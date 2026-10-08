@@ -1,0 +1,47 @@
+---
+description: Bonnes pratiques Next.js 15 App Router pour ce projet
+alwaysApply: true
+---
+
+# Next.js 15 — pratiques MSK ERP
+
+Stack : App Router · React 19 · Server Components par défaut · Tailwind · Prisma (cible) · Supabase.
+
+## Architecture
+
+- Pages / layouts = **Server Components** sauf besoin interactif
+- `"use client"` au plus bas (feuille), jamais sur un layout entier si évitable
+- Data fetching dans le serveur : `async` page/layout, pas `useEffect` pour charger
+- Mutations = **Server Actions** (`src/actions/*`), valider avec Zod
+- Auth / cookies = helpers `src/lib/supabase/*` + `requireUser`
+
+## Rendu & perf
+
+- `next/image` pour toute image raster ; `priority` uniquement LCP (logo hero/auth)
+- `next/font/local` uniquement (`src/fonts`) — jamais Google Fonts Inter
+- Contours dynamiques : `loading.tsx`, `error.tsx`, `not-found.tsx` par segment
+- Éviter `force-dynamic` sauf pages auth / données user temps réel
+- Prefetch Link par défaut ; pas de `<a>` interne hors ancres `#`
+
+## Structure
+
+```
+src/app/(auth)/     routes publiques auth
+src/app/(app)/      shell authentifié + modules
+src/components/ui/  primitives shadcn
+src/components/brand/  Logo, MskMark
+src/lib/            utils, brand, auth, clients
+```
+
+## UI / state
+
+- Formulaires : Server Actions + progressive enhancement ; RHF seulement si UX complexe
+- Pas de `useMemo` / `useCallback` par défaut
+- Listes : Server Component + table ; filtres client isolés
+- Styles : tokens Tailwind `msk-*` + classes utilitaires charte (`.font-impact`, `.brand-gradient`)
+
+## Sécurité
+
+- Jamais de secrets côté client
+- RLS Supabase respectée ; admin client serveur uniquement
+- Valider chaque FormData / input dans l'action

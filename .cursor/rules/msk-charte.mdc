@@ -1,0 +1,48 @@
+---
+description: Charte graphique MSK CREATION — obligatoire pour toute UI
+alwaysApply: true
+---
+
+# Charte MSK CREATION (v3 — sept. 2026)
+
+Référence : `docs/brand/CHARTE-GRAPHIQUE-MSK.pdf` · Tokens : `src/lib/brand.ts`
+
+## Couleurs (strict)
+
+| Token | Hex | Usage |
+|-------|-----|--------|
+| `msk-blue` | `#1D73BC` | Logo, primary, liens, CTA |
+| Dégradé | `#2A3D8E → #00ACEE` | Grands formats, **fonds clairs uniquement** |
+| `msk-ink` | `#0D1330` | Texte sombre, fonds sombres |
+| `msk-coral` | `#FF5A3C` | Accent ≤ 10 % surface, **jamais sur le logo** |
+| `msk-chalk` | `#F5F3EF` | Fond pages (pas blanc pur sur longs docs) |
+
+**Interdits :** ocre/terracotta, `#0000FF`, Inter/Space Grotesk, violet/fuchsia, noir pur `#000` pour le texte, dégradé sur fond sombre.
+
+## Typographie
+
+- **Jost** (`font-sans`) : UI, texte, boutons, chiffres
+- **Bricolage ExtraBold** (`.font-impact`) : 1 ligne d'impact / bloc, jamais texte courant, jamais < 40 px
+- **Instrument Serif Italic** (`.font-accent`) : **un seul mot** d'accent par titre, en bleu
+
+Capitales → `.tracking-caps` (interlettrage ≥ 0.08em).
+
+## Logo
+
+Utiliser uniquement `<Logo />` / `<MskMark />` (`src/components/brand`).
+
+Compositions : `short` (nav / UI) · `intercale` (auth / large) · `stacked` · `mark`.
+
+Assets : uniquement `public/brand/lockup*.png` et `wordmark-short.png` (recadrés).
+Jamais les PNG 1200² sources.
+
+Tailles — charte §01 :
+- Mot-logo UI = **40 px** de hauteur
+- Sous **24 px** → `variant="mark"` uniquement
+- Avatar / favicon → signe blanc sur `msk-ink` (pas de dégradé)
+
+## UI
+
+- Primary = `bg-msk-blue` / `text-msk-blue` (pas indigo/violet)
+- Fonds app = `bg-msk-chalk`, cartes = blanc
+- Pas de glow violet, pas de pastilles « AI purple »
