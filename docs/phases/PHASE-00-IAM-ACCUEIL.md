@@ -132,7 +132,7 @@ Voir `.cursor/rules/phase-quality.mdc` :
 - [x] AuditLog seed + actions IAM instrumentées
 - [x] UI login / accueil / admin livrée (charte MSK, fonts locales, full-width, loading)
 - [x] `npm run build` + `npm run lint` + `npm run test:nav` + gate Phase 0 OK
-- [ ] Validation explicite « Phase 0 OK » (humaine)
+- [x] Validation explicite « Phase 0 OK » (humaine) — 2026-10-09 ; polish UI Vaul/Radix/Card sur `dev` (`f29ae61`)
 
 ## Critères d’acceptation
 
@@ -140,4 +140,4 @@ Un Super Admin peut se connecter, inviter un collaborateur par e-mail, gérer gr
 
 ## Après validation
 
-Ouvrir **Phase 1** (plan dédié) : GED + charte + gabarits + signatures/cachets + organigramme.
+**Phase 0 OK** — ouvrir le plan dédié [PHASE-01-GED.md](./PHASE-01-GED.md) (GED + charte + gabarits + signatures/cachets + organigramme, MVP COM/CPT). Aucune implémentation Phase 1 avant GO explicite sur ce plan.
