@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -19,6 +19,7 @@ import {
   softDeleteDocumentAction,
   uploadDocumentAction,
 } from "@/actions/ged";
+import { cn } from "@/lib/utils";
 
 export type GedFolderRow = {
   id: string;
@@ -56,14 +57,19 @@ export function GedBrowser({
 }) {
   const router = useRouter();
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    setPendingHref(null);
+  }, [folderId]);
+
   const empty = folders.length === 0 && documents.length === 0;
 
-  function goFolder(id: string) {
-    router.push(`/ged?folder=${id}`);
+  function folderHref(id: string) {
+    return `/ged?folder=${id}`;
   }
 
   async function onUpload(formData: FormData) {
@@ -106,9 +112,15 @@ export function GedBrowser({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <nav aria-label="Fil d’Ariane" className="flex min-w-0 flex-wrap items-center gap-1 text-sm">
+        <nav
+          aria-label="Fil d’Ariane"
+          className="flex min-w-0 flex-wrap items-center gap-1 text-sm"
+        >
           <Link
             href="/ged"
+            prefetch
+            scroll={false}
+            onClick={() => setPendingHref("/ged")}
             className="cursor-pointer font-medium text-msk-blue hover:underline"
           >
             GED
@@ -119,28 +131,33 @@ export function GedBrowser({
               {i === breadcrumbs.length - 1 ? (
                 <span className="truncate font-medium text-msk-ink">{c.name}</span>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => goFolder(c.id)}
+                <Link
+                  href={folderHref(c.id)}
+                  prefetch
+                  scroll={false}
+                  onClick={() => setPendingHref(folderHref(c.id))}
                   className="cursor-pointer truncate text-msk-blue hover:underline"
                 >
                   {c.name}
-                </button>
+                </Link>
               )}
             </span>
           ))}
+          {pendingHref ? (
+            <span
+              className="ml-2 inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-msk-blue/30 border-t-msk-blue"
+              aria-hidden
+            />
+          ) : null}
         </nav>
 
         <div className="flex flex-wrap gap-2">
           {yearRootId && !folderId ? (
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => goFolder(yearRootId)}
-            >
-              Ouvrir {new Date().getFullYear()}
-            </Button>
+            <Link href={folderHref(yearRootId)} prefetch scroll={false}>
+              <Button type="button" variant="secondary" size="sm">
+                Ouvrir {new Date().getFullYear()}
+              </Button>
+            </Link>
           ) : null}
           {canUpload && folderId ? (
             <Button type="button" size="sm" onClick={() => setUploadOpen(true)}>
@@ -176,28 +193,41 @@ export function GedBrowser({
             </div>
           ) : (
             <ul className="divide-y divide-msk-ink/[0.06]">
-              {folders.map((f) => (
-                <li key={f.id}>
-                  <button
-                    type="button"
-                    onClick={() => goFolder(f.id)}
-                    className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left transition hover:bg-msk-chalk/80"
-                  >
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-msk-blue/10 text-msk-blue">
-                      <Folder className="h-4 w-4" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-medium text-msk-ink">
-                        {f.name}
+              {folders.map((f) => {
+                const href = folderHref(f.id);
+                const isPending = pendingHref === href;
+                return (
+                  <li key={f.id}>
+                    <Link
+                      href={href}
+                      prefetch
+                      scroll={false}
+                      onClick={() => setPendingHref(href)}
+                      className={cn(
+                        "flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left transition hover:bg-msk-chalk/80",
+                        isPending && "bg-msk-blue/[0.04]",
+                      )}
+                    >
+                      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-msk-blue/10 text-msk-blue">
+                        <Folder className="h-4 w-4" />
                       </span>
-                      <span className="block truncate text-xs text-msk-ink/40">
-                        {f.code}
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium text-msk-ink">
+                          {f.name}
+                        </span>
+                        <span className="block truncate text-xs text-msk-ink/40">
+                          {f.code}
+                        </span>
                       </span>
-                    </span>
-                    <ChevronRight className="h-4 w-4 text-msk-ink/25" />
-                  </button>
-                </li>
-              ))}
+                      {isPending ? (
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-msk-blue/30 border-t-msk-blue" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 text-msk-ink/25" />
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
               {documents.map((d) => (
                 <li
                   key={d.id}

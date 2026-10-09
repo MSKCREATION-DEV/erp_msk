@@ -28,18 +28,29 @@ export async function generateDemoPdfAction(
   const folder = await findModelesFolder(typeFolder);
   const number = `${template.type === "DEVIS" ? "D" : "F"}-DEMO-${Date.now().toString().slice(-6)}`;
 
-  const pdfBytes = await generateCommercialPdf({
-    type: template.type,
-    number,
-    clientName: "Client Démo MSK",
-    clientAddress: "Bamako, Mali",
-    lines: [
-      { label: "Prestation conseil digital", qty: 1, unitPrice: 500_000 },
-      { label: "Production créative", qty: 2, unitPrice: 150_000 },
-    ],
-    currency: "XOF",
-    vatRate: 18,
-  });
+  let pdfBytes: Uint8Array;
+  try {
+    pdfBytes = await generateCommercialPdf({
+      type: template.type,
+      number,
+      clientName: "Client Demo MSK",
+      clientAddress: "Bamako, Mali",
+      lines: [
+        { label: "Prestation conseil digital", qty: 1, unitPrice: 500_000 },
+        { label: "Production creative", qty: 2, unitPrice: 150_000 },
+      ],
+      currency: "XOF",
+      vatRate: 18,
+    });
+  } catch (e) {
+    return {
+      ok: false,
+      error:
+        e instanceof Error
+          ? `Generation PDF: ${e.message}`
+          : "Echec generation PDF",
+    };
+  }
 
   const storagePath = `${folder.path.replace(/^\//, "")}/${number}.pdf`;
   try {

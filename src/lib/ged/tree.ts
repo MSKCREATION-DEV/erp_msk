@@ -16,9 +16,14 @@ async function ensureChild(
   createdById?: string | null,
 ) {
   const path = `${parentPath}/${code}`;
-  return prisma.documentFolder.upsert({
+  const existing = await prisma.documentFolder.findUnique({
     where: { path },
-    create: {
+    select: { id: true, name: true, code: true, path: true, parentId: true },
+  });
+  if (existing) return existing;
+
+  return prisma.documentFolder.create({
+    data: {
       parentId,
       name,
       code,
@@ -26,24 +31,41 @@ async function ensureChild(
       year,
       createdById: createdById ?? null,
     },
-    update: { name },
+    select: { id: true, name: true, code: true, path: true, parentId: true },
   });
 }
 
-/** Bootstrap racines année N (idempotent). */
-export async function ensureYearTree(year = new Date().getFullYear(), createdById?: string) {
+/** Bootstrap racines année N — no-op rapide si déjà présent. */
+export async function ensureYearTree(
+  year = new Date().getFullYear(),
+  createdById?: string,
+) {
   const yearPath = `/${year}`;
-  const yearRoot = await prisma.documentFolder.upsert({
+  const existingRoot = await prisma.documentFolder.findUnique({
     where: { path: yearPath },
-    create: {
-      name: String(year),
-      code: String(year),
-      path: yearPath,
-      year,
-      createdById: createdById ?? null,
-    },
-    update: {},
   });
+  // Arbo déjà seedée (racine + au moins Clients) → skip
+  if (existingRoot) {
+    const clients = await prisma.documentFolder.findUnique({
+      where: { path: `${yearPath}/03_CLIENTS` },
+      select: { id: true },
+    });
+    if (clients) {
+      return { yearRoot: existingRoot, roots: {} as Record<string, string> };
+    }
+  }
+
+  const yearRoot = existingRoot
+    ? existingRoot
+    : await prisma.documentFolder.create({
+        data: {
+          name: String(year),
+          code: String(year),
+          path: yearPath,
+          year,
+          createdById: createdById ?? null,
+        },
+      });
 
   const roots: Record<string, string> = {};
   for (const f of YEAR_ROOT_FOLDERS) {
@@ -75,7 +97,6 @@ export async function ensureYearTree(year = new Date().getFullYear(), createdByI
   return { yearRoot, roots };
 }
 
-/** Dossier collaborateur + sous-dossiers de base. */
 export async function ensureCollaboratorFolders(
   firstName: string,
   lastName: string,
@@ -87,6 +108,12 @@ export async function ensureCollaboratorFolders(
     where: { path: `/${year}/05_COLLABORATEURS` },
   });
   const slug = collabFolderSlug(lastName, firstName);
+  const personPath = `${collabs.path}/${slug}`;
+  const existing = await prisma.documentFolder.findUnique({
+    where: { path: personPath },
+  });
+  if (existing) return existing;
+
   const person = await ensureChild(
     collabs.id,
     collabs.path,
@@ -101,25 +128,39 @@ export async function ensureCollaboratorFolders(
   return person;
 }
 
+/** Fil d’Ariane en 1 query (préfixes de path) au lieu de N round-trips. */
 export async function getFolderBreadcrumb(folderId: string) {
-  const crumbs: { id: string; name: string; path: string }[] = [];
-  let current = await prisma.documentFolder.findUnique({ where: { id: folderId } });
-  while (current) {
-    crumbs.unshift({ id: current.id, name: current.name, path: current.path });
-    if (!current.parentId) break;
-    current = await prisma.documentFolder.findUnique({
-      where: { id: current.parentId },
-    });
+  const folder = await prisma.documentFolder.findUnique({
+    where: { id: folderId },
+    select: { id: true, name: true, path: true },
+  });
+  if (!folder) return [];
+
+  const segments = folder.path.split("/").filter(Boolean);
+  const paths: string[] = [];
+  let acc = "";
+  for (const seg of segments) {
+    acc += `/${seg}`;
+    paths.push(acc);
   }
-  return crumbs;
+
+  const rows = await prisma.documentFolder.findMany({
+    where: { path: { in: paths } },
+    select: { id: true, name: true, path: true },
+  });
+  const byPath = new Map(rows.map((r) => [r.path, r]));
+  return paths
+    .map((p) => byPath.get(p))
+    .filter((r): r is { id: string; name: string; path: string } => Boolean(r));
 }
 
 export async function findModelesFolder(
   type: "Devis" | "Factures",
   year = new Date().getFullYear(),
 ) {
+  const path = `/${year}/04_MODELES/${type}`;
+  const existing = await prisma.documentFolder.findUnique({ where: { path } });
+  if (existing) return existing;
   await ensureYearTree(year);
-  return prisma.documentFolder.findUniqueOrThrow({
-    where: { path: `/${year}/04_MODELES/${type}` },
-  });
+  return prisma.documentFolder.findUniqueOrThrow({ where: { path } });
 }

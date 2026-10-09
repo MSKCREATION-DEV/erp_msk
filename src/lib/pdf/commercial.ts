@@ -1,4 +1,5 @@
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import { formatDateFr, formatMoneyFr, toWinAnsi } from "@/lib/pdf/winansi";
 
 const MSK_BLUE = rgb(29 / 255, 115 / 255, 188 / 255);
 const MSK_INK = rgb(13 / 255, 19 / 255, 48 / 255);
@@ -14,6 +15,20 @@ export type CommercialPdfInput = {
   vatRate?: number;
 };
 
+function draw(
+  page: PDFPage,
+  text: string,
+  opts: {
+    x: number;
+    y: number;
+    size: number;
+    font: PDFFont;
+    color: ReturnType<typeof rgb>;
+  },
+) {
+  page.drawText(toWinAnsi(text), opts);
+}
+
 export async function generateCommercialPdf(
   input: CommercialPdfInput,
 ): Promise<Uint8Array> {
@@ -27,7 +42,6 @@ export async function generateCommercialPdf(
   const vatRate = input.vatRate ?? 18;
   const title = input.type === "DEVIS" ? "DEVIS" : "FACTURE";
 
-  // Bandeau brand
   page.drawRectangle({
     x: 0,
     y: height - 56,
@@ -35,14 +49,14 @@ export async function generateCommercialPdf(
     height: 56,
     color: MSK_BLUE,
   });
-  page.drawText("MSK CREATION", {
+  draw(page, "MSK CREATION", {
     x: 40,
     y: height - 36,
     size: 16,
     font: fontBold,
     color: rgb(1, 1, 1),
   });
-  page.drawText(title, {
+  draw(page, title, {
     x: width - 140,
     y: height - 36,
     size: 18,
@@ -51,7 +65,7 @@ export async function generateCommercialPdf(
   });
 
   let y = height - 90;
-  page.drawText(`N° ${input.number}`, {
+  draw(page, `N° ${input.number}`, {
     x: 40,
     y,
     size: 11,
@@ -59,7 +73,7 @@ export async function generateCommercialPdf(
     color: MSK_INK,
   });
   y -= 18;
-  page.drawText(`Date : ${new Date().toLocaleDateString("fr-FR")}`, {
+  draw(page, `Date : ${formatDateFr()}`, {
     x: 40,
     y,
     size: 10,
@@ -68,7 +82,7 @@ export async function generateCommercialPdf(
   });
 
   y -= 36;
-  page.drawText("Client", {
+  draw(page, "Client", {
     x: 40,
     y,
     size: 9,
@@ -76,7 +90,7 @@ export async function generateCommercialPdf(
     color: MSK_BLUE,
   });
   y -= 16;
-  page.drawText(input.clientName, {
+  draw(page, input.clientName, {
     x: 40,
     y,
     size: 12,
@@ -85,7 +99,7 @@ export async function generateCommercialPdf(
   });
   if (input.clientAddress) {
     y -= 14;
-    page.drawText(input.clientAddress, {
+    draw(page, input.clientAddress, {
       x: 40,
       y,
       size: 10,
@@ -95,7 +109,6 @@ export async function generateCommercialPdf(
   }
 
   y -= 36;
-  // En-tête tableau
   page.drawRectangle({
     x: 40,
     y: y - 4,
@@ -103,38 +116,44 @@ export async function generateCommercialPdf(
     height: 22,
     color: rgb(0.95, 0.96, 0.98),
   });
-  page.drawText("Désignation", { x: 48, y: y + 2, size: 9, font: fontBold, color: MSK_INK });
-  page.drawText("Qté", { x: 340, y: y + 2, size: 9, font: fontBold, color: MSK_INK });
-  page.drawText("P.U.", { x: 400, y: y + 2, size: 9, font: fontBold, color: MSK_INK });
-  page.drawText("Total", { x: 480, y: y + 2, size: 9, font: fontBold, color: MSK_INK });
+  draw(page, "Désignation", {
+    x: 48,
+    y: y + 2,
+    size: 9,
+    font: fontBold,
+    color: MSK_INK,
+  });
+  draw(page, "Qté", { x: 340, y: y + 2, size: 9, font: fontBold, color: MSK_INK });
+  draw(page, "P.U.", { x: 400, y: y + 2, size: 9, font: fontBold, color: MSK_INK });
+  draw(page, "Total", { x: 480, y: y + 2, size: 9, font: fontBold, color: MSK_INK });
   y -= 28;
 
   let ht = 0;
   for (const line of input.lines) {
     const lineTotal = line.qty * line.unitPrice;
     ht += lineTotal;
-    page.drawText(line.label.slice(0, 48), {
+    draw(page, line.label.slice(0, 48), {
       x: 48,
       y,
       size: 10,
       font,
       color: MSK_INK,
     });
-    page.drawText(String(line.qty), {
+    draw(page, String(line.qty), {
       x: 340,
       y,
       size: 10,
       font,
       color: MSK_INK,
     });
-    page.drawText(formatMoney(line.unitPrice), {
+    draw(page, formatMoneyFr(line.unitPrice), {
       x: 400,
       y,
       size: 10,
       font,
       color: MSK_INK,
     });
-    page.drawText(formatMoney(lineTotal), {
+    draw(page, formatMoneyFr(lineTotal), {
       x: 480,
       y,
       size: 10,
@@ -147,7 +166,7 @@ export async function generateCommercialPdf(
   const vat = Math.round(ht * (vatRate / 100));
   const ttc = ht + vat;
   y -= 20;
-  page.drawText(`Total HT : ${formatMoney(ht)} ${currency}`, {
+  draw(page, `Total HT : ${formatMoneyFr(ht)} ${currency}`, {
     x: 360,
     y,
     size: 10,
@@ -155,7 +174,7 @@ export async function generateCommercialPdf(
     color: MSK_INK,
   });
   y -= 16;
-  page.drawText(`TVA ${vatRate} % : ${formatMoney(vat)} ${currency}`, {
+  draw(page, `TVA ${vatRate} % : ${formatMoneyFr(vat)} ${currency}`, {
     x: 360,
     y,
     size: 10,
@@ -163,7 +182,7 @@ export async function generateCommercialPdf(
     color: MSK_MUTED,
   });
   y -= 18;
-  page.drawText(`Total TTC : ${formatMoney(ttc)} ${currency}`, {
+  draw(page, `Total TTC : ${formatMoneyFr(ttc)} ${currency}`, {
     x: 360,
     y,
     size: 12,
@@ -171,9 +190,8 @@ export async function generateCommercialPdf(
     color: MSK_BLUE,
   });
 
-  // Slot signature
   y = 120;
-  page.drawText("Signature", {
+  draw(page, "Signature", {
     x: 40,
     y,
     size: 9,
@@ -188,7 +206,7 @@ export async function generateCommercialPdf(
     borderColor: MSK_MUTED,
     borderWidth: 1,
   });
-  page.drawText("MSK CREATION — document généré ERP", {
+  draw(page, "MSK CREATION - document généré ERP", {
     x: 40,
     y: 28,
     size: 8,
@@ -197,8 +215,4 @@ export async function generateCommercialPdf(
   });
 
   return pdf.save();
-}
-
-function formatMoney(n: number) {
-  return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(n);
 }

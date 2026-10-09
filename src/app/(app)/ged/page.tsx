@@ -23,11 +23,23 @@ export default async function GedPage({
 
   const { folder: folderParam } = await searchParams;
   const year = new Date().getFullYear();
+  const folderId = folderParam ?? null;
 
-  // Bootstrap arbo une seule fois si absente (évite N upserts à chaque visite)
-  let yearRoot = await prisma.documentFolder.findUnique({
-    where: { path: `/${year}` },
-  });
+  // Lecture parallèle ; bootstrap seulement si racine année absente
+  const [yearRootMaybe, current] = await Promise.all([
+    prisma.documentFolder.findUnique({
+      where: { path: `/${year}` },
+      select: { id: true, path: true },
+    }),
+    folderId
+      ? prisma.documentFolder.findUnique({
+          where: { id: folderId },
+          select: { id: true, name: true, path: true, parentId: true },
+        })
+      : Promise.resolve(null),
+  ]);
+
+  let yearRoot = yearRootMaybe;
   if (!yearRoot) {
     await ensureYearTree(
       year,
@@ -35,58 +47,46 @@ export default async function GedPage({
     );
     yearRoot = await prisma.documentFolder.findUnique({
       where: { path: `/${year}` },
+      select: { id: true, path: true },
     });
   }
 
-  const folderId = folderParam ?? null;
-  const current = folderId
-    ? await prisma.documentFolder.findUnique({ where: { id: folderId } })
-    : null;
+  const parentForChildren = current?.id ?? yearRoot?.id ?? null;
 
-  const breadcrumbs = current ? await getFolderBreadcrumb(current.id) : [];
-
-  const parentId = current?.id ?? null;
-  const folders = await prisma.documentFolder.findMany({
-    where: parentId
-      ? { parentId }
-      : { parentId: null, year },
-    orderBy: [{ code: "asc" }, { name: "asc" }],
-    select: { id: true, name: true, code: true, path: true },
-  });
-
-  // At absolute root (no folder): show year roots only via year folder children
-  const listFolders =
-    !folderId && yearRoot
-      ? await prisma.documentFolder.findMany({
-          where: { parentId: yearRoot.id },
-          orderBy: { code: "asc" },
+  const [breadcrumbs, folders, documents] = await Promise.all([
+    current ? getFolderBreadcrumb(current.id) : Promise.resolve([]),
+    parentForChildren
+      ? prisma.documentFolder.findMany({
+          where: { parentId: parentForChildren },
+          orderBy: [{ code: "asc" }, { name: "asc" }],
           select: { id: true, name: true, code: true, path: true },
         })
-      : folders;
-
-  const documents = current
-    ? await prisma.document.findMany({
-        where: {
-          folderId: current.id,
-          status: DocStatus.ACTIVE,
-          softDeletedAt: null,
-        },
-        orderBy: { createdAt: "desc" },
-        select: {
-          id: true,
-          originalName: true,
-          mime: true,
-          size: true,
-          createdAt: true,
-        },
-      })
-    : [];
+      : Promise.resolve([]),
+    current
+      ? prisma.document.findMany({
+          where: {
+            folderId: current.id,
+            status: DocStatus.ACTIVE,
+            softDeletedAt: null,
+          },
+          orderBy: { createdAt: "desc" },
+          take: 100,
+          select: {
+            id: true,
+            originalName: true,
+            mime: true,
+            size: true,
+            createdAt: true,
+          },
+        })
+      : Promise.resolve([]),
+  ]);
 
   return (
     <PageShell>
       <PageHeader
         title="GED"
-        description="Documents MSK — navigation type Drive : fil d’Ariane, dossier courant, dépôt latéral."
+        description="Documents MSK — fil d’Ariane, dossier courant, dépôt latéral."
         breadcrumbs={[
           { label: "Accueil", href: "/accueil" },
           { label: "GED" },
@@ -95,7 +95,7 @@ export default async function GedPage({
       <GedBrowser
         folderId={current?.id ?? null}
         breadcrumbs={breadcrumbs.map((b) => ({ id: b.id, name: b.name }))}
-        folders={folderId ? folders : listFolders}
+        folders={folders}
         documents={documents.map((d) => ({
           ...d,
           createdAt: d.createdAt.toISOString(),
