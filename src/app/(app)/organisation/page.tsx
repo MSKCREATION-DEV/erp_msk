@@ -6,8 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Card, CardContent } from "@/components/ui/card";
-import { UserAvatar } from "@/components/ui/user-avatar";
-import { Badge } from "@/components/ui/badge";
+import { OrgChart } from "@/components/org/org-chart";
 
 export const metadata: Metadata = { title: "Organisation" };
 
@@ -17,26 +16,22 @@ export default async function OrganisationPage() {
 
   const nodes = await prisma.orgNode.findMany({
     orderBy: [{ sortOrder: "asc" }, { fullName: "asc" }],
-    include: {
-      user: { select: { firstName: true, lastName: true, email: true } },
-      parent: { select: { fullName: true, title: true } },
+    select: {
+      id: true,
+      fullName: true,
+      title: true,
+      email: true,
+      photoPath: true,
+      parentId: true,
+      sortOrder: true,
     },
   });
-
-  const roots = nodes.filter((n) => !n.parentId);
-  const byParent = new Map<string, typeof nodes>();
-  for (const n of nodes) {
-    if (!n.parentId) continue;
-    const list = byParent.get(n.parentId) ?? [];
-    list.push(n);
-    byParent.set(n.parentId, list);
-  }
 
   return (
     <PageShell>
       <PageHeader
         title="Organigramme"
-        description="Équipe MSK CREATION — vue lecture (seed Phase 1)."
+        description="Équipe MSK CREATION — hiérarchie, photos et rôles."
         breadcrumbs={[
           { label: "Accueil", href: "/accueil" },
           { label: "Organisation" },
@@ -50,73 +45,8 @@ export default async function OrganisationPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-6">
-          {roots.map((root) => (
-            <OrgBranch
-              key={root.id}
-              node={root}
-              childrenMap={byParent}
-              depth={0}
-            />
-          ))}
-        </div>
+        <OrgChart nodes={nodes} />
       )}
     </PageShell>
-  );
-}
-
-function OrgBranch({
-  node,
-  childrenMap,
-  depth,
-}: {
-  node: {
-    id: string;
-    fullName: string;
-    title: string;
-    email: string | null;
-    user: { firstName: string; lastName: string } | null;
-  };
-  childrenMap: Map<string, Array<{
-    id: string;
-    fullName: string;
-    title: string;
-    email: string | null;
-    user: { firstName: string; lastName: string } | null;
-  }>>;
-  depth: number;
-}) {
-  const kids = childrenMap.get(node.id) ?? [];
-  const [first, ...rest] = node.fullName.split(" ");
-  const firstName = node.user?.firstName ?? first ?? "?";
-  const lastName =
-    node.user?.lastName ?? (rest.length ? rest.join(" ") : firstName);
-
-  return (
-    <div style={{ marginLeft: depth * 16 }} className="space-y-3">
-      <Card>
-        <CardContent className="flex items-center gap-4 py-4">
-          <UserAvatar firstName={firstName} lastName={lastName} size="md" />
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold text-msk-ink">{node.fullName}</p>
-            <p className="text-sm text-msk-ink/50">{node.title}</p>
-            {node.email ? (
-              <p className="mt-0.5 truncate text-xs text-msk-ink/40">
-                {node.email}
-              </p>
-            ) : null}
-          </div>
-          {depth === 0 ? <Badge tone="blue">Direction</Badge> : null}
-        </CardContent>
-      </Card>
-      {kids.map((child) => (
-        <OrgBranch
-          key={child.id}
-          node={child}
-          childrenMap={childrenMap}
-          depth={depth + 1}
-        />
-      ))}
-    </div>
   );
 }

@@ -8,6 +8,7 @@ import {
   PACK_PERMISSIONS,
   PERMISSIONS,
 } from "../src/lib/rbac/catalog";
+import { MSK_TEAM } from "../src/lib/org/team";
 
 config({ path: ".env.local" });
 config({ path: ".env" });
@@ -353,13 +354,37 @@ async function seedPhase1Ged() {
       code: "devis_standard",
       type: "DEVIS" as const,
       name: "Devis standard MSK",
-      structureJson: { slots: ["header", "lines", "totals", "signature"] },
+      structureJson: {
+        layout: "msk_v1",
+        slots: [
+          "logo_header",
+          "doc_title",
+          "parties",
+          "mission",
+          "lines_table",
+          "totals",
+          "legal_footer",
+        ],
+        ref: "docs/exemple devis gestion reseau social.png",
+      },
     },
     {
       code: "facture_standard",
       type: "FACTURE" as const,
       name: "Facture standard MSK",
-      structureJson: { slots: ["header", "lines", "totals", "signature"] },
+      structureJson: {
+        layout: "msk_v1",
+        slots: [
+          "logo_header",
+          "doc_title",
+          "parties",
+          "lines_table",
+          "iban",
+          "totals",
+          "legal_footer",
+        ],
+        ref: "docs/exemple facture.png",
+      },
     },
   ];
   for (const t of templates) {
@@ -377,89 +402,54 @@ async function seedPhase1Ged() {
   }
   console.log("✓ Gabarits devis / facture");
 
-  // Organigramme équipe MSK (CDC §14bis) — ids stables via email lookup
-  const team: {
-    email: string | null;
-    fullName: string;
-    title: string;
-    parentEmail: string | null;
-    sortOrder: number;
-  }[] = [
-    {
-      email: null,
-      fullName: "Mathieu Diarra",
-      title: "Fondateur",
-      parentEmail: null,
-      sortOrder: 0,
-    },
-    {
-      email: null,
-      fullName: "Isdalinia Boisseaux",
-      title: "Co-fondatrice",
-      parentEmail: null,
-      sortOrder: 1,
-    },
-    {
-      email: "a.guiro@mskcreation.net",
-      fullName: "Amadou Samba Guiro",
-      title: "Responsable Technique",
-      parentEmail: null,
-      sortOrder: 2,
-    },
-    {
-      email: null,
-      fullName: "Andile Boussari",
-      title: "Chef de Projet",
-      parentEmail: null,
-      sortOrder: 10,
-    },
-    {
-      email: null,
-      fullName: "Yaye Bah",
-      title: "Commerciale",
-      parentEmail: null,
-      sortOrder: 20,
-    },
-    {
-      email: null,
-      fullName: "Issiaka Yacouba Traoré",
-      title: "Comptable",
-      parentEmail: null,
-      sortOrder: 30,
-    },
-  ];
+  // Organigramme équipe MSK (slide 05 + assets public/team)
+  const idByKey = new Map<string, string>();
 
-  // Clear + recreate simple flat org (MVP lecture) — keep stable by fullName
-  for (const member of team) {
+  for (const member of MSK_TEAM) {
     const user = member.email
       ? await prisma.user.findUnique({ where: { email: member.email } })
       : null;
     const existing = await prisma.orgNode.findFirst({
       where: { fullName: member.fullName },
     });
+    const data = {
+      title: member.title,
+      email: member.email,
+      photoPath: member.photoPath,
+      userId: user?.id ?? null,
+      sortOrder: member.sortOrder,
+    };
     if (existing) {
-      await prisma.orgNode.update({
+      const updated = await prisma.orgNode.update({
         where: { id: existing.id },
-        data: {
-          title: member.title,
-          email: member.email,
-          userId: user?.id ?? null,
-          sortOrder: member.sortOrder,
-        },
+        data,
       });
+      idByKey.set(member.key, updated.id);
     } else {
-      await prisma.orgNode.create({
-        data: {
-          fullName: member.fullName,
-          title: member.title,
-          email: member.email,
-          userId: user?.id ?? null,
-          sortOrder: member.sortOrder,
-        },
+      const created = await prisma.orgNode.create({
+        data: { fullName: member.fullName, ...data },
       });
+      idByKey.set(member.key, created.id);
     }
   }
-  console.log("✓ Organigramme seedé");
+
+  for (const member of MSK_TEAM) {
+    const id = idByKey.get(member.key);
+    if (!id) continue;
+    const parentId = member.parentKey
+      ? (idByKey.get(member.parentKey) ?? null)
+      : null;
+    await prisma.orgNode.update({
+      where: { id },
+      data: { parentId },
+    });
+  }
+
+  const keptNames = MSK_TEAM.map((m) => m.fullName);
+  await prisma.orgNode.deleteMany({
+    where: { fullName: { notIn: keptNames } },
+  });
+  console.log(`✓ Organigramme seedé (${MSK_TEAM.length} nœuds + photos)`);
 
   const guiro = await prisma.user.findUnique({
     where: { email: SUPER_ADMIN.email },

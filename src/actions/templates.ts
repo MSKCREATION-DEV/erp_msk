@@ -30,18 +30,59 @@ export async function generateDemoPdfAction(
 
   let pdfBytes: Uint8Array;
   try {
-    pdfBytes = await generateCommercialPdf({
-      type: template.type,
-      number,
-      clientName: "Client Demo MSK",
-      clientAddress: "Bamako, Mali",
-      lines: [
-        { label: "Prestation conseil digital", qty: 1, unitPrice: 500_000 },
-        { label: "Production creative", qty: 2, unitPrice: 150_000 },
-      ],
-      currency: "XOF",
-      vatRate: 18,
-    });
+    pdfBytes = await generateCommercialPdf(
+      template.type === TemplateType.DEVIS
+        ? {
+            type: "DEVIS",
+            number,
+            clientName: "MARINAS",
+            clientAddress: "ACI 2000, Bamako",
+            clientPhone: "+223 74 40 00 00",
+            object:
+              "Gestion professionnelle des reseaux sociaux sur une duree de 3 mois.",
+            missionNote:
+              "Creation de contenu, publication, community management et reporting mensuel.",
+            lines: [
+              {
+                label: "Offre STANDARD - gestion reseaux (mensuel)",
+                qty: 3,
+                unitPrice: 100_000,
+              },
+              {
+                label: "Visuels graphiques additionnels",
+                qty: 4,
+                unitPrice: 25_000,
+              },
+            ],
+            currency: "FCFA",
+            vatRate: 18,
+          }
+        : {
+            type: "FACTURE",
+            number,
+            clientName: "M. TRAORE",
+            clientCompany: "KOUNDJI SERVICES",
+            clientAddress: "Agence Immobiliere, Bamako, Mali",
+            lines: [
+              {
+                label:
+                  "Gestion reseaux sociaux + Maintenance site + Suivi logiciel - tout inclus",
+                qty: 1,
+                unitPrice: 100_000,
+                date: "01/09/2026",
+              },
+              {
+                label:
+                  "Gestion reseaux sociaux + Maintenance site + Suivi logiciel - tout inclus",
+                qty: 1,
+                unitPrice: 100_000,
+                date: "01/10/2026",
+              },
+            ],
+            currency: "FCFA",
+            vatRate: 18,
+          },
+    );
   } catch (e) {
     return {
       ok: false,

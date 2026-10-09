@@ -1,3 +1,4 @@
+import { DocStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   COLLAB_SUBFOLDERS,
@@ -163,4 +164,243 @@ export async function findModelesFolder(
   if (existing) return existing;
   await ensureYearTree(year);
   return prisma.documentFolder.findUniqueOrThrow({ where: { path } });
+}
+
+/** Code dossier dérivé du nom (unique sous le parent). */
+export function folderCodeFromName(name: string): string {
+  const base = name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .replace(/[^a-zA-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .toUpperCase()
+    .slice(0, 48);
+  return base || "DOSSIER";
+}
+
+/**
+ * Crée un sous-dossier direct sous `parentId`.
+ * `code` / `path` uniques ; collision → suffixe `_2`, `_3`…
+ */
+export async function createChildFolder(opts: {
+  parentId: string;
+  name: string;
+  createdById?: string | null;
+}) {
+  const parent = await prisma.documentFolder.findUnique({
+    where: { id: opts.parentId },
+    select: { id: true, path: true, year: true },
+  });
+  if (!parent) throw new Error("Dossier parent introuvable");
+
+  const { code, path } = await uniqueChildPath(parent.path, opts.name);
+
+  return prisma.documentFolder.create({
+    data: {
+      parentId: parent.id,
+      name: opts.name.trim(),
+      code,
+      path,
+      year: parent.year,
+      createdById: opts.createdById ?? null,
+    },
+    select: { id: true, name: true, code: true, path: true, parentId: true },
+  });
+}
+
+/** Dossiers bootstrap / structure — non supprimables ; rename = nom seul. */
+export function isProtectedFolder(folder: {
+  path: string;
+  code: string;
+}): boolean {
+  const segs = folder.path.split("/").filter(Boolean);
+  if (segs.length <= 1) return true;
+  if (
+    segs.length === 2 &&
+    YEAR_ROOT_FOLDERS.some((f) => f.code === folder.code)
+  ) {
+    return true;
+  }
+  if (
+    MODELES_CHILDREN.some((c) => c.code === folder.code) &&
+    segs.includes("04_MODELES")
+  ) {
+    return true;
+  }
+  if (
+    COMPTA_MENSUELLE_CHILDREN.some((c) => c.code === folder.code) &&
+    segs.includes("02_COMPTABILITE_MENSUELLE")
+  ) {
+    return true;
+  }
+  if (
+    COLLAB_SUBFOLDERS.some((c) => c.code === folder.code) &&
+    segs.includes("05_COLLABORATEURS")
+  ) {
+    return true;
+  }
+  return false;
+}
+
+async function uniqueChildPath(
+  parentPath: string,
+  name: string,
+  excludeId?: string,
+) {
+  const baseCode = folderCodeFromName(name);
+  let code = baseCode;
+  let path = `${parentPath}/${code}`;
+  let n = 2;
+  while (true) {
+    const existing = await prisma.documentFolder.findUnique({
+      where: { path },
+      select: { id: true },
+    });
+    if (!existing || existing.id === excludeId) break;
+    code = `${baseCode}_${n}`;
+    path = `${parentPath}/${code}`;
+    n += 1;
+    if (n > 99) throw new Error("Trop de dossiers similaires");
+  }
+  return { code, path };
+}
+
+/**
+ * Renomme un dossier.
+ * - Protégé : `name` uniquement (path/code stables).
+ * - Libre : `name` + recalcul `code`/`path` + cascade descendants.
+ */
+export async function renameFolder(opts: { folderId: string; name: string }) {
+  const name = opts.name.trim();
+  const folder = await prisma.documentFolder.findUnique({
+    where: { id: opts.folderId },
+    select: {
+      id: true,
+      name: true,
+      code: true,
+      path: true,
+      parentId: true,
+    },
+  });
+  if (!folder) throw new Error("Dossier introuvable");
+
+  if (isProtectedFolder(folder)) {
+    return prisma.documentFolder.update({
+      where: { id: folder.id },
+      data: { name },
+      select: { id: true, name: true, code: true, path: true, parentId: true },
+    });
+  }
+
+  if (!folder.parentId) {
+    return prisma.documentFolder.update({
+      where: { id: folder.id },
+      data: { name },
+      select: { id: true, name: true, code: true, path: true, parentId: true },
+    });
+  }
+
+  const parent = await prisma.documentFolder.findUniqueOrThrow({
+    where: { id: folder.parentId },
+    select: { path: true },
+  });
+
+  const { code, path: newPath } = await uniqueChildPath(
+    parent.path,
+    name,
+    folder.id,
+  );
+
+  if (newPath === folder.path) {
+    return prisma.documentFolder.update({
+      where: { id: folder.id },
+      data: { name, code },
+      select: { id: true, name: true, code: true, path: true, parentId: true },
+    });
+  }
+
+  const oldPath = folder.path;
+  const descendants = await prisma.documentFolder.findMany({
+    where: { path: { startsWith: `${oldPath}/` } },
+    select: { id: true, path: true },
+  });
+
+  const all = [
+    { id: folder.id, path: oldPath, isRoot: true as const },
+    ...descendants.map((d) => ({
+      id: d.id,
+      path: d.path,
+      isRoot: false as const,
+    })),
+  ].sort((a, b) => b.path.length - a.path.length);
+
+  const stamp = `#rn${Date.now()}`;
+
+  return prisma.$transaction(async (tx) => {
+    for (const d of all) {
+      await tx.documentFolder.update({
+        where: { id: d.id },
+        data: { path: `${d.path}${stamp}` },
+      });
+    }
+    for (const d of all) {
+      const finalPath = d.isRoot
+        ? newPath
+        : d.path.replace(oldPath, newPath);
+      await tx.documentFolder.update({
+        where: { id: d.id },
+        data: d.isRoot
+          ? { name, code, path: finalPath }
+          : { path: finalPath },
+      });
+    }
+
+    return tx.documentFolder.findUniqueOrThrow({
+      where: { id: folder.id },
+      select: { id: true, name: true, code: true, path: true, parentId: true },
+    });
+  });
+}
+
+/**
+ * Supprime un dossier libre (non protégé) et sa sous-arborescence.
+ * Documents du sous-arbre → soft-delete (TRASH) + déplacés vers le parent
+ * (évite la perte hard-delete via cascade).
+ */
+export async function deleteFolderSubtree(folderId: string) {
+  const folder = await prisma.documentFolder.findUnique({
+    where: { id: folderId },
+    select: { id: true, name: true, code: true, path: true, parentId: true },
+  });
+  if (!folder) throw new Error("Dossier introuvable");
+  if (isProtectedFolder(folder)) {
+    throw new Error("Ce dossier système ne peut pas être supprimé");
+  }
+  if (!folder.parentId) {
+    throw new Error("La racine année ne peut pas être supprimée");
+  }
+
+  const subtree = await prisma.documentFolder.findMany({
+    where: {
+      OR: [{ id: folder.id }, { path: { startsWith: `${folder.path}/` } }],
+    },
+    select: { id: true },
+  });
+  const ids = subtree.map((f) => f.id);
+  const now = new Date();
+
+  await prisma.$transaction(async (tx) => {
+    await tx.document.updateMany({
+      where: { folderId: { in: ids } },
+      data: {
+        status: DocStatus.TRASH,
+        softDeletedAt: now,
+        folderId: folder.parentId!,
+      },
+    });
+    await tx.documentFolder.delete({ where: { id: folder.id } });
+  });
+
+  return folder;
 }

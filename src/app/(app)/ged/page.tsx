@@ -4,7 +4,11 @@ import { DocStatus } from "@prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { ensureYearTree, getFolderBreadcrumb } from "@/lib/ged/tree";
+import {
+  ensureYearTree,
+  getFolderBreadcrumb,
+  isProtectedFolder,
+} from "@/lib/ged/tree";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { GedBrowser } from "@/components/ged/ged-browser";
@@ -26,7 +30,7 @@ export default async function GedPage({
   const folderId = folderParam ?? null;
 
   // Lecture parallèle ; bootstrap seulement si racine année absente
-  const [yearRootMaybe, current] = await Promise.all([
+  const [yearRootMaybe, currentMaybe] = await Promise.all([
     prisma.documentFolder.findUnique({
       where: { path: `/${year}` },
       select: { id: true, path: true },
@@ -51,15 +55,41 @@ export default async function GedPage({
     });
   }
 
-  const parentForChildren = current?.id ?? yearRoot?.id ?? null;
+  // /ged sans dossier → ouvrir l’année courante
+  if (!folderId && yearRoot) {
+    redirect(`/ged?folder=${yearRoot.id}`);
+  }
 
-  const [breadcrumbs, folders, documents] = await Promise.all([
+  const current = currentMaybe;
+  if (folderId && !current) {
+    redirect("/ged");
+  }
+
+  const parentForChildren = current?.id ?? null;
+
+  const [breadcrumbs, foldersRaw, documents] = await Promise.all([
     current ? getFolderBreadcrumb(current.id) : Promise.resolve([]),
     parentForChildren
       ? prisma.documentFolder.findMany({
           where: { parentId: parentForChildren },
           orderBy: [{ code: "asc" }, { name: "asc" }],
-          select: { id: true, name: true, code: true, path: true },
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            path: true,
+            _count: {
+              select: {
+                children: true,
+                documents: {
+                  where: {
+                    status: DocStatus.ACTIVE,
+                    softDeletedAt: null,
+                  },
+                },
+              },
+            },
+          },
         })
       : Promise.resolve([]),
     current
@@ -82,11 +112,21 @@ export default async function GedPage({
       : Promise.resolve([]),
   ]);
 
+  const folders = foldersRaw.map((f) => ({
+    id: f.id,
+    name: f.name,
+    code: f.code,
+    path: f.path,
+    childFolderCount: f._count.children,
+    childFileCount: f._count.documents,
+    isProtected: isProtectedFolder(f),
+  }));
+
   return (
     <PageShell>
       <PageHeader
         title="GED"
-        description="Documents MSK — fil d’Ariane, dossier courant, dépôt latéral."
+        description="Documents MSK — aperçu, affichage, tri et regroupement."
         breadcrumbs={[
           { label: "Accueil", href: "/accueil" },
           { label: "GED" },
@@ -102,6 +142,7 @@ export default async function GedPage({
         }))}
         canUpload={hasPermission(user, "ged.upload")}
         canDelete={hasPermission(user, "ged.delete")}
+        canManageFolders={hasPermission(user, "ged.manage_folders")}
         yearRootId={yearRoot?.id ?? null}
       />
     </PageShell>

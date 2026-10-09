@@ -13,8 +13,34 @@ import {
   MAX_UPLOAD_BYTES,
 } from "@/lib/ged/constants";
 import { signedGedUrl, uploadGedObject } from "@/lib/ged/storage";
-import { ensureYearTree } from "@/lib/ged/tree";
+import {
+  createChildFolder,
+  deleteFolderSubtree,
+  ensureYearTree,
+  renameFolder,
+} from "@/lib/ged/tree";
 import type { ActionResult } from "@/actions/auth";
+
+const folderNameSchema = z
+  .string()
+  .trim()
+  .min(1, "Nom requis")
+  .max(120, "Nom trop long")
+  .refine((v) => !/[\\/]/.test(v), "Caractères / \\ interdits");
+
+const createFolderSchema = z.object({
+  parentId: z.string().min(1),
+  name: folderNameSchema,
+});
+
+const renameFolderSchema = z.object({
+  folderId: z.string().min(1),
+  name: folderNameSchema,
+});
+
+const deleteFolderSchema = z.object({
+  folderId: z.string().min(1),
+});
 
 const uploadMeta = z.object({
   folderId: z.string().min(1),
@@ -149,4 +175,132 @@ export async function ensureGedYearAction(): Promise<ActionResult> {
   await ensureYearTree(new Date().getFullYear(), actor.id);
   revalidatePath("/ged");
   return { ok: true, message: "Arborescence année prête" };
+}
+
+export async function createFolderAction(
+  formData: FormData,
+): Promise<ActionResult & { folderId?: string }> {
+  const actor = await requireUser({ permission: "ged.manage_folders" });
+
+  const parsed = createFolderSchema.safeParse({
+    parentId: formData.get("parentId"),
+    name: formData.get("name"),
+  });
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Données invalides",
+    };
+  }
+
+  try {
+    const folder = await createChildFolder({
+      parentId: parsed.data.parentId,
+      name: parsed.data.name,
+      createdById: actor.id,
+    });
+
+    await writeAudit({
+      actorId: actor.id,
+      action: "ged.create_folder",
+      entityType: "document_folder",
+      entityId: folder.id,
+      metadata: { name: folder.name, path: folder.path },
+    });
+
+    revalidatePath("/ged");
+    return {
+      ok: true,
+      message: `Dossier « ${folder.name} » créé`,
+      folderId: folder.id,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Création impossible",
+    };
+  }
+}
+
+export async function renameFolderAction(
+  formData: FormData,
+): Promise<ActionResult & { folderId?: string }> {
+  const actor = await requireUser({ permission: "ged.manage_folders" });
+
+  const parsed = renameFolderSchema.safeParse({
+    folderId: formData.get("folderId"),
+    name: formData.get("name"),
+  });
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Données invalides",
+    };
+  }
+
+  try {
+    const folder = await renameFolder({
+      folderId: parsed.data.folderId,
+      name: parsed.data.name,
+    });
+
+    await writeAudit({
+      actorId: actor.id,
+      action: "ged.rename_folder",
+      entityType: "document_folder",
+      entityId: folder.id,
+      metadata: { name: folder.name, path: folder.path },
+    });
+
+    revalidatePath("/ged");
+    return {
+      ok: true,
+      message: `Dossier renommé « ${folder.name} »`,
+      folderId: folder.id,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Renommage impossible",
+    };
+  }
+}
+
+export async function deleteFolderAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "ged.manage_folders" });
+
+  const parsed = deleteFolderSchema.safeParse({
+    folderId: formData.get("folderId"),
+  });
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Données invalides",
+    };
+  }
+
+  try {
+    const folder = await deleteFolderSubtree(parsed.data.folderId);
+
+    await writeAudit({
+      actorId: actor.id,
+      action: "ged.delete_folder",
+      entityType: "document_folder",
+      entityId: folder.id,
+      metadata: { name: folder.name, path: folder.path },
+    });
+
+    revalidatePath("/ged");
+    return {
+      ok: true,
+      message: `Dossier « ${folder.name} » supprimé`,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Suppression impossible",
+    };
+  }
 }

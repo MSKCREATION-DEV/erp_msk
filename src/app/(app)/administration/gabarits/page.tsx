@@ -54,7 +54,9 @@ export default async function GabaritsPage() {
             </CardHeader>
             <CardContent className="flex items-center justify-between gap-3">
               <p className="text-xs text-msk-ink/45">
-                {t.active ? "Actif" : "Inactif"} — pdf-lib, charte MSK.
+                {t.active
+                  ? "Actif — structure alignée exemples MSK + charte"
+                  : "Inactif"}
               </p>
               {t.active ? <GenerateDemoButton templateId={t.id} /> : null}
             </CardContent>

@@ -1,8 +1,8 @@
-import { BadgeCheck, LogOut } from "lucide-react";
+import { BadgeCheck } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { SidebarNav } from "@/components/app/sidebar-nav";
+import { LogoutButton } from "@/components/app/logout-button";
 import { UserAvatar } from "@/components/ui/user-avatar";
-import { logoutAction } from "@/actions/auth";
 import { NAV_GROUPS } from "@/lib/nav";
 import { hasPermission, type SessionUser } from "@/lib/rbac/resolve";
 
@@ -25,7 +25,7 @@ export function Sidebar({ user }: { user: SessionUser }) {
       : `${user.firstName} ${user.lastName}`;
 
   return (
-    <aside className="flex h-screen w-[248px] shrink-0 flex-col border-r border-msk-ink/[0.07] bg-white">
+    <aside className="flex h-full w-[248px] shrink-0 flex-col overflow-hidden border-r border-msk-ink/[0.07] bg-white">
       <div className="flex h-[64px] items-center px-4">
         <Logo variant="bloc" size="sm" href="/accueil" priority />
       </div>
@@ -53,16 +53,7 @@ export function Sidebar({ user }: { user: SessionUser }) {
               {user.email}
             </p>
           </div>
-          <form action={logoutAction}>
-            <button
-              type="submit"
-              title="Déconnexion"
-              className="cursor-pointer rounded-lg p-2 text-msk-ink/35 transition hover:bg-msk-chalk hover:text-msk-ink"
-            >
-              <LogOut className="h-4 w-4" />
-              <span className="sr-only">Déconnexion</span>
-            </button>
-          </form>
+          <LogoutButton />
         </div>
       </div>
     </aside>

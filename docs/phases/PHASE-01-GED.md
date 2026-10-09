@@ -1,9 +1,9 @@
 # Phase 1 — GED + Charte + Gabarits + Signatures + Organigramme (MVP COM/CPT)
 
-> Plan de phase dédié. **Aucun démarrage d’implémentation** avant validation explicite **« Phase 1 GO »**.  
+> Plan de phase dédié.  
 > Prérequis : **Phase 0 OK** (2026-10-09).  
 > Branche de travail : **`dev`**.  
-> Contexte priorités : COM / Finance / Compta = **URGENT** ([PRIORITES.md](./PRIORITES.md)) — cette phase livre d’abord dossiers & gabarits utiles au commercial/finance.
+> Contexte priorités : COM / Finance / Compta = **URGENT** ([PRIORITES.md](./PRIORITES.md)).
 
 ## Statut
 
@@ -11,8 +11,9 @@
 |---|---|
 | Plan rédigé | Oui — 2026-10-09 |
 | Validation « Phase 1 GO » | **GO** — 2026-10-09 |
-| Implémentation | En cours / livrée sur `dev` |
-| Gate Phase 1 OK | En attente tests gate |
+| Implémentation | **Livrée sur `dev`** — 2026-10-09 (itinérance UI/GED/org/PDF) |
+| Gate technique | **OK** (`npm run gate:phase1` + `build` + `test:nav`) |
+| Gate Phase 1 OK (humaine) | **En attente** — checklist UI ci-dessous |
 
 ## Règle de gate
 
@@ -31,7 +32,7 @@ Poser le **socle documentaire** de l’ERP MSK pour que les phases Commercial / 
 - Charte / brand en config (assets existants `public/brand`)
 - Bibliothèque signatures (upload original)
 - Organigramme seedé (lecture)
-- Gabarits **devis** / **facture** + génération PDF minimale charte MSK
+- Gabarits **devis** / **facture** + génération PDF charte MSK
 
 ## Hors scope (strict — Phase 1.x / 2+)
 
@@ -42,6 +43,7 @@ Poser le **socle documentaire** de l’ERP MSK pour que les phases Commercial / 
 | Pad dessin + signature « typed » | 1.x |
 | Éditeur gabarit drag-and-drop / tous types RH-paie | 2–5 |
 | Partage nominatif UI avancée (expire, manage_share) | 1.x |
+| **UI corbeille GED** (liste / restore) | 1.x |
 | Arborescence SharePoint exhaustive (tous sous-dossiers) | incrémental |
 | Clients / devis / factures **transactionnels** | Phase 2–3 |
 | CRM, paie, stocks | Phase 2+ |
@@ -54,133 +56,88 @@ Poser le **socle documentaire** de l’ERP MSK pour que les phases Commercial / 
 | Storage | Supabase Storage (bucket privé `ged`) + signed URLs serveur |
 | Métadonnées | Prisma (`DocumentFolder`, `Document`, `DocumentLink`, `DocumentAcl`) |
 | Validation uploads | Zod (mime, taille max, nom) |
-| PDF gabarits | **`pdf-lib`** (génération serveur, Node-friendly, mature) |
-| UI | PageShell + Card + SideDrawer Vaul (déjà en place) |
-| ACL | Niveaux de visibilité + ACL nominative **modèle** ; UI partage simple (view/upload) |
-| Soft-delete | Documents soft-delete ; pas de purge silencieuse |
+| PDF gabarits | **`pdf-lib`** — layout aligné exemples `docs/exemple *.png` + tokens MSK |
+| UI | PageShell + Card + SideDrawer Vaul + **ConfirmDialog** MSK |
+| ACL | Modèle présent ; UI partage avancée → 1.x |
+| Soft-delete | Documents soft-delete ; dossiers système protégés |
 | Priorité arbo | `03_CLIENTS`, `04_MODELES`, `01/02_COMPTA` stubs, `05_COLLABORATEURS` |
 
-## Modèle de données (minimum)
+## Livré (implémentation)
 
-```
-DocumentFolder
-  - id, parentId?, name, code, path, year?, visibility, createdBy
-Document
-  - id, folderId, storagePath, originalName, mime, size, checksum
-  - version, status (ACTIVE|ARCHIVED|TRASH), visibility, createdBy
-  - softDeletedAt?
-DocumentLink
-  - documentId, entityType, entityId  # client | user | template | …
-DocumentAcl
-  - folderId? | documentId?, userId, right (VIEW|UPLOAD|EDIT_META|MANAGE_SHARE)
-  - expiresAt?
-BrandAsset (CFG)
-  - kind (logo_short|…), storageOrPublicPath, active
-SignatureAsset
-  - ownerUserId?, orgOwned, kind (UPLOAD), storageOriginal, status, label
-OrgNode
-  - userId?, title, parentId?, sortOrder  # organigramme lecture
-DocumentTemplate
-  - type (DEVIS|FACTURE), code, name, version, structureJson, active
-```
-
-Permissions à **compléter** dans le seed (en plus des stubs Phase 0 `ged.upload`, `ged.view_scoped`, `cfg.*`) :
-
-- `ged.browse`, `ged.manage_folders`, `ged.delete`, `ged.share`
-- `self.signature.manage`
-- `orgchart.view`, `orgchart.manage` (manage hors MVP UI — seed + lecture)
-
-## Arborescence bootstrap (année N)
-
-Créée au seed / script d’ouverture d’exercice (lazy OK pour sous-dossiers clients) :
-
-```
-/{year}/
-  01_COMPTABILITE_ANNUELLE/     # stub dossiers racines
-  02_COMPTABILITE_MENSUELLE/    # stub + 01_FACTURES_ET_RECUS
-  03_CLIENTS/                   # {client_slug}/Devis|Factures|Contrats|Autres (lazy)
-  04_MODELES/                   # Devis/ Factures/ (+ stubs Contrats/RH)
-  05_COLLABORATEURS/            # créé à l’invitation / activation user
-```
-
-Automatisations Phase 1 :
-
-| Événement | Action |
-|---|---|
-| Seed / ouverture année | Créer racines année N |
-| User ACTIVE (post-invite) | Créer `05_COLLABORATEURS/{NOM_PRENOM}/` + sous-dossiers de base |
-| PDF devis/facture généré (démo gabarit) | Déposer sous `04_MODELES` ou dossier client test si fourni |
-
-## Parcours à livrer
-
-### GED
-- Route `/ged` (sidebar, permission `ged.view_scoped` / `ged.browse`)
-- Navigation arborescence + fil d’Ariane
-- Upload fichier dans dossier courant (SideDrawer)
-- Téléchargement via signed URL
-- Soft-delete + liste corbeille minimale (autorisés)
+### GED (`/ged`)
+- [x] Navigation + fil d’Ariane, ouverture année courante
+- [x] Upload fichier (drawer) + download signed URL + soft-delete document
+- [x] **CRUD dossiers** (create / rename / delete) — `ged.manage_folders`
+- [x] Dossiers système protégés (année, racines, modèles, collab sub)
+- [x] Affichage : liste / compact / vignettes + tri + regroupement (prefs localStorage)
+- [x] Aperçu document en **modal** (PDF / image / texte)
+- [x] Compteurs enfants directs (dossiers / fichiers) à la place des codes techniques
+- [x] Modal de confirmation MSK (`ConfirmProvider` / `useConfirm`) — delete + logout
 
 ### Charte / brand
-- Page CFG `/administration/charte` (`cfg.brand`) : aperçu tokens + logos `public/brand`
-- Pas d’éditeur PDF avancé ; enregistrement références assets org
+- [x] Page `/administration/charte` — tokens + logos `public/brand`
 
 ### Signatures
-- Self : upload signature PNG/JPEG/WebP (`self.signature.manage`)
-- Admin : lister / révoquer (`cfg.signatures`)
-- Stockage original uniquement (pas de pipeline clean)
+- [x] Self `/profil/signature` — upload PNG/JPEG/WebP
+- [x] Admin `/administration/signatures` — liste / révocation
 
-### Organigramme
-- Seed nœuds équipe MSK (CDC §14bis) liés users si e-mail connu
-- Page lecture `/organisation` (`orgchart.view`)
+### Organigramme (`/organisation`)
+- [x] Seed 11 nœuds (Assetou retiré) + photos `public/team/*`
+- [x] E-mails `initiale.nom@mskcreation.net`
+- [x] Board 5 niveaux + connecteurs SVG (co-direction → ops → staff)
+- [x] `OrgNode.photoPath`
 
-### Gabarits devis / facture
-- CRUD léger métadonnées template (`cfg.templates`)
-- Action « Générer PDF démo » → `pdf-lib` (en-tête MSK, parties, lignes factices, total, slot signature placeholder)
-- Fichier classé GED sous `04_MODELES/{Devis|Factures}/`
+### Gabarits
+- [x] Templates seed `devis_standard` / `facture_standard`
+- [x] PDF démo alignés exemples devis / facture (logo lockup, parties, tableau, totaux, IBAN, pied fiscal)
+- [x] Classement sous `04_MODELES/{Devis|Factures}/`
 
-## Zones code (prévision)
+### Transverse
+- [x] Règle absolue anti-reset MDP comptes `ACTIVE`
+- [x] WinAnsi PDF (espaces fr-FR)
+- [x] Shell : sidebar + topbar fixes ; scroll contenu seul
+- [x] Navbar / perf : loading segments, RBAC, prefetch dossiers
 
-- `prisma/schema.prisma` + migration `phase1_ged`
-- `src/lib/ged/*` (paths, ACL resolve, storage client)
-- `src/lib/pdf/templates/*` (devis, facture)
-- `src/actions/ged.ts`, `signatures.ts`, `templates.ts`
-- `src/app/(app)/ged/`, `organisation/`, `administration/charte/`, `administration/gabarits/`
-- Seed : arbo année, orgchart, permissions GED manquantes
-- Nav : activer GED / Organisation (retirer `soon` où livré)
+## Reste avant « Phase 1 OK » (gate humaine)
 
-## Standards transverses
+À valider **manuellement** en Super Admin (pas bloquant gate technique) :
 
-Voir `.cursor/rules/phase-quality.mdc` + charte MSK :
+| # | Parcours | Critère |
+|---|---|---|
+| 1 | GED | Créer dossier → upload → aperçu modal → soft-delete fichier → renommer / supprimer dossier libre |
+| 2 | Affichage GED | Basculer liste / compact / vignettes + tri + regroupement |
+| 3 | Signature | Upload self + révocation admin visibles |
+| 4 | Gabarits | Générer PDF devis **et** facture → ouvrir depuis GED `04_MODELES` |
+| 5 | Org | Vérifier hiérarchie + photos + e-mails |
+| 6 | Déconnexion | Modal confirmation (pas `window.confirm`) |
 
-- UI moderne, drawers Vaul, cards, états loading/empty/error
-- Zod sur toutes les entrées ; secrets jamais client
-- `npm run build` + lint sans erreur avant gate
+Optionnel Phase **1.x** (hors gate stricte) :
 
-## Tests & vérifications (gate Phase 1)
+- UI corbeille (lister / restaurer documents soft-deleted)
+- Partage nominatif ACL UI
+- Pad signature / nettoyage image
 
-- [x] Migration Prisma GED appliquée sur Supabase (`db push` + `20261009090000_phase1_ged` résolue)
-- [x] Bucket Storage `ged` créé (privé, 20 Mo) + signed URLs via service role
-- [x] Bootstrap arborescence année courante (`/${year}/03_CLIENTS` … `05_COLLABORATEURS`)
-- [ ] Upload + download + soft-delete E2E (Super Admin) — à valider en UI
-- [x] Dossier collab créé à l’invite (+ seed Super Admin)
-- [x] Page organigramme seedée lisible (`/organisation`)
-- [ ] Upload signature self + révocation admin — à valider en UI
-- [ ] PDF devis + facture démo générés et classés GED — à valider en UI
-- [x] Permissions seed : `ged.browse`, `ged.manage_folders`, `ged.delete`, `ged.share`, `self.signature.manage`, `orgchart.*`
-- [x] `npm run build` + `test:nav` OK (2026-10-09)
-- [ ] Validation explicite « Phase 1 OK »
+## Tests automatiques
+
+```bash
+npm run build
+npm run test:nav
+NODE_TLS_REJECT_UNAUTHORIZED=0 npm run gate:phase1
+```
+
+Résultats 2026-10-09 : **build OK** · **nav OK** · **gate technique OK** (arbo 2026, 2 gabarits, 11 org nodes, perms, bucket `ged`).
 
 ## Critères d’acceptation
 
-Un Super Admin peut parcourir la GED année N, uploader un document, voir l’organigramme seedé, déposer sa signature, et générer un PDF devis/facture démo classé sous `04_MODELES` — sans module CRM/commercial transactionnel.
+Un Super Admin peut parcourir la GED année N, CRUD dossiers libres, uploader / prévisualiser / soft-delete un document, voir l’organigramme seedé, déposer sa signature, et générer un PDF devis/facture démo classé sous `04_MODELES` — sans module CRM/commercial transactionnel.
 
 ## Après validation
 
-Ouvrir **Phase 2** (plan dédié) : Catalogue + CRM — **URGENT**.
+Répondre dans le chat : **« Phase 1 OK »**.  
+Puis ouvrir **Phase 2** (plan dédié) : Catalogue + CRM — **URGENT**.
 
 ---
 
-## Validation
+## Validation historique
 
-Répondre dans le chat : **« Phase 1 GO »** pour démarrer l’implémentation.  
-Toute autre formulation ambiguë = pas de GO.
+- **« Phase 1 GO »** — 2026-10-09 (démarrage implémentation).

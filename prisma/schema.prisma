@@ -367,6 +367,7 @@ model OrgNode {
   title     String
   fullName  String
   email     String?
+  photoPath String?
   parentId  String?
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())

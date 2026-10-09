@@ -7,7 +7,7 @@ type UserAvatarProps = {
   firstName: string;
   lastName: string;
   src?: string | null;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
   className?: string;
 };
 
@@ -16,6 +16,7 @@ const sizes = {
   md: "h-10 w-10 text-xs",
   lg: "h-12 w-12 text-sm",
   xl: "h-16 w-16 text-base",
+  "2xl": "h-20 w-20 text-lg",
 } as const;
 
 export function UserAvatar({
@@ -28,7 +29,12 @@ export function UserAvatar({
   return (
     <Avatar className={cn(sizes[size], className)}>
       {src ? <AvatarImage src={src} alt={`${firstName} ${lastName}`} /> : null}
-      <AvatarFallback className={cn(size === "xl" && "text-base")}>
+      <AvatarFallback
+        className={cn(
+          size === "xl" && "text-base",
+          size === "2xl" && "text-lg",
+        )}
+      >
         {initials(firstName, lastName)}
       </AvatarFallback>
     </Avatar>
