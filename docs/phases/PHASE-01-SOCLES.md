@@ -26,15 +26,15 @@ Préparer l’environnement : dépôt `erp_msk`, nouveau Supabase, Resend (dev),
 
 ## Checklist tests (gate)
 
-- [ ] `git ls-remote` / push OK sur `erp_msk`
-- [ ] CDC présent (`docs/CAHIER-DES-CHARGES-ERP-MSK.md`)
-- [ ] `docs/msk` favicons + team présents
-- [ ] Projet Supabase **neuf** ; variables renseignées localement
-- [ ] `.env.example` complet ; secrets absents du git
-- [ ] `npm run build` OK
-- [ ] E-mail test Resend reçu sur `a.guiro@mskcreation.net`
-- [ ] README à jour
-- [ ] Validation « Phase -1 OK » avant Phase 0
+- [x] `git ls-remote` / push OK sur `erp_msk` (`main` → `MSKCREATION-DEV/erp_msk`)
+- [x] CDC présent (`docs/CAHIER-DES-CHARGES-ERP-MSK.md`)
+- [x] `docs/msk` favicons + team présents
+- [x] Projet Supabase connecté ; `npm run health:env` OK
+- [x] `.env.example` complet ; secrets absents du git (`.env.local` gitignoré)
+- [x] `npm run build` OK
+- [x] E-mail test Resend **envoyé** vers `a.guiro@mskcreation.net` (id `01a11e20-1ba2-7bb0-913a-848c07948869`) — confirmer réception boîte
+- [x] README à jour
+- [x] Validation explicite « Phase -1 OK » (2026-10-09) — gate fermée
 
 ## Scripts utiles
 
