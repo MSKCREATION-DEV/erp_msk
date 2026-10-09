@@ -24,8 +24,6 @@ export function GenerateDemoButton({ templateId }: { templateId: string }) {
     if (state?.ok && state.documentId) {
       void openPreview(state.documentId);
     }
-    // Auto-ouvrir l’aperçu après génération réussie
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.ok, state?.documentId]);
 
   async function openPreview(documentId: string) {

@@ -1,4 +1,4 @@
-// ERP MSK CREATION — Phase 0 IAM + Phase 1 GED
+// ERP MSK CREATION — Phase 0 IAM + Phase 1 GED + Phase 2 Catalogue/CRM
 // https://pris.ly/d/prisma-schema
 
 generator client {
@@ -67,6 +67,71 @@ enum TemplateType {
   FACTURE
 }
 
+enum CatalogPillar {
+  IMAGE_MARQUE
+  CONTENU_COMMUNICATION
+  PRESENCE_DIGITALE
+  CROISSANCE_ACQUISITION
+  TRANSFORMATION_STRUCTURATION
+}
+
+enum CatalogBilling {
+  ONE_SHOT
+  MONTHLY
+  PACKAGE
+}
+
+enum CrmSource {
+  INSTAGRAM
+  LINKEDIN
+  WHATSAPP
+  TIKTOK
+  GOOGLE_MAPS
+  GOOGLE
+  SNAPCHAT
+  TERRAIN
+  RECOMMANDATION
+  EMAIL
+  TELEPHONE
+  AUTRE
+}
+
+enum CrmPipelineStage {
+  NOUVEAU
+  CONTACTE
+  QUALIFICATION
+  INTERESSE
+  DEVIS_ENVOYE
+  NEGOCIATION
+  GAGNE
+  PERDU
+}
+
+enum CrmActivityType {
+  APPEL
+  WHATSAPP
+  INSTAGRAM
+  LINKEDIN
+  EMAIL
+  RDV
+  NOTE
+  AUTRE
+}
+
+enum CrmTaskStatus {
+  OPEN
+  DONE
+  CANCELLED
+}
+
+enum CrmLossReason {
+  BUDGET
+  CONCURRENT
+  TIMING
+  NO_SHOW
+  AUTRE
+}
+
 /// Singleton single-tenant MSK (id fixe = "msk")
 model OrganizationSettings {
   id               String   @id @default("msk")
@@ -112,6 +177,13 @@ model User {
   documentAcls   DocumentAcl[]
   signatures     SignatureAsset[]
   orgNodes       OrgNode[]
+  crmOrgsOwned   CrmOrganization[] @relation("CrmOrgOwner")
+  crmOrgsCreated CrmOrganization[] @relation("CrmOrgCreator")
+  crmDealsOwned CrmOpportunity[]  @relation("CrmDealOwner")
+  crmDealsCreated CrmOpportunity[] @relation("CrmDealCreator")
+  crmActivities CrmActivity[]     @relation("CrmActivityActor")
+  crmTasksAssigned CrmTask[]      @relation("CrmTaskAssignee")
+  crmTasksCreated  CrmTask[]      @relation("CrmTaskCreator")
 
   @@index([status])
   @@map("users")
@@ -397,4 +469,167 @@ model DocumentTemplate {
 
   @@index([type])
   @@map("document_templates")
+}
+
+/// Offre catalogue MSK (5 piliers)
+model CatalogOffer {
+  id            String         @id @default(cuid())
+  sku           String         @unique
+  name          String
+  description   String?
+  pillar        CatalogPillar
+  billing       CatalogBilling @default(ONE_SHOT)
+  priceXof      Int?
+  priceEurHint  Int?
+  vatEligible   Boolean        @default(true)
+  active        Boolean        @default(true)
+  sortOrder     Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  opportunities CrmOpportunity[]
+
+  @@index([pillar, active])
+  @@map("catalog_offers")
+}
+
+model CrmOrganization {
+  id            String     @id @default(cuid())
+  name          String
+  normalizedName String
+  sector        String?
+  city          String?
+  country       String     @default("ML")
+  website       String?
+  source        CrmSource?
+  notes         String?
+  ownerId       String     @db.Uuid
+  createdById   String     @db.Uuid
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  owner       User             @relation("CrmOrgOwner", fields: [ownerId], references: [id])
+  createdBy   User             @relation("CrmOrgCreator", fields: [createdById], references: [id])
+  contacts    CrmContact[]
+  opportunities CrmOpportunity[]
+  activities  CrmActivity[]
+  tasks       CrmTask[]
+
+  @@index([ownerId])
+  @@index([normalizedName])
+  @@map("crm_organizations")
+}
+
+model CrmContact {
+  id             String   @id @default(cuid())
+  organizationId String
+  firstName      String
+  lastName       String
+  jobTitle       String?
+  email          String?
+  phone          String?
+  isPrimary      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization CrmOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+  @@map("crm_contacts")
+}
+
+model CrmOpportunity {
+  id              String           @id @default(cuid())
+  organizationId  String
+  title           String
+  stage           CrmPipelineStage @default(NOUVEAU)
+  source          CrmSource?
+  offerLabel      String?
+  catalogOfferId  String?
+  budgetXof       Int?
+  probability     Int?             // 0..100
+  expectedCloseAt DateTime?
+  lossReason      CrmLossReason?
+  lossNote        String?
+  ownerId         String           @db.Uuid
+  createdById     String           @db.Uuid
+  lastActivityAt  DateTime?
+  nextAction      String?
+  followUpAt      DateTime?
+  wonAt           DateTime?
+  lostAt          DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  organization CrmOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  catalogOffer CatalogOffer?   @relation(fields: [catalogOfferId], references: [id], onDelete: SetNull)
+  owner        User            @relation("CrmDealOwner", fields: [ownerId], references: [id])
+  createdBy    User            @relation("CrmDealCreator", fields: [createdById], references: [id])
+  activities   CrmActivity[]
+  tasks        CrmTask[]
+
+  @@index([ownerId, stage])
+  @@index([organizationId])
+  @@index([followUpAt])
+  @@map("crm_opportunities")
+}
+
+model CrmActivity {
+  id             String         @id @default(cuid())
+  organizationId String?
+  opportunityId  String?
+  type           CrmActivityType
+  summary        String
+  body           String?
+  occurredAt     DateTime       @default(now())
+  actorId        String         @db.Uuid
+  createdAt      DateTime       @default(now())
+
+  organization CrmOrganization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  opportunity  CrmOpportunity?  @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  actor        User             @relation("CrmActivityActor", fields: [actorId], references: [id])
+
+  @@index([opportunityId, occurredAt])
+  @@index([organizationId, occurredAt])
+  @@map("crm_activities")
+}
+
+model CrmTask {
+  id             String        @id @default(cuid())
+  organizationId String?
+  opportunityId  String?
+  title          String
+  dueAt          DateTime
+  status         CrmTaskStatus @default(OPEN)
+  assigneeId     String        @db.Uuid
+  createdById    String        @db.Uuid
+  completedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  organization CrmOrganization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  opportunity  CrmOpportunity?  @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  assignee     User             @relation("CrmTaskAssignee", fields: [assigneeId], references: [id])
+  createdBy    User             @relation("CrmTaskCreator", fields: [createdById], references: [id])
+
+  @@index([assigneeId, status, dueAt])
+  @@index([dueAt])
+  @@map("crm_tasks")
+}
+
+model CrmScript {
+  id        String    @id @default(cuid())
+  code      String    @unique
+  channel   CrmSource
+  title     String
+  body      String
+  tips      String?
+  active    Boolean   @default(true)
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([channel, active])
+  @@map("crm_scripts")
 }

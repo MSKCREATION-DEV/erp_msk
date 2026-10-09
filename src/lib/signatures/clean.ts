@@ -44,9 +44,9 @@ export async function cleanSignatureImage(
 
   const out = Buffer.from(data);
   for (let i = 0; i < out.length; i += 4) {
-    let r = out[i]!;
-    let g = out[i + 1]!;
-    let b = out[i + 2]!;
+    const r = out[i]!;
+    const g = out[i + 1]!;
+    const b = out[i + 2]!;
     const lum = 0.299 * r + 0.587 * g + 0.114 * b;
     const chroma = Math.max(r, g, b) - Math.min(r, g, b);
 

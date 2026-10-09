@@ -11,6 +11,7 @@ import {
   Palette,
   PenLine,
   UserRound,
+  Package,
   type LucideIcon,
 } from "lucide-react";
 
@@ -63,6 +64,20 @@ export const NAV_GROUPS: NavGroup[] = [
         label: "Organisation",
         icon: Network,
         permission: "orgchart.view",
+      },
+      {
+        id: "crm",
+        href: "/crm",
+        label: "CRM",
+        icon: Briefcase,
+        permission: "crm.access",
+      },
+      {
+        id: "catalogue",
+        href: "/catalogue",
+        label: "Catalogue",
+        icon: Package,
+        permission: "com.catalogue.view",
       },
     ],
   },
@@ -127,14 +142,6 @@ export const NAV_GROUPS: NavGroup[] = [
     collapsible: true,
     defaultCollapsed: true,
     items: [
-      {
-        id: "crm",
-        href: "/bientot/crm",
-        label: "CRM",
-        icon: Briefcase,
-        permission: "crm.access",
-        soon: true,
-      },
       {
         id: "commercial",
         href: "/bientot/commercial",

@@ -9,6 +9,8 @@ import {
   PERMISSIONS,
 } from "../src/lib/rbac/catalog";
 import { MSK_TEAM } from "../src/lib/org/team";
+import { CATALOG_OFFERS_SEED } from "../src/lib/catalogue/offers-seed";
+import { CRM_SCRIPTS_SEED } from "../src/lib/crm/scripts-seed";
 
 config({ path: ".env.local" });
 config({ path: ".env" });
@@ -465,10 +467,47 @@ async function seedPhase1Ged() {
   }
 }
 
+async function seedPhase2CatalogueCrm() {
+  for (const offer of CATALOG_OFFERS_SEED) {
+    await prisma.catalogOffer.upsert({
+      where: { sku: offer.sku },
+      create: offer,
+      update: {
+        name: offer.name,
+        description: offer.description,
+        pillar: offer.pillar,
+        billing: offer.billing,
+        priceXof: offer.priceXof,
+        priceEurHint: offer.priceEurHint,
+        sortOrder: offer.sortOrder,
+        active: true,
+      },
+    });
+  }
+  console.log(`✓ Catalogue ${CATALOG_OFFERS_SEED.length} offres`);
+
+  for (const script of CRM_SCRIPTS_SEED) {
+    await prisma.crmScript.upsert({
+      where: { code: script.code },
+      create: script,
+      update: {
+        channel: script.channel,
+        title: script.title,
+        body: script.body,
+        tips: script.tips,
+        sortOrder: script.sortOrder,
+        active: true,
+      },
+    });
+  }
+  console.log(`✓ CRM scripts ${CRM_SCRIPTS_SEED.length}`);
+}
+
 async function main() {
   await seedCatalog();
   await seedSuperAdmin();
   await seedPhase1Ged();
+  await seedPhase2CatalogueCrm();
 }
 
 main()

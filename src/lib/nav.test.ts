@@ -6,7 +6,8 @@ const live = all.filter((i) => !i.soon);
 
 const accueil = live.find((i) => i.id === "accueil")!;
 const users = live.find((i) => i.id === "utilisateurs")!;
-const crm = all.find((i) => i.id === "crm")!;
+const crm = live.find((i) => i.id === "crm")!;
+const catalogue = live.find((i) => i.id === "catalogue")!;
 const maSig = live.find((i) => i.id === "ma-signature")!;
 
 assert.equal(isNavActive("/accueil", accueil, live), true);
@@ -18,12 +19,14 @@ assert.equal(
   true,
 );
 
-assert.equal(isNavActive("/accueil", crm, live), false);
-assert.equal(isNavActive("/bientot/crm", crm, all), false);
+assert.ok(crm, "CRM live (plus soon)");
+assert.equal(isNavActive("/crm", crm, live), true);
+assert.equal(isNavActive("/crm/prospects", crm, live), true);
+assert.ok(catalogue, "Catalogue live");
+assert.equal(isNavActive("/catalogue", catalogue, live), true);
 
 assert.equal(isNavActive("/profil/signature", maSig, live), true);
 
-// Pas de doublon Administration / Utilisateurs
 assert.equal(
   all.some((i) => i.id === "administration"),
   false,

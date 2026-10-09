@@ -12,6 +12,7 @@
     "test:nav": "tsx src/lib/nav.test.ts",
     "gate:phase0": "node scripts/gate-phase0.mjs",
     "gate:phase1": "node scripts/gate-phase1.mjs",
+    "gate:phase2": "node scripts/gate-phase2.mjs",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
