@@ -165,13 +165,16 @@ async function seedSuperAdmin() {
     process.env.BOOTSTRAP_FORCE_PASSWORD?.trim() === "1" &&
     process.env.BOOTSTRAP_TEMP_PASSWORD?.trim()
   ) {
-    // Jamais réécrire le MDP d’un compte existant sauf force explicite
-    // (évite de casser la session après un seed Phase N).
+    // ABSOLU : uniquement avec FORCE explicite (voir .cursor/rules/auth-password-safety.mdc)
     await admin.auth.admin.updateUserById(authId, {
       password: tempPassword,
       email_confirm: true,
     });
     console.log("⚠ BOOTSTRAP_FORCE_PASSWORD=1 → mot de passe Auth réécrit");
+  } else if (process.env.BOOTSTRAP_TEMP_PASSWORD?.trim()) {
+    console.log(
+      "ℹ BOOTSTRAP_TEMP_PASSWORD ignoré (compte existant). Pour forcer: BOOTSTRAP_FORCE_PASSWORD=1",
+    );
   }
 
   const otherSuper = await prisma.user.findFirst({

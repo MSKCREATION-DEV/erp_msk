@@ -2,8 +2,12 @@ import { requireUser } from "@/lib/auth/session";
 import { Sidebar } from "@/components/app/sidebar";
 import { Topbar } from "@/components/app/topbar";
 
-export const dynamic = "force-dynamic";
-
+/**
+ * Shell authentifié.
+ * - Pas de `force-dynamic` explicite : cookies Auth suffisent à dynamiser.
+ * - `loading.tsx` frère → Suspense sur `children` : la sidebar reste visible
+ *   pendant le fetch RSC de la page (nav soft non bloquante).
+ */
 export default async function AppLayout({
   children,
 }: {

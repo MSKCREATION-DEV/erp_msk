@@ -24,16 +24,19 @@ export default async function GedPage({
   const { folder: folderParam } = await searchParams;
   const year = new Date().getFullYear();
 
-  // Ensure tree exists for admins; others just read
-  if (hasPermission(user, "ged.manage_folders")) {
-    await ensureYearTree(year, user.id);
-  } else {
-    await ensureYearTree(year);
-  }
-
-  const yearRoot = await prisma.documentFolder.findUnique({
+  // Bootstrap arbo une seule fois si absente (évite N upserts à chaque visite)
+  let yearRoot = await prisma.documentFolder.findUnique({
     where: { path: `/${year}` },
   });
+  if (!yearRoot) {
+    await ensureYearTree(
+      year,
+      hasPermission(user, "ged.manage_folders") ? user.id : undefined,
+    );
+    yearRoot = await prisma.documentFolder.findUnique({
+      where: { path: `/${year}` },
+    });
+  }
 
   const folderId = folderParam ?? null;
   const current = folderId

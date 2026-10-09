@@ -14,57 +14,101 @@ export type SessionUser = {
   packCodes: string[];
 };
 
-const userInclude = {
-  groupMembers: { include: { group: true } },
-  userPacks: { include: { pack: true } },
-  overrides: { include: { permission: true } },
-} as const;
-
 /**
- * Résolution RBAC :
- * union(packs directs) ∪ union(packs défaut des groupes) ∪ GRANT − DENY
- * Super Admin → toutes les permissions catalogue en base.
+ * Résolution RBAC en **une seule query** Prisma.
+ * Super Admin : pas de fetch catalogue (hasPermission court-circuite déjà).
  */
-export async function resolveUserPermissions(userId: string): Promise<SessionUser | null> {
+export async function resolveUserPermissions(
+  userId: string,
+): Promise<SessionUser | null> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: userInclude,
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      status: true,
+      isSuperAdmin: true,
+      mustChangePassword: true,
+      groupMembers: {
+        select: {
+          group: {
+            select: {
+              code: true,
+              defaultPack: { select: { id: true, code: true } },
+            },
+          },
+        },
+      },
+      userPacks: {
+        select: {
+          pack: {
+            select: {
+              id: true,
+              code: true,
+              permissions: {
+                select: { permission: { select: { code: true } } },
+              },
+            },
+          },
+        },
+      },
+      overrides: {
+        select: {
+          effect: true,
+          permission: { select: { code: true } },
+        },
+      },
+    },
   });
   if (!user) return null;
 
   const groupCodes = [...new Set(user.groupMembers.map((m) => m.group.code))];
-  const packIds = new Set(user.userPacks.map((p) => p.packId));
+  const packCodes = new Set(user.userPacks.map((p) => p.pack.code));
+  for (const m of user.groupMembers) {
+    if (m.group.defaultPack) packCodes.add(m.group.defaultPack.code);
+  }
 
-  for (const membership of user.groupMembers) {
-    if (membership.group.defaultPackId) {
-      packIds.add(membership.group.defaultPackId);
+  // Super Admin : pas besoin de charger 60+ permissions — le gate utilise isSuperAdmin
+  if (user.isSuperAdmin) {
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      status: user.status,
+      isSuperAdmin: true,
+      mustChangePassword: user.mustChangePassword,
+      permissions: new Set(),
+      groupCodes,
+      packCodes: [...packCodes],
+    };
+  }
+
+  const permissionCodes = new Set<string>();
+
+  for (const up of user.userPacks) {
+    for (const pp of up.pack.permissions) {
+      permissionCodes.add(pp.permission.code);
     }
   }
 
-  const packCodeSet = new Set(user.userPacks.map((p) => p.pack.code));
-  const groupDefaultPacks = await prisma.group.findMany({
-    where: {
-      id: { in: user.groupMembers.map((m) => m.groupId) },
-      defaultPackId: { not: null },
-    },
-    include: { defaultPack: true },
-  });
-  for (const g of groupDefaultPacks) {
-    if (g.defaultPack) packCodeSet.add(g.defaultPack.code);
+  // Packs défaut des groupes non déjà couverts via userPacks
+  const defaultPackIds = new Set(
+    user.groupMembers
+      .map((m) => m.group.defaultPack?.id)
+      .filter((id): id is string => Boolean(id)),
+  );
+  for (const up of user.userPacks) {
+    defaultPackIds.delete(up.pack.id);
   }
-  const packCodes = [...packCodeSet];
-
-  let permissionCodes = new Set<string>();
-
-  if (user.isSuperAdmin) {
-    const all = await prisma.permission.findMany({ select: { code: true } });
-    permissionCodes = new Set(all.map((p) => p.code));
-  } else if (packIds.size > 0) {
-    const packPerms = await prisma.packPermission.findMany({
-      where: { packId: { in: [...packIds] } },
-      include: { permission: true },
+  if (defaultPackIds.size > 0) {
+    const extras = await prisma.packPermission.findMany({
+      where: { packId: { in: [...defaultPackIds] } },
+      select: { permission: { select: { code: true } } },
     });
-    for (const pp of packPerms) {
+    for (const pp of extras) {
       permissionCodes.add(pp.permission.code);
     }
   }
@@ -83,11 +127,11 @@ export async function resolveUserPermissions(userId: string): Promise<SessionUse
     firstName: user.firstName,
     lastName: user.lastName,
     status: user.status,
-    isSuperAdmin: user.isSuperAdmin,
+    isSuperAdmin: false,
     mustChangePassword: user.mustChangePassword,
     permissions: permissionCodes,
     groupCodes,
-    packCodes,
+    packCodes: [...packCodes],
   };
 }
 
@@ -113,16 +157,18 @@ export type PermissionProvenance = {
   sources: PermissionSource[];
 };
 
+export type ProvenanceResult = {
+  isSuperAdmin: boolean;
+  entries: PermissionProvenance[];
+};
+
 /**
  * Provenance des droits pour l’UI admin (lecture seule).
  * Ne remplace pas resolveUserPermissions pour l’auth.
  */
 export async function resolvePermissionProvenance(
   userId: string,
-): Promise<{
-  isSuperAdmin: boolean;
-  entries: PermissionProvenance[];
-} | null> {
+): Promise<ProvenanceResult | null> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     include: {
@@ -143,52 +189,22 @@ export async function resolvePermissionProvenance(
 
   const map = new Map<string, PermissionProvenance>();
 
-  function ensure(code: string): PermissionProvenance {
+  const ensure = (code: string) => {
     let row = map.get(code);
     if (!row) {
       row = { code, effective: false, sources: [] };
       map.set(code, row);
     }
     return row;
-  }
-
-  const packIds = new Set(user.userPacks.map((p) => p.packId));
-  for (const m of user.groupMembers) {
-    if (m.group.defaultPackId) packIds.add(m.group.defaultPackId);
-  }
-
-  const packPerms =
-    packIds.size > 0
-      ? await prisma.packPermission.findMany({
-          where: { packId: { in: [...packIds] } },
-          include: { permission: true, pack: true },
-        })
-      : [];
-
-  const permsByPackId = new Map<string, string[]>();
-  for (const pp of packPerms) {
-    const list = permsByPackId.get(pp.packId) ?? [];
-    list.push(pp.permission.code);
-    permsByPackId.set(pp.packId, list);
-  }
-
-  for (const m of user.groupMembers) {
-    const pack = m.group.defaultPack;
-    if (!pack) continue;
-    for (const code of permsByPackId.get(pack.id) ?? []) {
-      const row = ensure(code);
-      row.sources.push({
-        kind: "group_pack",
-        groupName: m.group.name,
-        packName: pack.name,
-      });
-      row.effective = true;
-    }
-  }
+  };
 
   for (const up of user.userPacks) {
-    for (const code of permsByPackId.get(up.packId) ?? []) {
-      const row = ensure(code);
+    const perms = await prisma.packPermission.findMany({
+      where: { packId: up.packId },
+      include: { permission: true },
+    });
+    for (const pp of perms) {
+      const row = ensure(pp.permission.code);
       row.sources.push({
         kind: "direct_pack",
         packName: up.pack.name,
@@ -197,9 +213,25 @@ export async function resolvePermissionProvenance(
     }
   }
 
+  for (const m of user.groupMembers) {
+    if (!m.group.defaultPackId || !m.group.defaultPack) continue;
+    const perms = await prisma.packPermission.findMany({
+      where: { packId: m.group.defaultPackId },
+      include: { permission: true },
+    });
+    for (const pp of perms) {
+      const row = ensure(pp.permission.code);
+      row.sources.push({
+        kind: "group_pack",
+        groupName: m.group.name,
+        packName: m.group.defaultPack.name,
+      });
+      row.effective = true;
+    }
+  }
+
   for (const ov of user.overrides) {
-    const code = ov.permission.code;
-    const row = ensure(code);
+    const row = ensure(ov.permission.code);
     if (ov.effect === OverrideEffect.GRANT) {
       row.sources.push({
         kind: "override_grant",
@@ -215,9 +247,8 @@ export async function resolvePermissionProvenance(
     }
   }
 
-  const entries = [...map.values()].sort((a, b) =>
-    a.code.localeCompare(b.code),
-  );
-
-  return { isSuperAdmin: false, entries };
+  return {
+    isSuperAdmin: false,
+    entries: [...map.values()].sort((a, b) => a.code.localeCompare(b.code)),
+  };
 }

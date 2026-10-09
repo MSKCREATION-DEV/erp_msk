@@ -83,6 +83,9 @@ export default async function UserDetailPage({
   if (!target) notFound();
 
   const resolved = await resolveUserPermissions(target.id);
+  const permissionCount = target.isSuperAdmin
+    ? await prisma.permission.count()
+    : (resolved?.permissions.size ?? 0);
 
   return (
     <PageShell>
@@ -103,7 +106,7 @@ export default async function UserDetailPage({
         phone={target.phone}
         status={target.status}
         isSuperAdmin={target.isSuperAdmin}
-        permissionCount={resolved?.permissions.size ?? 0}
+        permissionCount={permissionCount}
         groupCodes={resolved?.groupCodes ?? []}
         packCodes={resolved?.packCodes ?? []}
       />

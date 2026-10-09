@@ -1,12 +1,11 @@
-import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { assets, brand, type LogoVariant } from "@/lib/brand";
+import { brand, type LogoVariant } from "@/lib/brand";
 import { MskMark } from "./msk-mark";
 
 const HEIGHT_PX = {
-  mark: 16,
-  sm: 40,
+  mark: 28,
+  sm: 32,
   md: 40,
 } as const;
 
@@ -16,76 +15,59 @@ type LogoProps = {
   tone?: "color" | "white";
   href?: string | null;
   className?: string;
+  /** Conservé pour API — le mark SVG local n’a pas besoin de priority Image. */
   priority?: boolean;
   alt?: string;
 };
 
-function resolveAsset(
-  variant: Exclude<LogoVariant, "mark">,
-  tone: "color" | "white",
-) {
-  if (tone === "white") return assets.lockupWhite;
-  if (variant === "stacked") return assets.stacked;
-  if (variant === "intercale") return assets.lockup;
-  return assets.bloc;
-}
-
+/**
+ * Logo shell : MskMark SVG inline (0 requête réseau) + mot « MSK ».
+ * Évite les PNG manquants qui freinaient chaque navigation du layout.
+ */
 export function Logo({
   variant = "bloc",
   size = "sm",
   tone = "color",
   href = "/accueil",
   className,
-  priority = false,
   alt = brand.name,
 }: LogoProps) {
   const heightPx = HEIGHT_PX[variant === "mark" ? "mark" : size];
+  const markColor = tone === "white" ? "text-white" : "text-msk-blue";
+  const textColor = tone === "white" ? "text-white" : "text-msk-ink";
 
-  const content =
-    variant === "mark" ? (
+  const content = (
+    <span
+      className={cn("inline-flex items-center gap-2.5", className)}
+      title={alt}
+    >
       <MskMark
-        className={cn(
-          "w-auto",
-          tone === "white" ? "text-white" : "text-msk-blue",
-          className,
-        )}
+        className={cn("w-auto shrink-0", markColor)}
         style={{ height: heightPx }}
         title={alt}
       />
-    ) : (
-      (() => {
-        const asset = resolveAsset(variant, tone);
-        const widthPx = Math.round((asset.width / asset.height) * heightPx);
-        return (
-          <Image
-            src={asset.src}
-            alt={alt}
-            width={asset.width}
-            height={asset.height}
-            priority={priority}
-            unoptimized
-            className="object-contain object-left"
-            style={{ height: heightPx, width: widthPx, maxWidth: "100%" }}
-          />
-        );
-      })()
-    );
+      {variant !== "mark" ? (
+        <span
+          className={cn(
+            "text-[15px] font-semibold tracking-tight",
+            textColor,
+          )}
+        >
+          {brand.shortName}
+        </span>
+      ) : null}
+    </span>
+  );
 
   if (href === null) {
-    return (
-      <span className={cn("inline-flex shrink-0 items-center", className)}>
-        {content}
-      </span>
-    );
+    return content;
   }
 
   return (
     <Link
       href={href}
-      className={cn(
-        "inline-flex shrink-0 cursor-pointer items-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40",
-        className,
-      )}
+      prefetch
+      className="inline-flex shrink-0 cursor-pointer items-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40"
       aria-label={brand.name}
     >
       {content}
