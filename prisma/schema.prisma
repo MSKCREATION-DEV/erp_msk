@@ -1,4 +1,4 @@
-// ERP MSK CREATION — Phase 0 IAM
+// ERP MSK CREATION — Phase 0 IAM + Phase 1 GED
 // https://pris.ly/d/prisma-schema
 
 generator client {
@@ -28,6 +28,43 @@ enum ResetRequestStatus {
   PENDING
   DONE
   CANCELLED
+}
+
+enum DocVisibility {
+  PRIVATE_SELF
+  GROUP
+  RH_ONLY
+  DIRECTION
+  COMPANY
+  CUSTOM
+}
+
+enum DocStatus {
+  ACTIVE
+  ARCHIVED
+  TRASH
+}
+
+enum AclRight {
+  VIEW
+  UPLOAD
+  EDIT_META
+  MANAGE_SHARE
+}
+
+enum SignatureKind {
+  UPLOAD
+}
+
+enum SignatureStatus {
+  DRAFT
+  ACTIVE
+  REVOKED
+}
+
+enum TemplateType {
+  DEVIS
+  FACTURE
 }
 
 /// Singleton single-tenant MSK (id fixe = "msk")
@@ -70,6 +107,11 @@ model User {
   auditLogs      AuditLog[]              @relation("AuditActor")
   resetRequests  PasswordResetRequest[]  @relation("ResetSubject")
   resetsResolved PasswordResetRequest[]  @relation("ResetResolver")
+  foldersCreated DocumentFolder[]        @relation("FolderCreator")
+  docsCreated    Document[]              @relation("DocCreator")
+  documentAcls   DocumentAcl[]
+  signatures     SignatureAsset[]
+  orgNodes       OrgNode[]
 
   @@index([status])
   @@map("users")
@@ -200,4 +242,156 @@ model PasswordResetRequest {
 
   @@index([status])
   @@map("password_reset_requests")
+}
+
+// ─── Phase 1 GED ───────────────────────────────────────────────
+
+model DocumentFolder {
+  id         String        @id @default(cuid())
+  parentId   String?
+  name       String
+  code       String
+  path       String
+  year       Int?
+  visibility DocVisibility @default(COMPANY)
+  createdById String?      @db.Uuid
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  parent    DocumentFolder?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children  DocumentFolder[] @relation("FolderTree")
+  documents Document[]
+  acls      DocumentAcl[]
+  createdBy User?            @relation("FolderCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@unique([path])
+  @@index([parentId])
+  @@index([year])
+  @@index([code])
+  @@map("document_folders")
+}
+
+model Document {
+  id           String        @id @default(cuid())
+  folderId     String
+  storagePath  String
+  originalName String
+  mime         String
+  size         Int
+  checksum     String?
+  version      Int           @default(1)
+  status       DocStatus     @default(ACTIVE)
+  visibility   DocVisibility @default(COMPANY)
+  createdById  String?       @db.Uuid
+  softDeletedAt DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  folder    DocumentFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  createdBy User?          @relation("DocCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  links     DocumentLink[]
+  acls      DocumentAcl[]
+
+  @@index([folderId])
+  @@index([status])
+  @@index([softDeletedAt])
+  @@map("documents")
+}
+
+model DocumentLink {
+  id         String @id @default(cuid())
+  documentId String
+  entityType String
+  entityId   String
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, entityType, entityId])
+  @@index([entityType, entityId])
+  @@map("document_links")
+}
+
+model DocumentAcl {
+  id         String    @id @default(cuid())
+  folderId   String?
+  documentId String?
+  userId     String    @db.Uuid
+  right      AclRight  @default(VIEW)
+  expiresAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  folder   DocumentFolder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  document Document?       @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([folderId])
+  @@index([documentId])
+  @@index([userId])
+  @@map("document_acls")
+}
+
+model BrandAsset {
+  id        String   @id @default(cuid())
+  kind      String   @unique
+  label     String
+  publicPath String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("brand_assets")
+}
+
+model SignatureAsset {
+  id              String          @id @default(cuid())
+  ownerUserId     String?         @db.Uuid
+  orgOwned        Boolean         @default(false)
+  kind            SignatureKind   @default(UPLOAD)
+  label           String
+  storageOriginal String
+  mime            String
+  status          SignatureStatus @default(DRAFT)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  owner User? @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+
+  @@index([ownerUserId])
+  @@index([status])
+  @@map("signature_assets")
+}
+
+model OrgNode {
+  id        String   @id @default(cuid())
+  userId    String?  @db.Uuid
+  title     String
+  fullName  String
+  email     String?
+  parentId  String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  parent   OrgNode?  @relation("OrgTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children OrgNode[] @relation("OrgTree")
+
+  @@index([parentId])
+  @@index([sortOrder])
+  @@map("org_nodes")
+}
+
+model DocumentTemplate {
+  id            String       @id @default(cuid())
+  type          TemplateType
+  code          String       @unique
+  name          String
+  version       Int          @default(1)
+  structureJson Json         @default("{}")
+  active        Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([type])
+  @@map("document_templates")
 }

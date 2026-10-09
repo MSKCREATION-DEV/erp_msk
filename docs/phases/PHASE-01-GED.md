@@ -10,9 +10,9 @@
 | Étape | État |
 |---|---|
 | Plan rédigé | Oui — 2026-10-09 |
-| Validation « Phase 1 GO » | **EN ATTENTE** |
-| Implémentation | Bloquée jusqu’au GO |
-| Gate Phase 1 OK | — |
+| Validation « Phase 1 GO » | **GO** — 2026-10-09 |
+| Implémentation | En cours / livrée sur `dev` |
+| Gate Phase 1 OK | En attente tests gate |
 
 ## Règle de gate
 
@@ -158,16 +158,16 @@ Voir `.cursor/rules/phase-quality.mdc` + charte MSK :
 
 ## Tests & vérifications (gate Phase 1)
 
-- [ ] Migration Prisma GED appliquée sur Supabase
-- [ ] Bucket Storage `ged` créé + policies serveur (service role / signed URLs)
-- [ ] Bootstrap arborescence année courante
-- [ ] Upload + download + soft-delete E2E (Super Admin)
-- [ ] Dossier collab créé à l’activation / invite
-- [ ] Page organigramme seedée lisible
-- [ ] Upload signature self + révocation admin
-- [ ] PDF devis + facture démo générés et classés GED
-- [ ] Permissions : collab sans `ged.manage_folders` ne crée pas de racines
-- [ ] `npm run build` + lint + parcours UI vérifiés
+- [x] Migration Prisma GED appliquée sur Supabase (`db push` + `20261009090000_phase1_ged` résolue)
+- [x] Bucket Storage `ged` créé (privé, 20 Mo) + signed URLs via service role
+- [x] Bootstrap arborescence année courante (`/${year}/03_CLIENTS` … `05_COLLABORATEURS`)
+- [ ] Upload + download + soft-delete E2E (Super Admin) — à valider en UI
+- [x] Dossier collab créé à l’invite (+ seed Super Admin)
+- [x] Page organigramme seedée lisible (`/organisation`)
+- [ ] Upload signature self + révocation admin — à valider en UI
+- [ ] PDF devis + facture démo générés et classés GED — à valider en UI
+- [x] Permissions seed : `ged.browse`, `ged.manage_folders`, `ged.delete`, `ged.share`, `self.signature.manage`, `orgchart.*`
+- [x] `npm run build` + `test:nav` OK (2026-10-09)
 - [ ] Validation explicite « Phase 1 OK »
 
 ## Critères d’acceptation

@@ -6,7 +6,11 @@ import {
   Briefcase,
   Calculator,
   FolderKanban,
+  FolderOpen,
+  Network,
   Settings,
+  Palette,
+  PenLine,
   type LucideIcon,
 } from "lucide-react";
 
@@ -45,6 +49,20 @@ export const NAV_GROUPS: NavGroup[] = [
         label: "Utilisateurs",
         icon: Users,
         permission: "users.view",
+      },
+      {
+        id: "ged",
+        href: "/ged",
+        label: "GED",
+        icon: FolderOpen,
+        permission: "ged.browse",
+      },
+      {
+        id: "organisation",
+        href: "/organisation",
+        label: "Organisation",
+        icon: Network,
+        permission: "orgchart.view",
       },
       {
         id: "crm",
@@ -90,6 +108,34 @@ export const NAV_GROUPS: NavGroup[] = [
         label: "Administration",
         icon: Shield,
         permission: "users.view",
+      },
+      {
+        id: "charte",
+        href: "/administration/charte",
+        label: "Charte",
+        icon: Palette,
+        permission: "cfg.brand",
+      },
+      {
+        id: "gabarits",
+        href: "/administration/gabarits",
+        label: "Gabarits",
+        icon: FileText,
+        permission: "cfg.templates",
+      },
+      {
+        id: "signatures-admin",
+        href: "/administration/signatures",
+        label: "Signatures",
+        icon: PenLine,
+        permission: "cfg.signatures",
+      },
+      {
+        id: "ma-signature",
+        href: "/profil/signature",
+        label: "Ma signature",
+        icon: PenLine,
+        permission: "self.signature.manage",
       },
       {
         id: "parametres",

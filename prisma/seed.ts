@@ -254,9 +254,185 @@ async function seedSuperAdmin() {
   }
 }
 
+async function seedPhase1Ged() {
+  const year = new Date().getFullYear();
+  const { ensureYearTree, ensureCollaboratorFolders } = await import(
+    "../src/lib/ged/tree"
+  );
+  const { ensureGedBucket } = await import("../src/lib/ged/storage");
+
+  try {
+    await ensureGedBucket();
+    console.log("✓ Bucket Storage `ged`");
+  } catch (e) {
+    console.warn("⚠ Bucket GED:", e instanceof Error ? e.message : e);
+  }
+
+  await ensureYearTree(year);
+  console.log(`✓ Arborescence GED /${year}`);
+
+  const brandRows = [
+    {
+      kind: "logo_white",
+      label: "Logo blanc",
+      publicPath: "/brand/logo-white.svg",
+    },
+    {
+      kind: "mark_white",
+      label: "Signe blanc",
+      publicPath: "/brand/mark-white.svg",
+    },
+    {
+      kind: "lockup_bloc",
+      label: "Lockup bloc",
+      publicPath: "/brand/lockup-bloc.png",
+    },
+    {
+      kind: "lockup",
+      label: "Lockup",
+      publicPath: "/brand/lockup.png",
+    },
+  ];
+  for (const a of brandRows) {
+    await prisma.brandAsset.upsert({
+      where: { kind: a.kind },
+      create: a,
+      update: { label: a.label, publicPath: a.publicPath, active: true },
+    });
+  }
+  console.log("✓ Brand assets");
+
+  const templates = [
+    {
+      code: "devis_standard",
+      type: "DEVIS" as const,
+      name: "Devis standard MSK",
+      structureJson: { slots: ["header", "lines", "totals", "signature"] },
+    },
+    {
+      code: "facture_standard",
+      type: "FACTURE" as const,
+      name: "Facture standard MSK",
+      structureJson: { slots: ["header", "lines", "totals", "signature"] },
+    },
+  ];
+  for (const t of templates) {
+    await prisma.documentTemplate.upsert({
+      where: { code: t.code },
+      create: {
+        code: t.code,
+        type: t.type,
+        name: t.name,
+        structureJson: t.structureJson,
+        active: true,
+      },
+      update: { name: t.name, active: true, structureJson: t.structureJson },
+    });
+  }
+  console.log("✓ Gabarits devis / facture");
+
+  // Organigramme équipe MSK (CDC §14bis) — ids stables via email lookup
+  const team: {
+    email: string | null;
+    fullName: string;
+    title: string;
+    parentEmail: string | null;
+    sortOrder: number;
+  }[] = [
+    {
+      email: null,
+      fullName: "Mathieu Diarra",
+      title: "Fondateur",
+      parentEmail: null,
+      sortOrder: 0,
+    },
+    {
+      email: null,
+      fullName: "Isdalinia Boisseaux",
+      title: "Co-fondatrice",
+      parentEmail: null,
+      sortOrder: 1,
+    },
+    {
+      email: "a.guiro@mskcreation.net",
+      fullName: "Amadou Samba Guiro",
+      title: "Responsable Technique",
+      parentEmail: null,
+      sortOrder: 2,
+    },
+    {
+      email: null,
+      fullName: "Andile Boussari",
+      title: "Chef de Projet",
+      parentEmail: null,
+      sortOrder: 10,
+    },
+    {
+      email: null,
+      fullName: "Yaye Bah",
+      title: "Commerciale",
+      parentEmail: null,
+      sortOrder: 20,
+    },
+    {
+      email: null,
+      fullName: "Issiaka Yacouba Traoré",
+      title: "Comptable",
+      parentEmail: null,
+      sortOrder: 30,
+    },
+  ];
+
+  // Clear + recreate simple flat org (MVP lecture) — keep stable by fullName
+  for (const member of team) {
+    const user = member.email
+      ? await prisma.user.findUnique({ where: { email: member.email } })
+      : null;
+    const existing = await prisma.orgNode.findFirst({
+      where: { fullName: member.fullName },
+    });
+    if (existing) {
+      await prisma.orgNode.update({
+        where: { id: existing.id },
+        data: {
+          title: member.title,
+          email: member.email,
+          userId: user?.id ?? null,
+          sortOrder: member.sortOrder,
+        },
+      });
+    } else {
+      await prisma.orgNode.create({
+        data: {
+          fullName: member.fullName,
+          title: member.title,
+          email: member.email,
+          userId: user?.id ?? null,
+          sortOrder: member.sortOrder,
+        },
+      });
+    }
+  }
+  console.log("✓ Organigramme seedé");
+
+  const guiro = await prisma.user.findUnique({
+    where: { email: SUPER_ADMIN.email },
+  });
+  if (guiro) {
+    await ensureCollaboratorFolders(
+      guiro.firstName,
+      guiro.lastName,
+      year,
+      guiro.id,
+    );
+    console.log("✓ Dossier collaborateur Super Admin");
+  }
+}
+
 async function main() {
   await seedCatalog();
   await seedSuperAdmin();
+  await seedPhase1Ged();
 }
 
 main()

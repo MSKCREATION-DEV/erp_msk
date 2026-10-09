@@ -96,6 +96,19 @@ export async function inviteUserAction(
         },
       },
     });
+
+    // GED : dossier collaborateur (lazy sous 05_COLLABORATEURS)
+    try {
+      const { ensureCollaboratorFolders } = await import("@/lib/ged/tree");
+      await ensureCollaboratorFolders(
+        parsed.data.firstName,
+        parsed.data.lastName,
+        new Date().getFullYear(),
+        actor.id,
+      );
+    } catch (gedErr) {
+      console.warn("GED collab folder:", gedErr);
+    }
   } catch (e) {
     await admin.auth.admin.deleteUser(authId);
     return {
