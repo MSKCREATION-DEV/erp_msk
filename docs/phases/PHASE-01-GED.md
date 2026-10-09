@@ -136,7 +136,7 @@ Un Super Admin peut parcourir la GED année N, CRUD dossiers libres, uploader / 
 
 ## Suite
 
-**Phase 1 OK** — plan [PHASE-02-CATALOGUE-CRM.md](./PHASE-02-CATALOGUE-CRM.md) · **Phase 2 GO** 2026-10-09.
+**Phase 1 OK** — [PHASE-02-CATALOGUE-CRM.md](./PHASE-02-CATALOGUE-CRM.md) **Phase 2 OK** (2026-10-09) · suite [PHASE-03-COMMERCIAL.md](./PHASE-03-COMMERCIAL.md).
 
 ---
 

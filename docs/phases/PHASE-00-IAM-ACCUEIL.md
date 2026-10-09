@@ -140,4 +140,4 @@ Un Super Admin peut se connecter, inviter un collaborateur par e-mail, gérer gr
 
 ## Après validation
 
-**Phase 0 OK** — plan [PHASE-01-GED.md](./PHASE-01-GED.md) ouvert puis **Phase 1 OK** (2026-10-09). Suite : plan Phase 2 (Catalogue + CRM — URGENT).
+**Phase 0 OK** — [PHASE-01-GED.md](./PHASE-01-GED.md) **OK** · [PHASE-02-CATALOGUE-CRM.md](./PHASE-02-CATALOGUE-CRM.md) **OK** (2026-10-09). Suite : [PHASE-03-COMMERCIAL.md](./PHASE-03-COMMERCIAL.md).

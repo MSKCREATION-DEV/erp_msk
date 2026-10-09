@@ -20,10 +20,10 @@ Les pôles suivants sont **URGENTS / PRIORITAIRES** pour MSK :
 
 - On **ne saute pas** les fondations (Phase 0 IAM, Phase 1 GED/gabarits utiles).
 - On **oriente** chaque plan de phase : marquer `URGENT` sur les livrables COM/CPT.
-- Phase 0 **OK** · Phase 1 **OK** (2026-10-09) — socle IAM + GED/gabarits/signatures/org livré.
-- Phase 2 **GO** (2026-10-09) — Catalogue + CRM en cours ([PHASE-02-CATALOGUE-CRM.md](./PHASE-02-CATALOGUE-CRM.md)).
-- Ensuite **URGENT** : Phase 3 → 6 (Commercial documentaire → Compta) sans diluer sur RH/stocks.
-- Optionnel **1.x** (hors chemin critique) : UI corbeille GED, partage ACL, pad signature.
+- Phase 0 **OK** · Phase 1 **OK** · Phase 2 **OK** (2026-10-09) — IAM + GED + Catalogue/CRM livrés.
+- Phase 3 **plan ouvert** — Commercial documentaire ([PHASE-03-COMMERCIAL.md](./PHASE-03-COMMERCIAL.md)) — attendre **« Phase 3 GO »**.
+- Ensuite **URGENT** : Phase 3 → 6 (Devis/factures → Compta) sans diluer sur RH/stocks.
+- Optionnel **1.x** / **2.x** (hors chemin critique) : UI corbeille GED, partage ACL, pad signature, cron relances.
 
 ### Ce que ça ne change pas
 
@@ -32,8 +32,9 @@ Les pôles suivants sont **URGENTS / PRIORITAIRES** pour MSK :
 
 ## Qualité & design (absolu)
 
-Voir `.cursor/rules/phase-quality.mdc` :
+Voir `.cursor/rules/phase-quality.mdc` · `ui-never-freeze.mdc` · `list-create-separation.mdc` :
 
 - Design moderne, inspiré des meilleurs produits du domaine, **sous charte MSK**
+- UI jamais figée (`loading.tsx`, pending, Suspense layout)
 - Tests UI + fonctionnels après chaque phase ; build sans erreur
 - Code expert Next.js / full-stack ; meilleures libs si besoin
