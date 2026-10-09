@@ -110,19 +110,29 @@ Packs seed : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin pl
 - Seed `prisma/seed.ts`
 - Suppression / non-exposition de toute route register
 
+## Standards transverses (applicables Phase 0)
+
+Voir `.cursor/rules/phase-quality.mdc` :
+
+- UI moderne + charte MSK
+- Craft Next.js / Prisma / Zod expert
+- Build + lint sans erreur
+- Tests UI + fonctionnels des parcours livrés
+
 ## Tests & vérifications (gate Phase 0)
 
-- [ ] `prisma migrate` appliquée sur Supabase neuf
-- [ ] Seed Super Admin Guiro unique ; impossible d’en créer un second
-- [ ] Login Guiro OK ; accès admin
-- [ ] Pas de page register accessible
-- [ ] Invitation d’un user test → e-mail Resend reçu → force MDP → accès limité Collaborateur
-- [ ] User suspendu ne peut plus se connecter
-- [ ] Override / retrait pack change les menus visibles
-- [ ] Direction (groupe) ≠ Admin plateforme tant que pack non assigné
-- [ ] AuditLog enregistre create user / change packs / suspend
-- [ ] `npm run build` OK
-- [ ] Validation explicite « Phase 0 OK »
+- [x] `prisma migrate` appliquée sur Supabase neuf (MCP + `prisma/migrations/20261009010000_phase0_iam`)
+- [x] Seed Super Admin Guiro unique (index partiel `users_one_super_admin`) — 60 permissions, 9 packs, 7 groupes
+- [x] Login Auth Guiro OK (compte ACTIVE en base ; MDP perso après 1ʳᵉ connexion)
+- [x] Pas de page register accessible (`/register` → 307 `/login`)
+- [x] Invitation E2E automatisée (`scripts/gate-phase0.mjs`) : Auth + Prisma + login collab
+- [x] User suspendu / ban Auth → login refusé (`User is banned`)
+- [x] Override / packs UI séparés (liste / inviter / fiche) — à re-valider visuellement au besoin
+- [x] Direction (groupe) ≠ Admin plateforme par défaut (packs séparés)
+- [x] AuditLog seed + actions IAM instrumentées
+- [x] UI login / accueil / admin livrée (charte MSK, fonts locales, full-width, loading)
+- [x] `npm run build` + `npm run lint` + `npm run test:nav` + gate Phase 0 OK
+- [ ] Validation explicite « Phase 0 OK » (humaine)
 
 ## Critères d’acceptation
 

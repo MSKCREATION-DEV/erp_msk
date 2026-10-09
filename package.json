@@ -4,32 +4,56 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "test:email": "node scripts/test-email.mjs",
-    "health:env": "node scripts/health-env.mjs"
+    "health:env": "node scripts/health-env.mjs",
+    "test:nav": "tsx src/lib/nav.test.ts",
+    "gate:phase0": "node scripts/gate-phase0.mjs",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:setup": "prisma migrate deploy && tsx prisma/seed.ts",
+    "postinstall": "prisma generate || exit 0"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
+    "bcryptjs": "^3.0.3",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "lucide-react": "^1.53.0",
+    "nanoid": "^5.1.16",
     "next": "15.2.4",
+    "pg": "^8.23.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "resend": "^6.32.1",
+    "tailwind-merge": "^3.7.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.19.43",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv": "^18.0.6",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
+    "prisma": "^6.19.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "@prisma/client@6.19.0": true,
+    "prisma@6.19.0": true,
+    "@prisma/engines@6.19.0": true
   }
 }

@@ -1,0 +1,203 @@
+// ERP MSK CREATION — Phase 0 IAM
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserStatus {
+  INVITE_PENDING
+  MUST_CHANGE_PASSWORD
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum OverrideEffect {
+  GRANT
+  DENY
+}
+
+enum ResetRequestStatus {
+  PENDING
+  DONE
+  CANCELLED
+}
+
+/// Singleton single-tenant MSK (id fixe = "msk")
+model OrganizationSettings {
+  id               String   @id @default("msk")
+  legalName        String   @default("MSK CREATION")
+  tradeName        String   @default("MSK CREATION")
+  defaultCurrency  String   @default("XOF")
+  defaultVatRate   Decimal  @default(18.00) @db.Decimal(5, 2)
+  frVatRate        Decimal  @default(20.00) @db.Decimal(5, 2)
+  countryCode      String   @default("ML")
+  timezone         String   @default("Africa/Bamako")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("organization_settings")
+}
+
+/// Profil applicatif lié à auth.users (id = UUID Supabase Auth)
+model User {
+  id                 String     @id @db.Uuid
+  email              String     @unique
+  firstName          String
+  lastName           String
+  phone              String?
+  status             UserStatus @default(INVITE_PENDING)
+  isSuperAdmin       Boolean    @default(false)
+  mustChangePassword Boolean    @default(true)
+  invitedAt          DateTime?
+  activatedAt        DateTime?
+  lastLoginAt        DateTime?
+  suspendedAt        DateTime?
+  archivedAt         DateTime?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  groupMembers   GroupMember[]
+  userPacks      UserPack[]
+  overrides      UserPermissionOverride[]
+  auditLogs      AuditLog[]              @relation("AuditActor")
+  resetRequests  PasswordResetRequest[]  @relation("ResetSubject")
+  resetsResolved PasswordResetRequest[]  @relation("ResetResolver")
+
+  @@index([status])
+  @@map("users")
+}
+
+model Group {
+  id            String  @id @default(cuid())
+  code          String  @unique
+  name          String
+  description   String?
+  defaultPackId String?
+  sortOrder     Int     @default(0)
+
+  defaultPack PermissionPack? @relation("GroupDefaultPack", fields: [defaultPackId], references: [id], onDelete: SetNull)
+  members     GroupMember[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  groupId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@index([groupId])
+  @@map("group_members")
+}
+
+model Permission {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  domain      String
+  description String?
+
+  packItems PackPermission[]
+  overrides UserPermissionOverride[]
+
+  @@index([domain])
+  @@map("permissions")
+}
+
+model PermissionPack {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  name        String
+  description String?
+  sortOrder   Int     @default(0)
+
+  permissions   PackPermission[]
+  userPacks     UserPack[]
+  groupsDefault Group[]          @relation("GroupDefaultPack")
+
+  @@map("permission_packs")
+}
+
+model PackPermission {
+  packId       String
+  permissionId String
+
+  pack       PermissionPack @relation(fields: [packId], references: [id], onDelete: Cascade)
+  permission Permission     @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([packId, permissionId])
+  @@map("pack_permissions")
+}
+
+model UserPack {
+  userId    String   @db.Uuid
+  packId    String
+  createdAt DateTime @default(now())
+
+  user User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pack PermissionPack @relation(fields: [packId], references: [id], onDelete: Cascade)
+
+  @@id([userId, packId])
+  @@index([packId])
+  @@map("user_packs")
+}
+
+model UserPermissionOverride {
+  id           String         @id @default(cuid())
+  userId       String         @db.Uuid
+  permissionId String
+  effect       OverrideEffect
+  reason       String?
+  createdAt    DateTime       @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId])
+  @@map("user_permission_overrides")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?  @db.Uuid
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+model PasswordResetRequest {
+  id                String             @id @default(cuid())
+  userId            String             @db.Uuid
+  requesterEmail    String?
+  status            ResetRequestStatus @default(PENDING)
+  note              String?
+  createdAt         DateTime           @default(now())
+  resolvedAt        DateTime?
+  resolvedById      String?            @db.Uuid
+
+  user       User  @relation("ResetSubject", fields: [userId], references: [id], onDelete: Cascade)
+  resolvedBy User? @relation("ResetResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@map("password_reset_requests")
+}

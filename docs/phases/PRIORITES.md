@@ -27,3 +27,11 @@ Les pôles suivants sont **URGENTS / PRIORITAIRES** pour MSK :
 
 - Règle absolue 1 phase = 1 plan → implémentation → tests → gate.
 - Pas de big-bang « tout le commercial + toute la compta » sans IAM/GED.
+
+## Qualité & design (absolu)
+
+Voir `.cursor/rules/phase-quality.mdc` :
+
+- Design moderne, inspiré des meilleurs produits du domaine, **sous charte MSK**
+- Tests UI + fonctionnels après chaque phase ; build sans erreur
+- Code expert Next.js / full-stack ; meilleures libs si besoin

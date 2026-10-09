@@ -1,0 +1,46 @@
+---
+description: Règles absolues qualité, tests, design et craft pour chaque phase ERP MSK
+alwaysApply: true
+---
+
+# Qualité & craft — règles absolues ERP MSK
+
+## Conduite de phase
+
+1. Plan de phase dédié → implémentation complète → **tests** → gate OK → phase suivante.
+2. Branche de travail : **`dev`**. Merge `main` seulement après gate.
+3. Priorité métier : Commercial / Finance / Compta = **URGENT** (sans sauter les prérequis).
+
+## Qualité code (non négociable)
+
+- Coder au niveau **expert full-stack** : lisible, typé, sécurisé, maintenable.
+- S’appuyer sur les forces de **Next.js App Router** : Server Components par défaut, Server Actions, `loading`/`error`/`not-found`, pas de fetch client inutile.
+- Validation **Zod** sur toutes les entrées / FormData.
+- Secrets jamais côté client ; RLS + contrôles serveur.
+- Si librairie nécessaire : choisir une lib **mature, bien suivie**, adaptée (ex. Prisma, Zod, Resend, shadcn/Radix, date-fns) — pas de dépendance fantôme.
+- Pas de dette volontaire (« on corrigera plus tard ») dans la gate d’une phase.
+- `npm run build` et lint **sans erreur** avant de déclarer une phase OK.
+
+## Design UI (non négociable)
+
+- Design **moderne**, inspiré des meilleures références produit (clarté Linear/Notion/Attio/fintech pro) — **adapté à la charte MSK** (pas de thème violet AI, pas Inter Google, pas cream/terracotta générique).
+- Charte MSK stricte : tokens `msk-*`, typo locale, composants brand.
+- Une intention visuelle claire par écran ; peu de cards inutiles ; hiérarchie typographique nette.
+- Responsive desktop + mobile raisonnable pour l’ERP.
+- États : loading, empty, error — toujours soignés.
+
+## Tests après chaque phase (gate)
+
+Avant « Phase N OK », vérifier au minimum :
+
+| Type | Exigence |
+|---|---|
+| Build | `npm run build` OK |
+| Lint / types | Pas d’erreur bloquante |
+| Fonctionnel | Parcours livrés de la phase testés bout en bout |
+| UI | Écrans livrés vérifiés (layout, contrastes charte, pas de casse visuelle majeure) |
+| Auth / droits | Si concerné : accès refusés/autorisés conformes |
+| E-mail | Si concerné : envoi réel testé |
+| Régression | Ce qui marchait en phase précédente continue de marcher |
+
+Pas d’erreur runtime connue sur les parcours de la phase. Si bug bloquant → corriger avant gate.

@@ -5,6 +5,7 @@ export function envStatus() {
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
     "DATABASE_URL",
+    "DIRECT_URL",
     "RESEND_API_KEY",
     "EMAIL_FROM",
     "NEXT_PUBLIC_APP_URL",

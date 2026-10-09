@@ -5,18 +5,40 @@
   --color-msk-ink: #0d1330;
   --color-msk-coral: #ff5a3c;
   --color-msk-chalk: #f5f3ef;
+  --color-msk-paper: #dce0e8;
+  --color-msk-muted: #8a93a6;
+  --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
   color: var(--color-msk-ink);
-  background: var(--color-msk-chalk);
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
+  background: #f4f6f9;
+  font-family: var(--font-sans);
+}
+
+.font-impact {
+  font-family: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+}
+
+.font-accent {
+  font-family: var(--font-instrument), Georgia, serif;
+  font-style: italic;
+  color: var(--color-msk-blue);
+}
+
+.tracking-caps {
+  letter-spacing: 0.08em;
+}
+
+.brand-gradient {
+  background-image: linear-gradient(90deg, #2a3d8e 0%, #00acee 100%);
+}
+
+.auth-atmosphere {
+  background-color: #f5f3ef;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(29, 115, 188, 0.12), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(0, 172, 238, 0.1), transparent 50%),
+    linear-gradient(180deg, #f5f3ef 0%, #eef2f7 100%);
 }

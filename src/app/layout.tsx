@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import { fontVariables } from "@/fonts";
+import { brand } from "@/lib/brand";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ERP MSK CREATION",
-  description: "Logiciel métier interne MSK CREATION — Phase -1 socle",
+  title: {
+    default: `${brand.name} · ERP`,
+    template: `%s · ${brand.name}`,
+  },
+  description: "Logiciel métier interne MSK CREATION",
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -21,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
-      <body className="min-h-screen bg-msk-chalk text-msk-ink antialiased">
+    <html lang="fr" className={fontVariables}>
+      <body className="min-h-screen bg-msk-chalk font-sans text-msk-ink antialiased">
         {children}
       </body>
     </html>
