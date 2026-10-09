@@ -47,37 +47,13 @@ Il sert de **référence unique** pour le développement, les tests d’acceptat
 
 #### Fichiers métier (`docs/`)
 
-| Fichier | Domaine |
-|---|---|
-| `CRM_Prospection_MSK.xlsx` / CSV PROSPECTS | CRM, scripts, KPI, suivi équipe |
-| `10-DEVIS - GESTION DES RESEAUX - MARINAS.pdf` | Devis client réel |
-| `DEVIS CHARTRES GRAPHIQUE MARINAS.pdf` | Devis charte graphique |
-| `TEMPLATE.docx` | Gabarit document |
-| `Contrat de Stage de Yaye Bah.docx` | Contrat stage |
-| `Contrat de Travail Guiro Amadou Samba.pdf` | Contrat travail |
-| `CONTRAT DE PRESTATION DE SERVICES.pdf` | Prestation |
-| `ATTESTATION DE STAGE DE MANGARA ASSETOU.pdf` | Attestation fin stage |
-| `Solde de tout compte Mangara Assetou.pdf` | Offboarding |
-| `Fiche de Paie de Guiro Amadou Samba …pdf` | Bulletin de paie |
-| `Document – Règlement intérieur – Fatoumata.pdf` | Règlement + signature |
-| `Tableau de suivi des congés payés …2026.xlsx` | Congés |
-| `Tableau de Suivi des Heures de Travail ….xlsx` | Temps de travail |
-| `Tableau de suivi des cotisations INPS ….xlsx` | Cotisations sociales |
-| `Tableau de suivi des anomalies ….xlsx` | Interventions / maintenance |
-| `Tableau des dépenses du projet ont n'est où.xlsx` | Dépenses projet |
-| `Journal Comptable …2026.xlsx` | Journal général |
-| `Journal de caisse & Journal de banque 2026.xlsx` | Caisse / banque |
-| `GRAND LIVRE COMPTABLE 2026 ….xlsx` | Grand livre |
-| `BILAN COMPTABLE 2026 ….xlsx` | Bilan |
-| `COMPTE DE RESULTAT 2026 ….xlsx` | Compte de résultat |
-| `BUDJET-MSKCREATION 2026.xlsx` | Budget Capex/Opex |
-| `Achats_du_09-09-2026.xlsx` | Achats |
-| `TABLEAU DE SUIVI DES STOCKS ….xlsx` | Stocks (codes, familles) |
-| `Patrimoine de (MSK CREATION).xlsx` | Immobilisations / patrimoine |
-| `docs/brand/` + charte | Identité visuelle |
-| `02 - CATALOGUE DE SERVICE.pdf` | Catalogue offres MSK (5 piliers, méthodologie) |
-| `docs/msk/team/*` + capture équipe | Seed organigramme / fiches collab / photos |
-| `docs/msk/favicon*` | Favicons site à reprendre en app |
+| Fichier / source | Domaine | Statut repo |
+|---|---|---|
+| `CRM_Prospection_MSK.xlsx` / CSV PROSPECTS | CRM, scripts, import | Conservé (`docs/`) |
+| `docs/msk/team/*` | Photos organigramme / seed | Conservé |
+| `docs/msk/favicon*` | Favicons | Conservé |
+| Devis Marinas / catalogue services / exemples PNG | Prix catalogue, gabarits PDF | **Intégrés** (seed + `src/lib/pdf`) — PDF/PNG d’exemple retirés du repo |
+| Autres fichiers métier historiques (contrats, paie, journaux…) | Analyse CDC Phase -1 | Hors repo (sources externes) |
 
 #### Organisation SharePoint observée (captures)
 
@@ -943,7 +919,7 @@ Lignes : désignation, qté, PU HT, remise ligne, TVA ligne (défaut 18 % ou exo
 
 ### 6.2bis Catalogue de services MSK
 
-Source : `docs/02 - CATALOGUE DE SERVICE.pdf` (v1 — 17/02/2026, Andile BOUSSARI) + site https://mskcreation.net
+Source : catalogue MSK (seed `CATALOG_OFFERS_SEED` / 5 piliers) + site https://mskcreation.net
 
 À paramétrer en CFG / COM comme **catalogue produits-services** (pas seulement texte marketing) :
 

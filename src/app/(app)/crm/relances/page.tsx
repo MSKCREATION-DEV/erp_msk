@@ -46,6 +46,8 @@ export default async function CrmRelancesPage() {
       <PageHeader
         title="Relances"
         description="Tâches à échéance — à traiter aujourd’hui ou en retard."
+        backHref="/crm"
+        backLabel="Retour au CRM"
         breadcrumbs={[
           { label: "CRM", href: "/crm" },
           { label: "Relances" },

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type Breadcrumb = { label: string; href?: string };
@@ -8,12 +9,17 @@ export function PageHeader({
   description,
   breadcrumbs,
   actions,
+  backHref,
+  backLabel = "Retour",
   className,
 }: {
   title: string;
   description?: string;
   breadcrumbs?: Breadcrumb[];
   actions?: React.ReactNode;
+  /** Lien retour explicite (liste / parent) — obligatoire sur create/edit/détail. */
+  backHref?: string;
+  backLabel?: string;
   className?: string;
 }) {
   return (
@@ -24,6 +30,15 @@ export function PageHeader({
       )}
     >
       <div className="min-w-0">
+        {backHref ? (
+          <Link
+            href={backHref}
+            className="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-msk-ink/45 transition hover:text-msk-blue"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            {backLabel}
+          </Link>
+        ) : null}
         <h1 className="text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
           {title}
         </h1>
@@ -33,7 +48,10 @@ export function PageHeader({
             className="mt-1.5 flex flex-wrap items-center gap-1.5 text-sm text-msk-ink/45"
           >
             {breadcrumbs.map((crumb, i) => (
-              <span key={`${crumb.label}-${i}`} className="inline-flex items-center gap-1.5">
+              <span
+                key={`${crumb.label}-${i}`}
+                className="inline-flex items-center gap-1.5"
+              >
                 {i > 0 ? <span aria-hidden>/</span> : null}
                 {crumb.href ? (
                   <Link
@@ -56,7 +74,9 @@ export function PageHeader({
         ) : null}
       </div>
       {actions ? (
-        <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {actions}
+        </div>
       ) : null}
     </header>
   );

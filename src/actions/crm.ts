@@ -393,3 +393,87 @@ export async function importCrmCsvAction(
     skipped,
   };
 }
+
+const scriptSchema = z.object({
+  code: z
+    .string()
+    .min(2)
+    .max(60)
+    .regex(/^[a-z0-9_]+$/, "Code: a-z, 0-9, _"),
+  channel: sourceSchema,
+  title: z.string().min(2).max(120),
+  body: z.string().min(10).max(8000),
+  tips: z.string().max(500).optional(),
+  sortOrder: z.coerce.number().int().min(0).max(9999),
+});
+
+export async function upsertCrmScriptAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.scripts.manage" });
+  const id = String(formData.get("id") ?? "").trim() || null;
+
+  const parsed = scriptSchema.safeParse({
+    code: String(formData.get("code") ?? "")
+      .trim()
+      .toLowerCase(),
+    channel: String(formData.get("channel") ?? ""),
+    title: String(formData.get("title") ?? "").trim(),
+    body: String(formData.get("body") ?? "").trim(),
+    tips: String(formData.get("tips") ?? "").trim() || undefined,
+    sortOrder: String(formData.get("sortOrder") ?? "100").replace(/\s/g, ""),
+  });
+  if (!parsed.success) {
+    return { ok: false, error: "Champs script invalides" };
+  }
+
+  if (id) {
+    await prisma.crmScript.update({
+      where: { id },
+      data: {
+        channel: parsed.data.channel,
+        title: parsed.data.title,
+        body: parsed.data.body,
+        tips: parsed.data.tips ?? null,
+        sortOrder: parsed.data.sortOrder,
+      },
+    });
+  } else {
+    await prisma.crmScript.create({
+      data: {
+        code: parsed.data.code,
+        channel: parsed.data.channel,
+        title: parsed.data.title,
+        body: parsed.data.body,
+        tips: parsed.data.tips ?? null,
+        sortOrder: parsed.data.sortOrder,
+      },
+    });
+  }
+
+  await writeAudit({
+    actorId: actor.id,
+    action: id ? "crm.script.update" : "crm.script.create",
+    entityType: "crm_script",
+    entityId: id ?? parsed.data.code,
+  });
+
+  revalidatePath("/crm/scripts");
+  return { ok: true, message: "Script enregistré" };
+}
+
+export async function toggleCrmScriptAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  await requireUser({ permission: "crm.scripts.manage" });
+  const id = String(formData.get("id") ?? "");
+  const active = String(formData.get("active") ?? "") === "true";
+  if (!id) return { ok: false, error: "Script manquant" };
+
+  await prisma.crmScript.update({
+    where: { id },
+    data: { active },
+  });
+  revalidatePath("/crm/scripts");
+  return { ok: true, message: active ? "Script activé" : "Script désactivé" };
+}

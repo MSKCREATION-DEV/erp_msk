@@ -185,24 +185,61 @@ async function main() {
   if (/Catalogue/.test(nav)) ok("Nav Catalogue live");
   else fail("Nav Catalogue absente");
 
-  // Créer un prospect via UI
+  // Listing prospects : pas de formulaire create inline
   await page.goto(`${BASE}/crm/prospects`, { waitUntil: "networkidle" });
+  const prospectsList = await page.locator("body").innerText();
+  if (await page.locator("#orgName").count()) {
+    fail("Formulaire create encore sur listing prospects");
+  } else if (
+    prospectsList.includes("Nouveau prospect") ||
+    prospectsList.includes("Créer le premier")
+  ) {
+    ok("Prospects listing sans create inline");
+  } else {
+    fail("CTA Nouveau prospect absent du listing");
+  }
+
+  // Créer un prospect via page dédiée
+  await page.goto(`${BASE}/crm/prospects/nouveau`, { waitUntil: "networkidle" });
   const stamp = Date.now().toString().slice(-5);
   const orgName = `Smoke UI ${stamp}`;
   if (await page.locator("#orgName").count()) {
+    const back = await page.locator("body").innerText();
+    if (back.includes("Retour")) ok("Retour arrière page nouveau prospect");
+    else fail("Retour arrière manquant sur /crm/prospects/nouveau");
+
     await page.fill("#orgName", orgName);
     await page.fill("#contactFirst", "Test");
     await page.fill("#contactLast", "Smoke");
     await page.fill("#nextAction", "Relance smoke");
     await page.click('button[type="submit"]');
-    await page.waitForURL(/\/crm\/prospects\//, { timeout: 20000 }).catch(() => null);
+    await page
+      .waitForURL(
+        (u) =>
+          /\/crm\/prospects\/[^/]+$/.test(u.pathname) &&
+          !u.pathname.endsWith("/nouveau"),
+        { timeout: 30000 },
+      )
+      .catch(() => null);
     const url = page.url();
-    if (url.includes("/crm/prospects/") && !url.endsWith("/prospects")) {
+    if (
+      /\/crm\/prospects\/[^/?]+$/.test(url.replace(BASE, "")) &&
+      !url.includes("/nouveau")
+    ) {
       ok(`Prospect créé → ${url.replace(BASE, "")}`);
+      // Attendre la fiche réelle (pas le loading.tsx skeleton)
+      await page
+        .getByRole("link", { name: /Retour aux prospects/i })
+        .waitFor({ timeout: 20000 })
+        .catch(() => null);
       await page.screenshot({
         path: path.join(SHOT_DIR, "13-prospect-detail.png"),
         fullPage: true,
       });
+
+      const detailBack = await page.locator("body").innerText();
+      if (/Retour aux prospects/i.test(detailBack)) ok("Retour fiche prospect");
+      else fail("Retour manquant sur fiche prospect");
 
       // Changer étape
       if (await page.locator("#stage").count()) {
@@ -214,13 +251,17 @@ async function main() {
         else fail("Changement d’étape non visible");
       }
 
-      // Quick-log
+      // Quick-log — attendre fin pending puis timeline (actions parfois lentes)
       if (await page.locator("#summary").count()) {
         await page.fill("#summary", "Smoke activité auto");
         await page.locator("#activity-form button[type='submit']").click();
         try {
+          await page
+            .locator("#activity-form button[type='submit']")
+            .filter({ hasText: /^Logger$/ })
+            .waitFor({ timeout: 45000 });
           await page.getByText("Smoke activité auto").waitFor({
-            timeout: 15000,
+            timeout: 20000,
           });
           ok("Quick-log activité");
         } catch {
@@ -239,12 +280,16 @@ async function main() {
       });
     }
   } else {
-    fail("Formulaire nouveau prospect introuvable");
+    fail("Formulaire nouveau prospect introuvable sur /nouveau");
   }
 
-  // Catalogue piliers
+  // Catalogue pricing Marinas + piliers
   await page.goto(`${BASE}/catalogue`, { waitUntil: "networkidle" });
   const cat = await page.locator("body").innerText();
+  if (cat.includes("Recommandé") || cat.includes("150")) ok("Catalogue pricing RS Pro");
+  else fail("Catalogue pricing RS (Pro / recommandé) manquant");
+  // Titres piliers en CSS uppercase → innerText souvent en majuscules
+  const catNorm = cat.toLowerCase();
   for (const p of [
     "Image de marque",
     "Contenu & Communication",
@@ -252,9 +297,18 @@ async function main() {
     "Croissance & Acquisition",
     "Transformation & Structuration",
   ]) {
-    if (cat.includes(p)) ok(`Catalogue pilier « ${p} »`);
+    if (catNorm.includes(p.toLowerCase())) ok(`Catalogue pilier « ${p} »`);
     else fail(`Catalogue manque pilier « ${p} »`);
   }
+
+  // Scripts manage CTA
+  await page.goto(`${BASE}/crm/scripts`, { waitUntil: "networkidle" });
+  const scriptsBody = await page.locator("body").innerText();
+  if (scriptsBody.includes("Nouveau script") || scriptsBody.includes("Éditer")) {
+    ok("Scripts gestion CRUD visible");
+  } else if (scriptsBody.includes("Premier contact")) {
+    ok("Scripts lecture OK");
+  } else fail("Scripts page vide / cassée");
 
   // Déconnexion modal
   await page.goto(`${BASE}/accueil`, { waitUntil: "networkidle" });

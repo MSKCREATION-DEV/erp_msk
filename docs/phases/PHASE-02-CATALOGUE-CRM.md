@@ -64,19 +64,22 @@ Remplacer l’Excel CRM et brancher le **catalogue 5 piliers** pour que les comm
 
 ### Catalogue
 - [x] Modèle `CatalogOffer` + enum `CatalogPillar` (5 piliers)
-- [x] Seed offres représentatives (prix indicatifs XOF)
-- [x] Page `/catalogue` (lecture) + admin create / toggle
+- [x] Seed prix réels devis Marinas (RS STD/PRO/PREMIUM + add-ons)
+- [x] Page `/catalogue` pricing cards + `/catalogue/nouveau` + `/catalogue/[id]/edit`
 - [x] Permission `com.catalogue.view` / `com.catalogue.manage`
+- [x] Règle list/create : pas de formulaire create sur le listing
 
 ### CRM cœur
 - [x] `CrmOrganization`, `CrmContact`, `CrmOpportunity`, `CrmActivity`, `CrmTask`, `CrmScript`
 - [x] Pipeline + motif perte si Perdu
-- [x] Pages `/crm`, `/crm/prospects`, `/crm/prospects/[id]`, `/crm/relances`, `/crm/scripts`
-- [x] Quick-log activité + tâche relance
+- [x] Pages `/crm`, `/crm/prospects`, `/crm/prospects/nouveau`, `/crm/prospects/import`, `/crm/prospects/[id]`, `/crm/relances`
+- [x] Scripts : `/crm/scripts` + `/crm/scripts/nouveau` + `/crm/scripts/[id]/edit` (CRUD `crm.scripts.manage`)
+- [x] Quick-log activité + tâche relance (fiche détail uniquement)
 - [x] Filtrage ownership selon droits (`own` / `team` / `global`)
+- [x] Retour arrière (`backHref`) sur create / edit / détail
 
 ### Import & seed
-- [x] Action import CSV (format Excel `;`, max 200)
+- [x] Action import CSV (format Excel `;`, max 200) — page dédiée `/crm/prospects/import`
 - [x] Seed scripts IG / LinkedIn / WhatsApp / téléphone
 - [ ] Seed prospects démo (optionnel — import CSV suffit)
 
@@ -86,7 +89,7 @@ Remplacer l’Excel CRM et brancher le **catalogue 5 piliers** pour que les comm
 
 ### Gate
 - [x] `npm run build` / `lint` / `test:nav` / `gate:phase0|1|2`
-- [x] `npm run smoke:ui` (Playwright Super Admin — 27 checks OK, 2026-10-09)
+- [x] `npm run smoke:ui` (Playwright Super Admin — 32 checks OK, 2026-10-09 — list/create, back, pricing Marinas, scripts CRUD)
 - [ ] Checklist humaine (ci-dessous)
 
 ## Gate humaine (après implémentation)

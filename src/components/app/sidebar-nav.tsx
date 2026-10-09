@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -15,7 +15,6 @@ import {
 export function SidebarNav({ allowedIds }: { allowedIds: string[] }) {
   const pathname = usePathname();
   const [pendingHref, setPendingHref] = useState<string | null>(null);
-  const [, startTransition] = useTransition();
   const allowed = new Set(allowedIds);
   const allItems = flatNavItems().filter((i) => allowed.has(i.id));
 
@@ -87,9 +86,6 @@ export function SidebarNav({ allowedIds }: { allowedIds: string[] }) {
                         onNavigate={() => {
                           if (item.soon || item.href === pathname) return;
                           setPendingHref(item.href);
-                          startTransition(() => {
-                            /* Link gère la nav */
-                          });
                         }}
                       />
                     </li>

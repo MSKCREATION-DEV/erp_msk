@@ -91,6 +91,8 @@ export default async function UserDetailPage({
     <PageShell>
       <PageHeader
         title="Fiche utilisateur"
+        backHref="/administration/utilisateurs"
+        backLabel="Retour aux utilisateurs"
         breadcrumbs={[
           { label: "Administration" },
           { label: "Utilisateurs", href: "/administration/utilisateurs" },

@@ -367,7 +367,7 @@ async function seedPhase1Ged() {
           "totals",
           "legal_footer",
         ],
-        ref: "docs/exemple devis gestion reseau social.png",
+        ref: "gabarit_msk_v1_devis",
       },
     },
     {
@@ -385,7 +385,7 @@ async function seedPhase1Ged() {
           "totals",
           "legal_footer",
         ],
-        ref: "docs/exemple facture.png",
+        ref: "gabarit_msk_v1_facture",
       },
     },
   ];
@@ -469,17 +469,18 @@ async function seedPhase1Ged() {
 
 async function seedPhase2CatalogueCrm() {
   for (const offer of CATALOG_OFFERS_SEED) {
+    const { highlights: _highlights, ...data } = offer;
     await prisma.catalogOffer.upsert({
-      where: { sku: offer.sku },
-      create: offer,
+      where: { sku: data.sku },
+      create: data,
       update: {
-        name: offer.name,
-        description: offer.description,
-        pillar: offer.pillar,
-        billing: offer.billing,
-        priceXof: offer.priceXof,
-        priceEurHint: offer.priceEurHint,
-        sortOrder: offer.sortOrder,
+        name: data.name,
+        description: data.description,
+        pillar: data.pillar,
+        billing: data.billing,
+        priceXof: data.priceXof,
+        priceEurHint: data.priceEurHint,
+        sortOrder: data.sortOrder,
         active: true,
       },
     });

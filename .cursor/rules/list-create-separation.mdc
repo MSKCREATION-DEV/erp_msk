@@ -1,0 +1,27 @@
+---
+description: Interdit formulaires de création sur les pages listing — séparation list / create absolue
+alwaysApply: true
+---
+
+# Séparation list / create (absolu ERP MSK)
+
+## Interdit
+
+- Formulaire de **création** (prospect, offre, script, user, dossier…) sur la **même page** qu’un listing / table / grille.
+- Import bulk, upload « nouveau », ou drawer de create collé à la liste en colonne latérale.
+
+## Obligatoire
+
+| Intention | Route / pattern |
+|---|---|
+| Liste | `/module` ou `/module/items` — table / cards uniquement + CTA « Nouveau » |
+| Création | `/module/nouveau` (ou `/module/items/nouveau`) — page dédiée |
+| Édition | `/module/[id]/edit` ou fiche `[id]` avec actions |
+| Import | `/module/import` — page dédiée |
+
+- CTA « Nouveau » / « Importer » = `Link` vers la page dédiée (jamais un formulaire inline).
+- Sur les pages create/edit/import/détail : **retour** explicite vers la liste (`backHref` PageHeader ou fil d’Ariane cliquable).
+
+## Pourquoi
+
+Clarté UX (Linear / Attio / fintech) : une page = une intention. Listing scannable ; création focus sans scroll/competition visuelle.

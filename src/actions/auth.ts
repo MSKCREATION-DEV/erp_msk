@@ -84,10 +84,11 @@ export async function loginAction(
   redirect("/accueil");
 }
 
-export async function logoutAction() {
+/** Déconnexion Auth — le client doit faire un hard nav (`window.location`) pour vider l’état. */
+export async function logoutAction(): Promise<ActionResult> {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/login");
+  return { ok: true, message: "Déconnecté" };
 }
 
 const passwordSchema = z

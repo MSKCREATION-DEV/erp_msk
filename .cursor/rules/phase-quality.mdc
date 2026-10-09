@@ -28,6 +28,7 @@ alwaysApply: true
 - Une intention visuelle claire par écran ; peu de cards inutiles ; hiérarchie typographique nette.
 - Responsive desktop + mobile raisonnable pour l’ERP.
 - États : loading, empty, error — toujours soignés.
+- **UI jamais figée** (absolu) : `loading.tsx` + pending visible — voir `ui-never-freeze.mdc`.
 
 ## Tests après chaque phase (gate)
 

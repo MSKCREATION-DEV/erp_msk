@@ -122,7 +122,8 @@ export function GedBrowser({
   const [folderOpen, setFolderOpen] = useState(false);
   const [renameTarget, setRenameTarget] = useState<GedFolderRow | null>(null);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const [pending, setPending] = useState(false);
+  const [, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
@@ -166,10 +167,20 @@ export function GedBrowser({
     setPrefs((p) => ({ ...p, ...patch }));
   }
 
+  async function runBusy(fn: () => Promise<void>) {
+    if (pending) return;
+    setPending(true);
+    try {
+      await fn();
+    } finally {
+      setPending(false);
+    }
+  }
+
   async function onUpload(formData: FormData) {
     setError(null);
     setMessage(null);
-    startTransition(async () => {
+    await runBusy(async () => {
       const res = await uploadDocumentAction(formData);
       if (!res.ok) {
         setError(res.error ?? "Échec");
@@ -184,7 +195,7 @@ export function GedBrowser({
   async function onCreateFolder(formData: FormData) {
     setError(null);
     setMessage(null);
-    startTransition(async () => {
+    await runBusy(async () => {
       const res = await createFolderAction(formData);
       if (!res.ok) {
         setError(res.error ?? "Échec");
@@ -199,7 +210,7 @@ export function GedBrowser({
   async function onRenameFolder(formData: FormData) {
     setError(null);
     setMessage(null);
-    startTransition(async () => {
+    await runBusy(async () => {
       const res = await renameFolderAction(formData);
       if (!res.ok) {
         setError(res.error ?? "Échec");

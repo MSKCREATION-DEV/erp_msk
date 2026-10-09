@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
 import { toggleCatalogOfferAction } from "@/actions/catalogue";
 import { Button } from "@/components/ui/button";
+import { usePendingAction } from "@/hooks/use-pending-action";
 
 export function CatalogueToggleButton({
   id,
@@ -13,7 +13,7 @@ export function CatalogueToggleButton({
   active: boolean;
 }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { pending, run } = usePendingAction();
 
   return (
     <Button
@@ -21,17 +21,18 @@ export function CatalogueToggleButton({
       size="sm"
       variant="ghost"
       disabled={pending}
+      aria-busy={pending || undefined}
       onClick={() => {
         const fd = new FormData();
         fd.set("id", id);
         fd.set("active", active ? "false" : "true");
-        startTransition(async () => {
+        void run(async () => {
           await toggleCatalogOfferAction(fd);
           router.refresh();
         });
       }}
     >
-      {active ? "Désactiver" : "Activer"}
+      {pending ? "…" : active ? "Désactiver" : "Activer"}
     </Button>
   );
 }

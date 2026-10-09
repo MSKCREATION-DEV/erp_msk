@@ -77,6 +77,8 @@ export default async function CrmProspectDetailPage({
       <PageHeader
         title={deal.organization.name}
         description={deal.title}
+        backHref="/crm/prospects"
+        backLabel="Retour aux prospects"
         breadcrumbs={[
           { label: "CRM", href: "/crm" },
           { label: "Prospects", href: "/crm/prospects" },

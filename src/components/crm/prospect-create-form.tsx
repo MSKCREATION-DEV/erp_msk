@@ -1,11 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { createProspectAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePendingAction } from "@/hooks/use-pending-action";
 
 const SOURCES = [
   "INSTAGRAM",
@@ -24,12 +25,14 @@ export function ProspectCreateForm({
   offers: { id: string; name: string; sku: string }[];
 }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { pending, run } = usePendingAction();
   const [error, setError] = useState<string | null>(null);
 
-  function onSubmit(fd: FormData) {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setError(null);
-    startTransition(async () => {
+    const fd = new FormData(e.currentTarget);
+    void run(async () => {
       const res = await createProspectAction(fd);
       if (!res.ok) {
         setError(res.error ?? "Échec");
@@ -41,33 +44,38 @@ export function ProspectCreateForm({
   }
 
   return (
-    <form action={onSubmit} className="space-y-3">
+    <form
+      onSubmit={onSubmit}
+      className="space-y-3"
+      aria-busy={pending || undefined}
+    >
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <Label htmlFor="orgName">Entreprise *</Label>
-          <Input id="orgName" name="orgName" required />
+          <Input id="orgName" name="orgName" required disabled={pending} />
         </div>
         <div>
           <Label htmlFor="contactFirst">Prénom contact</Label>
-          <Input id="contactFirst" name="contactFirst" />
+          <Input id="contactFirst" name="contactFirst" disabled={pending} />
         </div>
         <div>
           <Label htmlFor="contactLast">Nom contact</Label>
-          <Input id="contactLast" name="contactLast" />
+          <Input id="contactLast" name="contactLast" disabled={pending} />
         </div>
         <div>
           <Label htmlFor="phone">Téléphone</Label>
-          <Input id="phone" name="phone" />
+          <Input id="phone" name="phone" disabled={pending} />
         </div>
         <div>
           <Label htmlFor="email">E-mail</Label>
-          <Input id="email" name="email" type="email" />
+          <Input id="email" name="email" type="email" disabled={pending} />
         </div>
         <div>
           <Label htmlFor="source">Source</Label>
           <select
             id="source"
             name="source"
+            disabled={pending}
             className="mt-1 flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
             defaultValue="INSTAGRAM"
           >

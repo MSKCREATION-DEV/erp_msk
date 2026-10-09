@@ -1,22 +1,25 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { logActivityAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePendingAction } from "@/hooks/use-pending-action";
 import { ACTIVITY_LABELS } from "@/lib/crm/labels";
 
 export function ActivityForm({ opportunityId }: { opportunityId: string }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { pending, run } = usePendingAction();
   const [error, setError] = useState<string | null>(null);
 
-  function onSubmit(fd: FormData) {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setError(null);
+    const fd = new FormData(e.currentTarget);
     fd.set("opportunityId", opportunityId);
-    startTransition(async () => {
+    void run(async () => {
       const res = await logActivityAction(fd);
       if (!res.ok) setError(res.error ?? "Échec");
       else {
@@ -30,10 +33,8 @@ export function ActivityForm({ opportunityId }: { opportunityId: string }) {
     <form
       id="activity-form"
       className="space-y-3"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit(new FormData(e.currentTarget));
-      }}
+      onSubmit={onSubmit}
+      aria-busy={pending || undefined}
     >
       <input type="hidden" name="opportunityId" value={opportunityId} />
       <div className="grid gap-3 sm:grid-cols-2">
@@ -42,6 +43,7 @@ export function ActivityForm({ opportunityId }: { opportunityId: string }) {
           <select
             id="type"
             name="type"
+            disabled={pending}
             className="mt-1 flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
             defaultValue="NOTE"
           >
@@ -54,20 +56,25 @@ export function ActivityForm({ opportunityId }: { opportunityId: string }) {
         </div>
         <div>
           <Label htmlFor="followUpAt">Prochaine relance</Label>
-          <Input id="followUpAt" name="followUpAt" type="date" />
+          <Input
+            id="followUpAt"
+            name="followUpAt"
+            type="date"
+            disabled={pending}
+          />
         </div>
         <div className="sm:col-span-2">
           <Label htmlFor="summary">Résumé *</Label>
-          <Input id="summary" name="summary" required />
+          <Input id="summary" name="summary" required disabled={pending} />
         </div>
         <div className="sm:col-span-2">
           <Label htmlFor="nextAction">Prochaine action</Label>
-          <Input id="nextAction" name="nextAction" />
+          <Input id="nextAction" name="nextAction" disabled={pending} />
         </div>
       </div>
       {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
       <Button type="submit" size="sm" disabled={pending}>
-        {pending ? "…" : "Logger"}
+        {pending ? "Enregistrement…" : "Logger"}
       </Button>
     </form>
   );

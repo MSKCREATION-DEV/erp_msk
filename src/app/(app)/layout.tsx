@@ -1,27 +1,34 @@
-import { requireUser } from "@/lib/auth/session";
-import { Sidebar } from "@/components/app/sidebar";
+import { Suspense } from "react";
+import { AppSidebar } from "@/components/app/app-sidebar";
+import { SidebarSkeleton } from "@/components/app/sidebar-skeleton";
 import { Topbar } from "@/components/app/topbar";
 import { ConfirmProvider } from "@/components/ui/confirm-dialog";
+import { NavigationProgress } from "@/components/ui/navigation-progress";
 
 /**
- * Shell authentifié.
- * - Pas de `force-dynamic` explicite : cookies Auth suffisent à dynamiser.
- * - `loading.tsx` frère → Suspense sur `children` : la sidebar reste visible
- *   pendant le fetch RSC de la page (nav soft non bloquante).
- * - ConfirmProvider : modales de confirmation (delete, logout, …).
+ * Shell authentifié — navigation instantanée.
+ *
+ * Important (doc Next.js loading.js) :
+ * Si le layout `await` cookies()/session, la nav **bloque** et `loading.tsx`
+ * ne s’affiche pas. On isole donc la session sidebar dans <Suspense>.
+ * Auth route : middleware + requireUser() dans chaque page.
+ *
+ * @see https://nextjs.org/docs/app/api-reference/file-conventions/loading#instant-loading-states
+ * @see https://nextjs.org/docs/app/api-reference/file-conventions/layout#interaction-with-loadingjs
  */
-export default async function AppLayout({
+export default function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireUser();
-
   return (
     <ConfirmProvider>
+      <NavigationProgress />
       <div className="flex h-screen overflow-hidden bg-[#F4F6F9]">
         <div className="z-20 hidden h-full shrink-0 md:flex">
-          <Sidebar user={user} />
+          <Suspense fallback={<SidebarSkeleton />}>
+            <AppSidebar />
+          </Suspense>
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <Topbar />

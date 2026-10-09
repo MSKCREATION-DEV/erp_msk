@@ -56,7 +56,7 @@ Poser le **socle documentaire** de l’ERP MSK pour que les phases Commercial / 
 | Storage | Supabase Storage (bucket privé `ged`) + signed URLs serveur |
 | Métadonnées | Prisma (`DocumentFolder`, `Document`, `DocumentLink`, `DocumentAcl`) |
 | Validation uploads | Zod (mime, taille max, nom) |
-| PDF gabarits | **`pdf-lib`** — layout aligné exemples `docs/exemple *.png` + tokens MSK |
+| PDF gabarits | **`pdf-lib`** — layout MSK (`src/lib/pdf/commercial.ts`) + tokens charte |
 | UI | PageShell + Card + SideDrawer Vaul + **ConfirmDialog** MSK |
 | ACL | Modèle présent ; UI partage avancée → 1.x |
 | Soft-delete | Documents soft-delete ; dossiers système protégés |

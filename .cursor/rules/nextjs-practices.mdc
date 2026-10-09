@@ -1,47 +1,74 @@
 ---
-description: Bonnes pratiques Next.js 15 App Router pour ce projet
+description: Bonnes pratiques Next.js App Router MSK (doc officielle)
 alwaysApply: true
 ---
 
-# Next.js 15 — pratiques MSK ERP
+# Next.js App Router — pratiques MSK ERP
 
-Stack : App Router · React 19 · Server Components par défaut · Tailwind · Prisma (cible) · Supabase.
+Stack : App Router · React 19 · Next 15.x · Server Components · Tailwind · Prisma · Supabase.
+
+Réf. doc : [file-conventions](https://nextjs.org/docs/app/api-reference/file-conventions) · [loading](https://nextjs.org/docs/app/api-reference/file-conventions/loading) · [guides](https://nextjs.org/docs/app/guides)
 
 ## Architecture
 
 - Pages / layouts = **Server Components** sauf besoin interactif
 - `"use client"` au plus bas (feuille), jamais sur un layout entier si évitable
-- Data fetching dans le serveur : `async` page/layout, pas `useEffect` pour charger
+- Data fetching dans le serveur : `async` page, pas de `useEffect` pour charger
 - Mutations = **Server Actions** (`src/actions/*`), valider avec Zod
-- Auth / cookies = helpers `src/lib/supabase/*` + `requireUser`
+- Auth : middleware session + `requireUser` **dans les pages** (pas await cookies bloquant au top du layout shell)
+
+## Instant loading (absolu)
+
+Doc : [`loading.js` — Instant Loading States](https://nextjs.org/docs/app/api-reference/file-conventions/loading#instant-loading-states)
+
+- `loading.tsx` par segment métier → Suspense auto autour de `page.js`
+- **Le layout parent reste interactif** (sidebar) pendant le stream de la page
+- **Caveat critique** : si le `layout` fait `await cookies()` / session / fetch non caché **sans** `<Suspense>`, la navigation **bloque** et `loading.tsx` **ne s’affiche pas**
+  - Isoler la partie session (ex. `AppSidebar`) dans `<Suspense fallback={…}>`
+  - Shell layout = synchrone (structure + children)
+
+## Contours fichiers (conventions)
+
+| Fichier | Rôle |
+|---|---|
+| `loading.tsx` | Skeleton immédiat à la nav |
+| `error.tsx` | Erreur UI (Client), recovery |
+| `not-found.tsx` | 404 segment |
+| `layout.tsx` | Shell partagé (ne pas bloquer sur cookies) |
+
+## Mutations / pending
+
+- Préférer `useActionState` **ou** `usePendingAction` (MSK)
+- Interdit : `startTransition(async () => { await … })` (pending trompeur)
+- OK doc : `startTransition(() => action())` si l’action retourne une Promise trackée, ou `useActionState`
+- Bouton `disabled` + libellé tant que pending
+
+## État UI / navigations
+
+- Shell partagé = état sidebar préservé naturellement (layout)
+- Guide [preserving-ui-state](https://nextjs.org/docs/app/guides/preserving-ui-state) (`<Activity>` / Cache Components) = **Next 16+** — ne pas activer `cacheComponents` tant qu’on est en 15.2
+- Logout : full reload (`window.location`) pour vider l’état client (recommandation doc Activity / auth)
+- Messages succès formulaire : reset au hide / après submit si retour arrière pourrait les laisser stale
 
 ## Rendu & perf
 
-- `next/image` pour toute image raster ; `priority` uniquement LCP (logo hero/auth)
-- `next/font/local` uniquement (`src/fonts`) — jamais Google Fonts Inter
-- Contours dynamiques : `loading.tsx`, `error.tsx`, `not-found.tsx` par segment
-- Éviter `force-dynamic` sauf pages auth / données user temps réel
-- Prefetch Link par défaut ; pas de `<a>` interne hors ancres `#`
+- `next/image` ; `priority` uniquement LCP
+- `next/font/local` uniquement — jamais Google Fonts Inter
+- Prefetch `Link` ; jamais `<a>` interne
+- `NavigationProgress` = feedback clic immédiat en complément de `loading.tsx`
 
 ## Structure
 
 ```
 src/app/(auth)/     routes publiques auth
 src/app/(app)/      shell authentifié + modules
-src/components/ui/  primitives shadcn
-src/components/brand/  Logo, MskMark
-src/lib/            utils, brand, auth, clients
+src/components/ui/  primitives
+src/components/brand/
+src/lib/
 ```
-
-## UI / state
-
-- Formulaires : Server Actions + progressive enhancement ; RHF seulement si UX complexe
-- Pas de `useMemo` / `useCallback` par défaut
-- Listes : Server Component + table ; filtres client isolés
-- Styles : tokens Tailwind `msk-*` + classes utilitaires charte (`.font-impact`, `.brand-gradient`)
 
 ## Sécurité
 
-- Jamais de secrets côté client
-- RLS Supabase respectée ; admin client serveur uniquement
-- Valider chaque FormData / input dans l'action
+- Secrets jamais côté client
+- RLS Supabase ; admin client serveur uniquement
+- Valider chaque FormData / input dans l’action

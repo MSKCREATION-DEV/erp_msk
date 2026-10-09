@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { updateOpportunityStageAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { usePendingAction } from "@/hooks/use-pending-action";
 import { STAGE_LABELS, STAGE_ORDER, LOSS_LABELS } from "@/lib/crm/labels";
 import type { CrmPipelineStage } from "@prisma/client";
 
@@ -16,13 +17,15 @@ export function StageForm({
   stage: CrmPipelineStage;
 }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { pending, run } = usePendingAction();
   const [current, setCurrent] = useState(stage);
   const [error, setError] = useState<string | null>(null);
 
-  function onSubmit(fd: FormData) {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setError(null);
-    startTransition(async () => {
+    const fd = new FormData(e.currentTarget);
+    void run(async () => {
       const res = await updateOpportunityStageAction(fd);
       if (!res.ok) setError(res.error ?? "Échec");
       else router.refresh();
@@ -30,7 +33,11 @@ export function StageForm({
   }
 
   return (
-    <form action={onSubmit} className="space-y-3">
+    <form
+      onSubmit={onSubmit}
+      className="space-y-3"
+      aria-busy={pending || undefined}
+    >
       <input type="hidden" name="opportunityId" value={opportunityId} />
       <div>
         <Label htmlFor="stage">Étape pipeline</Label>
@@ -38,6 +45,7 @@ export function StageForm({
           id="stage"
           name="stage"
           value={current}
+          disabled={pending}
           onChange={(e) => setCurrent(e.target.value as CrmPipelineStage)}
           className="mt-1 flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
         >
@@ -56,6 +64,7 @@ export function StageForm({
               id="lossReason"
               name="lossReason"
               required
+              disabled={pending}
               className="mt-1 flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
               defaultValue="BUDGET"
             >
@@ -71,6 +80,7 @@ export function StageForm({
             <input
               id="lossNote"
               name="lossNote"
+              disabled={pending}
               className="mt-1 flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
             />
           </div>
@@ -78,7 +88,7 @@ export function StageForm({
       ) : null}
       {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
       <Button type="submit" size="sm" disabled={pending}>
-        {pending ? "…" : "Mettre à jour"}
+        {pending ? "Mise à jour…" : "Mettre à jour"}
       </Button>
     </form>
   );

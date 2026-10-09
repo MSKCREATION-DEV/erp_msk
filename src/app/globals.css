@@ -35,6 +35,19 @@ body {
   background-image: linear-gradient(90deg, #2a3d8e 0%, #00acee 100%);
 }
 
+@keyframes msk-nav-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+.msk-nav-progress-bar {
+  animation: msk-nav-progress 1.1s ease-in-out infinite;
+}
+
 .auth-atmosphere {
   background-color: #f5f3ef;
   background-image:

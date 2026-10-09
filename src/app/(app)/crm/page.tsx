@@ -81,9 +81,14 @@ export default async function CrmDashboardPage() {
             <Link href="/crm/relances" className={linkSecondary}>
               Relances
             </Link>
-            <Link href="/crm/prospects" className={linkPrimary}>
+            <Link href="/crm/prospects" className={linkSecondary}>
               Prospects
             </Link>
+            {hasPermission(user, "crm.prospect.create") ? (
+              <Link href="/crm/prospects/nouveau" className={linkPrimary}>
+                Nouveau prospect
+              </Link>
+            ) : null}
           </div>
         }
       />
@@ -144,7 +149,21 @@ export default async function CrmDashboardPage() {
         <Surface className="divide-y divide-msk-ink/[0.06] overflow-hidden p-0">
           {deals.slice(0, 8).length === 0 ? (
             <p className="p-6 text-center text-sm text-msk-ink/40">
-              Aucun prospect — créez-en un ou importez le CSV Excel.
+              Aucun prospect —{" "}
+              <Link
+                href="/crm/prospects/nouveau"
+                className="font-medium text-msk-blue hover:underline"
+              >
+                créer
+              </Link>{" "}
+              ou{" "}
+              <Link
+                href="/crm/prospects/import"
+                className="font-medium text-msk-blue hover:underline"
+              >
+                importer le CSV
+              </Link>
+              .
             </p>
           ) : (
             deals.slice(0, 8).map((d) => (

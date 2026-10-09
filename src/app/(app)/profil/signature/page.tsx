@@ -56,6 +56,8 @@ export default async function MySignaturePage() {
   return (
     <PageShell>
       <PageHeader
+        backHref="/accueil"
+        backLabel="Retour à l’accueil"
         title="Ma signature"
         description="Upload PNG / JPEG / WebP — fond papier retiré automatiquement (PNG transparent)."
         breadcrumbs={[

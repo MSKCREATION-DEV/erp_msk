@@ -1,49 +1,85 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { upsertCatalogOfferAction } from "@/actions/catalogue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePendingAction } from "@/hooks/use-pending-action";
 import { PILLAR_LABELS } from "@/lib/crm/labels";
+import type { CatalogBilling, CatalogPillar } from "@prisma/client";
 
-export function CatalogueOfferForm() {
+type Initial = {
+  id?: string;
+  sku?: string;
+  name?: string;
+  description?: string;
+  pillar?: CatalogPillar;
+  billing?: CatalogBilling;
+  priceXof?: string;
+};
+
+export function CatalogueOfferForm({
+  initial,
+  redirectTo = "/catalogue",
+}: {
+  initial?: Initial;
+  redirectTo?: string;
+}) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { pending, run } = usePendingAction();
   const [error, setError] = useState<string | null>(null);
-  const [ok, setOk] = useState<string | null>(null);
 
-  function onSubmit(fd: FormData) {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setError(null);
-    setOk(null);
-    startTransition(async () => {
+    const fd = new FormData(e.currentTarget);
+    void run(async () => {
       const res = await upsertCatalogOfferAction(fd);
       if (!res.ok) setError(res.error ?? "Échec");
-      else {
-        setOk(res.message ?? "OK");
-        router.refresh();
-      }
+      else router.push(redirectTo);
     });
   }
 
   return (
-    <form action={onSubmit} className="space-y-3">
+    <form
+      onSubmit={onSubmit}
+      className="space-y-3"
+      aria-busy={pending || undefined}
+    >
+      {initial?.id ? (
+        <input type="hidden" name="id" value={initial.id} />
+      ) : null}
       <div>
         <Label htmlFor="sku">SKU</Label>
-        <Input id="sku" name="sku" required placeholder="WEB-VITRINE" />
+        <Input
+          id="sku"
+          name="sku"
+          required
+          defaultValue={initial?.sku}
+          placeholder="WEB-VITRINE"
+          disabled={pending}
+        />
       </div>
       <div>
         <Label htmlFor="name">Libellé</Label>
-        <Input id="name" name="name" required />
+        <Input
+          id="name"
+          name="name"
+          required
+          defaultValue={initial?.name}
+          disabled={pending}
+        />
       </div>
       <div>
         <Label htmlFor="pillar">Pilier</Label>
         <select
           id="pillar"
           name="pillar"
+          disabled={pending}
           className="mt-1 flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-          defaultValue="PRESENCE_DIGITALE"
+          defaultValue={initial?.pillar ?? "PRESENCE_DIGITALE"}
         >
           {Object.entries(PILLAR_LABELS).map(([k, v]) => (
             <option key={k} value={k}>
@@ -57,8 +93,9 @@ export function CatalogueOfferForm() {
         <select
           id="billing"
           name="billing"
+          disabled={pending}
           className="mt-1 flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-          defaultValue="ONE_SHOT"
+          defaultValue={initial?.billing ?? "ONE_SHOT"}
         >
           <option value="ONE_SHOT">One-shot</option>
           <option value="MONTHLY">Mensuel</option>
@@ -67,21 +104,28 @@ export function CatalogueOfferForm() {
       </div>
       <div>
         <Label htmlFor="priceXof">Prix FCFA</Label>
-        <Input id="priceXof" name="priceXof" inputMode="numeric" />
+        <Input
+          id="priceXof"
+          name="priceXof"
+          inputMode="numeric"
+          defaultValue={initial?.priceXof}
+          disabled={pending}
+        />
       </div>
       <div>
         <Label htmlFor="description">Description</Label>
         <textarea
           id="description"
           name="description"
-          rows={2}
+          rows={3}
+          defaultValue={initial?.description}
+          disabled={pending}
           className="mt-1 w-full rounded-lg border border-msk-ink/15 bg-white px-3 py-2 text-sm"
         />
       </div>
       {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
-      {ok ? <p className="text-sm text-msk-blue">{ok}</p> : null}
-      <Button type="submit" disabled={pending} size="sm">
-        {pending ? "…" : "Enregistrer"}
+      <Button type="submit" disabled={pending}>
+        {pending ? "Enregistrement…" : "Enregistrer"}
       </Button>
     </form>
   );

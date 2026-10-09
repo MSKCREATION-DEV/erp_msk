@@ -1,0 +1,37 @@
+---
+description: Absolu — l’UI ne doit jamais se figer ; loading + feedback partout
+alwaysApply: true
+---
+
+# UI jamais figée (absolu ERP MSK)
+
+L’utilisateur **ne doit jamais** rester sans feedback : écran blanc figé, bouton cliqué sans état, navigation silencieuse, formulaire bloqué.
+
+Aligné sur la doc Next.js :
+- [Instant loading states](https://nextjs.org/docs/app/api-reference/file-conventions/loading#instant-loading-states)
+- [layout ↔ loading](https://nextjs.org/docs/app/api-reference/file-conventions/layout#interaction-with-loadingjs)
+- [Guides App Router](https://nextjs.org/docs/app/guides)
+
+## Interdit
+
+- Mutation / Server Action **sans** pending visible (`disabled` + libellé)
+- `startTransition(async () => …)` pour piloter un submit
+- Page async **sans** `loading.tsx` sur le segment
+- **`await requireUser()` / cookies() au top-level du layout shell** sans `<Suspense>` → bloque toute la nav (loading.tsx inutile)
+- Navigation sans feedback (skeleton et/ou barre progression)
+
+## Obligatoire
+
+| Cas | Pattern |
+|---|---|
+| Shell `(app)` | Layout **synchrone** ; session sidebar dans `<Suspense>` |
+| Nav route | `loading.tsx` segment + `NavigationProgress` |
+| Formulaire | `usePendingAction` / `useActionState` |
+| Confirm | pending jusqu’à fin d’action |
+| Erreur | `error.tsx` message utilisateur |
+
+## Test mental
+
+> Réseau 3 s : skeleton page + barre top + bouton « … » visibles ?
+> Clic nav : sidebar reste interactive pendant le stream ?
+> Si non → **bug bloquant**, corriger avant gate.

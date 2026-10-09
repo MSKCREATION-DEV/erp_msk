@@ -12,7 +12,7 @@ export function LogoutButton() {
   async function onClick() {
     setBusy(true);
     try {
-      await confirm({
+      const ok = await confirm({
         title: "Se déconnecter ?",
         description:
           "Vous quitterez la session MSK. Reconnectez-vous pour accéder à l’ERP.",
@@ -22,10 +22,14 @@ export function LogoutButton() {
         tone: "primary",
         icon: "logout",
         action: async () => {
-          await logoutAction();
+          const res = await logoutAction();
+          if (!res.ok) throw new Error(res.error ?? "Échec déconnexion");
+          // Hard nav : purge l’état client (recommandation Next.js / Activity)
+          window.location.href = "/login";
         },
       });
-    } finally {
+      if (!ok) setBusy(false);
+    } catch {
       setBusy(false);
     }
   }

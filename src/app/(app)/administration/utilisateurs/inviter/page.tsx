@@ -43,6 +43,8 @@ export default async function InviteUserPage() {
     <PageShell>
       <PageHeader
         title="Inviter un collaborateur"
+        backHref="/administration/utilisateurs"
+        backLabel="Retour aux utilisateurs"
         breadcrumbs={[
           { label: "Administration" },
           { label: "Utilisateurs", href: "/administration/utilisateurs" },

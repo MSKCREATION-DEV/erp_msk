@@ -1,13 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
 import { completeTaskAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
+import { usePendingAction } from "@/hooks/use-pending-action";
 
 export function CompleteTaskButton({ taskId }: { taskId: string }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { pending, run } = usePendingAction();
 
   return (
     <Button
@@ -15,10 +15,11 @@ export function CompleteTaskButton({ taskId }: { taskId: string }) {
       size="sm"
       variant="secondary"
       disabled={pending}
+      aria-busy={pending || undefined}
       onClick={() => {
         const fd = new FormData();
         fd.set("taskId", taskId);
-        startTransition(async () => {
+        void run(async () => {
           await completeTaskAction(fd);
           router.refresh();
         });
