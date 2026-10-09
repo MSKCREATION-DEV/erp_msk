@@ -47,3 +47,4 @@ next-env.d.ts
 .agents/
 .claude/
 .devin/
+tmp/

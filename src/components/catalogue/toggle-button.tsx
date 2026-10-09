@@ -31,7 +31,7 @@ export function CatalogueToggleButton({
         });
       }}
     >
-      {active ? "Off" : "On"}
+      {active ? "Désactiver" : "Activer"}
     </Button>
   );
 }

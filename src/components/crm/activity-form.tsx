@@ -15,6 +15,7 @@ export function ActivityForm({ opportunityId }: { opportunityId: string }) {
 
   function onSubmit(fd: FormData) {
     setError(null);
+    fd.set("opportunityId", opportunityId);
     startTransition(async () => {
       const res = await logActivityAction(fd);
       if (!res.ok) setError(res.error ?? "Échec");
@@ -26,7 +27,14 @@ export function ActivityForm({ opportunityId }: { opportunityId: string }) {
   }
 
   return (
-    <form id="activity-form" action={onSubmit} className="space-y-3">
+    <form
+      id="activity-form"
+      className="space-y-3"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(new FormData(e.currentTarget));
+      }}
+    >
       <input type="hidden" name="opportunityId" value={opportunityId} />
       <div className="grid gap-3 sm:grid-cols-2">
         <div>

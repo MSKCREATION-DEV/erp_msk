@@ -85,7 +85,8 @@ Remplacer l’Excel CRM et brancher le **catalogue 5 piliers** pour que les comm
 - [x] Enrichir permissions packs `commercial` / `admin_crm` / `direction` / `admin_plateforme`
 
 ### Gate
-- [x] `npm run build` / `test:nav` / `gate:phase2`
+- [x] `npm run build` / `lint` / `test:nav` / `gate:phase0|1|2`
+- [x] `npm run smoke:ui` (Playwright Super Admin — 27 checks OK, 2026-10-09)
 - [ ] Checklist humaine (ci-dessous)
 
 ## Gate humaine (après implémentation)
