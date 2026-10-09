@@ -161,11 +161,17 @@ async function seedSuperAdmin() {
       }
       authId = created.data.user.id;
     }
-  } else if (process.env.BOOTSTRAP_TEMP_PASSWORD?.trim()) {
+  } else if (
+    process.env.BOOTSTRAP_FORCE_PASSWORD?.trim() === "1" &&
+    process.env.BOOTSTRAP_TEMP_PASSWORD?.trim()
+  ) {
+    // Jamais réécrire le MDP d’un compte existant sauf force explicite
+    // (évite de casser la session après un seed Phase N).
     await admin.auth.admin.updateUserById(authId, {
       password: tempPassword,
       email_confirm: true,
     });
+    console.log("⚠ BOOTSTRAP_FORCE_PASSWORD=1 → mot de passe Auth réécrit");
   }
 
   const otherSuper = await prisma.user.findFirst({
@@ -247,10 +253,14 @@ async function seedSuperAdmin() {
 
   console.log("✓ Catalogue IAM seedé");
   console.log(`✓ Super Admin: ${SUPER_ADMIN.email}`);
-  if (process.env.BOOTSTRAP_TEMP_PASSWORD?.trim() || !existing) {
+  if (!existing) {
     console.log(`✓ Mot de passe temporaire (à changer à la 1ʳᵉ connexion): ${tempPassword}`);
+  } else if (process.env.BOOTSTRAP_FORCE_PASSWORD?.trim() === "1") {
+    console.log(`✓ Mot de passe forcé: ${tempPassword}`);
   } else {
-    console.log("✓ Mot de passe Auth inchangé (définir BOOTSTRAP_TEMP_PASSWORD pour forcer)");
+    console.log(
+      "✓ Mot de passe Auth inchangé (pour forcer: BOOTSTRAP_FORCE_PASSWORD=1 + BOOTSTRAP_TEMP_PASSWORD)",
+    );
   }
 }
 
