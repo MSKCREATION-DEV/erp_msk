@@ -112,6 +112,21 @@ async function seedCatalog() {
   });
 }
 
+/**
+ * ABSOLU — compte déjà activé (ACTIVE) : jamais toucher au MDP Auth.
+ * MDP Auth uniquement à createUser (compte neuf). Voir auth-password-safety.mdc.
+ */
+function isActivatedAccount(u: {
+  status: UserStatus;
+  mustChangePassword: boolean;
+  activatedAt: Date | null;
+}): boolean {
+  return (
+    u.status === UserStatus.ACTIVE ||
+    (!u.mustChangePassword && u.activatedAt != null)
+  );
+}
+
 async function seedSuperAdmin() {
   const url = requireEnv("NEXT_PUBLIC_SUPABASE_URL");
   const serviceKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
@@ -128,6 +143,7 @@ async function seedSuperAdmin() {
   });
 
   let authId = existing?.id;
+  let passwordJustSet = false;
 
   if (!authId) {
     const listed = await admin.auth.admin.listUsers({ perPage: 200 });
@@ -135,15 +151,18 @@ async function seedSuperAdmin() {
       (u) => u.email?.toLowerCase() === SUPER_ADMIN.email,
     );
     if (found) {
+      // Auth existe déjà → lier sans JAMAIS réécrire le MDP
       authId = found.id;
       await admin.auth.admin.updateUserById(authId, {
-        password: tempPassword,
         email_confirm: true,
         user_metadata: {
           first_name: SUPER_ADMIN.firstName,
           last_name: SUPER_ADMIN.lastName,
         },
       });
+      console.log(
+        "ℹ Auth Super Admin déjà présent — MDP conservé (pas de reset seed)",
+      );
     } else {
       const created = await admin.auth.admin.createUser({
         email: SUPER_ADMIN.email,
@@ -160,20 +179,36 @@ async function seedSuperAdmin() {
         );
       }
       authId = created.data.user.id;
+      passwordJustSet = true;
+    }
+  } else if (existing && isActivatedAccount(existing)) {
+    // Compte ACTIVÉ → interdit absolu de toucher au MDP (ignore FORCE)
+    if (
+      process.env.BOOTSTRAP_FORCE_PASSWORD?.trim() === "1" ||
+      process.env.BOOTSTRAP_TEMP_PASSWORD?.trim()
+    ) {
+      console.log(
+        "⛔ Compte ACTIVE — MDP Auth NON modifié (BOOTSTRAP_* ignoré)",
+      );
+    } else {
+      console.log("✓ Compte ACTIVE — MDP Auth conservé");
     }
   } else if (
     process.env.BOOTSTRAP_FORCE_PASSWORD?.trim() === "1" &&
     process.env.BOOTSTRAP_TEMP_PASSWORD?.trim()
   ) {
-    // ABSOLU : uniquement avec FORCE explicite (voir .cursor/rules/auth-password-safety.mdc)
+    // Uniquement comptes non activés (invite / must change) + FORCE explicite
     await admin.auth.admin.updateUserById(authId, {
       password: tempPassword,
       email_confirm: true,
     });
-    console.log("⚠ BOOTSTRAP_FORCE_PASSWORD=1 → mot de passe Auth réécrit");
+    passwordJustSet = true;
+    console.log(
+      "⚠ BOOTSTRAP_FORCE_PASSWORD=1 sur compte non activé → MDP temporaire réécrit",
+    );
   } else if (process.env.BOOTSTRAP_TEMP_PASSWORD?.trim()) {
     console.log(
-      "ℹ BOOTSTRAP_TEMP_PASSWORD ignoré (compte existant). Pour forcer: BOOTSTRAP_FORCE_PASSWORD=1",
+      "ℹ BOOTSTRAP_TEMP_PASSWORD ignoré (compte existant). Force seulement si non ACTIVE + BOOTSTRAP_FORCE_PASSWORD=1",
     );
   }
 
@@ -256,14 +291,12 @@ async function seedSuperAdmin() {
 
   console.log("✓ Catalogue IAM seedé");
   console.log(`✓ Super Admin: ${SUPER_ADMIN.email}`);
-  if (!existing) {
-    console.log(`✓ Mot de passe temporaire (à changer à la 1ʳᵉ connexion): ${tempPassword}`);
-  } else if (process.env.BOOTSTRAP_FORCE_PASSWORD?.trim() === "1") {
-    console.log(`✓ Mot de passe forcé: ${tempPassword}`);
-  } else {
+  if (passwordJustSet) {
     console.log(
-      "✓ Mot de passe Auth inchangé (pour forcer: BOOTSTRAP_FORCE_PASSWORD=1 + BOOTSTRAP_TEMP_PASSWORD)",
+      `✓ Mot de passe temporaire (à changer à la 1ʳᵉ connexion): ${tempPassword}`,
     );
+  } else {
+    console.log("✓ Mot de passe Auth inchangé (compte déjà provisionné / activé)");
   }
 }
 
