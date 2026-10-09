@@ -1,7 +1,9 @@
 # Phase 0 — Fondations IAM + Accueil
 
 > Plan de phase dédié. **Aucun démarrage d’implémentation** avant validation explicite de ce document.  
-> Prérequis : Phase -1 OK (socle, Supabase, Resend, repo).
+> Prérequis : Phase -1 OK (socle, Supabase, Resend, repo).  
+> Branche de travail : **`dev`** (pas `main`).  
+> Contexte priorités : COM / Finance / Compta = **URGENT** (voir `PRIORITES.md`) — Phase 0 reste bloquante technique ; on prépare packs/groupes Commerciaux + Comptabilité dès le seed.
 
 ## Règle de gate
 

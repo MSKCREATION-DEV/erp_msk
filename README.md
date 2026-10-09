@@ -3,9 +3,23 @@
 Logiciel métier **interne** MSK CREATION.
 
 - Cahier des charges : [`docs/CAHIER-DES-CHARGES-ERP-MSK.md`](docs/CAHIER-DES-CHARGES-ERP-MSK.md)
-- Phase en cours : **Phase -1 — Socle** → [`docs/phases/PHASE-01-SOCLES.md`](docs/phases/PHASE-01-SOCLES.md)
+- Priorités : [`docs/phases/PRIORITES.md`](docs/phases/PRIORITES.md) — **Commercial / Finance / Compta = URGENT**
+- Phase -1 : OK · Phase suivante : [`docs/phases/PHASE-00-IAM-ACCUEIL.md`](docs/phases/PHASE-00-IAM-ACCUEIL.md)
 - Repo : `git@asg-msk:MSKCREATION-DEV/erp_msk.git`
 - Super Admin (Phase 0) : `a.guiro@mskcreation.net`
+
+## Branches
+
+| Branche | Usage |
+|---|---|
+| **`dev`** | Travail quotidien (phases) |
+| `main` | Stable — merge après gate de phase |
+
+```bash
+git clone git@asg-msk:MSKCREATION-DEV/erp_msk.git
+cd erp_msk
+git checkout dev
+```
 
 ## Prérequis
 
@@ -17,8 +31,7 @@ Logiciel métier **interne** MSK CREATION.
 ## Démarrage
 
 ```bash
-git clone git@asg-msk:MSKCREATION-DEV/erp_msk.git
-cd erp_msk
+git checkout dev
 npm install
 cp .env.example .env.local
 # Renseigner les clés Supabase + Resend

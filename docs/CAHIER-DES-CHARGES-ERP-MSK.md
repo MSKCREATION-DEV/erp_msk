@@ -1430,7 +1430,32 @@ Pour **chaque** phase (y compris -1, 0, 1…) :
 
 Les plans de phase vivent idéalement dans le dépôt cible (`docs/phases/PHASE-XX-….md`) ou comme plan Cursor lié à la phase.
 
-### Phase -1 — Cadrage & socle projet (bloquant)
+### 14.0bis Priorités métier (prise en compte, sans casser le découpage)
+
+Besoin opérationnel MSK : les pôles **Commercial**, **Finance** et **Comptabilité** sont **URGENTS / PRIORITAIRES**.
+
+Cela **ne signifie pas** de sauter Phase 0 ou de tout fusionner. Cela signifie :
+
+1. Chaque plan de phase marque explicitement ce qui est `URGENT` vs `normal`.
+2. Dès qu’une phase touche ces pôles (ou leurs prérequis), on les traite **de bout en bout** (données → UI → docs → écritures liées), pas en demi-mesure.
+3. Phase 1 (GED/gabarits) doit **prioriser** les dossiers & gabarits utiles au commercial/finance (clients, devis, factures, pièces comptables) avant le reste « confort ».
+4. L’ordre des phases reste fondations → docs → **CRM/COM (urgent)** → … → **Compta/Budget/Banques (urgent)** ; RH/stocks restent nécessaires mais **non bloquants** pour le cœur cash/vente.
+5. Les dépendances (IAM, GED, gabarits, clients) sont construites pour **servir vite** COM + CPT.
+
+| Domaine | Priorité | Phases principales |
+|---|---|---|
+| IAM / Accueil | Bloquant technique | 0 |
+| GED + gabarits (socle docs COM/CPT) | Prioritaire (prérequis urgent) | 1 |
+| Catalogue + CRM | **URGENT** | 2 |
+| Commercial (devis/factures/paiements) | **URGENT** | 3 |
+| Compta SYSCOHADA + banques + budget | **URGENT** | 6 |
+| RH / Paie / INPS | Important | 4–5 |
+| Stocks / projets / ops | Normal | 7 |
+| Automatisations avancées | Normal | 8 |
+
+Voir aussi [`docs/phases/PRIORITES.md`](phases/PRIORITES.md).
+
+### Phase -1 — Cadrage & socle projet (bloquant) — FAIT
 1. Dépôt cible : `git@asg-msk:MSKCREATION-DEV/erp_msk.git` — portage des travaux / CDC  
 2. Création **nouveau projet Supabase** (Free puis Pro quand besoin) + branchement MCP  
 3. Config **Resend** + DNS `mskcreation.net` sur Cloudflare (SPF/DKIM)  
@@ -1441,13 +1466,13 @@ Les plans de phase vivent idéalement dans le dépôt cible (`docs/phases/PHASE-
 ### Phase 0 — Fondations IAM + Accueil
 Prisma complet (migration depuis modèle cible), Super Admin, groupes/packs/overrides, invitation mail, force MDP, page Accueil guide, audit, FCFA/TVA défaut, seeds **équipe MSK** (ci-dessous).
 
-### Phase 1 — GED + Charte + Gabarits + Signatures/Cachets + Organigramme
-Storage, ACL (niveaux + **partage nominatif**), nettoyage images, organigramme seedé, gabarits avec slots signataires + bloc déplacement optionnel.
+### Phase 1 — GED + Charte + Gabarits + Signatures/Cachets + Organigramme *(prérequis prioritaire COM/CPT)*
+Storage, ACL (niveaux + **partage nominatif**), nettoyage images, organigramme seedé, gabarits avec slots signataires + bloc déplacement optionnel. **Prioriser** arborescence clients / devis / factures / pièces comptables.
 
-### Phase 2 — Catalogue + CRM
+### Phase 2 — Catalogue + CRM — **URGENT**
 Catalogue 5 piliers, import CRM Excel, multi-commerciaux, relances, scripts, dashboards.
 
-### Phase 3 — Commercial documentaire (ML + FR)
+### Phase 3 — Commercial documentaire (ML + FR) — **URGENT**
 Clients, devis/factures multi-régime (ML 18 % / FR 20 %), déplacement on/off, paiements, écritures de base.
 
 ### Phase 4 — RH cœur
@@ -1456,7 +1481,7 @@ Collaborateurs, contrats, congés, absences, heures, docs entrée/sortie.
 ### Phase 5 — Paie + INPS
 Bulletins ; **recherches légales INPS Mali** au moment de l’implémentation (taux, assiettes, périodicité) + paramétrage + validation humaine Direction/Compta.
 
-### Phase 6 — Compta SYSCOHADA + budget + banques
+### Phase 6 — Compta SYSCOHADA + budget + banques — **URGENT**
 Plan OHADA, journaux, états, ECOBANK, patente/TVA ; conversion des ventes EUR→FCFA.
 
 ### Phase 7 — Stocks, achats, patrimoine, projets, anomalies
