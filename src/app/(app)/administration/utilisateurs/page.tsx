@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Plus, Shield } from "lucide-react";
+import { Plus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -21,7 +21,7 @@ export default async function UsersAdminPage() {
   const user = await requireUser({ permission: "users.view" });
   const canInvite = hasPermission(user, "users.create");
 
-  const [users, packs, pendingResets, counts] = await Promise.all([
+  const [users, pendingResets, counts] = await Promise.all([
     prisma.user.findMany({
       orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
       select: {
@@ -33,16 +33,6 @@ export default async function UsersAdminPage() {
         isSuperAdmin: true,
         groupMembers: { select: { group: { select: { name: true } } } },
         userPacks: { select: { pack: { select: { name: true, code: true } } } },
-      },
-    }),
-    prisma.permissionPack.findMany({
-      orderBy: { sortOrder: "asc" },
-      select: {
-        id: true,
-        name: true,
-        code: true,
-        description: true,
-        _count: { select: { userPacks: true, permissions: true } },
       },
     }),
     prisma.passwordResetRequest.findMany({
@@ -105,7 +95,7 @@ export default async function UsersAdminPage() {
           { label: "Administration" },
           { label: "Utilisateurs" },
         ]}
-        description="Gérez les comptes, groupes et packs. Invitation et édition sur des écrans dédiés."
+        description="Comptes, invitations et statuts. Groupes, packs et exceptions se gèrent sur chaque fiche."
         actions={
           canInvite ? (
             <Link
@@ -122,38 +112,6 @@ export default async function UsersAdminPage() {
       />
 
       <KpiGrid items={kpis} />
-
-      <Surface className="p-5">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <div>
-            <h2 className="font-semibold text-msk-ink">Packs & permissions</h2>
-            <p className="text-sm text-msk-ink/50">
-              Synthèse des capacités — assignation à l’invitation ou sur la fiche.
-            </p>
-          </div>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {packs.map((p) => (
-            <div
-              key={p.id}
-              className="rounded-xl border border-msk-ink/[0.07] bg-[#F8F9FB] p-4"
-            >
-              <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-msk-blue/10 text-msk-blue">
-                  <Shield className="h-3.5 w-3.5" />
-                </span>
-                <p className="text-sm font-semibold text-msk-ink">{p.name}</p>
-              </div>
-              <p className="mt-2 line-clamp-2 text-xs text-msk-ink/45">
-                {p.description}
-              </p>
-              <p className="mt-3 text-[11px] font-medium uppercase tracking-wider text-msk-ink/35">
-                {p._count.userPacks} user · {p._count.permissions} perm.
-              </p>
-            </div>
-          ))}
-        </div>
-      </Surface>
 
       {pendingResets.length > 0 ? (
         <Surface className="border-msk-coral/20 bg-msk-coral/[0.04] px-5 py-4">

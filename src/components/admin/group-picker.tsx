@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type GroupOption = {
@@ -7,38 +8,89 @@ export type GroupOption = {
   name: string;
   code: string;
   description?: string | null;
+  defaultPackName?: string | null;
+  defaultPackCode?: string | null;
 };
 
 export function GroupPicker({
   groups,
   name = "groupIds",
   defaultSelected = [],
+  onChange,
 }: {
   groups: GroupOption[];
   name?: string;
   defaultSelected?: string[];
+  onChange?: (ids: string[]) => void;
 }) {
+  const controlled = Boolean(onChange);
+
+  function toggle(id: string, checked: boolean) {
+    if (!onChange) return;
+    const next = checked
+      ? [...defaultSelected, id]
+      : defaultSelected.filter((x) => x !== id);
+    onChange(next);
+  }
+
   return (
-    <div className="flex flex-wrap gap-2">
-      {groups.map((g) => (
-        <label
-          key={g.id}
-          title={g.description ?? undefined}
-          className={cn(
-            "cursor-pointer rounded-full border border-msk-ink/10 bg-white px-3.5 py-2 text-sm font-medium text-msk-ink/70 transition",
-            "has-[:checked]:border-msk-blue has-[:checked]:bg-msk-blue has-[:checked]:text-white",
-          )}
-        >
-          <input
-            type="checkbox"
-            name={name}
-            value={g.id}
-            defaultChecked={defaultSelected.includes(g.id)}
-            className="sr-only"
-          />
-          {g.name}
-        </label>
-      ))}
+    <div className="grid gap-2 sm:grid-cols-2">
+      {groups.map((g) => {
+        const isOn = defaultSelected.includes(g.id);
+        return (
+          <label
+            key={g.id}
+            title={g.description ?? undefined}
+            className={cn(
+              "group flex cursor-pointer items-start gap-3 rounded-xl border border-msk-ink/10 bg-white px-3.5 py-3 transition",
+              "has-[:checked]:border-msk-blue has-[:checked]:bg-msk-blue/[0.04]",
+            )}
+          >
+            <input
+              type="checkbox"
+              name={controlled ? undefined : name}
+              value={g.id}
+              {...(controlled
+                ? {
+                    checked: isOn,
+                    onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                      toggle(g.id, e.target.checked),
+                  }
+                : { defaultChecked: isOn })}
+              className="peer sr-only"
+            />
+            <span
+              className={cn(
+                "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 border-msk-ink/20 transition",
+                "group-has-[:checked]:border-msk-blue group-has-[:checked]:bg-msk-blue",
+              )}
+              aria-hidden
+            >
+              <Check
+                className={cn(
+                  "h-3 w-3 text-white opacity-0 transition",
+                  "group-has-[:checked]:opacity-100",
+                )}
+                strokeWidth={3}
+              />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-sm font-medium text-msk-ink">
+                {g.name}
+              </span>
+              {g.defaultPackName ? (
+                <span className="mt-0.5 block text-xs text-msk-ink/45">
+                  Pack défaut : {g.defaultPackName}
+                </span>
+              ) : (
+                <span className="mt-0.5 block text-xs text-msk-ink/35">
+                  Aucun pack défaut
+                </span>
+              )}
+            </span>
+          </label>
+        );
+      })}
     </div>
   );
 }

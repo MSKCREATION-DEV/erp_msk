@@ -15,7 +15,13 @@ export default async function InviteUserPage() {
   const [groups, packs] = await Promise.all([
     prisma.group.findMany({
       orderBy: { sortOrder: "asc" },
-      select: { id: true, name: true, code: true, description: true },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        description: true,
+        defaultPack: { select: { name: true, code: true } },
+      },
     }),
     prisma.permissionPack.findMany({
       orderBy: { sortOrder: "asc" },
@@ -24,6 +30,10 @@ export default async function InviteUserPage() {
         name: true,
         code: true,
         description: true,
+        permissions: {
+          select: { permission: { select: { code: true } } },
+          take: 40,
+        },
         _count: { select: { permissions: true } },
       },
     }),
@@ -41,13 +51,21 @@ export default async function InviteUserPage() {
         description="Création de compte Auth + profil ERP, e-mail Resend, changement de mot de passe obligatoire à la 1ʳᵉ connexion."
       />
       <InviteUserForm
-        groups={groups}
+        groups={groups.map((g) => ({
+          id: g.id,
+          name: g.name,
+          code: g.code,
+          description: g.description,
+          defaultPackName: g.defaultPack?.name ?? null,
+          defaultPackCode: g.defaultPack?.code ?? null,
+        }))}
         packs={packs.map((p) => ({
           id: p.id,
           name: p.name,
           code: p.code,
           description: p.description,
           permissionCount: p._count.permissions,
+          permissionCodes: p.permissions.map((pp) => pp.permission.code),
         }))}
       />
     </PageShell>

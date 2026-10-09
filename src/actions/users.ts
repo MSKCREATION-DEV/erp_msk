@@ -253,7 +253,20 @@ export async function setOverrideAction(
 ): Promise<ActionResult> {
   const actor = await requireUser({ permission: "overrides.manage" });
   const userId = String(formData.get("userId") ?? "");
-  const permissionCode = String(formData.get("permissionCode") ?? "");
+  const permissionCodes = [
+    ...new Set(
+      formData
+        .getAll("permissionCodes")
+        .map(String)
+        .filter(Boolean)
+        .concat(
+          // compat ancien champ single
+          String(formData.get("permissionCode") ?? "")
+            ? [String(formData.get("permissionCode"))]
+            : [],
+        ),
+    ),
+  ];
   const effect = String(formData.get("effect") ?? "") as OverrideEffect;
   const reason = String(formData.get("reason") ?? "") || undefined;
 
@@ -264,34 +277,49 @@ export async function setOverrideAction(
     return { ok: false, error: "Effet invalide" };
   }
 
-  const permission = await prisma.permission.findUnique({
-    where: { code: permissionCode },
-  });
-  if (!permission) return { ok: false, error: "Permission inconnue" };
+  const codesParsed = z.array(z.string().min(1)).min(1).safeParse(permissionCodes);
+  if (!codesParsed.success) {
+    return { ok: false, error: "Sélectionnez au moins une permission" };
+  }
 
-  await prisma.userPermissionOverride.upsert({
-    where: {
-      userId_permissionId: { userId, permissionId: permission.id },
-    },
-    create: {
-      userId,
-      permissionId: permission.id,
-      effect,
-      reason,
-    },
-    update: { effect, reason },
+  const permissions = await prisma.permission.findMany({
+    where: { code: { in: codesParsed.data } },
   });
+  if (permissions.length !== codesParsed.data.length) {
+    return { ok: false, error: "Une ou plusieurs permissions sont inconnues" };
+  }
+
+  for (const permission of permissions) {
+    await prisma.userPermissionOverride.upsert({
+      where: {
+        userId_permissionId: { userId, permissionId: permission.id },
+      },
+      create: {
+        userId,
+        permissionId: permission.id,
+        effect,
+        reason,
+      },
+      update: { effect, reason },
+    });
+  }
 
   await writeAudit({
     actorId: actor.id,
     action: "overrides.set",
     entityType: "user",
     entityId: userId,
-    metadata: { permissionCode, effect },
+    metadata: { permissionCodes: codesParsed.data, effect, count: permissions.length },
   });
 
   revalidatePath(`/administration/utilisateurs/${userId}`);
-  return { ok: true, message: "Override enregistré" };
+  return {
+    ok: true,
+    message:
+      permissions.length === 1
+        ? "Override enregistré"
+        : `${permissions.length} overrides enregistrés`,
+  };
 }
 
 export async function removeOverrideAction(
