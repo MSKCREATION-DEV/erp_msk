@@ -13,12 +13,6 @@ export function Sidebar({ user }: { user: SessionUser }) {
       .map((item) => item.id),
   );
 
-  // Évite Utilisateurs + Administration en double dans le menu
-  const dedupedIds = allowedIds.filter((id, _, arr) => {
-    if (id === "administration" && arr.includes("utilisateurs")) return false;
-    return true;
-  });
-
   const displayName =
     user.firstName.length + user.lastName.length > 18
       ? user.firstName
@@ -30,7 +24,7 @@ export function Sidebar({ user }: { user: SessionUser }) {
         <Logo variant="bloc" size="sm" href="/accueil" priority />
       </div>
 
-      <SidebarNav allowedIds={dedupedIds} />
+      <SidebarNav allowedIds={allowedIds} />
 
       <div className="mt-auto border-t border-msk-ink/[0.07] p-3">
         <div className="flex items-center gap-2.5 rounded-xl px-2 py-2">

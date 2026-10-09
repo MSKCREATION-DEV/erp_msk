@@ -46,7 +46,7 @@ export function SignatureUploadForm() {
       {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
       {ok ? <p className="text-sm text-msk-blue">{ok}</p> : null}
       <Button type="submit" disabled={pending}>
-        {pending ? "Envoi…" : "Enregistrer"}
+        {pending ? "Nettoyage…" : "Enregistrer"}
       </Button>
     </form>
   );

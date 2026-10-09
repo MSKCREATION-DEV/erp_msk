@@ -349,6 +349,8 @@ model SignatureAsset {
   kind            SignatureKind   @default(UPLOAD)
   label           String
   storageOriginal String
+  /** PNG fond transparent après pipeline de nettoyage (null = pas encore traité). */
+  storageCleaned  String?
   mime            String
   status          SignatureStatus @default(DRAFT)
   createdAt       DateTime        @default(now())

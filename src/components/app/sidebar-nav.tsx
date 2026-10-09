@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   NAV_GROUPS,
@@ -18,43 +19,84 @@ export function SidebarNav({ allowedIds }: { allowedIds: string[] }) {
   const allowed = new Set(allowedIds);
   const allItems = flatNavItems().filter((i) => allowed.has(i.id));
 
-  // Navigation terminée → clear pending (feedback instantané pendant le fetch RSC)
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
+    const init: Record<string, boolean> = {};
+    for (const g of NAV_GROUPS) {
+      if (g.collapsible) init[g.id] = g.defaultCollapsed ?? true;
+    }
+    return init;
+  });
+
   useEffect(() => {
     setPendingHref(null);
   }, [pathname]);
 
   return (
-    <nav className="flex flex-1 flex-col gap-6 overflow-y-auto px-3 py-5">
+    <nav className="flex flex-1 flex-col gap-5 overflow-y-auto px-3 py-5">
       {NAV_GROUPS.map((group) => {
         const items = group.items.filter((item) => allowed.has(item.id));
         if (items.length === 0) return null;
+
+        const isCollapsed = group.collapsible
+          ? (collapsed[group.id] ?? true)
+          : false;
+
         return (
           <div key={group.id}>
-            <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
-              {group.label}
-            </p>
-            <ul className="space-y-1">
-              {items.map((item) => {
-                const active = isNavActive(pathname, item, allItems);
-                const pending = pendingHref === item.href;
-                return (
-                  <li key={item.id}>
-                    <NavItemRow
-                      item={item}
-                      active={active}
-                      pending={pending}
-                      onNavigate={() => {
-                        if (item.soon || item.href === pathname) return;
-                        setPendingHref(item.href);
-                        startTransition(() => {
-                          /* Link gère la nav ; transition marque le pending React */
-                        });
-                      }}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
+            {group.collapsible ? (
+              <button
+                type="button"
+                onClick={() =>
+                  setCollapsed((c) => ({
+                    ...c,
+                    [group.id]: !(c[group.id] ?? true),
+                  }))
+                }
+                className="mb-2 flex w-full cursor-pointer items-center justify-between px-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35 transition hover:text-msk-ink/55"
+              >
+                <span>
+                  {group.label}
+                  <span className="ml-1.5 font-normal normal-case tracking-normal text-msk-ink/25">
+                    ({items.length})
+                  </span>
+                </span>
+                <ChevronDown
+                  className={cn(
+                    "h-3.5 w-3.5 transition",
+                    isCollapsed && "-rotate-90",
+                  )}
+                />
+              </button>
+            ) : (
+              <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
+                {group.label}
+              </p>
+            )}
+
+            {!isCollapsed ? (
+              <ul className="space-y-1">
+                {items.map((item) => {
+                  const active = isNavActive(pathname, item, allItems);
+                  const pending = pendingHref === item.href;
+                  return (
+                    <li key={item.id}>
+                      <NavItemRow
+                        item={item}
+                        active={active}
+                        pending={pending}
+                        onNavigate={() => {
+                          if (item.soon || item.href === pathname) return;
+                          setPendingHref(item.href);
+                          startTransition(() => {
+                            /* Link gère la nav */
+                          });
+                        }}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : null}
           </div>
         );
       })}

@@ -1,7 +1,6 @@
 import {
   Home,
   Users,
-  Shield,
   FileText,
   Briefcase,
   Calculator,
@@ -11,6 +10,7 @@ import {
   Settings,
   Palette,
   PenLine,
+  UserRound,
   type LucideIcon,
 } from "lucide-react";
 
@@ -28,9 +28,16 @@ export type NavItem = {
 export type NavGroup = {
   id: string;
   label: string;
+  /** Groupe replié par défaut (ex. modules à venir). */
+  collapsible?: boolean;
+  defaultCollapsed?: boolean;
   items: NavItem[];
 };
 
+/**
+ * Navigation regroupée pour rester lisible :
+ * Principal → Administration → Compte → À venir (replié).
+ */
 export const NAV_GROUPS: NavGroup[] = [
   {
     id: "main",
@@ -42,13 +49,6 @@ export const NAV_GROUPS: NavGroup[] = [
         label: "Accueil",
         icon: Home,
         permission: "home.view",
-      },
-      {
-        id: "utilisateurs",
-        href: "/administration/utilisateurs",
-        label: "Utilisateurs",
-        icon: Users,
-        permission: "users.view",
       },
       {
         id: "ged",
@@ -64,6 +64,69 @@ export const NAV_GROUPS: NavGroup[] = [
         icon: Network,
         permission: "orgchart.view",
       },
+    ],
+  },
+  {
+    id: "admin",
+    label: "Administration",
+    items: [
+      {
+        id: "utilisateurs",
+        href: "/administration/utilisateurs",
+        label: "Utilisateurs",
+        icon: Users,
+        permission: "users.view",
+      },
+      {
+        id: "charte",
+        href: "/administration/charte",
+        label: "Charte",
+        icon: Palette,
+        permission: "cfg.brand",
+      },
+      {
+        id: "gabarits",
+        href: "/administration/gabarits",
+        label: "Gabarits",
+        icon: FileText,
+        permission: "cfg.templates",
+      },
+      {
+        id: "signatures-admin",
+        href: "/administration/signatures",
+        label: "Signatures",
+        icon: PenLine,
+        permission: "cfg.signatures",
+      },
+    ],
+  },
+  {
+    id: "account",
+    label: "Compte",
+    items: [
+      {
+        id: "ma-signature",
+        href: "/profil/signature",
+        label: "Ma signature",
+        icon: UserRound,
+        permission: "self.signature.manage",
+      },
+      {
+        id: "parametres",
+        href: "/bientot/parametres",
+        label: "Paramètres",
+        icon: Settings,
+        permission: "cfg.org",
+        soon: true,
+      },
+    ],
+  },
+  {
+    id: "soon",
+    label: "À venir",
+    collapsible: true,
+    defaultCollapsed: true,
+    items: [
       {
         id: "crm",
         href: "/bientot/crm",
@@ -98,55 +161,6 @@ export const NAV_GROUPS: NavGroup[] = [
       },
     ],
   },
-  {
-    id: "others",
-    label: "Autres",
-    items: [
-      {
-        id: "administration",
-        href: "/administration/utilisateurs",
-        label: "Administration",
-        icon: Shield,
-        permission: "users.view",
-      },
-      {
-        id: "charte",
-        href: "/administration/charte",
-        label: "Charte",
-        icon: Palette,
-        permission: "cfg.brand",
-      },
-      {
-        id: "gabarits",
-        href: "/administration/gabarits",
-        label: "Gabarits",
-        icon: FileText,
-        permission: "cfg.templates",
-      },
-      {
-        id: "signatures-admin",
-        href: "/administration/signatures",
-        label: "Signatures",
-        icon: PenLine,
-        permission: "cfg.signatures",
-      },
-      {
-        id: "ma-signature",
-        href: "/profil/signature",
-        label: "Ma signature",
-        icon: PenLine,
-        permission: "self.signature.manage",
-      },
-      {
-        id: "parametres",
-        href: "/bientot/parametres",
-        label: "Paramètres",
-        icon: Settings,
-        permission: "cfg.org",
-        soon: true,
-      },
-    ],
-  },
 ];
 
 /**
@@ -154,8 +168,6 @@ export const NAV_GROUPS: NavGroup[] = [
  * - Accueil : exact
  * - Autres : match exact ou préfixe enfant
  * - Items `soon` : jamais actifs
- * - En cas d’égalité (ex. Utilisateurs vs Administration même href),
- *   on préfère l’item le plus spécifique (id utilisateurs si path users).
  */
 export function isNavActive(
   pathname: string,
@@ -174,12 +186,10 @@ export function isNavActive(
     return item.href === "/accueil" && pathname === "/accueil";
   }
 
-  // Plus long href = plus spécifique
   const best = candidates.reduce((a, b) =>
     a.href.length >= b.href.length ? a : b,
   );
 
-  // Si plusieurs items partagent le même href, départager
   const sameHref = candidates.filter((c) => c.href === best.href);
   if (sameHref.length > 1) {
     if (pathname.startsWith("/administration/utilisateurs")) {

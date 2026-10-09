@@ -9,6 +9,7 @@ import { writeAudit } from "@/lib/audit";
 import { generateCommercialPdf } from "@/lib/pdf/commercial";
 import { uploadGedObject } from "@/lib/ged/storage";
 import { findModelesFolder } from "@/lib/ged/tree";
+import { getSignaturePngBytes } from "@/lib/signatures/resolve";
 import type { ActionResult } from "@/actions/auth";
 
 export async function generateDemoPdfAction(
@@ -27,6 +28,13 @@ export async function generateDemoPdfAction(
   const typeFolder = template.type === TemplateType.DEVIS ? "Devis" : "Factures";
   const folder = await findModelesFolder(typeFolder);
   const number = `${template.type === "DEVIS" ? "D" : "F"}-DEMO-${Date.now().toString().slice(-6)}`;
+
+  const signature = await getSignaturePngBytes({
+    ownerUserId: actor.id,
+  }).catch((e) => {
+    console.error("[template] signature introuvable", e);
+    return null;
+  });
 
   let pdfBytes: Uint8Array;
   try {
@@ -56,6 +64,10 @@ export async function generateDemoPdfAction(
             ],
             currency: "FCFA",
             vatRate: 18,
+            signaturePng: signature?.bytes,
+            signatureLabel: signature
+              ? `${actor.firstName} ${actor.lastName}`
+              : undefined,
           }
         : {
             type: "FACTURE",
@@ -81,6 +93,10 @@ export async function generateDemoPdfAction(
             ],
             currency: "FCFA",
             vatRate: 18,
+            signaturePng: signature?.bytes,
+            signatureLabel: signature
+              ? `${actor.firstName} ${actor.lastName}`
+              : undefined,
           },
     );
   } catch (e) {

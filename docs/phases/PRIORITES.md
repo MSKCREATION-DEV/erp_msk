@@ -20,8 +20,9 @@ Les pôles suivants sont **URGENTS / PRIORITAIRES** pour MSK :
 
 - On **ne saute pas** les fondations (Phase 0 IAM, Phase 1 GED/gabarits utiles).
 - On **oriente** chaque plan de phase : marquer `URGENT` sur les livrables COM/CPT.
-- Phase 1 livre d’abord ce dont COM/CPT ont besoin (dossiers clients, gabarits devis/facture).
-- Dès que possible après ces prérequis : enchaîner **Phase 2 → 3 → 6** sans diluer sur RH/stocks.
+- Phase 0 **OK** · Phase 1 **OK** (2026-10-09) — socle IAM + GED/gabarits/signatures/org livré.
+- Suite **URGENT** : enchaîner **Phase 2 → 3 → 6** (Catalogue + CRM → Commercial → Compta) sans diluer sur RH/stocks.
+- Optionnel **1.x** (hors chemin critique) : UI corbeille GED, partage ACL, pad signature.
 
 ### Ce que ça ne change pas
 

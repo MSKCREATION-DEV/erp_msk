@@ -11,16 +11,16 @@
 |---|---|
 | Plan rédigé | Oui — 2026-10-09 |
 | Validation « Phase 1 GO » | **GO** — 2026-10-09 |
-| Implémentation | **Livrée sur `dev`** — 2026-10-09 (itinérance UI/GED/org/PDF) |
+| Implémentation | **Livrée sur `dev`** — 2026-10-09 |
 | Gate technique | **OK** (`npm run gate:phase1` + `build` + `test:nav`) |
-| Gate Phase 1 OK (humaine) | **En attente** — checklist UI ci-dessous |
+| Gate Phase 1 OK (humaine) | **OK** — 2026-10-09 |
 
 ## Règle de gate
 
 1. Plan validé (« Phase 1 GO »)  
 2. Implémentation complète de **ce** plan seulement  
 3. Tests / vérifications  
-4. Validation « Phase 1 OK »  
+4. Validation « Phase 1 OK » ← **fait**  
 5. Seulement ensuite → Phase 2 (Catalogue + CRM — URGENT)
 
 ## Objectif
@@ -30,7 +30,7 @@ Poser le **socle documentaire** de l’ERP MSK pour que les phases Commercial / 
 - GED native (métadonnées Prisma + **Supabase Storage**)
 - Arborescence année prioritaire COM/CPT
 - Charte / brand en config (assets existants `public/brand`)
-- Bibliothèque signatures (upload original)
+- Bibliothèque signatures (upload + nettoyage fond)
 - Organigramme seedé (lecture)
 - Gabarits **devis** / **facture** + génération PDF charte MSK
 
@@ -39,7 +39,7 @@ Poser le **socle documentaire** de l’ERP MSK pour que les phases Commercial / 
 | Reporté | Phase cible |
 |---|---|
 | OCR / full-text avancé | 1.x+ |
-| Pipeline nettoyage image signature / cachet | 1.x |
+| UI avant/après nettoyage signature + réglages manuels | 1.x |
 | Pad dessin + signature « typed » | 1.x |
 | Éditeur gabarit drag-and-drop / tous types RH-paie | 2–5 |
 | Partage nominatif UI avancée (expire, manage_share) | 1.x |
@@ -60,6 +60,8 @@ Poser le **socle documentaire** de l’ERP MSK pour que les phases Commercial / 
 | UI | PageShell + Card + SideDrawer Vaul + **ConfirmDialog** MSK |
 | ACL | Modèle présent ; UI partage avancée → 1.x |
 | Soft-delete | Documents soft-delete ; dossiers système protégés |
+| Signatures | Original + `storageCleaned` (PNG transparent, sharp v2) |
+| Erreurs UI | `ErrorFallback` + messages sanitizés (pas de dump Prisma) |
 | Priorité arbo | `03_CLIENTS`, `04_MODELES`, `01/02_COMPTA` stubs, `05_COLLABORATEURS` |
 
 ## Livré (implémentation)
@@ -72,7 +74,7 @@ Poser le **socle documentaire** de l’ERP MSK pour que les phases Commercial / 
 - [x] Affichage : liste / compact / vignettes + tri + regroupement (prefs localStorage)
 - [x] Aperçu document en **modal** (PDF / image / texte)
 - [x] Compteurs enfants directs (dossiers / fichiers) à la place des codes techniques
-- [x] Modal de confirmation MSK (`ConfirmProvider` / `useConfirm`) — delete + logout
+- [x] Modal de confirmation MSK (`ConfirmProvider` / `useConfirm`) — delete + logout + loading in-modal
 
 ### Charte / brand
 - [x] Page `/administration/charte` — tokens + logos `public/brand`
@@ -80,6 +82,8 @@ Poser le **socle documentaire** de l’ERP MSK pour que les phases Commercial / 
 ### Signatures
 - [x] Self `/profil/signature` — upload PNG/JPEG/WebP
 - [x] Admin `/administration/signatures` — liste / révocation
+- [x] Pipeline nettoyage fond → PNG transparent (`storageCleaned` v2, sharp)
+- [x] Signature ACTIVE apposée sur PDF devis/facture démo
 
 ### Organigramme (`/organisation`)
 - [x] Seed 11 nœuds (Assetou retiré) + photos `public/team/*`
@@ -89,33 +93,32 @@ Poser le **socle documentaire** de l’ERP MSK pour que les phases Commercial / 
 
 ### Gabarits
 - [x] Templates seed `devis_standard` / `facture_standard`
-- [x] PDF démo alignés exemples devis / facture (logo lockup, parties, tableau, totaux, IBAN, pied fiscal)
+- [x] PDF démo alignés exemples devis / facture (logo lockup, parties, tableau, totaux, IBAN, pied fiscal, signature)
 - [x] Classement sous `04_MODELES/{Devis|Factures}/`
 
 ### Transverse
 - [x] Règle absolue anti-reset MDP comptes `ACTIVE`
 - [x] WinAnsi PDF (espaces fr-FR)
-- [x] Shell : sidebar + topbar fixes ; scroll contenu seul
+- [x] Shell : sidebar + topbar fixes ; scroll contenu seul ; nav regroupée (Principal / Admin / Compte / À venir)
+- [x] Erreurs : `error.tsx` / `global-error.tsx` + Accueil résilient (pool DB)
 - [x] Navbar / perf : loading segments, RBAC, prefetch dossiers
 
-## Reste avant « Phase 1 OK » (gate humaine)
+## Gate humaine — validée 2026-10-09
 
-À valider **manuellement** en Super Admin (pas bloquant gate technique) :
-
-| # | Parcours | Critère |
+| # | Parcours | Résultat |
 |---|---|---|
-| 1 | GED | Créer dossier → upload → aperçu modal → soft-delete fichier → renommer / supprimer dossier libre |
-| 2 | Affichage GED | Basculer liste / compact / vignettes + tri + regroupement |
-| 3 | Signature | Upload self + révocation admin visibles |
-| 4 | Gabarits | Générer PDF devis **et** facture → ouvrir depuis GED `04_MODELES` |
-| 5 | Org | Vérifier hiérarchie + photos + e-mails |
-| 6 | Déconnexion | Modal confirmation (pas `window.confirm`) |
+| 1 | GED — créer / renommer / supprimer dossier + upload + aperçu + soft-delete | **OK** |
+| 2 | Vues — liste / compact / vignettes + tri / regroupement | **OK** |
+| 3 | Signature — upload self + révocation admin | **OK** |
+| 4 | Gabarits — PDF devis et facture → visibles dans `04_MODELES` | **OK** |
+| 5 | Org — hiérarchie + photos | **OK** |
+| 6 | Déconnexion — modal MSK | **OK** |
 
-Optionnel Phase **1.x** (hors gate stricte) :
+### Optionnel 1.x (pas bloquant — à implémenter plus tard)
 
-- UI corbeille (lister / restaurer documents soft-deleted)
-- Partage nominatif ACL UI
-- Pad signature / nettoyage image
+- UI corbeille GED (liste / restaurer soft-delete)
+- Partage ACL nominatif (UI)
+- Pad signature (+ raffinements nettoyage avant/après)
 
 ## Tests automatiques
 
@@ -129,15 +132,16 @@ Résultats 2026-10-09 : **build OK** · **nav OK** · **gate technique OK** (arb
 
 ## Critères d’acceptation
 
-Un Super Admin peut parcourir la GED année N, CRUD dossiers libres, uploader / prévisualiser / soft-delete un document, voir l’organigramme seedé, déposer sa signature, et générer un PDF devis/facture démo classé sous `04_MODELES` — sans module CRM/commercial transactionnel.
+Un Super Admin peut parcourir la GED année N, CRUD dossiers libres, uploader / prévisualiser / soft-delete un document, voir l’organigramme seedé, déposer sa signature (fond nettoyé), et générer un PDF devis/facture démo classé sous `04_MODELES` — sans module CRM/commercial transactionnel.
 
-## Après validation
+## Suite
 
-Répondre dans le chat : **« Phase 1 OK »**.  
-Puis ouvrir **Phase 2** (plan dédié) : Catalogue + CRM — **URGENT**.
+**Phase 1 OK** — ouvrir le plan dédié **Phase 2** (Catalogue + CRM — **URGENT**).  
+Aucun démarrage Phase 2 avant GO explicite sur ce plan.
 
 ---
 
 ## Validation historique
 
 - **« Phase 1 GO »** — 2026-10-09 (démarrage implémentation).
+- **« Phase 1 OK »** — 2026-10-09 (gate humaine validée + push `dev`).

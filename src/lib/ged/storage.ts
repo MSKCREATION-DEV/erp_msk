@@ -20,12 +20,13 @@ export async function uploadGedObject(
   storagePath: string,
   body: Buffer | Uint8Array,
   mime: string,
+  opts?: { upsert?: boolean },
 ) {
   await ensureGedBucket();
   const admin = createAdminClient();
   const { error } = await admin.storage.from(GED_BUCKET).upload(storagePath, body, {
     contentType: mime,
-    upsert: false,
+    upsert: opts?.upsert ?? false,
   });
   if (error) throw new Error(error.message);
 }
@@ -44,4 +45,15 @@ export async function signedGedUrl(storagePath: string, expiresIn = 3600) {
 export async function removeGedObject(storagePath: string) {
   const admin = createAdminClient();
   await admin.storage.from(GED_BUCKET).remove([storagePath]);
+}
+
+export async function downloadGedObject(storagePath: string): Promise<Buffer> {
+  const admin = createAdminClient();
+  const { data, error } = await admin.storage
+    .from(GED_BUCKET)
+    .download(storagePath);
+  if (error || !data) {
+    throw new Error(error?.message ?? "Téléchargement Storage impossible");
+  }
+  return Buffer.from(await data.arrayBuffer());
 }

@@ -11,6 +11,7 @@ import {
   SIGNATURE_MIME,
 } from "@/lib/ged/constants";
 import { uploadGedObject } from "@/lib/ged/storage";
+import { cleanSignatureImage } from "@/lib/signatures/clean";
 import type { ActionResult } from "@/actions/auth";
 
 export async function uploadSignatureAction(
@@ -32,7 +33,10 @@ export async function uploadSignatureAction(
   }
 
   const bytes = Buffer.from(await file.arrayBuffer());
-  const storagePath = `signatures/${actor.id}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]+/g, "_")}`;
+  const stamp = Date.now();
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, "_");
+  const storagePath = `signatures/${actor.id}/${stamp}_${safeName}`;
+  const cleanedPath = `signatures/${actor.id}/${stamp}_cleaned.png`;
 
   try {
     await uploadGedObject(storagePath, bytes, mime);
@@ -43,7 +47,15 @@ export async function uploadSignatureAction(
     };
   }
 
-  // Une seule ACTIVE par user : les autres passent DRAFT
+  let storageCleaned: string | null = null;
+  try {
+    const cleaned = await cleanSignatureImage(bytes);
+    await uploadGedObject(cleanedPath, cleaned, "image/png");
+    storageCleaned = cleanedPath;
+  } catch (e) {
+    console.error("[signature] nettoyage échoué — original conservé", e);
+  }
+
   await prisma.signatureAsset.updateMany({
     where: { ownerUserId: actor.id, status: SignatureStatus.ACTIVE },
     data: { status: SignatureStatus.DRAFT },
@@ -55,6 +67,7 @@ export async function uploadSignatureAction(
       label,
       kind: "UPLOAD",
       storageOriginal: storagePath,
+      storageCleaned,
       mime,
       status: SignatureStatus.ACTIVE,
     },
@@ -65,11 +78,17 @@ export async function uploadSignatureAction(
     action: "signature.upload",
     entityType: "signature",
     entityId: row.id,
+    metadata: { cleaned: Boolean(storageCleaned) },
   });
 
   revalidatePath("/administration/signatures");
   revalidatePath("/profil/signature");
-  return { ok: true, message: "Signature enregistrée" };
+  return {
+    ok: true,
+    message: storageCleaned
+      ? "Signature enregistrée (fond nettoyé)"
+      : "Signature enregistrée (nettoyage non appliqué — original utilisé)",
+  };
 }
 
 export async function revokeSignatureAction(

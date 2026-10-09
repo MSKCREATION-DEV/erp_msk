@@ -1,7 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { ErrorFallback } from "@/components/ui/error-fallback";
 
+/**
+ * Boundary App Router — ne jamais afficher error.message brut
+ * (Prisma / chemins / stack). Voir `toUserFacingError`.
+ */
 export default function AppError({
   error,
   reset,
@@ -10,14 +14,6 @@ export default function AppError({
   reset: () => void;
 }) {
   return (
-    <div className="mx-auto max-w-lg rounded-xl border border-msk-coral/25 bg-white p-8 text-center">
-      <h2 className="font-impact text-3xl text-msk-ink">Erreur</h2>
-      <p className="mt-3 text-sm text-msk-ink/60">
-        {error.message || "Une erreur est survenue."}
-      </p>
-      <Button className="mt-6" onClick={reset}>
-        Réessayer
-      </Button>
-    </div>
+    <ErrorFallback error={error} reset={reset} scope="(app)/error" />
   );
 }

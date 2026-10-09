@@ -13,6 +13,7 @@ import {
   Folder,
   FolderPlus,
   ImageIcon,
+  Loader2,
   Pencil,
   Trash2,
   Upload,
@@ -215,26 +216,27 @@ export function GedBrowser({
       setError("Ce dossier système ne peut pas être supprimé");
       return;
     }
+    setError(null);
+    setMessage(null);
+    const fd = new FormData();
+    fd.set("folderId", folder.id);
     const ok = await confirm({
       title: "Supprimer ce dossier ?",
       description: `« ${folder.name} » et ses sous-dossiers seront définitivement retirés. Les fichiers seront mis à la corbeille.`,
       confirmLabel: "Supprimer",
       cancelLabel: "Annuler",
+      loadingLabel: "Suppression…",
       tone: "danger",
       icon: "trash",
+      action: async () => {
+        const res = await deleteFolderAction(fd);
+        if (!res.ok) throw new Error(res.error ?? "Échec");
+        setMessage(res.message ?? "OK");
+      },
     });
     if (!ok) return;
-    setError(null);
-    setMessage(null);
-    const fd = new FormData();
-    fd.set("folderId", folder.id);
-    startTransition(async () => {
-      const res = await deleteFolderAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else {
-        setMessage(res.message ?? "OK");
-        router.refresh();
-      }
+    startTransition(() => {
+      router.refresh();
     });
   }
 
@@ -248,6 +250,10 @@ export function GedBrowser({
   }
 
   async function onDelete(id: string, name?: string) {
+    setError(null);
+    setMessage(null);
+    const fd = new FormData();
+    fd.set("documentId", id);
     const ok = await confirm({
       title: "Mettre à la corbeille ?",
       description: name
@@ -255,24 +261,35 @@ export function GedBrowser({
         : "Ce document sera retiré de ce dossier (soft-delete).",
       confirmLabel: "Corbeille",
       cancelLabel: "Annuler",
+      loadingLabel: "Mise à la corbeille…",
       tone: "danger",
       icon: "trash",
+      action: async () => {
+        const res = await softDeleteDocumentAction(null, fd);
+        if (!res.ok) throw new Error(res.error ?? "Échec");
+        setMessage(res.message ?? "OK");
+      },
     });
     if (!ok) return;
-    const fd = new FormData();
-    fd.set("documentId", id);
-    startTransition(async () => {
-      const res = await softDeleteDocumentAction(null, fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else {
-        setMessage(res.message ?? "OK");
-        router.refresh();
-      }
+    startTransition(() => {
+      router.refresh();
     });
   }
 
   return (
-    <div className="space-y-3">
+    <div className="relative space-y-3">
+      {pending ? (
+        <div
+          className="absolute inset-0 z-20 flex items-start justify-center rounded-xl bg-white/70 pt-24 backdrop-blur-[2px]"
+          aria-live="polite"
+          aria-busy
+        >
+          <div className="flex items-center gap-2 rounded-full border border-msk-ink/10 bg-white px-4 py-2 text-sm text-msk-ink shadow-md">
+            <Loader2 className="h-4 w-4 animate-spin text-msk-blue" />
+            Mise à jour…
+          </div>
+        </div>
+      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <nav
           aria-label="Fil d’Ariane"

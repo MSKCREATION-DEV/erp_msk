@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { SignatureStatus } from "@prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { signedGedUrl } from "@/lib/ged/storage";
+import { getSignaturePngBytes } from "@/lib/signatures/resolve";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import {
@@ -13,8 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { SignatureUploadForm } from "@/components/admin/signature-upload-form";
+import { SignaturePreviewCard } from "@/components/admin/signature-preview";
 
 export const metadata: Metadata = { title: "Ma signature" };
 
@@ -22,28 +23,72 @@ export default async function MySignaturePage() {
   const user = await requireUser();
   if (!hasPermission(user, "self.signature.manage")) redirect("/accueil");
 
+  // Backfill / upgrade v2 (retire fond gris des anciens cleans)
+  await getSignaturePngBytes({ ownerUserId: user.id }).catch(() => null);
+
   const signatures = await prisma.signatureAsset.findMany({
     where: { ownerUserId: user.id },
     orderBy: { createdAt: "desc" },
   });
 
+  const items = await Promise.all(
+    signatures.map(async (s) => {
+      let previewUrl: string | null = null;
+      const path = s.storageCleaned ?? s.storageOriginal;
+      try {
+        previewUrl = await signedGedUrl(path, 3600);
+      } catch {
+        previewUrl = null;
+      }
+      return {
+        id: s.id,
+        label: s.label,
+        status: s.status,
+        mime: s.mime,
+        previewUrl,
+        createdAt: s.createdAt.toISOString(),
+      };
+    }),
+  );
+
+  const active = items.find((i) => i.status === "ACTIVE");
+
   return (
     <PageShell>
       <PageHeader
         title="Ma signature"
-        description="Upload image (PNG / JPEG / WebP). Une seule signature active à la fois."
+        description="Upload PNG / JPEG / WebP — fond papier retiré automatiquement (PNG transparent)."
         breadcrumbs={[
           { label: "Accueil", href: "/accueil" },
           { label: "Signature" },
         ]}
       />
 
+      {active?.previewUrl ? (
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle>Signature active</CardTitle>
+            <CardDescription>{active.label}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex max-w-md items-center justify-center rounded-xl border border-msk-ink/[0.08] bg-[linear-gradient(45deg,#f3f3f3_25%,transparent_25%,transparent_75%,#f3f3f3_75%,#f3f3f3),linear-gradient(45deg,#f3f3f3_25%,transparent_25%,transparent_75%,#f3f3f3_75%,#f3f3f3)] bg-[length:16px_16px] bg-[position:0_0,8px_8px] p-6">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={active.previewUrl}
+                alt={active.label}
+                className="max-h-28 max-w-full object-contain"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Déposer</CardTitle>
             <CardDescription>
-              Original conservé — nettoyage auto reporté Phase 1.x.
+              Original conservé + version nettoyée (fond transparent) pour PDF.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -54,32 +99,15 @@ export default async function MySignaturePage() {
         <Card>
           <CardHeader>
             <CardTitle>Historique</CardTitle>
+            <CardDescription>Cliquez une vignette pour agrandir.</CardDescription>
           </CardHeader>
           <CardContent>
-            {signatures.length === 0 ? (
+            {items.length === 0 ? (
               <p className="text-sm text-msk-ink/40">Aucune signature.</p>
             ) : (
               <ul className="space-y-2">
-                {signatures.map((s) => (
-                  <li
-                    key={s.id}
-                    className="flex items-center justify-between gap-2 rounded-lg border border-msk-ink/10 px-3 py-2 text-sm"
-                  >
-                    <span className="truncate font-medium text-msk-ink">
-                      {s.label}
-                    </span>
-                    <Badge
-                      tone={
-                        s.status === SignatureStatus.ACTIVE
-                          ? "success"
-                          : s.status === SignatureStatus.REVOKED
-                            ? "coral"
-                            : "muted"
-                      }
-                    >
-                      {s.status}
-                    </Badge>
-                  </li>
+                {items.map((item) => (
+                  <SignaturePreviewCard key={item.id} item={item} compact />
                 ))}
               </ul>
             )}

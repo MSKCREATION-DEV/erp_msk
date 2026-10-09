@@ -25,18 +25,31 @@ export default async function AccueilPage({
   const denied = params.error === "acces_refuse";
   const canViewUsers = hasPermission(user, "users.view");
 
-  const [userCount, activeCount, pendingInvite, pendingResets] = canViewUsers
-    ? await Promise.all([
-        prisma.user.count(),
-        prisma.user.count({ where: { status: "ACTIVE" } }),
-        prisma.user.count({
-          where: {
-            status: { in: ["INVITE_PENDING", "MUST_CHANGE_PASSWORD"] },
-          },
-        }),
-        prisma.passwordResetRequest.count({ where: { status: "PENDING" } }),
-      ])
-    : [0, 0, 0, 0];
+  let userCount = 0;
+  let activeCount = 0;
+  let pendingInvite = 0;
+  let pendingResets = 0;
+  let statsUnavailable = false;
+
+  if (canViewUsers) {
+    try {
+      [userCount, activeCount, pendingInvite, pendingResets] =
+        await Promise.all([
+          prisma.user.count(),
+          prisma.user.count({ where: { status: "ACTIVE" } }),
+          prisma.user.count({
+            where: {
+              status: { in: ["INVITE_PENDING", "MUST_CHANGE_PASSWORD"] },
+            },
+          }),
+          prisma.passwordResetRequest.count({ where: { status: "PENDING" } }),
+        ]);
+    } catch (err) {
+      // Ne pas faire planter toute la page (ex. pool DB saturé)
+      console.error("[accueil] stats indisponibles", err);
+      statsUnavailable = true;
+    }
+  }
 
   const chips = roleChips({
     isSuperAdmin: user.isSuperAdmin,
@@ -130,6 +143,13 @@ export default async function AccueilPage({
       {denied ? (
         <p className="rounded-xl border border-msk-coral/30 bg-msk-coral/5 px-4 py-3 text-sm text-msk-coral">
           Accès refusé pour cette zone.
+        </p>
+      ) : null}
+
+      {statsUnavailable ? (
+        <p className="rounded-xl border border-msk-blue/20 bg-msk-blue/5 px-4 py-3 text-sm text-msk-ink/70">
+          Les indicateurs ne sont pas disponibles pour le moment (service
+          saturé). Le reste de l’accueil fonctionne — réessayez dans un instant.
         </p>
       ) : null}
 

@@ -35,6 +35,9 @@ export type CommercialPdfInput = {
   lines: CommercialLine[];
   currency?: string;
   vatRate?: number;
+  /** PNG signature (idéalement fond transparent). */
+  signaturePng?: Uint8Array | Buffer;
+  signatureLabel?: string;
 };
 
 function draw(
@@ -256,6 +259,44 @@ export async function generateCommercialPdf(
       vatRate,
       issued,
     });
+  }
+
+  // Bloc signature (bas de page, au-dessus du footer)
+  if (input.signaturePng) {
+    try {
+      const sig = await pdf.embedPng(input.signaturePng);
+      const maxW = 140;
+      const maxH = 56;
+      const scale = Math.min(maxW / sig.width, maxH / sig.height);
+      const sw = sig.width * scale;
+      const sh = sig.height * scale;
+      const sigY = 58;
+      draw(page, "Signature", {
+        x: margin,
+        y: sigY + sh + 10,
+        size: 8,
+        font: fontBold,
+        color: MUTED,
+      });
+      page.drawImage(sig, {
+        x: margin,
+        y: sigY,
+        width: sw,
+        height: sh,
+      });
+      if (input.signatureLabel) {
+        draw(page, input.signatureLabel, {
+          x: margin,
+          y: sigY - 12,
+          size: 7.5,
+          font: fontOblique,
+          color: MUTED,
+          maxWidth: 180,
+        });
+      }
+    } catch (e) {
+      console.error("[pdf] signature embed échoué", e);
+    }
   }
 
   // Pied de page

@@ -12,12 +12,15 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {
   AlertTriangle,
   Info,
+  Loader2,
   LogOut,
   Trash2,
   type LucideIcon,
 } from "lucide-react";
+import { unstable_rethrow } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toUserFacingError } from "@/lib/errors/user-facing";
 
 export type ConfirmTone = "danger" | "primary" | "neutral";
 export type ConfirmIcon = "trash" | "logout" | "warning" | "info";
@@ -27,8 +30,16 @@ export type ConfirmOptions = {
   description?: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  /** Libellé pendant l’action (ex. « Suppression… »). */
+  loadingLabel?: string;
   tone?: ConfirmTone;
   icon?: ConfirmIcon;
+  /**
+   * Action exécutée après clic Confirmer.
+   * La modal reste ouverte en loading jusqu’à résolution.
+   * Throw / reject → message d’erreur, modal reste ouverte.
+   */
+  action?: () => void | Promise<void>;
 };
 
 type ConfirmFn = (options: ConfirmOptions) => Promise<boolean>;
@@ -44,7 +55,12 @@ const ICONS: Record<ConfirmIcon, LucideIcon> = {
 
 const TONE_STYLES: Record<
   ConfirmTone,
-  { ring: string; iconBg: string; iconColor: string; button: "danger" | "primary" }
+  {
+    ring: string;
+    iconBg: string;
+    iconColor: string;
+    button: "danger" | "primary";
+  }
 > = {
   danger: {
     ring: "ring-msk-coral/20",
@@ -70,27 +86,58 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<ConfirmOptions | null>(null);
   const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const resolverRef = useRef<((value: boolean) => void) | null>(null);
+  const optionsRef = useRef<ConfirmOptions | null>(null);
 
   const confirm = useCallback<ConfirmFn>((opts) => {
+    optionsRef.current = opts;
     setOptions(opts);
     setOpen(true);
     setPending(false);
+    setError(null);
     return new Promise<boolean>((resolve) => {
       resolverRef.current = resolve;
     });
   }, []);
 
-  function settle(value: boolean) {
+  function finish(value: boolean) {
     resolverRef.current?.(value);
     resolverRef.current = null;
+    optionsRef.current = null;
     setOpen(false);
     setPending(false);
+    setError(null);
   }
 
   function onOpenChange(next: boolean) {
-    if (!next) settle(false);
+    if (pending) return; // bloque fermeture pendant l’action
+    if (!next) finish(false);
     else setOpen(true);
+  }
+
+  async function onConfirm() {
+    const opts = optionsRef.current;
+    setError(null);
+    setPending(true);
+    try {
+      if (opts?.action) {
+        await opts.action();
+      }
+      finish(true);
+    } catch (e) {
+      // redirect() / notFound() — garder le loading pendant la navigation
+      try {
+        unstable_rethrow(e);
+      } catch {
+        return;
+      }
+      setPending(false);
+      const facing = toUserFacingError(
+        e instanceof Error ? e : new Error("Une erreur est survenue"),
+      );
+      setError(facing.description);
+    }
   }
 
   const tone = options?.tone ?? "danger";
@@ -100,6 +147,15 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
   return (
     <ConfirmContext.Provider value={confirm}>
       {children}
+
+      {/* Voile global pendant l’action (feedback même si modal bouge) */}
+      {pending ? (
+        <div
+          className="pointer-events-auto fixed inset-0 z-[55] bg-msk-ink/10"
+          aria-hidden
+        />
+      ) : null}
+
       <Dialog.Root open={open} onOpenChange={onOpenChange}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-[60] bg-msk-ink/45 backdrop-blur-[2px]" />
@@ -108,6 +164,12 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
               "fixed left-1/2 top-1/2 z-[60] w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-msk-ink/[0.08] bg-white shadow-2xl shadow-msk-ink/25 outline-none",
               "focus:outline-none",
             )}
+            onEscapeKeyDown={(e) => {
+              if (pending) e.preventDefault();
+            }}
+            onPointerDownOutside={(e) => {
+              if (pending) e.preventDefault();
+            }}
             onOpenAutoFocus={(e) => {
               const root = e.currentTarget as HTMLElement | null;
               const target = root?.querySelector<HTMLButtonElement>(
@@ -128,12 +190,22 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                   styles.ring,
                 )}
               >
-                <Icon className="h-5 w-5" aria-hidden />
+                {pending ? (
+                  <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                ) : (
+                  <Icon className="h-5 w-5" aria-hidden />
+                )}
               </div>
               <Dialog.Title className="text-center text-lg font-semibold tracking-tight text-msk-ink">
-                {options?.title ?? "Confirmer"}
+                {pending
+                  ? (options?.loadingLabel ?? "Traitement en cours…")
+                  : (options?.title ?? "Confirmer")}
               </Dialog.Title>
-              {options?.description ? (
+              {pending ? (
+                <Dialog.Description className="mt-2 text-center text-sm leading-relaxed text-msk-ink/55">
+                  Merci de patienter — ne fermez pas cette fenêtre.
+                </Dialog.Description>
+              ) : options?.description ? (
                 <Dialog.Description className="mt-2 text-center text-sm leading-relaxed text-msk-ink/55">
                   {options.description}
                 </Dialog.Description>
@@ -142,6 +214,11 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                   Confirmation requise
                 </Dialog.Description>
               )}
+              {error ? (
+                <p className="mt-3 rounded-lg border border-msk-coral/25 bg-msk-coral/5 px-3 py-2 text-center text-sm text-msk-coral">
+                  {error}
+                </p>
+              ) : null}
             </div>
 
             <div className="flex flex-col-reverse gap-2 px-6 py-5 sm:flex-row sm:justify-end">
@@ -151,7 +228,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                 size="sm"
                 className="sm:min-w-[7rem]"
                 disabled={pending}
-                onClick={() => settle(false)}
+                onClick={() => finish(false)}
               >
                 {options?.cancelLabel ?? "Annuler"}
               </Button>
@@ -162,12 +239,16 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                 className="sm:min-w-[7rem]"
                 data-confirm-primary
                 disabled={pending}
-                onClick={() => {
-                  setPending(true);
-                  settle(true);
-                }}
+                onClick={() => void onConfirm()}
               >
-                {options?.confirmLabel ?? "Confirmer"}
+                {pending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {options?.loadingLabel ?? "Patientez…"}
+                  </>
+                ) : (
+                  (options?.confirmLabel ?? "Confirmer")
+                )}
               </Button>
             </div>
           </Dialog.Content>
@@ -177,7 +258,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
   );
 }
 
-/** API impérative — `const ok = await confirm({ title, … })` */
+/** API impérative — `const ok = await confirm({ title, action })` */
 export function useConfirm(): ConfirmFn {
   const ctx = useContext(ConfirmContext);
   if (!ctx) {
