@@ -38,7 +38,7 @@ export default async function BientotPage({
         <p className="text-sm text-msk-ink/55">
           Priorité roadmap : Commercial / Finance / Compta après GED (Phase 1).
         </p>
-        <Link href="/accueil" className="mt-6 inline-block">
+        <Link href="/accueil" className="mt-6 inline-block cursor-pointer">
           <Button>Retour à l’accueil</Button>
         </Link>
       </Surface>

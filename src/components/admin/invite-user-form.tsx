@@ -85,7 +85,7 @@ export function InviteUserForm({
           {state.message}{" "}
           <Link
             href="/administration/utilisateurs"
-            className="font-medium text-msk-blue hover:underline"
+            className="cursor-pointer font-medium text-msk-blue hover:underline"
           >
             Voir la liste
           </Link>

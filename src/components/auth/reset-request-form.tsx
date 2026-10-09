@@ -37,7 +37,10 @@ export function ResetRequestForm() {
         {pending ? "Envoi…" : "Notifier les administrateurs"}
       </Button>
       <p className="text-center text-sm">
-        <Link href="/login" className="font-medium text-msk-blue hover:underline">
+        <Link
+          href="/login"
+          className="cursor-pointer font-medium text-msk-blue hover:underline"
+        >
           Retour connexion
         </Link>
       </p>

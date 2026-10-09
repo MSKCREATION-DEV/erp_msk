@@ -7,7 +7,7 @@ export default function NotFound() {
       <p className="mt-3 text-sm text-msk-ink/60">Cette page n’existe pas.</p>
       <Link
         href="/accueil"
-        className="mt-6 inline-block text-sm font-medium text-msk-blue hover:underline"
+        className="mt-6 inline-block cursor-pointer text-sm font-medium text-msk-blue hover:underline"
       >
         Retour accueil
       </Link>

@@ -45,14 +45,14 @@ export function SidebarNav({ allowedIds }: { allowedIds: string[] }) {
 function NavItemRow({ item, active }: { item: NavItem; active: boolean }) {
   const Icon = item.icon;
   const className = cn(
-    "relative flex w-full items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[13px] font-medium transition-colors",
-    active &&
-      "bg-msk-blue/[0.1] text-msk-blue before:absolute before:inset-y-1.5 before:left-0 before:w-[3px] before:rounded-r-full before:bg-msk-blue",
-    !active &&
-      !item.soon &&
-      "text-msk-ink/65 hover:bg-msk-ink/[0.04] hover:text-msk-ink",
-    item.soon && "cursor-not-allowed text-msk-ink/35",
-  );
+        "relative flex w-full items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[13px] font-medium transition-colors",
+        active &&
+          "bg-msk-blue/[0.1] text-msk-blue before:absolute before:inset-y-1.5 before:left-0 before:w-[3px] before:rounded-r-full before:bg-msk-blue",
+        !active &&
+          !item.soon &&
+          "cursor-pointer text-msk-ink/65 hover:bg-msk-ink/[0.04] hover:text-msk-ink",
+        item.soon && "cursor-not-allowed text-msk-ink/35",
+      );
 
   const content = (
     <>

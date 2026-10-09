@@ -80,7 +80,7 @@ export function PermissionDomainPicker({
                 onClick={() =>
                   setOpen((s) => ({ ...s, [domain]: !isOpen }))
                 }
-                className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-msk-chalk/50"
+                className="flex w-full cursor-pointer items-center justify-between px-4 py-3 text-left hover:bg-msk-chalk/50"
               >
                 <span className="text-sm font-semibold text-msk-ink">
                   {DOMAIN_LABELS[domain] ?? domain}

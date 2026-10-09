@@ -52,7 +52,7 @@ export function LoginForm() {
         Mot de passe oublié ?{" "}
         <Link
           href="/demande-reset"
-          className="font-medium text-msk-blue hover:underline"
+          className="cursor-pointer font-medium text-msk-blue hover:underline"
         >
           Demander une réinitialisation
         </Link>

@@ -57,7 +57,7 @@ export function Sidebar({ user }: { user: SessionUser }) {
             <button
               type="submit"
               title="Déconnexion"
-              className="rounded-lg p-2 text-msk-ink/35 transition hover:bg-msk-chalk hover:text-msk-ink"
+              className="cursor-pointer rounded-lg p-2 text-msk-ink/35 transition hover:bg-msk-chalk hover:text-msk-ink"
             >
               <LogOut className="h-4 w-4" />
               <span className="sr-only">Déconnexion</span>

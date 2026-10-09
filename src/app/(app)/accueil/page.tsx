@@ -163,7 +163,7 @@ export default async function AccueilPage({
                 key={item.href + item.title}
                 href={item.href}
                 prefetch
-                className="group block"
+                className="group block cursor-pointer"
               >
                 <Surface className="flex h-full flex-col p-5 transition group-hover:border-msk-blue/20 group-hover:shadow-sm">
                   <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-msk-blue/10 text-msk-blue">

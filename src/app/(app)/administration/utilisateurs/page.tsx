@@ -108,7 +108,10 @@ export default async function UsersAdminPage() {
         description="Gérez les comptes, groupes et packs. Invitation et édition sur des écrans dédiés."
         actions={
           canInvite ? (
-            <Link href="/administration/utilisateurs/inviter">
+            <Link
+              href="/administration/utilisateurs/inviter"
+              className="cursor-pointer"
+            >
               <Button>
                 <Plus className="h-4 w-4" />
                 Inviter
@@ -163,7 +166,7 @@ export default async function UsersAdminPage() {
                 <Link
                   href={`/administration/utilisateurs/${r.userId}`}
                   prefetch
-                  className="font-medium text-msk-blue hover:underline"
+                  className="cursor-pointer font-medium text-msk-blue hover:underline"
                 >
                   {r.user.firstName} {r.user.lastName}
                 </Link>{" "}
@@ -187,17 +190,22 @@ export default async function UsersAdminPage() {
                 <th className="px-5 py-3.5">Statut</th>
                 <th className="hidden px-5 py-3.5 md:table-cell">Groupes</th>
                 <th className="hidden px-5 py-3.5 lg:table-cell">Packs</th>
-                <th className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.map((u) => (
                 <tr
                   key={u.id}
-                  className="border-b border-msk-ink/[0.04] last:border-0 hover:bg-msk-chalk/40"
+                  className="relative border-b border-msk-ink/[0.04] last:border-0 hover:bg-msk-chalk/40"
                 >
                   <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-3">
+                    <Link
+                      href={`/administration/utilisateurs/${u.id}`}
+                      prefetch
+                      className="absolute inset-0 z-[1] cursor-pointer"
+                      aria-label={`Ouvrir ${u.firstName} ${u.lastName}`}
+                    />
+                    <div className="relative z-0 flex items-center gap-3">
                       <UserAvatar
                         firstName={u.firstName}
                         lastName={u.lastName}
@@ -216,25 +224,16 @@ export default async function UsersAdminPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="relative z-0 px-5 py-3.5">
                     <Badge tone={USER_STATUS_TONE[u.status] ?? "ink"}>
                       {USER_STATUS_LABEL[u.status] ?? u.status}
                     </Badge>
                   </td>
-                  <td className="hidden px-5 py-3.5 text-msk-ink/60 md:table-cell">
+                  <td className="relative z-0 hidden px-5 py-3.5 text-msk-ink/60 md:table-cell">
                     {u.groupMembers.map((m) => m.group.name).join(", ") || "—"}
                   </td>
-                  <td className="hidden px-5 py-3.5 text-msk-ink/60 lg:table-cell">
+                  <td className="relative z-0 hidden px-5 py-3.5 text-msk-ink/60 lg:table-cell">
                     {u.userPacks.map((p) => p.pack.name).join(", ") || "—"}
-                  </td>
-                  <td className="px-5 py-3.5 text-right">
-                    <Link
-                      href={`/administration/utilisateurs/${u.id}`}
-                      prefetch
-                      className="text-sm font-medium text-msk-blue hover:underline"
-                    >
-                      Gérer
-                    </Link>
                   </td>
                 </tr>
               ))}
