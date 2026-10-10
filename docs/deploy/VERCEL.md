@@ -9,7 +9,8 @@ Checklist pour ouvrir l’ERP aux collaborateurs (Mathieu, Andile, équipe) en t
 | `dev` | Travail quotidien + previews |
 | `main` | **Prod** — merge depuis `dev` quand on déploie |
 
-Merge effectué : `dev` → `main` (préparation déploiement collab).
+Merge effectué : `dev` → `main` (préparation déploiement collab).  
+Next.js **≥ 15.5.27** requis (Vercel refuse les versions vulnérables, ex. 15.2.4).
 
 ## 1. Projet Vercel
 
@@ -30,8 +31,16 @@ Dans Vercel → Project → Settings → Environment Variables — cocher **Prod
 
 | Variable | Notes |
 |---|---|
-| `DATABASE_URL` | Supabase Postgres — **Transaction pooler** (`:6543`, `?pgbouncer=true` si besoin) |
-| `DIRECT_URL` | Connexion **directe** (session / port 5432) — migrations Prisma |
+| `DATABASE_URL` | Supabase → Connect → **Transaction** pooler (**port `6543`**) — **pas** Session (`5432`). Sinon `EMAXCONNSESSION` / pool_size 15 sur Vercel |
+| `DIRECT_URL` | Connexion **directe** (db.*.supabase.co:5432) — migrations Prisma uniquement |
+
+Exemple `DATABASE_URL` (Transaction) :
+
+```
+postgresql://postgres.[REF]:[PWD]@aws-0-….pooler.supabase.com:6543/postgres?pgbouncer=true
+```
+
+Si tu vois `EMAXCONNSESSION` / `max clients reached in session mode` → la URL Vercel est encore en **Session** : remplace-la par le mode **Transaction** (6543), redeploy.
 | `NEXT_PUBLIC_SUPABASE_URL` | URL projet Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Serveur uniquement** — ne jamais préfixer `NEXT_PUBLIC_` |
