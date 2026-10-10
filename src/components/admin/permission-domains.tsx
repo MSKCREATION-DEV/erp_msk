@@ -26,6 +26,7 @@ const DOMAIN_LABELS: Record<string, string> = {
   prj: "Projets",
   ops: "Ops",
   stk: "Stocks",
+  pat: "Patrimoine",
   ged: "GED",
 };
 

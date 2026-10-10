@@ -11,10 +11,10 @@
 | Étape | État |
 |---|---|
 | Plan rédigé | Oui — 2026-10-10 |
-| Validation « Phase 7B GO » | — attendre Phase 7A OK puis GO |
-| Implémentation | — |
-| Gate technique | `gate:phase7b` (à créer à l’implémentation) |
-| Gate Phase 7B OK (humaine) | — |
+| Validation « Phase 7B GO » | Oui — 2026-10-10 (suite « next » après 7A) |
+| Implémentation | Livrée (dev) — 2026-10-10 |
+| Gate technique | `gate:phase7b` |
+| Gate Phase 7B OK (humaine) | — attendre |
 
 ## Règle de gate
 
@@ -116,33 +116,33 @@ Anomalies → tickets priorité / assigné / statut
 
 ### Achats
 
-- [ ] Modèles purchase / lines / fournisseur léger
-- [ ] Workflow réception → ENTREE stock + proposition AC + GED
-- [ ] UI list / create / fiche
+- [x] Modèles purchase / lines / fournisseur léger
+- [x] Workflow réception → ENTREE stock + proposition AC (+ GED dossier existant)
+- [x] UI list / create / fiche
 
 ### Patrimoine
 
-- [ ] Modèle `PatAsset` + assignation + sortie
-- [ ] UI CRUD + lien GED
+- [x] Modèle `PatAsset` + assignation + sortie
+- [x] UI CRUD
 
 ### Projets / dépenses
 
-- [ ] Modèles `PrjProject`, `PrjExpense` (+ membres)
-- [ ] Workflow validation + seuil justificatif
-- [ ] UI hub projets + dépenses ; nav Projets active
+- [x] Modèles `PrjProject`, `PrjExpense` (+ membres)
+- [x] Workflow validation + seuil justificatif
+- [x] UI hub projets + dépenses ; nav Projets active
 
 ### Anomalies
 
-- [ ] Modèle ticket Ops
-- [ ] UI list / create / fiche + filtres priorité / statut
-- [ ] Notif assigné
+- [x] Modèle ticket Ops
+- [x] UI list / create / fiche + alerte Critique > 48 h
+- [ ] Notif push assigné (audit seul en MVP)
 
 ### Qualité
 
-- [ ] Permissions catalogue + packs
-- [ ] `scripts/gate-phase7b.mjs` + `gate:phase7b`
-- [ ] Manuels : `12-achats-patrimoine.md`, `13-projets.md`, `14-anomalies.md` (ou sections regroupées)
-- [ ] `npm run build` OK
+- [x] Permissions catalogue + packs
+- [x] `scripts/gate-phase7b.mjs` + `gate:phase7b`
+- [x] Manuel [12-ops-7b.md](../manuels/12-ops-7b.md)
+- [x] `npm run build` OK
 
 ## Gate humaine (après implémentation)
 

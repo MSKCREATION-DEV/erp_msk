@@ -247,6 +247,15 @@ model User {
   rhPayrollApproved   RhPayrollPeriod[] @relation("RhPayrollApprover")
   stkArticlesCreated  StkArticle[]      @relation("StkArticleCreator")
   stkMovementsCreated StkMovement[]     @relation("StkMovementCreator")
+  stkPurchasesCreated StkPurchase[]     @relation("StkPurchaseCreator")
+  patAssetsCreated    PatAsset[]        @relation("PatAssetCreator")
+  patAssetsAssigned   PatAsset[]        @relation("PatAssetAssignee")
+  prjProjectsOwned    PrjProject[]      @relation("PrjProjectOwner")
+  prjMemberships      PrjMember[]
+  prjExpensesCreated  PrjExpense[]      @relation("PrjExpenseCreator")
+  prjExpensesReviewed PrjExpense[]      @relation("PrjExpenseReviewer")
+  opsTicketsCreated   OpsTicket[]       @relation("OpsTicketCreator")
+  opsTicketsAssigned  OpsTicket[]       @relation("OpsTicketAssignee")
 
   @@index([status])
   @@map("users")
@@ -1508,6 +1517,7 @@ model StkArticle {
 
   createdBy  User?          @relation("StkArticleCreator", fields: [createdById], references: [id], onDelete: SetNull)
   movements  StkMovement[]
+  purchaseLines StkPurchaseLine[]
 
   @@index([family, active])
   @@index([qtyOnHand, stockMin])
@@ -1532,4 +1542,195 @@ model StkMovement {
   @@index([articleId, movedAt])
   @@index([type, movedAt])
   @@map("stk_movements")
+}
+
+// ─── Phase 7B — Ops (achats, patrimoine, projets, anomalies) ───
+
+enum StkPurchaseStatus {
+  DRAFT
+  ORDERED
+  RECEIVED
+  CANCELLED
+}
+
+enum PatAssetStatus {
+  IN_SERVICE
+  MAINTENANCE
+  DISPOSED
+}
+
+enum PrjProjectStatus {
+  ACTIVE
+  ON_HOLD
+  DONE
+  CANCELLED
+}
+
+enum PrjExpenseStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  REIMBURSED
+}
+
+enum OpsTicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum OpsTicketStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  DEFERRED
+}
+
+model StkPurchase {
+  id              String            @id @default(cuid())
+  number          String            @unique
+  supplierName    String
+  supplierContact String?
+  status          StkPurchaseStatus @default(DRAFT)
+  orderedAt       DateTime?
+  receivedAt      DateTime?
+  notes           String?
+  cptEntryId      String?
+  createdById     String            @db.Uuid
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  createdBy User             @relation("StkPurchaseCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  lines     StkPurchaseLine[]
+  assets    PatAsset[]
+
+  @@index([status, createdAt])
+  @@map("stk_purchases")
+}
+
+model StkPurchaseLine {
+  id          String  @id @default(cuid())
+  purchaseId  String
+  articleId   String?
+  label       String
+  quantity    Decimal @db.Decimal(14, 3)
+  unitPriceXof Int
+  sortOrder   Int     @default(0)
+
+  purchase StkPurchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  article  StkArticle? @relation(fields: [articleId], references: [id], onDelete: SetNull)
+
+  @@index([purchaseId])
+  @@map("stk_purchase_lines")
+}
+
+model PatAsset {
+  id              String         @id @default(cuid())
+  code            String         @unique
+  designation     String
+  category        String
+  acquiredAt      DateTime       @db.Date
+  valueXof        Int
+  location        String?
+  status          PatAssetStatus @default(IN_SERVICE)
+  assignedToId    String?        @db.Uuid
+  purchaseId      String?
+  amortYears      Int            @default(5)
+  disposeNote     String?
+  disposedAt      DateTime?
+  createdById     String         @db.Uuid
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  assignedTo User?        @relation("PatAssetAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdBy  User         @relation("PatAssetCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  purchase   StkPurchase? @relation(fields: [purchaseId], references: [id], onDelete: SetNull)
+
+  @@index([status, category])
+  @@map("pat_assets")
+}
+
+model PrjProject {
+  id          String           @id @default(cuid())
+  code        String           @unique
+  name        String
+  description String?
+  status      PrjProjectStatus @default(ACTIVE)
+  budgetXof   Int              @default(0)
+  startDate   DateTime?        @db.Date
+  endDate     DateTime?        @db.Date
+  ownerId     String           @db.Uuid
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  owner     User         @relation("PrjProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  members   PrjMember[]
+  expenses  PrjExpense[]
+
+  @@index([status])
+  @@map("prj_projects")
+}
+
+model PrjMember {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String   @db.Uuid
+  role      String?
+  createdAt DateTime @default(now())
+
+  project PrjProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("prj_members")
+}
+
+model PrjExpense {
+  id               String           @id @default(cuid())
+  projectId        String
+  expenseDate      DateTime         @db.Date
+  nature           String
+  description      String?
+  plannedXof       Int              @default(0)
+  spentXof         Int
+  paymentMode      String?
+  status           PrjExpenseStatus @default(DRAFT)
+  justificatifNote String?
+  createdById      String           @db.Uuid
+  reviewedById     String?          @db.Uuid
+  reviewedAt       DateTime?
+  reviewNote       String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  project   PrjProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy User       @relation("PrjExpenseCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  reviewedBy User?     @relation("PrjExpenseReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([projectId, status])
+  @@map("prj_expenses")
+}
+
+model OpsTicket {
+  id           String            @id @default(cuid())
+  equipment    String
+  problem      String
+  priority     OpsTicketPriority @default(MEDIUM)
+  status       OpsTicketStatus   @default(TODO)
+  actionPlan   String?
+  observations String?
+  assignedToId String?           @db.Uuid
+  createdById  String            @db.Uuid
+  noticedAt    DateTime          @default(now())
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  assignedTo User? @relation("OpsTicketAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdBy  User  @relation("OpsTicketCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([status, priority])
+  @@index([assignedToId])
+  @@map("ops_tickets")
 }

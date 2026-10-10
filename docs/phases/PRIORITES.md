@@ -22,7 +22,7 @@ Les pôles suivants sont **URGENTS / PRIORITAIRES** pour MSK :
 - On **oriente** chaque plan de phase : marquer `URGENT` sur les livrables COM/CPT.
 - Phase 0–3 **OK** · Phase 6 Compta **livrée** · Phase 4 RH **livrée** + UX Mon espace · Phase 5 Paie/INPS **livrée**.
 - Comptes Direction (Mathieu / Andile) seedés ; e-mail invitation charte MSK.
-- **En cours** : Phase 7A Stocks **implémentée** ([PHASE-07A-STOCKS.md](./PHASE-07A-STOCKS.md)) — gate humaine puis [07B Ops](./PHASE-07B-OPS.md).
+- Phase 7A Stocks **livrée** · Phase 7B Ops **implémentée** ([PHASE-07B-OPS.md](./PHASE-07B-OPS.md)) — gate humaine.
 - Déploiement collab : checklist [docs/deploy/VERCEL.md](../deploy/VERCEL.md) — merge `dev` → `main` après gate humaine, puis prod Vercel.
 - Optionnel **1.x** / **2.x** / **3.x** (hors chemin critique) : UI corbeille GED, partage ACL, pad signature, cron relances factures.
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AlertTriangle, ArrowLeftRight, Package } from "lucide-react";
+import { AlertTriangle, ArrowLeftRight, Package, ShoppingCart } from "lucide-react";
 import { Prisma } from "@prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
@@ -47,6 +47,7 @@ export default async function StocksHubPage() {
 
   const canManage = hasPermission(user, "stk.articles.manage");
   const canMove = hasPermission(user, "stk.moves.create");
+  const canAchats = hasPermission(user, "stk.achats.manage");
 
   const tiles = [
     {
@@ -61,6 +62,16 @@ export default async function StocksHubPage() {
       icon: ArrowLeftRight,
       desc: "Entrées, sorties, ajustements",
     },
+    ...(canAchats
+      ? [
+          {
+            href: "/stocks/achats",
+            label: "Achats",
+            icon: ShoppingCart,
+            desc: "Commandes fournisseurs et réception",
+          },
+        ]
+      : []),
   ];
 
   return (

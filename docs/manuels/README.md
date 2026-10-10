@@ -29,7 +29,7 @@ Documentation **vivante** pour l’équipe (commerciaux, finance, admin, directi
 | [09 — RH](./09-rh.md) | Collaborateurs, contrats, congés, absences, heures | Admin RH / Direction / Collaborateur |
 | [10 — Paie & INPS](./10-paie-inps.md) | Périodes, bulletins, cotisations | Admin RH / Direction / Collaborateur |
 | [11 — Stocks](./11-stocks.md) | Articles, mouvements, alertes | Pack Stock / Direction |
-| *12+ — Achats / patrimoine / projets / anomalies* | Ops large | **Phase 7B** (manuels à créer à l’implémentation) |
+| [12 — Ops 7B](./12-ops-7b.md) | Achats, patrimoine, projets, anomalies | Stock / Projets / Direction |
 
 Phases : [07A Stocks](../phases/PHASE-07A-STOCKS.md) · [07B Ops](../phases/PHASE-07B-OPS.md).
 

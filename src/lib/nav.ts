@@ -13,6 +13,7 @@ import {
   UserRound,
   UsersRound,
   Package,
+  AlertTriangle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -108,6 +109,27 @@ export const NAV_GROUPS: NavGroup[] = [
         icon: Package,
         permission: "stk.access",
       },
+      {
+        id: "patrimoine",
+        href: "/patrimoine",
+        label: "Patrimoine",
+        icon: Briefcase,
+        permission: "pat.access",
+      },
+      {
+        id: "projets",
+        href: "/projets",
+        label: "Projets",
+        icon: FolderKanban,
+        permission: "prj.access",
+      },
+      {
+        id: "anomalies",
+        href: "/ops/anomalies",
+        label: "Anomalies",
+        icon: AlertTriangle,
+        permission: "ops.access",
+      },
     ],
   },
   {
@@ -175,22 +197,6 @@ export const NAV_GROUPS: NavGroup[] = [
         label: "Paramètres",
         icon: Settings,
         permission: "cfg.org",
-        soon: true,
-      },
-    ],
-  },
-  {
-    id: "soon",
-    label: "À venir",
-    collapsible: true,
-    defaultCollapsed: true,
-    items: [
-      {
-        id: "projets",
-        href: "/bientot/projets",
-        label: "Projets",
-        icon: FolderKanban,
-        permission: "prj.access",
         soon: true,
       },
     ],

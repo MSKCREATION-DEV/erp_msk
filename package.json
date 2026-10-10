@@ -23,6 +23,7 @@
     "gate:phase5": "node scripts/gate-phase5.mjs",
     "gate:phase6": "node scripts/gate-phase6.mjs",
     "gate:phase7a": "node scripts/gate-phase7a.mjs",
+    "gate:phase7b": "node scripts/gate-phase7b.mjs",
     "test:paie-calc": "tsx src/lib/paie/calc.test.ts",
     "review:ux-rh": "node scripts/review-ux-rh-espace.mjs",
     "smoke:ui": "node scripts/smoke-ui.mjs",

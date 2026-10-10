@@ -60,9 +60,23 @@ assert.equal(
   "item administration retiré (regroupé)",
 );
 
+const stocks = live.find((i) => i.id === "stocks")!;
+assert.ok(stocks, "Stocks live");
+const projets = live.find((i) => i.id === "projets")!;
+assert.ok(projets, "Projets live (plus soon)");
+assert.equal(isNavActive("/projets", projets, live), true);
+assert.equal(
+  all.some((i) => i.id === "projets" && i.soon),
+  false,
+  "Projets plus dans À venir",
+);
+assert.ok(live.find((i) => i.id === "patrimoine"), "Patrimoine live");
+assert.ok(live.find((i) => i.id === "anomalies"), "Anomalies live");
+
+const soonGroup = NAV_GROUPS.find((g) => g.id === "soon");
 assert.ok(
-  NAV_GROUPS.some((g) => g.id === "soon" && g.collapsible),
-  "groupe À venir collapsible",
+  !soonGroup || soonGroup.collapsible,
+  "groupe À venir absent ou collapsible",
 );
 
 console.log("nav.test.ts OK");
