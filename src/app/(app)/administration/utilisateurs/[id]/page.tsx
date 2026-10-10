@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AccessCompositionCard } from "@/components/admin/access-composition-card";
 import { EffectiveAccessCard } from "@/components/admin/effective-access-card";
 import { UserAccessForm } from "@/components/admin/user-access-form";
 import { UserProfileCard } from "@/components/admin/user-profile-card";
@@ -102,6 +103,7 @@ export default async function UserDetailPage({
       />
 
       <UserProfileCard
+        userId={target.id}
         firstName={target.firstName}
         lastName={target.lastName}
         email={target.email}
@@ -111,6 +113,17 @@ export default async function UserDetailPage({
         permissionCount={permissionCount}
         groupCodes={resolved?.groupCodes ?? []}
         packCodes={resolved?.packCodes ?? []}
+        canEdit={hasPermission(actor, "users.edit_profile_any")}
+      />
+
+      <AccessCompositionCard
+        groups={target.groupMembers.map((m) => ({
+          code: m.group.code,
+          defaultPackCode:
+            groups.find((g) => g.id === m.groupId)?.defaultPack?.code ?? null,
+        }))}
+        directPackCodes={target.userPacks.map((p) => p.pack.code)}
+        overrideCount={target.overrides.length}
       />
 
       <UserAccessForm

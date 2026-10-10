@@ -8,7 +8,7 @@ import {
   collabFolderSlug,
 } from "@/lib/ged/constants";
 
-async function ensureChild(
+export async function ensureChild(
   parentId: string,
   parentPath: string,
   code: string,

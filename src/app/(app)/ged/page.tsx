@@ -2,13 +2,20 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { DocStatus } from "@prisma/client";
 import { requireUser } from "@/lib/auth/session";
-import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
+import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import {
+  ensureCollaboratorFolders,
   ensureYearTree,
   getFolderBreadcrumb,
   isProtectedFolder,
 } from "@/lib/ged/tree";
+import {
+  canViewFolderPath,
+  filterVisibleFolders,
+  hasFullGedBrowse,
+  hasGedAccess,
+} from "@/lib/ged/scope";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { GedBrowser } from "@/components/ged/ged-browser";
@@ -21,7 +28,7 @@ export default async function GedPage({
   searchParams: Promise<{ folder?: string }>;
 }) {
   const user = await requireUser();
-  if (!hasAnyPermission(user, ["ged.browse", "ged.view_scoped"])) {
+  if (!hasGedAccess(user)) {
     redirect("/accueil");
   }
 
@@ -29,7 +36,6 @@ export default async function GedPage({
   const year = new Date().getFullYear();
   const folderId = folderParam ?? null;
 
-  // Lecture parallèle ; bootstrap seulement si racine année absente
   const [yearRootMaybe, currentMaybe] = await Promise.all([
     prisma.documentFolder.findUnique({
       where: { path: `/${year}` },
@@ -55,7 +61,16 @@ export default async function GedPage({
     });
   }
 
-  // /ged sans dossier → ouvrir l’année courante
+  // Scoped : assure le dossier collaborateur perso
+  if (!hasFullGedBrowse(user) && hasPermission(user, "ged.view_scoped")) {
+    await ensureCollaboratorFolders(
+      user.firstName,
+      user.lastName,
+      year,
+      user.id,
+    ).catch(() => null);
+  }
+
   if (!folderId && yearRoot) {
     redirect(`/ged?folder=${yearRoot.id}`);
   }
@@ -65,9 +80,15 @@ export default async function GedPage({
     redirect("/ged");
   }
 
+  // Scope : URL forcée hors périmètre → retour année
+  if (current && !(await canViewFolderPath(user, current.path))) {
+    if (yearRoot) redirect(`/ged?folder=${yearRoot.id}`);
+    redirect("/accueil");
+  }
+
   const parentForChildren = current?.id ?? null;
 
-  const [breadcrumbs, foldersRaw, documents] = await Promise.all([
+  const [breadcrumbs, foldersRaw, documentsRaw] = await Promise.all([
     current ? getFolderBreadcrumb(current.id) : Promise.resolve([]),
     parentForChildren
       ? prisma.documentFolder.findMany({
@@ -112,7 +133,19 @@ export default async function GedPage({
       : Promise.resolve([]),
   ]);
 
-  const folders = foldersRaw.map((f) => ({
+  const foldersVisible = await filterVisibleFolders(
+    user,
+    current?.path ?? null,
+    foldersRaw,
+  );
+
+  // Docs uniquement si le dossier courant est autorisé
+  const documents =
+    current && (await canViewFolderPath(user, current.path))
+      ? documentsRaw
+      : [];
+
+  const folders = foldersVisible.map((f) => ({
     id: f.id,
     name: f.name,
     code: f.code,
@@ -126,7 +159,11 @@ export default async function GedPage({
     <PageShell>
       <PageHeader
         title="GED"
-        description="Documents MSK — aperçu, affichage, tri et regroupement."
+        description={
+          hasFullGedBrowse(user)
+            ? "Documents MSK — aperçu, affichage, tri et regroupement."
+            : "Vos dossiers (clients liés + espace collaborateur)."
+        }
         breadcrumbs={[
           { label: "Accueil", href: "/accueil" },
           { label: "GED" },

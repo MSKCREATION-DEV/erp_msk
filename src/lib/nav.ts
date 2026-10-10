@@ -56,7 +56,7 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/ged",
         label: "GED",
         icon: FolderOpen,
-        permission: "ged.browse",
+        permission: "ged.view_scoped",
       },
       {
         id: "organisation",
@@ -78,6 +78,13 @@ export const NAV_GROUPS: NavGroup[] = [
         label: "Catalogue",
         icon: Package,
         permission: "com.catalogue.view",
+      },
+      {
+        id: "commercial",
+        href: "/commercial",
+        label: "Commercial",
+        icon: FileText,
+        permission: "com.access",
       },
     ],
   },
@@ -142,14 +149,6 @@ export const NAV_GROUPS: NavGroup[] = [
     collapsible: true,
     defaultCollapsed: true,
     items: [
-      {
-        id: "commercial",
-        href: "/bientot/commercial",
-        label: "Commercial",
-        icon: FileText,
-        permission: "com.access",
-        soon: true,
-      },
       {
         id: "compta",
         href: "/bientot/comptabilite",

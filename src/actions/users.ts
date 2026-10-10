@@ -157,6 +157,105 @@ export async function inviteUserAction(
   };
 }
 
+const profileSchema = z.object({
+  userId: z.string().uuid(),
+  email: z.string().email(),
+  firstName: z.string().min(1).max(80),
+  lastName: z.string().min(1).max(80),
+  phone: z.string().max(40).optional(),
+});
+
+/** Corrige identité / e-mail (Prisma + Auth). Jamais de mot de passe ici. */
+export async function updateUserProfileAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "users.edit_profile_any" });
+
+  const parsed = profileSchema.safeParse({
+    userId: formData.get("userId"),
+    email: formData.get("email"),
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
+    phone: String(formData.get("phone") ?? "").trim() || undefined,
+  });
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Données invalides",
+    };
+  }
+
+  const email = parsed.data.email.toLowerCase().trim();
+  const target = await prisma.user.findUnique({
+    where: { id: parsed.data.userId },
+  });
+  if (!target) return { ok: false, error: "Utilisateur introuvable" };
+  if (target.isSuperAdmin && !actor.isSuperAdmin) {
+    return { ok: false, error: "Seul le Super Admin peut modifier ce compte" };
+  }
+
+  if (email !== target.email) {
+    const clash = await prisma.user.findUnique({ where: { email } });
+    if (clash && clash.id !== target.id) {
+      return { ok: false, error: "Un autre compte utilise déjà cet e-mail" };
+    }
+  }
+
+  const admin = createAdminClient();
+  if (email !== target.email) {
+    const authUp = await admin.auth.admin.updateUserById(target.id, {
+      email,
+      email_confirm: true,
+      user_metadata: {
+        first_name: parsed.data.firstName,
+        last_name: parsed.data.lastName,
+      },
+    });
+    if (authUp.error) {
+      return {
+        ok: false,
+        error: `Auth: ${authUp.error.message}`,
+      };
+    }
+  } else {
+    await admin.auth.admin
+      .updateUserById(target.id, {
+        user_metadata: {
+          first_name: parsed.data.firstName,
+          last_name: parsed.data.lastName,
+        },
+      })
+      .catch(() => null);
+  }
+
+  await prisma.user.update({
+    where: { id: target.id },
+    data: {
+      email,
+      firstName: parsed.data.firstName,
+      lastName: parsed.data.lastName,
+      phone: parsed.data.phone ?? null,
+    },
+  });
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "users.edit_profile",
+    entityType: "user",
+    entityId: target.id,
+    metadata: {
+      emailFrom: target.email,
+      emailTo: email,
+      firstName: parsed.data.firstName,
+      lastName: parsed.data.lastName,
+    },
+  });
+
+  revalidatePath(`/administration/utilisateurs/${target.id}`);
+  revalidatePath("/administration/utilisateurs");
+  return { ok: true, message: "Profil mis à jour" };
+}
+
 export async function updateUserAccessAction(
   _prev: ActionResult | null,
   formData: FormData,

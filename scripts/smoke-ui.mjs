@@ -177,13 +177,21 @@ async function main() {
   await assertPage(page, "/administration/signatures", "Signatures", "11-signatures");
   await assertPage(page, "/administration/charte", "Charte", "12-charte");
 
-  // Nav CRM / Catalogue visibles (plus « bientôt »)
+  // Nav CRM / Catalogue / Commercial visibles (plus « bientôt »)
   await page.goto(`${BASE}/accueil`, { waitUntil: "networkidle" });
   const nav = await page.locator("nav, aside").first().innerText();
   if (/\bCRM\b/.test(nav) && !nav.includes("/bientot/crm")) ok("Nav CRM live");
   else fail("Nav CRM absente ou still bientôt");
   if (/Catalogue/.test(nav)) ok("Nav Catalogue live");
   else fail("Nav Catalogue absente");
+  if (/\bCommercial\b/.test(nav) && !nav.includes("/bientot/commercial")) {
+    ok("Nav Commercial live");
+  } else fail("Nav Commercial absente ou still bientôt");
+
+  await assertPage(page, "/commercial", "Commercial", "15-commercial");
+  await assertPage(page, "/commercial/clients", "Clients", "16-com-clients");
+  await assertPage(page, "/commercial/devis", "Devis", "17-com-devis");
+  await assertPage(page, "/commercial/factures", "Factures", "18-com-factures");
 
   // Listing prospects : pas de formulaire create inline
   await page.goto(`${BASE}/crm/prospects`, { waitUntil: "networkidle" });
@@ -309,6 +317,227 @@ async function main() {
   } else if (scriptsBody.includes("Premier contact")) {
     ok("Scripts lecture OK");
   } else fail("Scripts page vide / cassée");
+
+  // ——— Phase 3 : client → devis → facture → paiement ———
+  const comStamp = Date.now().toString().slice(-5);
+  const clientName = `Smoke Client ${comStamp}`;
+  await page.goto(`${BASE}/commercial/clients/nouveau`, {
+    waitUntil: "networkidle",
+    timeout: 45000,
+  });
+  if (await page.locator("#name").count()) {
+    const backClient = await page.locator("body").innerText();
+    if (/Retour/.test(backClient)) ok("Retour page nouveau client");
+    else fail("Retour manquant /commercial/clients/nouveau");
+
+    await page.fill("#name", clientName);
+    await page.fill("#contactName", "Smoke Contact");
+    await page.fill("#city", "Bamako");
+    await page.click('button[type="submit"]');
+    await page
+      .waitForURL(
+        (u) =>
+          /\/commercial\/clients\/[^/]+$/.test(u.pathname) &&
+          !u.pathname.endsWith("/nouveau"),
+        { timeout: 45000 },
+      )
+      .catch(() => null);
+    if (/\/commercial\/clients\/[^/?]+$/.test(page.url().replace(BASE, ""))) {
+      ok(`Client COM créé → ${page.url().replace(BASE, "")}`);
+      await page.screenshot({
+        path: path.join(SHOT_DIR, "19-com-client.png"),
+        fullPage: true,
+      });
+    } else {
+      fail("Création client : pas de redirection fiche");
+      await page.screenshot({
+        path: path.join(SHOT_DIR, "19-com-client-fail.png"),
+        fullPage: true,
+      });
+    }
+  } else {
+    fail("Formulaire nouveau client introuvable");
+  }
+
+  await page.goto(`${BASE}/commercial/devis/nouveau`, {
+    waitUntil: "networkidle",
+    timeout: 45000,
+  });
+  if (await page.locator("#clientId").count()) {
+    // Sélectionner le client smoke (dernier créé souvent en fin de liste alpha)
+    const clientOpt = page.locator(`#clientId option`).filter({
+      hasText: clientName,
+    });
+    if ((await clientOpt.count()) > 0) {
+      const val = await clientOpt.first().getAttribute("value");
+      await page.selectOption("#clientId", val);
+    } else {
+      // fallback première option non vide
+      const opts = page.locator("#clientId option");
+      const n = await opts.count();
+      for (let i = 0; i < n; i++) {
+        const v = await opts.nth(i).getAttribute("value");
+        if (v) {
+          await page.selectOption("#clientId", v);
+          break;
+        }
+      }
+    }
+
+    // Ajouter offre catalogue si dispo
+    const offerSelect = page.locator("select").filter({
+      has: page.locator('option:has-text("Offre catalogue")'),
+    });
+    if (await offerSelect.count()) {
+      const offerOpts = offerSelect.locator("option");
+      const oc = await offerOpts.count();
+      if (oc > 1) {
+        const ov = await offerOpts.nth(1).getAttribute("value");
+        if (ov) await offerSelect.selectOption(ov);
+      }
+    }
+
+    // Garantir au moins une ligne avec libellé
+    const labelInputs = page.locator('input[placeholder="Libellé"]');
+    if (await labelInputs.count()) {
+      const first = labelInputs.first();
+      const cur = await first.inputValue();
+      if (!cur) await first.fill(`Offre smoke ${comStamp}`);
+      const priceInputs = page.locator('input[type="number"]');
+      // qty puis unitPrice sur première ligne — remplir unitPrice si 0
+      const countNum = await priceInputs.count();
+      if (countNum >= 2) {
+        const unit = priceInputs.nth(1);
+        const uv = await unit.inputValue();
+        if (!uv || uv === "0") await unit.fill("100000");
+      }
+    }
+
+    await page.click('button[type="submit"]');
+    await page
+      .waitForURL(
+        (u) =>
+          /\/commercial\/devis\/[^/]+$/.test(u.pathname) &&
+          !u.pathname.endsWith("/nouveau"),
+        { timeout: 60000 },
+      )
+      .catch(() => null);
+
+    if (/\/commercial\/devis\/[^/?]+$/.test(page.url().replace(BASE, ""))) {
+      ok(`Devis créé → ${page.url().replace(BASE, "")}`);
+      await page
+        .getByRole("link", { name: /Retour aux devis/i })
+        .waitFor({ timeout: 20000 })
+        .catch(() => null);
+      await page.screenshot({
+        path: path.join(SHOT_DIR, "20-com-devis.png"),
+        fullPage: true,
+      });
+
+      // Envoyer — attendre disparition du CTA + apparition Accepter (évite faux positif « Marquer envoyé »)
+      const sendBtn = page.getByRole("button", { name: /Marquer envoyé/i });
+      if (await sendBtn.count()) {
+        await sendBtn.click();
+        try {
+          await page
+            .getByRole("button", { name: /^Accepter$/i })
+            .waitFor({ timeout: 60000 });
+          ok("Devis → Envoyé");
+        } catch {
+          await page.screenshot({
+            path: path.join(SHOT_DIR, "20b-send-fail.png"),
+            fullPage: true,
+          });
+          fail("Statut Envoyé / bouton Accepter non visible");
+        }
+      } else fail("Bouton Marquer envoyé absent");
+
+      // Accepter
+      const acceptBtn = page.getByRole("button", { name: /^Accepter$/i });
+      if (await acceptBtn.count()) {
+        await acceptBtn.click();
+        try {
+          await page
+            .getByRole("button", { name: /Créer facture/i })
+            .waitFor({ timeout: 60000 });
+          const bodyAcc = await page.locator("body").innerText();
+          if (/Accepté/i.test(bodyAcc)) ok("Devis → Accepté");
+          else ok("Devis accepté (CTA facture visible)");
+        } catch {
+          await page.screenshot({
+            path: path.join(SHOT_DIR, "20c-accept-fail.png"),
+            fullPage: true,
+          });
+          fail("Statut Accepté / CTA facture non visible");
+        }
+      } else fail("Bouton Accepter absent");
+
+      // Facture
+      const invBtn = page.getByRole("button", { name: /Créer facture/i });
+      if (await invBtn.count()) {
+        await invBtn.click();
+        await page
+          .waitForURL(/\/commercial\/factures\/[^/]+$/, { timeout: 60000 })
+          .catch(() => null);
+        if (/\/commercial\/factures\//.test(page.url())) {
+          ok(`Facture créée → ${page.url().replace(BASE, "")}`);
+          await page
+            .getByRole("link", { name: /Retour aux factures/i })
+            .waitFor({ timeout: 20000 })
+            .catch(() => null);
+          await page.screenshot({
+            path: path.join(SHOT_DIR, "21-com-facture.png"),
+            fullPage: true,
+          });
+
+          const issueBtn = page.getByRole("button", { name: /^Émettre$/i });
+          if (await issueBtn.count()) {
+            await issueBtn.click();
+            try {
+              await page.locator("#amount").waitFor({ timeout: 60000 });
+              ok("Facture émise");
+            } catch {
+              const bodyIss = await page.locator("body").innerText();
+              if (/Émise|Partiellement|Payée/i.test(bodyIss)) ok("Facture émise");
+              else fail("Émission facture non visible");
+            }
+          } else fail("Bouton Émettre absent");
+
+          if (await page.locator("#amount").count()) {
+            await page.fill("#amount", "50000");
+            await page
+              .getByRole("button", { name: /Enregistrer le paiement/i })
+              .click();
+            try {
+              await page
+                .getByText(/Partiellement payée/i)
+                .waitFor({ timeout: 60000 });
+              ok("Paiement enregistré");
+            } catch {
+              const bodyPay = await page.locator("body").innerText();
+              if (/Partiellement payée|Payée/i.test(bodyPay)) {
+                ok("Paiement enregistré");
+              } else fail("Paiement non visible");
+            }
+            await page.screenshot({
+              path: path.join(SHOT_DIR, "22-com-paiement.png"),
+              fullPage: true,
+            });
+          } else fail("Formulaire paiement absent");
+        } else {
+          fail("Création facture : pas de redirection");
+        }
+      } else fail("Bouton Créer facture absent");
+    } else {
+      fail("Création devis : pas de redirection fiche");
+      await page.screenshot({
+        path: path.join(SHOT_DIR, "20-com-devis-fail.png"),
+        fullPage: true,
+      });
+    }
+  } else {
+    fail("Formulaire nouveau devis introuvable");
+  }
 
   // Déconnexion modal
   await page.goto(`${BASE}/accueil`, { waitUntil: "networkidle" });

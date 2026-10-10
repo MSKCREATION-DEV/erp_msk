@@ -11,10 +11,10 @@
 | Étape | État |
 |---|---|
 | Plan rédigé | Oui — 2026-10-09 |
-| Validation « Phase 3 GO » | **En attente** |
-| Implémentation | Non démarrée |
-| Gate technique | — |
-| Gate Phase 3 OK (humaine) | — |
+| Validation « Phase 3 GO » | Oui — plan approuvé |
+| Implémentation | Livrée (2026-10-09) |
+| Gate technique | OK — `gate:phase3` + `smoke:ui` 45/45 · smoke RBAC |
+| Gate Phase 3 OK (humaine) | **OK** — 2026-10-10 |
 
 ## Règle de gate
 
@@ -64,35 +64,35 @@ Un commercial peut convertir un deal gagné, produire un devis charte MSK (ligne
 ## Livrables (checklist — à cocher à l’implémentation)
 
 ### Données
-- [ ] Modèles Prisma : `ComClient`, `ComQuote` (+ lines), `ComInvoice` (+ lines), `ComPayment`
-- [ ] Lien `opportunityId` / `organizationId` CRM → client
-- [ ] Régime documentaire `ML` \| `FR` + devise + taux TVA
-- [ ] Séquences numérotation année
+- [x] Modèles Prisma : `ComClient`, `ComQuote` (+ lines), `ComInvoice` (+ lines), `ComPayment`
+- [x] Lien `opportunityId` / `organizationId` CRM → client
+- [x] Régime documentaire `ML` \| `FR` + devise + taux TVA
+- [x] Séquences numérotation année
 
 ### Clients
-- [ ] Liste `/commercial/clients` + `/nouveau` + fiche `[id]`
-- [ ] Création directe + conversion depuis opportunité Gagné
-- [ ] Contacts / notes / préférence déplacement défaut
+- [x] Liste `/commercial/clients` + `/nouveau` + fiche `[id]`
+- [x] Création directe + conversion depuis opportunité Gagné
+- [x] Contacts / notes / préférence déplacement défaut
 
 ### Devis
-- [ ] Liste `/commercial/devis` + `/nouveau` + `[id]` + edit
-- [ ] Lignes catalogue (SKU) + saisie libre
-- [ ] Toggle TVA / promo / déplacement
-- [ ] Statuts : Brouillon → Envoyé → Accepté / Refusé / Expiré / Annulé
-- [ ] Génération PDF + dépôt GED client
-- [ ] Création depuis opportunité (préremplissage)
+- [x] Liste `/commercial/devis` + `/nouveau` + `[id]`
+- [x] Lignes catalogue (SKU) + saisie libre
+- [x] Toggle TVA / promo / déplacement
+- [x] Statuts : Brouillon → Envoyé → Accepté / Refusé / Expiré / Annulé
+- [x] Génération PDF + dépôt GED client
+- [x] Création depuis opportunité (préremplissage)
 
 ### Factures & paiements
-- [ ] Liste `/commercial/factures` + création depuis devis (1 clic)
-- [ ] Statuts : Brouillon → Émise → Partiellement payée → Payée → Annulée
-- [ ] Enregistrement paiement(s) sur facture
-- [ ] PDF facture + GED
+- [x] Liste `/commercial/factures` + création depuis devis (1 clic)
+- [x] Statuts : Brouillon → Émise → Partiellement payée → Payée → Annulée
+- [x] Enregistrement paiement(s) sur facture
+- [x] PDF facture + GED
 
 ### Nav / RBAC / UX
-- [ ] Nav Commercial (plus « bientôt »)
-- [ ] Permissions `com.clients.*`, `com.devis.*`, `com.factures.*`, `com.paiements.record`
-- [ ] `loading.tsx` / pending / list-create / backHref
-- [ ] `gate:phase3` + smoke UI parcours clients → devis → facture → paiement
+- [x] Nav Commercial (plus « bientôt »)
+- [x] Permissions `com.clients.*`, `com.devis.*`, `com.factures.*`, `com.paiements.record`
+- [x] `loading.tsx` / pending / list-create / backHref
+- [x] `gate:phase3` + smoke UI parcours clients → devis → facture → paiement
 
 ## Gate humaine (après implémentation)
 
@@ -110,12 +110,14 @@ Un commercial peut convertir un deal gagné, produire un devis charte MSK (ligne
 
 Un commercial convertit un prospect gagné en client, émet un devis PDF charte MSK classé en GED, le transforme en facture, enregistre un paiement. Aucune compta SYSCOHADA complète (Phase 6). Pas de stock (Phase 7).
 
-## Après validation du plan
+## Après gate technique
 
-Répondre : **« Phase 3 GO »** → démarrage implémentation sur `dev`.
+Répondre : **« Phase 3 OK »** (humaine) → ouverture Phase 6 Compta (PRIORITES) ou 3.x.
 
 ---
 
 ## Validation historique
 
+- 2026-10-10 — **Phase 3 OK** (humaine). Durcissement GED scope / RBAC composition / manuels. Suite → [PHASE-06-COMPTA.md](./PHASE-06-COMPTA.md).
+- 2026-10-09 — Implémentation + gate technique OK (build, lint, nav, gate:phase3, smoke 45/45).
 - Plan ouvert — 2026-10-09 (après Phase 2 OK).

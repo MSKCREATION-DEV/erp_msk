@@ -19,6 +19,7 @@ import {
   ensureYearTree,
   renameFolder,
 } from "@/lib/ged/tree";
+import { canViewFolderPath } from "@/lib/ged/scope";
 import type { ActionResult } from "@/actions/auth";
 
 const folderNameSchema = z
@@ -80,6 +81,9 @@ export async function uploadDocumentAction(
     where: { id: parsed.data.folderId },
   });
   if (!folder) return { ok: false, error: "Dossier introuvable" };
+  if (!(await canViewFolderPath(actor, folder.path))) {
+    return { ok: false, error: "Dossier hors de votre périmètre GED" };
+  }
 
   const bytes = Buffer.from(await file.arrayBuffer());
   const checksum = createHash("sha256").update(bytes).digest("hex");
@@ -127,6 +131,15 @@ export async function softDeleteDocumentAction(
   const id = String(formData.get("documentId") ?? "");
   if (!id) return { ok: false, error: "Document manquant" };
 
+  const doc = await prisma.document.findUnique({
+    where: { id },
+    include: { folder: { select: { path: true } } },
+  });
+  if (!doc) return { ok: false, error: "Document introuvable" };
+  if (!(await canViewFolderPath(actor, doc.folder.path))) {
+    return { ok: false, error: "Document hors de votre périmètre GED" };
+  }
+
   await prisma.document.update({
     where: { id },
     data: { status: DocStatus.TRASH, softDeletedAt: new Date() },
@@ -154,9 +167,15 @@ export async function getDocumentDownloadUrlAction(
     return { ok: false, error: "Permission refusée" };
   }
 
-  const doc = await prisma.document.findUnique({ where: { id: documentId } });
+  const doc = await prisma.document.findUnique({
+    where: { id: documentId },
+    include: { folder: { select: { path: true } } },
+  });
   if (!doc || doc.status === DocStatus.TRASH) {
     return { ok: false, error: "Document introuvable" };
+  }
+  if (!(await canViewFolderPath(actor, doc.folder.path))) {
+    return { ok: false, error: "Document hors de votre périmètre GED" };
   }
 
   try {

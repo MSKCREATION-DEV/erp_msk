@@ -1,4 +1,4 @@
-// ERP MSK CREATION — Phase 0 IAM + Phase 1 GED + Phase 2 Catalogue/CRM
+// ERP MSK CREATION — Phase 0–3 (IAM, GED, Catalogue/CRM, Commercial)
 // https://pris.ly/d/prisma-schema
 
 generator client {
@@ -132,6 +132,40 @@ enum CrmLossReason {
   AUTRE
 }
 
+enum ComDocRegime {
+  ML
+  FR
+}
+
+enum ComDocKind {
+  DEVIS
+  FACTURE
+}
+
+enum ComQuoteStatus {
+  BROUILLON
+  ENVOYE
+  ACCEPTE
+  REFUSE
+  EXPIRE
+  ANNULE
+}
+
+enum ComInvoiceStatus {
+  BROUILLON
+  EMISE
+  PARTIELLEMENT_PAYEE
+  PAYEE
+  ANNULEE
+}
+
+enum ComPaymentMethod {
+  ESPECES
+  VIREMENT
+  MOBILE_MONEY
+  AUTRE
+}
+
 /// Singleton single-tenant MSK (id fixe = "msk")
 model OrganizationSettings {
   id               String   @id @default("msk")
@@ -184,6 +218,13 @@ model User {
   crmActivities CrmActivity[]     @relation("CrmActivityActor")
   crmTasksAssigned CrmTask[]      @relation("CrmTaskAssignee")
   crmTasksCreated  CrmTask[]      @relation("CrmTaskCreator")
+  comClientsOwned  ComClient[]     @relation("ComClientOwner")
+  comClientsCreated ComClient[]    @relation("ComClientCreator")
+  comQuotesOwned   ComQuote[]      @relation("ComQuoteOwner")
+  comQuotesCreated ComQuote[]      @relation("ComQuoteCreator")
+  comInvoicesOwned ComInvoice[]    @relation("ComInvoiceOwner")
+  comInvoicesCreated ComInvoice[]  @relation("ComInvoiceCreator")
+  comPaymentsRecorded ComPayment[] @relation("ComPaymentRecorder")
 
   @@index([status])
   @@map("users")
@@ -488,6 +529,8 @@ model CatalogOffer {
   updatedAt     DateTime       @updatedAt
 
   opportunities CrmOpportunity[]
+  quoteLines    ComQuoteLine[]
+  invoiceLines  ComInvoiceLine[]
 
   @@index([pillar, active])
   @@map("catalog_offers")
@@ -514,6 +557,7 @@ model CrmOrganization {
   opportunities CrmOpportunity[]
   activities  CrmActivity[]
   tasks       CrmTask[]
+  comClients  ComClient[]
 
   @@index([ownerId])
   @@index([normalizedName])
@@ -568,6 +612,8 @@ model CrmOpportunity {
   createdBy    User            @relation("CrmDealCreator", fields: [createdById], references: [id])
   activities   CrmActivity[]
   tasks        CrmTask[]
+  comClients   ComClient[]
+  comQuotes    ComQuote[]
 
   @@index([ownerId, stage])
   @@index([organizationId])
@@ -632,4 +678,173 @@ model CrmScript {
 
   @@index([channel, active])
   @@map("crm_scripts")
+}
+
+model ComNumberSequence {
+  id        String     @id @default(cuid())
+  kind      ComDocKind
+  year      Int
+  lastValue Int        @default(0)
+  updatedAt DateTime   @updatedAt
+
+  @@unique([kind, year])
+  @@map("com_number_sequences")
+}
+
+model ComClient {
+  id                   String   @id @default(cuid())
+  name                 String
+  normalizedName       String
+  contactName          String?
+  email                String?
+  phone                String?
+  address              String?
+  city                 String?
+  country              String   @default("ML")
+  notes                String?
+  includeTravelDefault Boolean  @default(false)
+  crmOrganizationId    String?
+  sourceOpportunityId  String?
+  ownerId              String   @db.Uuid
+  createdById          String   @db.Uuid
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  crmOrganization CrmOrganization? @relation(fields: [crmOrganizationId], references: [id], onDelete: SetNull)
+  sourceOpportunity CrmOpportunity? @relation(fields: [sourceOpportunityId], references: [id], onDelete: SetNull)
+  owner     User @relation("ComClientOwner", fields: [ownerId], references: [id])
+  createdBy User @relation("ComClientCreator", fields: [createdById], references: [id])
+  quotes    ComQuote[]
+  invoices  ComInvoice[]
+
+  @@index([ownerId])
+  @@index([normalizedName])
+  @@index([crmOrganizationId])
+  @@map("com_clients")
+}
+
+model ComQuote {
+  id              String         @id @default(cuid())
+  number          String         @unique
+  status          ComQuoteStatus @default(BROUILLON)
+  regime          ComDocRegime   @default(ML)
+  currency        String         @default("XOF")
+  vatEnabled      Boolean        @default(true)
+  vatRate         Int            @default(18)
+  promoEnabled    Boolean        @default(false)
+  promoPercent    Int?
+  includeTravel   Boolean        @default(false)
+  object          String?
+  missionNote     String?
+  validUntil      DateTime?
+  totalHt         Int            @default(0)
+  totalVat        Int            @default(0)
+  totalTtc        Int            @default(0)
+  clientId        String
+  opportunityId   String?
+  ownerId         String         @db.Uuid
+  createdById     String         @db.Uuid
+  gedDocumentId   String?
+  sentAt          DateTime?
+  acceptedAt      DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  client      ComClient       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  opportunity CrmOpportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  owner       User            @relation("ComQuoteOwner", fields: [ownerId], references: [id])
+  createdBy   User            @relation("ComQuoteCreator", fields: [createdById], references: [id])
+  lines       ComQuoteLine[]
+  invoices    ComInvoice[]
+
+  @@index([clientId])
+  @@index([ownerId, status])
+  @@index([opportunityId])
+  @@map("com_quotes")
+}
+
+model ComQuoteLine {
+  id             String  @id @default(cuid())
+  quoteId        String
+  sortOrder      Int     @default(0)
+  label          String
+  qty            Int     @default(1)
+  unitPrice      Int
+  catalogOfferId String?
+  isTravel       Boolean @default(false)
+
+  quote        ComQuote      @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  catalogOffer CatalogOffer? @relation(fields: [catalogOfferId], references: [id], onDelete: SetNull)
+
+  @@index([quoteId])
+  @@map("com_quote_lines")
+}
+
+model ComInvoice {
+  id            String           @id @default(cuid())
+  number        String           @unique
+  status        ComInvoiceStatus @default(BROUILLON)
+  regime        ComDocRegime     @default(ML)
+  currency      String           @default("XOF")
+  vatEnabled    Boolean          @default(true)
+  vatRate       Int              @default(18)
+  object        String?
+  totalHt       Int              @default(0)
+  totalVat      Int              @default(0)
+  totalTtc      Int              @default(0)
+  amountPaid    Int              @default(0)
+  clientId      String
+  quoteId       String?
+  ownerId       String           @db.Uuid
+  createdById   String           @db.Uuid
+  gedDocumentId String?
+  issuedAt      DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  client    ComClient      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  quote     ComQuote?      @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  owner     User           @relation("ComInvoiceOwner", fields: [ownerId], references: [id])
+  createdBy User           @relation("ComInvoiceCreator", fields: [createdById], references: [id])
+  lines     ComInvoiceLine[]
+  payments  ComPayment[]
+
+  @@index([clientId])
+  @@index([ownerId, status])
+  @@index([quoteId])
+  @@map("com_invoices")
+}
+
+model ComInvoiceLine {
+  id             String  @id @default(cuid())
+  invoiceId      String
+  sortOrder      Int     @default(0)
+  label          String
+  qty            Int     @default(1)
+  unitPrice      Int
+  catalogOfferId String?
+  isTravel       Boolean @default(false)
+
+  invoice      ComInvoice    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  catalogOffer CatalogOffer? @relation(fields: [catalogOfferId], references: [id], onDelete: SetNull)
+
+  @@index([invoiceId])
+  @@map("com_invoice_lines")
+}
+
+model ComPayment {
+  id          String           @id @default(cuid())
+  invoiceId   String
+  amount      Int
+  method      ComPaymentMethod @default(VIREMENT)
+  paidAt      DateTime         @default(now())
+  note        String?
+  recordedById String          @db.Uuid
+  createdAt   DateTime         @default(now())
+
+  invoice    ComInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  recordedBy User       @relation("ComPaymentRecorder", fields: [recordedById], references: [id])
+
+  @@index([invoiceId])
+  @@map("com_payments")
 }

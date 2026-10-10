@@ -6,9 +6,11 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { UserProfileEditForm } from "@/components/admin/user-profile-edit-form";
 import { USER_STATUS_LABEL, USER_STATUS_TONE } from "@/lib/users/status";
 
 export function UserProfileCard({
+  userId,
   firstName,
   lastName,
   email,
@@ -18,7 +20,9 @@ export function UserProfileCard({
   permissionCount,
   groupCodes,
   packCodes,
+  canEdit,
 }: {
+  userId: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -28,6 +32,7 @@ export function UserProfileCard({
   permissionCount: number;
   groupCodes: string[];
   packCodes: string[];
+  canEdit?: boolean;
 }) {
   return (
     <Card className="overflow-hidden">
@@ -68,6 +73,17 @@ export function UserProfileCard({
                   </li>
                 ) : null}
               </ul>
+              {canEdit ? (
+                <div className="mt-3">
+                  <UserProfileEditForm
+                    userId={userId}
+                    firstName={firstName}
+                    lastName={lastName}
+                    email={email}
+                    phone={phone}
+                  />
+                </div>
+              ) : null}
             </div>
           </div>
 

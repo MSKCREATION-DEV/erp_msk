@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,7 +17,7 @@ export function PageHeader({
   title: string;
   description?: string;
   breadcrumbs?: Breadcrumb[];
-  actions?: React.ReactNode;
+  actions?: ReactNode;
   /** Lien retour explicite (liste / parent) — obligatoire sur create/edit/détail. */
   backHref?: string;
   backLabel?: string;

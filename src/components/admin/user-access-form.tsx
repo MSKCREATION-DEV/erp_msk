@@ -106,31 +106,36 @@ export function UserAccessForm({
         {canManageAccess ? (
           <ActionCard
             icon={Shield}
-            title="Packs & groupes"
+            title="Groupes & packs"
             subtitle={
               selectedPacks.length || selectedGroups.length
-                ? `${selectedPacks.length} pack(s) · ${selectedGroups.length} groupe(s)`
-                : "Aucun accès direct"
+                ? `${selectedGroups.length} groupe(s) · ${selectedPacks.length} pack(s) direct(s)`
+                : "Aucun accès configuré"
             }
             onClick={() => setDrawer("access")}
           >
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {selectedPacks.slice(0, 4).map((p) => (
-                <Badge key={p.id} tone="blue">
-                  {p.name}
-                </Badge>
-              ))}
-              {selectedGroups.slice(0, 3).map((g) => (
-                <Badge key={g.id} tone="ink">
-                  {g.name}
-                </Badge>
-              ))}
+            <div className="mt-3 space-y-2">
+              <div className="flex flex-wrap gap-1.5">
+                {selectedGroups.slice(0, 4).map((g) => (
+                  <Badge key={g.id} tone="ink">
+                    {g.name}
+                    {g.defaultPackCode ? ` → ${g.defaultPackName}` : ""}
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {selectedPacks.slice(0, 4).map((p) => (
+                  <Badge key={p.id} tone="blue">
+                    Pack {p.name}
+                  </Badge>
+                ))}
+              </div>
               {selectedPacks.length === 0 && selectedGroups.length === 0 ? (
                 <span className="text-xs text-msk-ink/40">Configurer →</span>
               ) : null}
             </div>
             <p className="mt-2 text-[11px] text-msk-ink/40">
-              Les groupes apportent leur pack défaut.
+              Préférer les groupes ; packs directs = exception / cumul.
             </p>
           </ActionCard>
         ) : null}
@@ -184,18 +189,30 @@ export function UserAccessForm({
         open={drawer === "access"}
         onOpenChange={(open) => !open && setDrawer(null)}
         title="Modifier les accès"
-        description="Cochez plusieurs packs et groupes. Chaque groupe apporte son pack défaut."
+        description="1) Groupes (héritage pack défaut) · 2) Packs directs (cumul) · 3) Overrides ailleurs."
         wide
       >
         <form action={accessAction} className="space-y-6">
           <input type="hidden" name="userId" value={userId} />
           <section>
             <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-msk-ink">
-              <Shield className="h-4 w-4 text-msk-blue" />
-              Packs directs
+              <Users className="h-4 w-4 text-msk-blue" />
+              1 · Groupes
             </h3>
             <p className="mb-3 text-xs text-msk-ink/45">
-              Multi-sélection. Chaque pack regroupe des permissions.
+              Ex. « Commerciaux » → pack Commercial. Base recommandée pour un
+              métier.
+            </p>
+            <GroupPicker groups={groups} defaultSelected={selectedGroupIds} />
+          </section>
+          <section>
+            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-msk-ink">
+              <Shield className="h-4 w-4 text-msk-blue" />
+              2 · Packs directs
+            </h3>
+            <p className="mb-3 text-xs text-msk-ink/45">
+              Uniquement si besoin d’un cumul (ex. Admin CRM en plus). Évitez de
+              dupliquer le pack déjà hérité du groupe.
             </p>
             <PackPicker
               packs={packs}
@@ -203,16 +220,11 @@ export function UserAccessForm({
               compact
             />
           </section>
-          <section>
-            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-msk-ink">
-              <Users className="h-4 w-4 text-msk-blue" />
-              Groupes
-            </h3>
-            <p className="mb-3 text-xs text-msk-ink/45">
-              Multi-sélection. Le pack défaut du groupe s’ajoute aux droits.
-            </p>
-            <GroupPicker groups={groups} defaultSelected={selectedGroupIds} />
-          </section>
+          <div className="rounded-lg border border-msk-blue/20 bg-msk-blue/[0.04] px-3 py-2 text-xs text-msk-ink/60">
+            Exemple terrain : groupes Collaborateur + Commerciaux,{" "}
+            <strong>aucun</strong> pack Admin CRM — sinon GED complète +
+            catalogue éditable.
+          </div>
           {accessState?.error ? (
             <p className="text-sm text-msk-coral">{accessState.error}</p>
           ) : null}

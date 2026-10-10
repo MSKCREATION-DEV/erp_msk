@@ -55,6 +55,8 @@ export default async function AccueilPage({
     isSuperAdmin: user.isSuperAdmin,
     groupCodes: user.groupCodes,
     packCodes: user.packCodes,
+    directPackCodes: user.directPackCodes,
+    groupPackCodes: user.groupPackCodes,
   });
 
   const kpis = canViewUsers
@@ -156,7 +158,7 @@ export default async function AccueilPage({
       <PageHeader
         title={`Bonjour ${user.firstName}`}
         breadcrumbs={[{ label: "MSK" }, { label: "Accueil" }]}
-        description="Espace collaborateur MSK CREATION. Les modules métier arrivent après les fondations IAM / GED."
+        description="Espace collaborateur MSK — modules selon vos groupes, packs et exceptions."
       />
 
       {chips.length > 0 ? (

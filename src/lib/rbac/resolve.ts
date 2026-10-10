@@ -11,7 +11,12 @@ export type SessionUser = {
   mustChangePassword: boolean;
   permissions: Set<string>;
   groupCodes: string[];
+  /** Packs issus des groupes (pack défaut) + packs directs — union. */
   packCodes: string[];
+  /** Packs assignés directement (user_packs), hors héritage groupe. */
+  directPackCodes: string[];
+  /** Packs défaut des groupes d’appartenance. */
+  groupPackCodes: string[];
 };
 
 /**
@@ -65,10 +70,17 @@ export async function resolveUserPermissions(
   if (!user) return null;
 
   const groupCodes = [...new Set(user.groupMembers.map((m) => m.group.code))];
-  const packCodes = new Set(user.userPacks.map((p) => p.pack.code));
-  for (const m of user.groupMembers) {
-    if (m.group.defaultPack) packCodes.add(m.group.defaultPack.code);
-  }
+  const directPackCodes = [
+    ...new Set(user.userPacks.map((p) => p.pack.code)),
+  ];
+  const groupPackCodes = [
+    ...new Set(
+      user.groupMembers
+        .map((m) => m.group.defaultPack?.code)
+        .filter((c): c is string => Boolean(c)),
+    ),
+  ];
+  const packCodes = new Set([...directPackCodes, ...groupPackCodes]);
 
   // Super Admin : pas besoin de charger 60+ permissions — le gate utilise isSuperAdmin
   if (user.isSuperAdmin) {
@@ -83,6 +95,8 @@ export async function resolveUserPermissions(
       permissions: new Set(),
       groupCodes,
       packCodes: [...packCodes],
+      directPackCodes,
+      groupPackCodes,
     };
   }
 
@@ -132,6 +146,8 @@ export async function resolveUserPermissions(
     permissions: permissionCodes,
     groupCodes,
     packCodes: [...packCodes],
+    directPackCodes,
+    groupPackCodes,
   };
 }
 

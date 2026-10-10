@@ -11,7 +11,6 @@ const MUTED = rgb(100 / 255, 110 / 255, 130 / 255);
 const ROW_ALT = rgb(0.96, 0.97, 0.98);
 const LIGHT_BLUE = rgb(0.9, 0.94, 0.98);
 const LIGHT_GREEN = rgb(0.88, 0.95, 0.9);
-const GOLD = rgb(0.84, 0.62, 0.18);
 
 export type CommercialLine = {
   label: string;
@@ -539,23 +538,7 @@ function drawDevisBody(
     color: BLUE,
   });
 
-  // Pastille premium (rappel or exemple devis)
-  page.drawRectangle({
-    x: margin,
-    y: y - 4,
-    width: 72,
-    height: 14,
-    color: GOLD,
-  });
-  draw(page, "MSK CREATION", {
-    x: margin + 4,
-    y: y - 1,
-    size: 7,
-    font: fontBold,
-    color: rgb(1, 1, 1),
-  });
-
-  return y - 40;
+  return y - 28;
 }
 
 function drawFactureBody(

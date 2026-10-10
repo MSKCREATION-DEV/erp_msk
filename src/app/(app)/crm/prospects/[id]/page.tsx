@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/card";
 import { StageForm } from "@/components/crm/stage-form";
 import { ActivityForm } from "@/components/crm/activity-form";
+import { CrmConvertButtons } from "@/components/commercial/crm-convert-buttons";
 
 export const metadata: Metadata = { title: "Fiche prospect" };
 
@@ -72,6 +73,19 @@ export default async function CrmProspectDetailPage({
       hasPermission(user, "crm.reports.global") ||
       user.isSuperAdmin);
 
+  const linkedClient =
+    deal.stage === "GAGNE"
+      ? await prisma.comClient.findFirst({
+          where: {
+            OR: [
+              { sourceOpportunityId: deal.id },
+              { crmOrganizationId: deal.organizationId },
+            ],
+          },
+          select: { id: true },
+        })
+      : null;
+
   return (
     <PageShell>
       <PageHeader
@@ -96,6 +110,14 @@ export default async function CrmProspectDetailPage({
           Owner {deal.owner.firstName} {deal.owner.lastName}
         </Badge>
       </div>
+
+      {deal.stage === "GAGNE" ? (
+        <CrmConvertButtons
+          opportunityId={deal.id}
+          existingClientId={linkedClient?.id}
+          canManage={hasPermission(user, "com.clients.manage")}
+        />
+      ) : null}
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">

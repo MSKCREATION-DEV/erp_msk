@@ -20,10 +20,13 @@ Les pôles suivants sont **URGENTS / PRIORITAIRES** pour MSK :
 
 - On **ne saute pas** les fondations (Phase 0 IAM, Phase 1 GED/gabarits utiles).
 - On **oriente** chaque plan de phase : marquer `URGENT` sur les livrables COM/CPT.
-- Phase 0 **OK** · Phase 1 **OK** · Phase 2 **OK** (2026-10-09) — IAM + GED + Catalogue/CRM livrés.
-- Phase 3 **plan ouvert** — Commercial documentaire ([PHASE-03-COMMERCIAL.md](./PHASE-03-COMMERCIAL.md)) — attendre **« Phase 3 GO »**.
-- Ensuite **URGENT** : Phase 3 → 6 (Devis/factures → Compta) sans diluer sur RH/stocks.
-- Optionnel **1.x** / **2.x** (hors chemin critique) : UI corbeille GED, partage ACL, pad signature, cron relances.
+- Phase 0 **OK** · Phase 1 **OK** · Phase 2 **OK** · Phase 3 **OK** (2026-10-10) — IAM + GED + Catalogue/CRM + Commercial documentaire.
+- **En cours** : Phase 6 Compta ([PHASE-06-COMPTA.md](./PHASE-06-COMPTA.md)) — plan ouvert, attendre **« Phase 6 GO »**.
+- Optionnel **1.x** / **2.x** / **3.x** (hors chemin critique) : UI corbeille GED, partage ACL, pad signature, cron relances factures.
+
+### Documentation vivante
+
+Manuels utilisateur : [docs/manuels/](../manuels/) — à mettre à jour à chaque évolution de module.
 
 ### Ce que ça ne change pas
 

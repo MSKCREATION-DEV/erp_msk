@@ -22,14 +22,29 @@ const PACK_LABELS: Record<string, string> = {
   admin_plateforme: "Admin plateforme",
 };
 
+export function groupLabel(code: string): string {
+  return GROUP_LABELS[code] ?? code;
+}
+
+export function packLabel(code: string): string {
+  return PACK_LABELS[code] ?? code;
+}
+
+/**
+ * Chips Accueil — couche claire :
+ * 1) Super Admin
+ * 2) Groupes (appartenance)
+ * 3) Packs directs seulement (pas les packs déjà hérités du groupe)
+ */
 export function roleChips(input: {
   isSuperAdmin: boolean;
   groupCodes: string[];
   packCodes: string[];
+  directPackCodes?: string[];
+  groupPackCodes?: string[];
 }): { label: string; tone: "blue" | "ink" | "muted" }[] {
-  const seen = new Set<string>();
   const chips: { label: string; tone: "blue" | "ink" | "muted" }[] = [];
-
+  const seen = new Set<string>();
   const push = (key: string, label: string, tone: "blue" | "ink" | "muted") => {
     const k = key.toLowerCase();
     if (seen.has(k)) return;
@@ -39,12 +54,16 @@ export function roleChips(input: {
 
   if (input.isSuperAdmin) push("super_admin", "Super Admin", "blue");
 
-  // Packs d’abord (plus parlant), puis groupes non déjà couverts
-  for (const code of input.packCodes) {
-    push(code, PACK_LABELS[code] ?? code, "muted");
-  }
   for (const code of input.groupCodes) {
-    push(code, GROUP_LABELS[code] ?? code, "ink");
+    push(`g:${code}`, groupLabel(code), "ink");
+  }
+
+  const direct = input.directPackCodes ?? input.packCodes;
+  const inherited = new Set(input.groupPackCodes ?? []);
+  for (const code of direct) {
+    // Ne pas re-afficher un pack déjà apporté par le groupe
+    if (inherited.has(code)) continue;
+    push(`p:${code}`, `Pack ${packLabel(code)}`, "muted");
   }
 
   return chips;
