@@ -46,8 +46,15 @@ DIRECT_URL=postgresql://postgres.[REF]:[PWD]@aws-0-….pooler.supabase.com:5432/
 
 | Symptôme | Cause | Action |
 |---|---|---|
-| `EMAXCONNSESSION` / pool_size 15 | `DATABASE_URL` en Session | Passer `DATABASE_URL` en **6543** |
-| Build bloqué >10 min sur `prisma migrate deploy` | `DIRECT_URL` = `db.*.supabase.co` | Passer `DIRECT_URL` en **pooler:5432**, puis Redeploy |
+| `EMAXCONNSESSION` / pool_size 15 | Runtime encore en Session (`:5432`) — souvent un vieux déploiement Ready | `DATABASE_URL` = **6543** + Redeploy réussi |
+| Build 45 min / hang après `migrate deploy` | CLI Prisma utilisait `DATABASE_URL` (6543) au lieu de `DIRECT_URL` | Corrigé dans `prisma.config.ts` (`url` = `DIRECT_URL`). Vérifier `DIRECT_URL` = pooler **:5432** |
+| Log migrate : `…pooler…:6543` | Mauvaise URL CLI | Doit afficher **`:5432`** après le fix |
+
+### Checklist Vercel (2 URLs)
+
+1. `DATABASE_URL` → port **6543** + `?pgbouncer=true` (app)
+2. `DIRECT_URL` → **même host pooler**, port **5432** (migrate)
+3. Redeploy Production — le build doit afficher `[build] prisma generate…` en < 1 min
 | `NEXT_PUBLIC_SUPABASE_URL` | URL projet Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Serveur uniquement** — ne jamais préfixer `NEXT_PUBLIC_` |

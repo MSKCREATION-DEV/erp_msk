@@ -27,7 +27,7 @@ git checkout dev
 - Accès SSH GitHub host `asg-msk`
 - Projet Supabase **neuf**
 - Compte [Resend](https://resend.com) (dev)
-- Prisma 6 + pooler Supabase (`DATABASE_URL` session, région correcte)
+- Prisma 6 + pooler Supabase (`DATABASE_URL` Transaction `:6543`, `DIRECT_URL` Session `:5432`)
 
 ## Démarrage
 
