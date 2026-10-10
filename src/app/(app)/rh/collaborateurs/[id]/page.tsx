@@ -20,6 +20,9 @@ import {
 } from "@/lib/rh/labels";
 import { EmployeeStatusButtons } from "@/components/rh/employee-status-buttons";
 import { EmployeeDocsActions } from "@/components/rh/employee-docs-actions";
+import { findLatestLinkedDoc, mapEmployeeDocIds } from "@/lib/rh/docs-query";
+import { RH_DOC } from "@/lib/rh/docs";
+import { DocDownloadButton } from "@/components/rh/doc-download-button";
 
 export const metadata: Metadata = { title: "Collaborateur" };
 
@@ -45,6 +48,20 @@ export default async function RhCollaborateurDetailPage({
 
   const canManage = hasPermission(user, "rh.employees.manage");
   const canContracts = hasPermission(user, "rh.contracts.manage");
+  const docIds = await mapEmployeeDocIds(employee.id);
+
+  const contractPdfs = await Promise.all(
+    employee.contracts.map(async (c) => {
+      const linked = await findLatestLinkedDoc(RH_DOC.CONTRACT, c.id);
+      return {
+        contractId: c.id,
+        documentId: linked?.id ?? c.gedDocumentId,
+      };
+    }),
+  );
+  const pdfByContract = new Map(
+    contractPdfs.map((x) => [x.contractId, x.documentId]),
+  );
 
   return (
     <PageShell>
@@ -80,8 +97,10 @@ export default async function RhCollaborateurDetailPage({
         </Badge>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Surface className="space-y-2 p-5 text-sm lg:col-span-1">
+      {/* 1. Identité */}
+      <Surface className="space-y-2 p-5 text-sm">
+        <h2 className="text-sm font-semibold text-msk-ink">Identité</h2>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           <p>
             <span className="text-msk-ink/45">Email </span>
             {employee.email ?? employee.user?.email ?? "—"}
@@ -104,36 +123,58 @@ export default async function RhCollaborateurDetailPage({
             <span className="text-msk-ink/45">Compte lié </span>
             {employee.user ? "Oui" : "Non"}
           </p>
-        </Surface>
+        </div>
+      </Surface>
 
-        <Surface className="overflow-x-auto p-0 lg:col-span-2">
-          <div className="border-b border-msk-ink/10 px-4 py-3">
-            <h2 className="text-sm font-semibold text-msk-ink">Contrats</h2>
-          </div>
-          {employee.contracts.length === 0 ? (
-            <p className="px-4 py-6 text-sm text-msk-ink/50">
-              Aucun contrat enregistré.
-            </p>
-          ) : (
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-msk-ink/10 text-msk-ink/45">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Intitulé</th>
-                  <th className="px-4 py-3 font-medium">Type</th>
-                  <th className="px-4 py-3 font-medium">Début</th>
-                  <th className="px-4 py-3 font-medium">Statut</th>
-                </tr>
-              </thead>
-              <tbody>
-                {employee.contracts.map((c) => (
+      {/* 2. Contrats */}
+      <Surface className="overflow-x-auto p-0">
+        <div className="flex items-center justify-between border-b border-msk-ink/10 px-4 py-3">
+          <h2 className="text-sm font-semibold text-msk-ink">Contrats</h2>
+          {canContracts ? (
+            <Link
+              href={`/rh/contrats/nouveau?employeeId=${employee.id}`}
+              className="text-xs font-medium text-msk-blue hover:underline"
+            >
+              Ajouter
+            </Link>
+          ) : null}
+        </div>
+        {employee.contracts.length === 0 ? (
+          <p className="px-4 py-6 text-sm text-msk-ink/50">
+            Aucun contrat enregistré.
+          </p>
+        ) : (
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-msk-ink/10 text-msk-ink/45">
+              <tr>
+                <th className="px-4 py-3 font-medium">Intitulé</th>
+                <th className="px-4 py-3 font-medium">Type</th>
+                <th className="px-4 py-3 font-medium">Début</th>
+                <th className="px-4 py-3 font-medium">Statut</th>
+                <th className="px-4 py-3 font-medium">PDF</th>
+              </tr>
+            </thead>
+            <tbody>
+              {employee.contracts.map((c) => {
+                const pdfId = pdfByContract.get(c.id);
+                const titleLooksStage = /stage/i.test(c.title);
+                const typeMismatch =
+                  (titleLooksStage && c.type !== "STAGE") ||
+                  (!titleLooksStage && c.type === "STAGE" && /cdi|cdd/i.test(c.title));
+                return (
                   <tr key={c.id} className="border-b border-msk-ink/5">
                     <td className="px-4 py-2">
                       <Link
-                        href={`/rh/contrats/${c.id}`}
+                        href={`/rh/contrats/${c.id}?from=collab&employeeId=${employee.id}`}
                         className="font-medium text-msk-blue hover:underline"
                       >
                         {c.title}
                       </Link>
+                      {typeMismatch ? (
+                        <p className="text-xs text-msk-coral">
+                          Intitulé et type incohérents
+                        </p>
+                      ) : null}
                     </td>
                     <td className="px-4 py-2 text-msk-ink/70">
                       {CONTRACT_TYPE_LABEL[c.type]}
@@ -146,30 +187,54 @@ export default async function RhCollaborateurDetailPage({
                         {CONTRACT_STATUS_LABEL[c.status]}
                       </Badge>
                     </td>
+                    <td className="px-4 py-2">
+                      {pdfId ? (
+                        <DocDownloadButton
+                          documentId={pdfId}
+                          label="PDF"
+                          size="sm"
+                        />
+                      ) : (
+                        <span className="text-xs text-msk-ink/40">—</span>
+                      )}
+                    </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </Surface>
-      </div>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </Surface>
 
+      {/* 3. Documents */}
       {canManage ? (
         <Surface className="p-5">
-          <h2 className="mb-3 text-sm font-semibold text-msk-ink">
-            Documents RH (PDF)
+          <h2 className="mb-1 text-sm font-semibold text-msk-ink">
+            Documents RH
           </h2>
-          <p className="mb-3 text-xs text-msk-ink/45">
-            Charte MSK — classés automatiquement dans le dossier GED du
-            collaborateur.
+          <p className="mb-4 text-xs text-msk-ink/45">
+            Charte MSK — classés en GED. Si déjà généré : Voir / Télécharger ;
+            Regénérer en secondaire.
           </p>
-          <EmployeeDocsActions employeeId={employee.id} />
+          <EmployeeDocsActions
+            employeeId={employee.id}
+            docs={{
+              ...docIds,
+              reglementSigned: employee.reglementStatus === "SIGNED",
+            }}
+          />
         </Surface>
       ) : null}
 
+      {/* 4. Cycle de vie */}
       {canManage ? (
         <Surface className="p-5">
-          <h2 className="mb-3 text-sm font-semibold text-msk-ink">Statut</h2>
+          <h2 className="mb-3 text-sm font-semibold text-msk-ink">
+            Cycle de vie
+          </h2>
+          <p className="mb-3 text-xs text-msk-ink/45">
+            Onboarding → Actif → Offboarding → Archivé
+          </p>
           <EmployeeStatusButtons
             employeeId={employee.id}
             status={employee.status}

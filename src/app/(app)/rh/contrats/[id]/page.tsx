@@ -15,17 +15,22 @@ import {
 } from "@/lib/rh/labels";
 import { ContractStatusButtons } from "@/components/rh/contract-status-buttons";
 import { ContractPdfButton } from "@/components/rh/contract-pdf-button";
+import { findLatestLinkedDoc } from "@/lib/rh/docs-query";
+import { RH_DOC } from "@/lib/rh/docs";
 
 export const metadata: Metadata = { title: "Contrat" };
 
 export default async function RhContratDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: string; employeeId?: string }>;
 }) {
   const user = await requireUser();
   if (!hasPermission(user, "rh.contracts.manage")) redirect("/accueil");
   const { id } = await params;
+  const sp = await searchParams;
 
   const contract = await prisma.rhContract.findUnique({
     where: { id },
@@ -35,16 +40,47 @@ export default async function RhContratDetailPage({
   });
   if (!contract) notFound();
 
+  const linked = await findLatestLinkedDoc(RH_DOC.CONTRACT, contract.id);
+  const documentId = linked?.id ?? contract.gedDocumentId;
+
+  const fromCollab =
+    sp.from === "collab" &&
+    (sp.employeeId === contract.employee.id || !sp.employeeId);
+  const backHref = fromCollab
+    ? `/rh/collaborateurs/${contract.employee.id}`
+    : "/rh/contrats";
+  const backLabel = fromCollab
+    ? `Retour à ${contract.employee.firstName} ${contract.employee.lastName}`
+    : "Retour aux contrats";
+
+  const titleLooksStage = /stage/i.test(contract.title);
+  const typeMismatch =
+    (titleLooksStage && contract.type !== "STAGE") ||
+    (!titleLooksStage &&
+      contract.type === "STAGE" &&
+      /cdi|cdd/i.test(contract.title));
+
   return (
     <PageShell>
       <PageHeader
         title={contract.title}
         description={`${contract.employee.firstName} ${contract.employee.lastName}`}
-        backHref="/rh/contrats"
-        backLabel="Retour aux contrats"
+        backHref={backHref}
+        backLabel={backLabel}
         breadcrumbs={[
           { label: "RH", href: "/rh" },
-          { label: "Contrats", href: "/rh/contrats" },
+          ...(fromCollab
+            ? [
+                {
+                  label: "Collaborateurs",
+                  href: "/rh/collaborateurs",
+                },
+                {
+                  label: `${contract.employee.firstName} ${contract.employee.lastName}`,
+                  href: `/rh/collaborateurs/${contract.employee.id}`,
+                },
+              ]
+            : [{ label: "Contrats", href: "/rh/contrats" }]),
           { label: contract.title },
         ]}
       />
@@ -54,9 +90,13 @@ export default async function RhContratDetailPage({
           {CONTRACT_STATUS_LABEL[contract.status]}
         </Badge>
         <Badge tone="muted">{CONTRACT_TYPE_LABEL[contract.type]}</Badge>
+        {typeMismatch ? (
+          <Badge tone="coral">Intitulé / type incohérents</Badge>
+        ) : null}
       </div>
 
       <Surface className="space-y-2 p-5 text-sm">
+        <h2 className="text-sm font-semibold text-msk-ink">Détail</h2>
         <p>
           <span className="text-msk-ink/45">Collaborateur </span>
           <Link
@@ -92,12 +132,11 @@ export default async function RhContratDetailPage({
 
       <Surface className="p-5">
         <h2 className="mb-3 text-sm font-semibold text-msk-ink">Document PDF</h2>
-        <ContractPdfButton contractId={contract.id} />
-        {contract.gedDocumentId ? (
-          <p className="mt-2 text-xs text-msk-ink/45">
-            Dernier PDF classé en GED (Collaborateurs → Contrats).
-          </p>
-        ) : null}
+        <ContractPdfButton
+          contractId={contract.id}
+          documentId={documentId}
+          generatedAt={linked?.createdAt}
+        />
       </Surface>
 
       <Surface className="p-5">

@@ -4,6 +4,7 @@ import { createHash } from "crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
+  DocStatus,
   Prisma,
   RhAbsenceStatus,
   RhContractStatus,
@@ -34,6 +35,9 @@ import { uploadGedObject } from "@/lib/ged/storage";
 import { ensureCollaboratorSubfolder } from "@/lib/ged/tree";
 import { getSignaturePngBytes } from "@/lib/signatures/resolve";
 import { CONTRACT_TYPE_LABEL } from "@/lib/rh/labels";
+import { RH_DOC } from "@/lib/rh/docs";
+import { signedGedUrl } from "@/lib/ged/storage";
+import { canViewFolderPath } from "@/lib/ged/scope";
 
 const cuidSchema = z.string().min(8).max(40);
 
@@ -754,7 +758,7 @@ export async function generateContractPdfAction(
       subCode: "02_CONTRATS",
       fileName,
       pdfBytes,
-      entityType: "RhContract",
+      entityType: RH_DOC.CONTRACT,
       entityId: contract.id,
       auditAction: "rh.contract.generate_pdf",
     });
@@ -764,6 +768,10 @@ export async function generateContractPdfAction(
     });
     revalidateRh();
     revalidatePath(`/rh/contrats/${contract.id}`);
+    revalidatePath(`/rh/collaborateurs/${contract.employeeId}`);
+    revalidatePath("/espace");
+    revalidatePath("/espace/documents");
+    revalidatePath("/espace/contrats");
     revalidatePath("/ged");
     return {
       ok: true,
@@ -842,12 +850,13 @@ export async function generateAttestationPdfAction(
       subCode: "05_DIPLOMES_ATTESTATIONS",
       fileName,
       pdfBytes,
-      entityType: "RhEmployee",
+      entityType: RH_DOC.ATTESTATION,
       entityId: employee.id,
       auditAction: "rh.attestation.generate_pdf",
     });
     revalidateRh();
     revalidatePath(`/rh/collaborateurs/${employee.id}`);
+    revalidatePath("/espace/documents");
     return {
       ok: true,
       message: `Attestation classée GED`,
@@ -904,12 +913,14 @@ export async function generateReglementPdfAction(
       subCode: "06_REGLEMENT_INTERIEUR",
       fileName,
       pdfBytes,
-      entityType: "RhEmployee",
+      entityType: RH_DOC.REGLEMENT,
       entityId: employee.id,
       auditAction: "rh.reglement.generate_pdf",
     });
     revalidateRh();
     revalidatePath(`/rh/collaborateurs/${employee.id}`);
+    revalidatePath("/espace");
+    revalidatePath("/espace/documents");
     return {
       ok: true,
       message: "Règlement intérieur PDF classé GED",
@@ -968,12 +979,13 @@ export async function generateSoldePdfAction(
       subCode: "09_SORTIE",
       fileName,
       pdfBytes,
-      entityType: "RhEmployee",
+      entityType: RH_DOC.SOLDE,
       entityId: employee.id,
       auditAction: "rh.solde.generate_pdf",
     });
     revalidateRh();
     revalidatePath(`/rh/collaborateurs/${employee.id}`);
+    revalidatePath("/espace/documents");
     return {
       ok: true,
       message: "Solde de tout compte classé GED",
@@ -1056,12 +1068,14 @@ export async function generateFichePaiePdfAction(
       subCode: "03_PAIE",
       fileName,
       pdfBytes,
-      entityType: "RhEmployee",
+      entityType: RH_DOC.FICHE_PAIE,
       entityId: employee.id,
       auditAction: "rh.payslip.generate_pdf",
     });
     revalidateRh();
     revalidatePath(`/rh/collaborateurs/${employee.id}`);
+    revalidatePath("/espace/documents");
+    revalidatePath("/espace/bulletins");
     return {
       ok: true,
       message: "Fiche de paie (indicative) classée GED",
@@ -1071,6 +1085,51 @@ export async function generateFichePaiePdfAction(
     return {
       ok: false,
       error: e instanceof Error ? e.message : "Échec dépôt GED",
+    };
+  }
+}
+
+/**
+ * URL signée d’un document RH — RH admin ou collab (son dossier / self.documents.view).
+ */
+export async function getRhDocumentUrlAction(
+  formData: FormData,
+): Promise<ActionResult & { url?: string }> {
+  const actor = await requireUser();
+  const id = cuidSchema.safeParse(formData.get("documentId"));
+  if (!id.success) return { ok: false, error: "Document manquant" };
+
+  const doc = await prisma.document.findUnique({
+    where: { id: id.data },
+    include: { folder: { select: { path: true } } },
+  });
+  if (!doc || doc.status === DocStatus.TRASH) {
+    return { ok: false, error: "Document introuvable" };
+  }
+
+  const isRh =
+    hasPermission(actor, "rh.employees.view") ||
+    hasPermission(actor, "rh.employees.manage") ||
+    hasPermission(actor, "rh.contracts.manage");
+  const canSelf =
+    hasPermission(actor, "self.documents.view") ||
+    hasPermission(actor, "ged.view_scoped");
+
+  if (!isRh && !canSelf) {
+    return { ok: false, error: "Permission refusée" };
+  }
+
+  if (!isRh && !(await canViewFolderPath(actor, doc.folder.path))) {
+    return { ok: false, error: "Document hors de votre périmètre" };
+  }
+
+  try {
+    const url = await signedGedUrl(doc.storagePath);
+    return { ok: true, url };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "URL signée impossible",
     };
   }
 }

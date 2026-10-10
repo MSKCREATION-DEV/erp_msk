@@ -35,16 +35,34 @@ export default async function RhContratNouveauPage({
     take: 500,
   });
 
+  const fromEmployee = employeeId
+    ? employees.find((e) => e.id === employeeId)
+    : null;
+  const backHref = fromEmployee
+    ? `/rh/collaborateurs/${fromEmployee.id}`
+    : "/rh/contrats";
+  const backLabel = fromEmployee
+    ? `Retour à ${fromEmployee.firstName} ${fromEmployee.lastName}`
+    : "Retour aux contrats";
+
   return (
     <PageShell>
       <PageHeader
         title="Nouveau contrat"
         description="Lier un contrat à un collaborateur."
-        backHref="/rh/contrats"
-        backLabel="Retour aux contrats"
+        backHref={backHref}
+        backLabel={backLabel}
         breadcrumbs={[
           { label: "RH", href: "/rh" },
-          { label: "Contrats", href: "/rh/contrats" },
+          ...(fromEmployee
+            ? [
+                { label: "Collaborateurs", href: "/rh/collaborateurs" },
+                {
+                  label: `${fromEmployee.firstName} ${fromEmployee.lastName}`,
+                  href: `/rh/collaborateurs/${fromEmployee.id}`,
+                },
+              ]
+            : [{ label: "Contrats", href: "/rh/contrats" }]),
           { label: "Nouveau" },
         ]}
       />
