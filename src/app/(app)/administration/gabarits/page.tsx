@@ -29,7 +29,7 @@ export default async function GabaritsPage() {
     <PageShell>
       <PageHeader
         title="Gabarits"
-        description="Devis & factures — génération PDF démo classée dans 04_MODELES."
+        description="Devis, factures et gabarits RH (contrats, attestation, règlement, solde, paie) — PDF démo dans 04_MODELES."
         breadcrumbs={[
           { label: "Administration" },
           { label: "Gabarits" },
@@ -47,8 +47,12 @@ export default async function GabaritsPage() {
                     {t.code} · v{t.version}
                   </CardDescription>
                 </div>
-                <Badge tone={t.type === "DEVIS" ? "blue" : "ink"}>
-                  {t.type}
+                <Badge
+                  tone={
+                    t.type === "DEVIS" || t.type === "FACTURE" ? "blue" : "ink"
+                  }
+                >
+                  {t.type.replace(/_/g, " ")}
                 </Badge>
               </div>
             </CardHeader>

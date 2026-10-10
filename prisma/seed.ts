@@ -388,6 +388,77 @@ async function seedPhase1Ged() {
         ref: "gabarit_msk_v1_facture",
       },
     },
+    {
+      code: "contrat_travail_msk",
+      type: "CONTRAT_TRAVAIL" as const,
+      name: "Contrat de travail MSK",
+      structureJson: {
+        layout: "msk_rh_v1",
+        slots: ["header", "parties", "articles", "signatures", "footer"],
+        ref: "docs/Contrat de Travail",
+      },
+    },
+    {
+      code: "contrat_stage_msk",
+      type: "CONTRAT_STAGE" as const,
+      name: "Contrat de stage MSK",
+      structureJson: {
+        layout: "msk_rh_v1",
+        slots: ["header", "parties", "articles", "signatures", "footer"],
+        ref: "docs/Contrat de Stage",
+      },
+    },
+    {
+      code: "contrat_presta_msk",
+      type: "CONTRAT_PRESTA" as const,
+      name: "Contrat de prestation MSK",
+      structureJson: {
+        layout: "msk_rh_v1",
+        slots: ["header", "parties", "articles", "signatures", "footer"],
+        ref: "docs/CONTRAT DE PRESTATION",
+      },
+    },
+    {
+      code: "attestation_stage_msk",
+      type: "ATTESTATION_STAGE" as const,
+      name: "Attestation de stage MSK",
+      structureJson: {
+        layout: "msk_rh_v1",
+        slots: ["header", "certificat", "signatures", "footer"],
+        ref: "docs/ATTESTATION DE STAGE",
+      },
+    },
+    {
+      code: "reglement_interieur_msk",
+      type: "REGLEMENT_INTERIEUR" as const,
+      name: "Règlement intérieur — accusé MSK",
+      structureJson: {
+        layout: "msk_rh_v1",
+        slots: ["header", "articles", "accuse", "signatures", "footer"],
+        ref: "docs/Règlement intérieur",
+      },
+    },
+    {
+      code: "solde_tout_compte_msk",
+      type: "SOLDE_TOUT_COMPTE" as const,
+      name: "Solde de tout compte MSK",
+      structureJson: {
+        layout: "msk_rh_v1",
+        slots: ["header", "recu", "signatures", "footer"],
+        ref: "docs/Solde de tout compte",
+      },
+    },
+    {
+      code: "fiche_paie_msk",
+      type: "FICHE_PAIE" as const,
+      name: "Fiche de paie (indicative) MSK",
+      structureJson: {
+        layout: "msk_rh_v1",
+        slots: ["header", "infos", "cotisations", "net", "footer"],
+        ref: "docs/Fiche de Paie",
+        note: "Phase 5 finalisera INPS officiel",
+      },
+    },
   ];
   for (const t of templates) {
     await prisma.documentTemplate.upsert({
@@ -402,7 +473,7 @@ async function seedPhase1Ged() {
       update: { name: t.name, active: true, structureJson: t.structureJson },
     });
   }
-  console.log("✓ Gabarits devis / facture");
+  console.log("✓ Gabarits devis / facture / RH");
 
   // Organigramme équipe MSK (slide 05 + assets public/team)
   const idByKey = new Map<string, string>();

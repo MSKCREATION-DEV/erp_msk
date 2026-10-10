@@ -2,7 +2,12 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import { company } from "@/lib/company";
-import { formatDateFr, formatMoneyFr, toWinAnsi } from "@/lib/pdf/winansi";
+import {
+  formatDateFr,
+  formatMoneyFr,
+  toWinAnsi,
+  toWinAnsiLines,
+} from "@/lib/pdf/winansi";
 
 /** Charte MSK — couleurs PDF (exemples devis / facture). */
 const BLUE = rgb(29 / 255, 115 / 255, 188 / 255);
@@ -82,6 +87,32 @@ function drawRight(
     font: opts.font,
     color: opts.color,
   });
+}
+
+/** Coupe un texte WinAnsi-safe en lignes qui tiennent dans maxWidth. */
+function wrapParagraph(
+  text: string,
+  font: PDFFont,
+  size: number,
+  maxWidth: number,
+): string[] {
+  const paragraphs = toWinAnsiLines(text);
+  const out: string[] = [];
+  for (const para of paragraphs.length ? paragraphs : [toWinAnsi(text)]) {
+    const words = para.split(" ").filter(Boolean);
+    let cur = "";
+    for (const word of words) {
+      const test = cur ? `${cur} ${word}` : word;
+      if (font.widthOfTextAtSize(test, size) > maxWidth && cur) {
+        out.push(cur);
+        cur = word;
+      } else {
+        cur = test;
+      }
+    }
+    if (cur) out.push(cur);
+  }
+  return out.length ? out : [""];
 }
 
 async function embedLogo(pdf: PDFDocument) {
@@ -352,7 +383,19 @@ function drawDevisBody(
     input.missionNote ??
     "Cette proposition precise le perimetre, les livrables et les conditions commerciales.";
 
-  const boxH = 58;
+  const maxTextW = contentW - 20;
+  const objetLines = wrapParagraph(`Objet : ${objet}`, fontBold, 9, maxTextW);
+  const noteLines = wrapParagraph(note, font, 8.5, maxTextW);
+  const lineGap = 11;
+  const boxPadTop = 10;
+  const boxPadBottom = 10;
+  const boxH =
+    boxPadTop +
+    objetLines.length * lineGap +
+    4 +
+    noteLines.length * lineGap +
+    boxPadBottom;
+
   page.drawRectangle({
     x: margin,
     y: y - boxH + 12,
@@ -360,22 +403,28 @@ function drawDevisBody(
     height: boxH,
     color: LIGHT_BLUE,
   });
-  draw(page, `Objet : ${objet}`, {
-    x: margin + 10,
-    y: y - 2,
-    size: 9,
-    font: fontBold,
-    color: INK,
-    maxWidth: contentW - 20,
-  });
-  draw(page, note, {
-    x: margin + 10,
-    y: y - 18,
-    size: 8.5,
-    font,
-    color: MUTED,
-    maxWidth: contentW - 20,
-  });
+  let ty = y - 2;
+  for (const line of objetLines) {
+    draw(page, line, {
+      x: margin + 10,
+      y: ty,
+      size: 9,
+      font: fontBold,
+      color: INK,
+    });
+    ty -= lineGap;
+  }
+  ty -= 4;
+  for (const line of noteLines) {
+    draw(page, line, {
+      x: margin + 10,
+      y: ty,
+      size: 8.5,
+      font,
+      color: MUTED,
+    });
+    ty -= lineGap;
+  }
   y -= boxH + 16;
 
   draw(page, "2. DETAIL DES PRESTATIONS", {

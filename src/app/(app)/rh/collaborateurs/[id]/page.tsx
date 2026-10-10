@@ -19,6 +19,7 @@ import {
   reglementStatusTone,
 } from "@/lib/rh/labels";
 import { EmployeeStatusButtons } from "@/components/rh/employee-status-buttons";
+import { EmployeeDocsActions } from "@/components/rh/employee-docs-actions";
 
 export const metadata: Metadata = { title: "Collaborateur" };
 
@@ -152,6 +153,19 @@ export default async function RhCollaborateurDetailPage({
           )}
         </Surface>
       </div>
+
+      {canManage ? (
+        <Surface className="p-5">
+          <h2 className="mb-3 text-sm font-semibold text-msk-ink">
+            Documents RH (PDF)
+          </h2>
+          <p className="mb-3 text-xs text-msk-ink/45">
+            Charte MSK — classés automatiquement dans le dossier GED du
+            collaborateur.
+          </p>
+          <EmployeeDocsActions employeeId={employee.id} />
+        </Surface>
+      ) : null}
 
       {canManage ? (
         <Surface className="p-5">

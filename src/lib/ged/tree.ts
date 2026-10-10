@@ -156,14 +156,47 @@ export async function getFolderBreadcrumb(folderId: string) {
 }
 
 export async function findModelesFolder(
-  type: "Devis" | "Factures",
+  type: "Devis" | "Factures" | "Contrats" | "RH",
   year = new Date().getFullYear(),
 ) {
   const path = `/${year}/04_MODELES/${type}`;
   const existing = await prisma.documentFolder.findUnique({ where: { path } });
   if (existing) return existing;
   await ensureYearTree(year);
+  const modeles = await prisma.documentFolder.findUniqueOrThrow({
+    where: { path: `/${year}/04_MODELES` },
+  });
+  const meta = MODELES_CHILDREN.find((c) => c.code === type);
+  if (meta) {
+    await ensureChild(modeles.id, modeles.path, meta.code, meta.name, year);
+  }
   return prisma.documentFolder.findUniqueOrThrow({ where: { path } });
+}
+
+/** Sous-dossier collaborateur (ex. 02_CONTRATS, 05_DIPLOMES…). */
+export async function ensureCollaboratorSubfolder(
+  firstName: string,
+  lastName: string,
+  subCode: (typeof COLLAB_SUBFOLDERS)[number]["code"],
+  year = new Date().getFullYear(),
+  createdById?: string,
+) {
+  const person = await ensureCollaboratorFolders(
+    firstName,
+    lastName,
+    year,
+    createdById,
+  );
+  const meta = COLLAB_SUBFOLDERS.find((s) => s.code === subCode);
+  if (!meta) throw new Error(`Sous-dossier collab inconnu: ${subCode}`);
+  return ensureChild(
+    person.id,
+    person.path,
+    meta.code,
+    meta.name,
+    year,
+    createdById,
+  );
 }
 
 /** Code dossier dérivé du nom (unique sous le parent). */

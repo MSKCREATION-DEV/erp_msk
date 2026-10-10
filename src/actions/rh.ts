@@ -1,5 +1,6 @@
 "use server";
 
+import { createHash } from "crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import {
@@ -19,6 +20,20 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { writeAudit } from "@/lib/audit";
 import type { ActionResult } from "@/actions/auth";
+import { formatDateFr } from "@/lib/pdf/winansi";
+import {
+  generateAttestationStagePdf,
+  generateContractPrestaPdf,
+  generateContractStagePdf,
+  generateContractTravailPdf,
+  generateFichePaiePdf,
+  generateReglementInterieurPdf,
+  generateSoldeToutComptePdf,
+} from "@/lib/pdf/rh";
+import { uploadGedObject } from "@/lib/ged/storage";
+import { ensureCollaboratorSubfolder } from "@/lib/ged/tree";
+import { getSignaturePngBytes } from "@/lib/signatures/resolve";
+import { CONTRACT_TYPE_LABEL } from "@/lib/rh/labels";
 
 const cuidSchema = z.string().min(8).max(40);
 
@@ -607,4 +622,455 @@ export async function reviewTimesheetAction(
     message:
       decision.data === "APPROVED" ? "Heures approuvées" : "Heures refusées",
   };
+}
+
+// ─── PDF RH (contrats, attestation, règlement, solde, fiche paie) ───
+
+async function storeRhPdf(opts: {
+  actorId: string;
+  firstName: string;
+  lastName: string;
+  subCode: Parameters<typeof ensureCollaboratorSubfolder>[2];
+  fileName: string;
+  pdfBytes: Uint8Array;
+  entityType: string;
+  entityId: string;
+  auditAction: string;
+}) {
+  const folder = await ensureCollaboratorSubfolder(
+    opts.firstName,
+    opts.lastName,
+    opts.subCode,
+    new Date().getFullYear(),
+    opts.actorId,
+  );
+  const storagePath = `${folder.path.replace(/^\//, "")}/${opts.fileName}`;
+  await uploadGedObject(storagePath, opts.pdfBytes, "application/pdf", {
+    upsert: true,
+  });
+  const checksum = createHash("sha256").update(opts.pdfBytes).digest("hex");
+  const doc = await prisma.document.create({
+    data: {
+      folderId: folder.id,
+      storagePath,
+      originalName: opts.fileName,
+      mime: "application/pdf",
+      size: opts.pdfBytes.byteLength,
+      checksum,
+      createdById: opts.actorId,
+      links: {
+        create: {
+          entityType: opts.entityType,
+          entityId: opts.entityId,
+        },
+      },
+    },
+  });
+  await writeAudit({
+    actorId: opts.actorId,
+    action: opts.auditAction,
+    entityType: "document",
+    entityId: doc.id,
+    metadata: { linked: opts.entityId, fileName: opts.fileName },
+  });
+  return doc;
+}
+
+function slugName(first: string, last: string) {
+  return `${last}_${first}`
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9_-]+/g, "_")
+    .toUpperCase();
+}
+
+/** Génère le PDF du contrat selon son type (CDI/CDD → travail, STAGE, PRESTA). */
+export async function generateContractPdfAction(
+  formData: FormData,
+): Promise<ActionResult & { documentId?: string }> {
+  const actor = await requireUser({ permission: "rh.contracts.manage" });
+  const id = cuidSchema.safeParse(formData.get("contractId"));
+  if (!id.success) return { ok: false, error: "Contrat manquant" };
+
+  const contract = await prisma.rhContract.findUnique({
+    where: { id: id.data },
+    include: { employee: true },
+  });
+  if (!contract) return { ok: false, error: "Contrat introuvable" };
+
+  const signature = await getSignaturePngBytes({
+    ownerUserId: actor.id,
+  }).catch(() => null);
+
+  const person = {
+    firstName: contract.employee.firstName,
+    lastName: contract.employee.lastName,
+    email: contract.employee.email ?? undefined,
+    phone: contract.employee.phone ?? undefined,
+    jobTitle: contract.employee.jobTitle ?? contract.title,
+  };
+  const base = {
+    title: contract.title,
+    startDate: formatDateFr(contract.startDate),
+    endDate: contract.endDate ? formatDateFr(contract.endDate) : undefined,
+    salaryXof: contract.salaryXof ?? undefined,
+    notes: contract.notes ?? undefined,
+    employee: person,
+    signaturePng: signature?.bytes,
+    signatureLabel: signature
+      ? `${actor.firstName} ${actor.lastName}`
+      : undefined,
+  };
+
+  let pdfBytes: Uint8Array;
+  let kindLabel: string;
+  try {
+    if (contract.type === "STAGE") {
+      pdfBytes = await generateContractStagePdf({ ...base, kind: "STAGE" });
+      kindLabel = "STAGE";
+    } else if (contract.type === "PRESTA") {
+      pdfBytes = await generateContractPrestaPdf({ ...base, kind: "PRESTA" });
+      kindLabel = "PRESTA";
+    } else {
+      pdfBytes = await generateContractTravailPdf({ ...base, kind: "TRAVAIL" });
+      kindLabel = "TRAVAIL";
+    }
+  } catch (e) {
+    return {
+      ok: false,
+      error:
+        e instanceof Error
+          ? `Génération PDF: ${e.message}`
+          : "Échec génération PDF",
+    };
+  }
+
+  const fileName = `CONTRAT_${kindLabel}_${slugName(person.firstName, person.lastName)}.pdf`;
+  try {
+    const doc = await storeRhPdf({
+      actorId: actor.id,
+      firstName: person.firstName,
+      lastName: person.lastName,
+      subCode: "02_CONTRATS",
+      fileName,
+      pdfBytes,
+      entityType: "RhContract",
+      entityId: contract.id,
+      auditAction: "rh.contract.generate_pdf",
+    });
+    await prisma.rhContract.update({
+      where: { id: contract.id },
+      data: { gedDocumentId: doc.id },
+    });
+    revalidateRh();
+    revalidatePath(`/rh/contrats/${contract.id}`);
+    revalidatePath("/ged");
+    return {
+      ok: true,
+      message: `PDF contrat classé GED (${fileName})`,
+      documentId: doc.id,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Échec dépôt GED",
+    };
+  }
+}
+
+/** Attestation de stage / fin de mission pour un collaborateur. */
+export async function generateAttestationPdfAction(
+  formData: FormData,
+): Promise<ActionResult & { documentId?: string }> {
+  const actor = await requireUser({ permission: "rh.employees.manage" });
+  const id = cuidSchema.safeParse(formData.get("employeeId"));
+  if (!id.success) return { ok: false, error: "Collaborateur manquant" };
+
+  const employee = await prisma.rhEmployee.findUnique({
+    where: { id: id.data },
+    include: {
+      contracts: { orderBy: { startDate: "desc" }, take: 1 },
+    },
+  });
+  if (!employee) return { ok: false, error: "Collaborateur introuvable" };
+
+  const c = employee.contracts[0];
+  const signature = await getSignaturePngBytes({
+    ownerUserId: actor.id,
+  }).catch(() => null);
+
+  let pdfBytes: Uint8Array;
+  try {
+    pdfBytes = await generateAttestationStagePdf({
+      employee: {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        jobTitle: employee.jobTitle ?? undefined,
+      },
+      startDate: c
+        ? formatDateFr(c.startDate)
+        : employee.hireDate
+          ? formatDateFr(employee.hireDate)
+          : formatDateFr(),
+      endDate: c?.endDate
+        ? formatDateFr(c.endDate)
+        : employee.endDate
+          ? formatDateFr(employee.endDate)
+          : formatDateFr(),
+      jobTitle: employee.jobTitle ?? c?.title ?? "Stagiaire",
+      signaturePng: signature?.bytes,
+      signatureLabel: signature
+        ? `${actor.firstName} ${actor.lastName}`
+        : undefined,
+    });
+  } catch (e) {
+    return {
+      ok: false,
+      error:
+        e instanceof Error
+          ? `Génération PDF: ${e.message}`
+          : "Échec génération PDF",
+    };
+  }
+
+  const fileName = `ATTESTATION_${slugName(employee.firstName, employee.lastName)}.pdf`;
+  try {
+    const doc = await storeRhPdf({
+      actorId: actor.id,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      subCode: "05_DIPLOMES_ATTESTATIONS",
+      fileName,
+      pdfBytes,
+      entityType: "RhEmployee",
+      entityId: employee.id,
+      auditAction: "rh.attestation.generate_pdf",
+    });
+    revalidateRh();
+    revalidatePath(`/rh/collaborateurs/${employee.id}`);
+    return {
+      ok: true,
+      message: `Attestation classée GED`,
+      documentId: doc.id,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Échec dépôt GED",
+    };
+  }
+}
+
+/** Règlement intérieur — accusé de réception PDF. */
+export async function generateReglementPdfAction(
+  formData: FormData,
+): Promise<ActionResult & { documentId?: string }> {
+  const actor = await requireUser({ permission: "rh.employees.manage" });
+  const id = cuidSchema.safeParse(formData.get("employeeId"));
+  if (!id.success) return { ok: false, error: "Collaborateur manquant" };
+
+  const employee = await prisma.rhEmployee.findUnique({ where: { id: id.data } });
+  if (!employee) return { ok: false, error: "Collaborateur introuvable" };
+
+  const signature = await getSignaturePngBytes({
+    ownerUserId: actor.id,
+  }).catch(() => null);
+
+  let pdfBytes: Uint8Array;
+  try {
+    pdfBytes = await generateReglementInterieurPdf({
+      employee: {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+      },
+      signaturePng: signature?.bytes,
+    });
+  } catch (e) {
+    return {
+      ok: false,
+      error:
+        e instanceof Error
+          ? `Génération PDF: ${e.message}`
+          : "Échec génération PDF",
+    };
+  }
+
+  const fileName = `REGLEMENT_${slugName(employee.firstName, employee.lastName)}.pdf`;
+  try {
+    const doc = await storeRhPdf({
+      actorId: actor.id,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      subCode: "06_REGLEMENT_INTERIEUR",
+      fileName,
+      pdfBytes,
+      entityType: "RhEmployee",
+      entityId: employee.id,
+      auditAction: "rh.reglement.generate_pdf",
+    });
+    revalidateRh();
+    revalidatePath(`/rh/collaborateurs/${employee.id}`);
+    return {
+      ok: true,
+      message: "Règlement intérieur PDF classé GED",
+      documentId: doc.id,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Échec dépôt GED",
+    };
+  }
+}
+
+/** Solde de tout compte (montant XOF requis). */
+export async function generateSoldePdfAction(
+  formData: FormData,
+): Promise<ActionResult & { documentId?: string }> {
+  const actor = await requireUser({ permission: "rh.employees.manage" });
+  const id = cuidSchema.safeParse(formData.get("employeeId"));
+  const amount = z.coerce.number().int().min(0).safeParse(formData.get("amountXof"));
+  if (!id.success || !amount.success) {
+    return { ok: false, error: "Collaborateur ou montant invalide" };
+  }
+
+  const employee = await prisma.rhEmployee.findUnique({ where: { id: id.data } });
+  if (!employee) return { ok: false, error: "Collaborateur introuvable" };
+
+  const paymentRef = String(formData.get("paymentRef") ?? "").trim() || undefined;
+
+  let pdfBytes: Uint8Array;
+  try {
+    pdfBytes = await generateSoldeToutComptePdf({
+      employee: {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+      },
+      amountXof: amount.data,
+      paymentRef,
+    });
+  } catch (e) {
+    return {
+      ok: false,
+      error:
+        e instanceof Error
+          ? `Génération PDF: ${e.message}`
+          : "Échec génération PDF",
+    };
+  }
+
+  const fileName = `SOLDE_${slugName(employee.firstName, employee.lastName)}.pdf`;
+  try {
+    const doc = await storeRhPdf({
+      actorId: actor.id,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      subCode: "09_SORTIE",
+      fileName,
+      pdfBytes,
+      entityType: "RhEmployee",
+      entityId: employee.id,
+      auditAction: "rh.solde.generate_pdf",
+    });
+    revalidateRh();
+    revalidatePath(`/rh/collaborateurs/${employee.id}`);
+    return {
+      ok: true,
+      message: "Solde de tout compte classé GED",
+      documentId: doc.id,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Échec dépôt GED",
+    };
+  }
+}
+
+/** Fiche de paie indicative (aperçu Phase 5). */
+export async function generateFichePaiePdfAction(
+  formData: FormData,
+): Promise<ActionResult & { documentId?: string }> {
+  const actor = await requireUser({ permission: "rh.employees.manage" });
+  const id = cuidSchema.safeParse(formData.get("employeeId"));
+  if (!id.success) return { ok: false, error: "Collaborateur manquant" };
+
+  const employee = await prisma.rhEmployee.findUnique({
+    where: { id: id.data },
+    include: {
+      contracts: {
+        where: { status: "ACTIVE" },
+        orderBy: { startDate: "desc" },
+        take: 1,
+      },
+    },
+  });
+  if (!employee) return { ok: false, error: "Collaborateur introuvable" };
+
+  const c = employee.contracts[0];
+  const salary = c?.salaryXof ?? 0;
+  if (!salary) {
+    return {
+      ok: false,
+      error: "Aucun salaire sur contrat actif — renseigner le contrat d'abord",
+    };
+  }
+
+  const now = new Date();
+  const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  let pdfBytes: Uint8Array;
+  try {
+    pdfBytes = await generateFichePaiePdf({
+      employee: {
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email ?? undefined,
+        jobTitle: employee.jobTitle ?? undefined,
+      },
+      periodStart: formatDateFr(periodStart),
+      periodEnd: formatDateFr(periodEnd),
+      baseSalaryXof: salary,
+      netSalaryXof: salary,
+      contractTypeLabel: c ? CONTRACT_TYPE_LABEL[c.type] : undefined,
+      leaveBalanceDays: Number(employee.leaveBalanceDays),
+      leaveTakenDays: 0,
+    });
+  } catch (e) {
+    return {
+      ok: false,
+      error:
+        e instanceof Error
+          ? `Génération PDF: ${e.message}`
+          : "Échec génération PDF",
+    };
+  }
+
+  const fileName = `PAIE_${slugName(employee.firstName, employee.lastName)}_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}.pdf`;
+  try {
+    const doc = await storeRhPdf({
+      actorId: actor.id,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      subCode: "03_PAIE",
+      fileName,
+      pdfBytes,
+      entityType: "RhEmployee",
+      entityId: employee.id,
+      auditAction: "rh.payslip.generate_pdf",
+    });
+    revalidateRh();
+    revalidatePath(`/rh/collaborateurs/${employee.id}`);
+    return {
+      ok: true,
+      message: "Fiche de paie (indicative) classée GED",
+      documentId: doc.id,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Échec dépôt GED",
+    };
+  }
 }

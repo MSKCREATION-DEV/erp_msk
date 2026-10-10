@@ -14,6 +14,7 @@ import {
   contractStatusTone,
 } from "@/lib/rh/labels";
 import { ContractStatusButtons } from "@/components/rh/contract-status-buttons";
+import { ContractPdfButton } from "@/components/rh/contract-pdf-button";
 
 export const metadata: Metadata = { title: "Contrat" };
 
@@ -85,6 +86,16 @@ export default async function RhContratDetailPage({
           <p>
             <span className="text-msk-ink/45">Notes </span>
             {contract.notes}
+          </p>
+        ) : null}
+      </Surface>
+
+      <Surface className="p-5">
+        <h2 className="mb-3 text-sm font-semibold text-msk-ink">Document PDF</h2>
+        <ContractPdfButton contractId={contract.id} />
+        {contract.gedDocumentId ? (
+          <p className="mt-2 text-xs text-msk-ink/45">
+            Dernier PDF classé en GED (Collaborateurs → Contrats).
           </p>
         ) : null}
       </Surface>
