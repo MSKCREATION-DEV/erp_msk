@@ -1,50 +1,88 @@
 # Déploiement Vercel — ERP MSK
 
-Checklist après validation humaine des phases (dont Phase 5 Paie) pour ouvrir l’ERP aux collaborateurs en test.
+Checklist pour ouvrir l’ERP aux collaborateurs (Mathieu, Andile, équipe) en test.
 
-## Branches
+## État Git
 
 | Branche | Usage |
 |---|---|
-| `dev` | Travail + previews Vercel |
-| `main` | Stable — prod après gate |
+| `dev` | Travail quotidien + previews |
+| `main` | **Prod** — merge depuis `dev` quand on déploie |
 
-Workflow : valider sur `dev` → merge `dev` → `main` → prod Vercel.
+Merge effectué : `dev` → `main` (préparation déploiement collab).
 
-## Variables d’environnement (Vercel)
+## 1. Projet Vercel
 
-Obligatoires :
+1. [vercel.com](https://vercel.com) → **Add New Project** → importer `MSKCREATION-DEV/erp_msk` (ou le remote Git actuel)
+2. **Production Branch** = `main`
+3. Framework Preset = **Next.js**
+4. Root Directory = `.` (défaut)
+5. **Build Command** = `npm run build`  
+   (= `prisma migrate deploy && prisma generate && next build`)
+6. **Install Command** = `npm ci` (ou `npm install`)
+7. **Output** = défaut Next.js (pas besoin de changer)
 
-- `DATABASE_URL` (Postgres Supabase — pooler ou direct selon migrate)
-- `DIRECT_URL` si Prisma le demande pour les migrations
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY` (serveur uniquement)
-- `NEXT_PUBLIC_APP_URL` (URL prod, ex. `https://erp.mskcreation…`)
-- `RESEND_API_KEY`
-- `EMAIL_FROM` (domaine **vérifié** Resend, ex. `MSK CREATION <noreply@mskcreation.net>`) — sans domaine vérifié, Resend n’envoie qu’à l’adresse du compte test
+Previews : laisser les déploiements sur les PR / branche `dev` si souhaité.
 
-**Ne pas** définir en prod `BOOTSTRAP_TEMP_PASSWORD` / `BOOTSTRAP_FORCE_PASSWORD` (risque reset MDP comptes activés).
+## 2. Variables d’environnement (Production)
 
-## Build
+Dans Vercel → Project → Settings → Environment Variables — cocher **Production** (et Preview si tu veux les mêmes données).
 
-Commande build recommandée :
+| Variable | Notes |
+|---|---|
+| `DATABASE_URL` | Supabase Postgres — **Transaction pooler** (`:6543`, `?pgbouncer=true` si besoin) |
+| `DIRECT_URL` | Connexion **directe** (session / port 5432) — migrations Prisma |
+| `NEXT_PUBLIC_SUPABASE_URL` | URL projet Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Serveur uniquement** — ne jamais préfixer `NEXT_PUBLIC_` |
+| `NEXT_PUBLIC_APP_URL` | URL canonique prod, ex. `https://erp.mskcreation.net` ou `https://….vercel.app` |
+| `RESEND_API_KEY` | Clé Resend |
+| `EMAIL_FROM` | Domaine **vérifié** Resend, ex. `MSK CREATION <noreply@mskcreation.net>` |
 
-```bash
-prisma migrate deploy && prisma generate && next build
-```
+### Interdit en Production
 
-Ou via `package.json` : adapter `build` Vercel pour enchaîner `prisma migrate deploy` avant `next build`.
+- `BOOTSTRAP_TEMP_PASSWORD`
+- `BOOTSTRAP_FORCE_PASSWORD`
 
-## Post-déploiement
+(risque de réécriture MDP des comptes ACTIVE)
 
-1. Vérifier login Super Admin
-2. Seed équipe déjà appliqué en staging (`m.diarra@…`, `a.boussari@…`) — invitations si comptes neufs
-3. Smoke : Accueil, Mon espace, RH Paie, Commercial devis PDF
-4. Confirmer e-mails Resend (invitation / reset)
+### Optionnel plus tard (Phase 8)
 
-## Hors scope de cette checklist
+- `CRON_SECRET` — pour `/api/cron/automations`
 
-- Déclaration INPS officielle
-- Phase 7 stocks
-- Domaines custom DNS (à faire côté Vercel + DNS MSK)
+## 3. Domaine & e-mail
+
+1. Domaine custom (optionnel) : Vercel → Domains → `erp.mskcreation.net` + DNS Cloudflare
+2. Resend → Domains → vérifier `mskcreation.net` (SPF/DKIM) puis utiliser ce domaine dans `EMAIL_FROM`
+3. Sans domaine vérifié, Resend n’envoie qu’à l’adresse du compte test
+
+## 4. Déployer
+
+1. Push / merge sur `main` → déploiement Production automatique
+2. Suivre les logs Build : `migrate deploy` doit réussir avant `next build`
+3. Si migrate échoue : vérifier `DATABASE_URL` / `DIRECT_URL` et que le pooler autorise les migrations (sinon `DIRECT_URL` seul pour migrate — déjà géré côté Prisma si schema le demande)
+
+## 5. Post-déploiement (smoke)
+
+| # | Check |
+|---|---|
+| 1 | Login Super Admin (`a.guiro@…`) |
+| 2 | Accueil + sidebar (Stocks, Projets, Patrimoine, Anomalies visibles selon packs) |
+| 3 | Compte Mathieu / Andile : login + change MDP si `MUST_CHANGE_PASSWORD` |
+| 4 | Commercial : devis PDF |
+| 5 | RH Paie : ouvrir une période (lecture) |
+| 6 | Stocks : liste articles seed |
+| 7 | E-mail test : invitation ou reset (Resend dashboard) |
+
+Seed déjà appliqué sur la base Supabase partagée (staging = prod DB pour l’instant). **Ne pas** relancer un seed destructif en prod.
+
+## 6. Rollback rapide
+
+Vercel → Deployments → Promote un déploiement précédent OK.  
+Migrations Prisma : ne pas downgrade à la main sans plan ; préférer hotfix forward sur `dev` → `main`.
+
+## Hors scope
+
+- Phase 8 cron / digests (doc prête, code après « Phase 8 GO »)
+- Export DGI, WhatsApp
+- Multi-région / Supabase Pro (décision ops)
