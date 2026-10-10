@@ -30,8 +30,9 @@ Documentation **vivante** pour l’équipe (commerciaux, finance, admin, directi
 | [10 — Paie & INPS](./10-paie-inps.md) | Périodes, bulletins, cotisations | Admin RH / Direction / Collaborateur |
 | [11 — Stocks](./11-stocks.md) | Articles, mouvements, alertes | Pack Stock / Direction |
 | [12 — Ops 7B](./12-ops-7b.md) | Achats, patrimoine, projets, anomalies | Stock / Projets / Direction |
+| *13 — Notifications* | Cloche, automatisations, digests | Tous — **Phase 8** (manuel à créer) |
 
-Phases : [07A Stocks](../phases/PHASE-07A-STOCKS.md) · [07B Ops](../phases/PHASE-07B-OPS.md).
+Phases : [07A](../phases/PHASE-07A-STOCKS.md) · [07B](../phases/PHASE-07B-OPS.md) · [08 Automations](../phases/PHASE-08-AUTOMATIONS.md).
 
 ## Chaîne de cause → effet (vue d’ensemble)
 

@@ -21,10 +21,11 @@ Les pôles suivants sont **URGENTS / PRIORITAIRES** pour MSK :
 - On **ne saute pas** les fondations (Phase 0 IAM, Phase 1 GED/gabarits utiles).
 - On **oriente** chaque plan de phase : marquer `URGENT` sur les livrables COM/CPT.
 - Phase 0–3 **OK** · Phase 6 Compta **livrée** · Phase 4 RH **livrée** + UX Mon espace · Phase 5 Paie/INPS **livrée**.
+- Phase 7A Stocks + 7B Ops **livrées** sur `dev` ([07A](./PHASE-07A-STOCKS.md), [07B](./PHASE-07B-OPS.md)).
 - Comptes Direction (Mathieu / Andile) seedés ; e-mail invitation charte MSK.
-- Phase 7A Stocks **livrée** · Phase 7B Ops **implémentée** ([PHASE-07B-OPS.md](./PHASE-07B-OPS.md)) — gate humaine.
-- Déploiement collab : checklist [docs/deploy/VERCEL.md](../deploy/VERCEL.md) — merge `dev` → `main` après gate humaine, puis prod Vercel.
-- Optionnel **1.x** / **2.x** / **3.x** (hors chemin critique) : UI corbeille GED, partage ACL, pad signature, cron relances factures.
+- **En cours (doc)** : [Phase 8 — Automatisations](./PHASE-08-AUTOMATIONS.md) — attendre « Phase 8 GO ».
+- Déploiement collab : checklist [docs/deploy/VERCEL.md](../deploy/VERCEL.md) — merge `dev` → `main` puis prod Vercel (possible en parallèle de la Phase 8).
+- Optionnel **1.x** / **2.x** / **3.x** (hors chemin critique) : UI corbeille GED, partage ACL, pad signature.
 
 ### Documentation vivante
 
