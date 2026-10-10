@@ -66,7 +66,7 @@ export function Logo({
   return (
     <Link
       href={href}
-      prefetch
+      prefetch={false}
       className="inline-flex shrink-0 cursor-pointer items-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40"
       aria-label={brand.name}
     >

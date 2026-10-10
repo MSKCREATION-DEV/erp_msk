@@ -308,7 +308,7 @@ export function GedBrowser({
         >
           <Link
             href="/ged"
-            prefetch
+            prefetch={false}
             scroll={false}
             onClick={() => setPendingHref("/ged")}
             className="cursor-pointer font-medium text-msk-blue hover:underline"
@@ -323,7 +323,7 @@ export function GedBrowser({
               ) : (
                 <Link
                   href={folderHref(c.id)}
-                  prefetch
+                  prefetch={false}
                   scroll={false}
                   onClick={() => setPendingHref(folderHref(c.id))}
                   className="cursor-pointer truncate text-msk-blue hover:underline"
@@ -736,7 +736,7 @@ function FolderRow({
     >
       <Link
         href={href}
-        prefetch
+        prefetch={false}
         scroll={false}
         onClick={onNavigate}
         className={cn(
@@ -923,7 +923,7 @@ function FolderTile({
     <li className="relative flex flex-col rounded-xl border border-msk-ink/[0.06] bg-white">
       <Link
         href={href}
-        prefetch
+        prefetch={false}
         scroll={false}
         onClick={onNavigate}
         className={cn(

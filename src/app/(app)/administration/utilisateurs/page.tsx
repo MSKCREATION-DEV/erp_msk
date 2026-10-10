@@ -123,7 +123,7 @@ export default async function UsersAdminPage() {
               <li key={r.id}>
                 <Link
                   href={`/administration/utilisateurs/${r.userId}`}
-                  prefetch
+                  prefetch={false}
                   className="cursor-pointer font-medium text-msk-blue hover:underline"
                 >
                   {r.user.firstName} {r.user.lastName}
@@ -159,7 +159,7 @@ export default async function UsersAdminPage() {
                   <td className="px-5 py-3.5">
                     <Link
                       href={`/administration/utilisateurs/${u.id}`}
-                      prefetch
+                      prefetch={false}
                       className="absolute inset-0 z-[1] cursor-pointer"
                       aria-label={`Ouvrir ${u.firstName} ${u.lastName}`}
                     />

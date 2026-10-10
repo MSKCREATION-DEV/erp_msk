@@ -11,13 +11,20 @@ function runtimeDatabaseUrl() {
   if (!base) return undefined;
   try {
     const u = new URL(base);
+    // Supabase Session pooler (:5432) = max ~15 clients → EMAXCONNSESSION sur Vercel.
+    // Runtime app = toujours Transaction (:6543). DIRECT_URL reste pour migrate CLI.
+    if (
+      u.hostname.includes("pooler.supabase.com") &&
+      (u.port === "5432" || u.port === "" || !u.port)
+    ) {
+      u.port = "6543";
+    }
     if (!u.searchParams.has("connection_limit")) {
       u.searchParams.set("connection_limit", "1");
     }
     if (!u.searchParams.has("pool_timeout")) {
       u.searchParams.set("pool_timeout", "20");
     }
-    // Aide Prisma + PgBouncer (transaction / port 6543)
     if (
       (u.port === "6543" || u.hostname.includes("pooler")) &&
       !u.searchParams.has("pgbouncer")

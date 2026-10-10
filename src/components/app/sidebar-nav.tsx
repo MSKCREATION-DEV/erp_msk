@@ -158,7 +158,7 @@ function NavItemRow({
   return (
     <Link
       href={item.href}
-      prefetch
+      prefetch={false}
       scroll={false}
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
