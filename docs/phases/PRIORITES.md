@@ -20,8 +20,8 @@ Les pôles suivants sont **URGENTS / PRIORITAIRES** pour MSK :
 
 - On **ne saute pas** les fondations (Phase 0 IAM, Phase 1 GED/gabarits utiles).
 - On **oriente** chaque plan de phase : marquer `URGENT` sur les livrables COM/CPT.
-- Phase 0–3 **OK** · Phase 6 Compta **livrée** (2026-10-10, gate technique OK — validation humaine restante).
-- **En cours** : Phase 4 RH cœur ([PHASE-04-RH.md](./PHASE-04-RH.md)) — GO enchaîné.
+- Phase 0–3 **OK** · Phase 6 Compta **livrée** · Phase 4 RH **livrée** + UX Mon espace.
+- **En cours** : Phase 5 Paie + INPS ([PHASE-05-PAIE.md](./PHASE-05-PAIE.md)).
 - Optionnel **1.x** / **2.x** / **3.x** (hors chemin critique) : UI corbeille GED, partage ACL, pad signature, cron relances factures.
 
 ### Documentation vivante

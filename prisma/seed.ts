@@ -475,6 +475,23 @@ async function seedPhase1Ged() {
   }
   console.log("✓ Gabarits devis / facture / RH");
 
+  const inpsCount = await prisma.rhInpsSettings.count();
+  if (inpsCount === 0) {
+    const { DEFAULT_INPS_RATES, INPS_PROVISIONAL_NOTE } = await import(
+      "../src/lib/paie/rates"
+    );
+    await prisma.rhInpsSettings.create({
+      data: {
+        effectiveFrom: new Date("2026-01-01"),
+        ratesJson: DEFAULT_INPS_RATES,
+        note: INPS_PROVISIONAL_NOTE,
+      },
+    });
+    console.log("✓ Paramètres INPS provisoires");
+  } else {
+    console.log("✓ Paramètres INPS (déjà présents)");
+  }
+
   // Organigramme équipe MSK (slide 05 + assets public/team)
   const idByKey = new Map<string, string>();
 

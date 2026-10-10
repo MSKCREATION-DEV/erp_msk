@@ -243,6 +243,8 @@ model User {
   rhAbsencesReviewed  RhAbsence[]      @relation("RhAbsenceReviewer")
   rhTimesheetsOwned   RhTimesheet[]    @relation("RhTimesheetOwner")
   rhTimesheetsValidated RhTimesheet[]  @relation("RhTimesheetValidator")
+  rhPayrollOpened     RhPayrollPeriod[] @relation("RhPayrollOpener")
+  rhPayrollApproved   RhPayrollPeriod[] @relation("RhPayrollApprover")
 
   @@index([status])
   @@map("users")
@@ -1218,6 +1220,8 @@ model RhEmployee {
   leaves     RhLeaveRequest[]
   absences   RhAbsence[]
   timesheets RhTimesheet[]
+  payslips   RhPayslip[]
+  inpsLines  RhInpsLine[]
 
   @@index([status, lastName])
   @@map("rh_employees")
@@ -1327,4 +1331,136 @@ model RhTimesheetLine {
 
   @@index([timesheetId])
   @@map("rh_timesheet_lines")
+}
+
+// ─── Phase 5 — Paie + INPS ───
+
+enum RhPayrollPeriodStatus {
+  DRAFT
+  OPEN
+  CALCULATED
+  APPROVED
+  CLOSED
+}
+
+enum RhPayslipStatus {
+  DRAFT
+  CALCULATED
+  APPROVED
+  PAID
+  CANCELLED
+}
+
+enum RhInpsLineStatus {
+  DRAFT
+  CALCULATED
+  DECLARED
+  PAID
+}
+
+/// Paramètres cotisations (versionnés). ratesJson = [{code,label,rate,party}]
+model RhInpsSettings {
+  id                String   @id @default(cuid())
+  effectiveFrom     DateTime @db.Date
+  ratesJson         Json
+  declarationPeriod String   @default("monthly")
+  paymentDueDay     Int      @default(15)
+  note              String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([effectiveFrom])
+  @@map("rh_inps_settings")
+}
+
+model RhPayrollPeriod {
+  id           String                @id @default(cuid())
+  year         Int
+  month        Int
+  status       RhPayrollPeriodStatus @default(OPEN)
+  openedById   String                @db.Uuid
+  approvedById String?               @db.Uuid
+  approvedAt   DateTime?
+  closedAt     DateTime?
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  openedBy   User         @relation("RhPayrollOpener", fields: [openedById], references: [id])
+  approvedBy User?        @relation("RhPayrollApprover", fields: [approvedById], references: [id])
+  slips      RhPayslip[]
+  inpsLines  RhInpsLine[]
+
+  @@unique([year, month])
+  @@index([status, year, month])
+  @@map("rh_payroll_periods")
+}
+
+model RhPayslip {
+  id                  String         @id @default(cuid())
+  periodId            String
+  employeeId          String
+  contractId          String?
+  status              RhPayslipStatus @default(DRAFT)
+  baseSalaryXof       Int
+  primesXof           Int            @default(0)
+  brutXof             Int
+  employeeDeductXof   Int            @default(0)
+  employerChargesXof  Int            @default(0)
+  netXof              Int
+  gedDocumentId       String?
+  cptEntryId          String?
+  paidAt              DateTime?
+  paymentRef          String?
+  notes               String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  period   RhPayrollPeriod  @relation(fields: [periodId], references: [id], onDelete: Cascade)
+  employee RhEmployee       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  lines    RhPayslipLine[]
+  inpsLine RhInpsLine?
+
+  @@unique([periodId, employeeId])
+  @@index([employeeId, status])
+  @@map("rh_payslips")
+}
+
+model RhPayslipLine {
+  id         String  @id @default(cuid())
+  payslipId  String
+  code       String
+  label      String
+  kind       String
+  rate       Decimal? @db.Decimal(8, 6)
+  amountXof  Int
+  sortOrder  Int     @default(0)
+
+  payslip RhPayslip @relation(fields: [payslipId], references: [id], onDelete: Cascade)
+
+  @@index([payslipId])
+  @@map("rh_payslip_lines")
+}
+
+model RhInpsLine {
+  id                       String           @id @default(cuid())
+  periodId                 String
+  employeeId               String
+  payslipId                String?          @unique
+  baseAmountXof            Int
+  employeeContributionXof  Int
+  employerContributionXof  Int
+  status                   RhInpsLineStatus @default(DRAFT)
+  paymentRef               String?
+  declaredAt               DateTime?
+  paidAt                   DateTime?
+  createdAt                DateTime         @default(now())
+  updatedAt                DateTime         @updatedAt
+
+  period   RhPayrollPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+  employee RhEmployee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  payslip  RhPayslip?      @relation(fields: [payslipId], references: [id], onDelete: SetNull)
+
+  @@unique([periodId, employeeId])
+  @@index([status])
+  @@map("rh_inps_lines")
 }

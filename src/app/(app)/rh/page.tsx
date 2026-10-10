@@ -5,8 +5,10 @@ import {
   CalendarDays,
   Clock,
   FileSignature,
+  Landmark,
   UserCog,
   UsersRound,
+  Wallet,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
@@ -41,6 +43,15 @@ export default async function RhHubPage() {
   ]);
   const canAbsence = hasPermission(user, "rh.absence.manage");
   const canTimesheet = hasPermission(user, "rh.timesheet.validate");
+  const canPaie = hasAnyPermission(user, [
+    "rh.payroll.view",
+    "rh.payroll.run",
+    "rh.payroll.approve",
+  ]);
+  const canInps = hasAnyPermission(user, [
+    "rh.inps.manage",
+    "rh.payroll.view",
+  ]);
 
   const navItems = [
     canEmployees && {
@@ -54,6 +65,18 @@ export default async function RhHubPage() {
       label: "Contrats",
       icon: FileSignature,
       desc: "CDI, CDD, stage, prestation, avenants",
+    },
+    canPaie && {
+      href: "/rh/paie",
+      label: "Paie",
+      icon: Wallet,
+      desc: "Périodes, bulletins, écritures PA",
+    },
+    canInps && {
+      href: "/rh/inps",
+      label: "INPS",
+      icon: Landmark,
+      desc: "Cotisations et récap mensuel",
     },
     canLeave && {
       href: "/rh/conges",
@@ -84,7 +107,7 @@ export default async function RhHubPage() {
     <PageShell>
       <PageHeader
         title="Ressources humaines"
-        description="Collaborateurs, contrats, congés, absences et heures."
+        description="Collaborateurs, contrats, paie, INPS, congés, absences et heures."
         breadcrumbs={[{ label: "Accueil", href: "/accueil" }, { label: "RH" }]}
       />
 

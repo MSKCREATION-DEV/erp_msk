@@ -6,6 +6,7 @@ import {
   FileSignature,
   FileText,
   FolderOpen,
+  Receipt,
   ScrollText,
   UserCog,
 } from "lucide-react";
@@ -96,6 +97,12 @@ export default async function EspaceHubPage() {
         docs.length > 0
           ? `${docs.length} document(s) RH`
           : "Attestations, règlement, solde, paie…",
+    },
+    {
+      href: "/espace/bulletins",
+      label: "Mes bulletins",
+      icon: Receipt,
+      desc: "Bulletins de paie approuvés",
     },
   ];
 
