@@ -73,7 +73,7 @@ export default async function AComptabiliserPage() {
               {pending.map((inv) => (
                 <tr key={inv.id} className="border-b border-msk-ink/5">
                   <td className="px-4 py-3">
-                    <Link
+                    <Link prefetch={false}
                       href={`/commercial/factures/${inv.id}`}
                       className="font-medium text-msk-blue hover:underline"
                     >

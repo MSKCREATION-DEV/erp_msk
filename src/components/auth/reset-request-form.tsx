@@ -37,7 +37,7 @@ export function ResetRequestForm() {
         {pending ? "Envoi…" : "Notifier les administrateurs"}
       </Button>
       <p className="text-center text-sm">
-        <Link
+        <Link prefetch={false}
           href="/login"
           className="cursor-pointer font-medium text-msk-blue hover:underline"
         >

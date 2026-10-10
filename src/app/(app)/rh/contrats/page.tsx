@@ -55,7 +55,7 @@ export default async function RhContratsPage({
         backLabel="Retour RH"
         breadcrumbs={[{ label: "RH", href: "/rh" }, { label: "Contrats" }]}
         actions={
-          <Link
+          <Link prefetch={false}
             href="/rh/contrats/nouveau"
             className="inline-flex h-9 items-center justify-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
           >
@@ -65,14 +65,14 @@ export default async function RhContratsPage({
       />
 
       <div className="flex flex-wrap gap-2 text-sm">
-        <Link
+        <Link prefetch={false}
           href="/rh/contrats"
           className={`rounded-lg px-3 py-1.5 ${!statusFilter ? "bg-msk-blue text-white" : "bg-white text-msk-ink/60 border border-msk-ink/15"}`}
         >
           Tous
         </Link>
         {STATUS_FILTERS.map((s) => (
-          <Link
+          <Link prefetch={false}
             key={s}
             href={`/rh/contrats?status=${s}`}
             className={`rounded-lg px-3 py-1.5 ${statusFilter === s ? "bg-msk-blue text-white" : "bg-white text-msk-ink/60 border border-msk-ink/15"}`}
@@ -105,7 +105,7 @@ export default async function RhContratsPage({
                   className="border-b border-msk-ink/5 hover:bg-msk-chalk/60"
                 >
                   <td className="px-4 py-3">
-                    <Link
+                    <Link prefetch={false}
                       href={`/rh/contrats/${c.id}`}
                       className="font-medium text-msk-blue hover:underline"
                     >

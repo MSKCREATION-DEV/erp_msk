@@ -164,7 +164,7 @@ export default async function ComptabiliteHubPage() {
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
-            <Link key={item.href} href={item.href}>
+            <Link prefetch={false} key={item.href} href={item.href}>
               <Surface className="h-full p-5 transition hover:border-msk-blue/30 hover:shadow-md">
                 <Icon className="h-5 w-5 text-msk-blue" aria-hidden />
                 <p className="mt-3 text-sm font-semibold text-msk-ink">

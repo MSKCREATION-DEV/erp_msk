@@ -71,7 +71,7 @@ export default async function CrmRelancesPage() {
                   <p className="font-medium text-msk-ink">{t.title}</p>
                   <p className="text-xs text-msk-ink/45">
                     {t.opportunity ? (
-                      <Link
+                      <Link prefetch={false}
                         href={`/crm/prospects/${t.opportunity.id}`}
                         className="text-msk-blue hover:underline"
                       >

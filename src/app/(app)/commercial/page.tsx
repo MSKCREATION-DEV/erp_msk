@@ -63,17 +63,17 @@ export default async function CommercialDashboardPage() {
         ]}
         actions={
           <div className="flex flex-wrap gap-2">
-            <Link href="/commercial/clients" className={linkSecondary}>
+            <Link prefetch={false} href="/commercial/clients" className={linkSecondary}>
               Clients
             </Link>
-            <Link href="/commercial/devis" className={linkSecondary}>
+            <Link prefetch={false} href="/commercial/devis" className={linkSecondary}>
               Devis
             </Link>
-            <Link href="/commercial/factures" className={linkSecondary}>
+            <Link prefetch={false} href="/commercial/factures" className={linkSecondary}>
               Factures
             </Link>
             {hasPermission(user, "com.clients.manage") ? (
-              <Link href="/commercial/clients/nouveau" className={linkPrimary}>
+              <Link prefetch={false} href="/commercial/clients/nouveau" className={linkPrimary}>
                 Nouveau client
               </Link>
             ) : null}

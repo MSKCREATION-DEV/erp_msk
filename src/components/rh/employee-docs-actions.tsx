@@ -111,10 +111,20 @@ export function EmployeeDocsActions({
   const [error, setError] = useState<string | null>(null);
   const [amount, setAmount] = useState("85000");
   const [paymentRef, setPaymentRef] = useState("");
+  const [local, setLocal] = useState(docs);
 
   function act(
     label: string,
-    fn: () => Promise<{ ok: boolean; error?: string; message?: string }>,
+    field: keyof Pick<
+      EmployeeDocState,
+      "attestationId" | "reglementId" | "fichePaieId" | "soldeId"
+    >,
+    fn: () => Promise<{
+      ok: boolean;
+      error?: string;
+      message?: string;
+      documentId?: string;
+    }>,
   ) {
     setMsg(null);
     setError(null);
@@ -124,7 +134,10 @@ export function EmployeeDocsActions({
         setError(res.error ?? "Échec");
         return;
       }
-      setMsg(res.message ?? label);
+      if (res.documentId) {
+        setLocal((prev) => ({ ...prev, [field]: res.documentId! }));
+      }
+      setMsg(res.message ?? `${label} — utilisez Voir / Télécharger`);
       router.refresh();
     });
   }
@@ -133,12 +146,12 @@ export function EmployeeDocsActions({
     <div className="space-y-1">
       <DocRow
         title="Attestation"
-        documentId={docs.attestationId}
+        documentId={local.attestationId}
         generatedAt={docs.attestationAt}
         generateLabel="Générer l’attestation"
         pending={pending}
         onGenerate={() =>
-          act("Attestation", async () => {
+          act("Attestation", "attestationId", async () => {
             const fd = new FormData();
             fd.set("employeeId", employeeId);
             return generateAttestationPdfAction(fd);
@@ -152,12 +165,12 @@ export function EmployeeDocsActions({
             ? "Règlement signé sur Mon espace — PDF d’accusé optionnel"
             : "Collaborateur n’a pas encore signé"
         }
-        documentId={docs.reglementId}
+        documentId={local.reglementId}
         generatedAt={docs.reglementAt}
         generateLabel="Générer l’accusé PDF"
         pending={pending}
         onGenerate={() =>
-          act("Règlement", async () => {
+          act("Règlement", "reglementId", async () => {
             const fd = new FormData();
             fd.set("employeeId", employeeId);
             return generateReglementPdfAction(fd);
@@ -167,12 +180,12 @@ export function EmployeeDocsActions({
       <DocRow
         title="Fiche de paie"
         hint="Indicatif — module Paie finalisera les cotisations"
-        documentId={docs.fichePaieId}
+        documentId={local.fichePaieId}
         generatedAt={docs.fichePaieAt}
         generateLabel="Générer la fiche"
         pending={pending}
         onGenerate={() =>
-          act("Fiche paie", async () => {
+          act("Fiche paie", "fichePaieId", async () => {
             const fd = new FormData();
             fd.set("employeeId", employeeId);
             return generateFichePaiePdfAction(fd);
@@ -182,10 +195,10 @@ export function EmployeeDocsActions({
 
       <div className="space-y-3 border-t border-msk-ink/10 pt-4">
         <p className="text-sm font-medium text-msk-ink">Solde de tout compte</p>
-        {docs.soldeId ? (
+        {local.soldeId ? (
           <div className="flex flex-wrap items-center gap-2">
             <DocDownloadButton
-              documentId={docs.soldeId}
+              documentId={local.soldeId}
               label="Voir / Télécharger"
               variant="primary"
             />
@@ -218,11 +231,11 @@ export function EmployeeDocsActions({
           </div>
           <Button
             type="button"
-            variant={docs.soldeId ? "ghost" : "secondary"}
+            variant={local.soldeId ? "ghost" : "secondary"}
             size="sm"
             disabled={pending}
             onClick={() =>
-              act("Solde", async () => {
+              act("Solde", "soldeId", async () => {
                 const fd = new FormData();
                 fd.set("employeeId", employeeId);
                 fd.set("amountXof", amount);
@@ -233,7 +246,7 @@ export function EmployeeDocsActions({
           >
             {pending
               ? "…"
-              : docs.soldeId
+              : local.soldeId
                 ? "Regénérer le solde"
                 : "Générer le solde"}
           </Button>

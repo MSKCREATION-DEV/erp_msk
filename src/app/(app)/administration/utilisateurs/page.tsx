@@ -98,7 +98,7 @@ export default async function UsersAdminPage() {
         description="Comptes, invitations et statuts. Groupes, packs et exceptions se gèrent sur chaque fiche."
         actions={
           canInvite ? (
-            <Link
+            <Link prefetch={false}
               href="/administration/utilisateurs/inviter"
               className="cursor-pointer"
             >

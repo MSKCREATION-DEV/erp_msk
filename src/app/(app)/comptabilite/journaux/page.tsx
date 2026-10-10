@@ -65,7 +65,7 @@ export default async function ComptabiliteJournauxPage() {
                   )}
                 </td>
                 <td className="px-4 py-3">
-                  <Link
+                  <Link prefetch={false}
                     href={`/comptabilite/ecritures?journalId=${j.id}`}
                     className="font-medium text-msk-blue hover:underline"
                   >
@@ -81,7 +81,7 @@ export default async function ComptabiliteJournauxPage() {
       {canCreate ? (
         <p className="text-sm text-msk-ink/55">
           Pour saisir une écriture, allez dans{" "}
-          <Link
+          <Link prefetch={false}
             href="/comptabilite/ecritures/nouveau"
             className="font-medium text-msk-blue hover:underline"
           >

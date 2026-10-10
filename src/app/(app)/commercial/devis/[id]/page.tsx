@@ -55,9 +55,6 @@ export default async function CommercialDevisDetailPage({
         <Badge tone="blue">{QUOTE_STATUS_LABELS[quote.status]}</Badge>
         <Badge tone="muted">{quote.regime}</Badge>
         <Badge tone="muted">{quote.currency}</Badge>
-        {quote.gedDocumentId ? (
-          <Badge tone="success">PDF GED</Badge>
-        ) : null}
       </div>
 
       <QuoteActions
@@ -67,13 +64,14 @@ export default async function CommercialDevisDetailPage({
         canAccept={hasPermission(user, "com.devis.accept_reject")}
         canInvoice={hasPermission(user, "com.factures.create")}
         canPdf={hasPermission(user, "com.devis.edit_own")}
+        gedDocumentId={quote.gedDocumentId}
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Surface className="space-y-2 p-5 text-sm lg:col-span-1">
           <p>
             <span className="text-msk-ink/45">Client </span>
-            <Link
+            <Link prefetch={false}
               href={`/commercial/clients/${quote.clientId}`}
               className="text-msk-blue hover:underline"
             >
@@ -101,7 +99,7 @@ export default async function CommercialDevisDetailPage({
           {quote.invoices.length > 0 ? (
             <p className="pt-2">
               Facture{" "}
-              <Link
+              <Link prefetch={false}
                 href={`/commercial/factures/${quote.invoices[0]!.id}`}
                 className="text-msk-blue hover:underline"
               >

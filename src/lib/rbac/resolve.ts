@@ -26,6 +26,43 @@ export type SessionUser = {
 export async function resolveUserPermissions(
   userId: string,
 ): Promise<SessionUser | null> {
+  // 1) Lecture légère — Super Admin court-circuite sans graphe packs/permissions
+  const base = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      status: true,
+      isSuperAdmin: true,
+      mustChangePassword: true,
+      groupMembers: {
+        select: { group: { select: { code: true } } },
+      },
+    },
+  });
+  if (!base) return null;
+
+  const groupCodes = [...new Set(base.groupMembers.map((m) => m.group.code))];
+
+  if (base.isSuperAdmin) {
+    return {
+      id: base.id,
+      email: base.email,
+      firstName: base.firstName,
+      lastName: base.lastName,
+      status: base.status,
+      isSuperAdmin: true,
+      mustChangePassword: base.mustChangePassword,
+      permissions: new Set(),
+      groupCodes,
+      packCodes: [],
+      directPackCodes: [],
+      groupPackCodes: [],
+    };
+  }
+
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
@@ -69,7 +106,6 @@ export async function resolveUserPermissions(
   });
   if (!user) return null;
 
-  const groupCodes = [...new Set(user.groupMembers.map((m) => m.group.code))];
   const directPackCodes = [
     ...new Set(user.userPacks.map((p) => p.pack.code)),
   ];
@@ -81,24 +117,6 @@ export async function resolveUserPermissions(
     ),
   ];
   const packCodes = new Set([...directPackCodes, ...groupPackCodes]);
-
-  // Super Admin : pas besoin de charger 60+ permissions — le gate utilise isSuperAdmin
-  if (user.isSuperAdmin) {
-    return {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      status: user.status,
-      isSuperAdmin: true,
-      mustChangePassword: user.mustChangePassword,
-      permissions: new Set(),
-      groupCodes,
-      packCodes: [...packCodes],
-      directPackCodes,
-      groupPackCodes,
-    };
-  }
 
   const permissionCodes = new Set<string>();
 

@@ -37,7 +37,7 @@ export default async function StocksArticlesPage() {
         ]}
         actions={
           canManage ? (
-            <Link
+            <Link prefetch={false}
               href="/stocks/articles/nouveau"
               className="inline-flex rounded-lg bg-msk-blue px-3 py-2 text-sm font-semibold text-white"
             >
@@ -52,7 +52,7 @@ export default async function StocksArticlesPage() {
           <p className="p-6 text-sm text-msk-ink/45">
             Aucun article.{" "}
             {canManage ? (
-              <Link href="/stocks/articles/nouveau" className="text-msk-blue">
+              <Link prefetch={false} href="/stocks/articles/nouveau" className="text-msk-blue">
                 Créer le premier
               </Link>
             ) : null}
@@ -77,7 +77,7 @@ export default async function StocksArticlesPage() {
                 return (
                   <tr key={a.id} className={!a.active ? "opacity-50" : undefined}>
                     <td className="px-4 py-3 font-medium">
-                      <Link
+                      <Link prefetch={false}
                         href={`/stocks/articles/${a.id}`}
                         className="text-msk-blue hover:underline"
                       >

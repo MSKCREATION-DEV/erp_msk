@@ -59,7 +59,7 @@ export default async function RhHeuresPage({
 
       <div className="flex flex-wrap gap-2 text-sm">
         {STATUS_FILTERS.map((s) => (
-          <Link
+          <Link prefetch={false}
             key={s}
             href={`/rh/heures?status=${s}`}
             className={`rounded-lg px-3 py-1.5 ${statusFilter === s ? "bg-msk-blue text-white" : "bg-white text-msk-ink/60 border border-msk-ink/15"}`}

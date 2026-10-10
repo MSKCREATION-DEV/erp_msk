@@ -46,7 +46,7 @@ export default async function CommercialClientsPage() {
         ]}
         actions={
           hasPermission(user, "com.clients.manage") ? (
-            <Link href="/commercial/clients/nouveau" className={linkPrimary}>
+            <Link prefetch={false} href="/commercial/clients/nouveau" className={linkPrimary}>
               Nouveau client
             </Link>
           ) : null
@@ -57,7 +57,7 @@ export default async function CommercialClientsPage() {
         <Surface className="p-8 text-center text-sm text-msk-ink/50">
           Aucun client pour l’instant.{" "}
           {hasPermission(user, "com.clients.manage") ? (
-            <Link
+            <Link prefetch={false}
               href="/commercial/clients/nouveau"
               className="font-medium text-msk-blue hover:underline"
             >
@@ -84,7 +84,7 @@ export default async function CommercialClientsPage() {
                   className="border-b border-msk-ink/5 hover:bg-msk-chalk/60"
                 >
                   <td className="px-4 py-3">
-                    <Link
+                    <Link prefetch={false}
                       href={`/commercial/clients/${c.id}`}
                       className="font-medium text-msk-blue hover:underline"
                     >

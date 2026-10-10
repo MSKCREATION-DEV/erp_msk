@@ -99,7 +99,7 @@ export default async function RhContratDetailPage({
         <h2 className="text-sm font-semibold text-msk-ink">Détail</h2>
         <p>
           <span className="text-msk-ink/45">Collaborateur </span>
-          <Link
+          <Link prefetch={false}
             href={`/rh/collaborateurs/${contract.employee.id}`}
             className="text-msk-blue hover:underline"
           >

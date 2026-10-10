@@ -118,7 +118,7 @@ export default async function RhPaiePeriodPage({
               {period.slips.map((s) => (
                 <tr key={s.id} className="border-b border-msk-ink/5">
                   <td className="px-4 py-2">
-                    <Link
+                    <Link prefetch={false}
                       href={`/rh/collaborateurs/${s.employee.id}`}
                       className="font-medium text-msk-blue hover:underline"
                     >

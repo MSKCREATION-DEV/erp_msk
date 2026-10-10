@@ -61,7 +61,7 @@ export default async function CommercialClientDetailPage({
         ]}
         actions={
           hasPermission(user, "com.devis.create") ? (
-            <Link
+            <Link prefetch={false}
               href={`/commercial/devis/nouveau?clientId=${client.id}`}
               className={linkPrimary}
             >
@@ -105,7 +105,7 @@ export default async function CommercialClientDetailPage({
                   key={q.id}
                   className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm"
                 >
-                  <Link
+                  <Link prefetch={false}
                     href={`/commercial/devis/${q.id}`}
                     className="font-medium text-msk-blue hover:underline"
                   >
@@ -130,7 +130,7 @@ export default async function CommercialClientDetailPage({
                   key={inv.id}
                   className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm"
                 >
-                  <Link
+                  <Link prefetch={false}
                     href={`/commercial/factures/${inv.id}`}
                     className="font-medium text-msk-blue hover:underline"
                   >

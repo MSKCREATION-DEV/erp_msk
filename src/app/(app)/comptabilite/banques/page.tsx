@@ -46,7 +46,7 @@ export default async function ComptabiliteBanquesPage() {
           {banks.map((b) => {
             const solde = b.txns.reduce((s, t) => s + t.amount, 0);
             return (
-              <Link key={b.id} href={`/comptabilite/banques/${b.id}`}>
+              <Link prefetch={false} key={b.id} href={`/comptabilite/banques/${b.id}`}>
                 <Surface className="h-full p-5 transition hover:border-msk-blue/30 hover:shadow-md">
                   <div className="flex items-center justify-between">
                     <p className="font-semibold text-msk-ink">{b.label}</p>

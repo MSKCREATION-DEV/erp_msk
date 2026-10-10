@@ -57,7 +57,7 @@ export default async function StocksArticleDetailPage({ params }: Props) {
         ]}
         actions={
           canMove ? (
-            <Link
+            <Link prefetch={false}
               href={`/stocks/mouvements/nouveau?articleId=${article.id}`}
               className="inline-flex rounded-lg bg-msk-blue px-3 py-2 text-sm font-semibold text-white"
             >

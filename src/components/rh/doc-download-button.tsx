@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { getDocumentDownloadUrlAction } from "@/actions/ged";
 import { getRhDocumentUrlAction } from "@/actions/rh";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
 
-/** Ouvre le PDF RH via URL signée (sans passer par l’UI GED). */
+/** Ouvre un PDF GED (commercial, RH, démo) via URL signée. */
 export function DocDownloadButton({
   documentId,
   label = "Télécharger",
@@ -30,9 +31,13 @@ export function DocDownloadButton({
         onClick={() => {
           setError(null);
           void run(async () => {
-            const fd = new FormData();
-            fd.set("documentId", documentId);
-            const res = await getRhDocumentUrlAction(fd);
+            // GED d’abord (com + scoped), puis RH (admins / self)
+            let res = await getDocumentDownloadUrlAction(documentId);
+            if (!res.ok || !res.url) {
+              const fd = new FormData();
+              fd.set("documentId", documentId);
+              res = await getRhDocumentUrlAction(fd);
+            }
             if (!res.ok || !res.url) {
               setError(res.error ?? "Téléchargement impossible");
               return;

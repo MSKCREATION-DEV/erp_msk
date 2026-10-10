@@ -62,7 +62,7 @@ export default async function ComptabiliteBanqueDetailPage({
         ]}
         actions={
           canManage ? (
-            <Link
+            <Link prefetch={false}
               href={`/comptabilite/banques/${bank.id}/mouvements/nouveau`}
               className="inline-flex h-9 items-center justify-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
             >

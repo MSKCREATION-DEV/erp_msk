@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { InvoiceActions } from "@/components/commercial/invoice-actions";
 import { PaymentForm } from "@/components/commercial/payment-form";
 import { ProposeInvoiceButton } from "@/components/comptabilite/propose-invoice-button";
+import { DocDownloadButton } from "@/components/rh/doc-download-button";
 
 export const metadata: Metadata = { title: "Facture" };
 
@@ -90,9 +91,6 @@ export default async function CommercialFactureDetailPage({
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone="blue">{INVOICE_STATUS_LABELS[invoice.status]}</Badge>
         <Badge tone="muted">{invoice.currency}</Badge>
-        {invoice.gedDocumentId ? (
-          <Badge tone="success">PDF GED</Badge>
-        ) : null}
       </div>
 
       {showComActions ? (
@@ -101,6 +99,14 @@ export default async function CommercialFactureDetailPage({
           status={invoice.status}
           canIssue={hasPermission(user, "com.factures.issue")}
           canPdf={hasPermission(user, "com.factures.create")}
+          gedDocumentId={invoice.gedDocumentId}
+        />
+      ) : invoice.gedDocumentId ? (
+        <DocDownloadButton
+          documentId={invoice.gedDocumentId}
+          label="Voir / Télécharger la facture"
+          variant="primary"
+          size="sm"
         />
       ) : null}
 
@@ -113,7 +119,7 @@ export default async function CommercialFactureDetailPage({
           <p>
             <span className="text-msk-ink/45">Client </span>
             {canCom ? (
-              <Link
+              <Link prefetch={false}
                 href={`/commercial/clients/${invoice.clientId}`}
                 className="text-msk-blue hover:underline"
               >
@@ -126,7 +132,7 @@ export default async function CommercialFactureDetailPage({
           {invoice.quote && canCom ? (
             <p>
               <span className="text-msk-ink/45">Devis </span>
-              <Link
+              <Link prefetch={false}
                 href={`/commercial/devis/${invoice.quote.id}`}
                 className="text-msk-blue hover:underline"
               >

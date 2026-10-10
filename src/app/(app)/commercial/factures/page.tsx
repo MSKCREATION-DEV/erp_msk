@@ -63,7 +63,7 @@ export default async function CommercialFacturesPage() {
                   className="border-b border-msk-ink/5 hover:bg-msk-chalk/60"
                 >
                   <td className="px-4 py-3">
-                    <Link
+                    <Link prefetch={false}
                       href={`/commercial/factures/${inv.id}`}
                       className="font-medium text-msk-blue hover:underline"
                     >

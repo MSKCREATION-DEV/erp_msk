@@ -41,7 +41,7 @@ export default async function CrmScriptsPage() {
         ]}
         actions={
           canManage ? (
-            <Link href="/crm/scripts/nouveau" className={linkPrimary}>
+            <Link prefetch={false} href="/crm/scripts/nouveau" className={linkPrimary}>
               Nouveau script
             </Link>
           ) : null
@@ -54,7 +54,7 @@ export default async function CrmScriptsPage() {
           {canManage ? (
             <>
               {" "}
-              <Link
+              <Link prefetch={false}
                 href="/crm/scripts/nouveau"
                 className="font-medium text-msk-blue hover:underline"
               >
@@ -93,7 +93,7 @@ export default async function CrmScriptsPage() {
               ) : null}
               {canManage ? (
                 <div className="mt-4 flex gap-2 border-t border-msk-ink/[0.06] pt-3">
-                  <Link
+                  <Link prefetch={false}
                     href={`/crm/scripts/${s.id}/edit`}
                     className="inline-flex h-8 flex-1 items-center justify-center rounded-lg border border-msk-ink/15 text-sm font-medium text-msk-ink hover:bg-msk-chalk"
                   >

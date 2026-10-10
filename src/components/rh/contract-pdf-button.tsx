@@ -21,6 +21,7 @@ export function ContractPdfButton({
   const { pending, run } = usePendingAction();
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [docId, setDocId] = useState<string | null>(documentId ?? null);
 
   function generate() {
     setMsg(null);
@@ -33,7 +34,8 @@ export function ContractPdfButton({
         setError(res.error ?? "Échec");
         return;
       }
-      setMsg(res.message ?? "PDF généré");
+      if (res.documentId) setDocId(res.documentId);
+      setMsg(res.message ?? "PDF généré — utilisez Voir / Télécharger");
       router.refresh();
     });
   }
@@ -44,10 +46,10 @@ export function ContractPdfButton({
 
   return (
     <div className="flex flex-col gap-2">
-      {documentId ? (
+      {docId ? (
         <div className="flex flex-wrap items-center gap-2">
           <DocDownloadButton
-            documentId={documentId}
+            documentId={docId}
             label="Voir / Télécharger le contrat"
             variant="primary"
             size="sm"

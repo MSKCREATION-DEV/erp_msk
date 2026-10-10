@@ -32,7 +32,7 @@ export function PageHeader({
     >
       <div className="min-w-0">
         {backHref ? (
-          <Link
+          <Link prefetch={false}
             href={backHref}
             className="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-msk-ink/45 transition hover:text-msk-blue"
           >
@@ -55,7 +55,7 @@ export function PageHeader({
               >
                 {i > 0 ? <span aria-hidden>/</span> : null}
                 {crumb.href ? (
-                  <Link
+                  <Link prefetch={false}
                     href={crumb.href}
                     className="cursor-pointer hover:text-msk-blue"
                   >

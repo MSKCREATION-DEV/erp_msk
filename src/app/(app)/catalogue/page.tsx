@@ -73,7 +73,7 @@ export default async function CataloguePage() {
         ]}
         actions={
           canManage ? (
-            <Link href="/catalogue/nouveau" className={linkPrimary}>
+            <Link prefetch={false} href="/catalogue/nouveau" className={linkPrimary}>
               Nouvelle offre
             </Link>
           ) : null
@@ -148,7 +148,7 @@ export default async function CataloguePage() {
                 </ul>
                 {canManage ? (
                   <div className="mt-6 flex gap-2">
-                    <Link
+                    <Link prefetch={false}
                       href={`/catalogue/${plan.id}/edit`}
                       className={cn(linkSecondary, "flex-1")}
                     >
@@ -202,7 +202,7 @@ export default async function CataloguePage() {
                 </p>
                 {canManage ? (
                   <div className="mt-4 flex gap-2">
-                    <Link
+                    <Link prefetch={false}
                       href={`/catalogue/${o.id}/edit`}
                       className={cn(linkSecondary, "flex-1 text-center")}
                     >

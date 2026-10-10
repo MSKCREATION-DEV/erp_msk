@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   createInvoiceFromQuoteAction,
   generateQuotePdfAction,
@@ -9,6 +9,7 @@ import {
 } from "@/actions/commercial";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
+import { DocDownloadButton } from "@/components/rh/doc-download-button";
 import type { ComQuoteStatus } from "@prisma/client";
 
 export function QuoteActions({
@@ -18,6 +19,7 @@ export function QuoteActions({
   canAccept,
   canInvoice,
   canPdf,
+  gedDocumentId,
 }: {
   quoteId: string;
   status: ComQuoteStatus;
@@ -25,15 +27,26 @@ export function QuoteActions({
   canAccept: boolean;
   canInvoice: boolean;
   canPdf: boolean;
+  gedDocumentId?: string | null;
 }) {
   const router = useRouter();
   const { pending, run } = usePendingAction();
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [docId, setDocId] = useState<string | null>(gedDocumentId ?? null);
+
+  useEffect(() => {
+    setDocId(gedDocumentId ?? null);
+  }, [gedDocumentId]);
 
   function act(
     label: string,
-    fn: () => Promise<{ ok: boolean; error?: string; invoiceId?: string }>,
+    fn: () => Promise<{
+      ok: boolean;
+      error?: string;
+      invoiceId?: string;
+      documentId?: string;
+    }>,
   ) {
     setMsg(null);
     setError(null);
@@ -44,34 +57,62 @@ export function QuoteActions({
         return;
       }
       setMsg(label);
+      if (res.documentId) setDocId(res.documentId);
       if (res.invoiceId) {
         router.push(`/commercial/factures/${res.invoiceId}`);
         return;
       }
       router.refresh();
-      // Laisser le RSC se rafraîchir avant la suite (smoke / double-clic)
-      await new Promise((r) => setTimeout(r, 200));
+    });
+  }
+
+  function generatePdf() {
+    act("PDF généré — utilisez Voir / Télécharger", async () => {
+      const fd = new FormData();
+      fd.set("quoteId", quoteId);
+      return generateQuotePdfAction(fd);
     });
   }
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {canPdf ? (
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={pending}
-            onClick={() =>
-              act("PDF généré", async () => {
-                const fd = new FormData();
-                fd.set("quoteId", quoteId);
-                return generateQuotePdfAction(fd);
-              })
-            }
-          >
-            Générer PDF
-          </Button>
+          docId ? (
+            <>
+              <DocDownloadButton
+                documentId={docId}
+                label="Voir / Télécharger le devis"
+                variant="primary"
+                size="sm"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={pending}
+                onClick={generatePdf}
+              >
+                {pending ? "…" : "Regénérer"}
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={pending}
+              onClick={generatePdf}
+            >
+              {pending ? "Génération…" : "Générer PDF"}
+            </Button>
+          )
+        ) : docId ? (
+          <DocDownloadButton
+            documentId={docId}
+            label="Voir / Télécharger le devis"
+            variant="primary"
+            size="sm"
+          />
         ) : null}
         {canSend && status === "BROUILLON" ? (
           <Button

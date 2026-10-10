@@ -77,7 +77,7 @@ export default async function RhCollaborateurDetailPage({
         ]}
         actions={
           canContracts ? (
-            <Link
+            <Link prefetch={false}
               href={`/rh/contrats/nouveau?employeeId=${employee.id}`}
               className="inline-flex h-9 items-center justify-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
             >
@@ -131,7 +131,7 @@ export default async function RhCollaborateurDetailPage({
         <div className="flex items-center justify-between border-b border-msk-ink/10 px-4 py-3">
           <h2 className="text-sm font-semibold text-msk-ink">Contrats</h2>
           {canContracts ? (
-            <Link
+            <Link prefetch={false}
               href={`/rh/contrats/nouveau?employeeId=${employee.id}`}
               className="text-xs font-medium text-msk-blue hover:underline"
             >
@@ -164,7 +164,7 @@ export default async function RhCollaborateurDetailPage({
                 return (
                   <tr key={c.id} className="border-b border-msk-ink/5">
                     <td className="px-4 py-2">
-                      <Link
+                      <Link prefetch={false}
                         href={`/rh/contrats/${c.id}?from=collab&employeeId=${employee.id}`}
                         className="font-medium text-msk-blue hover:underline"
                       >

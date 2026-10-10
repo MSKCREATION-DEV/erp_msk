@@ -47,7 +47,7 @@ export default async function RhPaiePage() {
         ]}
         actions={
           canRun ? (
-            <Link
+            <Link prefetch={false}
               href="/rh/paie/nouveau"
               className="inline-flex h-9 items-center justify-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
             >
@@ -75,7 +75,7 @@ export default async function RhPaiePage() {
               {periods.map((p) => (
                 <tr key={p.id} className="border-b border-msk-ink/5">
                   <td className="px-4 py-3">
-                    <Link
+                    <Link prefetch={false}
                       href={`/rh/paie/${p.id}`}
                       className="font-medium capitalize text-msk-blue hover:underline"
                     >

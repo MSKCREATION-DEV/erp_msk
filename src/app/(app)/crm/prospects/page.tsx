@@ -60,12 +60,12 @@ export default async function CrmProspectsPage() {
         actions={
           <div className="flex flex-wrap gap-2">
             {canImport ? (
-              <Link href="/crm/prospects/import" className={linkSecondary}>
+              <Link prefetch={false} href="/crm/prospects/import" className={linkSecondary}>
                 Importer CSV
               </Link>
             ) : null}
             {canCreate ? (
-              <Link href="/crm/prospects/nouveau" className={linkPrimary}>
+              <Link prefetch={false} href="/crm/prospects/nouveau" className={linkPrimary}>
                 Nouveau prospect
               </Link>
             ) : null}
@@ -95,7 +95,7 @@ export default async function CrmProspectsPage() {
                     {canCreate ? (
                       <>
                         {" "}
-                        <Link
+                        <Link prefetch={false}
                           href="/crm/prospects/nouveau"
                           className="font-medium text-msk-blue hover:underline"
                         >
@@ -111,7 +111,7 @@ export default async function CrmProspectsPage() {
                   return (
                     <tr key={d.id} className="hover:bg-msk-chalk/40">
                       <td className="px-4 py-3">
-                        <Link
+                        <Link prefetch={false}
                           href={`/crm/prospects/${d.id}`}
                           className="font-medium text-msk-blue hover:underline"
                         >

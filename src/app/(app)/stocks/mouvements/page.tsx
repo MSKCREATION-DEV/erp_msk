@@ -42,7 +42,7 @@ export default async function StocksMouvementsPage() {
         ]}
         actions={
           canMove ? (
-            <Link
+            <Link prefetch={false}
               href="/stocks/mouvements/nouveau"
               className="inline-flex rounded-lg bg-msk-blue px-3 py-2 text-sm font-semibold text-white"
             >
@@ -57,7 +57,7 @@ export default async function StocksMouvementsPage() {
           <p className="p-6 text-sm text-msk-ink/45">
             Aucun mouvement.{" "}
             {canMove ? (
-              <Link href="/stocks/mouvements/nouveau" className="text-msk-blue">
+              <Link prefetch={false} href="/stocks/mouvements/nouveau" className="text-msk-blue">
                 Enregistrer le premier
               </Link>
             ) : null}
@@ -82,7 +82,7 @@ export default async function StocksMouvementsPage() {
                   </td>
                   <td className="px-4 py-3 font-medium">{m.type}</td>
                   <td className="px-4 py-3">
-                    <Link
+                    <Link prefetch={false}
                       href={`/stocks/articles/${m.articleId}`}
                       className="text-msk-blue hover:underline"
                     >

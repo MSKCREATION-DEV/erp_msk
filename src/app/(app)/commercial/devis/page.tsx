@@ -51,7 +51,7 @@ export default async function CommercialDevisPage() {
         ]}
         actions={
           hasPermission(user, "com.devis.create") ? (
-            <Link href="/commercial/devis/nouveau" className={linkPrimary}>
+            <Link prefetch={false} href="/commercial/devis/nouveau" className={linkPrimary}>
               Nouveau devis
             </Link>
           ) : null
@@ -62,7 +62,7 @@ export default async function CommercialDevisPage() {
         <Surface className="p-8 text-center text-sm text-msk-ink/50">
           Aucun devis.{" "}
           {hasPermission(user, "com.devis.create") ? (
-            <Link
+            <Link prefetch={false}
               href="/commercial/devis/nouveau"
               className="font-medium text-msk-blue hover:underline"
             >
@@ -89,7 +89,7 @@ export default async function CommercialDevisPage() {
                   className="border-b border-msk-ink/5 hover:bg-msk-chalk/60"
                 >
                   <td className="px-4 py-3">
-                    <Link
+                    <Link prefetch={false}
                       href={`/commercial/devis/${q.id}`}
                       className="font-medium text-msk-blue hover:underline"
                     >

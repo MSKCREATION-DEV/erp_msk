@@ -100,7 +100,7 @@ export default async function StocksAchatDetailPage({ params }: Props) {
               <div className="flex justify-between gap-2">
                 <dt className="text-msk-ink/45">Écriture AC</dt>
                 <dd>
-                  <Link
+                  <Link prefetch={false}
                     href={`/comptabilite/ecritures/${purchase.cptEntryId}`}
                     className="text-msk-blue hover:underline"
                   >
@@ -142,7 +142,7 @@ export default async function StocksAchatDetailPage({ params }: Props) {
                 <td className="px-4 py-3">{l.label}</td>
                 <td className="px-4 py-3 text-msk-ink/55">
                   {l.article ? (
-                    <Link
+                    <Link prefetch={false}
                       href={`/stocks/articles/${l.article.id}`}
                       className="text-msk-blue hover:underline"
                     >

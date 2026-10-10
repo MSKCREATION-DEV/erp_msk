@@ -83,7 +83,7 @@ export default async function StocksHubPage() {
         actions={
           <div className="flex flex-wrap gap-2">
             {canManage ? (
-              <Link
+              <Link prefetch={false}
                 href="/stocks/articles/nouveau"
                 className="inline-flex items-center rounded-lg bg-msk-blue px-3 py-2 text-sm font-semibold text-white"
               >
@@ -91,7 +91,7 @@ export default async function StocksHubPage() {
               </Link>
             ) : null}
             {canMove ? (
-              <Link
+              <Link prefetch={false}
                 href="/stocks/mouvements/nouveau"
                 className="inline-flex items-center rounded-lg border border-msk-paper bg-white px-3 py-2 text-sm font-semibold text-msk-ink"
               >
@@ -127,7 +127,7 @@ export default async function StocksHubPage() {
           <ul className="space-y-1 text-sm text-msk-ink/80">
             {alerts.slice(0, 8).map((a) => (
               <li key={a.id}>
-                <Link
+                <Link prefetch={false}
                   href={`/stocks/articles/${a.id}`}
                   className="text-msk-blue hover:underline"
                 >
@@ -143,7 +143,7 @@ export default async function StocksHubPage() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         {tiles.map((item) => (
-          <Link key={item.href} href={item.href}>
+          <Link prefetch={false} key={item.href} href={item.href}>
             <Surface className="h-full p-5 transition hover:border-msk-blue/30">
               <item.icon className="mb-3 h-5 w-5 text-msk-blue" />
               <p className="font-semibold text-msk-ink">{item.label}</p>
@@ -159,7 +159,7 @@ export default async function StocksHubPage() {
             Derniers mouvements
           </h2>
           {hasAnyPermission(user, ["stk.access", "stk.moves.create"]) ? (
-            <Link
+            <Link prefetch={false}
               href="/stocks/mouvements"
               className="text-sm font-medium text-msk-blue hover:underline"
             >
@@ -178,7 +178,7 @@ export default async function StocksHubPage() {
               >
                 <span>
                   <span className="font-medium text-msk-ink">{m.type}</span>{" "}
-                  <Link
+                  <Link prefetch={false}
                     href={`/stocks/articles/${m.articleId}`}
                     className="text-msk-blue hover:underline"
                   >

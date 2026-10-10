@@ -51,7 +51,7 @@ export default async function ComptabiliteEcrituresPage({
         ]}
         actions={
           canCreate ? (
-            <Link
+            <Link prefetch={false}
               href="/comptabilite/ecritures/nouveau"
               className="inline-flex h-9 items-center justify-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
             >
@@ -62,19 +62,19 @@ export default async function ComptabiliteEcrituresPage({
       />
 
       <div className="flex flex-wrap gap-2 text-sm">
-        <Link
+        <Link prefetch={false}
           href="/comptabilite/ecritures"
           className={`rounded-lg px-3 py-1.5 ${!status ? "bg-msk-blue text-white" : "bg-white text-msk-ink/60 border border-msk-ink/15"}`}
         >
           Toutes
         </Link>
-        <Link
+        <Link prefetch={false}
           href="/comptabilite/ecritures?status=DRAFT"
           className={`rounded-lg px-3 py-1.5 ${status === "DRAFT" ? "bg-msk-blue text-white" : "bg-white text-msk-ink/60 border border-msk-ink/15"}`}
         >
           Brouillons
         </Link>
-        <Link
+        <Link prefetch={false}
           href="/comptabilite/ecritures?status=VALIDATED"
           className={`rounded-lg px-3 py-1.5 ${status === "VALIDATED" ? "bg-msk-blue text-white" : "bg-white text-msk-ink/60 border border-msk-ink/15"}`}
         >
@@ -108,7 +108,7 @@ export default async function ComptabiliteEcrituresPage({
                     className="border-b border-msk-ink/5 hover:bg-msk-chalk/60"
                   >
                     <td className="px-4 py-3">
-                      <Link
+                      <Link prefetch={false}
                         href={`/comptabilite/ecritures/${e.id}`}
                         className="font-medium text-msk-blue hover:underline"
                       >

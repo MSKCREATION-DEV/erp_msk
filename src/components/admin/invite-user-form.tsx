@@ -199,7 +199,7 @@ export function InviteUserForm({
           role="status"
         >
           {state.message}{" "}
-          <Link
+          <Link prefetch={false}
             href="/administration/utilisateurs"
             className="cursor-pointer font-medium text-msk-blue hover:underline"
           >
@@ -212,7 +212,7 @@ export function InviteUserForm({
         <Button type="submit" disabled={pending} size="lg">
           {pending ? "Envoi de l’invitation…" : "Envoyer l’invitation"}
         </Button>
-        <Link href="/administration/utilisateurs">
+        <Link prefetch={false} href="/administration/utilisateurs">
           <Button type="button" variant="secondary" size="lg">
             Annuler
           </Button>

@@ -75,17 +75,17 @@ export default async function CrmDashboardPage() {
         breadcrumbs={[{ label: "Accueil", href: "/accueil" }, { label: "CRM" }]}
         actions={
           <div className="flex flex-wrap gap-2">
-            <Link href="/crm/scripts" className={linkSecondary}>
+            <Link prefetch={false} href="/crm/scripts" className={linkSecondary}>
               Scripts
             </Link>
-            <Link href="/crm/relances" className={linkSecondary}>
+            <Link prefetch={false} href="/crm/relances" className={linkSecondary}>
               Relances
             </Link>
-            <Link href="/crm/prospects" className={linkSecondary}>
+            <Link prefetch={false} href="/crm/prospects" className={linkSecondary}>
               Prospects
             </Link>
             {hasPermission(user, "crm.prospect.create") ? (
-              <Link href="/crm/prospects/nouveau" className={linkPrimary}>
+              <Link prefetch={false} href="/crm/prospects/nouveau" className={linkPrimary}>
                 Nouveau prospect
               </Link>
             ) : null}
@@ -139,7 +139,7 @@ export default async function CrmDashboardPage() {
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
             Récents
           </h2>
-          <Link
+          <Link prefetch={false}
             href="/crm/prospects"
             className="text-sm font-medium text-msk-blue hover:underline"
           >
@@ -150,14 +150,14 @@ export default async function CrmDashboardPage() {
           {deals.slice(0, 8).length === 0 ? (
             <p className="p-6 text-center text-sm text-msk-ink/40">
               Aucun prospect —{" "}
-              <Link
+              <Link prefetch={false}
                 href="/crm/prospects/nouveau"
                 className="font-medium text-msk-blue hover:underline"
               >
                 créer
               </Link>{" "}
               ou{" "}
-              <Link
+              <Link prefetch={false}
                 href="/crm/prospects/import"
                 className="font-medium text-msk-blue hover:underline"
               >
@@ -167,7 +167,7 @@ export default async function CrmDashboardPage() {
             </p>
           ) : (
             deals.slice(0, 8).map((d) => (
-              <Link
+              <Link prefetch={false}
                 key={d.id}
                 href={`/crm/prospects/${d.id}`}
                 className="flex items-center justify-between gap-3 px-4 py-3 transition hover:bg-msk-chalk/60"

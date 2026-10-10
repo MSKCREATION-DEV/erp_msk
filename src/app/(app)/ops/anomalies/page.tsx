@@ -62,7 +62,7 @@ export default async function OpsAnomaliesPage() {
         breadcrumbs={[{ label: "Ops", href: "/ops/anomalies" }, { label: "Anomalies" }]}
         actions={
           canCreate ? (
-            <Link
+            <Link prefetch={false}
               href="/ops/anomalies/nouveau"
               className="inline-flex rounded-lg bg-msk-blue px-3 py-2 text-sm font-semibold text-white"
             >
@@ -85,7 +85,7 @@ export default async function OpsAnomaliesPage() {
           <p className="p-6 text-sm text-msk-ink/45">
             Aucun ticket.{" "}
             {canCreate ? (
-              <Link href="/ops/anomalies/nouveau" className="text-msk-blue">
+              <Link prefetch={false} href="/ops/anomalies/nouveau" className="text-msk-blue">
                 Signaler la première
               </Link>
             ) : null}
@@ -114,7 +114,7 @@ export default async function OpsAnomaliesPage() {
                     }
                   >
                     <td className="px-4 py-3">
-                      <Link
+                      <Link prefetch={false}
                         href={`/ops/anomalies/${t.id}`}
                         className="font-medium text-msk-blue hover:underline"
                       >

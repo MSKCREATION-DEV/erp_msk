@@ -35,7 +35,7 @@ export function CrmConvertButtons({
       {showLinked && existingClientId ? (
         <>
           {canViewClient ? (
-            <Link
+            <Link prefetch={false}
               href={`/commercial/clients/${existingClientId}`}
               className="inline-flex h-9 items-center rounded-lg border border-msk-ink/15 bg-white px-3 text-sm font-medium hover:bg-msk-chalk"
             >
@@ -43,7 +43,7 @@ export function CrmConvertButtons({
             </Link>
           ) : null}
           {canCreateQuote ? (
-            <Link
+            <Link prefetch={false}
               href={`/commercial/devis/nouveau?clientId=${existingClientId}&opportunityId=${opportunityId}`}
               className="inline-flex h-9 items-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
             >
