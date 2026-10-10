@@ -245,6 +245,8 @@ model User {
   rhTimesheetsValidated RhTimesheet[]  @relation("RhTimesheetValidator")
   rhPayrollOpened     RhPayrollPeriod[] @relation("RhPayrollOpener")
   rhPayrollApproved   RhPayrollPeriod[] @relation("RhPayrollApprover")
+  stkArticlesCreated  StkArticle[]      @relation("StkArticleCreator")
+  stkMovementsCreated StkMovement[]     @relation("StkMovementCreator")
 
   @@index([status])
   @@map("users")
@@ -1477,4 +1479,57 @@ model RhContractTypeRule {
   updatedAt        DateTime       @updatedAt
 
   @@map("rh_contract_type_rules")
+}
+
+// ─── Phase 7A — Stocks ───
+
+enum StkMovementType {
+  ENTREE
+  SORTIE
+  AJUSTEMENT
+}
+
+model StkArticle {
+  id           String   @id @default(cuid())
+  code         String   @unique
+  family       String
+  subFamily    String?
+  designation  String
+  unit         String   @default("U")
+  qtyOnHand    Decimal  @default(0) @db.Decimal(14, 3)
+  stockMin     Decimal  @default(0) @db.Decimal(14, 3)
+  location     String?
+  unitCostXof  Int?
+  observations String?
+  active       Boolean  @default(true)
+  createdById  String?  @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  createdBy  User?          @relation("StkArticleCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  movements  StkMovement[]
+
+  @@index([family, active])
+  @@index([qtyOnHand, stockMin])
+  @@map("stk_articles")
+}
+
+model StkMovement {
+  id          String          @id @default(cuid())
+  articleId   String
+  type        StkMovementType
+  quantity    Decimal         @db.Decimal(14, 3)
+  qtyBefore   Decimal         @db.Decimal(14, 3)
+  qtyAfter    Decimal         @db.Decimal(14, 3)
+  reason      String?
+  movedAt     DateTime        @default(now())
+  createdById String          @db.Uuid
+  createdAt   DateTime        @default(now())
+
+  article   StkArticle @relation(fields: [articleId], references: [id], onDelete: Restrict)
+  createdBy User       @relation("StkMovementCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([articleId, movedAt])
+  @@index([type, movedAt])
+  @@map("stk_movements")
 }

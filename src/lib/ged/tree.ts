@@ -45,16 +45,6 @@ export async function ensureYearTree(
   const existingRoot = await prisma.documentFolder.findUnique({
     where: { path: yearPath },
   });
-  // Arbo déjà seedée (racine + au moins Clients) → skip
-  if (existingRoot) {
-    const clients = await prisma.documentFolder.findUnique({
-      where: { path: `${yearPath}/03_CLIENTS` },
-      select: { id: true },
-    });
-    if (clients) {
-      return { yearRoot: existingRoot, roots: {} as Record<string, string> };
-    }
-  }
 
   const yearRoot = existingRoot
     ? existingRoot
@@ -68,6 +58,7 @@ export async function ensureYearTree(
         },
       });
 
+  // Toujours assurer les racines (idempotent) — ex. 07_STOCKS_ACHATS ajouté en Phase 7A
   const roots: Record<string, string> = {};
   for (const f of YEAR_ROOT_FOLDERS) {
     const row = await ensureChild(

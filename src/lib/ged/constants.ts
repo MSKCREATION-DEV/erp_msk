@@ -29,6 +29,7 @@ export const YEAR_ROOT_FOLDERS = [
   { code: "03_CLIENTS", name: "Clients" },
   { code: "04_MODELES", name: "Modèles" },
   { code: "05_COLLABORATEURS", name: "Collaborateurs" },
+  { code: "07_STOCKS_ACHATS", name: "Stocks & achats" },
 ] as const;
 
 export const MODELES_CHILDREN = [

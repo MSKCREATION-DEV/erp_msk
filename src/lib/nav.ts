@@ -101,6 +101,13 @@ export const NAV_GROUPS: NavGroup[] = [
         icon: UsersRound,
         permission: "rh.access",
       },
+      {
+        id: "stocks",
+        href: "/stocks",
+        label: "Stocks",
+        icon: Package,
+        permission: "stk.access",
+      },
     ],
   },
   {

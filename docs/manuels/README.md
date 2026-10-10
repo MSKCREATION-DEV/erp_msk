@@ -27,6 +27,11 @@ Documentation **vivante** pour l’équipe (commerciaux, finance, admin, directi
 | [07 — Signatures & gabarits](./07-signatures-gabarits.md) | Signature perso, PDF | Collaborateur / Admin |
 | [08 — Comptabilité](./08-comptabilite.md) | Plan SYSCOHADA, écritures, banques, états, budget | Comptable / Admin Compta / Direction |
 | [09 — RH](./09-rh.md) | Collaborateurs, contrats, congés, absences, heures | Admin RH / Direction / Collaborateur |
+| [10 — Paie & INPS](./10-paie-inps.md) | Périodes, bulletins, cotisations | Admin RH / Direction / Collaborateur |
+| [11 — Stocks](./11-stocks.md) | Articles, mouvements, alertes | Pack Stock / Direction |
+| *12+ — Achats / patrimoine / projets / anomalies* | Ops large | **Phase 7B** (manuels à créer à l’implémentation) |
+
+Phases : [07A Stocks](../phases/PHASE-07A-STOCKS.md) · [07B Ops](../phases/PHASE-07B-OPS.md).
 
 ## Chaîne de cause → effet (vue d’ensemble)
 
