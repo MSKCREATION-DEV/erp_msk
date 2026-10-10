@@ -26,6 +26,7 @@ Documentation **vivante** pour l’équipe (commerciaux, finance, admin, directi
 | [06 — Commercial](./06-commercial.md) | Clients, devis, factures, paiements | Commerciaux / Compta |
 | [07 — Signatures & gabarits](./07-signatures-gabarits.md) | Signature perso, PDF | Collaborateur / Admin |
 | [08 — Comptabilité](./08-comptabilite.md) | Plan SYSCOHADA, écritures, banques, états, budget | Comptable / Admin Compta / Direction |
+| [09 — RH](./09-rh.md) | Collaborateurs, contrats, congés, absences, heures | Admin RH / Direction / Collaborateur |
 
 ## Chaîne de cause → effet (vue d’ensemble)
 

@@ -11,6 +11,7 @@ import {
   Palette,
   PenLine,
   UserRound,
+  UsersRound,
   Package,
   type LucideIcon,
 } from "lucide-react";
@@ -93,6 +94,13 @@ export const NAV_GROUPS: NavGroup[] = [
         icon: Calculator,
         permission: "cpt.access",
       },
+      {
+        id: "rh",
+        href: "/rh",
+        label: "RH",
+        icon: UsersRound,
+        permission: "rh.access",
+      },
     ],
   },
   {
@@ -133,6 +141,13 @@ export const NAV_GROUPS: NavGroup[] = [
     id: "account",
     label: "Compte",
     items: [
+      {
+        id: "mon-espace",
+        href: "/espace",
+        label: "Mon espace",
+        icon: UserRound,
+        permission: "self.leave.request",
+      },
       {
         id: "ma-signature",
         href: "/profil/signature",

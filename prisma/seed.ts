@@ -511,6 +511,8 @@ async function main() {
   await seedPhase2CatalogueCrm();
   const { seedPhase6Compta } = await import("./seed-cpt");
   await seedPhase6Compta(prisma);
+  const { seedPhase4Rh } = await import("./seed-rh");
+  await seedPhase4Rh(prisma);
 }
 
 main()

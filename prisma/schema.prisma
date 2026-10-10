@@ -1,4 +1,4 @@
-// ERP MSK CREATION — Phase 0–3 + 6 (IAM, GED, Catalogue/CRM, Commercial, Comptabilité)
+// ERP MSK CREATION — Phase 0–4 + 6 (IAM, GED, Catalogue/CRM, Commercial, RH, Comptabilité)
 // https://pris.ly/d/prisma-schema
 
 generator client {
@@ -229,6 +229,13 @@ model User {
   cptEntriesValidated CptEntry[]     @relation("CptEntryValidator")
   cptBankTxnsCreated  CptBankTxn[]   @relation("CptBankTxnCreator")
   budLinesCreated     BudLine[]      @relation("BudLineCreator")
+  rhEmployee          RhEmployee?    @relation("RhEmployeeUser")
+  rhLeavesRequested   RhLeaveRequest[] @relation("RhLeaveRequester")
+  rhLeavesValidated   RhLeaveRequest[] @relation("RhLeaveValidator")
+  rhAbsencesDeclared  RhAbsence[]      @relation("RhAbsenceDeclarer")
+  rhAbsencesReviewed  RhAbsence[]      @relation("RhAbsenceReviewer")
+  rhTimesheetsOwned   RhTimesheet[]    @relation("RhTimesheetOwner")
+  rhTimesheetsValidated RhTimesheet[]  @relation("RhTimesheetValidator")
 
   @@index([status])
   @@map("users")
@@ -1110,4 +1117,207 @@ model BudPatenteDue {
 
   @@index([exerciseId, dueDate])
   @@map("bud_patente_dues")
+}
+
+// ─── Phase 4 — RH cœur ───
+
+enum RhEmployeeType {
+  SALARIE
+  STAGIAIRE
+  PRESTATAIRE
+  DIRIGEANT
+  AUTRE
+}
+
+enum RhEmployeeStatus {
+  ACTIVE
+  ONBOARDING
+  OFFBOARDING
+  ARCHIVED
+}
+
+enum RhReglementStatus {
+  PENDING
+  SIGNED
+  WAIVED
+}
+
+enum RhContractType {
+  CDI
+  CDD
+  STAGE
+  PRESTA
+  AVENANT
+  AUTRE
+}
+
+enum RhContractStatus {
+  DRAFT
+  ACTIVE
+  ENDED
+  CANCELLED
+}
+
+enum RhLeaveType {
+  CONGES_PAYES
+  SANS_SOLDE
+  EXCEPTIONNEL
+  MALADIE
+  AUTRE
+}
+
+enum RhLeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum RhAbsenceStatus {
+  DECLARED
+  JUSTIFIED
+  UNJUSTIFIED
+}
+
+enum RhTimesheetStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+model RhEmployee {
+  id               String            @id @default(cuid())
+  userId           String?           @unique @db.Uuid
+  firstName        String
+  lastName         String
+  email            String?
+  phone            String?
+  jobTitle         String?
+  employeeType     RhEmployeeType    @default(SALARIE)
+  status           RhEmployeeStatus  @default(ACTIVE)
+  hireDate         DateTime?         @db.Date
+  endDate          DateTime?         @db.Date
+  leaveBalanceDays Decimal           @default(0) @db.Decimal(6, 2)
+  reglementStatus  RhReglementStatus @default(PENDING)
+  reglementSignedAt DateTime?
+  emergencyContact String?
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  user       User?            @relation("RhEmployeeUser", fields: [userId], references: [id], onDelete: SetNull)
+  contracts  RhContract[]
+  leaves     RhLeaveRequest[]
+  absences   RhAbsence[]
+  timesheets RhTimesheet[]
+
+  @@index([status, lastName])
+  @@map("rh_employees")
+}
+
+model RhContract {
+  id          String           @id @default(cuid())
+  employeeId  String
+  type        RhContractType   @default(CDI)
+  status      RhContractStatus @default(DRAFT)
+  title       String
+  startDate   DateTime         @db.Date
+  endDate     DateTime?        @db.Date
+  salaryXof   Int?
+  notes       String?
+  gedDocumentId String?
+  parentId    String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  employee RhEmployee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  parent   RhContract? @relation("RhContractAvenant", fields: [parentId], references: [id], onDelete: SetNull)
+  avenants RhContract[] @relation("RhContractAvenant")
+
+  @@index([employeeId, status])
+  @@map("rh_contracts")
+}
+
+model RhLeaveRequest {
+  id           String        @id @default(cuid())
+  employeeId   String
+  requesterId  String        @db.Uuid
+  type         RhLeaveType   @default(CONGES_PAYES)
+  status       RhLeaveStatus @default(PENDING)
+  startDate    DateTime      @db.Date
+  endDate      DateTime      @db.Date
+  days         Decimal       @db.Decimal(5, 2)
+  reason       String?
+  validatedById String?      @db.Uuid
+  validatedAt  DateTime?
+  reviewNote   String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  employee    RhEmployee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  requester   User       @relation("RhLeaveRequester", fields: [requesterId], references: [id])
+  validatedBy User?      @relation("RhLeaveValidator", fields: [validatedById], references: [id])
+
+  @@index([employeeId, status])
+  @@index([status, startDate])
+  @@map("rh_leave_requests")
+}
+
+model RhAbsence {
+  id            String          @id @default(cuid())
+  employeeId    String
+  declaredById  String          @db.Uuid
+  status        RhAbsenceStatus @default(DECLARED)
+  startDate     DateTime        @db.Date
+  endDate       DateTime        @db.Date
+  reason        String
+  justificationNote String?
+  reviewedById  String?         @db.Uuid
+  reviewedAt    DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  employee   RhEmployee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  declaredBy User       @relation("RhAbsenceDeclarer", fields: [declaredById], references: [id])
+  reviewedBy User?      @relation("RhAbsenceReviewer", fields: [reviewedById], references: [id])
+
+  @@index([employeeId, status])
+  @@map("rh_absences")
+}
+
+model RhTimesheet {
+  id            String            @id @default(cuid())
+  employeeId    String
+  ownerId       String            @db.Uuid
+  weekStart     DateTime          @db.Date
+  status        RhTimesheetStatus @default(DRAFT)
+  totalMinutes  Int               @default(0)
+  note          String?
+  validatedById String?           @db.Uuid
+  validatedAt   DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  employee    RhEmployee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  owner       User               @relation("RhTimesheetOwner", fields: [ownerId], references: [id])
+  validatedBy User?              @relation("RhTimesheetValidator", fields: [validatedById], references: [id])
+  lines       RhTimesheetLine[]
+
+  @@unique([employeeId, weekStart])
+  @@index([status, weekStart])
+  @@map("rh_timesheets")
+}
+
+model RhTimesheetLine {
+  id           String   @id @default(cuid())
+  timesheetId  String
+  workDate     DateTime @db.Date
+  minutes      Int      @default(0)
+  label        String?
+
+  timesheet RhTimesheet @relation(fields: [timesheetId], references: [id], onDelete: Cascade)
+
+  @@index([timesheetId])
+  @@map("rh_timesheet_lines")
 }

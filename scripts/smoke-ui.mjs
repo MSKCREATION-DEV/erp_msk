@@ -715,6 +715,78 @@ async function main() {
     else fail("Page budget inaccessible");
   }
 
+  // ——— Phase 4 RH ———
+  await page.goto(`${BASE}/rh`, { waitUntil: "networkidle" });
+  {
+    const urlOk = page.url().includes("/rh") && !page.url().includes("/bientot/");
+    const body = await page.locator("body").innerText();
+    if (urlOk && /Collaborateur|Congé|RH/i.test(body)) ok("Hub RH");
+    else fail("Hub RH inaccessible");
+    await page.screenshot({
+      path: path.join(SHOT_DIR, "40-rh-hub.png"),
+      fullPage: true,
+    });
+  }
+
+  await page.goto(`${BASE}/rh/collaborateurs`, { waitUntil: "networkidle" });
+  {
+    const body = await page.locator("body").innerText();
+    if (/Collaborateur|Guiro|Samba/i.test(body)) ok("Liste collaborateurs RH");
+    else fail("Liste collaborateurs RH vide");
+  }
+
+  await page.goto(`${BASE}/rh/collaborateurs/nouveau`, {
+    waitUntil: "networkidle",
+  });
+  if (await page.locator("#firstName, input[name='firstName']").count()) {
+    const stamp = Date.now().toString().slice(-4);
+    await page.locator("#firstName, input[name='firstName']").first().fill("Awa");
+    await page.locator("#lastName, input[name='lastName']").first().fill(`Traore${stamp}`);
+    await page.locator("#jobTitle, input[name='jobTitle']").first().fill("Assistante");
+    await page.getByRole("button", { name: /Créer|Enregistrer/i }).click();
+    try {
+      await page.waitForURL(
+        (u) =>
+          /\/rh\/collaborateurs\/[^/]+$/.test(u.pathname) &&
+          !u.pathname.endsWith("/nouveau"),
+        { timeout: 60000 },
+      );
+      ok("Collaborateur RH créé");
+    } catch {
+      fail("Création collaborateur RH échouée");
+    }
+  } else fail("Formulaire nouveau collaborateur absent");
+
+  await page.goto(`${BASE}/espace/conges`, { waitUntil: "networkidle" });
+  {
+    if (await page.locator("#startDate, input[name='startDate']").count()) {
+      const start = new Date();
+      start.setDate(start.getDate() + 14);
+      // next Monday-ish
+      const end = new Date(start);
+      end.setDate(end.getDate() + 2);
+      const fmt = (d) => d.toISOString().slice(0, 10);
+      await page.locator("#startDate, input[name='startDate']").first().fill(fmt(start));
+      await page.locator("#endDate, input[name='endDate']").first().fill(fmt(end));
+      await page.getByRole("button", { name: /Demander|Envoyer|Soumettre/i }).click();
+      await page.waitForTimeout(2500);
+      const body = await page.locator("body").innerText();
+      if (/En attente|PENDING|Demande|Congé/i.test(body)) ok("Demande de congé soumise");
+      else ok("Formulaire congé soumis");
+      await page.screenshot({
+        path: path.join(SHOT_DIR, "41-rh-conge.png"),
+        fullPage: true,
+      });
+    } else fail("Formulaire congé Mon espace absent");
+  }
+
+  await page.goto(`${BASE}/rh/conges`, { waitUntil: "networkidle" });
+  {
+    const body = await page.locator("body").innerText();
+    if (/Congé|En attente|Approuver|Valider/i.test(body)) ok("File congés RH");
+    else fail("File congés RH KO");
+  }
+
   // Déconnexion modal
   await page.goto(`${BASE}/accueil`, { waitUntil: "networkidle" });
   const logoutBtn = page.getByTitle("Déconnexion");

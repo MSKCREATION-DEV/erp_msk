@@ -46,8 +46,11 @@ export const COLLAB_SUBFOLDERS = [
   { code: "01_IDENTITE_ADMIN", name: "Identité / admin" },
   { code: "02_CONTRATS", name: "Contrats" },
   { code: "03_PAIE", name: "Paie" },
+  { code: "04_CONGES_ABSENCES", name: "Congés / absences" },
+  { code: "05_DIPLOMES_ATTESTATIONS", name: "Diplômes / attestations" },
   { code: "06_REGLEMENT_INTERIEUR", name: "Règlement intérieur" },
   { code: "07_PHOTOS", name: "Photos" },
+  { code: "09_SORTIE", name: "Sortie / offboarding" },
   { code: "99_AUTRES", name: "Autres" },
 ] as const;
 

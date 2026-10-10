@@ -44,6 +44,14 @@ assert.equal(
   "Comptabilité plus dans À venir",
 );
 
+const rh = live.find((i) => i.id === "rh")!;
+assert.ok(rh, "RH live");
+assert.equal(isNavActive("/rh", rh, live), true);
+assert.equal(isNavActive("/rh/collaborateurs", rh, live), true);
+
+const monEspace = live.find((i) => i.id === "espace" || i.id === "mon-espace");
+assert.ok(monEspace, "Mon espace live");
+
 assert.equal(isNavActive("/profil/signature", maSig, live), true);
 
 assert.equal(
