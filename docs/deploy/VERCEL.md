@@ -31,16 +31,23 @@ Dans Vercel → Project → Settings → Environment Variables — cocher **Prod
 
 | Variable | Notes |
 |---|---|
-| `DATABASE_URL` | Supabase → Connect → **Transaction** pooler (**port `6543`**) — **pas** Session (`5432`). Sinon `EMAXCONNSESSION` / pool_size 15 sur Vercel |
-| `DIRECT_URL` | Connexion **directe** (db.*.supabase.co:5432) — migrations Prisma uniquement |
+| `DATABASE_URL` | Supabase → Connect → **Transaction** (**port `6543`**) + `pgbouncer=true`. Runtime app. |
+| `DIRECT_URL` | Même host **pooler**, port **`5432`** (mode Session) — **uniquement** pour `prisma migrate deploy` au build. **Ne pas** utiliser `db.*.supabase.co` sur Vercel (souvent IPv6 / DNS → build qui tourne 15+ min sans log). |
 
-Exemple `DATABASE_URL` (Transaction) :
+Exemples (même mot de passe, ports différents) :
 
 ```
-postgresql://postgres.[REF]:[PWD]@aws-0-….pooler.supabase.com:6543/postgres?pgbouncer=true
+# Runtime (Transaction)
+DATABASE_URL=postgresql://postgres.[REF]:[PWD]@aws-0-….pooler.supabase.com:6543/postgres?pgbouncer=true
+
+# Migrations build (Session pooler — OK, 1 connexion au build)
+DIRECT_URL=postgresql://postgres.[REF]:[PWD]@aws-0-….pooler.supabase.com:5432/postgres
 ```
 
-Si tu vois `EMAXCONNSESSION` / `max clients reached in session mode` → la URL Vercel est encore en **Session** : remplace-la par le mode **Transaction** (6543), redeploy.
+| Symptôme | Cause | Action |
+|---|---|---|
+| `EMAXCONNSESSION` / pool_size 15 | `DATABASE_URL` en Session | Passer `DATABASE_URL` en **6543** |
+| Build bloqué >10 min sur `prisma migrate deploy` | `DIRECT_URL` = `db.*.supabase.co` | Passer `DIRECT_URL` en **pooler:5432**, puis Redeploy |
 | `NEXT_PUBLIC_SUPABASE_URL` | URL projet Supabase |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Serveur uniquement** — ne jamais préfixer `NEXT_PUBLIC_` |
