@@ -13,7 +13,6 @@ import {
 } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
-import { hasPermission } from "@/lib/rbac/resolve";
 import { writeAudit } from "@/lib/audit";
 import { computeDocTotals } from "@/lib/commercial/totals";
 import { nextComNumber } from "@/lib/commercial/numbering";

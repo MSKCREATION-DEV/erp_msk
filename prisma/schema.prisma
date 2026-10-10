@@ -1,4 +1,4 @@
-// ERP MSK CREATION — Phase 0–3 (IAM, GED, Catalogue/CRM, Commercial)
+// ERP MSK CREATION — Phase 0–3 + 6 (IAM, GED, Catalogue/CRM, Commercial, Comptabilité)
 // https://pris.ly/d/prisma-schema
 
 generator client {
@@ -225,6 +225,10 @@ model User {
   comInvoicesOwned ComInvoice[]    @relation("ComInvoiceOwner")
   comInvoicesCreated ComInvoice[]  @relation("ComInvoiceCreator")
   comPaymentsRecorded ComPayment[] @relation("ComPaymentRecorder")
+  cptEntriesCreated   CptEntry[]     @relation("CptEntryCreator")
+  cptEntriesValidated CptEntry[]     @relation("CptEntryValidator")
+  cptBankTxnsCreated  CptBankTxn[]   @relation("CptBankTxnCreator")
+  budLinesCreated     BudLine[]      @relation("BudLineCreator")
 
   @@index([status])
   @@map("users")
@@ -849,4 +853,261 @@ model ComPayment {
 
   @@index([invoiceId])
   @@map("com_payments")
+}
+
+// ─── Phase 6 — Comptabilité SYSCOHADA + banques + budget ───
+
+enum CptAccountNature {
+  ASSET
+  LIABILITY
+  EQUITY
+  EXPENSE
+  INCOME
+}
+
+enum CptExerciseStatus {
+  OPEN
+  CLOSED
+}
+
+enum CptPeriodStatus {
+  OPEN
+  CLOSED
+}
+
+enum CptEntryStatus {
+  DRAFT
+  VALIDATED
+}
+
+enum BudNature {
+  CAPEX
+  OPEX
+}
+
+enum BudPatenteStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+/// Plan de comptes SYSCOHADA (minimal PME, extensible)
+model CptAccount {
+  id         String           @id @default(cuid())
+  code       String           @unique
+  label      String
+  classNum   Int
+  nature     CptAccountNature
+  isPostable Boolean          @default(true)
+  active     Boolean          @default(true)
+  parentId   String?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  parent   CptAccount?  @relation("CptAccountTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children CptAccount[] @relation("CptAccountTree")
+  lines    CptEntryLine[]
+  banks    CptBankAccount[]
+
+  @@index([classNum, code])
+  @@index([active, isPostable])
+  @@map("cpt_accounts")
+}
+
+model CptJournal {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  label     String
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  entries CptEntry[]
+
+  @@map("cpt_journals")
+}
+
+model CptExercise {
+  id        String            @id @default(cuid())
+  year      Int               @unique
+  status    CptExerciseStatus @default(OPEN)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  periods CptPeriod[]
+
+  @@map("cpt_exercises")
+}
+
+model CptPeriod {
+  id         String          @id @default(cuid())
+  exerciseId String
+  month      Int
+  status     CptPeriodStatus @default(OPEN)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  exercise CptExercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  entries  CptEntry[]
+
+  @@unique([exerciseId, month])
+  @@index([status])
+  @@map("cpt_periods")
+}
+
+model CptEntry {
+  id               String         @id @default(cuid())
+  number           String         @unique
+  journalId        String
+  periodId         String
+  entryDate        DateTime       @db.Date
+  label            String
+  status           CptEntryStatus @default(DRAFT)
+  sourceType       String?
+  sourceId         String?
+  currencyOriginal String?
+  fxRate           Decimal?       @db.Decimal(12, 6)
+  amountOriginal   Int?
+  createdById      String         @db.Uuid
+  validatedById    String?        @db.Uuid
+  validatedAt      DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  journal     CptJournal     @relation(fields: [journalId], references: [id])
+  period      CptPeriod      @relation(fields: [periodId], references: [id])
+  createdBy   User           @relation("CptEntryCreator", fields: [createdById], references: [id])
+  validatedBy User?          @relation("CptEntryValidator", fields: [validatedById], references: [id])
+  lines       CptEntryLine[]
+  bankTxns    CptBankTxn[]
+
+  @@index([journalId, entryDate])
+  @@index([periodId, status])
+  @@index([sourceType, sourceId])
+  @@map("cpt_entries")
+}
+
+model CptEntryLine {
+  id        String  @id @default(cuid())
+  entryId   String
+  accountId String
+  label     String?
+  debit     Int     @default(0)
+  credit    Int     @default(0)
+  sortOrder Int     @default(0)
+
+  entry   CptEntry   @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  account CptAccount @relation(fields: [accountId], references: [id])
+
+  @@index([entryId])
+  @@index([accountId])
+  @@map("cpt_entry_lines")
+}
+
+model CptBankAccount {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  label       String
+  bankName    String   @default("ECOBANK")
+  accountRef  String?
+  currency    String   @default("XOF")
+  cptAccountId String
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cptAccount CptAccount   @relation(fields: [cptAccountId], references: [id])
+  txns       CptBankTxn[]
+
+  @@index([active])
+  @@map("cpt_bank_accounts")
+}
+
+model CptBankTxn {
+  id             String    @id @default(cuid())
+  bankAccountId  String
+  txnDate        DateTime  @db.Date
+  label          String
+  amount         Int
+  matchedEntryId String?
+  matchedAt      DateTime?
+  note           String?
+  createdById    String    @db.Uuid
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  bankAccount  CptBankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  matchedEntry CptEntry?      @relation(fields: [matchedEntryId], references: [id], onDelete: SetNull)
+  createdBy    User           @relation("CptBankTxnCreator", fields: [createdById], references: [id])
+
+  @@index([bankAccountId, txnDate])
+  @@index([matchedEntryId])
+  @@map("cpt_bank_txns")
+}
+
+/// Taux EUR → XOF (paramétrable)
+model CptFxRate {
+  id        String   @id @default(cuid())
+  pair      String   @default("EUR/XOF")
+  rate      Decimal  @db.Decimal(12, 6)
+  validFrom DateTime @db.Date
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([pair, validFrom])
+  @@map("cpt_fx_rates")
+}
+
+model BudExercise {
+  id        String   @id @default(cuid())
+  year      Int      @unique
+  label     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lines     BudLine[]
+  patentes  BudPatenteDue[]
+
+  @@map("bud_exercises")
+}
+
+model BudLine {
+  id          String    @id @default(cuid())
+  exerciseId  String
+  nature      BudNature
+  category    String
+  month       Int
+  planned     Int       @default(0)
+  actual      Int       @default(0)
+  note        String?
+  createdById String    @db.Uuid
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  exercise  BudExercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  createdBy User        @relation("BudLineCreator", fields: [createdById], references: [id])
+
+  @@unique([exerciseId, nature, category, month])
+  @@index([exerciseId, month])
+  @@map("bud_lines")
+}
+
+/// Suivi patente assisté (échéances + statut)
+model BudPatenteDue {
+  id         String           @id @default(cuid())
+  exerciseId String
+  label      String
+  dueDate    DateTime         @db.Date
+  amount     Int              @default(0)
+  status     BudPatenteStatus @default(PENDING)
+  note       String?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  exercise BudExercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([exerciseId, dueDate])
+  @@map("bud_patente_dues")
 }

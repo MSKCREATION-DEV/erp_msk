@@ -193,6 +193,20 @@ async function main() {
       ok("Admin — liste utilisateurs");
     } else fail("Admin utilisateurs KO");
 
+    // Comptabilité Super Admin
+    r = await bodyOf(page, "/comptabilite");
+    if (/Comptabilit/i.test(r.text) && !r.url.includes("/login")) {
+      ok("Admin — hub Comptabilité");
+    } else fail("Admin Comptabilité KO");
+
+    r = await bodyOf(page, "/comptabilite/plan");
+    if (/4111|706|5211/i.test(r.text)) ok("Admin — plan OHADA seedé");
+    else fail("Admin — plan OHADA vide");
+
+    r = await bodyOf(page, "/comptabilite/etats");
+    if (/Bilan|Balance|Résultat/i.test(r.text)) ok("Admin — états financiers");
+    else fail("Admin — états KO");
+
     await page.screenshot({
       path: path.join(SHOT_DIR, "10-admin.png"),
       fullPage: true,
@@ -269,6 +283,24 @@ async function main() {
     if (/Nouveau client|Créer le client/i.test(r.text)) {
       ok("Commercial — création client OK");
     } else fail("Commercial — /clients/nouveau KO");
+
+    // Comptabilité interdite au commercial
+    r = await bodyOf(page, "/comptabilite");
+    if (
+      r.url.includes("/comptabilite") &&
+      /Plan de comptes|Écritures|Banques|SYSCOHADA/i.test(r.text) &&
+      !r.url.includes("/accueil")
+    ) {
+      fail("Commercial voit Comptabilité");
+    } else ok("Commercial — Comptabilité refusée");
+
+    r = await bodyOf(page, "/comptabilite/ecritures/nouveau");
+    if (
+      r.url.includes("/comptabilite/ecritures") &&
+      /Nouvelle écriture|Journal/i.test(r.text)
+    ) {
+      fail("Commercial peut saisir écritures");
+    } else ok("Commercial — saisie écritures refusée");
 
     // Admin interdit
     r = await bodyOf(page, "/administration/utilisateurs");

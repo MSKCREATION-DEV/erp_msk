@@ -34,6 +34,16 @@ assert.equal(
   "Commercial plus dans À venir",
 );
 
+const compta = live.find((i) => i.id === "comptabilite")!;
+assert.ok(compta, "Comptabilité live (plus soon)");
+assert.equal(isNavActive("/comptabilite", compta, live), true);
+assert.equal(isNavActive("/comptabilite/ecritures", compta, live), true);
+assert.equal(
+  all.some((i) => i.id === "comptabilite" && i.soon),
+  false,
+  "Comptabilité plus dans À venir",
+);
+
 assert.equal(isNavActive("/profil/signature", maSig, live), true);
 
 assert.equal(

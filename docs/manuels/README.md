@@ -25,6 +25,7 @@ Documentation **vivante** pour l’équipe (commerciaux, finance, admin, directi
 | [05 — CRM](./05-crm.md) | Prospects, pipeline, scripts, conversion | Commerciaux / Admin CRM |
 | [06 — Commercial](./06-commercial.md) | Clients, devis, factures, paiements | Commerciaux / Compta |
 | [07 — Signatures & gabarits](./07-signatures-gabarits.md) | Signature perso, PDF | Collaborateur / Admin |
+| [08 — Comptabilité](./08-comptabilite.md) | Plan SYSCOHADA, écritures, banques, états, budget | Comptable / Admin Compta / Direction |
 
 ## Chaîne de cause → effet (vue d’ensemble)
 
@@ -34,6 +35,8 @@ Invitation user → groupes (+ packs défaut) → packs directs optionnels → o
   Permissions effectives → Nav + boutons UI + Server Actions
         ↓
   Prospect gagné → Client COM → Devis → Facture → Paiement → PDF → GED client
+        ↓
+  Facture émise/payée → proposition écriture VE SYSCOHADA (FCFA) → validation → états
 ```
 
 Branche de travail : `dev`.  

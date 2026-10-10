@@ -86,6 +86,13 @@ export const NAV_GROUPS: NavGroup[] = [
         icon: FileText,
         permission: "com.access",
       },
+      {
+        id: "comptabilite",
+        href: "/comptabilite",
+        label: "Comptabilité",
+        icon: Calculator,
+        permission: "cpt.access",
+      },
     ],
   },
   {
@@ -149,14 +156,6 @@ export const NAV_GROUPS: NavGroup[] = [
     collapsible: true,
     defaultCollapsed: true,
     items: [
-      {
-        id: "compta",
-        href: "/bientot/comptabilite",
-        label: "Comptabilité",
-        icon: Calculator,
-        permission: "cpt.access",
-        soon: true,
-      },
       {
         id: "projets",
         href: "/bientot/projets",

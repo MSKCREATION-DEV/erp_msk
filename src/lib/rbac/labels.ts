@@ -16,6 +16,7 @@ const PACK_LABELS: Record<string, string> = {
   admin_crm: "Admin CRM",
   admin_rh: "Admin RH",
   comptable: "Comptable",
+  admin_compta: "Admin Compta",
   projets: "Projets",
   stock: "Stock",
   direction: "Direction",

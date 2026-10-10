@@ -509,6 +509,8 @@ async function main() {
   await seedSuperAdmin();
   await seedPhase1Ged();
   await seedPhase2CatalogueCrm();
+  const { seedPhase6Compta } = await import("./seed-cpt");
+  await seedPhase6Compta(prisma);
 }
 
 main()

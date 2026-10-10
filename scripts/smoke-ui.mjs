@@ -539,6 +539,182 @@ async function main() {
     fail("Formulaire nouveau devis introuvable");
   }
 
+  // ——— Phase 6 Comptabilité ———
+  await page.goto(`${BASE}/comptabilite`, { waitUntil: "networkidle" });
+  {
+    const urlOk = page.url().includes("/comptabilite") && !page.url().includes("/bientot/");
+    const body = await page.locator("body").innerText();
+    if (urlOk && /Plan de comptes|SYSCOHADA|Écritures/i.test(body)) {
+      ok("Hub Comptabilité");
+    } else fail("Hub Comptabilité inaccessible");
+    await page.screenshot({
+      path: path.join(SHOT_DIR, "30-cpt-hub.png"),
+      fullPage: true,
+    });
+  }
+
+  await page.goto(`${BASE}/comptabilite/plan`, { waitUntil: "networkidle" });
+  {
+    const body = await page.locator("body").innerText();
+    if (/4111|706|5211|Clients|Services/i.test(body)) ok("Plan de comptes OHADA");
+    else fail("Plan de comptes vide / incorrect");
+  }
+
+  await page.goto(`${BASE}/comptabilite/ecritures/nouveau`, {
+    waitUntil: "networkidle",
+  });
+  {
+    const journalSelect = page.locator("#journalId");
+    if (!(await journalSelect.count())) {
+      fail("Formulaire nouvelle écriture absent");
+    } else {
+      const odValue = await journalSelect.locator("option").evaluateAll((opts) => {
+        const hit = opts.find((o) => /^OD\b/i.test((o.textContent || "").trim()));
+        return hit ? hit.value : null;
+      });
+      if (odValue) await journalSelect.selectOption(odValue);
+      else fail("Journal OD introuvable");
+
+      await page.locator("#label").fill("Smoke UI OD Phase 6");
+
+      const rows = page.locator("tbody tr");
+      const row0 = rows.nth(0);
+      const row1 = rows.nth(1);
+      const pickAccount = async (row, code) => {
+        const sel = row.locator("select");
+        const value = await sel.locator("option").evaluateAll(
+          (opts, c) => {
+            const hit = opts.find((o) => (o.textContent || "").includes(c));
+            return hit ? hit.value : null;
+          },
+          code,
+        );
+        if (!value) return false;
+        await sel.selectOption(value);
+        return true;
+      };
+
+      const ok411 = await pickAccount(row0, "4111");
+      const ok706 = await pickAccount(row1, "706");
+      if (!ok411 || !ok706) {
+        await page.screenshot({
+          path: path.join(SHOT_DIR, "31-cpt-entry-form.png"),
+          fullPage: true,
+        });
+        fail("Comptes 4111/706 introuvables dans le formulaire");
+      } else {
+        // Ligne 0 : débit ; ligne 1 : crédit (inputs number dans l’ordre)
+        await row0.locator('input[type="number"]').nth(0).fill("10000");
+        await row1.locator('input[type="number"]').nth(1).fill("10000");
+
+        await page
+          .getByRole("button", { name: /Créer l.écriture/i })
+          .click();
+        try {
+          // Exclure /nouveau (sinon waitForURL réussit immédiatement)
+          await page.waitForURL(
+            (u) =>
+              /\/comptabilite\/ecritures\/[^/]+$/.test(u.pathname) &&
+              !u.pathname.endsWith("/nouveau"),
+            { timeout: 60000 },
+          );
+          ok("Écriture OD créée");
+          await page.screenshot({
+            path: path.join(SHOT_DIR, "32-cpt-entry.png"),
+            fullPage: true,
+          });
+          const validateBtn = page.getByRole("button", {
+            name: /Valider l.écriture/i,
+          });
+          await validateBtn.waitFor({ timeout: 15000 });
+          await validateBtn.click();
+          await page.getByText(/^Validée$/i).waitFor({ timeout: 30000 });
+          ok("Écriture validée");
+        } catch {
+          await page.screenshot({
+            path: path.join(SHOT_DIR, "31-cpt-entry-fail.png"),
+            fullPage: true,
+          });
+          fail("Création / validation écriture échouée");
+        }
+      }
+    }
+  }
+
+  await page.goto(`${BASE}/comptabilite/banques`, { waitUntil: "networkidle" });
+  {
+    const body = await page.locator("body").innerText();
+    if (/ECOBANK/i.test(body)) ok("Liste banques ECOBANK");
+    else fail("Banques ECOBANK absentes");
+    await page.screenshot({
+      path: path.join(SHOT_DIR, "33-cpt-banques.png"),
+      fullPage: true,
+    });
+    const bankHref = await page
+      .locator('a[href^="/comptabilite/banques/"]')
+      .filter({ hasText: /ECOBANK Compte 1/i })
+      .first()
+      .getAttribute("href");
+    if (bankHref) {
+      await page.goto(`${BASE}${bankHref}/mouvements/nouveau`, {
+        waitUntil: "networkidle",
+      });
+      if (await page.locator("#label, input[name='label']").count()) {
+        await page.locator("#label, input[name='label']").first().fill(
+          "Smoke relevé ECOBANK",
+        );
+        await page.locator("#amount, input[name='amount']").first().fill("25000");
+        await page
+          .getByRole("button", { name: /Enregistrer le mouvement/i })
+          .click();
+        await page.waitForURL(
+          (u) =>
+            /\/comptabilite\/banques\/[^/]+$/.test(u.pathname) &&
+            !u.pathname.includes("/mouvements/"),
+          { timeout: 60000 },
+        );
+        await page.waitForLoadState("networkidle");
+        try {
+          await page.getByText(/Smoke relevé ECOBANK/i).waitFor({ timeout: 20000 });
+          ok("Mouvement bancaire créé");
+        } catch {
+          const b = await page.locator("body").innerText();
+          if (/25[\s\u00a0]?000/i.test(b)) ok("Mouvement bancaire créé (montant)");
+          else fail("Mouvement bancaire non visible après redirect");
+        }
+        await page.screenshot({
+          path: path.join(SHOT_DIR, "34-cpt-bank-txn.png"),
+          fullPage: true,
+        });
+      } else {
+        await page.screenshot({
+          path: path.join(SHOT_DIR, "34-cpt-bank-fail.png"),
+          fullPage: true,
+        });
+        fail("Formulaire mouvement bancaire absent");
+      }
+    } else fail("Lien ECOBANK Compte 1 absent");
+  }
+
+  await page.goto(`${BASE}/comptabilite/etats`, { waitUntil: "networkidle" });
+  {
+    const body = await page.locator("body").innerText();
+    if (/Bilan|Balance|Résultat|Compte de résultat/i.test(body)) {
+      ok("États financiers");
+    } else fail("États financiers incomplets");
+    await page.screenshot({
+      path: path.join(SHOT_DIR, "35-cpt-etats.png"),
+      fullPage: true,
+    });
+  }
+
+  await page.goto(`${BASE}/comptabilite/budget`, { waitUntil: "networkidle" });
+  {
+    const body = await page.locator("body").innerText();
+    if (/Budget/i.test(body)) ok("Budget");
+    else fail("Page budget inaccessible");
+  }
+
   // Déconnexion modal
   await page.goto(`${BASE}/accueil`, { waitUntil: "networkidle" });
   const logoutBtn = page.getByTitle("Déconnexion");

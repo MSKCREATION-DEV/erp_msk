@@ -16,6 +16,7 @@ import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { InvoiceActions } from "@/components/commercial/invoice-actions";
 import { PaymentForm } from "@/components/commercial/payment-form";
+import { ProposeInvoiceButton } from "@/components/comptabilite/propose-invoice-button";
 
 export const metadata: Metadata = { title: "Facture" };
 
@@ -25,7 +26,10 @@ export default async function CommercialFactureDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const user = await requireUser();
-  if (!hasPermission(user, "com.access")) redirect("/accueil");
+  const canCom = hasPermission(user, "com.access");
+  const canCptPropose = hasPermission(user, "cpt.ecritures.manage");
+  // Comptable peut ouvrir une facture pour proposer l’écriture SYSCOHADA
+  if (!canCom && !canCptPropose) redirect("/accueil");
   const { id } = await params;
 
   const invoice = await prisma.comInvoice.findUnique({
@@ -43,27 +47,44 @@ export default async function CommercialFactureDetailPage({
     },
   });
   if (!invoice) notFound();
-  if (!canAccessOwned(user, invoice.ownerId)) {
+  if (canCom && !canAccessOwned(user, invoice.ownerId)) {
     redirect("/commercial/factures");
   }
+  // Accès CPT seul : lecture + proposition, pas de scope owner commercial
 
   const remaining = Math.max(0, invoice.totalTtc - invoice.amountPaid);
   const canPay =
+    canCom &&
     hasPermission(user, "com.paiements.record") &&
     ["EMISE", "PARTIELLEMENT_PAYEE"].includes(invoice.status);
+  const canProposeEntry =
+    canCptPropose &&
+    ["EMISE", "PARTIELLEMENT_PAYEE", "PAYEE"].includes(invoice.status);
+  const showComActions = canCom;
 
   return (
     <PageShell>
       <PageHeader
         title={invoice.number}
         description={invoice.client.name}
-        backHref="/commercial/factures"
-        backLabel="Retour aux factures"
-        breadcrumbs={[
-          { label: "Commercial", href: "/commercial" },
-          { label: "Factures", href: "/commercial/factures" },
-          { label: invoice.number },
-        ]}
+        backHref={canCom ? "/commercial/factures" : "/comptabilite/a-comptabiliser"}
+        backLabel={canCom ? "Retour aux factures" : "Retour à comptabiliser"}
+        breadcrumbs={
+          canCom
+            ? [
+                { label: "Commercial", href: "/commercial" },
+                { label: "Factures", href: "/commercial/factures" },
+                { label: invoice.number },
+              ]
+            : [
+                { label: "Comptabilité", href: "/comptabilite" },
+                {
+                  label: "À comptabiliser",
+                  href: "/comptabilite/a-comptabiliser",
+                },
+                { label: invoice.number },
+              ]
+        }
       />
 
       <div className="flex flex-wrap items-center gap-2">
@@ -74,25 +95,35 @@ export default async function CommercialFactureDetailPage({
         ) : null}
       </div>
 
-      <InvoiceActions
-        invoiceId={invoice.id}
-        status={invoice.status}
-        canIssue={hasPermission(user, "com.factures.issue")}
-        canPdf={hasPermission(user, "com.factures.create")}
-      />
+      {showComActions ? (
+        <InvoiceActions
+          invoiceId={invoice.id}
+          status={invoice.status}
+          canIssue={hasPermission(user, "com.factures.issue")}
+          canPdf={hasPermission(user, "com.factures.create")}
+        />
+      ) : null}
+
+      {canProposeEntry ? (
+        <ProposeInvoiceButton invoiceId={invoice.id} />
+      ) : null}
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Surface className="space-y-2 p-5 text-sm lg:col-span-1">
           <p>
             <span className="text-msk-ink/45">Client </span>
-            <Link
-              href={`/commercial/clients/${invoice.clientId}`}
-              className="text-msk-blue hover:underline"
-            >
-              {invoice.client.name}
-            </Link>
+            {canCom ? (
+              <Link
+                href={`/commercial/clients/${invoice.clientId}`}
+                className="text-msk-blue hover:underline"
+              >
+                {invoice.client.name}
+              </Link>
+            ) : (
+              <span>{invoice.client.name}</span>
+            )}
           </p>
-          {invoice.quote ? (
+          {invoice.quote && canCom ? (
             <p>
               <span className="text-msk-ink/45">Devis </span>
               <Link

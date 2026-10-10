@@ -11,10 +11,10 @@
 | Étape | État |
 |---|---|
 | Plan rédigé | Oui — 2026-10-10 |
-| Validation « Phase 6 GO » | — attendre validation humaine |
-| Implémentation | — |
-| Gate technique | — |
-| Gate Phase 6 OK (humaine) | — |
+| Validation « Phase 6 GO » | Oui — 2026-10-10 |
+| Implémentation | Livrée (dev) — 2026-10-10 |
+| Gate technique | OK — `gate:phase6` + smoke UI 53/53 + build |
+| Gate Phase 6 OK (humaine) | — attendre validation |
 
 ## Règle de gate
 
@@ -64,25 +64,25 @@ Le comptable (Issiaka) peut saisir / valider des écritures, rattacher les pièc
 ## Livrables (checklist — à cocher à l’implémentation)
 
 ### Données
-- [ ] Plan de comptes OHADA (seed + CRUD admin)
-- [ ] Journaux (VE, OD, BQ, …) + pièces / lignes
-- [ ] Exercice / période + statut brouillon / validé / clôturé (MVP)
-- [ ] Comptes bancaires + mouvements
-- [ ] Lien optionnel `ComInvoice` / `ComPayment` → écriture
-- [ ] Paramètres taux de change EUR→XOF
+- [x] Plan de comptes OHADA (seed + CRUD admin)
+- [x] Journaux (VE, OD, BQ, …) + pièces / lignes
+- [x] Exercice / période + statut brouillon / validé / clôturé (MVP)
+- [x] Comptes bancaires + mouvements
+- [x] Lien optionnel `ComInvoice` / `ComPayment` → écriture
+- [x] Paramètres taux de change EUR→XOF
 
 ### UI Comptabilité
-- [ ] Hub `/comptabilite`
-- [ ] Plan de comptes, journaux, saisie écriture, GL, états (bilan / CR simplifiés)
-- [ ] Banques + rapprochement
-- [ ] Budget (liste + saisie)
+- [x] Hub `/comptabilite`
+- [x] Plan de comptes, journaux, saisie écriture, GL, états (bilan / CR simplifiés)
+- [x] Banques + rapprochement
+- [x] Budget (liste + saisie)
 
 ### Nav / RBAC / UX
-- [ ] Nav Comptabilité (plus « bientôt »)
-- [ ] Permissions `cpt.*` / `bud.*` branchées UI + actions
-- [ ] `loading.tsx` / pending / list-create / backHref
-- [ ] `gate:phase6` + smoke UI parcours clés
-- [ ] Manuel [docs/manuels/08-comptabilite.md](../manuels/08-comptabilite.md) (à créer à l’implémentation)
+- [x] Nav Comptabilité (plus « bientôt »)
+- [x] Permissions `cpt.*` / `bud.*` branchées UI + actions
+- [x] `loading.tsx` / pending / list-create / backHref
+- [x] `gate:phase6` + smoke UI parcours clés
+- [x] Manuel [docs/manuels/08-comptabilite.md](../manuels/08-comptabilite.md)
 
 ## Gate humaine (après implémentation)
 
