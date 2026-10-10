@@ -1464,3 +1464,17 @@ model RhInpsLine {
   @@index([status])
   @@map("rh_inps_lines")
 }
+
+/// Éligibilité paie / INPS / congés par type de contrat (activable).
+model RhContractTypeRule {
+  id               String         @id @default(cuid())
+  contractType     RhContractType @unique
+  includeInPayroll Boolean        @default(true)
+  applyInpsRates   Boolean        @default(true)
+  accruePaidLeave  Boolean        @default(true)
+  active           Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@map("rh_contract_type_rules")
+}

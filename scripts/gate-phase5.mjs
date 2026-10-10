@@ -37,10 +37,32 @@ async function main() {
   const tables = await prisma.$queryRaw`
     SELECT table_name FROM information_schema.tables
     WHERE table_schema = 'public'
-      AND table_name IN ('rh_payroll_periods','rh_payslips','rh_inps_settings','rh_inps_lines')
+      AND table_name IN (
+        'rh_payroll_periods','rh_payslips','rh_inps_settings','rh_inps_lines',
+        'rh_contract_type_rules'
+      )
   `;
-  if (tables.length < 4) fail(`Tables paie manquantes (${tables.length}/4)`);
-  else ok("Tables paie / INPS");
+  if (tables.length < 5) fail(`Tables paie manquantes (${tables.length}/5)`);
+  else ok("Tables paie / INPS / éligibilité");
+
+  const stageRule = await prisma.rhContractTypeRule.findUnique({
+    where: { contractType: "STAGE" },
+  });
+  if (
+    !stageRule ||
+    !stageRule.includeInPayroll ||
+    !stageRule.applyInpsRates ||
+    stageRule.accruePaidLeave
+  ) {
+    fail("Règle STAGE incorrecte (paie+INPS on, congés off attendus)");
+  } else ok("Éligibilité STAGE conforme");
+
+  const prestaRule = await prisma.rhContractTypeRule.findUnique({
+    where: { contractType: "PRESTA" },
+  });
+  if (!prestaRule || prestaRule.includeInPayroll) {
+    fail("Règle PRESTA incorrecte (exclu paie attendu)");
+  } else ok("Éligibilité PRESTA conforme");
 
   const settings = await prisma.rhInpsSettings.count();
   if (settings < 1) fail("Aucun RhInpsSettings — seed");

@@ -113,11 +113,19 @@ export async function calculatePayrollAction(
     return { ok: false, error: "Période verrouillée" };
   }
 
-  const rates = await getActiveRates();
+  const { getPayrollEligibleTypes, getRuleForType } = await import(
+    "@/lib/paie/contract-rules"
+  );
+  const eligibleTypes = await getPayrollEligibleTypes();
+  if (eligibleTypes.length === 0) {
+    return { ok: false, error: "Aucun type de contrat éligible à la paie" };
+  }
+
+  const allRates = await getActiveRates();
   const contracts = await prisma.rhContract.findMany({
     where: {
       status: "ACTIVE",
-      type: { in: ["CDI", "CDD", "STAGE"] },
+      type: { in: eligibleTypes },
       salaryXof: { gt: 0 },
       employee: { status: "ACTIVE" },
     },
@@ -128,6 +136,8 @@ export async function calculatePayrollAction(
 
   let count = 0;
   for (const c of contracts) {
+    const rule = await getRuleForType(c.type);
+    const rates = rule.applyInpsRates ? allRates : [];
     const calc = calculatePayslip({
       baseSalaryXof: c.salaryXof ?? 0,
       primesXof: 0,

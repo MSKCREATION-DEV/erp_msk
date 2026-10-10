@@ -601,6 +601,8 @@ async function main() {
   await seedPhase6Compta(prisma);
   const { seedPhase4Rh } = await import("./seed-rh");
   await seedPhase4Rh(prisma);
+  const { seedTeamUsers } = await import("./seed-team-users");
+  await seedTeamUsers(prisma);
 }
 
 main()

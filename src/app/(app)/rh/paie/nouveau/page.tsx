@@ -17,7 +17,7 @@ export default async function RhPaieNouveauPage() {
     <PageShell>
       <PageHeader
         title="Ouvrir une période"
-        description="Créer le run de paie mensuel (contrats ACTIVE CDI/CDD/STAGE)."
+        description="Créer le run de paie mensuel (types éligibles configurables en Administration)."
         backHref="/rh/paie"
         backLabel="Retour à la paie"
         breadcrumbs={[

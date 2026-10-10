@@ -129,6 +129,13 @@ export const NAV_GROUPS: NavGroup[] = [
         permission: "cfg.templates",
       },
       {
+        id: "contrats-eligibilite",
+        href: "/administration/contrats-eligibilite",
+        label: "Éligibilité contrats",
+        icon: Settings,
+        permission: "rh.payroll.run",
+      },
+      {
         id: "signatures-admin",
         href: "/administration/signatures",
         label: "Signatures",

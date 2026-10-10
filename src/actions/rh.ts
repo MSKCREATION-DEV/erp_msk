@@ -306,6 +306,24 @@ export async function requestLeaveAction(
     });
   if (!parsed.success) return { ok: false, error: "Données invalides" };
 
+  if (parsed.data.type === "CONGES_PAYES") {
+    const activeContract = await prisma.rhContract.findFirst({
+      where: { employeeId: emp.id, status: "ACTIVE" },
+      orderBy: { startDate: "desc" },
+    });
+    if (activeContract) {
+      const { getRuleForType } = await import("@/lib/paie/contract-rules");
+      const rule = await getRuleForType(activeContract.type);
+      if (!rule.accruePaidLeave) {
+        return {
+          ok: false,
+          error:
+            "Votre type de contrat n’ouvre pas droit aux congés payés (réglage Administration).",
+        };
+      }
+    }
+  }
+
   const start = new Date(parsed.data.startDate);
   const end = new Date(parsed.data.endDate);
   if (end < start) return { ok: false, error: "Dates invalides" };

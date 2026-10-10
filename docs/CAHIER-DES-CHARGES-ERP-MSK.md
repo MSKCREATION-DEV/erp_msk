@@ -1474,7 +1474,7 @@ Source : page « LES GENS derrière LE TRAVAIL » + `docs/msk/team/*.png`
 |---|---|---|---|
 | Mathieu Diarra | Fondateur | Direction, Commerciaux | Direction + Admin plateforme (selon vous) |
 | Isdalinia Boisseaux | Co-fondatrice | Direction | Direction (+ Admin si besoin) |
-| Andile Boussari | Chef de Projet | Projets / Ops | Projets |
+| Andile Boussari | Chef de Projet | Projets / Ops + Direction | Projets + Direction + Admin plateforme |
 | Yaye Bah | Commerciale | Commerciaux | Commercial |
 | Amadou Samba Guiro | Responsable Technique | (Tech) + Direction | **Super Admin** (bootstrap unique) + Admin plateforme |
 | Fatimatou Diallo | Graphiste | (Créa) | Collaborateur |

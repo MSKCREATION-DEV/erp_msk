@@ -8,7 +8,7 @@ import { requireUser } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { writeAudit } from "@/lib/audit";
 import { sendEmail } from "@/lib/email/resend";
-import { inviteEmailHtml } from "@/lib/email/templates";
+import { inviteEmailHtml, inviteEmailText } from "@/lib/email/templates";
 import type { ActionResult } from "@/actions/auth";
 
 const inviteSchema = z.object({
@@ -127,13 +127,19 @@ export async function inviteUserAction(
   try {
     await sendEmail({
       to: email,
-      subject: `[${process.env.EMAIL_FROM ? "ERP MSK" : "MSK"}] Invitation — votre compte`,
+      subject: "MSK CREATION — Votre accès ERP",
       html: inviteEmailHtml({
         firstName: parsed.data.firstName,
+        email,
         tempPassword,
         packsSummary,
       }),
-      text: `Bienvenue ${parsed.data.firstName}. Connectez-vous puis changez votre mot de passe. MDP temporaire: ${tempPassword}`,
+      text: inviteEmailText({
+        firstName: parsed.data.firstName,
+        email,
+        tempPassword,
+        packsSummary,
+      }),
     });
     emailSent = true;
   } catch {

@@ -214,7 +214,7 @@ export async function requestPasswordResetAction(
     try {
       await sendEmail({
         to: notifyEmails,
-        subject: `[ERP MSK] Demande reset MDP — ${user.firstName} ${user.lastName}`,
+        subject: `MSK CREATION — Demande reset MDP — ${user.firstName} ${user.lastName}`,
         html: resetRequestNotifyHtml({
           subjectName: `${user.firstName} ${user.lastName}`,
           subjectEmail: user.email,
