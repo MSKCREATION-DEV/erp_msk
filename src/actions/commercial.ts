@@ -9,6 +9,7 @@ import {
   ComPaymentMethod,
   ComQuoteStatus,
   CrmPipelineStage,
+  Prisma,
 } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
@@ -17,8 +18,15 @@ import { writeAudit } from "@/lib/audit";
 import { computeDocTotals } from "@/lib/commercial/totals";
 import { nextComNumber } from "@/lib/commercial/numbering";
 import { ensureClientDocFolder } from "@/lib/commercial/ged-client";
+import { buildClientGedFolderCode } from "@/lib/commercial/ged-folder-code";
 import { normalizeClientName } from "@/lib/commercial/labels";
 import { canAccessOwned } from "@/lib/commercial/scope";
+import {
+  canTransitionQuoteStatus,
+  permissionForQuoteStatus,
+} from "@/lib/commercial/quote-transitions";
+import { crmVisibility } from "@/lib/crm/scope";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import { generateCommercialPdf } from "@/lib/pdf/commercial";
 import { uploadGedObject } from "@/lib/ged/storage";
 import { getSignaturePngBytes } from "@/lib/signatures/resolve";
@@ -27,6 +35,45 @@ import type { ActionResult } from "@/actions/auth";
 
 const regimeSchema = z.nativeEnum(ComDocRegime);
 const paymentMethodSchema = z.nativeEnum(ComPaymentMethod);
+
+const cuidSchema = z.string().min(8).max(40);
+
+const createClientSchema = z.object({
+  name: z.string().trim().min(1).max(200),
+  contactName: z.string().trim().max(200).nullable(),
+  email: z
+    .string()
+    .trim()
+    .max(200)
+    .refine((v) => !v || z.string().email().safeParse(v).success, {
+      message: "E-mail invalide",
+    })
+    .transform((v) => (v ? v : null)),
+  phone: z.string().trim().max(40).nullable(),
+  address: z.string().trim().max(500).nullable(),
+  city: z.string().trim().max(120).nullable(),
+  country: z.string().trim().min(2).max(8).default("ML"),
+  notes: z.string().trim().max(4000).nullable(),
+  includeTravelDefault: z.boolean(),
+});
+
+const createQuoteMetaSchema = z.object({
+  clientId: cuidSchema,
+  opportunityId: z.preprocess(
+    (v) => (v === "" || v == null ? null : v),
+    cuidSchema.nullable(),
+  ),
+  object: z.string().trim().max(500).nullable(),
+  missionNote: z.string().trim().max(2000).nullable(),
+  regime: regimeSchema,
+  currency: z.string().trim().min(3).max(8),
+  vatEnabled: z.boolean(),
+  vatRate: z.number().int().min(0).max(100),
+  promoEnabled: z.boolean(),
+  promoPercent: z.number().int().min(0).max(100).nullable(),
+  includeTravel: z.boolean(),
+  validUntil: z.date().nullable(),
+});
 
 const lineSchema = z.object({
   label: z.string().min(1).max(500),
@@ -46,6 +93,20 @@ function parseLinesJson(raw: string): z.infer<typeof lineSchema>[] | null {
   }
 }
 
+async function assertCrmDealAccess(
+  actor: Awaited<ReturnType<typeof requireUser>>,
+  ownerId: string,
+): Promise<boolean> {
+  const vis = crmVisibility(actor);
+  if (vis === "global") return true;
+  if (ownerId === actor.id) return true;
+  if (vis === "team") {
+    const team = await commercialTeamUserIds();
+    return team.includes(ownerId);
+  }
+  return false;
+}
+
 function revalidateCommercial(paths: string[] = []) {
   revalidatePath("/commercial");
   revalidatePath("/commercial/clients");
@@ -59,33 +120,46 @@ export async function createClientAction(
 ): Promise<ActionResult & { clientId?: string }> {
   const actor = await requireUser({ permission: "com.clients.manage" });
 
-  const name = String(formData.get("name") ?? "").trim();
-  const contactName = String(formData.get("contactName") ?? "").trim() || null;
-  const email = String(formData.get("email") ?? "").trim() || null;
-  const phone = String(formData.get("phone") ?? "").trim() || null;
-  const address = String(formData.get("address") ?? "").trim() || null;
-  const city = String(formData.get("city") ?? "").trim() || null;
-  const country = String(formData.get("country") ?? "ML").trim() || "ML";
-  const notes = String(formData.get("notes") ?? "").trim() || null;
-  const includeTravelDefault = formData.get("includeTravelDefault") === "on";
+  const parsed = createClientSchema.safeParse({
+    name: String(formData.get("name") ?? ""),
+    contactName: String(formData.get("contactName") ?? "").trim() || null,
+    email: String(formData.get("email") ?? "").trim(),
+    phone: String(formData.get("phone") ?? "").trim() || null,
+    address: String(formData.get("address") ?? "").trim() || null,
+    city: String(formData.get("city") ?? "").trim() || null,
+    country: String(formData.get("country") ?? "ML").trim() || "ML",
+    notes: String(formData.get("notes") ?? "").trim() || null,
+    includeTravelDefault: formData.get("includeTravelDefault") === "on",
+  });
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Données invalides" };
+  }
+  const data = parsed.data;
 
-  if (!name) return { ok: false, error: "Nom client obligatoire" };
-
-  const client = await prisma.comClient.create({
-    data: {
-      name,
-      normalizedName: normalizeClientName(name),
-      contactName,
-      email,
-      phone,
-      address,
-      city,
-      country,
-      notes,
-      includeTravelDefault,
-      ownerId: actor.id,
-      createdById: actor.id,
-    },
+  const client = await prisma.$transaction(async (tx) => {
+    const created = await tx.comClient.create({
+      data: {
+        name: data.name,
+        normalizedName: normalizeClientName(data.name),
+        gedFolderCode: `TMP_${Date.now()}`,
+        contactName: data.contactName,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        city: data.city,
+        country: data.country,
+        notes: data.notes,
+        includeTravelDefault: data.includeTravelDefault,
+        ownerId: actor.id,
+        createdById: actor.id,
+      },
+    });
+    return tx.comClient.update({
+      where: { id: created.id },
+      data: {
+        gedFolderCode: buildClientGedFolderCode(data.name, created.id),
+      },
+    });
   });
 
   await writeAudit({
@@ -106,6 +180,10 @@ export async function convertOpportunityToClientAction(
   const opportunityId = String(formData.get("opportunityId") ?? "").trim();
   if (!opportunityId) return { ok: false, error: "Opportunité manquante" };
 
+  if (!cuidSchema.safeParse(opportunityId).success) {
+    return { ok: false, error: "Opportunité invalide" };
+  }
+
   const deal = await prisma.crmOpportunity.findUnique({
     where: { id: opportunityId },
     include: {
@@ -115,6 +193,9 @@ export async function convertOpportunityToClientAction(
   if (!deal) return { ok: false, error: "Opportunité introuvable" };
   if (deal.stage !== CrmPipelineStage.GAGNE) {
     return { ok: false, error: "Seuls les deals Gagné peuvent être convertis" };
+  }
+  if (!(await assertCrmDealAccess(actor, deal.ownerId))) {
+    return { ok: false, error: "Opportunité hors périmètre CRM" };
   }
 
   const existing = await prisma.comClient.findFirst({
@@ -138,21 +219,33 @@ export async function convertOpportunityToClientAction(
     ? `${primary.firstName} ${primary.lastName}`.trim()
     : null;
 
-  const client = await prisma.comClient.create({
-    data: {
-      name: deal.organization.name,
-      normalizedName: normalizeClientName(deal.organization.name),
-      contactName,
-      email: primary?.email ?? null,
-      phone: primary?.phone ?? null,
-      city: deal.organization.city,
-      country: deal.organization.country,
-      notes: deal.organization.notes,
-      crmOrganizationId: deal.organizationId,
-      sourceOpportunityId: deal.id,
-      ownerId: deal.ownerId,
-      createdById: actor.id,
-    },
+  const client = await prisma.$transaction(async (tx) => {
+    const created = await tx.comClient.create({
+      data: {
+        name: deal.organization.name,
+        normalizedName: normalizeClientName(deal.organization.name),
+        gedFolderCode: `TMP_${Date.now()}`,
+        contactName,
+        email: primary?.email ?? null,
+        phone: primary?.phone ?? null,
+        city: deal.organization.city,
+        country: deal.organization.country,
+        notes: deal.organization.notes,
+        crmOrganizationId: deal.organizationId,
+        sourceOpportunityId: deal.id,
+        ownerId: deal.ownerId,
+        createdById: actor.id,
+      },
+    });
+    return tx.comClient.update({
+      where: { id: created.id },
+      data: {
+        gedFolderCode: buildClientGedFolderCode(
+          deal.organization.name,
+          created.id,
+        ),
+      },
+    });
   });
 
   await writeAudit({
@@ -175,61 +268,86 @@ export async function createQuoteAction(
 ): Promise<ActionResult & { quoteId?: string }> {
   const actor = await requireUser({ permission: "com.devis.create" });
 
-  const clientId = String(formData.get("clientId") ?? "").trim();
-  const opportunityId =
-    String(formData.get("opportunityId") ?? "").trim() || null;
-  const object = String(formData.get("object") ?? "").trim() || null;
-  const missionNote = String(formData.get("missionNote") ?? "").trim() || null;
   const regimeRaw = String(formData.get("regime") ?? "ML");
   const regime = regimeSchema.safeParse(regimeRaw).success
     ? (regimeRaw as ComDocRegime)
     : ComDocRegime.ML;
-  const currency =
-    String(formData.get("currency") ?? "").trim() ||
-    (regime === "FR" ? "EUR" : "XOF");
-  const vatEnabled = formData.get("vatEnabled") !== "off";
   const vatRateRaw = Number.parseInt(
     String(formData.get("vatRate") ?? (regime === "FR" ? "20" : "18")),
     10,
   );
-  const vatRate = Number.isFinite(vatRateRaw)
-    ? vatRateRaw
-    : regime === "FR"
-      ? 20
-      : 18;
   const promoEnabled = formData.get("promoEnabled") === "on";
   const promoPercentRaw = Number.parseInt(
     String(formData.get("promoPercent") ?? ""),
     10,
   );
-  const promoPercent =
-    promoEnabled && Number.isFinite(promoPercentRaw) ? promoPercentRaw : null;
-  const includeTravel = formData.get("includeTravel") === "on";
   const validUntilRaw = String(formData.get("validUntil") ?? "").trim();
-  const validUntil = validUntilRaw ? new Date(validUntilRaw) : null;
+  const validUntilDate = validUntilRaw ? new Date(validUntilRaw) : null;
+  const opportunityRaw =
+    String(formData.get("opportunityId") ?? "").trim() || null;
+
+  const meta = createQuoteMetaSchema.safeParse({
+    clientId: String(formData.get("clientId") ?? "").trim(),
+    opportunityId: opportunityRaw,
+    object: String(formData.get("object") ?? "").trim() || null,
+    missionNote: String(formData.get("missionNote") ?? "").trim() || null,
+    regime,
+    currency:
+      String(formData.get("currency") ?? "").trim() ||
+      (regime === "FR" ? "EUR" : "XOF"),
+    vatEnabled: formData.get("vatEnabled") !== "off",
+    vatRate: Number.isFinite(vatRateRaw)
+      ? vatRateRaw
+      : regime === "FR"
+        ? 20
+        : 18,
+    promoEnabled,
+    promoPercent:
+      promoEnabled && Number.isFinite(promoPercentRaw) ? promoPercentRaw : null,
+    includeTravel: formData.get("includeTravel") === "on",
+    validUntil:
+      validUntilDate && !Number.isNaN(validUntilDate.getTime())
+        ? validUntilDate
+        : null,
+  });
+  if (!meta.success) {
+    return {
+      ok: false,
+      error: meta.error.issues[0]?.message ?? "Données devis invalides",
+    };
+  }
+
+  const {
+    clientId,
+    opportunityId,
+    object,
+    missionNote,
+    regime: quoteRegime,
+    currency,
+    vatEnabled,
+    vatRate,
+    promoEnabled: quotePromo,
+    includeTravel,
+    promoPercent,
+    validUntil,
+  } = meta.data;
   const lines = parseLinesJson(String(formData.get("lines") ?? "[]"));
 
-  if (!clientId) return { ok: false, error: "Client obligatoire" };
   if (!lines || lines.length === 0) {
     return { ok: false, error: "Au moins une ligne obligatoire" };
   }
 
   const client = await prisma.comClient.findUnique({ where: { id: clientId } });
   if (!client) return { ok: false, error: "Client introuvable" };
-  if (!canAccessOwned(actor, client.ownerId) && client.ownerId !== actor.id) {
-    // Créateur peut créer un devis même si client d'un autre si manage + global
-    if (!hasPermission(actor, "com.reports.view") && !actor.isSuperAdmin) {
-      if (client.ownerId !== actor.id) {
-        return { ok: false, error: "Client hors périmètre" };
-      }
-    }
+  if (!canAccessOwned(actor, client.ownerId)) {
+    return { ok: false, error: "Client hors périmètre" };
   }
 
   const totals = computeDocTotals({
     lines,
     vatEnabled,
     vatRate,
-    promoEnabled,
+    promoEnabled: quotePromo,
     promoPercent,
     includeTravel,
   });
@@ -240,11 +358,11 @@ export async function createQuoteAction(
       data: {
         number,
         status: ComQuoteStatus.BROUILLON,
-        regime,
+        regime: quoteRegime,
         currency,
         vatEnabled,
         vatRate,
-        promoEnabled,
+        promoEnabled: quotePromo,
         promoPercent,
         includeTravel,
         object,
@@ -294,17 +412,20 @@ export async function updateQuoteStatusAction(
   if (!statusParse.success) return { ok: false, error: "Statut invalide" };
   const status = statusParse.data;
 
-  let permission = "com.devis.edit_own";
-  if (status === "ENVOYE") permission = "com.devis.send";
-  if (status === "ACCEPTE" || status === "REFUSE") {
-    permission = "com.devis.accept_reject";
-  }
-  const actor = await requireUser({ permission });
+  const actor = await requireUser({
+    permission: permissionForQuoteStatus(status),
+  });
 
   const quote = await prisma.comQuote.findUnique({ where: { id: quoteId } });
   if (!quote) return { ok: false, error: "Devis introuvable" };
   if (!canAccessOwned(actor, quote.ownerId)) {
     return { ok: false, error: "Hors périmètre" };
+  }
+  if (!canTransitionQuoteStatus(quote.status, status)) {
+    return {
+      ok: false,
+      error: `Transition interdite : ${quote.status} → ${status}`,
+    };
   }
 
   const data: {
@@ -315,7 +436,7 @@ export async function updateQuoteStatusAction(
 
   if (status === "ENVOYE") data.sentAt = new Date();
   if (status === "ACCEPTE") data.acceptedAt = new Date();
-  if (status === "REFUSE" || status === "ANNULE" || status === "BROUILLON") {
+  if (status === "REFUSE" || status === "ANNULE") {
     data.acceptedAt = null;
   }
 
@@ -326,7 +447,7 @@ export async function updateQuoteStatusAction(
     action: "com.quote.status",
     entityType: "com_quote",
     entityId: quoteId,
-    metadata: { status },
+    metadata: { from: quote.status, status },
   });
 
   revalidateCommercial([`/commercial/devis/${quoteId}`]);
@@ -401,7 +522,7 @@ export async function generateQuotePdfAction(
   }
 
   const folder = await ensureClientDocFolder({
-    clientName: quote.client.name,
+    clientId: quote.clientId,
     type: "Devis",
     createdById: actor.id,
   });
@@ -476,62 +597,82 @@ export async function createInvoiceFromQuoteAction(
     };
   }
 
-  const existing = await prisma.comInvoice.findFirst({
-    where: { quoteId: quote.id },
-  });
-  if (existing) {
+  try {
+    const invoice = await prisma.$transaction(async (tx) => {
+      const existing = await tx.comInvoice.findUnique({
+        where: { quoteId: quote.id },
+      });
+      if (existing) return { created: false as const, invoice: existing };
+
+      const number = await nextComNumber("FACTURE", new Date().getFullYear(), tx);
+      const created = await tx.comInvoice.create({
+        data: {
+          number,
+          status: ComInvoiceStatus.BROUILLON,
+          regime: quote.regime,
+          currency: quote.currency,
+          vatEnabled: quote.vatEnabled,
+          vatRate: quote.vatRate,
+          object: quote.object,
+          totalHt: quote.totalHt,
+          totalVat: quote.totalVat,
+          totalTtc: quote.totalTtc,
+          clientId: quote.clientId,
+          quoteId: quote.id,
+          ownerId: actor.id,
+          createdById: actor.id,
+          lines: {
+            create: quote.lines.map((l) => ({
+              sortOrder: l.sortOrder,
+              label: l.label,
+              qty: l.qty,
+              unitPrice: l.unitPrice,
+              catalogOfferId: l.catalogOfferId,
+              isTravel: l.isTravel,
+            })),
+          },
+        },
+      });
+      return { created: true as const, invoice: created };
+    });
+
+    if (invoice.created) {
+      await writeAudit({
+        actorId: actor.id,
+        action: "com.invoice.from_quote",
+        entityType: "com_invoice",
+        entityId: invoice.invoice.id,
+        metadata: { quoteId },
+      });
+    }
+
+    revalidateCommercial([
+      `/commercial/factures/${invoice.invoice.id}`,
+      `/commercial/devis/${quoteId}`,
+    ]);
     return {
       ok: true,
-      message: "Facture déjà créée",
-      invoiceId: existing.id,
+      message: invoice.created ? "Facture créée" : "Facture déjà créée",
+      invoiceId: invoice.invoice.id,
     };
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2002"
+    ) {
+      const existing = await prisma.comInvoice.findUnique({
+        where: { quoteId: quote.id },
+      });
+      if (existing) {
+        return {
+          ok: true,
+          message: "Facture déjà créée",
+          invoiceId: existing.id,
+        };
+      }
+    }
+    throw e;
   }
-
-  const invoice = await prisma.$transaction(async (tx) => {
-    const number = await nextComNumber("FACTURE", new Date().getFullYear(), tx);
-    return tx.comInvoice.create({
-      data: {
-        number,
-        status: ComInvoiceStatus.BROUILLON,
-        regime: quote.regime,
-        currency: quote.currency,
-        vatEnabled: quote.vatEnabled,
-        vatRate: quote.vatRate,
-        object: quote.object,
-        totalHt: quote.totalHt,
-        totalVat: quote.totalVat,
-        totalTtc: quote.totalTtc,
-        clientId: quote.clientId,
-        quoteId: quote.id,
-        ownerId: actor.id,
-        createdById: actor.id,
-        lines: {
-          create: quote.lines.map((l) => ({
-            sortOrder: l.sortOrder,
-            label: l.label,
-            qty: l.qty,
-            unitPrice: l.unitPrice,
-            catalogOfferId: l.catalogOfferId,
-            isTravel: l.isTravel,
-          })),
-        },
-      },
-    });
-  });
-
-  await writeAudit({
-    actorId: actor.id,
-    action: "com.invoice.from_quote",
-    entityType: "com_invoice",
-    entityId: invoice.id,
-    metadata: { quoteId },
-  });
-
-  revalidateCommercial([
-    `/commercial/factures/${invoice.id}`,
-    `/commercial/devis/${quoteId}`,
-  ]);
-  return { ok: true, message: "Facture créée", invoiceId: invoice.id };
 }
 
 export async function issueInvoiceAction(
@@ -636,7 +777,7 @@ export async function generateInvoicePdfAction(
   }
 
   const folder = await ensureClientDocFolder({
-    clientName: invoice.client.name,
+    clientId: invoice.clientId,
     type: "Factures",
     createdById: actor.id,
   });
@@ -711,38 +852,71 @@ export async function recordPaymentAction(
     return { ok: false, error: "Montant invalide" };
   }
 
-  const invoice = await prisma.comInvoice.findUnique({
-    where: { id: invoiceId },
-  });
-  if (!invoice) return { ok: false, error: "Facture introuvable" };
-  if (!canAccessOwned(actor, invoice.ownerId)) {
-    return { ok: false, error: "Hors périmètre" };
-  }
-  if (invoice.status === "ANNULEE" || invoice.status === "BROUILLON") {
-    return { ok: false, error: "Émettre la facture avant paiement" };
-  }
+  const paidAtFinal = Number.isNaN(paidAt.getTime()) ? new Date() : paidAt;
 
-  const amountPaid = invoice.amountPaid + amountRaw;
-  let status: ComInvoiceStatus = ComInvoiceStatus.PARTIELLEMENT_PAYEE;
-  if (amountPaid >= invoice.totalTtc) status = ComInvoiceStatus.PAYEE;
-  else if (amountPaid <= 0) status = ComInvoiceStatus.EMISE;
+  try {
+    await prisma.$transaction(async (tx) => {
+      const rows = await tx.$queryRaw<
+        Array<{
+          id: string;
+          ownerId: string;
+          status: ComInvoiceStatus;
+          amountPaid: number;
+          totalTtc: number;
+        }>
+      >`
+        SELECT id, "ownerId", status, "amountPaid", "totalTtc"
+        FROM com_invoices
+        WHERE id = ${invoiceId}
+        FOR UPDATE
+      `;
+      const invoice = rows[0];
+      if (!invoice) throw new Error("Facture introuvable");
+      if (!canAccessOwned(actor, invoice.ownerId)) {
+        throw new Error("Hors périmètre");
+      }
+      if (
+        invoice.status === ComInvoiceStatus.ANNULEE ||
+        invoice.status === ComInvoiceStatus.BROUILLON
+      ) {
+        throw new Error("Émettre la facture avant paiement");
+      }
+      const remaining = invoice.totalTtc - invoice.amountPaid;
+      if (amountRaw > remaining) {
+        throw new Error(
+          remaining <= 0
+            ? "Facture déjà soldée"
+            : `Montant supérieur au reste dû (${remaining})`,
+        );
+      }
 
-  await prisma.$transaction([
-    prisma.comPayment.create({
-      data: {
-        invoiceId,
-        amount: amountRaw,
-        method,
-        note,
-        paidAt: Number.isNaN(paidAt.getTime()) ? new Date() : paidAt,
-        recordedById: actor.id,
-      },
-    }),
-    prisma.comInvoice.update({
-      where: { id: invoiceId },
-      data: { amountPaid, status },
-    }),
-  ]);
+      const amountPaid = invoice.amountPaid + amountRaw;
+      const status =
+        amountPaid >= invoice.totalTtc
+          ? ComInvoiceStatus.PAYEE
+          : ComInvoiceStatus.PARTIELLEMENT_PAYEE;
+
+      await tx.comPayment.create({
+        data: {
+          invoiceId,
+          amount: amountRaw,
+          method,
+          note,
+          paidAt: paidAtFinal,
+          recordedById: actor.id,
+        },
+      });
+      await tx.comInvoice.update({
+        where: { id: invoiceId },
+        data: { amountPaid, status },
+      });
+    });
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Échec enregistrement paiement",
+    };
+  }
 
   await writeAudit({
     actorId: actor.id,

@@ -7,7 +7,9 @@ import {
 import type { SessionUser } from "@/lib/rbac/resolve";
 
 function user(
-  partial: Partial<SessionUser> & { permissions: string[] },
+  partial: Omit<Partial<SessionUser>, "permissions"> & {
+    permissions: string[];
+  },
 ): SessionUser {
   return {
     id: partial.id ?? "00000000-0000-4000-8000-000000000001",

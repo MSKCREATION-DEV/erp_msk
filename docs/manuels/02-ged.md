@@ -45,4 +45,5 @@ Exemple commercial : racines visibles ≈ `Clients/`, `Commercial/`, `Collaborat
 
 ## Changelog manuel
 
+- 2026-10-10 — Codes dossier client = `ComClient.gedFolderCode` (unique) ; pas de docs listés à la racine `03_CLIENTS` / `05_COLLABORATEURS` en mode scoped.
 - 2026-10-10 — Scope `view_scoped` vs `browse` documenté ; soft-delete vérifie le chemin dossier.

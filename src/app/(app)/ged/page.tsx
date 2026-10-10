@@ -11,6 +11,7 @@ import {
   isProtectedFolder,
 } from "@/lib/ged/tree";
 import {
+  canListDocumentsInFolder,
   canViewFolderPath,
   filterVisibleFolders,
   hasFullGedBrowse,
@@ -139,9 +140,9 @@ export default async function GedPage({
     foldersRaw,
   );
 
-  // Docs uniquement si le dossier courant est autorisé
+  // Docs : pas sur les racines conteneur scoped (03_CLIENTS / 05_COLLABORATEURS)
   const documents =
-    current && (await canViewFolderPath(user, current.path))
+    current && (await canListDocumentsInFolder(user, current.path))
       ? documentsRaw
       : [];
 

@@ -116,6 +116,8 @@ export default async function CrmProspectDetailPage({
           opportunityId={deal.id}
           existingClientId={linkedClient?.id}
           canManage={hasPermission(user, "com.clients.manage")}
+          canViewClient={hasPermission(user, "com.clients.view_own")}
+          canCreateQuote={hasPermission(user, "com.devis.create")}
         />
       ) : null}
 

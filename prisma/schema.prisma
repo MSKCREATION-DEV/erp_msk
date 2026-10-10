@@ -695,6 +695,8 @@ model ComClient {
   id                   String   @id @default(cuid())
   name                 String
   normalizedName       String
+  /// Code dossier GED unique sous `03_CLIENTS` (évite collision nom → slug).
+  gedFolderCode        String   @unique
   contactName          String?
   email                String?
   phone                String?
@@ -811,7 +813,7 @@ model ComInvoice {
 
   @@index([clientId])
   @@index([ownerId, status])
-  @@index([quoteId])
+  @@unique([quoteId])
   @@map("com_invoices")
 }
 

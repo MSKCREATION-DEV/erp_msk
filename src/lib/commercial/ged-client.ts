@@ -1,9 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import {
-  ensureChild,
-  ensureYearTree,
-  folderCodeFromName,
-} from "@/lib/ged/tree";
+import { ensureChild, ensureYearTree } from "@/lib/ged/tree";
 
 /** Sous-dossiers standards sous un client COM. */
 const CLIENT_SUB = [
@@ -20,11 +16,11 @@ type FolderRef = {
 };
 
 /**
- * Assure `/{year}/03_CLIENTS/{slug}/Devis|Factures`.
- * Retourne le dossier type (Devis ou Factures).
+ * Assure `/{year}/03_CLIENTS/{gedFolderCode}/Devis|Factures`.
+ * Le code vient de `ComClient.gedFolderCode` (unique) — pas du nom seul.
  */
 export async function ensureClientDocFolder(opts: {
-  clientName: string;
+  clientId: string;
   type: "Devis" | "Factures";
   year?: number;
   createdById?: string;
@@ -32,12 +28,17 @@ export async function ensureClientDocFolder(opts: {
   const year = opts.year ?? new Date().getFullYear();
   await ensureYearTree(year, opts.createdById);
 
+  const client = await prisma.comClient.findUniqueOrThrow({
+    where: { id: opts.clientId },
+    select: { name: true, gedFolderCode: true },
+  });
+
   const clientsRoot = await prisma.documentFolder.findUniqueOrThrow({
     where: { path: `/${year}/03_CLIENTS` },
     select: { id: true, path: true },
   });
 
-  const slug = folderCodeFromName(opts.clientName);
+  const slug = client.gedFolderCode;
   let clientFolder: FolderRef | null = await prisma.documentFolder.findUnique({
     where: { path: `${clientsRoot.path}/${slug}` },
     select: { id: true, path: true, name: true, code: true, parentId: true },
@@ -48,7 +49,7 @@ export async function ensureClientDocFolder(opts: {
       clientsRoot.id,
       clientsRoot.path,
       slug,
-      opts.clientName.slice(0, 80),
+      client.name.slice(0, 80),
       year,
       opts.createdById,
     );

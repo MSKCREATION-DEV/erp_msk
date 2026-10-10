@@ -80,4 +80,5 @@ Selon packs : un commercial peut être limité à **ses** clients / devis (`com.
 
 ## Changelog manuel
 
+- 2026-10-10 — Durcissement : machine d’états devis, 1 facture/devis, dossier GED client unique (`gedFolderCode`), plafond paiements.
 - 2026-10-10 — Phase 3 livrée : flux, PDF, GED, scope.

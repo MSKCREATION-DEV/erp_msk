@@ -2,7 +2,6 @@ import type { SessionUser } from "@/lib/rbac/resolve";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { collabFolderSlug } from "@/lib/ged/constants";
-import { folderCodeFromName } from "@/lib/ged/tree";
 
 /** Parcours GED complet (admin / direction / compta…). */
 export function hasFullGedBrowse(user: SessionUser): boolean {
@@ -28,6 +27,11 @@ function yearFromPath(path: string): number | null {
   return m ? Number(m[1]) : null;
 }
 
+/** Conteneurs listables mais sans docs à la racine (scoped). */
+export function isScopedContainerRoot(path: string): boolean {
+  return /^\/\d{4}\/(03_CLIENTS|05_COLLABORATEURS)$/.test(path);
+}
+
 /** Prefixe autorisé sous Collaborateurs pour cet utilisateur. */
 export function ownCollabPathPrefix(
   user: SessionUser,
@@ -38,7 +42,7 @@ export function ownCollabPathPrefix(
 }
 
 /**
- * Codes dossiers client autorisés (ComClient own / global reports).
+ * Codes dossiers client autorisés (ComClient.gedFolderCode).
  */
 export async function allowedClientFolderCodes(
   user: SessionUser,
@@ -49,9 +53,9 @@ export async function allowedClientFolderCodes(
       : { ownerId: user.id };
   const clients = await prisma.comClient.findMany({
     where,
-    select: { name: true },
+    select: { gedFolderCode: true },
   });
-  return new Set(clients.map((c) => folderCodeFromName(c.name)));
+  return new Set(clients.map((c) => c.gedFolderCode));
 }
 
 export async function canViewFolderPath(
@@ -67,7 +71,7 @@ export async function canViewFolderPath(
   // Racine année : OK (liste filtrée ensuite)
   if (path === yearRoot) return true;
 
-  // Clients
+  // Clients — conteneur OK pour navigation ; docs racine filtrés ailleurs
   if (path === `${yearRoot}/03_CLIENTS`) return true;
   if (path.startsWith(`${yearRoot}/03_CLIENTS/`)) {
     const seg = path.split("/")[3]; // code client
@@ -82,6 +86,17 @@ export async function canViewFolderPath(
   if (path === own || path.startsWith(`${own}/`)) return true;
 
   return false;
+}
+
+/** Documents listables dans ce dossier (scoped : pas à la racine conteneur). */
+export async function canListDocumentsInFolder(
+  user: SessionUser,
+  path: string,
+): Promise<boolean> {
+  if (!(await canViewFolderPath(user, path))) return false;
+  if (hasFullGedBrowse(user)) return true;
+  if (isScopedContainerRoot(path)) return false;
+  return true;
 }
 
 /** Filtre enfants d’un dossier selon le scope. */
