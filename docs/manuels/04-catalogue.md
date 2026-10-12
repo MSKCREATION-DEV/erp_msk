@@ -1,41 +1,46 @@
-# Manuel — Catalogue (offres & produits)
+# Manuel — Offres (catalogue & planchers)
 
-**Version** : 2026-10-10 · Phase 2  
+**Version** : 2026-10-12 · Phase COM E2E  
 **Public** : Commercial (lecture), Admin CRM / Direction (édition)
 
 ## À retenir
 
-Le catalogue alimente les **lignes de devis** : références, prix HT, TVA, libellés.
+Les **Offres** alimentent les lignes de devis et les fiches prospects.  
+Accessible via tab / carte **Offres** du module Commercial (`/catalogue`).
 
 | Permission | Effet |
 |---|---|
-| `catalog.view` | Consulter offres / détails |
-| `catalog.manage` | Créer / éditer / archiver (admin CRM, direction…) |
-
-Un commercial **sans** `catalog.manage` voit le catalogue en lecture seule — pas « Nouvelle offre » ni Éditer.
+| `com.catalogue.view` | Consulter offres / planchers |
+| `com.catalogue.manage` | Créer / éditer / activer-désactiver |
 
 ## Navigation
 
 | Intention | Route |
 |---|---|
-| Liste | `/catalogue` |
-| Création | `/catalogue/nouveau` (si manage) |
-| Fiche | `/catalogue/[id]` |
+| Liste Offres | `/catalogue` |
+| Création | `/catalogue/nouveau` |
+| Édition | `/catalogue/[id]/edit` |
 
-Respecte la règle **liste ≠ création** (page dédiée).
+Breadcrumbs : Commercial → Offres. Règle **liste ≠ création**.
 
-## Ce qu’engendre une action
+## Plancher prix
 
-| Action | Conséquence |
+Chaque offre peut avoir un **plancher FCFA** (`floorPriceXof`) ≤ prix catalogue.
+
+- Affiché sur les cartes Offres  
+- Au devis (régime ML / XOF) : le P.U. ne peut pas descendre sous le plancher (UI + serveur)  
+- Régime FR / EUR : plancher XOF non appliqué (comparaison non pertinente)
+
+## Lien Commercial / CRM
+
+| Amont | Aval |
 |---|---|
-| Créer une offre | Disponible au choix dans le formulaire devis |
-| Archiver une offre | Plus proposée aux nouveaux devis (historique devis inchangé) |
-| Pack `admin_crm` en trop | Boutons édition visibles pour un commercial terrain |
+| Offre catalogue | Ligne devis (snapshot) · offre liée prospect |
+| Modifier une offre | N’altère pas un devis déjà créé |
 
-## Lien Commercial
+## Changelog
 
-Les devis référencent le catalogue (snapshot des libellés/prix au moment de la ligne). Modifier le catalogue **après** n’altère pas un devis déjà émis.
-
-## Changelog manuel
-
-- 2026-10-10 — Première version + lien packs CRM.
+| Date | Note |
+|---|---|
+| 2026-10-12 | Titre Offres ; plancher visible + enforcement devis XOF |
+| 2026-10-10 | Catalogue Phase 2 |

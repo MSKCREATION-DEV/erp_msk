@@ -1,5 +1,6 @@
 # 08 — Comptabilité SYSCOHADA
 
+**Version** : 2026-10-12  
 Public : **Comptable** · **Admin Compta** · **Direction** (lecture états / budget).  
 Module : `/comptabilite` — devise légale **FCFA (XOF)**, plan **SYSCOHADA**.
 
@@ -7,61 +8,64 @@ Module : `/comptabilite` — devise légale **FCFA (XOF)**, plan **SYSCOHADA**.
 
 | Pack | Accès typique |
 |---|---|
-| `comptable` | Saisie / validation écritures, banques, rapprochement, états, fiscalité assistée, budget lecture |
+| `comptable` | Saisie / validation, banques, états, fiscalité, budget lecture, **À comptabiliser** |
 | `admin_compta` | + plan de comptes, clôture, budget saisie |
-| `direction` | Accès module + états + budget lecture |
-| `commercial` | **Pas** de Comptabilité (proposition écriture = rôle compta) |
+| `direction` | Module + états + budget lecture |
+| `commercial` | Pas de module Compta (sauf ouverture fiche facture si droits mixtes) |
 
-## Parcours clés (manuel = gate humaine)
+## Parcours clés
 
 ### 1. Plan de comptes
 
-1. Nav **Comptabilité** → **Plan de comptes**
-2. Filtrer (ex. `411` ou `706`)
-3. Admin Compta : **Nouveau compte** (`/comptabilite/plan/nouveau`)
+1. **Comptabilité → Plan de comptes**  
+2. Filtrer (ex. `411`, `706`)  
+3. Admin : **Nouveau compte**
 
 ### 2. Saisir une écriture équilibrée
 
-1. **Écritures** → **Nouvelle écriture**
-2. Choisir journal (**OD**, **VE**, **BQ**…)
-3. Remplir ≥ 2 lignes : un débit **ou** un crédit par ligne
-4. L’indicateur passe vert « Équilibrée » → **Créer (brouillon)**
-5. Sur la fiche → **Valider** (verrouille la pièce)
+1. **Écritures → Nouvelle écriture**  
+2. Journal (OD, VE, BQ…)  
+3. ≥ 2 lignes équilibrées → **Créer (brouillon)** → **Valider**
 
-### 3. Lien Commercial → écriture VE
+### 3. Lien Commercial → écriture VE (COM-6)
 
-1. **Comptabilité → À comptabiliser** (file des factures sans écriture)  
-   *ou* fiche facture Commercial (si droits COM + CPT)
-2. Bouton **Proposer l’écriture comptable** (`cpt.ecritures.manage`)
-3. Brouillon journal **VE** : D clients (4111/4112) / C 706 / C 4432 TVA
-4. Si facture **EUR** : conversion via taux `EUR/XOF` (Fiscalité)
-5. Valider l’écriture après contrôle
+1. Hub Compta : KPI **Factures à comptabiliser**  
+2. **À comptabiliser** — file des factures sans écriture  
+   *ou* fiche facture Commercial (badge Compta)  
+3. **Proposer l’écriture comptable**  
+4. Brouillon journal **VE** : D **4111** (ML) / **4112** (FR) · C **706** · C **4432** (TVA)  
+5. Facture **EUR** : conversion `EUR/XOF`  
+6. Si déjà liée : bouton **Ouvrir l’écriture** (pas de double proposition)  
+7. **Valider** après contrôle  
+
+Section **Déjà liées** : liens facture + écriture + statut.
 
 ### 4. Banques ECOBANK + rapprochement
 
-1. **Banques** → Compte 1 ou 2
-2. **Nouveau mouvement** (crédit = encaissement, débit = décaissement : montant signé)
-3. Sur la fiche compte : associer le mouvement à une **écriture validée** (rapprochement)
+1. **Banques** → compte  
+2. **Nouveau mouvement**  
+3. Rapprocher à une écriture validée  
 
-### 5. États (Bilan / CR)
+> Bridge automatique **paiement Commercial → écriture BQ** : non livré (saisie manuelle / OD).
 
-1. **États** : Balance, Bilan simplifié, Compte de résultat
-2. **Grand livre** : détail par compte / période
-3. Montants en FCFA
+### 5. États
 
-### 6. Budget & fiscalité assistée
+Balance, Bilan, Compte de résultat, Grand livre — montants FCFA.
 
-- **Budget** : lignes Capex/Opex par mois (saisie = `bud.manage`)
-- **Fiscalité** : TVA collectée / déductible / nette période ; échéance **patente** ; taux **EUR→XOF**
+### 6. Budget & fiscalité
 
-## Hors scope (rappel)
+Budget Capex/Opex · TVA période · patente · taux EUR→XOF.
 
-- Paie → écritures PA automatiques : Phase 5  
-- Stocks / achats → écritures : Phase 7  
-- Télédéclaration DGI : Phase 8+
+## Hors scope
+
+- Paie → écritures PA auto  
+- Stocks → écritures  
+- Télédéclaration DGI  
+- Paiement COM → BQ auto (optionnel)
 
 ## Changelog
 
 | Date | Note |
 |---|---|
-| 2026-10-10 | Création Phase 6 — hub, plan, écritures, banques, états, budget, fiscalité |
+| 2026-10-12 | COM-6 : liens facture↔écriture, revalidation file, KPI hub, gate comptes 4111/4112/706/4432 |
+| 2026-10-10 | Phase 6 — hub, plan, écritures, banques, états, budget, fiscalité |

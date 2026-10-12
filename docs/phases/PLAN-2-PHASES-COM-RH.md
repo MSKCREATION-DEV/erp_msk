@@ -1,193 +1,169 @@
 # Plan Direction — 2 phases bout en bout (Commercial · RH)
 
 > Issu de la réunion Direction (2026-10-11) + corrections.  
-> Principe : **clarifier → découper en 2 phases complètes → approfondir, en commençant par le Commercial**.  
-> Stocks / anomalies / etc. : plus tard, hors de ces 2 phases.
+> Principe : **clarifier → découper en 2 phases complètes → approfondir**.  
+> **État 2026-10-12 :** Phase COMMERCIAL (CRM + COM-4…7) **livrée** sur `dev` / `main`.  
+> Stocks / anomalies / etc. : hors de ces 2 phases (déjà partiellement en phases 7A/7B).
 
 ---
 
 ## 0. Méthode
 
-| Étape | Contenu |
-|---|---|
-| A. Clarifier | Mode de travail MSK + écarts ERP actuel (ce doc) |
-| B. Découper | **Phase COM** (chaîne commerciale complète) puis **Phase RH** (RH complète) |
-| C. Approfondir | Spec détaillée **par phase**, gate humaine avant code |
-| D. Implémenter | Bout en bout, aligné méthode MSK — pas de demi-module |
+| Étape | Contenu | Statut |
+|---|---|---|
+| A. Clarifier | Mode de travail MSK + écarts ERP | **Fait** |
+| B. Découper | Phase COM puis Phase RH | **Fait** |
+| C. Approfondir | Spec détaillée par phase | COM **fait** · RH **à faire** |
+| D. Implémenter | Bout en bout + gate | COM **fait** · RH **suivant** |
 
-**Règle fichier CRM :** s’appuyer sur Excel/SharePoint (champs, statuts, habitudes) + **données migrées** — **améliorer** l’UX / les flux (pas reproduite bêtement).
+**Règle fichier CRM :** s’appuyer sur Excel/SharePoint + données migrables — **améliorer** l’UX / les flux (pas reproduite bêtement).
 
 ---
 
 ## 1. Vision des 2 phases
 
 ```
-PHASE COMMERCIAL — COMPLÈTE BOUT EN BOUT (priorité 1)
-  Suivi prospects (Excel MSK)  →  Client  →  Catalogue / prix  →  Devis  →  Facture  →  Paiement / finance
-  (+ docs GED, responsables, import, tableau de bord, équipe, rapport semaine)
-  NB : « CRM » dans les specs = tranche *suivi* de CETTE phase — pas un module isolé.
-  Phase COM OK seulement quand TOUTE la chaîne l’est.
+PHASE COMMERCIAL — COMPLÈTE BOUT EN BOUT     ✅ LIVRÉE (2026-10-12)
+  Suivi prospects  →  Client  →  Offres / plancher  →  Devis  →  Facture  →  Paiement
+  → Bridge compta VE (facture) + GED PDF
+  Reporté optionnel : paiement → journal BQ
 
-PHASE RH (priorité 2 — après COM OK)
+PHASE RH (priorité 2 — APRÈS COM)            ⏳ SUIVANT
   Collaborateur / espace  →  Contrats  →  Congés & absences  →  Paie paramétrable  →  Docs & signatures
   (+ INPS / déclarations, départ)
 ```
 
-Les deux phases doivent **couvrir tout** le périmètre métier retenu en réunion, pas un MVP tronqué.
-
 ---
 
-## 2. Phase COMMERCIAL — couverture complète (cadrage)
+## 2. Phase COMMERCIAL — couverture (état)
 
 ### 2.1 Objectif métier
 
 Un commercial MSK travaille **comme avec le fichier CRM**, en mieux : une seule chaîne du premier contact jusqu’à l’encaissement, sans Excel / SharePoint pour le quotidien.
 
-### 2.2 Périmètre à couvrir (checklist)
+### 2.2 Checklist
 
-#### A. CRM (cœur)
-- [x] Menu `/commercial` (cartes) + sidebar unique + tabs filtrées (Menu · Tableau de bord · …)
-- [x] Fiche / liste prospects + Par étapes dans Prospects ; filtres modal
-- [x] Statuts LISTES FR (Négociation masquée) ; Suivi par / droits team|own
-- [x] Relances groupées + règles GUIDE (CRM-2)
-- [x] Vue Équipe (lead) + KPI radiaux sur Prospects (collab own) ; Rapport auto (CRM-6/7)
-- [x] Import CSV robuste (CRM-3) — max 400, dédup, en-têtes auto
-- [x] Tableau de bord KPI + charts (CRM-5) + scripts (CRM-4)
-- [x] Pont devis 24h / fiche (CRM-8 v1) ; multi-offres opportunité
-- [x] Plancher catalogue `floorPriceXof` (COM-5 amorcé)
+#### A. CRM (cœur) — ✅
+- [x] Menu `/commercial` (cartes) + tabs filtrées (Menu · Tableau de bord · …)
+- [x] Fiche / liste prospects + Par étapes (`?vue=etapes`) ; filtres modal
+- [x] Statuts LISTES FR (Négociation masquée) ; Suivi par / droits team|own|global
+- [x] Relances groupées + règles GUIDE
+- [x] Vue Équipe (lead) + KPI radiaux sur Prospects (collab own) ; Rapport auto
+- [x] Import CSV robuste (max 400, dédup)
+- [x] Tableau de bord KPI + charts + scripts
+- [x] SLA devis 24h (`interestedAt`) ; multi-offres opportunité
 - [x] Fixtures `[TEST]` + badge UI
 
-#### B. Lien CRM ↔ documentaire
-- [x] Nav chaîne Commercial (hub)
-- [x] Conversion client dès Intéressé (+ CTA Client + devis)
-- [x] Devis liés fiche ; préremplissage offres CRM ; sync Devis envoyé
-- [x] SLA devis 24h (`interestedAt` + filtre `/crm/prospects?devisRetard=1`)
+#### B. Lien CRM ↔ documentaire — ✅
+- [x] Conversion client dès **Intéressé** (+ CTA Client + devis)
+- [x] Devis prérempli depuis offres CRM ; sync statut **Devis envoyé**
+- [x] Filtre `/crm/prospects?devisRetard=1`
 
-#### C. Catalogue & prix
-- [x] Catalogue / Offres (base)
-- [x] Plancher prix (UI catalogue + devis + garde serveur XOF)
+#### C. Catalogue & prix — ✅
+- [x] Offres `/catalogue` (titre Offres, breadcrumbs Commercial)
+- [x] Plancher `floorPriceXof` — UI + garde serveur XOF
 
-#### D. Devis · Factures · Paiements · Finance
-- [x] Devis / factures / paiements + PDF Voir/Télécharger (Phase 3)
-- [x] Bridge compta facture → VE (file, liens, revalidation, KPI) — **COM-6**
-- [x] Signature PDF = responsable commercial (owner) ; PDF après émission
-- [ ] Bridge paiement → BQ (encaissement) — reporté slice 2
+#### D. Devis · Factures · Finance — ✅ (slice)
+- [x] Devis / factures / paiements + PDF Voir/Télécharger
+- [x] Bridge compta facture → VE (file, liens, revalidation, KPI)
+- [x] Signature PDF = **owner** commercial ; PDF après émission
+- [ ] Bridge paiement → BQ — **reporté** (optionnel, non bloquant Phase COM)
 
-#### E. Hors phase COM (reporté)
+#### E. Hors phase COM
 - Stocks, anomalies, WhatsApp API, cron digests avancés, multi-échéances complexes
 
 ### 2.3 Critère « Phase COM OK »
 
-> Un commercial MSK gère **toute** la chaîne **sans Excel** : suivi prospects (fiche, relances, scripts, équipe, rapport) → client → devis → facture → paiement — et Direction voit indicateurs + docs. Données historiques présentes. Plancher prix respecté. **Suivi seul ≠ phase OK.**
+> Un commercial MSK gère **toute** la chaîne **sans Excel** : suivi → client → devis → facture → paiement — Direction voit indicateurs + docs. Plancher respecté. Bridge VE opérationnel.
+
+**Verdict :** critère atteint pour le quotidien MSK. Paiement→BQ = amélioration compta optionnelle.
+
+### 2.4 Docs de référence COM
+
+| Doc | Rôle |
+|---|---|
+| [`FLOW-COMMERCIAL-E2E.md`](./FLOW-COMMERCIAL-E2E.md) | Nav, personas, parcours |
+| [`SPEC-CRM-MSK-COMPLET.md`](./SPEC-CRM-MSK-COMPLET.md) | Spec suivi / Excel |
+| [`REGLES-EVOLUTION-CRM.md`](./REGLES-EVOLUTION-CRM.md) | Discipline keep/change/break + gate |
+
+### 2.5 Lots livrés
+
+| Lot | Contenu | Gate |
+|---|---|---|
+| CRM-0…8 + UX2/UX3 | Suivi complet + Menu / Tableau de bord | **Fait** |
+| COM-4 | Intéressé → client → devis | **Fait** |
+| COM-5 | Plancher prix | **Fait** |
+| COM-6 | Bridge facture → VE + GED | **Fait** |
+| COM-7 | Polish Direction (colonne Compta, KPI file, signature) | **Fait** |
+
+Commits repères : `d9cb98f` (CRM E2E) · `554f109` (COM-4/5) · `69da6c9` (COM-6/7).
 
 ---
 
-## 3. Phase RH — couverture complète (cadrage, après COM)
+## 3. Phase RH — couverture complète (cadrage, **suivant**)
 
 ### 3.1 Objectif métier
 
 Collaborateur et RH travaillent avec un **espace clair**, des **docs bien rangés**, des **congés/absences corrects**, une **paie paramétrable** (congés, avantages, cotisations, primes, mutuelle, nourriture…).
 
+> Note : Phases 4/5 ont déjà livré une base RH/paie — la Phase RH Direction = **reprise / alignement métier** (réunion 11/10), pas un greenfield.
+
 ### 3.2 Périmètre à couvrir (checklist)
 
-- [ ] Fiche collaborateur + **Mon espace** (rangement, docs, absences/congés)
-- [ ] Contrats typés par métier + zones variables + PDF / signature gérable
-- [ ] Congés & absences **repris** (types métier, validation, soldes, lien absences)
-- [ ] Paie : éléments **ajoutables / retirables** ; primes gérables ; prorata arrivée
+- [ ] Fiche collaborateur + **Mon espace** (rangement, docs, absences/congés) — *reprise UX*
+- [ ] Contrats typés par métier + zones variables + PDF / signature **gérable par doc**
+- [ ] Congés & absences **repris** (types métier, validation, soldes)
+- [ ] Paie : éléments **ajoutables / retirables** ; primes ; prorata arrivée
 - [ ] INPS / déclarés vs non déclarés
 - [ ] Docs entrée–sortie (règlement, bulletins, solde de tout compte…)
 - [ ] Départ : coupure d’accès + suite documentaire
 
 ### 3.3 Critère « Phase RH OK »
 
-> RH ouvre une période, produit un bulletin cohérent avec avantages/cotisations ; collab voit ses docs et demande un congé validé avec solde juste.
+> RH ouvre une période, produit un bulletin cohérent ; collab voit ses docs et demande un congé validé avec solde juste.
+
+### 3.4 Prochaine action RH
+
+1. Rédiger **SPEC-RH-MSK** (même niveau que SPEC-CRM) à partir de la synthèse Direction + manuels 09/10.  
+2. Matrice Keep / Change / Break sur l’existant Phase 4/5.  
+3. GO lots RH après validation Direction.
 
 ---
 
-## 4. Approfondissement — on commence par le COMMERCIAL (CRM d’abord)
+## 4. Décisions COM verrouillées (rappel)
 
-> **Spec CRM détaillée :** [`SPEC-CRM-MSK-COMPLET.md`](./SPEC-CRM-MSK-COMPLET.md)  
-> Analysé depuis Excel (GUIDE, PROSPECTS, TABLEAU BORD, SUIVI ÉQUIPE, SCRIPTS, LISTES, Rapport hebdo) + PDF + captures.  
-> Phase RH : même niveau de détail **après** gate CRM/COM.
-
-### 4.1 Référentiels MSK (sources de vérité)
-
-| Source | Usage |
-|---|---|
-| `docs/CRM_Prospection_MSK.xlsx` (+ PDF / captures) | **Tout** le CRM métier : listes, prospects, bord, équipe, scripts, rapport |
-| Méthode Madina / Mathieu / Fatoumata | Multi-commerciaux réel (~342 prospects) |
-| GUIDE Excel | Règles (relance obligatoire, 3 relances, devis 24h, revue vendredi…) |
-| Réunion Direction 11/10 | Améliorer sans copier bêtement ; chaîne CRM↔commercial |
-
-### 4.2 Couverture CRM à atteindre (résumé)
-
-1. **Liste + fiche** = colonnes PROSPECTS (+ secteur, web, devis liés)  
-2. **Statuts / sources** = LISTES Excel (libellés FR exacts)  
-3. **Règles GUIDE** encodées (date relance, retards, 3 relances → PERDU…)  
-4. **Scripts** parité onglet SCRIPTS  
-5. **Tableau de bord** KPI + **charts pro** (funnel, area, bar, radial)  
-6. **Vue Équipe** (lead) / KPI perso sur Prospects (collab)  
-7. **Rapport** (vendredi) chiffres auto + qualitatif  
-8. **Import** fichier Oct 2026  
-9. **Pont CLIENT → devis/facture** (suite lots COM)  
-10. **UI / flows** : sous-nav CRM, fiche 360°, kanban, parcours quotidiens sans friction — niveau Attio/Pipedrive, charte MSK, stack [shadcn Charts](https://ui.shadcn.com/docs/components/base/chart)
-
-Détail : [`SPEC-CRM-MSK-COMPLET.md`](./SPEC-CRM-MSK-COMPLET.md) — §9 UI/parcours/charts, lots **CRM-0 → CRM-UX → CRM-8**.
-
-### 4.3 Découpage d’implémentation COM
-
-| Lot | Nom | Contenu |
-|---|---|---|
-| **CRM-0…CRM-8** | CRM complet | Voir [`SPEC-CRM-MSK-COMPLET.md`](./SPEC-CRM-MSK-COMPLET.md) §9 |
-| **COM-4** | Chaîne documentaire | **Fait** — client dès Intéressé, prefill devis, sync stage, SLA 24h |
-| **COM-5** | Catalogue & plancher | **Fait** — plancher visible + enforcement XOF |
-| **COM-6** | Finance bridge | **Fait** — VE facture, file, liens, GED PDF ; paiement→BQ reporté |
-| **COM-7** | Polish Direction | **Fait** (slice) — colonne Compta, KPI file, signature owner |
-
-**Ordre :** terminer le **CRM** (CRM-0→8) avant d’élargir devis/facture — la Direction a priorisé un CRM fidèle et complet.
-
-**Discipline technique :** [`REGLES-EVOLUTION-CRM.md`](./REGLES-EVOLUTION-CRM.md) — keep / change / **break** (remontée décision) / wipe ; UI avant migration quand possible ; oser refaire ce qui est mal conçu **après GO clair** ; gate tests sur tout le périmètre touché.
-
-**Naming docs :** `SPEC-CRM-*` = détail tranche suivi ; le cadrage global reste **Phase COMMERCIAL complète** (ce fichier §2).  
-**Flow UI / qui voit quoi :** [`FLOW-COMMERCIAL-E2E.md`](./FLOW-COMMERCIAL-E2E.md) — sidebar unique, indicateurs **live**, vocabulaire Suivi par / Créé par / Responsable (rôle).
-
-### 4.4 Décisions CRM verrouillées (détail spec §12)
-
-1. Vocabulaire clair (pas « pipeline / owner » en UI)  
-2. **Négociation** masqué — déjà géré via Devis envoyé + journal + relances  
-3. Cards bord = 7 statuts ; option « En échange » = Contacté + En cours  
-4. Devise **paramétrable** ; objectifs collab **et** équipe **paramétrables**  
-5. Équipe ouverte : voir / reprendre les dossiers des autres  
-6. 0 `<select>` natif → Choice cards / Combobox  
-7. Liste = colonnes essentielles ; détail en fiche  
-
-Reste à trancher côté COM doc : naming menus Commercial ; **plancher prix**.
-
-### 4.5 Hors scope strict Phase COM
-
-WhatsApp Business API · Stocks · RH/paie · Anomalies · Cron digests avancés · Éditeur gabarit drag-and-drop.
+1. Vocabulaire clair (pas « pipeline / owner » en UI) — **Suivi par** / **Créé par**  
+2. **Négociation** masqué  
+3. Cards = 7 statuts  
+4. Devise paramétrable ; objectifs collab **et** équipe  
+5. Vue Équipe pour lead ; KPI perso pour collab own  
+6. Choice cards / pickers (éviter selects natifs sur CRM)  
+7. Liste courte / fiche profonde  
+8. Plancher prix XOF obligatoire sur lignes catalogue  
+9. Client commercial dès **Intéressé** (pas seulement Client/Gagné)
 
 ---
 
-## 5. Séquence globale
+## 5. Séquence globale (à jour)
 
 ```
-Maintenant
-  ├─ Valider ce plan (clarification OK ?)
-  ├─ Verrouiller décisions §4.4
-  └─ GO COM-1 … COM-7 (phase Commercial complète)
-Puis
-  └─ Spec Phase RH (même niveau de détail) → GO lots RH
+✅ Clarifier + verrouiller décisions COM
+✅ GO CRM-0…8 + UX + COM-4…7
+✅ Push dev + main (deploy Vercel)
+⏳ Retours terrain Commercial (polish)
+→ Spec Phase RH + GO lots RH
+→ (Optionnel) Bridge paiement → BQ
+→ Phase 8 Automatisations (si GO)
 ```
 
 ---
 
 ## 6. Prochaine action
 
-1. **Valider** ce document (surtout §2 couverture COM + §4.3 lots + §4.4 décisions).  
-2. Dire **« COM-1 GO »** pour démarrer l’approfondissement / implémentation fiche CRM.  
-3. Fichier Excel CRM reste la référence métier — on **améliore** dans l’ERP, on ne le clone pas pixel à pixel.
+1. **Terrain Commercial** : parcours hub carte par carte avec Madina / Mathieu / Fatoumata.  
+2. Dire **« RH GO »** / **« SPEC-RH GO »** pour démarrer l’approfondissement RH.  
+3. Ne pas rouvrir le schéma COM sans fiche Break ([`REGLES-EVOLUTION-CRM.md`](./REGLES-EVOLUTION-CRM.md) §0bis).
 
 ---
 
-*Document vivant — à mettre à jour à chaque gate de lot.*
+*Document vivant — maj 2026-10-12 (Phase COM livrée).*

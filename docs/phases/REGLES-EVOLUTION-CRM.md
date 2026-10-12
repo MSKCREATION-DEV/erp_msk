@@ -86,8 +86,10 @@ Champs déjà présents utiles à la spec : `sector`, `website`, `followUpAt`, `
 | `src/actions/crm.ts` | create, stage, activity, import, tasks, rapport, goals | **Keep** ; durcir GUIDE au fil des retours |
 | `labels.ts` / `scope.ts` / `team.ts` | FR, team|own|global | **Keep** |
 | RBAC `crm.*` | Packs Commercial / Admin CRM | **Keep** ; Vue Équipe = `crmVisibility ≠ own` |
-| Charts / pickers / Par étapes / Rapport / Vue Équipe | **Livrés** | Polish UX |
+| Charts / pickers / Par étapes / Rapport / Vue Équipe | **Livrés** | Polish terrain |
 | Fixtures `[TEST]` | Script + badge | **Keep** (§0ter) |
+| Pont client / devis / SLA / plancher | COM-4/5 | **Keep** |
+| Bridge facture → VE | COM-6 (`propose-from-invoice`, À comptabiliser) | **Keep** ; paiement→BQ optionnel |
 
 ### 1.3 Ce qu’il **ne faut pas** faire
 
@@ -217,6 +219,9 @@ Toute modif CRM doit vérifier que ça **ne casse pas** :
 | T10 | Client → COM | Conversion + devis (régression pont) |
 | T11 | Import | N lignes ; responsables OK |
 | T12 | Tabs Menu | Menu → Tableau de bord juste après ; Rapport / Vue Équipe |
+| T13 | Intéressé → Client + devis | Prefill + sync Devis envoyé |
+| T14 | Facture → VE | Proposer écriture ; lien retour ; file à jour |
+| T15 | Plancher | Refus UI + serveur si P.U. &lt; plancher XOF |
 
 ### 6.3 Régression hors CRM (si migration ou RBAC touché)
 
@@ -252,8 +257,8 @@ Si une case non → **ne pas merger**.
 
 **Périmètre mental :** « Commercial complet » = suivi **et** documentaire **et** prix **et** encaissement — un seul produit, une seule phase.
 
-**État :** CRM + COM-4…7 (slice) livrés — pont facture→VE, plancher, chaîne Intéressé.  
-**Prochaine étape :** retours terrain · bridge paiement→BQ (optionnel) · Phase RH.
+**État (2026-10-12) :** Phase COMMERCIAL livrée (CRM-0…8 + UX + COM-4…7) sur `dev`/`main`.  
+**Prochaine étape :** retours terrain Commercial · **Phase RH** (SPEC puis GO) · optionnel paiement→BQ.
 
 ---
 

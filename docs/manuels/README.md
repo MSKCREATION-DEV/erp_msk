@@ -21,9 +21,9 @@ Documentation **vivante** pour l’équipe (commerciaux, finance, admin, directi
 | [01 — IAM & droits](./01-iam-droits.md) | Groupes, packs, overrides, invitation | Admin plateforme / Direction |
 | [02 — GED](./02-ged.md) | Dossiers, dépôt, scope `view_scoped` / `browse` | Tous + Admin |
 | [03 — Organisation](./03-organisation.md) | Structure, rattachements | Direction / Admin |
-| [04 — Catalogue](./04-catalogue.md) | Offres & tarifs | Lecture : commercial · Édition : Admin CRM |
-| [05 — CRM](./05-crm.md) | Prospects, pipeline, scripts, conversion | Commerciaux / Admin CRM |
-| [06 — Commercial](./06-commercial.md) | Clients, devis, factures, paiements | Commerciaux / Compta |
+| [04 — Offres / Catalogue](./04-catalogue.md) | Offres, tarifs, planchers | Lecture : commercial · Édition : Admin CRM |
+| [05 — CRM / Suivi](./05-crm.md) | Menu, bord, prospects, équipe, rapport | Commerciaux / Admin CRM |
+| [06 — Commercial](./06-commercial.md) | Clients, devis, factures, bridge VE | Commerciaux / Compta |
 | [07 — Signatures & gabarits](./07-signatures-gabarits.md) | Signature perso, PDF | Collaborateur / Admin |
 | [08 — Comptabilité](./08-comptabilite.md) | Plan SYSCOHADA, écritures, banques, états, budget | Comptable / Admin Compta / Direction |
 | [09 — RH](./09-rh.md) | Collaborateurs, contrats, congés, absences, heures | Admin RH / Direction / Collaborateur |
@@ -37,14 +37,13 @@ Phases : [07A](../phases/PHASE-07A-STOCKS.md) · [07B](../phases/PHASE-07B-OPS.m
 ## Chaîne de cause → effet (vue d’ensemble)
 
 ```
-Invitation user → groupes (+ packs défaut) → packs directs optionnels → overrides
+Invitation user → groupes (+ packs) → permissions → Nav Commercial
         ↓
-  Permissions effectives → Nav + boutons UI + Server Actions
+  Prospect (Intéressé) → Client COM → Devis (plancher) → Facture → Paiement
         ↓
-  Prospect gagné → Client COM → Devis → Facture → Paiement → PDF → GED client
-        ↓
-  Facture émise/payée → proposition écriture VE SYSCOHADA (FCFA) → validation → états
+  PDF GED (signature owner) → proposition écriture VE → validation → états
 ```
 
-Branche de travail : `dev`.  
+Branche : `dev` · prod : `main`.  
+Plan Direction : [PLAN-2-PHASES-COM-RH](../phases/PLAN-2-PHASES-COM-RH.md) (COM ✅ · RH suivant).  
 Réf. phases : [docs/phases/](../phases/).

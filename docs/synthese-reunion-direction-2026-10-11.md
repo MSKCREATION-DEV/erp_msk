@@ -68,4 +68,20 @@ Priorité claire et saine pour mardi : **CRM fidèle au métier + chaîne commer
 
 ---
 
-*Synthèse révisée après relecture de la conversation et corrections Direction.*
+---
+
+## 4. Suivi d’exécution (2026-10-12)
+
+| Décision réunion | Suite ERP |
+|---|---|
+| CRM fidèle Excel + améliorer | Phase COM E2E **livrée** (Menu, bord, équipe, rapport, import…) |
+| Une chaîne CRM ↔ commercial | Client dès Intéressé → devis → facture → VE |
+| Plancher prix | Livré (UI + serveur XOF) |
+| Signatures gérables / RH | **Phase RH** suivante (pas bloqué par COM) |
+| Congés / paie / Mon espace | **Phase RH** — reprise sur base Phases 4/5 |
+
+Voir [`docs/phases/PLAN-2-PHASES-COM-RH.md`](./phases/PLAN-2-PHASES-COM-RH.md).
+
+---
+
+*Synthèse révisée après relecture + suivi d’exécution COM.*

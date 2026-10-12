@@ -68,7 +68,8 @@ Le comptable (Issiaka) peut saisir / valider des écritures, rattacher les pièc
 - [x] Journaux (VE, OD, BQ, …) + pièces / lignes
 - [x] Exercice / période + statut brouillon / validé / clôturé (MVP)
 - [x] Comptes bancaires + mouvements
-- [x] Lien optionnel `ComInvoice` / `ComPayment` → écriture
+- [x] Lien `ComInvoice` → écriture VE (`sourceType: COM_INVOICE`) — UX COM-6 2026-10-12
+- [ ] Lien `ComPayment` → écriture BQ — **non livré** (optionnel)
 - [x] Paramètres taux de change EUR→XOF
 
 ### UI Comptabilité
@@ -83,6 +84,7 @@ Le comptable (Issiaka) peut saisir / valider des écritures, rattacher les pièc
 - [x] `loading.tsx` / pending / list-create / backHref
 - [x] `gate:phase6` + smoke UI parcours clés
 - [x] Manuel [docs/manuels/08-comptabilite.md](../manuels/08-comptabilite.md)
+- [x] File `/comptabilite/a-comptabiliser` + liens bidirectionnels facture ↔ écriture + KPI hub
 
 ## Gate humaine (après implémentation)
 

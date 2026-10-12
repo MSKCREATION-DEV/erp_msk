@@ -424,9 +424,18 @@ Réf. implémentation : [doc Chart](https://ui.shadcn.com/docs/components/base/c
 | **CRM-8** | Pont commercial | Alerte devis 24h ; Client → devis | **Fait** (v1) |
 | **CRM-UX3** | Nav Menu / droits | Hub→Menu ; tab Tableau de bord ; libellés Rapport / Vue Équipe | **Fait** |
 
-Ordre livré : CRM-0 → UX → 1→8 + UX2/UX3. Suite = polish terrain + COM-4…7.
+Ordre livré : CRM-0 → UX → 1→8 + UX2/UX3.
 
-Puis **COM-4…COM-7** (catalogue, factures, finance).
+### 10bis. Lots COM (chaîne documentaire — hors CRM pur)
+
+| Lot | Contenu | Gate |
+|---|---|---|
+| **COM-4** | Client dès Intéressé ; prefill devis ; sync Devis envoyé ; SLA `interestedAt` | **Fait** |
+| **COM-5** | Plancher prix UI + serveur XOF | **Fait** |
+| **COM-6** | Bridge facture → VE + GED PDF owner | **Fait** |
+| **COM-7** | Colonne Compta ; KPI file ; polish Direction | **Fait** |
+
+Suite globale : retours terrain · Phase RH ([`PLAN-2-PHASES-COM-RH.md`](./PLAN-2-PHASES-COM-RH.md)).
 
 ---
 
@@ -457,7 +466,10 @@ Puis **COM-4…COM-7** (catalogue, factures, finance).
 | 8 | Colonnes liste | Essentiels (§3.1) ; détail en fiche. |
 | 9 | Vue par étapes | Oui, sans jargon pipeline/kanban en UI. |
 | 10 | Charts | shadcn/Recharts, tokens MSK. |
+| 11 | Nav | Menu · Tableau de bord · … · Vue Équipe* · Rapport · Offres |
+| 12 | Client commercial | Dès **Intéressé** (pour devis), pas seulement Client |
+| 13 | Plancher | Obligatoire XOF sur lignes catalogue |
 
 ---
 
-*Spec vivante — prochain signal : « CRM-0 GO » / « CRM-UX GO ».*
+*Spec vivante — CRM + COM livrés 2026-10-12. Prochain signal phase : « SPEC-RH GO » / « RH GO ».*

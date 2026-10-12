@@ -5,42 +5,44 @@
 | Branche | Rôle |
 |---|---|
 | `dev` | **Branche de travail** — toutes les phases s’y développent |
-| `main` | Branche stable — merge depuis `dev` après gate de phase validée |
+| `main` | Branche stable / **prod Vercel** — merge depuis `dev` après gate |
 
-Workflow : travailler sur `dev` → PR / merge vers `main` à la fin d’une phase OK.
+Workflow : travailler sur `dev` → merge `main` après gate.
 
-## Urgence métier (notification)
+## Urgence métier
 
-Les pôles suivants sont **URGENTS / PRIORITAIRES** pour MSK :
+Pôles **URGENTS** pour MSK :
 
-- **Commercial** (CRM, clients, devis, factures, paiements)
-- **Finance / Comptabilité** (journaux, banques, budget, TVA, états)
+- **Commercial** (CRM, clients, devis, factures, paiements) — **livré E2E 2026-10-12**
+- **Finance / Comptabilité** (journaux, banques, budget, TVA, états) — base livrée + bridge VE facture
 
-### Ce que ça change
+### État des phases (2026-10-12)
 
-- On **ne saute pas** les fondations (Phase 0 IAM, Phase 1 GED/gabarits utiles).
-- On **oriente** chaque plan de phase : marquer `URGENT` sur les livrables COM/CPT.
-- Phase 0–3 **OK** · Phase 6 Compta **livrée** · Phase 4 RH **livrée** + UX Mon espace · Phase 5 Paie/INPS **livrée**.
-- Phase 7A Stocks + 7B Ops **livrées** sur `dev` ([07A](./PHASE-07A-STOCKS.md), [07B](./PHASE-07B-OPS.md)).
-- Comptes Direction (Mathieu / Andile) seedés ; e-mail invitation charte MSK.
-- **En cours (doc)** : [Phase 8 — Automatisations](./PHASE-08-AUTOMATIONS.md) — attendre « Phase 8 GO ».
-- **Déploiement** : `main` aligné sur `dev` — checklist [docs/deploy/VERCEL.md](../deploy/VERCEL.md) (env + build + smoke collab).
-- Optionnel **1.x** / **2.x** / **3.x** (hors chemin critique) : UI corbeille GED, partage ACL, pad signature.
+| Zone | État |
+|---|---|
+| Phase 0–3 (IAM, GED, catalogue/CRM base, commercial docs) | **OK** |
+| Phase 4 RH + Phase 5 Paie/INPS | **Livrées** (base) — reprise métier Direction = **Phase RH** suivante |
+| Phase 6 Compta | **OK** + COM-6 bridge facture→VE |
+| Phase 7A Stocks + 7B Ops | **Livrées** |
+| **Phase COM E2E** (plan 2 phases) | **Livrée** — CRM + COM-4…7 · docs [`PLAN-2-PHASES-COM-RH.md`](./PLAN-2-PHASES-COM-RH.md) |
+| Phase RH (Direction 11/10) | **Suivant** — SPEC puis GO |
+| Phase 8 Automatisations | Doc — attendre « Phase 8 GO » |
+| Deploy | `main` ≈ `dev` · [VERCEL.md](../deploy/VERCEL.md) |
 
-### Documentation vivante
+### Documentation
 
-Manuels utilisateur : [docs/manuels/](../manuels/) — à mettre à jour à chaque évolution de module.
+| Doc | Usage |
+|---|---|
+| [`PLAN-2-PHASES-COM-RH.md`](./PLAN-2-PHASES-COM-RH.md) | Cadrage COM/RH Direction |
+| [`FLOW-COMMERCIAL-E2E.md`](./FLOW-COMMERCIAL-E2E.md) | Parcours Commercial |
+| [`SPEC-CRM-MSK-COMPLET.md`](./SPEC-CRM-MSK-COMPLET.md) | Spec suivi CRM |
+| [`REGLES-EVOLUTION-CRM.md`](./REGLES-EVOLUTION-CRM.md) | Discipline technique COM |
+| [docs/manuels/](../manuels/) | Manuels utilisateur |
 
-### Ce que ça ne change pas
+### Qualité & design (absolu)
 
-- Règle absolue 1 phase = 1 plan → implémentation → tests → gate.
-- Pas de big-bang « tout le commercial + toute la compta » sans IAM/GED.
+Voir `.cursor/rules/phase-quality.mdc` · `ui-never-freeze.mdc` · `list-create-separation.mdc` · `msk-charte.mdc`.
 
-## Qualité & design (absolu)
+---
 
-Voir `.cursor/rules/phase-quality.mdc` · `ui-never-freeze.mdc` · `list-create-separation.mdc` :
-
-- Design moderne, inspiré des meilleurs produits du domaine, **sous charte MSK**
-- UI jamais figée (`loading.tsx`, pending, Suspense layout)
-- Tests UI + fonctionnels après chaque phase ; build sans erreur
-- Code expert Next.js / full-stack ; meilleures libs si besoin
+*Maj 2026-10-12 — Phase COM E2E livrée ; priorité suivante = RH Direction.*

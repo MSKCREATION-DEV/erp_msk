@@ -1,84 +1,68 @@
-# Manuel — Commercial (clients, devis, factures)
+# Manuel — Commercial (clients, devis, factures, offres)
 
-**Version** : 2026-10-10 · Phase 3  
+**Version** : 2026-10-12 · Phase COM E2E  
 **Public** : Commerciaux, Comptabilité (factures), Direction
 
 ## À retenir
 
-Module de **vente formalisée** : Client → Devis → (acceptation) → Facture → Paiements.
+Chaîne **vente formalisée** sous l’entrée **Commercial** :
 
-Numérotation séquentielle (devis / factures). PDFs générés et rangés en GED client. Mentions légales en pied de page PDF (pas de badge décoratif « MSK CREATION »).
+Client → Devis → Facture → Paiements → (Compta VE).
+
+Numérotation séquentielle. PDF rangés en GED client. Signature PDF = **responsable** du devis/facture (owner).
 
 ## Navigation
 
-| Intention | Route | Permission |
-|---|---|---|
-| Hub | `/commercial` | `com.access` |
-| Clients liste | `/commercial/clients` | `com.clients.view` |
-| Nouveau client | `/commercial/clients/nouveau` | `com.clients.create` |
-| Fiche client | `/commercial/clients/[id]` | `com.clients.view` |
-| Devis liste | `/commercial/devis` | `com.quotes.view` |
-| Nouveau devis | `/commercial/devis/nouveau` | `com.quotes.create` |
-| Fiche devis | `/commercial/devis/[id]` | `com.quotes.view` |
-| Factures | `/commercial/factures` · `/[id]` | `com.invoices.view` |
+| Intention | Route |
+|---|---|
+| Menu hub | `/commercial` |
+| Clients | `/commercial/clients` · `/nouveau` · `/[id]` |
+| Devis | `/commercial/devis` · `/nouveau` · `/[id]` |
+| Factures | `/commercial/factures` · `/[id]` |
+| Offres (catalogue) | `/catalogue` |
 
-Liste et création sont **toujours** sur des pages séparées.
+Liste et création = **pages séparées**. Tabs Commercial partagées avec le CRM.
 
 ## Cycle devis
 
 ```
-BROUILLON → ENVOYÉ → ACCEPTE | REFUSE | EXPIRE
-                 ↓ (si accepté)
-              Facture (émission)
+BROUILLON → ENVOYÉ → ACCEPTE | REFUSE | ANNULE
+                 ↓
+              Facture
 ```
 
-| Action UI | Effet |
-|---|---|
-| Enregistrer brouillon | Totaux recalculés (HT / TVA / TTC) |
-| Envoyer | Statut ENVOYÉ + PDF GED + e-mail si configuré |
-| Accepter | Ouvre la facturation |
-| Refuser / Expirer | Clôture commerciale du devis |
-| Convertir en facture | Crée facture liée, numérotée, PDF GED |
+- Depuis un prospect **Intéressé** : bouton **Client + devis** → lignes préremplies si offres liées.  
+- **Plancher** catalogue (XOF) : le P.U. ne peut pas descendre sous le plancher.  
+- Marquer **Envoyé** → le prospect passe en **Devis envoyé** s’il était Intéressé.
 
 ## Cycle facture & paiements
 
 ```
-BROUILLON / ÉMISE → PARTIELLEMENT PAYÉE → PAYÉE
-                 → ANNULÉE (selon droits)
+BROUILLON → ÉMISE → PARTIELLEMENT PAYÉE → PAYÉE
 ```
 
-| Action | Effet |
-|---|---|
-| Enregistrer un paiement | Montant restant ↓ ; statut mis à jour |
-| PDF | Document versionné sous `Clients/{Client}/Factures/` |
+1. **Émettre** la facture  
+2. **Générer le PDF** (après émission uniquement) → GED  
+3. Enregistrer les paiements  
+4. Colonne **Compta** sur la liste : À faire / Brouillon / Validée  
 
-## Scope commercial
+## Lien comptabilité
 
-Selon packs : un commercial peut être limité à **ses** clients / devis (`com.scope.own` vs vue équipe / globale). Voir `src/lib/commercial/scope.ts`.
+Sur une facture émise : **Proposer l’écriture comptable** (si droit `cpt.ecritures.manage`)  
+ou file **Comptabilité → À comptabiliser**.  
+Détail : [manuel 08](./08-comptabilite.md) §3.
 
-## Lien CRM & GED
-
-| Amont | Aval |
-|---|---|
-| Prospect converti | Client + dossiers GED |
-| Devis / facture | PDF dans GED client |
-| Catalogue | Lignes devis (snapshot) |
-
-## Packs recommandés
+## Packs
 
 | Profil | Packs |
 |---|---|
-| Commercial | `commercial` (+ groupes `commerciaux` / `collaborateur`) |
-| Compta | packs factures / paiements (lecture + encaissement) |
-| Direction | vue large + reporting (phases suivantes) |
+| Commercial | `commercial` |
+| Compta | `comptable` (+ proposition VE) |
+| Direction | vue large |
 
-## Tests de non-régression
+## Changelog
 
-- `npm run gate:phase3`  
-- Smoke UI : parcours clients / devis / factures  
-- Smoke RBAC : commercial ≠ admin CRM sur GED / catalogue
-
-## Changelog manuel
-
-- 2026-10-10 — Durcissement : machine d’états devis, 1 facture/devis, dossier GED client unique (`gedFolderCode`), plafond paiements.
-- 2026-10-10 — Phase 3 livrée : flux, PDF, GED, scope.
+| Date | Note |
+|---|---|
+| 2026-10-12 | Prefill devis CRM ; plancher ; bridge VE ; PDF owner ; colonne Compta |
+| 2026-10-10 | Phase 3 clients / devis / factures / PDF |
