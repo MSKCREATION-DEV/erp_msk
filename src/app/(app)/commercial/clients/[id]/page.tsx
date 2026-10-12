@@ -86,7 +86,7 @@ export default async function CommercialClientDetailPage({
             {client.address ?? "—"}
           </p>
           <p>
-            <span className="text-msk-ink/45">Owner </span>
+            <span className="text-msk-ink/45">Suivi par </span>
             {client.owner.firstName} {client.owner.lastName}
           </p>
           {client.notes ? (

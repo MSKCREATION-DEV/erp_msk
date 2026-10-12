@@ -15,6 +15,7 @@ const offerSchema = z.object({
   pillar: z.nativeEnum(CatalogPillar),
   billing: z.nativeEnum(CatalogBilling),
   priceXof: z.coerce.number().int().min(0).nullable(),
+  floorPriceXof: z.coerce.number().int().min(0).nullable(),
 });
 
 export async function upsertCatalogOfferAction(
@@ -30,9 +31,21 @@ export async function upsertCatalogOfferAction(
     pillar: String(formData.get("pillar") ?? ""),
     billing: String(formData.get("billing") ?? "ONE_SHOT"),
     priceXof: String(formData.get("priceXof") ?? "").replace(/\s/g, "") || null,
+    floorPriceXof:
+      String(formData.get("floorPriceXof") ?? "").replace(/\s/g, "") || null,
   });
   if (!parsed.success) {
     return { ok: false, error: "Champs catalogue invalides" };
+  }
+  if (
+    parsed.data.floorPriceXof != null &&
+    parsed.data.priceXof != null &&
+    parsed.data.floorPriceXof > parsed.data.priceXof
+  ) {
+    return {
+      ok: false,
+      error: "Le plancher ne peut pas dépasser le prix catalogue",
+    };
   }
 
   if (id) {

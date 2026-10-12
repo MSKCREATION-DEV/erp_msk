@@ -54,4 +54,24 @@ Je vous avais contacté au sujet de {{offre}} pour {{entreprise}}. Toujours d’
     tips: "Noter l’activité immédiatement après l’appel.",
     sortOrder: 40,
   },
+  {
+    code: "ig_relance_j7",
+    channel: "INSTAGRAM",
+    title: "Relance Instagram J+7",
+    body: `Bonjour {{prenom}}, {{commercial}} (MSK) — je repasse juste pour {{entreprise}}.
+
+Toujours intéressé(e) pour échanger sur {{offre}} ? Sinon dites-moi quand ça tombe mieux 🙏`,
+    tips: "Changer de canal si pas de réponse (WA / LinkedIn).",
+    sortOrder: 50,
+  },
+  {
+    code: "wa_relance_j7",
+    channel: "WHATSAPP",
+    title: "Relance WhatsApp J+7",
+    body: `Bonjour {{prenom}}, c’est {{commercial}} chez MSK CREATION.
+
+Je vous relance concernant {{offre}} pour {{entreprise}}. Souhaitez-vous qu’on avance sur un devis simple ?`,
+    tips: "GUIDE : après 3 relances sans réponse → Perdu (motif No-show).",
+    sortOrder: 60,
+  },
 ];

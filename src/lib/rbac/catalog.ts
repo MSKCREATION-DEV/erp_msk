@@ -154,6 +154,8 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
     "crm.prospect.edit_own",
     "crm.activity.log",
     "crm.scripts.view",
+    "crm.view_team",
+    "crm.reassign",
     "crm.reports.own",
     "com.access",
     "com.catalogue.view",

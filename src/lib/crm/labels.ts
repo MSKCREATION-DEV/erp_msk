@@ -20,20 +20,28 @@ export const STAGE_LABELS: Record<CrmPipelineStage, string> = {
   QUALIFICATION: "En cours",
   INTERESSE: "Intéressé",
   DEVIS_ENVOYE: "Devis envoyé",
-  NEGOCIATION: "Négociation",
-  GAGNE: "Gagné",
+  /** Masqué en UI — traité comme Devis envoyé (métier MSK). */
+  NEGOCIATION: "Devis envoyé",
+  GAGNE: "Client",
   PERDU: "Perdu",
 };
 
+/** Ordre UI métier (7 statuts LISTES — sans Négociation). */
 export const STAGE_ORDER: CrmPipelineStage[] = [
   "NOUVEAU",
   "CONTACTE",
   "QUALIFICATION",
   "INTERESSE",
   "DEVIS_ENVOYE",
-  "NEGOCIATION",
   "GAGNE",
   "PERDU",
+];
+
+/** Tous les stages BDD (incl. legacy Négociation) — affichage / mapping uniquement. */
+export const STAGE_ORDER_ALL: CrmPipelineStage[] = [
+  ...STAGE_ORDER.slice(0, 5),
+  "NEGOCIATION",
+  ...STAGE_ORDER.slice(5),
 ];
 
 export const SOURCE_LABELS: Record<CrmSource, string> = {
@@ -101,6 +109,10 @@ export function mapExcelSource(raw: string): CrmSource {
   if (s.includes("recommand")) return "RECOMMANDATION";
   if (s.includes("mail") || s.includes("e-mail")) return "EMAIL";
   if (s.includes("tel") || s.includes("phone")) return "TELEPHONE";
+  // ChatGPT / IA → AUTRE (enum sans CHATGPT pour l’instant ; notes import)
+  if (s.includes("chatgpt") || s.includes("openai") || s.includes("gpt")) {
+    return "AUTRE";
+  }
   return "AUTRE";
 }
 

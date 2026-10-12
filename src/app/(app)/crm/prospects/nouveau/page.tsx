@@ -30,20 +30,18 @@ export default async function CrmProspectNouveauPage() {
     <PageShell>
       <PageHeader
         title="Nouveau prospect"
-        description="Organisation + contact principal + opportunité pipeline."
         backHref="/crm/prospects"
         backLabel="Retour aux prospects"
         breadcrumbs={[
-          { label: "CRM", href: "/crm" },
+          { label: "Commercial", href: "/commercial" },
           { label: "Prospects", href: "/crm/prospects" },
-          { label: "Nouveau" },
         ]}
       />
-      <Card className="max-w-2xl">
+      <Card className="max-w-xl">
         <CardHeader>
-          <CardTitle>Créer un prospect</CardTitle>
+          <CardTitle>En 4 étapes</CardTitle>
           <CardDescription>
-            Une fiche dédiée — pas de formulaire sur le listing.
+            Entreprise → contact → origine → offres (plusieurs possibles).
           </CardDescription>
         </CardHeader>
         <CardContent>

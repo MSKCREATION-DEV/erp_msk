@@ -342,6 +342,34 @@ export async function createQuoteAction(
     return { ok: false, error: "Client hors périmètre" };
   }
 
+  const offerIds = [
+    ...new Set(
+      lines
+        .map((l) => l.catalogOfferId)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ];
+  if (offerIds.length > 0) {
+    const offers = await prisma.catalogOffer.findMany({
+      where: { id: { in: offerIds } },
+      select: { id: true, name: true, floorPriceXof: true },
+    });
+    const floorById = new Map(offers.map((o) => [o.id, o]));
+    for (const l of lines) {
+      if (!l.catalogOfferId) continue;
+      const offer = floorById.get(l.catalogOfferId);
+      if (
+        offer?.floorPriceXof != null &&
+        l.unitPrice < offer.floorPriceXof
+      ) {
+        return {
+          ok: false,
+          error: `Plancher : « ${offer.name} » ≥ ${offer.floorPriceXof.toLocaleString("fr-FR")} FCFA (saisi ${l.unitPrice.toLocaleString("fr-FR")}).`,
+        };
+      }
+    }
+  }
+
   const totals = computeDocTotals({
     lines,
     vatEnabled,
@@ -470,6 +498,13 @@ export async function generateQuotePdfAction(
   if (!quote) return { ok: false, error: "Devis introuvable" };
   if (!canAccessOwned(actor, quote.ownerId)) {
     return { ok: false, error: "Hors périmètre" };
+  }
+  if (quote.gedDocumentId) {
+    return {
+      ok: true,
+      message: "PDF déjà généré — ouvrez Voir / Télécharger",
+      documentId: quote.gedDocumentId,
+    };
   }
 
   const signature = await getSignaturePngBytes({
@@ -733,6 +768,13 @@ export async function generateInvoicePdfAction(
   if (!invoice) return { ok: false, error: "Facture introuvable" };
   if (!canAccessOwned(actor, invoice.ownerId)) {
     return { ok: false, error: "Hors périmètre" };
+  }
+  if (invoice.gedDocumentId) {
+    return {
+      ok: true,
+      message: "PDF déjà généré — ouvrez Voir / Télécharger",
+      documentId: invoice.gedDocumentId,
+    };
   }
 
   const signature = await getSignaturePngBytes({

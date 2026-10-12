@@ -53,6 +53,10 @@ export default async function CatalogueEditPage({
               pillar: offer.pillar,
               billing: offer.billing,
               priceXof: offer.priceXof != null ? String(offer.priceXof) : "",
+              floorPriceXof:
+                offer.floorPriceXof != null
+                  ? String(offer.floorPriceXof)
+                  : "",
             }}
           />
         </CardContent>

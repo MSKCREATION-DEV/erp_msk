@@ -556,19 +556,33 @@ async function seedPhase1Ged() {
 }
 
 async function seedPhase2CatalogueCrm() {
+  const { SCHEMA_RS, SCHEMA_WEB, SCHEMA_ECOM } = await import(
+    "../src/lib/crm/offer-option-schemas"
+  );
   for (const offer of CATALOG_OFFERS_SEED) {
     const { highlights: _highlights, ...data } = offer;
+    const floorPriceXof = Math.round(data.priceXof * 0.85);
+    const sku = data.sku.toUpperCase();
+    const optionSchema = sku.includes("RS")
+      ? SCHEMA_RS
+      : sku.includes("ECOM")
+        ? SCHEMA_ECOM
+        : sku.startsWith("WEB")
+          ? SCHEMA_WEB
+          : undefined;
     await prisma.catalogOffer.upsert({
       where: { sku: data.sku },
-      create: data,
+      create: { ...data, floorPriceXof, optionSchema },
       update: {
         name: data.name,
         description: data.description,
         pillar: data.pillar,
         billing: data.billing,
         priceXof: data.priceXof,
+        floorPriceXof,
         priceEurHint: data.priceEurHint,
         sortOrder: data.sortOrder,
+        optionSchema,
         active: true,
       },
     });
@@ -593,18 +607,29 @@ async function seedPhase2CatalogueCrm() {
 }
 
 async function main() {
+  console.log("→ Seed démarré…");
+  console.log("→ IAM / packs / groupes…");
   await seedCatalog();
+  console.log("✓ Catalogue droits");
+  console.log("→ Super Admin…");
   await seedSuperAdmin();
+  console.log("→ GED Phase 1…");
   await seedPhase1Ged();
+  console.log("→ Catalogue + scripts CRM…");
   await seedPhase2CatalogueCrm();
+  console.log("→ Compta…");
   const { seedPhase6Compta } = await import("./seed-cpt");
   await seedPhase6Compta(prisma);
+  console.log("→ RH…");
   const { seedPhase4Rh } = await import("./seed-rh");
   await seedPhase4Rh(prisma);
+  console.log("→ Utilisateurs équipe…");
   const { seedTeamUsers } = await import("./seed-team-users");
   await seedTeamUsers(prisma);
+  console.log("→ Stocks…");
   const { seedPhase7aStocks } = await import("./seed-stocks");
   await seedPhase7aStocks(prisma);
+  console.log("✅ Seed terminé");
 }
 
 main()

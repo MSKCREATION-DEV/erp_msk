@@ -76,23 +76,12 @@ export function InvoiceActions({
         ) : null}
         {canPdf ? (
           docId ? (
-            <>
-              <DocDownloadButton
-                documentId={docId}
-                label="Voir / Télécharger la facture"
-                variant="primary"
-                size="sm"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                disabled={pending}
-                onClick={generatePdf}
-              >
-                {pending ? "…" : "Regénérer"}
-              </Button>
-            </>
+            <DocDownloadButton
+              documentId={docId}
+              label="Voir / Télécharger la facture"
+              variant="primary"
+              size="sm"
+            />
           ) : (
             <Button
               type="button"

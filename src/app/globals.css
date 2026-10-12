@@ -8,6 +8,12 @@
   --color-msk-paper: #dce0e8;
   --color-msk-muted: #8a93a6;
   --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+  /* Charts MSK (shadcn/Recharts) — pas de violet générique */
+  --color-chart-1: #1d73bc;
+  --color-chart-2: #00acee;
+  --color-chart-3: #2a3d8e;
+  --color-chart-4: #ff5a3c;
+  --color-chart-5: #8a93a6;
 }
 
 body {

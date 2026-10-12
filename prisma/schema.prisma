@@ -225,6 +225,8 @@ model User {
   crmActivities CrmActivity[]     @relation("CrmActivityActor")
   crmTasksAssigned CrmTask[]      @relation("CrmTaskAssignee")
   crmTasksCreated  CrmTask[]      @relation("CrmTaskCreator")
+  crmWeeklyReports CrmWeeklyReport[] @relation("CrmWeeklyReportAuthor")
+  crmWeeklyGoals    CrmWeeklyGoal[]   @relation("CrmWeeklyGoalUser")
   comClientsOwned  ComClient[]     @relation("ComClientOwner")
   comClientsCreated ComClient[]    @relation("ComClientCreator")
   comQuotesOwned   ComQuote[]      @relation("ComQuoteOwner")
@@ -552,14 +554,19 @@ model CatalogOffer {
   pillar        CatalogPillar
   billing       CatalogBilling @default(ONE_SHOT)
   priceXof      Int?
+  /// Plancher commercial — prix unitaire devis ne peut pas descendre en dessous.
+  floorPriceXof Int?
   priceEurHint  Int?
   vatEligible   Boolean        @default(true)
   active        Boolean        @default(true)
   sortOrder     Int            @default(0)
+  /// Schéma UI options (RS / WEB / ECOM…) — JSON OfferOptionSchema.
+  optionSchema  Json?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
   opportunities CrmOpportunity[]
+  opportunityOffers CrmOpportunityOffer[]
   quoteLines    ComQuoteLine[]
   invoiceLines  ComInvoiceLine[]
 
@@ -643,6 +650,7 @@ model CrmOpportunity {
   createdBy    User            @relation("CrmDealCreator", fields: [createdById], references: [id])
   activities   CrmActivity[]
   tasks        CrmTask[]
+  opportunityOffers CrmOpportunityOffer[]
   comClients   ComClient[]
   comQuotes    ComQuote[]
 
@@ -650,6 +658,24 @@ model CrmOpportunity {
   @@index([organizationId])
   @@index([followUpAt])
   @@map("crm_opportunities")
+}
+
+/// Offres proposées à un prospect (N:N) + config options.
+model CrmOpportunityOffer {
+  id             String   @id @default(cuid())
+  opportunityId  String
+  catalogOfferId String
+  config         Json?
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  opportunity  CrmOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  catalogOffer CatalogOffer   @relation(fields: [catalogOfferId], references: [id], onDelete: Cascade)
+
+  @@unique([opportunityId, catalogOfferId])
+  @@index([opportunityId])
+  @@map("crm_opportunity_offers")
 }
 
 model CrmActivity {
@@ -709,6 +735,51 @@ model CrmScript {
 
   @@index([channel, active])
   @@map("crm_scripts")
+}
+
+/// Objectifs hebdo paramétrables (collab ou équipe).
+model CrmWeeklyGoal {
+  id        String   @id @default(cuid())
+  /// USER = un collab ; TEAM = objectif pôle (userId null).
+  scope     String
+  userId    String?  @db.Uuid
+  /// NEW_PROSPECTS | FIRST_CONTACTS | MEETINGS | FOLLOW_UPS
+  metric    String
+  target    Int
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  user User? @relation("CrmWeeklyGoalUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([scope, userId, metric])
+  @@index([scope, metric])
+  @@map("crm_weekly_goals")
+}
+
+/// Rapport de semaine (vendredi) — chiffres préremplis + qualitatif.
+model CrmWeeklyReport {
+  id              String   @id @default(cuid())
+  authorId        String   @db.Uuid
+  /// Lundi 00:00 de la semaine concernée (UTC date).
+  weekStart       DateTime @db.Date
+  newProspects    Int      @default(0)
+  firstContacts   Int      @default(0)
+  replies         Int      @default(0)
+  inDiscussion    Int      @default(0)
+  qualified       Int      @default(0)
+  meetings        Int      @default(0)
+  followUpsDone   Int      @default(0)
+  difficulty      String?
+  needs           String?
+  scriptsFeedback String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  author User @relation("CrmWeeklyReportAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@unique([authorId, weekStart])
+  @@index([weekStart])
+  @@map("crm_weekly_reports")
 }
 
 model ComNumberSequence {

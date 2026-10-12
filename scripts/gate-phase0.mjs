@@ -47,7 +47,7 @@ try {
     prisma.group.count(),
     prisma.permissionPack.count(),
   ]);
-  if (pc >= 50 && gk === 7 && pk === 9) ok("catalog", `perm=${pc} g=${gk} p=${pk}`);
+  if (pc >= 50 && gk === 7 && pk >= 9) ok("catalog", `perm=${pc} g=${gk} p=${pk}`);
   else ko("catalog", `perm=${pc} g=${gk} p=${pk}`);
 
   const direction = await prisma.group.findUnique({

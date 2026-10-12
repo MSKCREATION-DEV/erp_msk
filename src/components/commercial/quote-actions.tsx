@@ -79,23 +79,12 @@ export function QuoteActions({
       <div className="flex flex-wrap items-center gap-2">
         {canPdf ? (
           docId ? (
-            <>
-              <DocDownloadButton
-                documentId={docId}
-                label="Voir / Télécharger le devis"
-                variant="primary"
-                size="sm"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                disabled={pending}
-                onClick={generatePdf}
-              >
-                {pending ? "…" : "Regénérer"}
-              </Button>
-            </>
+            <DocDownloadButton
+              documentId={docId}
+              label="Voir / Télécharger le devis"
+              variant="primary"
+              size="sm"
+            />
           ) : (
             <Button
               type="button"

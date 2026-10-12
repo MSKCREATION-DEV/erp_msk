@@ -18,6 +18,7 @@ type Initial = {
   pillar?: CatalogPillar;
   billing?: CatalogBilling;
   priceXof?: string;
+  floorPriceXof?: string;
 };
 
 export function CatalogueOfferForm({
@@ -102,15 +103,28 @@ export function CatalogueOfferForm({
           <option value="PACKAGE">Package</option>
         </select>
       </div>
-      <div>
-        <Label htmlFor="priceXof">Prix FCFA</Label>
-        <Input
-          id="priceXof"
-          name="priceXof"
-          inputMode="numeric"
-          defaultValue={initial?.priceXof}
-          disabled={pending}
-        />
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <Label htmlFor="priceXof">Prix catalogue FCFA</Label>
+          <Input
+            id="priceXof"
+            name="priceXof"
+            inputMode="numeric"
+            defaultValue={initial?.priceXof}
+            disabled={pending}
+          />
+        </div>
+        <div>
+          <Label htmlFor="floorPriceXof">Plancher FCFA</Label>
+          <Input
+            id="floorPriceXof"
+            name="floorPriceXof"
+            inputMode="numeric"
+            defaultValue={initial?.floorPriceXof}
+            disabled={pending}
+            placeholder="Min. devis"
+          />
+        </div>
       </div>
       <div>
         <Label htmlFor="description">Description</Label>

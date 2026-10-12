@@ -6,11 +6,21 @@ import { upsertCrmScriptAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ChoiceCards } from "@/components/ui/choice-cards";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { SOURCE_LABELS } from "@/lib/crm/labels";
 import type { CrmSource } from "@prisma/client";
 
-const CHANNELS = Object.keys(SOURCE_LABELS) as CrmSource[];
+const CHANNELS = (
+  [
+    "INSTAGRAM",
+    "LINKEDIN",
+    "WHATSAPP",
+    "EMAIL",
+    "TELEPHONE",
+    "AUTRE",
+  ] as const
+).map((c) => ({ value: c as CrmSource, label: SOURCE_LABELS[c] }));
 
 type Initial = {
   id?: string;
@@ -32,11 +42,15 @@ export function ScriptForm({
   const router = useRouter();
   const { pending, run } = usePendingAction();
   const [error, setError] = useState<string | null>(null);
+  const [channel, setChannel] = useState<CrmSource>(
+    initial?.channel ?? "INSTAGRAM",
+  );
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     const fd = new FormData(e.currentTarget);
+    fd.set("channel", channel);
     void run(async () => {
       const res = await upsertCrmScriptAction(fd);
       if (!res.ok) setError(res.error ?? "Échec");
@@ -86,20 +100,16 @@ export function ScriptForm({
         />
       </div>
       <div>
-        <Label htmlFor="channel">Canal</Label>
-        <select
-          id="channel"
+        <Label>Canal</Label>
+        <ChoiceCards
           name="channel"
+          className="mt-2"
+          columns={3}
           disabled={pending}
-          className="mt-1 flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-          defaultValue={initial?.channel ?? "INSTAGRAM"}
-        >
-          {CHANNELS.map((c) => (
-            <option key={c} value={c}>
-              {SOURCE_LABELS[c]}
-            </option>
-          ))}
-        </select>
+          value={channel}
+          onChange={setChannel}
+          options={CHANNELS}
+        />
       </div>
       <div>
         <Label htmlFor="body">Corps du script</Label>

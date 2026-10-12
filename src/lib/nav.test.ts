@@ -6,8 +6,6 @@ const live = all.filter((i) => !i.soon);
 
 const accueil = live.find((i) => i.id === "accueil")!;
 const users = live.find((i) => i.id === "utilisateurs")!;
-const crm = live.find((i) => i.id === "crm")!;
-const catalogue = live.find((i) => i.id === "catalogue")!;
 const commercial = live.find((i) => i.id === "commercial")!;
 const maSig = live.find((i) => i.id === "ma-signature")!;
 
@@ -20,14 +18,22 @@ assert.equal(
   true,
 );
 
-assert.ok(crm, "CRM live (plus soon)");
-assert.equal(isNavActive("/crm", crm, live), true);
-assert.equal(isNavActive("/crm/prospects", crm, live), true);
-assert.ok(catalogue, "Catalogue live");
-assert.equal(isNavActive("/catalogue", catalogue, live), true);
-assert.ok(commercial, "Commercial live (plus soon)");
+assert.ok(commercial, "Commercial live (entrée unique)");
 assert.equal(isNavActive("/commercial", commercial, live), true);
 assert.equal(isNavActive("/commercial/devis", commercial, live), true);
+assert.equal(isNavActive("/crm", commercial, live), true);
+assert.equal(isNavActive("/crm/prospects", commercial, live), true);
+assert.equal(isNavActive("/catalogue", commercial, live), true);
+assert.equal(
+  all.some((i) => i.id === "crm"),
+  false,
+  "entrée CRM sidebar retirée (fusionnée Commercial)",
+);
+assert.equal(
+  all.some((i) => i.id === "catalogue"),
+  false,
+  "entrée Catalogue sidebar retirée (fusionnée Commercial)",
+);
 assert.equal(
   all.some((i) => i.id === "commercial" && i.soon),
   false,

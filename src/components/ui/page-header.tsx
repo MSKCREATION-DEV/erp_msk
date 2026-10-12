@@ -40,36 +40,44 @@ export function PageHeader({
             {backLabel}
           </Link>
         ) : null}
+        {(() => {
+          // Évite titre = dernier crumb (redondance fiche / pages métier).
+          const crumbs = (breadcrumbs ?? []).filter(
+            (c, i, arr) =>
+              !(i === arr.length - 1 && c.label === title && !c.href),
+          );
+          return crumbs.length > 0 ? (
+            <nav
+              aria-label="Fil d’Ariane"
+              className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs text-msk-ink/40"
+            >
+              {crumbs.map((crumb, i) => (
+                <span
+                  key={`${crumb.label}-${i}`}
+                  className="inline-flex items-center gap-1.5"
+                >
+                  {i > 0 ? <span aria-hidden>/</span> : null}
+                  {crumb.href ? (
+                    <Link
+                      prefetch={false}
+                      href={crumb.href}
+                      className="cursor-pointer hover:text-msk-blue"
+                    >
+                      {crumb.label}
+                    </Link>
+                  ) : (
+                    <span>{crumb.label}</span>
+                  )}
+                </span>
+              ))}
+            </nav>
+          ) : null;
+        })()}
         <h1 className="text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
           {title}
         </h1>
-        {breadcrumbs && breadcrumbs.length > 0 ? (
-          <nav
-            aria-label="Fil d’Ariane"
-            className="mt-1.5 flex flex-wrap items-center gap-1.5 text-sm text-msk-ink/45"
-          >
-            {breadcrumbs.map((crumb, i) => (
-              <span
-                key={`${crumb.label}-${i}`}
-                className="inline-flex items-center gap-1.5"
-              >
-                {i > 0 ? <span aria-hidden>/</span> : null}
-                {crumb.href ? (
-                  <Link prefetch={false}
-                    href={crumb.href}
-                    className="cursor-pointer hover:text-msk-blue"
-                  >
-                    {crumb.label}
-                  </Link>
-                ) : (
-                  <span className="text-msk-ink/60">{crumb.label}</span>
-                )}
-              </span>
-            ))}
-          </nav>
-        ) : null}
-        {description ? (
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-msk-ink/55">
+        {description && description !== title ? (
+          <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-msk-ink/55">
             {description}
           </p>
         ) : null}

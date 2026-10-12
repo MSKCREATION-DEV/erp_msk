@@ -23,11 +23,11 @@ export default async function CrmProspectImportPage() {
     <PageShell>
       <PageHeader
         title="Importer des prospects"
-        description="CSV type Excel CRM_Prospection_MSK (séparateur « ; », max 200 lignes)."
+        description="CSV type Excel CRM_Prospection_MSK (séparateur « ; », max 400, doublons ignorés)."
         backHref="/crm/prospects"
         backLabel="Retour aux prospects"
         breadcrumbs={[
-          { label: "CRM", href: "/crm" },
+          { label: "Commercial", href: "/commercial" },
           { label: "Prospects", href: "/crm/prospects" },
           { label: "Import" },
         ]}
@@ -36,8 +36,8 @@ export default async function CrmProspectImportPage() {
         <CardHeader>
           <CardTitle>Fichier CSV</CardTitle>
           <CardDescription>
-            Lignes 1–2 = titre / en-têtes Excel MSK — les données commencent en
-            ligne 3.
+            Export Excel → CSV. En-têtes détectés automatiquement. Entreprises
+            déjà présentes (nom normalisé) sont sautées.
           </CardDescription>
         </CardHeader>
         <CardContent>

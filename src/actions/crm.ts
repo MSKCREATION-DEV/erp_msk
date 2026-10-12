@@ -8,16 +8,18 @@ import {
   CrmPipelineStage,
   CrmSource,
   CrmTaskStatus,
+  Prisma,
 } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { writeAudit } from "@/lib/audit";
+import { normalizeOrgName } from "@/lib/crm/labels";
 import {
-  mapExcelSource,
-  mapExcelStatus,
-  normalizeOrgName,
-} from "@/lib/crm/labels";
+  followUpRequiredForStage,
+  MIN_ACTIVITIES_BEFORE_LOST,
+  normalizeUiStage,
+} from "@/lib/crm/guide-rules";
 import type { ActionResult } from "@/actions/auth";
 
 const stageSchema = z.nativeEnum(CrmPipelineStage);
@@ -38,9 +40,10 @@ export async function createProspectAction(
   const phone = String(formData.get("phone") ?? "").trim() || null;
   const email = String(formData.get("email") ?? "").trim() || null;
   const jobTitle = String(formData.get("jobTitle") ?? "").trim() || null;
+  const sector = String(formData.get("sector") ?? "").trim() || null;
+  const city = String(formData.get("city") ?? "").trim() || null;
+  const website = String(formData.get("website") ?? "").trim() || null;
   const offerLabel = String(formData.get("offerLabel") ?? "").trim() || null;
-  const catalogOfferId =
-    String(formData.get("catalogOfferId") ?? "").trim() || null;
   const budgetXofRaw = String(formData.get("budgetXof") ?? "").replace(/\s/g, "");
   const budgetXof = budgetXofRaw ? Number.parseInt(budgetXofRaw, 10) : null;
   const nextAction = String(formData.get("nextAction") ?? "").trim() || null;
@@ -48,9 +51,46 @@ export async function createProspectAction(
   const followUpAt = followUpRaw ? new Date(followUpRaw) : null;
   const notes = String(formData.get("notes") ?? "").trim() || null;
 
+  type OfferLink = {
+    catalogOfferId: string;
+    config?: Record<string, unknown>;
+  };
+  let offerLinks: OfferLink[] = [];
+  const offersRaw = String(formData.get("offersJson") ?? "").trim();
+  if (offersRaw) {
+    try {
+      const parsed = JSON.parse(offersRaw) as unknown;
+      if (Array.isArray(parsed)) {
+        offerLinks = parsed
+          .filter(
+            (x): x is OfferLink =>
+              typeof x === "object" &&
+              x != null &&
+              typeof (x as OfferLink).catalogOfferId === "string",
+          )
+          .slice(0, 12);
+      }
+    } catch {
+      return { ok: false, error: "Offres invalides" };
+    }
+  }
+  const legacyOfferId =
+    String(formData.get("catalogOfferId") ?? "").trim() ||
+    offerLinks[0]?.catalogOfferId ||
+    null;
+
   if (!orgName) return { ok: false, error: "Entreprise obligatoire" };
   if (!contactFirst && !contactLast) {
     return { ok: false, error: "Contact (prénom ou nom) obligatoire" };
+  }
+  if (
+    nextAction &&
+    (!followUpAt || Number.isNaN(followUpAt.getTime()))
+  ) {
+    return {
+      ok: false,
+      error: "GUIDE : date de relance obligatoire si une prochaine action est renseignée.",
+    };
   }
 
   const source = sourceSchema.safeParse(sourceRaw);
@@ -60,6 +100,9 @@ export async function createProspectAction(
     data: {
       name: orgName,
       normalizedName: normalizeOrgName(orgName),
+      sector,
+      city,
+      website,
       source: src,
       notes,
       ownerId: actor.id,
@@ -84,7 +127,7 @@ export async function createProspectAction(
       stage: CrmPipelineStage.NOUVEAU,
       source: src,
       offerLabel,
-      catalogOfferId,
+      catalogOfferId: legacyOfferId,
       budgetXof: Number.isFinite(budgetXof) ? budgetXof : null,
       nextAction,
       followUpAt:
@@ -93,6 +136,17 @@ export async function createProspectAction(
       createdById: actor.id,
     },
   });
+
+  for (const [i, o] of offerLinks.entries()) {
+    await prisma.crmOpportunityOffer.create({
+      data: {
+        opportunityId: deal.id,
+        catalogOfferId: o.catalogOfferId,
+        config: (o.config ?? {}) as Prisma.InputJsonValue,
+        sortOrder: i,
+      },
+    });
+  }
 
   if (followUpAt && !Number.isNaN(followUpAt.getTime())) {
     await prisma.crmTask.create({
@@ -132,16 +186,20 @@ export async function updateOpportunityStageAction(
   if (!id || !stageParsed.success) {
     return { ok: false, error: "Étape invalide" };
   }
-  const stage = stageParsed.data;
+  const stage = normalizeUiStage(stageParsed.data);
 
-  const deal = await prisma.crmOpportunity.findUnique({ where: { id } });
+  const deal = await prisma.crmOpportunity.findUnique({
+    where: { id },
+    include: { _count: { select: { activities: true } } },
+  });
   if (!deal) return { ok: false, error: "Opportunité introuvable" };
 
-  const canGlobal =
+  const canTeam =
     actor.isSuperAdmin ||
     hasPermission(actor, "crm.reports.global") ||
-    hasPermission(actor, "crm.reassign");
-  if (deal.ownerId !== actor.id && !canGlobal) {
+    hasPermission(actor, "crm.reassign") ||
+    hasPermission(actor, "crm.view_team");
+  if (deal.ownerId !== actor.id && !canTeam) {
     return { ok: false, error: "Pas le droit de modifier ce deal" };
   }
 
@@ -150,6 +208,24 @@ export async function updateOpportunityStageAction(
     if (!loss.success) {
       return { ok: false, error: "Motif de perte obligatoire" };
     }
+    if (deal._count.activities < MIN_ACTIVITIES_BEFORE_LOST) {
+      return {
+        ok: false,
+        error: `GUIDE : au moins ${MIN_ACTIVITIES_BEFORE_LOST} actions journalisées avant de marquer Perdu (${deal._count.activities}/${MIN_ACTIVITIES_BEFORE_LOST}).`,
+      };
+    }
+  }
+
+  if (
+    followUpRequiredForStage(stage) &&
+    !deal.followUpAt &&
+    stage !== deal.stage
+  ) {
+    return {
+      ok: false,
+      error:
+        "GUIDE : renseignez une date de relance (via une activité) avant de changer d’étape.",
+    };
   }
 
   await prisma.crmOpportunity.update({
@@ -164,6 +240,7 @@ export async function updateOpportunityStageAction(
   });
 
   revalidatePath("/crm");
+  revalidatePath("/crm/par-etapes");
   revalidatePath(`/crm/prospects/${id}`);
   return { ok: true, message: "Étape mise à jour" };
 }
@@ -190,6 +267,26 @@ export async function logActivityAction(
   });
   if (!deal) return { ok: false, error: "Deal introuvable" };
 
+  const canTeam =
+    actor.isSuperAdmin ||
+    hasPermission(actor, "crm.view_team") ||
+    hasPermission(actor, "crm.reports.global");
+  if (deal.ownerId !== actor.id && !canTeam) {
+    return { ok: false, error: "Pas le droit sur ce prospect" };
+  }
+
+  const needsFollowUp = followUpRequiredForStage(
+    normalizeUiStage(deal.stage),
+  );
+  const hasNewFollowUp =
+    followUpAt != null && !Number.isNaN(followUpAt.getTime());
+  if (needsFollowUp && !deal.followUpAt && !hasNewFollowUp) {
+    return {
+      ok: false,
+      error: "GUIDE : date de relance obligatoire pour ce statut.",
+    };
+  }
+
   await prisma.crmActivity.create({
     data: {
       opportunityId,
@@ -206,14 +303,11 @@ export async function logActivityAction(
     data: {
       lastActivityAt: new Date(),
       nextAction: nextAction ?? deal.nextAction,
-      followUpAt:
-        followUpAt && !Number.isNaN(followUpAt.getTime())
-          ? followUpAt
-          : deal.followUpAt,
+      followUpAt: hasNewFollowUp ? followUpAt : deal.followUpAt,
     },
   });
 
-  if (followUpAt && !Number.isNaN(followUpAt.getTime())) {
+  if (hasNewFollowUp && followUpAt) {
     await prisma.crmTask.create({
       data: {
         organizationId: deal.organizationId,
@@ -228,6 +322,7 @@ export async function logActivityAction(
 
   revalidatePath(`/crm/prospects/${opportunityId}`);
   revalidatePath("/crm/relances");
+  revalidatePath("/crm/par-etapes");
   revalidatePath("/crm");
   return { ok: true, message: "Activité enregistrée" };
 }
@@ -243,6 +338,7 @@ export async function completeTaskAction(
   if (!task) return { ok: false, error: "Tâche introuvable" };
   if (
     task.assigneeId !== actor.id &&
+    !hasPermission(actor, "crm.view_team") &&
     !hasPermission(actor, "crm.reports.global") &&
     !actor.isSuperAdmin
   ) {
@@ -259,113 +355,182 @@ export async function completeTaskAction(
   return { ok: true, message: "Relance terminée" };
 }
 
-/** Import CSV type Excel CRM (séparateur `;`). */
+export async function saveWeeklyReportAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.access" });
+  const weekStartRaw = String(formData.get("weekStart") ?? "").trim();
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(weekStartRaw);
+  if (!m) return { ok: false, error: "Semaine invalide" };
+  const weekStart = new Date(
+    Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])),
+  );
+
+  const int = (k: string) => {
+    const n = Number.parseInt(String(formData.get(k) ?? "0"), 10);
+    return Number.isFinite(n) && n >= 0 ? n : 0;
+  };
+
+  const difficulty = String(formData.get("difficulty") ?? "").trim() || null;
+  const needs = String(formData.get("needs") ?? "").trim() || null;
+  const scriptsFeedback =
+    String(formData.get("scriptsFeedback") ?? "").trim() || null;
+
+  await prisma.crmWeeklyReport.upsert({
+    where: {
+      authorId_weekStart: {
+        authorId: actor.id,
+        weekStart,
+      },
+    },
+    create: {
+      authorId: actor.id,
+      weekStart,
+      newProspects: int("newProspects"),
+      firstContacts: int("firstContacts"),
+      replies: int("replies"),
+      inDiscussion: int("inDiscussion"),
+      qualified: int("qualified"),
+      meetings: int("meetings"),
+      followUpsDone: int("followUpsDone"),
+      difficulty,
+      needs,
+      scriptsFeedback,
+    },
+    update: {
+      newProspects: int("newProspects"),
+      firstContacts: int("firstContacts"),
+      replies: int("replies"),
+      inDiscussion: int("inDiscussion"),
+      qualified: int("qualified"),
+      meetings: int("meetings"),
+      followUpsDone: int("followUpsDone"),
+      difficulty,
+      needs,
+      scriptsFeedback,
+    },
+  });
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "crm.weekly_report.save",
+    entityType: "crm_weekly_report",
+    entityId: `${actor.id}:${weekStart.toISOString().slice(0, 10)}`,
+  });
+
+  revalidatePath("/crm/rapport-semaine");
+  return { ok: true, message: "Rapport de semaine enregistré" };
+}
+
+/** Import CSV type Excel CRM (séparateur `;`, max 400, dédupliqué). */
 export async function importCrmCsvAction(
   formData: FormData,
-): Promise<ActionResult & { imported?: number; skipped?: number }> {
+): Promise<
+  ActionResult & { imported?: number; skipped?: number; duplicates?: number }
+> {
   const actor = await requireUser({ permission: "crm.import" });
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
     return { ok: false, error: "Fichier CSV manquant" };
   }
 
+  const { parseImportCsv, normalizeOrgName: norm } = await import(
+    "@/lib/crm/import-csv"
+  );
   const text = await file.text();
-  const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
-  // Skip title + header rows (2 premières lignes typiques Excel MSK)
-  const dataLines = lines.slice(2);
+  const { rows, skipped: parseSkipped } = parseImportCsv(text);
+
+  const existing = await prisma.crmOrganization.findMany({
+    select: { normalizedName: true },
+  });
+  const known = new Set(existing.map((o) => o.normalizedName));
+
   let imported = 0;
-  let skipped = 0;
+  let skipped = parseSkipped;
+  let duplicates = 0;
+  const MAX = 400;
 
-  for (const line of dataLines) {
-    const cols = line.split(";");
-    if (cols.length < 9) {
-      skipped += 1;
+  for (const row of rows) {
+    if (imported >= MAX) {
+      skipped += rows.length - imported - duplicates;
+      break;
+    }
+    const normalizedName = norm(row.orgName);
+    if (known.has(normalizedName)) {
+      duplicates += 1;
       continue;
     }
-    const orgName = (cols[1] ?? "").trim();
-    const contactName = (cols[2] ?? "").trim();
-    if (!orgName || orgName.startsWith("#")) {
-      skipped += 1;
-      continue;
-    }
 
-    const [firstName, ...rest] = contactName.split(/\s+/);
-    const lastName = rest.join(" ") || "—";
-    const jobTitle = (cols[3] ?? "").trim() || null;
-    const phone = (cols[4] ?? "").trim() || null;
-    const email = (cols[5] ?? "").trim() || null;
-    const source = mapExcelSource(cols[6] ?? "");
-    const stage = mapExcelStatus(cols[8] ?? "");
-    const lastAction = (cols[9] ?? "").trim() || null;
-    const nextAction = (cols[10] ?? "").trim() || null;
-    const followUpRaw = (cols[11] ?? "").trim();
-    const offerLabel = (cols[12] ?? "").trim() || null;
-    const notes = (cols[14] ?? "").trim() || null;
-
-    let followUpAt: Date | null = null;
-    if (followUpRaw && /^\d{2}\/\d{2}\/\d{4}$/.test(followUpRaw)) {
-      const [d, m, y] = followUpRaw.split("/").map(Number);
-      followUpAt = new Date(y!, m! - 1, d!);
+    let notes = row.notes;
+    const srcRaw = row.source;
+    // Marquer ChatGPT dans les notes si origine AUTRE + hint
+    if (row.ownerHint) {
+      notes = [notes, `Suivi (import) : ${row.ownerHint}`]
+        .filter(Boolean)
+        .join("\n");
     }
 
     const org = await prisma.crmOrganization.create({
       data: {
-        name: orgName,
-        normalizedName: normalizeOrgName(orgName),
-        source,
+        name: row.orgName,
+        normalizedName,
+        sector: row.sector,
+        source: srcRaw,
         notes,
         ownerId: actor.id,
         createdById: actor.id,
         contacts: {
           create: {
-            firstName: firstName || "—",
-            lastName,
-            jobTitle,
-            phone: phone === "//" ? null : phone,
-            email: email === "//" ? null : email,
+            firstName: row.contactFirst,
+            lastName: row.contactLast,
+            jobTitle: row.jobTitle,
+            phone: row.phone,
+            email: row.email,
             isPrimary: true,
           },
         },
       },
     });
 
+    known.add(normalizedName);
+
     const deal = await prisma.crmOpportunity.create({
       data: {
         organizationId: org.id,
-        title: orgName,
-        stage,
-        source,
-        offerLabel,
-        nextAction,
-        followUpAt,
-        lastActivityAt: lastAction ? new Date() : null,
+        title: row.orgName,
+        stage: row.stage,
+        source: srcRaw,
+        offerLabel: row.offerLabel,
+        nextAction: row.nextAction,
+        followUpAt: row.followUpAt,
+        lastActivityAt: row.lastAction ? new Date() : null,
         ownerId: actor.id,
         createdById: actor.id,
-        wonAt: stage === "GAGNE" ? new Date() : null,
-        lostAt: stage === "PERDU" ? new Date() : null,
-        lossReason: stage === "PERDU" ? CrmLossReason.AUTRE : null,
+        wonAt: row.stage === "GAGNE" ? new Date() : null,
+        lostAt: row.stage === "PERDU" ? new Date() : null,
+        lossReason: row.stage === "PERDU" ? CrmLossReason.AUTRE : null,
       },
     });
 
-    if (lastAction) {
+    if (row.lastAction) {
       await prisma.crmActivity.create({
         data: {
           organizationId: org.id,
           opportunityId: deal.id,
           type: CrmActivityType.NOTE,
-          summary: lastAction,
+          summary: row.lastAction,
           actorId: actor.id,
         },
       });
     }
 
-    if (followUpAt) {
+    if (row.followUpAt) {
       await prisma.crmTask.create({
         data: {
           organizationId: org.id,
           opportunityId: deal.id,
-          title: nextAction || `Relance ${orgName}`,
-          dueAt: followUpAt,
+          title: row.nextAction || `Relance ${row.orgName}`,
+          dueAt: row.followUpAt,
           assigneeId: actor.id,
           createdById: actor.id,
         },
@@ -373,7 +538,6 @@ export async function importCrmCsvAction(
     }
 
     imported += 1;
-    if (imported >= 200) break; // garde-fou import
   }
 
   await writeAudit({
@@ -381,16 +545,18 @@ export async function importCrmCsvAction(
     action: "crm.import",
     entityType: "crm",
     entityId: "csv",
-    metadata: { imported, skipped },
+    metadata: { imported, skipped, duplicates },
   });
 
   revalidatePath("/crm");
   revalidatePath("/crm/prospects");
+  revalidatePath("/crm/par-etapes");
   return {
     ok: true,
-    message: `${imported} prospects importés (${skipped} ignorés)`,
+    message: `${imported} importés · ${duplicates} doublons · ${skipped} ignorés`,
     imported,
     skipped,
+    duplicates,
   };
 }
 
@@ -476,4 +642,72 @@ export async function toggleCrmScriptAction(
   });
   revalidatePath("/crm/scripts");
   return { ok: true, message: active ? "Script activé" : "Script désactivé" };
+}
+
+const GOAL_METRICS = [
+  "NEW_PROSPECTS",
+  "FIRST_CONTACTS",
+  "MEETINGS",
+  "FOLLOW_UPS",
+] as const;
+
+/** Objectifs hebdo — TEAM (global) ou USER (soi). */
+export async function saveWeeklyGoalsAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.access" });
+  const scopeRaw = String(formData.get("scope") ?? "USER");
+  const scope = scopeRaw === "TEAM" ? "TEAM" : "USER";
+
+  if (
+    scope === "TEAM" &&
+    !actor.isSuperAdmin &&
+    !hasPermission(actor, "crm.reports.global")
+  ) {
+    return { ok: false, error: "Pas le droit de fixer l’objectif équipe" };
+  }
+
+  for (const metric of GOAL_METRICS) {
+    const raw = String(formData.get(metric) ?? "").trim();
+    const target = Number.parseInt(raw, 10);
+    if (!Number.isFinite(target) || target < 0 || target > 9999) continue;
+
+    if (scope === "TEAM") {
+      const existing = await prisma.crmWeeklyGoal.findFirst({
+        where: { scope: "TEAM", metric, userId: null },
+      });
+      if (existing) {
+        await prisma.crmWeeklyGoal.update({
+          where: { id: existing.id },
+          data: { target },
+        });
+      } else {
+        await prisma.crmWeeklyGoal.create({
+          data: { scope: "TEAM", userId: null, metric, target },
+        });
+      }
+    } else {
+      await prisma.crmWeeklyGoal.upsert({
+        where: {
+          scope_userId_metric: {
+            scope: "USER",
+            userId: actor.id,
+            metric,
+          },
+        },
+        create: {
+          scope: "USER",
+          userId: actor.id,
+          metric,
+          target,
+        },
+        update: { target },
+      });
+    }
+  }
+
+  revalidatePath("/crm");
+  revalidatePath("/crm/objectifs");
+  revalidatePath("/crm/rapport-semaine");
+  return { ok: true, message: "Objectifs enregistrés" };
 }

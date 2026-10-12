@@ -26,6 +26,8 @@ export type NavItem = {
   permission?: string;
   /** Module non livré : pas de navigation, pas d’état actif. */
   soon?: boolean;
+  /** Préfixes additionnels pour l’état actif (ex. Commercial couvre /crm, /catalogue). */
+  alsoMatch?: string[];
 };
 
 export type NavGroup = {
@@ -68,25 +70,13 @@ export const NAV_GROUPS: NavGroup[] = [
         permission: "orgchart.view",
       },
       {
-        id: "crm",
-        href: "/crm",
-        label: "CRM",
-        icon: Briefcase,
-        permission: "crm.access",
-      },
-      {
-        id: "catalogue",
-        href: "/catalogue",
-        label: "Catalogue",
-        icon: Package,
-        permission: "com.catalogue.view",
-      },
-      {
         id: "commercial",
         href: "/commercial",
         label: "Commercial",
-        icon: FileText,
+        icon: Briefcase,
+        /** Suivi + ventes + offres — une seule entrée (FLOW-COMMERCIAL-E2E). */
         permission: "com.access",
+        alsoMatch: ["/crm", "/catalogue"],
       },
       {
         id: "comptabilite",
@@ -216,11 +206,13 @@ export function isNavActive(
 ): boolean {
   if (item.soon) return false;
 
-  const candidates = allItems.filter(
-    (i) =>
-      !i.soon &&
-      (pathname === i.href || pathname.startsWith(`${i.href}/`)),
-  );
+  const candidates = allItems.filter((i) => {
+    if (i.soon) return false;
+    if (pathname === i.href || pathname.startsWith(`${i.href}/`)) return true;
+    return (i.alsoMatch ?? []).some(
+      (p) => pathname === p || pathname.startsWith(`${p}/`),
+    );
+  });
 
   if (candidates.length === 0) {
     return item.href === "/accueil" && pathname === "/accueil";

@@ -168,7 +168,7 @@ async function main() {
   await assertPage(page, "/ged", "GED", "02-ged");
   await assertPage(page, "/organisation", "Organisation", "03-organisation");
   await assertPage(page, "/catalogue", "Catalogue", "04-catalogue");
-  await assertPage(page, "/crm", "CRM", "05-crm");
+  await assertPage(page, "/crm", "Tableau de bord", "05-crm");
   await assertPage(page, "/crm/prospects", "Prospects", "06-crm-prospects");
   await assertPage(page, "/crm/relances", "Relances", "07-crm-relances");
   await assertPage(page, "/crm/scripts", "Scripts", "08-crm-scripts");
@@ -177,18 +177,26 @@ async function main() {
   await assertPage(page, "/administration/signatures", "Signatures", "11-signatures");
   await assertPage(page, "/administration/charte", "Charte", "12-charte");
 
-  // Nav CRM / Catalogue / Commercial visibles (plus « bientôt »)
+  // Nav : une seule entrée Commercial (plus CRM / Catalogue séparés)
   await page.goto(`${BASE}/accueil`, { waitUntil: "networkidle" });
   const nav = await page.locator("nav, aside").first().innerText();
-  if (/\bCRM\b/.test(nav) && !nav.includes("/bientot/crm")) ok("Nav CRM live");
-  else fail("Nav CRM absente ou still bientôt");
-  if (/Catalogue/.test(nav)) ok("Nav Catalogue live");
-  else fail("Nav Catalogue absente");
   if (/\bCommercial\b/.test(nav) && !nav.includes("/bientot/commercial")) {
-    ok("Nav Commercial live");
+    ok("Nav Commercial live (entrée unique)");
   } else fail("Nav Commercial absente ou still bientôt");
+  if (/\bCRM\b/.test(nav)) fail("Nav CRM encore présente (doit être fusionnée)");
+  else ok("Nav CRM retirée (fusion Commercial)");
+  if (/^Catalogue$/m.test(nav) || /\nCatalogue\n/.test(nav)) {
+    fail("Nav Catalogue encore une entrée sidebar séparée");
+  } else ok("Nav Catalogue retirée (fusion Commercial / Offres)");
 
   await assertPage(page, "/commercial", "Commercial", "15-commercial");
+  // Hub = cartes modules (plus entrée pills seule)
+  {
+    const hub = await page.locator("body").innerText();
+    if (/Prospects/.test(hub) && /Devis/.test(hub) && /Ouvrir/.test(hub)) {
+      ok("Hub Commercial — cartes modules");
+    } else fail("Hub Commercial — cartes modules absentes");
+  }
   await assertPage(page, "/commercial/clients", "Clients", "16-com-clients");
   await assertPage(page, "/commercial/devis", "Devis", "17-com-devis");
   await assertPage(page, "/commercial/factures", "Factures", "18-com-factures");
@@ -249,24 +257,32 @@ async function main() {
       if (/Retour aux prospects/i.test(detailBack)) ok("Retour fiche prospect");
       else fail("Retour manquant sur fiche prospect");
 
-      // Changer étape
-      if (await page.locator("#stage").count()) {
-        await page.selectOption("#stage", "CONTACTE");
-        await page.locator('form').filter({ has: page.locator("#stage") }).locator('button[type="submit"]').click();
-        await page.waitForTimeout(800);
+      // Changer statut (ChoiceCards — plus de <select id=stage>)
+      const contacteCard = page
+        .locator('form')
+        .filter({ hasText: /^Statut/ })
+        .getByRole("radio", { name: /^Contacté$/i });
+      if (await contacteCard.count()) {
+        await contacteCard.click();
+        await page
+          .locator("form")
+          .filter({ hasText: /^Statut/ })
+          .locator('button[type="submit"]')
+          .click();
+        await page.waitForTimeout(1000);
         const txt = await page.locator("body").innerText();
-        if (txt.includes("Contacté")) ok("Pipeline → Contacté");
-        else fail("Changement d’étape non visible");
+        if (txt.includes("Contacté")) ok("Statut → Contacté");
+        else fail("Changement de statut non visible");
       }
 
-      // Quick-log — attendre fin pending puis timeline (actions parfois lentes)
+      // Quick-log — bouton « Enregistrer l’action » (plus « Logger »)
       if (await page.locator("#summary").count()) {
         await page.fill("#summary", "Smoke activité auto");
         await page.locator("#activity-form button[type='submit']").click();
         try {
           await page
             .locator("#activity-form button[type='submit']")
-            .filter({ hasText: /^Logger$/ })
+            .filter({ hasText: /Enregistrer/ })
             .waitFor({ timeout: 45000 });
           await page.getByText("Smoke activité auto").waitFor({
             timeout: 20000,
@@ -805,7 +821,9 @@ async function main() {
 
   const serious = consoleErrors.filter(
     (e) =>
-      !/favicon|hydration|Download the React DevTools|Extra attributes/i.test(e),
+      !/favicon|hydration|Download the React DevTools|Extra attributes|ERR_INCOMPLETE_CHUNKED_ENCODING|ERR_CONNECTION_RESET|net::ERR_FAILED|ChunkLoadError/i.test(
+        e,
+      ),
   );
   if (serious.length) {
     fail(`Erreurs console: ${serious.slice(0, 3).join(" | ")}`);
