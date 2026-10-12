@@ -252,8 +252,8 @@ Si une case non → **ne pas merger**.
 
 **Périmètre mental :** « Commercial complet » = suivi **et** documentaire **et** prix **et** encaissement — un seul produit, une seule phase.
 
-**État :** CRM-0…8 + UX2/UX3 livrés sur `dev` (Menu, Tableau de bord, Vue Équipe, Rapport, KPIs collab).  
-**Prochaine étape :** retours terrain hub carte par carte → polish ; puis COM-4…7 — remontées Break si besoin.
+**État :** CRM-0…8 + UX2/UX3 + **COM-4/5** livrés (chaîne Intéressé→client→devis, SLA 24h, plancher).  
+**Prochaine étape :** COM-6 bridge compta · COM-7 polish Direction · retours terrain.
 
 ---
 

@@ -228,6 +228,9 @@ export async function updateOpportunityStageAction(
     };
   }
 
+  const enteringInteresse =
+    stage === "INTERESSE" && deal.stage !== "INTERESSE";
+
   await prisma.crmOpportunity.update({
     where: { id },
     data: {
@@ -236,6 +239,7 @@ export async function updateOpportunityStageAction(
       lossNote: stage === "PERDU" ? lossNote : null,
       wonAt: stage === "GAGNE" ? new Date() : deal.wonAt,
       lostAt: stage === "PERDU" ? new Date() : null,
+      interestedAt: enteringInteresse ? new Date() : deal.interestedAt,
     },
   });
 

@@ -18,7 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { CatalogueToggleButton } from "@/components/catalogue/toggle-button";
 
-export const metadata: Metadata = { title: "Catalogue" };
+export const metadata: Metadata = { title: "Offres" };
 
 const RS_SKUS = ["CNT-RS-STD", "CNT-RS-PRO", "CNT-RS-PREMIUM"] as const;
 
@@ -65,11 +65,13 @@ export default async function CataloguePage() {
   return (
     <PageShell>
       <PageHeader
-        title="Catalogue"
-        description="Offres MSK — tarifs réels (devis réseaux Marinas). Engagement RS : 3 mois min. · facturation mensuelle."
+        title="Offres"
+        description="Catalogue MSK — tarifs et planchers. Engagement RS : 3 mois min. · facturation mensuelle."
+        backHref="/commercial"
+        backLabel="Retour Menu"
         breadcrumbs={[
-          { label: "Accueil", href: "/accueil" },
-          { label: "Catalogue" },
+          { label: "Commercial", href: "/commercial" },
+          { label: "Offres" },
         ]}
         actions={
           canManage ? (
@@ -132,6 +134,11 @@ export default async function CataloguePage() {
                   </span>
                   <span className="ml-1 text-sm text-msk-ink/45">FCFA / mois</span>
                 </p>
+                {plan.floorPriceXof != null ? (
+                  <p className="mt-1 text-xs text-msk-ink/45">
+                    Plancher {formatXof(plan.floorPriceXof)}
+                  </p>
+                ) : null}
                 <ul className="mt-5 flex-1 space-y-2.5">
                   {feats.map((f) => (
                     <li
@@ -200,6 +207,11 @@ export default async function CataloguePage() {
                     ? `À partir de ${formatXof(o.priceXof)}`
                     : formatXof(o.priceXof)}
                 </p>
+                {o.floorPriceXof != null ? (
+                  <p className="text-xs text-msk-ink/45">
+                    Plancher {formatXof(o.floorPriceXof)}
+                  </p>
+                ) : null}
                 {canManage ? (
                   <div className="mt-4 flex gap-2">
                     <Link prefetch={false}

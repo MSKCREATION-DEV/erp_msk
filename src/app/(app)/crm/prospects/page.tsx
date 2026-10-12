@@ -78,6 +78,20 @@ export default async function CrmProspectsPage({
       notIn: ["GAGNE", "PERDU"],
     } as Prisma.EnumCrmPipelineStageFilter;
   }
+  if (sp.devisRetard === "1") {
+    const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    where.stage = "INTERESSE";
+    where.comQuotes = { none: {} };
+    where.AND = [
+      ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
+      {
+        OR: [
+          { interestedAt: { lt: cutoff } },
+          { interestedAt: null, updatedAt: { lt: cutoff } },
+        ],
+      },
+    ];
+  }
   if (sp.q?.trim()) {
     const q = sp.q.trim();
     where.OR = [

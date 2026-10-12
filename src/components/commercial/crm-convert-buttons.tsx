@@ -1,11 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { convertOpportunityToClientAction } from "@/actions/commercial";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
-import Link from "next/link";
 
 export function CrmConvertButtons({
   opportunityId,
@@ -13,12 +13,15 @@ export function CrmConvertButtons({
   canManage,
   canViewClient = false,
   canCreateQuote = false,
+  /** Après création client → aller au devis (chaîne Intéressé). */
+  preferQuoteAfterConvert = false,
 }: {
   opportunityId: string;
   existingClientId?: string | null;
   canManage: boolean;
   canViewClient?: boolean;
   canCreateQuote?: boolean;
+  preferQuoteAfterConvert?: boolean;
 }) {
   const router = useRouter();
   const { pending, run } = usePendingAction();
@@ -35,7 +38,8 @@ export function CrmConvertButtons({
       {showLinked && existingClientId ? (
         <>
           {canViewClient ? (
-            <Link prefetch={false}
+            <Link
+              prefetch={false}
               href={`/commercial/clients/${existingClientId}`}
               className="inline-flex h-9 items-center rounded-lg border border-msk-ink/15 bg-white px-3 text-sm font-medium hover:bg-msk-chalk"
             >
@@ -43,7 +47,8 @@ export function CrmConvertButtons({
             </Link>
           ) : null}
           {canCreateQuote ? (
-            <Link prefetch={false}
+            <Link
+              prefetch={false}
               href={`/commercial/devis/nouveau?clientId=${existingClientId}&opportunityId=${opportunityId}`}
               className="inline-flex h-9 items-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
             >
@@ -67,12 +72,22 @@ export function CrmConvertButtons({
                 return;
               }
               if (res.clientId) {
-                router.push(`/commercial/clients/${res.clientId}`);
+                if (preferQuoteAfterConvert && canCreateQuote) {
+                  router.push(
+                    `/commercial/devis/nouveau?clientId=${res.clientId}&opportunityId=${opportunityId}`,
+                  );
+                } else {
+                  router.push(`/commercial/clients/${res.clientId}`);
+                }
               } else router.refresh();
             });
           }}
         >
-          {pending ? "Conversion…" : "Créer client Commercial"}
+          {pending
+            ? "Création…"
+            : preferQuoteAfterConvert && canCreateQuote
+              ? "Client + devis"
+              : "Créer le client"}
         </Button>
       ) : null}
       {error ? <p className="w-full text-sm text-msk-coral">{error}</p> : null}

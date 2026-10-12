@@ -73,6 +73,18 @@ export default async function CommercialClientDetailPage({
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Surface className="space-y-2 p-5 text-sm lg:col-span-1">
+          {client.sourceOpportunityId ? (
+            <p>
+              <span className="text-msk-ink/45">Prospect </span>
+              <Link
+                prefetch={false}
+                href={`/crm/prospects/${client.sourceOpportunityId}`}
+                className="font-medium text-msk-blue hover:underline"
+              >
+                Voir la fiche CRM
+              </Link>
+            </p>
+          ) : null}
           <p>
             <span className="text-msk-ink/45">E-mail </span>
             {client.email ?? "—"}

@@ -78,6 +78,18 @@ export default async function CommercialDevisDetailPage({
               {quote.client.name}
             </Link>
           </p>
+          {quote.opportunityId ? (
+            <p>
+              <span className="text-msk-ink/45">Prospect </span>
+              <Link
+                prefetch={false}
+                href={`/crm/prospects/${quote.opportunityId}`}
+                className="text-msk-blue hover:underline"
+              >
+                Voir la fiche CRM
+              </Link>
+            </p>
+          ) : null}
           {quote.object ? (
             <p>
               <span className="text-msk-ink/45">Objet </span>

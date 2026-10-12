@@ -9,12 +9,15 @@ import { Label } from "@/components/ui/label";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { computeDocTotals } from "@/lib/commercial/totals";
 import { formatComMoney } from "@/lib/commercial/labels";
+import { assertLinesAboveFloor } from "@/lib/commercial/floor-price";
+import { formatXof } from "@/lib/crm/labels";
 
 type Offer = {
   id: string;
   name: string;
   sku: string;
   priceXof: number | null;
+  floorPriceXof: number | null;
 };
 
 type Line = {
@@ -26,18 +29,29 @@ type Line = {
   isTravel?: boolean;
 };
 
+export type QuotePrefillLine = {
+  label: string;
+  qty: number;
+  unitPrice: number;
+  catalogOfferId?: string;
+};
+
 export function QuoteCreateForm({
   clients,
   offers,
   defaultClientId,
   defaultOpportunityId,
   defaultIncludeTravel,
+  initialLines,
+  defaultObject,
 }: {
   clients: { id: string; name: string; includeTravelDefault: boolean }[];
   offers: Offer[];
   defaultClientId?: string;
   defaultOpportunityId?: string;
   defaultIncludeTravel?: boolean;
+  initialLines?: QuotePrefillLine[];
+  defaultObject?: string;
 }) {
   const router = useRouter();
   const { pending, run } = usePendingAction();
@@ -50,9 +64,18 @@ export function QuoteCreateForm({
   const [includeTravel, setIncludeTravel] = useState(
     defaultIncludeTravel ?? false,
   );
-  const [lines, setLines] = useState<Line[]>([
-    { key: "1", label: "", qty: 1, unitPrice: 0 },
-  ]);
+  const [lines, setLines] = useState<Line[]>(() => {
+    if (initialLines?.length) {
+      return initialLines.map((l, i) => ({
+        key: `prefill-${i}`,
+        label: l.label,
+        qty: l.qty,
+        unitPrice: l.unitPrice,
+        catalogOfferId: l.catalogOfferId,
+      }));
+    }
+    return [{ key: "1", label: "", qty: 1, unitPrice: 0 }];
+  });
 
   const vatRate = regime === "FR" ? 20 : 18;
   const currency = regime === "FR" ? "EUR" : "XOF";
@@ -69,6 +92,11 @@ export function QuoteCreateForm({
       }),
     [lines, vatEnabled, vatRate, promoEnabled, promoPercent, includeTravel],
   );
+
+  function floorFor(catalogOfferId?: string) {
+    if (!catalogOfferId) return null;
+    return offers.find((o) => o.id === catalogOfferId)?.floorPriceXof ?? null;
+  }
 
   function addLineFromOffer(offerId: string) {
     const o = offers.find((x) => x.id === offerId);
@@ -88,21 +116,28 @@ export function QuoteCreateForm({
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    const payload = lines
+      .filter((l) => l.label.trim())
+      .map(({ label, qty, unitPrice, catalogOfferId, isTravel }) => ({
+        label,
+        qty,
+        unitPrice,
+        catalogOfferId,
+        isTravel,
+      }));
+
+    const floorCheck = assertLinesAboveFloor({
+      lines: payload,
+      offers,
+      currency,
+    });
+    if (!floorCheck.ok) {
+      setError(floorCheck.error);
+      return;
+    }
+
     const fd = new FormData(e.currentTarget);
-    fd.set(
-      "lines",
-      JSON.stringify(
-        lines
-          .filter((l) => l.label.trim())
-          .map(({ label, qty, unitPrice, catalogOfferId, isTravel }) => ({
-            label,
-            qty,
-            unitPrice,
-            catalogOfferId,
-            isTravel,
-          })),
-      ),
-    );
+    fd.set("lines", JSON.stringify(payload));
     fd.set("vatEnabled", vatEnabled ? "on" : "off");
     fd.set("regime", regime);
     fd.set("currency", currency);
@@ -179,7 +214,12 @@ export function QuoteCreateForm({
         </div>
         <div className="sm:col-span-2">
           <Label htmlFor="object">Objet</Label>
-          <Input id="object" name="object" disabled={pending} />
+          <Input
+            id="object"
+            name="object"
+            disabled={pending}
+            defaultValue={defaultObject}
+          />
         </div>
         <div className="sm:col-span-2">
           <Label htmlFor="missionNote">Note mission</Label>
@@ -254,6 +294,9 @@ export function QuoteCreateForm({
               {offers.map((o) => (
                 <option key={o.id} value={o.id}>
                   {o.sku} · {o.name}
+                  {o.floorPriceXof != null
+                    ? ` (min ${o.floorPriceXof.toLocaleString("fr-FR")})`
+                    : ""}
                 </option>
               ))}
             </select>
@@ -294,69 +337,91 @@ export function QuoteCreateForm({
           </div>
         </div>
 
-        {lines.map((line, idx) => (
-          <div
-            key={line.key}
-            className="grid gap-2 rounded-lg border border-msk-ink/10 bg-white p-3 sm:grid-cols-[1fr_80px_120px_auto]"
-          >
-            <Input
-              placeholder="Libellé"
-              value={line.label}
-              disabled={pending}
-              onChange={(e) =>
-                setLines((p) =>
-                  p.map((l, i) =>
-                    i === idx ? { ...l, label: e.target.value } : l,
-                  ),
-                )
-              }
-            />
-            <Input
-              type="number"
-              min={1}
-              value={line.qty}
-              disabled={pending}
-              onChange={(e) =>
-                setLines((p) =>
-                  p.map((l, i) =>
-                    i === idx
-                      ? { ...l, qty: Number(e.target.value) || 1 }
-                      : l,
-                  ),
-                )
-              }
-            />
-            <Input
-              type="number"
-              min={0}
-              value={line.unitPrice}
-              disabled={pending}
-              onChange={(e) =>
-                setLines((p) =>
-                  p.map((l, i) =>
-                    i === idx
-                      ? { ...l, unitPrice: Number(e.target.value) || 0 }
-                      : l,
-                  ),
-                )
-              }
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              disabled={pending || lines.length <= 1}
-              onClick={() => setLines((p) => p.filter((_, i) => i !== idx))}
+        {lines.map((line, idx) => {
+          const floor = floorFor(line.catalogOfferId);
+          const underFloor =
+            currency === "XOF" &&
+            floor != null &&
+            line.unitPrice < floor;
+          return (
+            <div
+              key={line.key}
+              className="grid gap-2 rounded-lg border border-msk-ink/10 bg-white p-3 sm:grid-cols-[1fr_80px_120px_auto]"
             >
-              Retirer
-            </Button>
-            {line.isTravel ? (
-              <span className="text-xs text-msk-ink/45 sm:col-span-4">
-                Ligne déplacement
-              </span>
-            ) : null}
-          </div>
-        ))}
+              <Input
+                placeholder="Libellé"
+                value={line.label}
+                disabled={pending}
+                onChange={(e) =>
+                  setLines((p) =>
+                    p.map((l, i) =>
+                      i === idx ? { ...l, label: e.target.value } : l,
+                    ),
+                  )
+                }
+              />
+              <Input
+                type="number"
+                min={1}
+                value={line.qty}
+                disabled={pending}
+                onChange={(e) =>
+                  setLines((p) =>
+                    p.map((l, i) =>
+                      i === idx
+                        ? { ...l, qty: Number(e.target.value) || 1 }
+                        : l,
+                    ),
+                  )
+                }
+              />
+              <div>
+                <Input
+                  type="number"
+                  min={floor != null && currency === "XOF" ? floor : 0}
+                  value={line.unitPrice}
+                  disabled={pending}
+                  aria-invalid={underFloor || undefined}
+                  className={underFloor ? "border-msk-coral" : undefined}
+                  onChange={(e) =>
+                    setLines((p) =>
+                      p.map((l, i) =>
+                        i === idx
+                          ? { ...l, unitPrice: Number(e.target.value) || 0 }
+                          : l,
+                      ),
+                    )
+                  }
+                />
+                {floor != null && currency === "XOF" ? (
+                  <p
+                    className={
+                      underFloor
+                        ? "mt-0.5 text-[11px] text-msk-coral"
+                        : "mt-0.5 text-[11px] text-msk-ink/40"
+                    }
+                  >
+                    Min. {formatXof(floor)}
+                  </p>
+                ) : null}
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={pending || lines.length <= 1}
+                onClick={() => setLines((p) => p.filter((_, i) => i !== idx))}
+              >
+                Retirer
+              </Button>
+              {line.isTravel ? (
+                <span className="text-xs text-msk-ink/45 sm:col-span-4">
+                  Ligne déplacement
+                </span>
+              ) : null}
+            </div>
+          );
+        })}
       </div>
 
       <div className="rounded-lg bg-msk-chalk px-4 py-3 text-sm text-msk-ink/70">

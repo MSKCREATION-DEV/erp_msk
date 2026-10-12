@@ -125,10 +125,23 @@ Code : `src/lib/commercial/nav.ts` · `modules.ts` · `CommercialShell`.
 
 ---
 
-## 7. Suite
+## 7. Chaîne Intéressé → devis (COM-4/5)
+
+```
+Fiche prospect (Intéressé)
+  → « Client + devis » (crée ComClient si besoin)
+  → Nouveau devis prérempli (offres liées)
+  → Marquer envoyé → statut CRM « Devis envoyé »
+  → Facture / paiement (inchangé)
+```
+
+SLA 24h : `interestedAt` ; alerte Tableau de bord → `/crm/prospects?devisRetard=1`.  
+Plancher : hint UI + refus serveur (XOF).
+
+## 8. Suite
 
 1. Parcours hub carte par carte avec le terrain.  
-2. Durcir COM-5 plancher / COM-6–7 finance si besoin.  
+2. **COM-6** bridge compta / **COM-7** polish Direction.  
 3. Gate [`REGLES-EVOLUTION-CRM.md`](./REGLES-EVOLUTION-CRM.md) §6.
 
 ---

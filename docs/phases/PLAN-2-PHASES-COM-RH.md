@@ -59,17 +59,18 @@ Un commercial MSK travaille **comme avec le fichier CRM**, en mieux : une seule 
 
 #### B. Lien CRM ↔ documentaire
 - [x] Nav chaîne Commercial (hub)
-- [~] Conversion prospect → client (base)
-- [~] Devis liés sur fiche — urgence devis 24h à durcir
+- [x] Conversion client dès Intéressé (+ CTA Client + devis)
+- [x] Devis liés fiche ; préremplissage offres CRM ; sync Devis envoyé
+- [x] SLA devis 24h (`interestedAt` + filtre `/crm/prospects?devisRetard=1`)
 
 #### C. Catalogue & prix
-- [x] Catalogue offres (base)
-- [ ] Plancher prix
+- [x] Catalogue / Offres (base)
+- [x] Plancher prix (UI catalogue + devis + garde serveur XOF)
 
 #### D. Devis · Factures · Paiements · Finance
 - [x] Devis / factures / paiements + PDF Voir/Télécharger (Phase 3)
-- [~] Bridge compta (existant partiel)
-- [~] Signatures par document
+- [~] Bridge compta (existant partiel) — **COM-6**
+- [~] Signatures par document — **COM-6/7**
 
 #### E. Hors phase COM (reporté)
 - Stocks, anomalies, WhatsApp API, cron digests avancés, multi-échéances complexes
@@ -137,10 +138,10 @@ Détail : [`SPEC-CRM-MSK-COMPLET.md`](./SPEC-CRM-MSK-COMPLET.md) — §9 UI/parc
 | Lot | Nom | Contenu |
 |---|---|---|
 | **CRM-0…CRM-8** | CRM complet | Voir [`SPEC-CRM-MSK-COMPLET.md`](./SPEC-CRM-MSK-COMPLET.md) §9 |
-| **COM-4** | Chaîne documentaire | Naming / nav ; client → devis → facture → paiement |
-| **COM-5** | Catalogue & plancher | Prix min ; offres |
-| **COM-6** | Finance bridge | Remontée compta + GED |
-| **COM-7** | Polish Direction | Smoke E2E + revue |
+| **COM-4** | Chaîne documentaire | **Fait** — client dès Intéressé, prefill devis, sync stage, SLA 24h |
+| **COM-5** | Catalogue & plancher | **Fait** — plancher visible + enforcement XOF |
+| **COM-6** | Finance bridge | Remontée compta + GED *(suivant)* |
+| **COM-7** | Polish Direction | Smoke E2E + revue *(suivant)* |
 
 **Ordre :** terminer le **CRM** (CRM-0→8) avant d’élargir devis/facture — la Direction a priorisé un CRM fidèle et complet.
 

@@ -19,6 +19,7 @@ import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { StageDonutChart } from "@/components/crm/stage-donut-chart";
 import { ConversionRadial } from "@/components/crm/conversion-radial";
+import { isDevisSlaBreached } from "@/lib/crm/devis-sla";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
 
@@ -72,7 +73,6 @@ export default async function CrmDashboardPage() {
   ]);
 
   const now = Date.now();
-  const dayMs = 24 * 60 * 60 * 1000;
 
   const byStage = STAGE_ORDER.map((stage) => ({
     stage,
@@ -91,11 +91,14 @@ export default async function CrmDashboardPage() {
     deals.length > 0 ? (won.length / deals.length) * 100 : 0;
   const interesses = byStage.find((x) => x.stage === "INTERESSE")?.count ?? 0;
 
-  const devisUrgent = deals.filter((d) => {
-    if (normalizeStage(d.stage) !== "INTERESSE") return false;
-    if (d.comQuotes.length > 0) return false;
-    return now - d.updatedAt.getTime() > dayMs;
-  });
+  const devisUrgent = deals.filter((d) =>
+    isDevisSlaBreached({
+      stage: d.stage,
+      interestedAt: d.interestedAt,
+      updatedAt: d.updatedAt,
+      quoteCount: d.comQuotes.length,
+    }),
+  );
 
   const aTraiter = deals
     .filter((d) => {
@@ -177,8 +180,14 @@ export default async function CrmDashboardPage() {
             ) : null}
             {devisUrgent.length > 0 ? (
               <li>
-                {devisUrgent.length} Intéressé
-                {devisUrgent.length > 1 ? "s" : ""} sans devis (&gt; 24h)
+                <Link
+                  prefetch={false}
+                  href="/crm/prospects?devisRetard=1"
+                  className="text-msk-blue hover:underline"
+                >
+                  {devisUrgent.length} Intéressé
+                  {devisUrgent.length > 1 ? "s" : ""} sans devis (&gt; 24h)
+                </Link>
               </li>
             ) : null}
           </ul>

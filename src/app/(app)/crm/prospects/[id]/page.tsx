@@ -13,10 +13,12 @@ import {
   STAGE_LABELS,
 } from "@/lib/crm/labels";
 import { isTestOrgName } from "@/lib/crm/test-data";
+import { isDevisSlaBreached } from "@/lib/crm/devis-sla";
 import {
   schemaForSku,
   summarizeConfig,
 } from "@/lib/crm/offer-option-schemas";
+import { QUOTE_STATUS_LABELS } from "@/lib/commercial/labels";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -148,10 +150,12 @@ export default async function CrmProspectDetailPage({
     deal.stage !== "GAGNE" &&
     deal.stage !== "PERDU";
   const uiStage = deal.stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : deal.stage;
-  const devisDue =
-    uiStage === "INTERESSE" &&
-    deal.comQuotes.length === 0 &&
-    Date.now() - deal.updatedAt.getTime() > 24 * 60 * 60 * 1000;
+  const devisDue = isDevisSlaBreached({
+    stage: deal.stage,
+    interestedAt: deal.interestedAt,
+    updatedAt: deal.updatedAt,
+    quoteCount: deal.comQuotes.length,
+  });
 
   return (
     <PageShell>
@@ -203,8 +207,8 @@ export default async function CrmProspectDetailPage({
             GUIDE — devis sous 24h
           </p>
           <p className="mt-1 text-sm text-msk-ink/70">
-            Prospect Intéressé sans devis lié. Passez en Client si accord, puis
-            créez le devis — ou envoyez la proposition dès maintenant.
+            Prospect Intéressé sans devis lié. Créez le client commercial puis le
+            devis (bouton ci-dessous), ou envoyez la proposition dès maintenant.
           </p>
         </Surface>
       ) : null}
@@ -217,10 +221,16 @@ export default async function CrmProspectDetailPage({
           opportunityId={deal.id}
           existingClientId={linkedClient?.id}
           canManage={
-            hasPermission(user, "com.clients.manage") && uiStage === "GAGNE"
+            hasPermission(user, "com.clients.manage") &&
+            (uiStage === "GAGNE" ||
+              uiStage === "INTERESSE" ||
+              uiStage === "DEVIS_ENVOYE")
           }
           canViewClient={hasPermission(user, "com.clients.view_own")}
           canCreateQuote={hasPermission(user, "com.devis.create")}
+          preferQuoteAfterConvert={
+            uiStage === "INTERESSE" || uiStage === "DEVIS_ENVOYE"
+          }
         />
       ) : null}
 
@@ -423,7 +433,8 @@ export default async function CrmProspectDetailPage({
                           Devis {q.number ?? q.id.slice(0, 8)}
                         </Link>
                         <p className="text-xs text-msk-ink/45">
-                          {q.status} · {formatXof(q.totalTtc)}
+                          {QUOTE_STATUS_LABELS[q.status]} ·{" "}
+                          {formatXof(q.totalTtc)}
                         </p>
                       </div>
                       {q.gedDocumentId ? (

@@ -641,6 +641,8 @@ model CrmOpportunity {
   followUpAt      DateTime?
   wonAt           DateTime?
   lostAt          DateTime?
+  /// Entrée en statut Intéressé — SLA devis 24h (GUIDE).
+  interestedAt    DateTime?        @map("interested_at")
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 

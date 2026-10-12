@@ -20,6 +20,7 @@ import { ensureClientDocFolder } from "@/lib/commercial/ged-client";
 import { buildClientGedFolderCode } from "@/lib/commercial/ged-folder-code";
 import { normalizeClientName } from "@/lib/commercial/labels";
 import { canAccessOwned } from "@/lib/commercial/scope";
+import { assertLinesAboveFloor } from "@/lib/commercial/floor-price";
 import {
   canTransitionQuoteStatus,
   permissionForQuoteStatus,
@@ -190,8 +191,21 @@ export async function convertOpportunityToClientAction(
     },
   });
   if (!deal) return { ok: false, error: "Opportunité introuvable" };
-  if (deal.stage !== CrmPipelineStage.GAGNE) {
-    return { ok: false, error: "Seuls les deals Gagné peuvent être convertis" };
+  const stage =
+    deal.stage === CrmPipelineStage.NEGOCIATION
+      ? CrmPipelineStage.DEVIS_ENVOYE
+      : deal.stage;
+  const convertible: CrmPipelineStage[] = [
+    CrmPipelineStage.INTERESSE,
+    CrmPipelineStage.DEVIS_ENVOYE,
+    CrmPipelineStage.GAGNE,
+  ];
+  if (!convertible.includes(stage)) {
+    return {
+      ok: false,
+      error:
+        "Création client dès le statut Intéressé (pour devis) ou Client.",
+    };
   }
   if (!(await assertCrmDealAccess(actor, deal.ownerId))) {
     return { ok: false, error: "Opportunité hors périmètre CRM" };
@@ -342,6 +356,35 @@ export async function createQuoteAction(
     return { ok: false, error: "Client hors périmètre" };
   }
 
+  if (opportunityId) {
+    const deal = await prisma.crmOpportunity.findUnique({
+      where: { id: opportunityId },
+      select: { id: true, organizationId: true, ownerId: true },
+    });
+    if (!deal) return { ok: false, error: "Prospect lié introuvable" };
+    if (!(await assertCrmDealAccess(actor, deal.ownerId))) {
+      return { ok: false, error: "Prospect hors périmètre CRM" };
+    }
+    if (
+      client.crmOrganizationId &&
+      client.crmOrganizationId !== deal.organizationId
+    ) {
+      return {
+        ok: false,
+        error: "Ce prospect n’appartient pas au client sélectionné",
+      };
+    }
+    if (
+      client.sourceOpportunityId &&
+      client.sourceOpportunityId !== opportunityId
+    ) {
+      return {
+        ok: false,
+        error: "Ce client est déjà lié à un autre prospect",
+      };
+    }
+  }
+
   const offerIds = [
     ...new Set(
       lines
@@ -354,20 +397,12 @@ export async function createQuoteAction(
       where: { id: { in: offerIds } },
       select: { id: true, name: true, floorPriceXof: true },
     });
-    const floorById = new Map(offers.map((o) => [o.id, o]));
-    for (const l of lines) {
-      if (!l.catalogOfferId) continue;
-      const offer = floorById.get(l.catalogOfferId);
-      if (
-        offer?.floorPriceXof != null &&
-        l.unitPrice < offer.floorPriceXof
-      ) {
-        return {
-          ok: false,
-          error: `Plancher : « ${offer.name} » ≥ ${offer.floorPriceXof.toLocaleString("fr-FR")} FCFA (saisi ${l.unitPrice.toLocaleString("fr-FR")}).`,
-        };
-      }
-    }
+    const floorCheck = assertLinesAboveFloor({
+      lines,
+      offers,
+      currency,
+    });
+    if (!floorCheck.ok) return floorCheck;
   }
 
   const totals = computeDocTotals({
@@ -424,7 +459,10 @@ export async function createQuoteAction(
     entityId: quote.id,
   });
 
-  revalidateCommercial([`/commercial/devis/${quote.id}`]);
+  revalidateCommercial([
+    `/commercial/devis/${quote.id}`,
+    ...(opportunityId ? [`/crm/prospects/${opportunityId}`] : []),
+  ]);
   return { ok: true, message: "Devis créé", quoteId: quote.id };
 }
 
@@ -467,7 +505,35 @@ export async function updateQuoteStatusAction(
     data.acceptedAt = null;
   }
 
-  await prisma.comQuote.update({ where: { id: quoteId }, data });
+  await prisma.$transaction(async (tx) => {
+    await tx.comQuote.update({ where: { id: quoteId }, data });
+
+    // Sync CRM : devis envoyé → statut Devis envoyé (si encore Intéressé / Négociation)
+    if (status === "ENVOYE" && quote.opportunityId) {
+      const deal = await tx.crmOpportunity.findUnique({
+        where: { id: quote.opportunityId },
+        select: { id: true, stage: true, organizationId: true },
+      });
+      if (
+        deal &&
+        (deal.stage === "INTERESSE" || deal.stage === "NEGOCIATION")
+      ) {
+        await tx.crmOpportunity.update({
+          where: { id: deal.id },
+          data: { stage: CrmPipelineStage.DEVIS_ENVOYE },
+        });
+        await tx.crmActivity.create({
+          data: {
+            opportunityId: deal.id,
+            organizationId: deal.organizationId,
+            type: "NOTE",
+            summary: `Devis ${quote.number} marqué envoyé`,
+            actorId: actor.id,
+          },
+        });
+      }
+    }
+  });
 
   await writeAudit({
     actorId: actor.id,
@@ -477,7 +543,11 @@ export async function updateQuoteStatusAction(
     metadata: { from: quote.status, status },
   });
 
-  revalidateCommercial([`/commercial/devis/${quoteId}`]);
+  revalidateCommercial([
+    `/commercial/devis/${quoteId}`,
+    ...(quote.opportunityId ? [`/crm/prospects/${quote.opportunityId}`] : []),
+  ]);
+  revalidatePath("/crm");
   return { ok: true, message: "Statut mis à jour" };
 }
 

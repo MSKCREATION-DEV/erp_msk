@@ -28,7 +28,7 @@ export default async function CommercialDevisNouveauPage({
   }
   const sp = await searchParams;
 
-  const [clients, offers] = await Promise.all([
+  const [clients, offers, opportunity] = await Promise.all([
     prisma.comClient.findMany({
       where: comOwnerScopeWhere(user),
       orderBy: { name: "asc" },
@@ -37,17 +37,77 @@ export default async function CommercialDevisNouveauPage({
     prisma.catalogOffer.findMany({
       where: { active: true },
       orderBy: { sortOrder: "asc" },
-      select: { id: true, name: true, sku: true, priceXof: true },
+      select: {
+        id: true,
+        name: true,
+        sku: true,
+        priceXof: true,
+        floorPriceXof: true,
+      },
     }),
+    sp.opportunityId
+      ? prisma.crmOpportunity.findUnique({
+          where: { id: sp.opportunityId },
+          select: {
+            id: true,
+            title: true,
+            organization: { select: { name: true } },
+            catalogOffer: {
+              select: {
+                id: true,
+                name: true,
+                sku: true,
+                priceXof: true,
+              },
+            },
+            opportunityOffers: {
+              orderBy: { sortOrder: "asc" },
+              select: {
+                catalogOffer: {
+                  select: {
+                    id: true,
+                    name: true,
+                    sku: true,
+                    priceXof: true,
+                  },
+                },
+              },
+            },
+          },
+        })
+      : Promise.resolve(null),
   ]);
 
   const defaultClient = clients.find((c) => c.id === sp.clientId);
+
+  const prefillFromOffers = (() => {
+    if (!opportunity) return undefined;
+    const linked = opportunity.opportunityOffers.map((o) => o.catalogOffer);
+    const legacy = opportunity.catalogOffer ? [opportunity.catalogOffer] : [];
+    const seen = new Set<string>();
+    const rows = [...linked, ...legacy].filter((o) => {
+      if (seen.has(o.id)) return false;
+      seen.add(o.id);
+      return true;
+    });
+    if (rows.length === 0) return undefined;
+    return rows.map((o) => ({
+      label: `${o.sku} · ${o.name}`,
+      qty: 1,
+      unitPrice: o.priceXof ?? 0,
+      catalogOfferId: o.id,
+    }));
+  })();
 
   return (
     <PageShell>
       <PageHeader
         title="Nouveau devis"
-        description="Lignes catalogue ou libres — PDF après création."
+        description={
+          opportunity
+            ? `Depuis ${opportunity.organization.name} — lignes préremplies si offres liées.`
+            : "Lignes catalogue ou libres — PDF après création."
+        }
         backHref="/commercial/devis"
         backLabel="Retour aux devis"
         breadcrumbs={[
@@ -60,7 +120,7 @@ export default async function CommercialDevisNouveauPage({
         <CardHeader>
           <CardTitle>Créer un devis</CardTitle>
           <CardDescription>
-            Régime ML (XOF, TVA 18 %) par défaut.
+            Régime ML (XOF, TVA 18 %) par défaut. Plancher catalogue respecté.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -75,6 +135,12 @@ export default async function CommercialDevisNouveauPage({
               defaultClientId={sp.clientId}
               defaultOpportunityId={sp.opportunityId}
               defaultIncludeTravel={defaultClient?.includeTravelDefault}
+              initialLines={prefillFromOffers}
+              defaultObject={
+                opportunity
+                  ? `Proposition — ${opportunity.organization.name}`
+                  : undefined
+              }
             />
           )}
         </CardContent>
