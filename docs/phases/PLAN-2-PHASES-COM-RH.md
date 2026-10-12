@@ -69,8 +69,9 @@ Un commercial MSK travaille **comme avec le fichier CRM**, en mieux : une seule 
 
 #### D. Devis · Factures · Paiements · Finance
 - [x] Devis / factures / paiements + PDF Voir/Télécharger (Phase 3)
-- [~] Bridge compta (existant partiel) — **COM-6**
-- [~] Signatures par document — **COM-6/7**
+- [x] Bridge compta facture → VE (file, liens, revalidation, KPI) — **COM-6**
+- [x] Signature PDF = responsable commercial (owner) ; PDF après émission
+- [ ] Bridge paiement → BQ (encaissement) — reporté slice 2
 
 #### E. Hors phase COM (reporté)
 - Stocks, anomalies, WhatsApp API, cron digests avancés, multi-échéances complexes
@@ -140,8 +141,8 @@ Détail : [`SPEC-CRM-MSK-COMPLET.md`](./SPEC-CRM-MSK-COMPLET.md) — §9 UI/parc
 | **CRM-0…CRM-8** | CRM complet | Voir [`SPEC-CRM-MSK-COMPLET.md`](./SPEC-CRM-MSK-COMPLET.md) §9 |
 | **COM-4** | Chaîne documentaire | **Fait** — client dès Intéressé, prefill devis, sync stage, SLA 24h |
 | **COM-5** | Catalogue & plancher | **Fait** — plancher visible + enforcement XOF |
-| **COM-6** | Finance bridge | Remontée compta + GED *(suivant)* |
-| **COM-7** | Polish Direction | Smoke E2E + revue *(suivant)* |
+| **COM-6** | Finance bridge | **Fait** — VE facture, file, liens, GED PDF ; paiement→BQ reporté |
+| **COM-7** | Polish Direction | **Fait** (slice) — colonne Compta, KPI file, signature owner |
 
 **Ordre :** terminer le **CRM** (CRM-0→8) avant d’élargir devis/facture — la Direction a priorisé un CRM fidèle et complet.
 

@@ -69,6 +69,17 @@ async function main() {
   if (journals.length < 7) fail(`Journaux incomplets (${journals.length}/7)`);
   else ok("Journaux AC/VE/BQ/CA/OD/PA/MM");
 
+  // COM-6 bridge — comptes VE facture
+  const bridgeCodes = ["4111", "4112", "706", "4432"];
+  const bridgeAccounts = await prisma.cptAccount.findMany({
+    where: { code: { in: bridgeCodes } },
+  });
+  if (bridgeAccounts.length < bridgeCodes.length) {
+    fail(
+      `Comptes bridge COM incomplets (${bridgeAccounts.map((a) => a.code).join(",")}/${bridgeCodes.join(",")})`,
+    );
+  } else ok("Comptes bridge COM 4111/4112/706/4432");
+
   const year = new Date().getFullYear();
   const exercise = await prisma.cptExercise.findUnique({ where: { year } });
   if (!exercise) fail(`Exercice ${year} manquant`);

@@ -20,10 +20,17 @@ export default async function AComptabiliserPage() {
 
   const linked = await prisma.cptEntry.findMany({
     where: { sourceType: "COM_INVOICE", sourceId: { not: null } },
-    select: { sourceId: true },
+    select: {
+      id: true,
+      number: true,
+      status: true,
+      sourceId: true,
+    },
   });
-  const linkedIds = new Set(
-    linked.map((e) => e.sourceId).filter((id): id is string => !!id),
+  const entryByInvoice = new Map(
+    linked
+      .filter((e): e is typeof e & { sourceId: string } => !!e.sourceId)
+      .map((e) => [e.sourceId, e]),
   );
 
   const invoices = await prisma.comInvoice.findMany({
@@ -37,8 +44,10 @@ export default async function AComptabiliserPage() {
     },
   });
 
-  const pending = invoices.filter((i) => !linkedIds.has(i.id));
-  const done = invoices.filter((i) => linkedIds.has(i.id)).slice(0, 20);
+  const pending = invoices.filter((i) => !entryByInvoice.has(i.id));
+  const done = invoices
+    .filter((i) => entryByInvoice.has(i.id))
+    .slice(0, 20);
 
   return (
     <PageShell>
@@ -73,7 +82,8 @@ export default async function AComptabiliserPage() {
               {pending.map((inv) => (
                 <tr key={inv.id} className="border-b border-msk-ink/5">
                   <td className="px-4 py-3">
-                    <Link prefetch={false}
+                    <Link
+                      prefetch={false}
                       href={`/commercial/factures/${inv.id}`}
                       className="font-medium text-msk-blue hover:underline"
                     >
@@ -104,12 +114,35 @@ export default async function AComptabiliserPage() {
           <h2 className="text-sm font-semibold text-msk-ink">
             Déjà liées (récentes)
           </h2>
-          <ul className="mt-3 space-y-1 text-sm text-msk-ink/60">
-            {done.map((inv) => (
-              <li key={inv.id}>
-                {inv.number} — {inv.client.name}
-              </li>
-            ))}
+          <ul className="mt-3 space-y-2 text-sm">
+            {done.map((inv) => {
+              const entry = entryByInvoice.get(inv.id)!;
+              return (
+                <li
+                  key={inv.id}
+                  className="flex flex-wrap items-center gap-x-3 gap-y-1"
+                >
+                  <Link
+                    prefetch={false}
+                    href={`/commercial/factures/${inv.id}`}
+                    className="font-medium text-msk-blue hover:underline"
+                  >
+                    {inv.number}
+                  </Link>
+                  <span className="text-msk-ink/50">{inv.client.name}</span>
+                  <Link
+                    prefetch={false}
+                    href={`/comptabilite/ecritures/${entry.id}`}
+                    className="text-msk-blue hover:underline"
+                  >
+                    {entry.number}
+                  </Link>
+                  <Badge tone={entry.status === "VALIDATED" ? "success" : "muted"}>
+                    {entry.status === "VALIDATED" ? "Validée" : "Brouillon"}
+                  </Badge>
+                </li>
+              );
+            })}
           </ul>
         </Surface>
       ) : null}

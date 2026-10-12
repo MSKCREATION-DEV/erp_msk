@@ -115,6 +115,11 @@ function revalidateCommercial(paths: string[] = []) {
   for (const p of paths) revalidatePath(p);
 }
 
+function revalidateComptaBridge() {
+  revalidatePath("/comptabilite/a-comptabiliser");
+  revalidatePath("/comptabilite");
+}
+
 export async function createClientAction(
   formData: FormData,
 ): Promise<ActionResult & { clientId?: string }> {
@@ -563,6 +568,7 @@ export async function generateQuotePdfAction(
     include: {
       client: true,
       lines: { orderBy: { sortOrder: "asc" } },
+      owner: { select: { id: true, firstName: true, lastName: true } },
     },
   });
   if (!quote) return { ok: false, error: "Devis introuvable" };
@@ -578,7 +584,7 @@ export async function generateQuotePdfAction(
   }
 
   const signature = await getSignaturePngBytes({
-    ownerUserId: actor.id,
+    ownerUserId: quote.ownerId,
   }).catch(() => null);
 
   const lines = quote.lines
@@ -612,7 +618,7 @@ export async function generateQuotePdfAction(
       vatRate: quote.vatEnabled ? quote.vatRate : 0,
       signaturePng: signature?.bytes,
       signatureLabel: signature
-        ? `${actor.firstName} ${actor.lastName}`
+        ? `${quote.owner.firstName} ${quote.owner.lastName}`
         : undefined,
     });
   } catch (e) {
@@ -818,6 +824,7 @@ export async function issueInvoiceAction(
   });
 
   revalidateCommercial([`/commercial/factures/${invoiceId}`]);
+  revalidateComptaBridge();
   return { ok: true, message: "Facture émise" };
 }
 
@@ -833,11 +840,18 @@ export async function generateInvoicePdfAction(
     include: {
       client: true,
       lines: { orderBy: { sortOrder: "asc" } },
+      owner: { select: { id: true, firstName: true, lastName: true } },
     },
   });
   if (!invoice) return { ok: false, error: "Facture introuvable" };
   if (!canAccessOwned(actor, invoice.ownerId)) {
     return { ok: false, error: "Hors périmètre" };
+  }
+  if (invoice.status === "BROUILLON") {
+    return {
+      ok: false,
+      error: "Émettez la facture avant de générer le PDF",
+    };
   }
   if (invoice.gedDocumentId) {
     return {
@@ -848,7 +862,7 @@ export async function generateInvoicePdfAction(
   }
 
   const signature = await getSignaturePngBytes({
-    ownerUserId: actor.id,
+    ownerUserId: invoice.ownerId,
   }).catch(() => null);
 
   let pdfBytes: Uint8Array;
@@ -874,7 +888,7 @@ export async function generateInvoicePdfAction(
       vatRate: invoice.vatEnabled ? invoice.vatRate : 0,
       signaturePng: signature?.bytes,
       signatureLabel: signature
-        ? `${actor.firstName} ${actor.lastName}`
+        ? `${invoice.owner.firstName} ${invoice.owner.lastName}`
         : undefined,
     });
   } catch (e) {
@@ -1038,5 +1052,6 @@ export async function recordPaymentAction(
   });
 
   revalidateCommercial([`/commercial/factures/${invoiceId}`]);
+  revalidateComptaBridge();
   return { ok: true, message: "Paiement enregistré" };
 }

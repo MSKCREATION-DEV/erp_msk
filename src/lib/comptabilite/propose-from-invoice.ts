@@ -1,12 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { convertEurToXof, getEurXofRate } from "@/lib/comptabilite/fx";
+import {
+  buildInvoiceVeLines,
+  type ProposedLine,
+} from "@/lib/comptabilite/invoice-ve-lines";
 
-export type ProposedLine = {
-  accountCode: string;
-  debit: number;
-  credit: number;
-  label: string;
-};
+export type { ProposedLine };
 
 export type InvoiceProposal = {
   label: string;
@@ -77,29 +76,13 @@ export async function proposeEntryFromInvoice(
     }
   }
 
-  const clientAccount = invoice.regime === "FR" ? "4112" : "4111";
-  const lines: ProposedLine[] = [
-    {
-      accountCode: clientAccount,
-      debit: ttc,
-      credit: 0,
-      label: `Client ${invoice.client.name}`,
-    },
-    {
-      accountCode: "706",
-      debit: 0,
-      credit: ht,
-      label: "Services vendus",
-    },
-  ];
-  if (vat > 0) {
-    lines.push({
-      accountCode: "4432",
-      debit: 0,
-      credit: vat,
-      label: "TVA collectée",
-    });
-  }
+  const lines = buildInvoiceVeLines({
+    clientName: invoice.client.name,
+    regime: invoice.regime === "FR" ? "FR" : "ML",
+    ht,
+    vat,
+    ttc,
+  });
 
   return {
     label: `Facture ${invoice.number} — ${invoice.client.name}`,

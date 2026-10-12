@@ -35,6 +35,7 @@ function parseLinesJson(raw: string) {
 function revalidateCpt() {
   revalidatePath("/comptabilite");
   revalidatePath("/comptabilite/ecritures");
+  revalidatePath("/comptabilite/a-comptabiliser");
   revalidatePath("/comptabilite/plan");
   revalidatePath("/comptabilite/journaux");
   revalidatePath("/comptabilite/grand-livre");

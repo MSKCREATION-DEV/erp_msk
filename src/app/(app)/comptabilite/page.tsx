@@ -35,7 +35,9 @@ export default async function ComptabiliteHubPage() {
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   const year = now.getFullYear();
 
-  const [draftCount, validatedThisMonth, bankCount, budgetSum] =
+  const canManageEntries = hasPermission(user, "cpt.ecritures.manage");
+
+  const [draftCount, validatedThisMonth, bankCount, budgetSum, toBookCount] =
     await Promise.all([
       prisma.cptEntry.count({ where: { status: "DRAFT" } }),
       prisma.cptEntry.count({
@@ -49,6 +51,23 @@ export default async function ComptabiliteHubPage() {
         where: { exercise: { year } },
         _sum: { planned: true },
       }),
+      canManageEntries
+        ? (async () => {
+            const linked = await prisma.cptEntry.findMany({
+              where: { sourceType: "COM_INVOICE", sourceId: { not: null } },
+              select: { sourceId: true },
+            });
+            const linkedIds = linked
+              .map((e) => e.sourceId)
+              .filter((id): id is string => !!id);
+            return prisma.comInvoice.count({
+              where: {
+                status: { in: ["EMISE", "PARTIELLEMENT_PAYEE", "PAYEE"] },
+                id: { notIn: linkedIds.length ? linkedIds : ["__none__"] },
+              },
+            });
+          })()
+        : Promise.resolve(0),
     ]);
 
   const canCpt = hasPermission(user, "cpt.access");
@@ -78,11 +97,14 @@ export default async function ComptabiliteHubPage() {
       icon: FileSpreadsheet,
       desc: "Saisie, validation, brouillons",
     },
-    hasPermission(user, "cpt.ecritures.manage") && {
+    canManageEntries && {
       href: "/comptabilite/a-comptabiliser",
       label: "À comptabiliser",
       icon: ReceiptText,
-      desc: "Factures COM → proposition VE",
+      desc:
+        toBookCount > 0
+          ? `${toBookCount} facture${toBookCount > 1 ? "s" : ""} en attente`
+          : "Factures COM → proposition VE",
     },
     canEtats && {
       href: "/comptabilite/grand-livre",
@@ -139,6 +161,15 @@ export default async function ComptabiliteHubPage() {
             value: String(draftCount),
             hint: "À valider",
           },
+          ...(canManageEntries
+            ? [
+                {
+                  label: "Factures à comptabiliser",
+                  value: String(toBookCount),
+                  hint: "File COM → VE",
+                },
+              ]
+            : []),
           {
             label: "Validées ce mois",
             value: String(validatedThisMonth),

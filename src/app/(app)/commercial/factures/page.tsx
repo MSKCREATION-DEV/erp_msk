@@ -27,13 +27,29 @@ export default async function CommercialFacturesPage() {
     include: { client: { select: { name: true } } },
   });
 
+  const linked =
+    invoices.length > 0
+      ? await prisma.cptEntry.findMany({
+          where: {
+            sourceType: "COM_INVOICE",
+            sourceId: { in: invoices.map((i) => i.id) },
+          },
+          select: { sourceId: true, status: true },
+        })
+      : [];
+  const linkedMap = new Map(
+    linked
+      .filter((e): e is typeof e & { sourceId: string } => !!e.sourceId)
+      .map((e) => [e.sourceId, e.status]),
+  );
+
   return (
     <PageShell>
       <PageHeader
         title="Factures"
-        description="Émission et suivi des paiements."
+        description="Émission, paiements et lien compta."
         backHref="/commercial"
-        backLabel="Retour Commercial"
+        backLabel="Retour Menu"
         breadcrumbs={[
           { label: "Commercial", href: "/commercial" },
           { label: "Factures" },
@@ -46,7 +62,7 @@ export default async function CommercialFacturesPage() {
         </Surface>
       ) : (
         <Surface className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-sm">
+          <table className="w-full min-w-[800px] text-left text-sm">
             <thead className="border-b border-msk-ink/10 text-msk-ink/45">
               <tr>
                 <th className="px-4 py-3 font-medium">N°</th>
@@ -54,36 +70,57 @@ export default async function CommercialFacturesPage() {
                 <th className="px-4 py-3 font-medium">Statut</th>
                 <th className="px-4 py-3 font-medium">TTC</th>
                 <th className="px-4 py-3 font-medium">Payé</th>
+                <th className="px-4 py-3 font-medium">Compta</th>
               </tr>
             </thead>
             <tbody>
-              {invoices.map((inv) => (
-                <tr
-                  key={inv.id}
-                  className="border-b border-msk-ink/5 hover:bg-msk-chalk/60"
-                >
-                  <td className="px-4 py-3">
-                    <Link prefetch={false}
-                      href={`/commercial/factures/${inv.id}`}
-                      className="font-medium text-msk-blue hover:underline"
-                    >
-                      {inv.number}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3">{inv.client.name}</td>
-                  <td className="px-4 py-3">
-                    <Badge tone="muted">
-                      {INVOICE_STATUS_LABELS[inv.status]}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    {formatComMoney(inv.totalTtc, inv.currency)}
-                  </td>
-                  <td className="px-4 py-3">
-                    {formatComMoney(inv.amountPaid, inv.currency)}
-                  </td>
-                </tr>
-              ))}
+              {invoices.map((inv) => {
+                const entryStatus = linkedMap.get(inv.id);
+                const isIssued = [
+                  "EMISE",
+                  "PARTIELLEMENT_PAYEE",
+                  "PAYEE",
+                ].includes(inv.status);
+                return (
+                  <tr
+                    key={inv.id}
+                    className="border-b border-msk-ink/5 hover:bg-msk-chalk/60"
+                  >
+                    <td className="px-4 py-3">
+                      <Link
+                        prefetch={false}
+                        href={`/commercial/factures/${inv.id}`}
+                        className="font-medium text-msk-blue hover:underline"
+                      >
+                        {inv.number}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">{inv.client.name}</td>
+                    <td className="px-4 py-3">
+                      <Badge tone="muted">
+                        {INVOICE_STATUS_LABELS[inv.status]}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3">
+                      {formatComMoney(inv.totalTtc, inv.currency)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {formatComMoney(inv.amountPaid, inv.currency)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {entryStatus === "VALIDATED" ? (
+                        <Badge tone="success">Validée</Badge>
+                      ) : entryStatus ? (
+                        <Badge tone="blue">Brouillon</Badge>
+                      ) : isIssued ? (
+                        <Badge tone="coral">À faire</Badge>
+                      ) : (
+                        <span className="text-msk-ink/35">—</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </Surface>

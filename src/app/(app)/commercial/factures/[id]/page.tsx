@@ -29,7 +29,6 @@ export default async function CommercialFactureDetailPage({
   const user = await requireUser();
   const canCom = hasPermission(user, "com.access");
   const canCptPropose = hasPermission(user, "cpt.ecritures.manage");
-  // Comptable peut ouvrir une facture pour proposer l’écriture SYSCOHADA
   if (!canCom && !canCptPropose) redirect("/accueil");
   const { id } = await params;
 
@@ -51,7 +50,11 @@ export default async function CommercialFactureDetailPage({
   if (canCom && !canAccessOwned(user, invoice.ownerId)) {
     redirect("/commercial/factures");
   }
-  // Accès CPT seul : lecture + proposition, pas de scope owner commercial
+
+  const cptEntry = await prisma.cptEntry.findFirst({
+    where: { sourceType: "COM_INVOICE", sourceId: invoice.id },
+    select: { id: true, number: true, status: true },
+  });
 
   const remaining = Math.max(0, invoice.totalTtc - invoice.amountPaid);
   const canPay =
@@ -62,6 +65,10 @@ export default async function CommercialFactureDetailPage({
     canCptPropose &&
     ["EMISE", "PARTIELLEMENT_PAYEE", "PAYEE"].includes(invoice.status);
   const showComActions = canCom;
+  const needsPdf =
+    invoice.status !== "BROUILLON" &&
+    invoice.status !== "ANNULEE" &&
+    !invoice.gedDocumentId;
 
   return (
     <PageShell>
@@ -91,7 +98,26 @@ export default async function CommercialFactureDetailPage({
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone="blue">{INVOICE_STATUS_LABELS[invoice.status]}</Badge>
         <Badge tone="muted">{invoice.currency}</Badge>
+        {cptEntry ? (
+          <Badge tone="success">
+            Compta · {cptEntry.status === "VALIDATED" ? "validée" : "brouillon"}
+          </Badge>
+        ) : canProposeEntry ? (
+          <Badge tone="coral">À comptabiliser</Badge>
+        ) : null}
       </div>
+
+      {needsPdf ? (
+        <Surface className="border-msk-coral/30 bg-msk-coral/[0.04] p-4">
+          <p className="text-sm font-semibold text-msk-coral">
+            PDF non classé en GED
+          </p>
+          <p className="mt-1 text-sm text-msk-ink/70">
+            Générez le PDF pour classer la facture dans le dossier client
+            (signature du responsable commercial).
+          </p>
+        </Surface>
+      ) : null}
 
       {showComActions ? (
         <InvoiceActions
@@ -111,7 +137,18 @@ export default async function CommercialFactureDetailPage({
       ) : null}
 
       {canProposeEntry ? (
-        <ProposeInvoiceButton invoiceId={invoice.id} />
+        <ProposeInvoiceButton
+          invoiceId={invoice.id}
+          existingEntryId={cptEntry?.id}
+          existingEntryNumber={cptEntry?.number}
+          existingEntryStatus={
+            cptEntry
+              ? cptEntry.status === "VALIDATED"
+                ? "Validée"
+                : "Brouillon"
+              : null
+          }
+        />
       ) : null}
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -119,7 +156,8 @@ export default async function CommercialFactureDetailPage({
           <p>
             <span className="text-msk-ink/45">Client </span>
             {canCom ? (
-              <Link prefetch={false}
+              <Link
+                prefetch={false}
                 href={`/commercial/clients/${invoice.clientId}`}
                 className="text-msk-blue hover:underline"
               >
@@ -132,7 +170,8 @@ export default async function CommercialFactureDetailPage({
           {invoice.quote && canCom ? (
             <p>
               <span className="text-msk-ink/45">Devis </span>
-              <Link prefetch={false}
+              <Link
+                prefetch={false}
                 href={`/commercial/devis/${invoice.quote.id}`}
                 className="text-msk-blue hover:underline"
               >
@@ -140,12 +179,20 @@ export default async function CommercialFactureDetailPage({
               </Link>
             </p>
           ) : null}
-          <p>
-            TTC {formatComMoney(invoice.totalTtc, invoice.currency)}
-          </p>
-          <p>
-            Payé {formatComMoney(invoice.amountPaid, invoice.currency)}
-          </p>
+          {cptEntry ? (
+            <p>
+              <span className="text-msk-ink/45">Écriture </span>
+              <Link
+                prefetch={false}
+                href={`/comptabilite/ecritures/${cptEntry.id}`}
+                className="text-msk-blue hover:underline"
+              >
+                {cptEntry.number}
+              </Link>
+            </p>
+          ) : null}
+          <p>TTC {formatComMoney(invoice.totalTtc, invoice.currency)}</p>
+          <p>Payé {formatComMoney(invoice.amountPaid, invoice.currency)}</p>
           <p className="font-semibold">
             Reste {formatComMoney(remaining, invoice.currency)}
           </p>

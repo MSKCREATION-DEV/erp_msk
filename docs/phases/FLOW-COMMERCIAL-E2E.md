@@ -138,11 +138,22 @@ Fiche prospect (Intéressé)
 SLA 24h : `interestedAt` ; alerte Tableau de bord → `/crm/prospects?devisRetard=1`.  
 Plancher : hint UI + refus serveur (XOF).
 
-## 8. Suite
+## 8. Bridge facture → compta (COM-6)
+
+```
+Émettre facture → Générer PDF (GED, signature owner)
+  → Comptabilité « À comptabiliser »
+  → Proposer écriture VE (411 / 706 / 4432)
+  → Valider l’écriture
+```
+
+Liste Factures : colonne Compta (À faire / Brouillon / Validée).
+
+## 9. Suite
 
 1. Parcours hub carte par carte avec le terrain.  
-2. **COM-6** bridge compta / **COM-7** polish Direction.  
-3. Gate [`REGLES-EVOLUTION-CRM.md`](./REGLES-EVOLUTION-CRM.md) §6.
+2. Optionnel : bridge paiement → journal BQ.  
+3. Phase RH selon [`PLAN-2-PHASES-COM-RH.md`](./PLAN-2-PHASES-COM-RH.md).
 
 ---
 
