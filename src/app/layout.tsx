@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { fontVariables } from "@/fonts";
 import { brand } from "@/lib/brand";
+import { AppProviders } from "@/components/app/app-providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -28,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={fontVariables}>
       <body className="min-h-screen bg-msk-chalk font-sans text-msk-ink antialiased">
-        {children}
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

@@ -258,11 +258,24 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
   );
 }
 
-/** API impérative — `const ok = await confirm({ title, action })` */
+/**
+ * API impérative — `const ok = await confirm({ title, action })`.
+ * Hors provider (Suspense SSR / edge) : fallback `window.confirm` côté client,
+ * jamais de throw au render (évite « Switched to client rendering »).
+ */
 export function useConfirm(): ConfirmFn {
   const ctx = useContext(ConfirmContext);
-  if (!ctx) {
-    throw new Error("useConfirm doit être utilisé dans <ConfirmProvider>");
-  }
-  return ctx;
+  if (ctx) return ctx;
+
+  return async (opts) => {
+    if (typeof window === "undefined") return false;
+    const ok = window.confirm(
+      opts.description
+        ? `${opts.title}\n\n${opts.description}`
+        : opts.title,
+    );
+    if (!ok) return false;
+    if (opts.action) await opts.action();
+    return true;
+  };
 }

@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { AppProviders } from "@/components/app/app-providers";
 import { AppSidebar } from "@/components/app/app-sidebar";
 import { SidebarSkeleton } from "@/components/app/sidebar-skeleton";
 import { Topbar } from "@/components/app/topbar";
@@ -22,7 +21,7 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AppProviders>
+    <>
       <NavigationProgress />
       <div className="flex h-screen overflow-hidden bg-[#F4F6F9]">
         <div className="z-20 hidden h-full shrink-0 md:flex">
@@ -37,6 +36,6 @@ export default function AppLayout({
           </main>
         </div>
       </div>
-    </AppProviders>
+    </>
   );
 }
