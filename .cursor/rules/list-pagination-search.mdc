@@ -1,0 +1,26 @@
+# Listes / tableaux ERP (absolu)
+
+## Obligatoire
+
+Toute page qui affiche des **données en tableau** (listing métier) doit :
+
+1. **Pagination** via `searchParams` (`page`, éventuellement `pageSize`) — helpers `src/lib/list/pagination.ts`
+2. **Recherche** via `q` — composant `ListSearchForm` + filtre serveur
+3. UI : `ListPagination` en bas du tableau ; compteur « X–Y sur N »
+
+## Interdit
+
+- `findMany` sans `take` / `skip` sur un listing (plafond « take: 400 » seul = insuffisant)
+- Recherche uniquement côté client sur un gros jeu chargé
+- Tableau sans moyen de paginer dès qu’il peut dépasser ~20 lignes
+
+## Pattern
+
+```
+?q=…&page=2&…autresFiltres
+```
+
+- Recherche : `ListSearchForm` — debounce + `router.replace` (instantané, historique propre)
+- Pagination : `ListPagination` — numéros + ellipses (inspiré [shadcn Pagination](https://ui.shadcn.com/docs/components/base/pagination))
+- Changement de `q` → reset `page`
+- Pas de champ recherche dupliqué dans les modales de filtres (`q` = barre seule)

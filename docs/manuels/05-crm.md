@@ -15,7 +15,7 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 |---|---|---|
 | Menu | `/commercial` | Cartes modules |
 | Tableau de bord | `/crm` | Indicateurs (Ouverts / Intéressés / Relances à venir+retard / Sans devis) · Conversion Signé\|En cours · Répartition cliquable · Objectifs |
-| Prospects | `/crm/prospects` | Liste · Par étapes · filtres URL `?stages=` |
+| Prospects | `/crm/prospects` | Liste paginée · recherche · filtres URL `?stages=` |
 | Relances | `/crm/relances` | Aujourd’hui / retard / semaine |
 | Scripts | `/crm/scripts` | Copier messages |
 | Vue Équipe | `/crm/equipe` | Prospects + objectifs semaine (si `view_team` / lead — pas « own only ») |

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-/** Vue Par étapes = mode de Prospects (plus d’onglet séparé). */
+/** Ancienne route « Par étapes » — la vue board a été retirée. */
 export default function CrmParEtapesRedirect() {
-  redirect("/crm/prospects?vue=etapes");
+  redirect("/crm/prospects");
 }

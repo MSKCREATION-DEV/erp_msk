@@ -54,8 +54,8 @@ Navigation (module Commercial unifié) :
 
 - **Menu** `/commercial` = hub cartes (pas de tabs).  
 - Sous-pages tabs : `Menu` · `Tableau de bord` · `Prospects` · `Relances` · `Scripts` · `Vue Équipe`* · `Rapport` · `Clients` · `Devis` · `Factures` · `Offres`  
-- **Par étapes** = bascule dans Prospects (`?vue=etapes`), pas un tab séparé.  
-- \* **Vue Équipe** masquée si visibilité CRM `own` ; collabs : KPI **Prospects** / Intéressés / Retards en tête de Prospects.
+- \* **Vue Équipe** masquée si visibilité CRM `own` ; collabs : KPI **Prospects** / Intéressés / Retards en tête de Prospects.  
+- **Par étapes** (board) : **retiré** — liste Prospects uniquement (pagination + recherche).
 
 ---
 

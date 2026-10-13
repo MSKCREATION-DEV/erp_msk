@@ -77,7 +77,7 @@ Sous-pages — `commercialNavItems` (`src/lib/commercial/nav.ts`) :
 |---|---|---|
 | Menu | `/commercial` | Hub cartes + badges |
 | Tableau de bord | `/crm` | Indicateurs live + graphs + urgences |
-| Prospects | `/crm/prospects` | Liste + Par étapes (`?vue=etapes`) |
+| Prospects | `/crm/prospects` | Liste paginée + recherche (`?q=` · `?page=`) · filtres `?stages=` |
 | Relances | `/crm/relances` | File du jour / retards |
 | Scripts | `/crm/scripts` | Messages à copier |
 | Vue Équipe | `/crm/equipe` | Prospects / objectifs par collab (lead) |
@@ -152,7 +152,7 @@ Tableau de bord → Vue Équipe → prospects du collaborateur
 |---|---|
 | `/commercial` | Menu |
 | `/crm` | Tableau de bord |
-| `/crm/prospects` (+ `?vue=etapes`, `?stages=`, `?devisRetard=1`) | Prospects (filtres URL) |
+| `/crm/prospects` (`?q=` · `?page=` · `?stages=` · `?devisRetard=1`) | Prospects (liste paginée) |
 | `/crm/prospects/nouveau` · `/[id]` · `/import` | Création / fiche / import |
 | `/crm/relances` · `/scripts` · `/equipe` · `/rapport-semaine` · `/objectifs` | Suivi |
 | `/commercial/clients` · `/devis` · `/factures` | Documentaire |

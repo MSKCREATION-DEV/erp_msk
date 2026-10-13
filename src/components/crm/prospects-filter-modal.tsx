@@ -14,6 +14,7 @@ import { STAGE_LABELS, STAGE_ORDER, SOURCE_LABELS } from "@/lib/crm/labels";
 
 type OwnerOpt = { value: string; label: string };
 
+/** Filtres structurés — la recherche texte reste dans `ListSearchForm` (`?q=`). */
 export function ProspectsFilterButton({
   owners,
 }: {
@@ -36,7 +37,6 @@ export function ProspectsFilterButton({
   const [from, setFrom] = useState(() => sp.get("from") ?? "");
   const [to, setTo] = useState(() => sp.get("to") ?? "");
   const [late, setLate] = useState(() => sp.get("late") === "1");
-  const [q, setQ] = useState(() => sp.get("q") ?? "");
 
   const activeCount = [
     stages.length > 0,
@@ -45,29 +45,23 @@ export function ProspectsFilterButton({
     Boolean(from),
     Boolean(to),
     late,
-    Boolean(q.trim()),
   ].filter(Boolean).length;
 
   function apply() {
-    const params = new URLSearchParams(sp.toString());
-    const keepVue = params.get("vue");
-    params.delete("stages");
-    params.delete("source");
-    params.delete("owner");
-    params.delete("from");
-    params.delete("to");
-    params.delete("late");
-    params.delete("q");
-    if (keepVue) params.set("vue", keepVue);
+    const params = new URLSearchParams();
+    const keepQ = sp.get("q")?.trim();
+    if (keepQ) params.set("q", keepQ);
     if (stages.length) params.set("stages", stages.join(","));
     if (source) params.set("source", source);
     if (ownerId) params.set("owner", ownerId);
     if (from) params.set("from", from);
     if (to) params.set("to", to);
     if (late) params.set("late", "1");
-    if (q.trim()) params.set("q", q.trim());
+    // `devisRetard` / autres deep-links hors modal : on ne les conserve pas
+    // volontairement — un apply filtres repart d’une base claire + `q`.
+    const qs = params.toString();
     start(() => {
-      router.push(`/crm/prospects?${params.toString()}`);
+      router.push(qs ? `/crm/prospects?${qs}` : "/crm/prospects");
       setOpen(false);
     });
   }
@@ -79,7 +73,6 @@ export function ProspectsFilterButton({
     setFrom("");
     setTo("");
     setLate(false);
-    setQ("");
   }
 
   return (
@@ -96,7 +89,7 @@ export function ProspectsFilterButton({
         open={open}
         onOpenChange={setOpen}
         title="Filtres prospects"
-        description="Affinez la liste — statut, origine, dates, collab…"
+        description="Statut, origine, dates, collaborateur…"
         size="md"
         footer={
           <div className="flex w-full flex-wrap justify-between gap-2">
@@ -120,16 +113,6 @@ export function ProspectsFilterButton({
         }
       >
         <div className="space-y-4 p-4">
-          <div>
-            <Label htmlFor="fq">Recherche</Label>
-            <Input
-              id="fq"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Entreprise, contact…"
-              className="mt-1"
-            />
-          </div>
           <OptionPickerMulti
             label="Statuts"
             options={STAGE_ORDER.map((s) => ({

@@ -245,7 +245,6 @@ export async function updateOpportunityStageAction(
   });
 
   revalidatePath("/crm");
-  revalidatePath("/crm/par-etapes");
   revalidatePath(`/crm/prospects/${id}`);
   return { ok: true, message: "Étape mise à jour" };
 }
@@ -327,7 +326,6 @@ export async function logActivityAction(
 
   revalidatePath(`/crm/prospects/${opportunityId}`);
   revalidatePath("/crm/relances");
-  revalidatePath("/crm/par-etapes");
   revalidatePath("/crm");
   return { ok: true, message: "Activité enregistrée" };
 }
@@ -555,7 +553,6 @@ export async function importCrmCsvAction(
 
   revalidatePath("/crm");
   revalidatePath("/crm/prospects");
-  revalidatePath("/crm/par-etapes");
   return {
     ok: true,
     message: `${imported} importés · ${duplicates} doublons · ${skipped} ignorés`,
