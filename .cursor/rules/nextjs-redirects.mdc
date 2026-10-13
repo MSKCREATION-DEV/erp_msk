@@ -1,0 +1,42 @@
+---
+description: Redirects & navigation — puissance Next.js App Router (absolu)
+alwaysApply: true
+---
+
+# Redirects Next.js (absolu ERP MSK)
+
+Réf. officielle : [Redirecting](https://nextjs.org/docs/app/guides/redirecting)
+
+## Obligatoire
+
+| Contexte | API |
+|---|---|
+| Après mutation (création / succès métier) | `redirect()` dans la **Server Action** (`next/navigation`) |
+| Nav depuis un handler client (bouton, pas mutation) | `useRouter().push` / `replace` |
+| Garde d’accès page (Server Component) | `redirect()` |
+| Redirects statiques connus | `next.config` `redirects` ou Proxy |
+
+Ordre type mutation :
+
+```ts
+revalidatePath("/module");
+redirect(`/module/${id}`); // hors try/catch
+```
+
+- `redirect()` **jette** une exception de contrôle — l’appeler **après** le try/catch DB, jamais à l’intérieur si on catch générique.
+- En Server Action + JS : navigation **client** App Router (Flight / `x-action-redirect`) — pas de full reload.
+- Sans JS : HTTP **303**.
+
+## Interdit
+
+- `window.location.assign` / `href` / `replace` pour naviguer après une Server Action (casse le modèle App Router, pertes de soft-nav / `loading.tsx` / cache).
+- Dupliquer la nav côté client (`router.push`) **et** `redirect()` dans l’action pour le même succès.
+
+## Exception autorisée
+
+- **Logout / invalidate session client** : `window.location` vers `/login` (vider l’état client — déjà dans `nextjs-practices.mdc`).
+
+## Erreurs
+
+- Échec validation / métier → `return { ok: false, error }` (pas de redirect).
+- Succès → `redirect(...)` uniquement (pas de `{ ok: true }` + push client).

@@ -21,12 +21,11 @@
 Menu `/commercial` (**pas** de tabs) :
 
 1. CTAs **Nouveau prospect** / **Nouveau devis**  
-2. **À traiter maintenant** — Relances + Factures seulement (`MetricNavCard` + mini radial)  
-3. **Pilotage** — Tableau de bord · Vue Équipe* · Rapport *(sans badges)*  
-4. **Prospection** — Prospects · Relances · Scripts  
-5. **Vente et facturation** — Offres · Devis · Factures · Clients  
+2. **Pilotage** — Tableau de bord · Vue Équipe* · Rapport *(sans badges)*  
+3. **Prospection** — Prospects · Relances · Scripts  
+4. **Vente et facturation** — Offres · Devis · Factures · Clients  
 
-Cartes blanches (`MetricNavCard`) : icône + titre/sous-titre alignés, flèche ; KPI / radial en bas à droite.
+Cartes blanches (`MetricNavCard`) : icône + titre/sous-titre alignés, flèche ; KPI en bas à droite (Relances / Factures une seule fois dans leur section).
 
 ### Tableau de bord `/crm`
 

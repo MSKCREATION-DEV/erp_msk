@@ -5,13 +5,6 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ProspectCreateForm } from "@/components/crm/prospect-create-form";
 
 export const metadata: Metadata = { title: "Nouveau prospect" };
@@ -30,24 +23,16 @@ export default async function CrmProspectNouveauPage() {
     <PageShell>
       <PageHeader
         title="Nouveau prospect"
+        description="Enregistrement complet — entreprise, contact, origine, offres."
         backHref="/crm/prospects"
         backLabel="Retour aux prospects"
         breadcrumbs={[
           { label: "Commercial", href: "/commercial" },
           { label: "Prospects", href: "/crm/prospects" },
+          { label: "Nouveau" },
         ]}
       />
-      <Card className="max-w-xl">
-        <CardHeader>
-          <CardTitle>En 4 étapes</CardTitle>
-          <CardDescription>
-            Entreprise → contact → origine → offres (plusieurs possibles).
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ProspectCreateForm offers={offers} />
-        </CardContent>
-      </Card>
+      <ProspectCreateForm offers={offers} />
     </PageShell>
   );
 }

@@ -1,0 +1,38 @@
+---
+description: Formulaires ERP — plein largeur, UX expert, validation, * obligatoires, submit/redirect
+alwaysApply: true
+---
+
+# Formulaires ERP MSK (absolu)
+
+## Layout
+
+- Le formulaire **occupe toute la largeur utile** de la page (`w-full`) — **interdit** `max-w-xl` / `max-w-lg` / carte coincée à gauche.
+- Conteneur : `Surface` (ou équivalent) pleine largeur ; grille responsive (`sm:grid-cols-2`, `lg:grid-cols-3` / `12`) pour remplir la zone.
+- Actions (Annuler / Continuer / Enregistrer) : barre claire en bas du formulaire, pending visible.
+
+## Champs
+
+- Chaque champ a un **label** + **placeholder** utile (exemple métier, pas « Saisir… » vague).
+- Champs **obligatoires** : astérisque `*` en **`text-msk-coral`** (`FieldLabel` `required`) — jamais un `*` noir/gris collé au texte.
+- États : focus MSK blue, erreur coral, `disabled` + pending pendant submit.
+
+## Logique
+
+- Validation **client** (étape / avant submit) + **Zod serveur** sur toute FormData.
+- Ce qui ne doit pas passer : bloquer avec message clair (pas de submit silencieux).
+- Règles métier (ex. GUIDE : prochaine action ⇒ date de relance) encodées côté UI et action.
+
+## Submit & navigation
+
+- `usePendingAction` / `useActionState` — bouton `disabled` + libellé « … » tant que pending.
+- Succès création → **`redirect()` dans la Server Action** ([guide Next.js](https://nextjs.org/docs/app/guides/redirecting)) — **interdit** `window.location` (voir `nextjs-redirects.mdc`).
+- Succès édition → `revalidatePath` + `redirect` ou `router.refresh()` selon intention.
+- Erreur serveur → `return { ok: false, error }` + message visible **sans** perdre les valeurs.
+
+## Interdit
+
+- Formulaire étroit aligné d’un côté sur une page vide.
+- `*` obligatoire sans couleur / sans `aria` (sr-only « obligatoire » ok).
+- Submit sans pending.
+- Création réussie sans redirection claire.

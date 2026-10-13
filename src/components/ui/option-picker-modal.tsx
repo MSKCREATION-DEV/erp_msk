@@ -22,6 +22,7 @@ export function OptionPickerSingle({
   disabled,
   className,
   modalTitle,
+  required,
 }: {
   label: string;
   options: OptionPickerItem[];
@@ -31,6 +32,7 @@ export function OptionPickerSingle({
   disabled?: boolean;
   className?: string;
   modalTitle?: string;
+  required?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -48,7 +50,17 @@ export function OptionPickerSingle({
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-medium text-msk-ink">{label}</p>
+        <p className="text-sm font-medium text-msk-ink">
+          {label}
+          {required ? (
+            <>
+              <span className="ml-0.5 font-semibold text-msk-coral" aria-hidden>
+                *
+              </span>
+              <span className="sr-only"> (obligatoire)</span>
+            </>
+          ) : null}
+        </p>
         <Button
           type="button"
           size="sm"

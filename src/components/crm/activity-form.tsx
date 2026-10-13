@@ -1,12 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { CrmActivityType } from "@prisma/client";
 import { logActivityAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { FieldError, FieldHint, FieldLabel } from "@/components/ui/field-label";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { ACTIVITY_LABELS } from "@/lib/crm/labels";
@@ -14,11 +15,14 @@ import { ACTIVITY_LABELS } from "@/lib/crm/labels";
 export function ActivityForm({
   opportunityId,
   requireFollowUp = false,
+  onSuccess,
 }: {
   opportunityId: string;
   requireFollowUp?: boolean;
+  onSuccess?: () => void;
 }) {
   const router = useRouter();
+  const formId = useId();
   const { pending, run } = usePendingAction();
   const [error, setError] = useState<string | null>(null);
   const [type, setType] = useState<CrmActivityType | null>("NOTE");
@@ -30,32 +34,35 @@ export function ActivityForm({
       setError("Choisissez un type d’action");
       return;
     }
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     fd.set("opportunityId", opportunityId);
     fd.set("type", type);
     void run(async () => {
       const res = await logActivityAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else {
-        (
-          document.getElementById("activity-form") as HTMLFormElement | null
-        )?.reset();
-        setType("NOTE");
-        router.refresh();
+      if (!res.ok) {
+        setError(res.error ?? "Échec");
+        return;
       }
+      form.reset();
+      setType("NOTE");
+      onSuccess?.();
+      router.refresh();
     });
   }
 
   return (
     <form
-      id="activity-form"
-      className="space-y-3"
+      id={formId}
+      className="space-y-4"
       onSubmit={onSubmit}
       aria-busy={pending || undefined}
+      noValidate
     >
       <input type="hidden" name="opportunityId" value={opportunityId} />
       <OptionPickerSingle
         label="Type d’action"
+        required
         options={Object.entries(ACTIVITY_LABELS).map(([k, v]) => ({
           value: k,
           label: v,
@@ -64,33 +71,62 @@ export function ActivityForm({
         onChange={(v) => setType((v as CrmActivityType) ?? "NOTE")}
         disabled={pending}
         placeholder="Choisir le type"
+        modalTitle="Type d’action"
       />
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div>
+        <FieldLabel htmlFor={`${formId}-summary`} required>
+          Résumé
+        </FieldLabel>
+        <Input
+          id={`${formId}-summary`}
+          name="summary"
+          required
+          disabled={pending}
+          placeholder="Ex. Appel — intéressée par le site vitrine"
+        />
+      </div>
+      <div>
+        <FieldLabel htmlFor={`${formId}-body`}>Détail</FieldLabel>
+        <Textarea
+          id={`${formId}-body`}
+          name="body"
+          rows={3}
+          disabled={pending}
+          placeholder="Notes de l’échange, objections, prochaine étape évoquée…"
+        />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="followUpAt">
-            Prochaine relance{requireFollowUp ? " *" : ""}
-          </Label>
+          <FieldLabel htmlFor={`${formId}-followUp`} required={requireFollowUp}>
+            Prochaine relance
+          </FieldLabel>
           <Input
-            id="followUpAt"
+            id={`${formId}-followUp`}
             name="followUpAt"
             type="date"
             required={requireFollowUp}
             disabled={pending}
           />
+          {requireFollowUp ? (
+            <FieldHint>Obligatoire — aucune date de relance sur ce dossier.</FieldHint>
+          ) : null}
         </div>
         <div>
-          <Label htmlFor="summary">Résumé *</Label>
-          <Input id="summary" name="summary" required disabled={pending} />
-        </div>
-        <div className="sm:col-span-2">
-          <Label htmlFor="nextAction">Prochaine action</Label>
-          <Input id="nextAction" name="nextAction" disabled={pending} />
+          <FieldLabel htmlFor={`${formId}-next`}>Prochaine action</FieldLabel>
+          <Input
+            id={`${formId}-next`}
+            name="nextAction"
+            disabled={pending}
+            placeholder="Ex. Envoyer proposition PDF"
+          />
         </div>
       </div>
-      {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
-      <Button type="submit" size="sm" disabled={pending}>
-        {pending ? "Enregistrement…" : "Enregistrer l’action"}
-      </Button>
+      <FieldError>{error}</FieldError>
+      <div className="flex justify-end gap-2 pt-1">
+        <Button type="submit" disabled={pending}>
+          {pending ? "Enregistrement…" : "Enregistrer l’action"}
+        </Button>
+      </div>
     </form>
   );
 }

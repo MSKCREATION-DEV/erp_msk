@@ -43,6 +43,14 @@ Doc : [`loading.js` — Instant Loading States](https://nextjs.org/docs/app/api-
 - OK doc : `startTransition(() => action())` si l’action retourne une Promise trackée, ou `useActionState`
 - Bouton `disabled` + libellé tant que pending
 
+## Redirects (absolu)
+
+Guide : [Redirecting](https://nextjs.org/docs/app/guides/redirecting) · règle dédiée `nextjs-redirects.mdc`
+
+- Après mutation : `redirect()` **dans** la Server Action (pas `window.location`)
+- Handler client sans mutation : `useRouter().push` / `replace`
+- Logout : exception `window.location` pour vider l’état auth client
+
 ## État UI / navigations
 
 - Shell partagé = état sidebar préservé naturellement (layout)

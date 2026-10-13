@@ -324,7 +324,7 @@ Réf. : patterns shadcn Combobox / Command ; densité Linear ; jamais de look «
 /commercial                   → Menu (hub cartes)
 /crm                          → Tableau de bord (titre exact, pas « Suivi »)
 /crm/prospects                → Liste (+ KPI collab si own) ; ?vue=etapes = Par étapes
-/crm/prospects/nouveau        → Création focus (wizard)
+/crm/prospects/nouveau        → Création plein largeur (wizard 4 étapes, validation GUIDE)
 /crm/prospects/[id]           → Fiche détaillée
 /crm/prospects/import         → Import
 /crm/relances                 → Relances du jour / en retard

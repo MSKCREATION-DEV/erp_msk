@@ -139,14 +139,7 @@ export default async function CommercialHubPage() {
         }
       />
 
-      <CommercialHubGrid
-        modules={modules}
-        counts={counts}
-        urgency={{
-          relances: overdue,
-          factures: unpaid,
-        }}
-      />
+      <CommercialHubGrid modules={modules} counts={counts} />
     </PageShell>
   );
 }

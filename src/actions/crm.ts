@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import {
   CrmActivityType,
@@ -28,29 +29,129 @@ const sourceSchema = z.nativeEnum(CrmSource);
 const activitySchema = z.nativeEnum(CrmActivityType);
 const lossSchema = z.nativeEnum(CrmLossReason);
 
+const createProspectSchema = z
+  .object({
+    orgName: z
+      .string()
+      .trim()
+      .min(1, "Entreprise obligatoire")
+      .max(200, "Nom d’entreprise trop long"),
+    contactFirst: z
+      .string()
+      .trim()
+      .min(1, "Prénom du contact obligatoire")
+      .max(100),
+    contactLast: z.string().trim().max(100).optional().default(""),
+    title: z.string().trim().max(200).optional().default(""),
+    source: sourceSchema,
+    phone: z.string().trim().max(40).optional().default(""),
+    email: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .default("")
+      .refine(
+        (v) => !v || z.string().email().safeParse(v).success,
+        "E-mail invalide",
+      ),
+    jobTitle: z.string().trim().max(120).optional().default(""),
+    sector: z.string().trim().max(120).optional().default(""),
+    city: z.string().trim().max(120).optional().default(""),
+    website: z.string().trim().max(300).optional().default(""),
+    offerLabel: z.string().trim().max(200).optional().default(""),
+    budgetXof: z.string().trim().optional().default(""),
+    nextAction: z.string().trim().max(300).optional().default(""),
+    followUpAt: z.string().trim().optional().default(""),
+    notes: z.string().trim().max(4000).optional().default(""),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.phone && !data.email) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Téléphone ou e-mail obligatoire",
+        path: ["phone"],
+      });
+    }
+    if (data.nextAction && !data.followUpAt) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "GUIDE : date de relance obligatoire si une prochaine action est renseignée.",
+        path: ["followUpAt"],
+      });
+    }
+    if (data.followUpAt) {
+      const d = new Date(data.followUpAt);
+      if (Number.isNaN(d.getTime())) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Date de relance invalide",
+          path: ["followUpAt"],
+        });
+      }
+    }
+  });
+
+/** FormData.get → string (jamais null — Zod string refuse null). */
+function fdString(formData: FormData, key: string): string {
+  const v = formData.get(key);
+  return v == null ? "" : String(v);
+}
+
+/** Succès → `redirect` Next.js (jamais return ok). Erreur → `{ ok: false }`. */
 export async function createProspectAction(
   formData: FormData,
-): Promise<ActionResult & { opportunityId?: string }> {
+): Promise<ActionResult> {
   const actor = await requireUser({ permission: "crm.prospect.create" });
 
-  const orgName = String(formData.get("orgName") ?? "").trim();
-  const contactFirst = String(formData.get("contactFirst") ?? "").trim();
-  const contactLast = String(formData.get("contactLast") ?? "").trim();
-  const title = String(formData.get("title") ?? "").trim() || orgName;
-  const sourceRaw = String(formData.get("source") ?? "AUTRE");
-  const phone = String(formData.get("phone") ?? "").trim() || null;
-  const email = String(formData.get("email") ?? "").trim() || null;
-  const jobTitle = String(formData.get("jobTitle") ?? "").trim() || null;
-  const sector = String(formData.get("sector") ?? "").trim() || null;
-  const city = String(formData.get("city") ?? "").trim() || null;
-  const website = String(formData.get("website") ?? "").trim() || null;
-  const offerLabel = String(formData.get("offerLabel") ?? "").trim() || null;
-  const budgetXofRaw = String(formData.get("budgetXof") ?? "").replace(/\s/g, "");
+  const sourceRaw = fdString(formData, "source").trim();
+  const parsed = createProspectSchema.safeParse({
+    orgName: fdString(formData, "orgName"),
+    contactFirst: fdString(formData, "contactFirst"),
+    contactLast: fdString(formData, "contactLast"),
+    title: fdString(formData, "title"),
+    source: sourceRaw || undefined,
+    phone: fdString(formData, "phone"),
+    email: fdString(formData, "email"),
+    jobTitle: fdString(formData, "jobTitle"),
+    sector: fdString(formData, "sector"),
+    city: fdString(formData, "city"),
+    website: fdString(formData, "website"),
+    offerLabel: fdString(formData, "offerLabel"),
+    budgetXof: fdString(formData, "budgetXof"),
+    nextAction: fdString(formData, "nextAction"),
+    followUpAt: fdString(formData, "followUpAt"),
+    notes: fdString(formData, "notes"),
+  });
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    let message = issue?.message ?? "Données invalides";
+    if (issue?.path[0] === "source") {
+      message = "Origine obligatoire";
+    }
+    return { ok: false, error: message };
+  }
+
+  const data = parsed.data;
+  const orgName = data.orgName;
+  const contactFirst = data.contactFirst;
+  const contactLast = data.contactLast;
+  const title = data.title || orgName;
+  const phone = data.phone || null;
+  const email = data.email || null;
+  const jobTitle = data.jobTitle || null;
+  const sector = data.sector || null;
+  const city = data.city || null;
+  const website = data.website || null;
+  const offerLabel = data.offerLabel || null;
+  const budgetXofRaw = data.budgetXof.replace(/\s/g, "");
   const budgetXof = budgetXofRaw ? Number.parseInt(budgetXofRaw, 10) : null;
-  const nextAction = String(formData.get("nextAction") ?? "").trim() || null;
-  const followUpRaw = String(formData.get("followUpAt") ?? "").trim();
-  const followUpAt = followUpRaw ? new Date(followUpRaw) : null;
-  const notes = String(formData.get("notes") ?? "").trim() || null;
+  const nextAction = data.nextAction || null;
+  const followUpAt = data.followUpAt ? new Date(data.followUpAt) : null;
+  const notes = data.notes || null;
+  const src = data.source;
 
   type OfferLink = {
     catalogOfferId: string;
@@ -60,9 +161,9 @@ export async function createProspectAction(
   const offersRaw = String(formData.get("offersJson") ?? "").trim();
   if (offersRaw) {
     try {
-      const parsed = JSON.parse(offersRaw) as unknown;
-      if (Array.isArray(parsed)) {
-        offerLinks = parsed
+      const parsedOffers = JSON.parse(offersRaw) as unknown;
+      if (Array.isArray(parsedOffers)) {
+        offerLinks = parsedOffers
           .filter(
             (x): x is OfferLink =>
               typeof x === "object" &&
@@ -79,23 +180,6 @@ export async function createProspectAction(
     String(formData.get("catalogOfferId") ?? "").trim() ||
     offerLinks[0]?.catalogOfferId ||
     null;
-
-  if (!orgName) return { ok: false, error: "Entreprise obligatoire" };
-  if (!contactFirst && !contactLast) {
-    return { ok: false, error: "Contact (prénom ou nom) obligatoire" };
-  }
-  if (
-    nextAction &&
-    (!followUpAt || Number.isNaN(followUpAt.getTime()))
-  ) {
-    return {
-      ok: false,
-      error: "GUIDE : date de relance obligatoire si une prochaine action est renseignée.",
-    };
-  }
-
-  const source = sourceSchema.safeParse(sourceRaw);
-  const src = source.success ? source.data : CrmSource.AUTRE;
 
   const org = await prisma.crmOrganization.create({
     data: {
@@ -171,7 +255,9 @@ export async function createProspectAction(
 
   revalidatePath("/crm");
   revalidatePath("/crm/prospects");
-  return { ok: true, message: "Prospect créé", opportunityId: deal.id };
+  revalidatePath("/crm/relances");
+  // Hors try/catch — voir https://nextjs.org/docs/app/guides/redirecting
+  redirect(`/crm/prospects/${deal.id}`);
 }
 
 export async function updateOpportunityStageAction(

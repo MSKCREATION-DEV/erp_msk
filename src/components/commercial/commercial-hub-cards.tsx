@@ -16,12 +16,9 @@ import {
   HUB_SECTIONS,
   type CommercialModule,
 } from "@/lib/commercial/modules";
-import { HubMiniRadial } from "@/components/commercial/hub-mini-radial";
 import {
   MetricNavCard,
   MetricNavKpi,
-  METRIC_NAV_TONE_CHART,
-  type MetricNavTone,
 } from "@/components/ui/metric-nav-card";
 import { cn } from "@/lib/utils";
 
@@ -97,112 +94,19 @@ function ModuleCard({
   );
 }
 
-export type HubUrgency = {
-  relances: number;
-  factures: number;
-};
-
-function UrgencyMetricCard({
-  href,
-  tone,
-  icon,
-  title,
-  description,
-  value,
-  caption,
-}: {
-  href: string;
-  tone: Exclude<MetricNavTone, "cyan">;
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  value: number;
-  caption: string;
-}) {
-  const scale = Math.max(5, value);
-
-  return (
-    <MetricNavCard
-      href={href}
-      icon={icon}
-      tone={tone}
-      title={title}
-      description={description}
-      footer={
-        <HubMiniRadial
-          value={value}
-          max={scale}
-          color={METRIC_NAV_TONE_CHART[tone]}
-          centerLabel={value}
-          caption={caption}
-        />
-      }
-    />
-  );
-}
-
-/** Hub Menu Commercial — urgences + sections (Pilotage en tête). */
+/** Hub Menu Commercial — sections Pilotage / Prospection / Vente. */
 export function CommercialHubGrid({
   modules,
   counts,
-  urgency,
 }: {
   modules: CommercialModule[];
   counts?: Partial<Record<string, number>>;
-  urgency: HubUrgency;
 }) {
   const bySection = (id: CommercialModule["section"]) =>
     modules.filter((m) => m.section === id);
 
-  const showUrgency = urgency.relances > 0 || urgency.factures > 0;
-
   return (
     <div className="space-y-8">
-      {showUrgency ? (
-        <section aria-labelledby="hub-urgent">
-          <div className="mb-3 flex items-baseline gap-2">
-            <h2
-              id="hub-urgent"
-              className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/40"
-            >
-              À traiter maintenant
-            </h2>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {urgency.relances > 0 ? (
-              <UrgencyMetricCard
-                href="/crm/relances"
-                tone="coral"
-                icon={Bell}
-                title="Relances"
-                description="À faire aujourd’hui, en retard, cette semaine."
-                value={urgency.relances}
-                caption={
-                  urgency.relances > 1
-                    ? "relances à faire"
-                    : "relance à faire"
-                }
-              />
-            ) : null}
-            {urgency.factures > 0 ? (
-              <UrgencyMetricCard
-                href="/commercial/factures"
-                tone="blue"
-                icon={Receipt}
-                title="Factures"
-                description="Émission, paiements et solde à encaisser."
-                value={urgency.factures}
-                caption={
-                  urgency.factures > 1
-                    ? "factures à encaisser"
-                    : "facture à encaisser"
-                }
-              />
-            ) : null}
-          </div>
-        </section>
-      ) : null}
-
       {HUB_SECTIONS.map((section) => {
         const items = bySection(section.id);
         if (items.length === 0) return null;
