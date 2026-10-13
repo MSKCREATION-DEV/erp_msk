@@ -14,10 +14,15 @@ export const PILLAR_LABELS: Record<CatalogPillar, string> = {
   TRANSFORMATION_STRUCTURATION: "Transformation & Structuration",
 };
 
+/**
+ * Libellés statut — distincts et compréhensibles :
+ * - Qualification = échange / critères (pas encore devis)
+ * - Devis envoyé = proposition commerciale déjà transmise
+ */
 export const STAGE_LABELS: Record<CrmPipelineStage, string> = {
   NOUVEAU: "À contacter",
   CONTACTE: "Contacté",
-  QUALIFICATION: "En cours",
+  QUALIFICATION: "En qualification",
   INTERESSE: "Intéressé",
   DEVIS_ENVOYE: "Devis envoyé",
   /** Masqué en UI — traité comme Devis envoyé (métier MSK). */

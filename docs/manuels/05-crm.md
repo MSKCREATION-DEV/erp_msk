@@ -18,9 +18,9 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 | Prospects | `/crm/prospects` | Liste · Par étapes · filtres URL `?stages=` |
 | Relances | `/crm/relances` | Aujourd’hui / retard / semaine |
 | Scripts | `/crm/scripts` | Copier messages |
-| Vue Équipe | `/crm/equipe` | Lead / Direction seulement |
-| Rapport | `/crm/rapport-semaine` | Chiffres auto + qualitatif |
-| Objectifs | `/crm/objectifs` | Param. collab / équipe |
+| Vue Équipe | `/crm/equipe` | Prospects + objectifs semaine (si `view_team` / lead — pas « own only ») |
+| Rapport | `/crm/rapport-semaine` | Par **semaine** (lundi–vendredi) · Direction : toute l’équipe ou un collaborateur |
+| Objectifs | `/crm/objectifs` | Collab : lecture · Lead : **Assignation globale** ou **Par collaborateur** |
 
 ## Vocabulaire
 
@@ -31,6 +31,9 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 | **Statut** | 7 étapes LISTES (Négociation absente) |
 | **Origine** | Source du contact |
 | **Client** | Statut gagné (plus « Gagné ») |
+| **Prospects** | Jamais « Portefeuille » |
+| **Assignation globale** | Objectifs communs à l’équipe |
+| **Par collaborateur** | Objectifs d’une personne |
 
 ## Cycle prospect
 
@@ -43,7 +46,7 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 
 ## Collab sans Vue Équipe
 
-En haut de Prospects : **Portefeuille** · **Intéressés** · **Retards** (radiaux).
+En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux).
 
 ## Packs
 
@@ -56,6 +59,7 @@ En haut de Prospects : **Portefeuille** · **Intéressés** · **Retards** (radi
 
 | Date | Note |
 |---|---|
-| 2026-10-13 | Tableau de bord : MetricNavCard, Conversion Signé/En cours, Répartition filtres URL, Objectifs radial |
+| 2026-10-13 | Objectifs : dashboard tous collabs, page admin assignation, Vue Équipe enrichie, rapport reflète cibles |
+| 2026-10-13 | Tableau de bord : MetricNavCard, Conversion Signé/En cours, Répartition filtres URL |
 | 2026-10-12 | Menu / Tableau de bord / Vue Équipe / Rapport ; client dès Intéressé ; SLA 24h |
 | 2026-10-10 | Conversion CRM → Commercial (v1) |

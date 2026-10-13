@@ -20,6 +20,7 @@ import {
   MIN_ACTIVITIES_BEFORE_LOST,
   normalizeUiStage,
 } from "@/lib/crm/guide-rules";
+import { GOAL_METRICS } from "@/lib/crm/goals";
 import type { ActionResult } from "@/actions/auth";
 
 const stageSchema = z.nativeEnum(CrmPipelineStage);
@@ -648,27 +649,35 @@ export async function toggleCrmScriptAction(
   return { ok: true, message: active ? "Script activé" : "Script désactivé" };
 }
 
-const GOAL_METRICS = [
-  "NEW_PROSPECTS",
-  "FIRST_CONTACTS",
-  "MEETINGS",
-  "FOLLOW_UPS",
-] as const;
-
-/** Objectifs hebdo — TEAM (global) ou USER (soi). */
+/** Objectifs hebdo — TEAM (global) ou USER (soi / collab si lead). */
 export async function saveWeeklyGoalsAction(
   formData: FormData,
 ): Promise<ActionResult> {
   const actor = await requireUser({ permission: "crm.access" });
   const scopeRaw = String(formData.get("scope") ?? "USER");
   const scope = scopeRaw === "TEAM" ? "TEAM" : "USER";
+  const canManage =
+    actor.isSuperAdmin || hasPermission(actor, "crm.reports.global");
 
-  if (
-    scope === "TEAM" &&
-    !actor.isSuperAdmin &&
-    !hasPermission(actor, "crm.reports.global")
-  ) {
-    return { ok: false, error: "Pas le droit de fixer l’objectif équipe" };
+  // Objectifs = Direction / crm.reports.global uniquement (pas d’auto-édition collab).
+  if (!canManage) {
+    return {
+      ok: false,
+      error: "Seule la Direction (ou un droit dédié) peut fixer les objectifs",
+    };
+  }
+
+  let targetUserId = actor.id;
+  if (scope === "USER") {
+    const requested = String(formData.get("targetUserId") ?? "").trim();
+    if (requested) {
+      const exists = await prisma.user.findFirst({
+        where: { id: requested, status: "ACTIVE" },
+        select: { id: true },
+      });
+      if (!exists) return { ok: false, error: "Collaborateur introuvable" };
+      targetUserId = requested;
+    }
   }
 
   for (const metric of GOAL_METRICS) {
@@ -695,13 +704,13 @@ export async function saveWeeklyGoalsAction(
         where: {
           scope_userId_metric: {
             scope: "USER",
-            userId: actor.id,
+            userId: targetUserId,
             metric,
           },
         },
         create: {
           scope: "USER",
-          userId: actor.id,
+          userId: targetUserId,
           metric,
           target,
         },
@@ -713,5 +722,6 @@ export async function saveWeeklyGoalsAction(
   revalidatePath("/crm");
   revalidatePath("/crm/objectifs");
   revalidatePath("/crm/rapport-semaine");
+  revalidatePath("/crm/equipe");
   return { ok: true, message: "Objectifs enregistrés" };
 }

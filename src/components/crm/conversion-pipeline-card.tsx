@@ -32,7 +32,7 @@ export function ConversionPipelineCard({
   return (
     <Surface className="p-5">
       <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
-        Conversion prospects → clients
+        Conversion prospects vers clients
       </p>
       <p className="mt-1 text-sm text-msk-ink/50">
         Taux = clients ÷ tous les dossiers visibles

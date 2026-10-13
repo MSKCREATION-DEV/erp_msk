@@ -28,13 +28,16 @@
 
 ## 1bis. Vocabulaire MSK (obligatoire — zéro jargon)
 
-Tout l’UI, les manuels et les mails internes utilisent **uniquement** ces termes. Interdit en interface : pipeline, owner, deal, stage, won, lead (seul), kanban (ok en spec tech seulement).
+Tout l’UI, les manuels et les mails internes utilisent **uniquement** ces termes.  
+Interdit en interface : pipeline, owner, deal, stage, won, lead (seul), kanban, **Portefeuille**, **pôle**, TEAM/USER, focuser, jargon interne (ok en spec tech seulement).
 
-| À éviter (tech / anglo) | Dire plutôt |
+| À éviter | Dire plutôt |
 |---|---|
 | Pipeline | **Suivi commercial** / parcours du prospect / vue **Par étapes** |
 | Owner | **Suivi par** (qui porte le dossier) — jamais « owner » |
-| Responsable *(sur un dossier)* | **Interdit** — « Responsable » = **rôle** du lead pôle commercial (ex. Mathieu) |
+| **Portefeuille** | **Prospects** · ou **Vue Équipe** (si lien vers `/crm/equipe`) |
+| Pôle / Paramétrer le pôle / Cibles du pôle | **Assignation globale** · **équipe** |
+| Étape 1 — Pôle / Étape 2 | **Assignation globale** · **Par collaborateur** |
 | Créateur | **Créé par** (audit ; peut ≠ Suivi par) |
 | Deal / Opportunity | **Prospect** / dossier |
 | Stage | **Statut** |
@@ -44,14 +47,15 @@ Tout l’UI, les manuels et les mails internes utilisent **uniquement** ces term
 | Board / Kanban | **Vue par étapes** |
 | Dashboard | **Tableau de bord** (**live** / instantané) |
 | Source | **Origine** |
-| Assign | **Changer le suivi** / **Suivi par** |
+| Assign (dossier) | **Changer le suivi** / **Suivi par** |
+| Assign (objectifs) | **Assignation globale** / **Par collaborateur** |
 
 Navigation (module Commercial unifié) :
 
 - **Menu** `/commercial` = hub cartes (pas de tabs).  
 - Sous-pages tabs : `Menu` · `Tableau de bord` · `Prospects` · `Relances` · `Scripts` · `Vue Équipe`* · `Rapport` · `Clients` · `Devis` · `Factures` · `Offres`  
 - **Par étapes** = bascule dans Prospects (`?vue=etapes`), pas un tab séparé.  
-- \* **Vue Équipe** masquée si visibilité CRM `own` ; collabs : KPI Portefeuille / Intéressés / Retards en tête de Prospects.
+- \* **Vue Équipe** masquée si visibilité CRM `own` ; collabs : KPI **Prospects** / Intéressés / Retards en tête de Prospects.
 
 ---
 
@@ -198,7 +202,7 @@ Droits fins éventuels plus tard (lecture seule vs édition) ; **par défaut Pha
 | Tendance | Courbe nouveaux / activités (8 semaines) |
 | Activité récente | Journal consolidé (appels, messages, notes) — **ce qu’ils font vraiment** |
 | File du jour | Relances du collab (ou de toute l’équipe) |
-| Portefeuille | Liste / vue par étapes filtrée sur ce responsable |
+| Prospects (filtre collab) | Liste / vue par étapes filtrée sur ce collaborateur |
 
 Objectifs : **paramétrables par collab** et **paramétrables équipe** (voir §12).
 
@@ -353,7 +357,7 @@ Réf. : patterns shadcn Combobox / Command ; densité Linear ; jamais de look «
 | **Liste** | **7 colonnes max** (§3.1) ; badges ; chips filtres ; relance rouge | Excel allégé + Attio |
 | **Fiche** | Identité + contacts + origine/offre ; journal ; statut / relance / devis | HubSpot 360° allégé |
 | **Relances** | Aujourd’hui / Cette semaine / En retard ; 1 clic « fait » | Close |
-| **Vue Équipe** | Cartes par collab + radiaux Portefeuille / Intéressés / Retards | §5 |
+| **Vue Équipe** | Cartes par collab + radiaux Prospects / Intéressés / Retards | §5 |
 | **Rapport** | Dashboard auto (charts + filtres) + qualitatif | Excel Madina+ |
 | **Scripts** | Cartes canal + Copier | Linear density |
 | **Choix statut / origine** | Choice cards / combobox — **jamais** select natif | §9.2bis |

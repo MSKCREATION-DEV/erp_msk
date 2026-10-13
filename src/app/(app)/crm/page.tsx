@@ -6,7 +6,6 @@ import {
   Bell,
   FileWarning,
   FolderOpen,
-  Settings2,
   Sparkles,
   UserPlus,
 } from "lucide-react";
@@ -21,7 +20,7 @@ import {
   STAGE_ORDER,
   prospectsStagesHref,
 } from "@/lib/crm/labels";
-import { GOAL_LABELS, resolveGoals, type GoalMetric } from "@/lib/crm/goals";
+import { buildGoalProgress, resolveGoals } from "@/lib/crm/goals";
 import { weekStartMonday } from "@/lib/crm/week";
 import { computeWeekStats } from "@/lib/crm/week-stats";
 import { isTestOrgName } from "@/lib/crm/test-data";
@@ -33,9 +32,9 @@ import { Badge } from "@/components/ui/badge";
 import { ActionLink } from "@/components/ui/action-link";
 import { MetricNavCard, METRIC_NAV_TONE_CHART } from "@/components/ui/metric-nav-card";
 import { HubMiniRadial } from "@/components/commercial/hub-mini-radial";
-import { RadialShape } from "@/components/ui/radial-shape";
 import { StageDonutChart } from "@/components/crm/stage-donut-chart";
 import { ConversionPipelineCard } from "@/components/crm/conversion-pipeline-card";
+import { GoalsProgressStrip } from "@/components/crm/goals-progress-strip";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
 
@@ -47,42 +46,41 @@ export default async function CrmDashboardPage() {
   const user = await requireUser();
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
 
-  const isLead =
+  const canManageGoals =
     user.isSuperAdmin || hasPermission(user, "crm.reports.global");
 
   const teamIds = await commercialTeamUserIds();
   const scope = dealOwnerScopeWhere(user, teamIds);
   const assigneeScope =
-    isLead
+    canManageGoals
       ? {}
       : hasPermission(user, "crm.view_team")
         ? { assigneeId: { in: [user.id, ...teamIds] } }
         : { assigneeId: user.id };
 
   const weekStart = weekStartMonday();
-  const [deals, openTasks, overdue, goals, weekStats] = await Promise.all([
-    prisma.crmOpportunity.findMany({
-      where: scope,
-      include: {
-        organization: { select: { name: true } },
-        comQuotes: { select: { id: true }, take: 1 },
-      },
-      orderBy: [{ followUpAt: "asc" }, { updatedAt: "desc" }],
-      take: 500,
-    }),
-    prisma.crmTask.count({
-      where: { status: CrmTaskStatus.OPEN, ...assigneeScope },
-    }),
-    prisma.crmTask.count({
-      where: {
-        status: CrmTaskStatus.OPEN,
-        dueAt: { lt: new Date() },
-        ...assigneeScope,
-      },
-    }),
-    resolveGoals(user.id),
-    computeWeekStats(user.id, weekStart),
-  ]);
+  // Séquentiel — pool Prisma connection_limit=1 (évite P2024)
+  const deals = await prisma.crmOpportunity.findMany({
+    where: scope,
+    include: {
+      organization: { select: { name: true } },
+      comQuotes: { select: { id: true }, take: 1 },
+    },
+    orderBy: [{ followUpAt: "asc" }, { updatedAt: "desc" }],
+    take: 500,
+  });
+  const openTasks = await prisma.crmTask.count({
+    where: { status: CrmTaskStatus.OPEN, ...assigneeScope },
+  });
+  const overdue = await prisma.crmTask.count({
+    where: {
+      status: CrmTaskStatus.OPEN,
+      dueAt: { lt: new Date() },
+      ...assigneeScope,
+    },
+  });
+  const goals = await resolveGoals(user.id);
+  const weekStats = await computeWeekStats(user.id, weekStart);
 
   const now = Date.now();
 
@@ -121,37 +119,7 @@ export default async function CrmDashboardPage() {
     })
     .slice(0, 5);
 
-  const goalProgress: {
-    metric: GoalMetric;
-    label: string;
-    current: number;
-    target: number;
-  }[] = [
-    {
-      metric: "NEW_PROSPECTS",
-      label: GOAL_LABELS.NEW_PROSPECTS,
-      current: weekStats.newProspects,
-      target: goals.NEW_PROSPECTS,
-    },
-    {
-      metric: "FIRST_CONTACTS",
-      label: GOAL_LABELS.FIRST_CONTACTS,
-      current: weekStats.firstContacts,
-      target: goals.FIRST_CONTACTS,
-    },
-    {
-      metric: "MEETINGS",
-      label: GOAL_LABELS.MEETINGS,
-      current: weekStats.meetings,
-      target: goals.MEETINGS,
-    },
-    {
-      metric: "FOLLOW_UPS",
-      label: GOAL_LABELS.FOLLOW_UPS,
-      current: weekStats.followUpsDone,
-      target: goals.FOLLOW_UPS,
-    },
-  ];
+  const goalProgress = buildGoalProgress(goals, weekStats);
 
   const openScale = Math.max(5, openDeals.length);
   const interesseScale = Math.max(5, interesses);
@@ -334,37 +302,12 @@ export default async function CrmDashboardPage() {
         </Surface>
       </section>
 
-      {isLead ? (
-        <Surface className="p-5">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
-              Objectifs semaine
-            </p>
-            <ActionLink
-              href="/crm/objectifs"
-              icon={Settings2}
-              variant="secondary"
-            >
-              Paramétrer
-            </ActionLink>
-          </div>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {goalProgress.map((g) => (
-              <RadialShape
-                key={g.metric}
-                current={g.current}
-                target={g.target}
-                label={g.label}
-                color={
-                  g.metric === "FOLLOW_UPS"
-                    ? METRIC_NAV_TONE_CHART.coral
-                    : METRIC_NAV_TONE_CHART.blue
-                }
-              />
-            ))}
-          </div>
-        </Surface>
-      ) : null}
+      <GoalsProgressStrip
+        progress={goalProgress}
+        compact
+        detailHref="/crm/objectifs"
+        detailLabel={canManageGoals ? "Assigner" : "Voir le détail"}
+      />
     </PageShell>
   );
 }

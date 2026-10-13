@@ -1,14 +1,27 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FolderOpen, Target, Users } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { dealOwnerScopeWhere } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
 import { STAGE_LABELS, STAGE_ORDER } from "@/lib/crm/labels";
-import { resolveGoals } from "@/lib/crm/goals";
-import { weekStartMonday, weekEndSunday } from "@/lib/crm/week";
+import {
+  buildGoalProgress,
+  loadTeamGoals,
+  resolveGoals,
+} from "@/lib/crm/goals";
+import {
+  formatWeekRangeLabel,
+  isoWeekNumber,
+  listWeekOptions,
+  parseWeekParam,
+  weekEndFriday,
+  weekEndSunday,
+  weekStartIso,
+  weekStartMonday,
+} from "@/lib/crm/week";
 import { computeWeekStats } from "@/lib/crm/week-stats";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -17,54 +30,93 @@ import { StageDonutChart } from "@/components/crm/stage-donut-chart";
 import { StageBarChart } from "@/components/crm/stage-bar-chart";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { RapportFilters } from "@/components/crm/rapport-filters";
+import { GoalsProgressStrip } from "@/components/crm/goals-progress-strip";
+import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
+import { ActionLink } from "@/components/ui/action-link";
 
 export const metadata: Metadata = { title: "Rapport commercial" };
 
-function monthsBack(n: number): { key: string; label: string; from: Date; to: Date }[] {
-  const out = [];
-  const now = new Date();
-  for (let i = n - 1; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const to = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
-    out.push({
-      key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
-      label: d.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }),
-      from: d,
-      to,
-    });
-  }
-  return out;
-}
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export default async function CrmRapportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ periode?: string; owner?: string }>;
+  searchParams: Promise<{ semaine?: string; owner?: string; periode?: string }>;
 }) {
   const user = await requireUser();
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
 
   const sp = await searchParams;
-  const periode = sp.periode === "annee" ? "annee" : "semaine";
   const teamIds = await commercialTeamUserIds();
   const canGlobal =
     user.isSuperAdmin || hasPermission(user, "crm.reports.global");
-  const ownerFilter =
-    canGlobal && sp.owner ? sp.owner : user.id;
 
-  const scope = {
+  const memberIds = [...new Set([user.id, ...teamIds])];
+  const owners = canGlobal
+    ? (
+        await prisma.user.findMany({
+          where: { id: { in: memberIds }, status: "ACTIVE" },
+          select: { id: true, firstName: true, lastName: true },
+          orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
+        })
+      ).map((u) => ({
+        value: u.id,
+        label: `${u.firstName} ${u.lastName}`,
+      }))
+    : [];
+
+  const ownerIdsSet = new Set(owners.map((o) => o.value));
+
+  /** `all` = équipe · uuid = collab · self si pas Direction. */
+  let scopeMode: "all" | "user" = canGlobal ? "all" : "user";
+  let focusOwnerId: string | null = canGlobal ? null : user.id;
+
+  if (canGlobal && sp.owner && sp.owner !== "all") {
+    if (UUID_RE.test(sp.owner) && ownerIdsSet.has(sp.owner)) {
+      scopeMode = "user";
+      focusOwnerId = sp.owner;
+    }
+    // sinon garde-fou : reste « Toute l’équipe »
+  } else if (!canGlobal) {
+    focusOwnerId = user.id;
+  }
+
+  const weeks = listWeekOptions({
+    fromYear: new Date().getFullYear() - 1,
+  });
+  const weekValues = new Set(weeks.map((w) => w.value));
+  const weekStart = (() => {
+    const parsed = parseWeekParam(sp.semaine);
+    const iso = weekStartIso(parsed);
+    if (weekValues.has(iso)) return parsed;
+    return weekStartMonday();
+  })();
+  const weekIso = weekStartIso(weekStart);
+  const weekFri = weekEndFriday(weekStart);
+  const weekSun = weekEndSunday(weekStart);
+
+  const statsOwnerIds =
+    scopeMode === "all" ? memberIds : [focusOwnerId!];
+
+  const baseDealWhere = {
     ...dealOwnerScopeWhere(user, teamIds),
-    ...(canGlobal && sp.owner ? { ownerId: sp.owner } : { ownerId: ownerFilter }),
+    ...(scopeMode === "user" && focusOwnerId
+      ? { ownerId: focusOwnerId }
+      : scopeMode === "all"
+        ? { ownerId: { in: memberIds } }
+        : {}),
   };
 
-  const weekStart = weekStartMonday();
-  const weekEnd = weekEndSunday(weekStart);
-  const goals = await resolveGoals(ownerFilter);
-  const weekStats = await computeWeekStats(ownerFilter, weekStart);
-
+  // Séquentiel — pool Prisma connection_limit=1
+  const goals =
+    scopeMode === "all"
+      ? await loadTeamGoals()
+      : await resolveGoals(focusOwnerId!);
+  const weekStats = await computeWeekStats(statsOwnerIds, weekStart);
   const deals = await prisma.crmOpportunity.findMany({
-    where: scope,
-    select: { stage: true, createdAt: true, wonAt: true },
+    where: baseDealWhere,
+    select: { stage: true, createdAt: true },
   });
 
   const byStage = STAGE_ORDER.map((stage) => ({
@@ -78,20 +130,9 @@ export default async function CrmRapportPage({
     ).length,
   }));
 
-  const months = monthsBack(12);
-  const barYear = await Promise.all(
-    months.map(async (m) => ({
-      statut: m.label,
-      count: await prisma.crmOpportunity.count({
-        where: {
-          ownerId: ownerFilter,
-          createdAt: { gte: m.from, lte: m.to },
-        },
-      }),
-    })),
-  );
+  const totalDossiers = byStage.reduce((a, b) => a + b.count, 0);
 
-  // Semaine : 4 dernières semaines nouveaux prospects
+  // 4 semaines glissantes se terminant à la semaine sélectionnée
   const weekBars = [];
   for (let i = 3; i >= 0; i--) {
     const start = new Date(weekStart);
@@ -99,30 +140,12 @@ export default async function CrmRapportPage({
     const end = weekEndSunday(start);
     const count = await prisma.crmOpportunity.count({
       where: {
-        ownerId: ownerFilter,
+        ownerId: { in: statsOwnerIds },
         createdAt: { gte: start, lte: end },
       },
     });
-    weekBars.push({
-      statut: `S${4 - i}`,
-      count,
-    });
+    weekBars.push({ statut: `S${isoWeekNumber(start)}`, count });
   }
-
-  const owners = canGlobal
-    ? (
-        await prisma.user.findMany({
-          where: {
-            id: { in: Array.from(new Set([user.id, ...teamIds])) },
-            status: "ACTIVE",
-          },
-          select: { id: true, firstName: true, lastName: true },
-        })
-      ).map((u) => ({
-        value: u.id,
-        label: `${u.firstName} ${u.lastName}`,
-      }))
-    : [];
 
   const qualifiedOpen = byStage
     .filter((s) => s.stage === "INTERESSE" || s.stage === "DEVIS_ENVOYE")
@@ -131,24 +154,92 @@ export default async function CrmRapportPage({
     .filter((s) => s.stage === "CONTACTE" || s.stage === "QUALIFICATION")
     .reduce((a, b) => a + b.count, 0);
 
+  const goalProgress = buildGoalProgress(goals, weekStats);
+
+  const scopeLabel =
+    scopeMode === "all"
+      ? "Toute l’équipe"
+      : (owners.find((o) => o.value === focusOwnerId)?.label ??
+        (focusOwnerId === user.id
+          ? `${user.firstName} ${user.lastName}`
+          : "Collaborateur"));
+
+  const rangeLabel = formatWeekRangeLabel(weekStart);
+  const isCurrentWeek = weekIso === weekStartIso(weekStartMonday());
+
+  const clearHref = (() => {
+    const p = new URLSearchParams();
+    if (!isCurrentWeek) p.set("semaine", weekIso);
+    const s = p.toString();
+    return s ? `/crm/rapport-semaine?${s}` : "/crm/rapport-semaine";
+  })();
+
+  const objectifsHref =
+    scopeMode === "user" && focusOwnerId && canGlobal
+      ? `/crm/objectifs?collab=${focusOwnerId}`
+      : "/crm/objectifs";
+
   return (
     <PageShell>
       <PageHeader
         title="Rapport"
-        description={`Lecture seule — calculé depuis l’activité CRM. Semaine du ${weekStart.toLocaleDateString("fr-FR")}.`}
+        description={`Activité CRM · ${scopeLabel} · ${rangeLabel}${isCurrentWeek ? " (semaine actuelle)" : ""}.`}
         backHref="/commercial"
         backLabel="Retour Commercial"
-        breadcrumbs={[
-          { label: "Commercial", href: "/commercial" },
-        ]}
+        breadcrumbs={[{ label: "Commercial", href: "/commercial" }]}
         actions={
           <RapportFilters
-            periode={periode}
-            ownerId={sp.owner ?? null}
+            semaine={weekIso}
+            weeks={weeks}
+            ownerId={scopeMode === "all" ? "all" : focusOwnerId}
             owners={owners}
+            canFilterOwners={canGlobal}
           />
         }
       />
+
+      {canGlobal && scopeMode === "user" && focusOwnerId ? (
+        <ScopeFocusBanner
+          label={scopeLabel}
+          clearHref={clearHref}
+          clearLabel="Toute l’équipe"
+        >
+          <ActionLink
+            href={objectifsHref}
+            icon={Target}
+            variant="secondary"
+            size="sm"
+          >
+            Objectifs
+          </ActionLink>
+          <ActionLink
+            href={`/crm/equipe?owner=${focusOwnerId}`}
+            icon={Users}
+            variant="secondary"
+            size="sm"
+          >
+            Vue Équipe
+          </ActionLink>
+          <ActionLink
+            href={`/crm/prospects?owner=${focusOwnerId}`}
+            icon={FolderOpen}
+            variant="secondary"
+            size="sm"
+          >
+            Prospects
+          </ActionLink>
+        </ScopeFocusBanner>
+      ) : null}
+
+      {totalDossiers === 0 &&
+      weekStats.newProspects === 0 &&
+      weekStats.firstContacts === 0 ? (
+        <Surface className="p-8 text-center text-sm text-msk-ink/45">
+          Aucune activité pour {scopeLabel.toLowerCase()} sur cette semaine.
+          Essayez une autre semaine
+          {canGlobal ? " ou un autre collaborateur" : ""}.
+        </Surface>
+      ) : null}
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiRadial
@@ -164,7 +255,7 @@ export default async function CrmRapportPage({
         <KpiRadial
           label="En échange"
           value={inExchange}
-          hint="Contacté + En cours"
+          hint="Contacté + En qualification"
         />
         <KpiRadial
           label="Prêts à convertir"
@@ -175,48 +266,51 @@ export default async function CrmRapportPage({
 
       <div className="grid gap-4 lg:grid-cols-2">
         <StageBarChart
-          data={periode === "annee" ? barYear : weekBars}
-          title={
-            periode === "annee"
-              ? "Nouveaux prospects — 12 mois"
-              : "Nouveaux prospects — 4 semaines"
-          }
-          subtitle="Automatique depuis le CRM"
+          data={weekBars}
+          title="Nouveaux prospects — 4 semaines"
+          subtitle={`Jusqu’à la semaine du ${weekStart.toLocaleDateString("fr-FR", { timeZone: "UTC" })}`}
         />
         <StageDonutChart data={byStage} />
       </div>
 
-      <Surface className="p-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
-          Semaine en cours — vs objectifs
-        </p>
-        <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-sm">
-          {(
-            [
-              ["Nouveaux prospects", weekStats.newProspects, goals.NEW_PROSPECTS],
-              ["Premiers contacts", weekStats.firstContacts, goals.FIRST_CONTACTS],
-              ["RDV", weekStats.meetings, goals.MEETINGS],
-              ["Relances faites", weekStats.followUpsDone, goals.FOLLOW_UPS],
-            ] as const
-          ).map(([label, cur, tgt]) => (
-            <div key={label} className="rounded-lg bg-msk-chalk/50 px-3 py-2">
-              <dt className="text-msk-ink/45">{label}</dt>
-              <dd className="mt-1 font-semibold tabular-nums text-msk-ink">
-                {cur}{" "}
-                <span className="text-xs font-normal text-msk-ink/40">
-                  / {tgt}
-                </span>
-              </dd>
-            </div>
-          ))}
-        </dl>
-        <p className="mt-4 text-xs text-msk-ink/40">
-          Fin de semaine : {weekEnd.toLocaleDateString("fr-FR")} ·{" "}
-          <Link href="/crm/objectifs" className="text-msk-blue hover:underline">
-            Objectifs
-          </Link>
-        </p>
-      </Surface>
+      {scopeMode === "user" ? (
+        <GoalsProgressStrip
+          progress={goalProgress}
+          title={`Objectifs — ${scopeLabel}`}
+          detailHref={objectifsHref}
+          detailLabel="Objectifs"
+        />
+      ) : (
+        <Surface className="flex flex-wrap items-center justify-between gap-3 p-5">
+          <div>
+            <p className="text-sm font-semibold text-msk-ink">
+              Objectifs de l’équipe
+            </p>
+            <p className="mt-1 text-xs text-msk-ink/45">
+              Vue combinée : choisissez un collaborateur pour voir ses objectifs
+              individuels, ou ouvrez l’assignation globale.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <ActionLink
+              href="/crm/objectifs"
+              icon={Target}
+              variant="secondary"
+              size="sm"
+            >
+              Objectifs
+            </ActionLink>
+          </div>
+        </Surface>
+      )}
+
+      <p className="text-xs text-msk-ink/40">
+        Semaine ouvrée :{" "}
+        {weekStart.toLocaleDateString("fr-FR", { timeZone: "UTC" })} →{" "}
+        {weekFri.toLocaleDateString("fr-FR", { timeZone: "UTC" })}
+        {" · "}données jusqu’au{" "}
+        {weekSun.toLocaleDateString("fr-FR", { timeZone: "UTC" })}
+      </p>
     </PageShell>
   );
 }

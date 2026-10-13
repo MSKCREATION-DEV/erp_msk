@@ -37,6 +37,7 @@ export function commercialNavItems(user: SessionUser): CommercialSubnavItem[] {
   }
   if (canCrm) {
     items.push({ href: "/crm/rapport-semaine", label: "Rapport" });
+    items.push({ href: "/crm/objectifs", label: "Objectifs" });
   }
   if (canCom) {
     items.push({ href: "/commercial/clients", label: "Clients" });

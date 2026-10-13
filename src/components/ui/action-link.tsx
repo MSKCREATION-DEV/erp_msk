@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import { ActionLinkPendingIcon } from "@/components/ui/action-link-pending";
 import { cn } from "@/lib/utils";
 
 const variants = {
@@ -28,6 +29,7 @@ export type ActionLinkProps = {
 
 /**
  * CTA navigation MSK : icône + libellé explicite (jamais un « Nouveau » nu).
+ * Server Component — pending via slot client (pas d’icône passée en prop client).
  */
 export function ActionLink({
   href,
@@ -48,7 +50,9 @@ export function ActionLink({
         className,
       )}
     >
-      <Icon className="h-4 w-4 shrink-0" aria-hidden />
+      <ActionLinkPendingIcon>
+        <Icon className="h-4 w-4 shrink-0" aria-hidden />
+      </ActionLinkPendingIcon>
       {children}
     </Link>
   );

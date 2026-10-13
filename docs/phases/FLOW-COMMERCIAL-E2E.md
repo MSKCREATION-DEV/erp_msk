@@ -43,8 +43,29 @@ Puis :
 
 - **Conversion prospects → clients** (`ConversionPipelineCard`) : Signé \| En cours — montants = `budgetXof` ; taux = clients ÷ dossiers visibles  
 - **Répartition des prospects** : `STAGE_COLORS` distinctes ; légende + segments cliquables → `/crm/prospects?stages=…`  
-- Priorités + **Objectifs semaine** (`RadialShape` + `ActionLink` Paramétrer)  
+- Priorités + **Objectifs semaine** (bandeau minimal → `/crm/objectifs`)  
 - CTA header : **Nouveau prospect** (`ActionLink` + icône)
+
+### Objectifs — droits & écrans
+
+| Qui | Tableau de bord | `/crm/objectifs` | Vue Équipe | Rapport |
+|---|---|---|---|---|
+| Commercial | Ses 4 radiaux (lecture) | Ma semaine (lecture) — pas d’édition | Si `view_team` : collabs + objectifs (même radiaux) | Ses objectifs |
+| Lead / Direction (`crm.reports.global`) | + « Assigner » | **Synthèse** · **Assignation globale** (`?vue=equipe`) · **Par collaborateur** (`?collab=`) | Filtre collaborateur · Objectifs → `?collab=` | Semaines (`?semaine=`) · **Toute l’équipe** / collab (`?owner=`) |
+
+**Parcours Direction (libellés UI simples — jamais jargon)** :
+
+1. `/crm/objectifs` — synthèse (ligne → par collaborateur) + CTA **Assignation globale**
+2. `/crm/objectifs?vue=equipe` — **Assignation globale** (objectifs communs à l’équipe)
+3. `/crm/objectifs?collab=<id>` — **Par collaborateur** (liens Vue Équipe / Rapport / Prospects)
+4. Vue Équipe : clic nom → filtre collaborateur ; Objectifs → même personne
+
+Pages réceptrices : bandeau **Focus collaborateur** quand un filtre est actif.
+
+Cascade technique (jamais en UI) : USER > TEAM > défauts. Édition = Direction uniquement.  
+**Interdit UI** : Portefeuille, pôle, TEAM/USER, focuser, « Paramétrer le pôle ».  
+Statuts : **En qualification** ≠ **Devis envoyé**.  
+Pending : `usePendingAction` / `useLinkStatus` / `GetFilterForm`.
 
 Sous-pages — `commercialNavItems` (`src/lib/commercial/nav.ts`) :
 
@@ -59,8 +80,8 @@ Sous-pages — `commercialNavItems` (`src/lib/commercial/nav.ts`) :
 | Prospects | `/crm/prospects` | Liste + Par étapes (`?vue=etapes`) |
 | Relances | `/crm/relances` | File du jour / retards |
 | Scripts | `/crm/scripts` | Messages à copier |
-| Vue Équipe | `/crm/equipe` | Portefeuille par collab (lead) |
-| Rapport | `/crm/rapport-semaine` | Chiffres auto + synthèse |
+| Vue Équipe | `/crm/equipe` | Prospects / objectifs par collab (lead) |
+| Rapport | `/crm/rapport-semaine` | Semaines (`?semaine=YYYY-MM-DD`) · Direction : `?owner=` ou toute l’équipe (défaut) |
 | Clients / Devis / Factures | `/commercial/...` | Documentaire |
 | Offres | `/catalogue` | Catalogue / planchers |
 
@@ -68,7 +89,7 @@ Création = pages `…/nouveau` dédiées.
 
 ### 1.2 Collab « own only »
 
-Pas de Vue Équipe. En tête de **Prospects** : Portefeuille · Intéressés · Retards (radiaux).
+Pas de Vue Équipe. En tête de **Prospects** : Prospects · Intéressés · Retards (radiaux).
 
 ---
 
@@ -118,7 +139,7 @@ Liste Factures : colonne **Compta** (À faire / Brouillon / Validée).
 ### 3.4 Lead / Direction
 
 ```
-Tableau de bord → Vue Équipe → portefeuille collab
+Tableau de bord → Vue Équipe → prospects du collaborateur
   → Rapport (filtres)
   → Hub Compta : KPI « Factures à comptabiliser »
 ```

@@ -37,7 +37,7 @@ export default async function CommercialClientsPage() {
     <PageShell>
       <PageHeader
         title="Clients"
-        description="Portefeuille clients Commercial."
+        description="Clients signés — Commercial."
         backHref="/commercial"
         backLabel="Retour Commercial"
         breadcrumbs={[

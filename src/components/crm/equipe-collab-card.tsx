@@ -1,0 +1,135 @@
+import Link from "next/link";
+import { FileText, FolderOpen, Target } from "lucide-react";
+import { STAGE_LABELS, STAGE_ORDER, formatXof } from "@/lib/crm/labels";
+import type { GoalProgressItem } from "@/lib/crm/goals";
+import { Surface } from "@/components/ui/surface";
+import { Badge } from "@/components/ui/badge";
+import { ActionLink } from "@/components/ui/action-link";
+import { KpiRadial } from "@/components/crm/kpi-radial";
+import { GoalsProgressStrip } from "@/components/crm/goals-progress-strip";
+import { EquipeFocusName } from "@/components/crm/equipe-focus-name";
+import { cn } from "@/lib/utils";
+
+export function EquipeCollabCard({
+  ownerId,
+  name,
+  total,
+  caOpen,
+  interesses,
+  overdue,
+  byStage,
+  goals,
+  canManageGoals,
+  focused,
+}: {
+  ownerId: string;
+  name: string;
+  total: number;
+  caOpen: number;
+  interesses: number;
+  overdue: number;
+  byStage: Record<string, number>;
+  goals: GoalProgressItem[];
+  canManageGoals: boolean;
+  focused: boolean;
+}) {
+  return (
+    <Surface
+      className={cn("space-y-4 p-5", focused && "ring-2 ring-msk-blue/25")}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <EquipeFocusName
+          ownerId={ownerId}
+          name={name}
+          focused={focused}
+          subtitle={`${total} prospect${total > 1 ? "s" : ""} · montant pipeline ${formatXof(caOpen)}`}
+        />
+        <div className="flex flex-wrap gap-2">
+          {canManageGoals ? (
+            <ActionLink
+              href={`/crm/objectifs?collab=${ownerId}`}
+              icon={Target}
+              variant="secondary"
+              size="sm"
+            >
+              Objectifs
+            </ActionLink>
+          ) : null}
+          <ActionLink
+            href={`/crm/rapport-semaine?owner=${ownerId}`}
+            icon={FileText}
+            variant="secondary"
+            size="sm"
+          >
+            Rapport
+          </ActionLink>
+          <ActionLink
+            href={`/crm/prospects?owner=${ownerId}`}
+            icon={FolderOpen}
+            variant="secondary"
+            size="sm"
+          >
+            Prospects
+          </ActionLink>
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        <KpiRadial label="Prospects" value={total} hint="dossiers suivis" />
+        <KpiRadial
+          label="Intéressés"
+          value={interesses}
+          hint="à convertir"
+        />
+        <KpiRadial
+          label="Retards"
+          value={overdue}
+          tone={overdue > 0 ? "coral" : "blue"}
+          hint="relances dues"
+        />
+      </div>
+
+      {goals.length > 0 ? (
+        <GoalsProgressStrip
+          progress={goals}
+          title="Objectifs semaine"
+          compact
+          embedded
+          detailHref={
+            canManageGoals
+              ? `/crm/objectifs?collab=${ownerId}`
+              : `/crm/rapport-semaine?owner=${ownerId}`
+          }
+          detailLabel={canManageGoals ? "Objectifs" : "Rapport"}
+        />
+      ) : null}
+
+      <div className="flex flex-wrap gap-1.5">
+        {STAGE_ORDER.map((s) => {
+          const n = byStage[s] ?? 0;
+          if (n === 0) return null;
+          return (
+            <Link
+              key={s}
+              prefetch={false}
+              href={`/crm/prospects?owner=${ownerId}&stages=${s === "DEVIS_ENVOYE" ? "DEVIS_ENVOYE,NEGOCIATION" : s}`}
+            >
+              <Badge
+                tone={
+                  s === "PERDU"
+                    ? "coral"
+                    : s === "GAGNE"
+                      ? "success"
+                      : "muted"
+                }
+                className="transition hover:ring-2 hover:ring-msk-blue/20"
+              >
+                {STAGE_LABELS[s]} · {n}
+              </Badge>
+            </Link>
+          );
+        })}
+      </div>
+    </Surface>
+  );
+}

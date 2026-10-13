@@ -5,6 +5,9 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 /**
  * URL runtime : 1 connexion max par isolate serverless (Vercel),
  * compatible PgBouncer transaction mode (évite EMAXCONNSESSION).
+ *
+ * ABSOLU : ne jamais `Promise.all([prisma…, prisma…])` — saturation pool → P2024.
+ * Utiliser `mapSeries` / `runSeries` (`src/lib/db/serial.ts`) ou await séquentiels.
  */
 function runtimeDatabaseUrl() {
   const base = process.env.DATABASE_URL;

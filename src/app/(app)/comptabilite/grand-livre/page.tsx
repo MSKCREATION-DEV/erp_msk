@@ -7,6 +7,7 @@ import { fetchGrandLivre } from "@/lib/comptabilite/reports";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
+import { GetFilterForm } from "@/components/ui/get-filter-form";
 import { formatXof } from "@/lib/comptabilite/money";
 
 export const metadata: Metadata = { title: "Grand livre" };
@@ -50,7 +51,7 @@ export default async function ComptabiliteGrandLivrePage({
         ]}
       />
 
-      <form method="GET" className="flex flex-wrap items-end gap-3">
+      <GetFilterForm submitLabel="Filtrer">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-msk-ink/80">
             Exercice
@@ -79,13 +80,7 @@ export default async function ComptabiliteGrandLivrePage({
             ))}
           </select>
         </div>
-        <button
-          type="submit"
-          className="inline-flex h-11 items-center justify-center rounded-lg bg-msk-blue px-4 text-sm font-medium text-white hover:bg-msk-blue/90"
-        >
-          Filtrer
-        </button>
-      </form>
+      </GetFilterForm>
 
       {rows.length === 0 ? (
         <Surface className="p-8 text-center text-sm text-msk-ink/50">

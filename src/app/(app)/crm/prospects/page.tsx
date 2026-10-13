@@ -24,6 +24,7 @@ import { ActionLink } from "@/components/ui/action-link";
 import { ProspectsFilterButton } from "@/components/crm/prospects-filter-modal";
 import { ProspectsBoard } from "@/components/crm/prospects-board";
 import { KpiRadial } from "@/components/crm/kpi-radial";
+import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Prospects" };
@@ -115,53 +116,51 @@ export default async function CrmProspectsPage({
   const vis = crmVisibility(user);
   const showOwnKpis = vis === "own";
 
-  const [deals, ownPortfolio] = await Promise.all([
-    prisma.crmOpportunity.findMany({
-      where:
-        vue === "etapes"
-          ? {
-              ...where,
-              stage: {
-                ...(typeof where.stage === "object" &&
-                where.stage &&
-                "in" in where.stage
-                  ? where.stage
-                  : {}),
-                notIn: ["GAGNE", "PERDU"],
-              },
-            }
-          : where,
-      include: {
-        organization: {
-          select: {
-            name: true,
-            sector: true,
-            contacts: { where: { isPrimary: true }, take: 1 },
-          },
+  const deals = await prisma.crmOpportunity.findMany({
+    where:
+      vue === "etapes"
+        ? {
+            ...where,
+            stage: {
+              ...(typeof where.stage === "object" &&
+              where.stage &&
+              "in" in where.stage
+                ? where.stage
+                : {}),
+              notIn: ["GAGNE", "PERDU"],
+            },
+          }
+        : where,
+    include: {
+      organization: {
+        select: {
+          name: true,
+          sector: true,
+          contacts: { where: { isPrimary: true }, take: 1 },
         },
-        owner: { select: { firstName: true, lastName: true } },
-        createdBy: { select: { firstName: true, lastName: true } },
       },
-      orderBy: [{ followUpAt: "asc" }, { updatedAt: "desc" }],
-      take: 400,
-    }),
-    showOwnKpis
-      ? prisma.crmOpportunity.findMany({
-          where: {
-            ...ownScope,
-            stage: { notIn: ["GAGNE", "PERDU"] },
-          },
-          select: { stage: true, followUpAt: true },
-        })
-      : Promise.resolve([] as { stage: string; followUpAt: Date | null }[]),
-  ]);
+      owner: { select: { firstName: true, lastName: true } },
+      createdBy: { select: { firstName: true, lastName: true } },
+    },
+    orderBy: [{ followUpAt: "asc" }, { updatedAt: "desc" }],
+    take: 400,
+  });
+  const ownPortfolio = showOwnKpis
+    ? await prisma.crmOpportunity.findMany({
+        where: {
+          ...ownScope,
+          stage: { notIn: ["GAGNE", "PERDU"] },
+        },
+        select: { stage: true, followUpAt: true },
+      })
+    : ([] as { stage: string; followUpAt: Date | null }[]);
 
   const canCreate = hasPermission(user, "crm.prospect.create");
   const canImport = hasPermission(user, "crm.import");
 
   const ownKpis = showOwnKpis
     ? {
-        portefeuille: ownPortfolio.length,
+        prospects: ownPortfolio.length,
         interesses: ownPortfolio.filter((d) => d.stage === "INTERESSE").length,
         retards: ownPortfolio.filter(
           (d) => d.followUpAt != null && d.followUpAt < now,
@@ -185,6 +184,20 @@ export default async function CrmProspectsPage({
           value: u.id,
           label: `${u.firstName} ${u.lastName}`,
         }));
+
+  const focusOwnerLabel = sp.owner
+    ? (owners.find((o) => o.value === sp.owner)?.label ?? null)
+    : null;
+
+  const clearOwnerHref = (() => {
+    const p = new URLSearchParams(
+      Object.entries(sp).filter(
+        (e): e is [string, string] => typeof e[1] === "string" && e[0] !== "owner",
+      ),
+    );
+    const s = p.toString();
+    return s ? `/crm/prospects?${s}` : "/crm/prospects";
+  })();
 
   const boardCards = deals.map((d) => {
     const uiStage = d.stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : d.stage;
@@ -222,6 +235,11 @@ export default async function CrmProspectsPage({
     <PageShell className={vue === "etapes" ? "max-w-none" : undefined}>
       <PageHeader
         title="Prospects"
+        description={
+          focusOwnerLabel
+            ? `Prospects de ${focusOwnerLabel}`
+            : undefined
+        }
         backHref="/commercial"
         backLabel="Retour Commercial"
         breadcrumbs={[
@@ -276,6 +294,14 @@ export default async function CrmProspectsPage({
         }
       />
 
+      {focusOwnerLabel ? (
+        <ScopeFocusBanner
+          label={focusOwnerLabel}
+          clearHref={clearOwnerHref}
+          clearLabel="Toute l’équipe"
+        />
+      ) : null}
+
       {(stageFilterRaw.length > 0 ||
         sp.late === "1" ||
         sp.devisRetard === "1") && (
@@ -312,8 +338,8 @@ export default async function CrmProspectsPage({
       {ownKpis ? (
         <div className="grid gap-3 sm:grid-cols-3">
           <KpiRadial
-            label="Portefeuille"
-            value={ownKpis.portefeuille}
+            label="Prospects"
+            value={ownKpis.prospects}
             hint="dossiers suivis"
           />
           <KpiRadial

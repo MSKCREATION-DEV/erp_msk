@@ -1,0 +1,28 @@
+# Prisma pool — requêtes séquentielles (absolu)
+
+Runtime : `src/lib/prisma.ts` force **`connection_limit=1`** (PgBouncer Transaction / Vercel).
+
+## Interdit
+
+```ts
+await Promise.all([
+  prisma.x.findMany(…),
+  prisma.y.count(…),
+  resolveGoals(…),      // appelle prisma
+  computeWeekStats(…),  // N counts prisma
+]);
+```
+
+→ Timeout **P2024** « Timed out fetching a new connection ».
+
+## Obligatoire
+
+- `await` **séquentiel** des appels Prisma
+- ou `runSeries` / `mapSeries` (`src/lib/db/serial.ts`)
+- Batch métier : `resolveGoalsMap`, `resolveGoalsSnapshots`, `computeWeekStatsByOwner`
+
+## Avant de toucher CRM / pages data-heavy
+
+1. Compter les `Promise.all` qui encapsulent du Prisma
+2. Vérifier N+1 (`members.map` + `resolveGoals` + `computeWeekStats`)
+3. Tester la page concernée après modif (pas seulement `tsc`)

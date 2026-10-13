@@ -8,6 +8,7 @@ import {
   MessageSquareText,
   Receipt,
   Tag,
+  Target,
   Users,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -35,6 +36,7 @@ const ICONS: Record<string, LucideIcon> = {
   tableau: LayoutDashboard,
   equipe: BarChart3,
   rapport: FileText,
+  objectifs: Target,
 };
 
 function moduleKpi(

@@ -6,6 +6,7 @@ import { fetchTrialBalance, buildBilanCr } from "@/lib/comptabilite/reports";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
+import { GetFilterForm } from "@/components/ui/get-filter-form";
 import { formatXof } from "@/lib/comptabilite/money";
 import { classLabel } from "@/lib/comptabilite/labels";
 import { cn } from "@/lib/utils";
@@ -42,7 +43,7 @@ export default async function ComptabiliteEtatsPage({
         ]}
       />
 
-      <form method="GET" className="flex items-end gap-3">
+      <GetFilterForm submitLabel="Afficher">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-msk-ink/80">
             Exercice
@@ -54,13 +55,7 @@ export default async function ComptabiliteEtatsPage({
             className="h-11 w-28 rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
           />
         </div>
-        <button
-          type="submit"
-          className="inline-flex h-11 items-center justify-center rounded-lg bg-msk-blue px-4 text-sm font-medium text-white hover:bg-msk-blue/90"
-        >
-          Afficher
-        </button>
-      </form>
+      </GetFilterForm>
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-msk-ink">

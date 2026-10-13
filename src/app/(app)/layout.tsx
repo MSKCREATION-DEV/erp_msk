@@ -1,8 +1,8 @@
 import { Suspense } from "react";
+import { AppProviders } from "@/components/app/app-providers";
 import { AppSidebar } from "@/components/app/app-sidebar";
 import { SidebarSkeleton } from "@/components/app/sidebar-skeleton";
 import { Topbar } from "@/components/app/topbar";
-import { ConfirmProvider } from "@/components/ui/confirm-dialog";
 import { NavigationProgress } from "@/components/ui/navigation-progress";
 
 /**
@@ -22,7 +22,7 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ConfirmProvider>
+    <AppProviders>
       <NavigationProgress />
       <div className="flex h-screen overflow-hidden bg-[#F4F6F9]">
         <div className="z-20 hidden h-full shrink-0 md:flex">
@@ -37,6 +37,6 @@ export default function AppLayout({
           </main>
         </div>
       </div>
-    </ConfirmProvider>
+    </AppProviders>
   );
 }

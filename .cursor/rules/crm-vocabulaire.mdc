@@ -1,0 +1,24 @@
+# Vocabulaire CRM / Commercial (absolu UI)
+
+Réf. : `docs/phases/SPEC-CRM-MSK-COMPLET.md` §1bis · `FLOW-COMMERCIAL-E2E.md`
+
+## Interdit en interface (libellés, boutons, descriptions, bandeaux)
+
+| Jamais | Remplacer par |
+|---|---|
+| Portefeuille / portefeuilles | **Prospects** · ou **Vue Équipe** (si lien `/crm/equipe`) |
+| Pôle / Paramétrer le pôle / Cibles du pôle | **Assignation globale** · **équipe** |
+| Étape 1 — Pôle / Étape 2 — … | **Assignation globale** · **Par collaborateur** |
+| TEAM / USER / cascade / focuser | Formulations métier simples |
+| Pipeline, owner, deal, stage, won | Voir glossaire §1bis |
+
+## Objectifs — libellés canoniques
+
+| Intention | Libellé |
+|---|---|
+| Objectifs communs équipe | **Assignation globale** |
+| Objectifs d’une personne | **Par collaborateur** |
+| Lien vers `/crm/equipe` | **Vue Équipe** |
+| Lien vers `/crm/prospects` | **Prospects** |
+
+Avant tout commit UI CRM : grep `Portefeuille|pôle|Paramétrer le pôle|focuser` dans `src/` — zéro hit utilisateur.
