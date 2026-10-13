@@ -12,8 +12,6 @@ export type CommercialModule = {
   /** Accent MSK (pas de violet). */
   tone: "blue" | "coral" | "cyan" | "ink";
   permission?: string;
-  /** Libellé fixe à droite (ex. Catalogue) — pas pour Pilotage. */
-  badgeLabel?: string;
 };
 
 /** Ordre d’affichage : Pilotage d’abord. */
@@ -102,7 +100,6 @@ export const COMMERCIAL_MODULES: CommercialModule[] = [
     section: "vente",
     tone: "cyan",
     permission: "com.catalogue.view",
-    badgeLabel: "Catalogue",
   },
   {
     id: "devis",

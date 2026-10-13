@@ -1,11 +1,6 @@
-import Link from "next/link";
-import type { ReactNode } from "react";
-import type { LucideIcon } from "lucide-react";
 import {
-  ArrowRight,
   BarChart3,
   Bell,
-  Calendar,
   CheckCircle2,
   FileSpreadsheet,
   FileText,
@@ -15,11 +10,18 @@ import {
   Tag,
   Users,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import {
   HUB_SECTIONS,
   type CommercialModule,
 } from "@/lib/commercial/modules";
 import { HubMiniRadial } from "@/components/commercial/hub-mini-radial";
+import {
+  MetricNavCard,
+  MetricNavKpi,
+  METRIC_NAV_TONE_CHART,
+  type MetricNavTone,
+} from "@/components/ui/metric-nav-card";
 import { cn } from "@/lib/utils";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -35,68 +37,36 @@ const ICONS: Record<string, LucideIcon> = {
   rapport: FileText,
 };
 
-const TONE_ICON: Record<CommercialModule["tone"], string> = {
-  blue: "bg-msk-blue/10 text-msk-blue",
-  coral: "bg-msk-coral/10 text-msk-coral",
-  cyan: "bg-[#00ACEE]/12 text-[#1384CB]",
-  ink: "bg-msk-ink/[0.06] text-msk-ink/70",
-};
-
-const TONE_CHART: Record<"coral" | "blue" | "ink", string> = {
-  coral: "#FF5A3C",
-  blue: "#1D73BC",
-  ink: "#284393",
-};
-
-const cardShell =
-  "group flex h-full flex-col rounded-xl border border-msk-ink/[0.08] bg-white p-4 shadow-sm transition hover:border-msk-blue/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40";
-
-function kpiLabel(
+function moduleKpi(
   module: CommercialModule,
   count?: number | null,
 ): { value: string; hint?: string } | null {
+  if (count == null) return null;
+
   switch (module.id) {
     case "relances":
-      if (count == null) return null;
       return count > 0
         ? { value: String(count), hint: "à faire" }
         : { value: "0", hint: "à jour" };
     case "scripts":
-      return count != null
-        ? {
-            value: String(count),
-            hint: count > 1 ? "modèles" : "modèle",
-          }
-        : null;
+      return {
+        value: String(count),
+        hint: count > 1 ? "modèles" : "modèle",
+      };
     case "prospects":
-      return count != null
-        ? {
-            value: String(count),
-            hint: count > 1 ? "prospects" : "prospect",
-          }
-        : null;
+      return {
+        value: String(count),
+        hint: count > 1 ? "prospects" : "prospect",
+      };
     case "devis":
-      return count != null
-        ? { value: String(count), hint: "ouverts" }
-        : null;
+      return { value: String(count), hint: "ouverts" };
     case "factures":
-      return count != null
-        ? {
-            value: String(count),
-            hint: count > 1 ? "à encaisser" : "à encaisser",
-          }
-        : null;
+      return { value: String(count), hint: "à encaisser" };
     case "clients":
-      return count != null
-        ? {
-            value: String(count),
-            hint: count > 1 ? "clients" : "client",
-          }
-        : null;
-    case "offres":
-      return module.badgeLabel
-        ? { value: module.badgeLabel }
-        : null;
+      return {
+        value: String(count),
+        hint: count > 1 ? "clients" : "client",
+      };
     default:
       return null;
   }
@@ -109,121 +79,63 @@ function ModuleCard({
   module: CommercialModule;
   count?: number | null;
 }) {
-  const Icon = ICONS[module.id] ?? FileText;
-  const kpi = kpiLabel(module, count);
+  const kpi = moduleKpi(module, count);
 
   return (
-    <Link prefetch={false} href={module.href} className={cardShell}>
-      <div className="flex items-start justify-between gap-3">
-        <span
-          className={cn(
-            "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-            TONE_ICON[module.tone],
-          )}
-        >
-          <Icon className="h-5 w-5" aria-hidden />
-        </span>
-        <div className="flex min-w-0 items-start gap-2">
-          {kpi ? (
-            <div className="min-w-0 text-right">
-              <p className="text-lg font-semibold tabular-nums leading-none text-msk-ink">
-                {kpi.value}
-              </p>
-              {kpi.hint ? (
-                <p className="mt-0.5 text-[11px] leading-tight text-msk-ink/45">
-                  {kpi.hint}
-                </p>
-              ) : null}
-            </div>
-          ) : null}
-          <ArrowRight
-            className="mt-0.5 h-4 w-4 shrink-0 text-msk-blue/55 transition group-hover:translate-x-0.5 group-hover:text-msk-blue"
-            aria-hidden
-          />
-        </div>
-      </div>
-      <h3 className="mt-3 text-base font-semibold text-msk-ink">
-        {module.title}
-      </h3>
-      <p className="mt-1 flex-1 text-[13px] leading-snug text-msk-ink/50">
-        {module.description}
-      </p>
-    </Link>
+    <MetricNavCard
+      href={module.href}
+      icon={ICONS[module.id] ?? FileText}
+      tone={module.tone}
+      title={module.title}
+      description={module.description}
+      footer={
+        kpi ? <MetricNavKpi value={kpi.value} hint={kpi.hint} /> : undefined
+      }
+    />
   );
 }
 
 export type HubUrgency = {
   relances: number;
   factures: number;
-  showRapport: boolean;
 };
 
-/** Progression semaine → vendredi (0–5) pour le mini radial rapport. */
-function rapportWeekProgress(): number {
-  const d = new Date().getDay(); // 0 dim … 5 ven … 6 sam
-  if (d === 0) return 0;
-  if (d === 6) return 5;
-  return d;
-}
-
-function UrgencyCard({
+function UrgencyMetricCard({
   href,
   tone,
-  icon: Icon,
+  icon,
+  title,
+  description,
   value,
-  label,
-  chartValue,
-  chartMax,
+  caption,
 }: {
   href: string;
-  tone: "coral" | "blue" | "ink";
+  tone: Exclude<MetricNavTone, "cyan">;
   icon: LucideIcon;
-  value: ReactNode;
-  label: string;
-  chartValue: number;
-  chartMax: number;
+  title: string;
+  description: string;
+  value: number;
+  caption: string;
 }) {
-  const iconWrap =
-    tone === "coral"
-      ? "bg-msk-coral/10 text-msk-coral"
-      : tone === "blue"
-        ? "bg-msk-blue/10 text-msk-blue"
-        : "bg-msk-ink/[0.06] text-msk-ink/70";
+  const scale = Math.max(5, value);
 
   return (
-    <Link prefetch={false} href={href} className={cardShell}>
-      <div className="flex items-start justify-between gap-3">
-        <span
-          className={cn(
-            "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-            iconWrap,
-          )}
-        >
-          <Icon className="h-5 w-5" aria-hidden />
-        </span>
-        <div className="flex min-w-0 items-start gap-2">
-          <div className="min-w-0 text-right">
-            <p className="text-2xl font-semibold tabular-nums leading-none tracking-tight text-msk-ink">
-              {value}
-            </p>
-            <p className="mt-1 text-[11px] leading-tight text-msk-ink/45">
-              {label}
-            </p>
-          </div>
-          <ArrowRight
-            className="mt-1 h-4 w-4 shrink-0 text-msk-blue/55 transition group-hover:translate-x-0.5 group-hover:text-msk-blue"
-            aria-hidden
-          />
-        </div>
-      </div>
-      <div className="mt-auto flex justify-end pt-3">
+    <MetricNavCard
+      href={href}
+      icon={icon}
+      tone={tone}
+      title={title}
+      description={description}
+      footer={
         <HubMiniRadial
-          value={chartValue}
-          max={chartMax}
-          color={TONE_CHART[tone]}
+          value={value}
+          max={scale}
+          color={METRIC_NAV_TONE_CHART[tone]}
+          centerLabel={value}
+          caption={caption}
         />
-      </div>
-    </Link>
+      }
+    />
   );
 }
 
@@ -240,11 +152,7 @@ export function CommercialHubGrid({
   const bySection = (id: CommercialModule["section"]) =>
     modules.filter((m) => m.section === id);
 
-  const showUrgency =
-    urgency.relances > 0 || urgency.factures > 0 || urgency.showRapport;
-
-  const relancesScale = Math.max(5, urgency.relances);
-  const facturesScale = Math.max(5, urgency.factures);
+  const showUrgency = urgency.relances > 0 || urgency.factures > 0;
 
   return (
     <div className="space-y-8">
@@ -258,46 +166,35 @@ export function CommercialHubGrid({
               À traiter maintenant
             </h2>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             {urgency.relances > 0 ? (
-              <UrgencyCard
+              <UrgencyMetricCard
                 href="/crm/relances"
                 tone="coral"
                 icon={Bell}
+                title="Relances"
+                description="À faire aujourd’hui, en retard, cette semaine."
                 value={urgency.relances}
-                label={
+                caption={
                   urgency.relances > 1
                     ? "relances à faire"
                     : "relance à faire"
                 }
-                chartValue={urgency.relances}
-                chartMax={relancesScale}
               />
             ) : null}
             {urgency.factures > 0 ? (
-              <UrgencyCard
+              <UrgencyMetricCard
                 href="/commercial/factures"
                 tone="blue"
                 icon={Receipt}
+                title="Factures"
+                description="Émission, paiements et solde à encaisser."
                 value={urgency.factures}
-                label={
+                caption={
                   urgency.factures > 1
                     ? "factures à encaisser"
                     : "facture à encaisser"
                 }
-                chartValue={urgency.factures}
-                chartMax={facturesScale}
-              />
-            ) : null}
-            {urgency.showRapport ? (
-              <UrgencyCard
-                href="/crm/rapport-semaine"
-                tone="ink"
-                icon={Calendar}
-                value="Ven. 17h"
-                label="échéance rapport hebdo"
-                chartValue={rapportWeekProgress()}
-                chartMax={5}
               />
             ) : null}
           </div>

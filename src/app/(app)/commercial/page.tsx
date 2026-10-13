@@ -145,7 +145,6 @@ export default async function CommercialHubPage() {
         urgency={{
           relances: overdue,
           factures: unpaid,
-          showRapport: canCrm,
         }}
       />
     </PageShell>
