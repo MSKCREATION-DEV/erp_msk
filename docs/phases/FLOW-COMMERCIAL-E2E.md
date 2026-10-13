@@ -21,12 +21,12 @@
 Menu `/commercial` (**pas** de tabs) :
 
 1. CTAs **Nouveau prospect** / **Nouveau devis**  
-2. **À traiter maintenant** — relances dues, factures à encaisser, échéance rapport  
-3. **Prospection** — Prospects · Relances · Scripts  
-4. **Vente et facturation** — Offres · Devis · Factures · Clients  
-5. **Pilotage** — Tableau de bord · Vue Équipe* · Rapport  
+2. **À traiter maintenant** — cartes blanches, KPI en haut à droite, flèche, mini radial empilé  
+3. **Pilotage** — Tableau de bord · Vue Équipe* · Rapport *(sans badges En direct / Équipe / Ven. 17h)*  
+4. **Prospection** — Prospects · Relances · Scripts  
+5. **Vente et facturation** — Offres · Devis · Factures · Clients  
 
-Cartes blanches + icônes MSK (pas de bandeaux dégradé pleine largeur).
+Cartes blanches ; couleur uniquement sur icône (+ chart urgences). KPI modules en haut à droite.
 
 Sous-pages — `commercialNavItems` (`src/lib/commercial/nav.ts`) :
 

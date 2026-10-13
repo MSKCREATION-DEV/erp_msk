@@ -1,7 +1,7 @@
 /**
  * Modules du hub Commercial — sections métier (proposition v2 + charte MSK).
  */
-export type CommercialHubSection = "prospection" | "vente" | "pilotage";
+export type CommercialHubSection = "pilotage" | "prospection" | "vente";
 
 export type CommercialModule = {
   id: string;
@@ -12,15 +12,21 @@ export type CommercialModule = {
   /** Accent MSK (pas de violet). */
   tone: "blue" | "coral" | "cyan" | "ink";
   permission?: string;
-  /** Libellé badge fixe (ex. « Catalogue ») si pas de compteur. */
+  /** Libellé fixe à droite (ex. Catalogue) — pas pour Pilotage. */
   badgeLabel?: string;
 };
 
+/** Ordre d’affichage : Pilotage d’abord. */
 export const HUB_SECTIONS: {
   id: CommercialHubSection;
   title: string;
   subtitle: string;
 }[] = [
+  {
+    id: "pilotage",
+    title: "Pilotage",
+    subtitle: "Mesurer et rendre compte",
+  },
   {
     id: "prospection",
     title: "Prospection",
@@ -31,14 +37,36 @@ export const HUB_SECTIONS: {
     title: "Vente et facturation",
     subtitle: "Proposer, signer, encaisser",
   },
-  {
-    id: "pilotage",
-    title: "Pilotage",
-    subtitle: "Mesurer et rendre compte",
-  },
 ];
 
 export const COMMERCIAL_MODULES: CommercialModule[] = [
+  {
+    id: "tableau",
+    href: "/crm",
+    title: "Tableau de bord",
+    description: "Indicateurs live, statuts, urgences et graphiques.",
+    section: "pilotage",
+    tone: "ink",
+    permission: "crm.access",
+  },
+  {
+    id: "equipe",
+    href: "/crm/equipe",
+    title: "Vue Équipe",
+    description: "Volumes et retards par collab (visibilité équipe).",
+    section: "pilotage",
+    tone: "ink",
+    permission: "crm.access",
+  },
+  {
+    id: "rapport",
+    href: "/crm/rapport-semaine",
+    title: "Rapport",
+    description: "Chiffres auto + synthèse avant vendredi 17h.",
+    section: "pilotage",
+    tone: "ink",
+    permission: "crm.access",
+  },
   {
     id: "prospects",
     href: "/crm/prospects",
@@ -102,35 +130,5 @@ export const COMMERCIAL_MODULES: CommercialModule[] = [
     section: "vente",
     tone: "cyan",
     permission: "com.access",
-  },
-  {
-    id: "tableau",
-    href: "/crm",
-    title: "Tableau de bord",
-    description: "Indicateurs live, statuts, urgences et graphiques.",
-    section: "pilotage",
-    tone: "ink",
-    permission: "crm.access",
-    badgeLabel: "En direct",
-  },
-  {
-    id: "equipe",
-    href: "/crm/equipe",
-    title: "Vue Équipe",
-    description: "Volumes et retards par collab (visibilité équipe).",
-    section: "pilotage",
-    tone: "ink",
-    permission: "crm.access",
-    badgeLabel: "Équipe",
-  },
-  {
-    id: "rapport",
-    href: "/crm/rapport-semaine",
-    title: "Rapport",
-    description: "Chiffres auto + synthèse avant vendredi 17h.",
-    section: "pilotage",
-    tone: "ink",
-    permission: "crm.access",
-    badgeLabel: "Ven. 17h",
   },
 ];
