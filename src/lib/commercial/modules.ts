@@ -1,33 +1,51 @@
 /**
- * Modules du hub Commercial — entrée par cartes (FLOW-COMMERCIAL-E2E).
+ * Modules du hub Commercial — sections métier (proposition v2 + charte MSK).
  */
+export type CommercialHubSection = "prospection" | "vente" | "pilotage";
+
 export type CommercialModule = {
   id: string;
   href: string;
   title: string;
   description: string;
-  /** Dégradé bandeau (charte MSK — fonds clairs). */
-  band: string;
+  section: CommercialHubSection;
+  /** Accent MSK (pas de violet). */
+  tone: "blue" | "coral" | "cyan" | "ink";
   permission?: string;
-  match?: string[];
+  /** Libellé badge fixe (ex. « Catalogue ») si pas de compteur. */
+  badgeLabel?: string;
 };
 
-export const COMMERCIAL_MODULES: CommercialModule[] = [
+export const HUB_SECTIONS: {
+  id: CommercialHubSection;
+  title: string;
+  subtitle: string;
+}[] = [
   {
-    id: "tableau",
-    href: "/crm",
-    title: "Tableau de bord",
-    description: "Indicateurs live, statuts, urgences et graphiques.",
-    band: "from-[#2A3D8E] to-[#00ACEE]",
-    permission: "crm.access",
-    match: ["/crm"],
+    id: "prospection",
+    title: "Prospection",
+    subtitle: "Trouver, contacter, relancer",
   },
+  {
+    id: "vente",
+    title: "Vente et facturation",
+    subtitle: "Proposer, signer, encaisser",
+  },
+  {
+    id: "pilotage",
+    title: "Pilotage",
+    subtitle: "Mesurer et rendre compte",
+  },
+];
+
+export const COMMERCIAL_MODULES: CommercialModule[] = [
   {
     id: "prospects",
     href: "/crm/prospects",
     title: "Prospects",
     description: "Portefeuille, statuts, relances et fiches détaillées.",
-    band: "from-[#1D73BC] to-[#2A3D8E]",
+    section: "prospection",
+    tone: "blue",
     permission: "crm.access",
   },
   {
@@ -35,7 +53,8 @@ export const COMMERCIAL_MODULES: CommercialModule[] = [
     href: "/crm/relances",
     title: "Relances",
     description: "À faire aujourd’hui, en retard, cette semaine.",
-    band: "from-[#1384CB] to-[#1D73BC]",
+    section: "prospection",
+    tone: "coral",
     permission: "crm.access",
   },
   {
@@ -43,40 +62,27 @@ export const COMMERCIAL_MODULES: CommercialModule[] = [
     href: "/crm/scripts",
     title: "Scripts",
     description: "Messages IG, LinkedIn, WhatsApp et relances à copier.",
-    band: "from-[#00ACEE] to-[#1D73BC]",
+    section: "prospection",
+    tone: "blue",
     permission: "crm.scripts.view",
   },
   {
-    id: "equipe",
-    href: "/crm/equipe",
-    title: "Vue Équipe",
-    description: "Volumes et retards par collab (visibilité équipe).",
-    band: "from-[#1D73BC] to-[#284393]",
-    /** Filtré côté hub via visibilité CRM (pas own). */
-    permission: "crm.access",
-  },
-  {
-    id: "rapport",
-    href: "/crm/rapport-semaine",
-    title: "Rapport",
-    description: "Chiffres auto + synthèse avant vendredi 17h.",
-    band: "from-[#1384CB] to-[#00ACEE]",
-    permission: "crm.access",
-  },
-  {
-    id: "clients",
-    href: "/commercial/clients",
-    title: "Clients",
-    description: "Clients signés et conversion depuis un prospect.",
-    band: "from-[#284393] to-[#1D73BC]",
-    permission: "com.access",
+    id: "offres",
+    href: "/catalogue",
+    title: "Offres",
+    description: "Catalogue MSK, tarifs et planchers.",
+    section: "vente",
+    tone: "cyan",
+    permission: "com.catalogue.view",
+    badgeLabel: "Catalogue",
   },
   {
     id: "devis",
     href: "/commercial/devis",
     title: "Devis",
     description: "Propositions, envoi PDF et suivi d’acceptation.",
-    band: "from-[#2A3D8E] to-[#1384CB]",
+    section: "vente",
+    tone: "cyan",
     permission: "com.access",
   },
   {
@@ -84,15 +90,47 @@ export const COMMERCIAL_MODULES: CommercialModule[] = [
     href: "/commercial/factures",
     title: "Factures",
     description: "Émission, paiements et solde à encaisser.",
-    band: "from-[#1D73BC] to-[#00ACEE]",
+    section: "vente",
+    tone: "cyan",
     permission: "com.access",
   },
   {
-    id: "offres",
-    href: "/catalogue",
-    title: "Offres",
-    description: "Catalogue MSK, tarifs et planchers.",
-    band: "from-[#0D1330] to-[#1D73BC]",
-    permission: "com.catalogue.view",
+    id: "clients",
+    href: "/commercial/clients",
+    title: "Clients",
+    description: "Clients signés et conversion depuis un prospect.",
+    section: "vente",
+    tone: "cyan",
+    permission: "com.access",
+  },
+  {
+    id: "tableau",
+    href: "/crm",
+    title: "Tableau de bord",
+    description: "Indicateurs live, statuts, urgences et graphiques.",
+    section: "pilotage",
+    tone: "ink",
+    permission: "crm.access",
+    badgeLabel: "En direct",
+  },
+  {
+    id: "equipe",
+    href: "/crm/equipe",
+    title: "Vue Équipe",
+    description: "Volumes et retards par collab (visibilité équipe).",
+    section: "pilotage",
+    tone: "ink",
+    permission: "crm.access",
+    badgeLabel: "Équipe",
+  },
+  {
+    id: "rapport",
+    href: "/crm/rapport-semaine",
+    title: "Rapport",
+    description: "Chiffres auto + synthèse avant vendredi 17h.",
+    section: "pilotage",
+    tone: "ink",
+    permission: "crm.access",
+    badgeLabel: "Ven. 17h",
   },
 ];

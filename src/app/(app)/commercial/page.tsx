@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -18,6 +19,11 @@ import { PageShell } from "@/components/ui/page-shell";
 
 export const metadata: Metadata = { title: "Commercial" };
 
+const linkBtn =
+  "inline-flex h-9 items-center justify-center rounded-lg px-3 text-sm font-medium transition";
+const linkPrimary = `${linkBtn} bg-msk-blue text-white hover:bg-msk-blue/90`;
+const linkSecondary = `${linkBtn} border border-msk-ink/15 bg-white text-msk-ink hover:bg-msk-chalk`;
+
 export default async function CommercialHubPage() {
   const user = await requireUser();
   if (
@@ -33,9 +39,14 @@ export default async function CommercialHubPage() {
   const quoteWhere = comQuoteOwnerScopeWhere(user);
   const invoiceWhere = comInvoiceOwnerScopeWhere(user);
 
+  const canCrm = hasPermission(user, "crm.access");
+  const canCom = hasPermission(user, "com.access");
+  const canCreateProspect = hasPermission(user, "crm.prospect.create");
+  const canCreateQuote = hasPermission(user, "com.devis.create");
+
   const [prospects, overdue, scripts, clients, openQuotes, unpaid] =
     await Promise.all([
-      hasPermission(user, "crm.access")
+      canCrm
         ? prisma.crmOpportunity.count({
             where: {
               ...dealScope,
@@ -43,7 +54,7 @@ export default async function CommercialHubPage() {
             },
           })
         : Promise.resolve(0),
-      hasPermission(user, "crm.access")
+      canCrm
         ? prisma.crmTask.count({
             where: {
               status: "OPEN",
@@ -59,10 +70,10 @@ export default async function CommercialHubPage() {
       hasPermission(user, "crm.scripts.view")
         ? prisma.crmScript.count({ where: { active: true } })
         : Promise.resolve(0),
-      hasPermission(user, "com.access")
+      canCom
         ? prisma.comClient.count({ where: clientWhere })
         : Promise.resolve(0),
-      hasPermission(user, "com.access")
+      canCom
         ? prisma.comQuote.count({
             where: {
               ...quoteWhere,
@@ -70,7 +81,7 @@ export default async function CommercialHubPage() {
             },
           })
         : Promise.resolve(0),
-      hasPermission(user, "com.access")
+      canCom
         ? prisma.comInvoice.count({
             where: {
               ...invoiceWhere,
@@ -99,14 +110,44 @@ export default async function CommercialHubPage() {
     <PageShell>
       <PageHeader
         title="Commercial"
-        description="Choisissez un espace — suivi prospects, ventes et offres. Indicateurs en direct."
+        description="Prospection, vente et pilotage — indicateurs en direct."
         breadcrumbs={[
           { label: "Accueil", href: "/accueil" },
           { label: "Commercial" },
         ]}
+        actions={
+          <div className="flex flex-wrap gap-2">
+            {canCreateProspect ? (
+              <Link
+                prefetch={false}
+                href="/crm/prospects/nouveau"
+                className={linkPrimary}
+              >
+                + Nouveau prospect
+              </Link>
+            ) : null}
+            {canCreateQuote ? (
+              <Link
+                prefetch={false}
+                href="/commercial/devis/nouveau"
+                className={linkSecondary}
+              >
+                + Nouveau devis
+              </Link>
+            ) : null}
+          </div>
+        }
       />
 
-      <CommercialHubGrid modules={modules} counts={counts} />
+      <CommercialHubGrid
+        modules={modules}
+        counts={counts}
+        urgency={{
+          relances: overdue,
+          factures: unpaid,
+          showRapport: canCrm,
+        }}
+      />
     </PageShell>
   );
 }

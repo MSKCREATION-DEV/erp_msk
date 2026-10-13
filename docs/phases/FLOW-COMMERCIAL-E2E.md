@@ -16,9 +16,17 @@
 | Offres | tab / carte → `/catalogue` | + `com.catalogue.view` |
 | Comptabilité | `/comptabilite` | Comptable / Direction — pas le suivi prospects |
 
-### 1.1 Menu = cartes ; sous-pages = tabs filtrées
+### 1.1 Menu = hub par sections (proposition v2)
 
-Menu `/commercial` = grille de cartes (**pas** de tabs).
+Menu `/commercial` (**pas** de tabs) :
+
+1. CTAs **Nouveau prospect** / **Nouveau devis**  
+2. **À traiter maintenant** — relances dues, factures à encaisser, échéance rapport  
+3. **Prospection** — Prospects · Relances · Scripts  
+4. **Vente et facturation** — Offres · Devis · Factures · Clients  
+5. **Pilotage** — Tableau de bord · Vue Équipe* · Rapport  
+
+Cartes blanches + icônes MSK (pas de bandeaux dégradé pleine largeur).
 
 Sous-pages — `commercialNavItems` (`src/lib/commercial/nav.ts`) :
 
