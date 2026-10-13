@@ -783,6 +783,9 @@ export async function generateQuotePdfAction(
     data: { gedDocumentId: doc.id },
   });
   if (claimed.count === 0) {
+    // Course : un autre PDF a gagné — supprimer le Document orphelin
+    // (même chemin Storage que le gagnant → ne pas removeGedObject).
+    await prisma.document.delete({ where: { id: doc.id } }).catch(() => null);
     const current = await prisma.comQuote.findUnique({
       where: { id: quote.id },
       select: { gedDocumentId: true },
@@ -790,7 +793,7 @@ export async function generateQuotePdfAction(
     return {
       ok: true,
       message: "PDF déjà généré — ouvrez la miniature",
-      documentId: current?.gedDocumentId ?? doc.id,
+      documentId: current?.gedDocumentId ?? undefined,
     };
   }
 
@@ -832,6 +835,7 @@ export async function createInvoiceFromQuoteAction(
     };
   }
 
+  let invoiceId: string;
   try {
     const invoice = await prisma.$transaction(async (tx) => {
       const existing = await tx.comInvoice.findUnique({
@@ -880,16 +884,7 @@ export async function createInvoiceFromQuoteAction(
         metadata: { quoteId },
       });
     }
-
-    revalidateCommercial([
-      `/commercial/factures/${invoice.invoice.id}`,
-      `/commercial/devis/${quoteId}`,
-    ]);
-    return {
-      ok: true,
-      message: invoice.created ? "Facture créée" : "Facture déjà créée",
-      invoiceId: invoice.invoice.id,
-    };
+    invoiceId = invoice.invoice.id;
   } catch (e) {
     if (
       e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -899,15 +894,20 @@ export async function createInvoiceFromQuoteAction(
         where: { quoteId: quote.id },
       });
       if (existing) {
-        return {
-          ok: true,
-          message: "Facture déjà créée",
-          invoiceId: existing.id,
-        };
+        invoiceId = existing.id;
+      } else {
+        throw e;
       }
+    } else {
+      throw e;
     }
-    throw e;
   }
+
+  revalidateCommercial([
+    `/commercial/factures/${invoiceId}`,
+    `/commercial/devis/${quoteId}`,
+  ]);
+  redirect(`/commercial/factures/${invoiceId}`);
 }
 
 export async function issueInvoiceAction(
@@ -972,10 +972,13 @@ export async function generateInvoicePdfAction(
   if (!canAccessOwned(actor, invoice.ownerId)) {
     return { ok: false, error: "Hors périmètre" };
   }
-  if (invoice.status === "BROUILLON") {
+  if (invoice.status === "BROUILLON" || invoice.status === "ANNULEE") {
     return {
       ok: false,
-      error: "Émettez la facture avant de générer le PDF",
+      error:
+        invoice.status === "BROUILLON"
+          ? "Émettez la facture avant de générer le PDF"
+          : "Facture annulée — PDF indisponible",
     };
   }
   if (invoice.gedDocumentId) {
@@ -1068,6 +1071,7 @@ export async function generateInvoicePdfAction(
     data: { gedDocumentId: doc.id },
   });
   if (claimed.count === 0) {
+    await prisma.document.delete({ where: { id: doc.id } }).catch(() => null);
     const current = await prisma.comInvoice.findUnique({
       where: { id: invoice.id },
       select: { gedDocumentId: true },
@@ -1075,7 +1079,7 @@ export async function generateInvoicePdfAction(
     return {
       ok: true,
       message: "PDF déjà généré — ouvrez la miniature",
-      documentId: current?.gedDocumentId ?? doc.id,
+      documentId: current?.gedDocumentId ?? undefined,
     };
   }
 

@@ -89,11 +89,11 @@ export default async function CommercialFactureDetailPage({
     canCptPropose &&
     ["EMISE", "PARTIELLEMENT_PAYEE", "PAYEE"].includes(invoice.status);
   const showComActions = canCom;
-  const canPdf = hasPermission(user, "com.factures.create");
-  const needsPdf =
+  const canPdf =
+    hasPermission(user, "com.factures.create") &&
     invoice.status !== "BROUILLON" &&
-    invoice.status !== "ANNULEE" &&
-    !invoice.gedDocumentId;
+    invoice.status !== "ANNULEE";
+  const needsPdf = canPdf && !invoice.gedDocumentId;
 
   return (
     <PageShell>
@@ -152,7 +152,7 @@ export default async function CommercialFactureDetailPage({
           status={invoice.status}
           canIssue={hasPermission(user, "com.factures.issue")}
           canPdf={canPdf}
-          gedDocumentId={invoice.gedDocumentId}
+          gedDocumentId={pdfDoc?.id ?? null}
         />
       ) : null}
 

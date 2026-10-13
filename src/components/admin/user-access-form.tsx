@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 import {
   ChevronRight,
   KeyRound,
@@ -9,9 +9,8 @@ import {
   Users,
 } from "lucide-react";
 import {
-  removeOverrideAction,
-  setOverrideAction,
   setUserStatusAction,
+  syncOverridesAction,
   updateUserAccessAction,
 } from "@/actions/users";
 import { adminResetPasswordAction, type ActionResult } from "@/actions/auth";
@@ -31,6 +30,7 @@ import { GroupPicker, type GroupOption } from "@/components/admin/group-picker";
 import { PackPicker, type PackOption } from "@/components/admin/pack-picker";
 import {
   PermissionDomainPicker,
+  type PermissionMark,
   type PermissionOption,
 } from "@/components/admin/permission-domains";
 
@@ -51,6 +51,10 @@ export function UserAccessForm({
   selectedPackIds,
   overrides,
   permissions,
+  /** Codes effectivement accordés (packs + GRANT − DENY). */
+  effectivePermissionCodes,
+  /** Badges Pack / Groupe / GRANT / DENY par code. */
+  permissionMarks,
   canManageAccess,
   canSuspend,
   canReset,
@@ -64,6 +68,8 @@ export function UserAccessForm({
   selectedPackIds: string[];
   overrides: OverrideRow[];
   permissions: PermissionOption[];
+  effectivePermissionCodes: string[];
+  permissionMarks: Record<string, PermissionMark>;
   canManageAccess: boolean;
   canSuspend: boolean;
   canReset: boolean;
@@ -71,6 +77,15 @@ export function UserAccessForm({
   isSuperAdminTarget: boolean;
 }) {
   const [drawer, setDrawer] = useState<DrawerId>(null);
+  /** Remount pickers à chaque ouverture pour recharger l’état serveur. */
+  const [accessKey, setAccessKey] = useState(0);
+  const [overridesKey, setOverridesKey] = useState(0);
+
+  const [draftGroupIds, setDraftGroupIds] = useState(selectedGroupIds);
+  const [draftPackIds, setDraftPackIds] = useState(selectedPackIds);
+  const [draftDesiredCodes, setDraftDesiredCodes] = useState(
+    () => effectivePermissionCodes,
+  );
 
   const [accessState, accessAction, accessPending] = useActionState<
     ActionResult | null,
@@ -87,18 +102,55 @@ export function UserAccessForm({
   const [ovState, ovAction, ovPending] = useActionState<
     ActionResult | null,
     FormData
-  >(setOverrideAction, null);
-  const [rmState, rmAction] = useActionState<ActionResult | null, FormData>(
-    removeOverrideAction,
-    null,
-  );
+  >(syncOverridesAction, null);
 
   useEffect(() => {
     if (accessState?.ok) setDrawer(null);
   }, [accessState]);
 
+  useEffect(() => {
+    if (ovState?.ok) setDrawer(null);
+  }, [ovState]);
+
+  /** Sync props → draft quand la fiche se revalide (hors drawer ouvert). */
+  useEffect(() => {
+    if (drawer !== "access") {
+      setDraftGroupIds(selectedGroupIds);
+      setDraftPackIds(selectedPackIds);
+    }
+  }, [selectedGroupIds, selectedPackIds, drawer]);
+
+  useEffect(() => {
+    if (drawer !== "overrides") {
+      setDraftDesiredCodes(effectivePermissionCodes);
+    }
+  }, [effectivePermissionCodes, drawer]);
+
+  function openAccess() {
+    setDraftGroupIds(selectedGroupIds);
+    setDraftPackIds(selectedPackIds);
+    setAccessKey((k) => k + 1);
+    setDrawer("access");
+  }
+
+  function openOverrides() {
+    setDraftDesiredCodes(effectivePermissionCodes);
+    setOverridesKey((k) => k + 1);
+    setDrawer("overrides");
+  }
+
   const selectedPacks = packs.filter((p) => selectedPackIds.includes(p.id));
   const selectedGroups = groups.filter((g) => selectedGroupIds.includes(g.id));
+
+  const inheritedPackIds = useMemo(() => {
+    const codes = new Set(
+      groups
+        .filter((g) => draftGroupIds.includes(g.id))
+        .map((g) => g.defaultPackCode)
+        .filter(Boolean) as string[],
+    );
+    return packs.filter((p) => codes.has(p.code)).map((p) => p.id);
+  }, [groups, draftGroupIds, packs]);
 
   return (
     <div className="space-y-4">
@@ -112,7 +164,7 @@ export function UserAccessForm({
                 ? `${selectedGroups.length} groupe(s) · ${selectedPacks.length} pack(s) direct(s)`
                 : "Aucun accès configuré"
             }
-            onClick={() => setDrawer("access")}
+            onClick={openAccess}
           >
             <div className="mt-3 space-y-2">
               <div className="flex flex-wrap gap-1.5">
@@ -143,20 +195,24 @@ export function UserAccessForm({
         {canOverride ? (
           <ActionCard
             icon={ShieldAlert}
-            title="Overrides"
+            title="Droits & exceptions"
             subtitle={
-              overrides.length
-                ? `${overrides.length} exception(s)`
-                : "Aucune exception"
+              effectivePermissionCodes.length
+                ? `${effectivePermissionCodes.length} droit(s) effectif(s)${
+                    overrides.length ? ` · ${overrides.length} exception(s)` : ""
+                  }`
+                : "Aucun droit effectif"
             }
-            onClick={() => setDrawer("overrides")}
+            onClick={openOverrides}
           >
             <ul className="mt-3 space-y-1 text-xs text-msk-ink/55">
               {overrides.slice(0, 3).map((o) => (
                 <li key={o.id}>
                   <span
                     className={
-                      o.effect === "GRANT" ? "text-emerald-700" : "text-msk-coral"
+                      o.effect === "GRANT"
+                        ? "text-emerald-700"
+                        : "text-msk-coral"
                     }
                   >
                     {o.effect}
@@ -165,7 +221,9 @@ export function UserAccessForm({
                 </li>
               ))}
               {overrides.length === 0 ? (
-                <li className="text-msk-ink/35">Exceptions rares (GRANT / DENY)</li>
+                <li className="text-msk-ink/35">
+                  Ouvrir pour voir / ajuster tous les droits de ce compte
+                </li>
               ) : null}
             </ul>
           </ActionCard>
@@ -189,10 +247,10 @@ export function UserAccessForm({
         open={drawer === "access"}
         onOpenChange={(open) => !open && setDrawer(null)}
         title="Modifier les accès"
-        description="1) Groupes (héritage pack défaut) · 2) Packs directs (cumul) · 3) Overrides ailleurs."
+        description="À l’ouverture, les groupes et packs déjà assignés sont cochés. Décochez pour retirer, cochez pour ajouter."
         wide
       >
-        <form action={accessAction} className="space-y-6">
+        <form action={accessAction} className="space-y-6" key={accessKey}>
           <input type="hidden" name="userId" value={userId} />
           <section>
             <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-msk-ink">
@@ -200,10 +258,14 @@ export function UserAccessForm({
               1 · Groupes
             </h3>
             <p className="mb-3 text-xs text-msk-ink/45">
-              Ex. « Commerciaux » → pack Commercial. Base recommandée pour un
-              métier.
+              Ex. « Commerciaux » → pack Commercial (dossiers suivis, sans Vue
+              Équipe). Admin CRM = pack direct en plus.
             </p>
-            <GroupPicker groups={groups} defaultSelected={selectedGroupIds} />
+            <GroupPicker
+              groups={groups}
+              selected={draftGroupIds}
+              onChange={setDraftGroupIds}
+            />
           </section>
           <section>
             <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-msk-ink">
@@ -211,19 +273,22 @@ export function UserAccessForm({
               2 · Packs directs
             </h3>
             <p className="mb-3 text-xs text-msk-ink/45">
-              Uniquement si besoin d’un cumul (ex. Admin CRM en plus). Évitez de
-              dupliquer le pack déjà hérité du groupe.
+              Uniquement pour un cumul (ex. Admin CRM). Les packs marqués
+              « Hérité groupe » sont déjà couverts — ne les cochez pas en
+              double sauf besoin.
             </p>
             <PackPicker
               packs={packs}
-              defaultSelected={selectedPackIds}
+              selected={draftPackIds}
+              onChange={setDraftPackIds}
+              inheritedPackIds={inheritedPackIds}
               compact
             />
           </section>
           <div className="rounded-lg border border-msk-blue/20 bg-msk-blue/[0.04] px-3 py-2 text-xs text-msk-ink/60">
-            Exemple terrain : groupes Collaborateur + Commerciaux,{" "}
-            <strong>aucun</strong> pack Admin CRM — sinon GED complète +
-            catalogue éditable.
+            <strong>Commercial</strong> : groupe Commerciaux suffit pour le
+            terrain. Vue Équipe / import / scripts / objectifs → ajoutez le pack{" "}
+            <strong>Admin CRM</strong> en direct.
           </div>
           {accessState?.error ? (
             <p className="text-sm text-msk-coral">{accessState.error}</p>
@@ -249,92 +314,59 @@ export function UserAccessForm({
       <SideDrawer
         open={drawer === "overrides"}
         onOpenChange={(open) => !open && setDrawer(null)}
-        title="Overrides"
-        description="Exceptions individuelles prioritaires sur packs & groupes. Multi-sélection possible."
+        title="Droits de ce compte"
+        description="Tous les droits déjà accordés sont cochés. Décochez pour retirer (DENY), cochez pour ajouter (GRANT)."
         wide
       >
-        <div className="space-y-5">
-          <ul className="space-y-2 text-sm">
-            {overrides.length === 0 ? (
-              <li className="rounded-lg border border-dashed border-msk-ink/15 px-3 py-4 text-center text-msk-ink/40">
-                Aucun override
-              </li>
-            ) : (
-              overrides.map((o) => (
-                <li
-                  key={o.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-msk-ink/10 px-3 py-2"
-                >
-                  <span>
-                    <strong
-                      className={
-                        o.effect === "GRANT"
-                          ? "text-emerald-700"
-                          : "text-msk-coral"
-                      }
-                    >
-                      {o.effect}
-                    </strong>{" "}
-                    {o.permissionCode}
-                    {o.reason ? ` — ${o.reason}` : ""}
-                  </span>
-                  <form action={rmAction}>
-                    <input type="hidden" name="overrideId" value={o.id} />
-                    <Button type="submit" variant="ghost" size="sm">
-                      Retirer
-                    </Button>
-                  </form>
-                </li>
-              ))
-            )}
-          </ul>
+        <form action={ovAction} className="space-y-5" key={overridesKey}>
+          <input type="hidden" name="userId" value={userId} />
 
-          <form
-            action={ovAction}
-            className="space-y-4 border-t border-msk-ink/[0.06] pt-4"
-          >
-            <input type="hidden" name="userId" value={userId} />
-            <h3 className="text-sm font-semibold text-msk-ink">
-              Ajouter des overrides
-            </h3>
-            <p className="text-xs text-msk-ink/45">
-              Cochez une ou plusieurs permissions, puis choisissez GRANT ou DENY.
-            </p>
-            <PermissionDomainPicker
-              permissions={permissions}
-              name="permissionCodes"
-              mode="multi"
+          <div className="rounded-lg border border-msk-blue/20 bg-msk-blue/[0.04] px-3 py-2 text-xs text-msk-ink/60">
+            <strong>{draftDesiredCodes.length}</strong> droit(s) coché(s) pour
+            ce compte (groupes, packs, exceptions). CRM / Commercial en tête.
+            Enregistrer calcule automatiquement GRANT / DENY par rapport aux
+            packs.
+          </div>
+
+          <PermissionDomainPicker
+            permissions={permissions}
+            name="permissionCodes"
+            mode="multi"
+            selectedCodes={draftDesiredCodes}
+            onChange={setDraftDesiredCodes}
+            marksByCode={permissionMarks}
+            preferDomains={["crm", "com"]}
+          />
+
+          <div>
+            <Label htmlFor="reason">Motif (si vous modifiez)</Label>
+            <Input
+              id="reason"
+              name="reason"
+              placeholder="Ex. Retirer l’accès factures temporairement"
             />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div>
-                <Label htmlFor="effect">Effet</Label>
-                <select
-                  id="effect"
-                  name="effect"
-                  className="h-11 w-full cursor-pointer rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-                >
-                  <option value="GRANT">GRANT</option>
-                  <option value="DENY">DENY</option>
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="reason">Motif</Label>
-                <Input id="reason" name="reason" />
-              </div>
-            </div>
-            {ovState?.error ? (
-              <p className="text-sm text-msk-coral">{ovState.error}</p>
-            ) : null}
-            {ovState?.message || rmState?.message ? (
-              <p className="text-sm text-msk-blue">
-                {ovState?.message ?? rmState?.message}
-              </p>
-            ) : null}
-            <Button type="submit" disabled={ovPending}>
-              {ovPending ? "Enregistrement…" : "Ajouter"}
+          </div>
+
+          {ovState?.error ? (
+            <p className="text-sm text-msk-coral">{ovState.error}</p>
+          ) : null}
+          {ovState?.message ? (
+            <p className="text-sm text-msk-blue">{ovState.message}</p>
+          ) : null}
+
+          <div className="sticky bottom-0 flex gap-2 border-t border-msk-ink/[0.06] bg-white pt-4">
+            <Button type="submit" disabled={ovPending} className="flex-1">
+              {ovPending ? "Enregistrement…" : "Enregistrer les droits"}
             </Button>
-          </form>
-        </div>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setDrawer(null)}
+            >
+              Annuler
+            </Button>
+          </div>
+        </form>
       </SideDrawer>
 
       <SideDrawer
@@ -378,10 +410,14 @@ export function UserAccessForm({
                 </Button>
               </form>
               {statusState?.message ? (
-                <p className="mt-2 text-sm text-msk-blue">{statusState.message}</p>
+                <p className="mt-2 text-sm text-msk-blue">
+                  {statusState.message}
+                </p>
               ) : null}
               {statusState?.error ? (
-                <p className="mt-2 text-sm text-msk-coral">{statusState.error}</p>
+                <p className="mt-2 text-sm text-msk-coral">
+                  {statusState.error}
+                </p>
               ) : null}
             </section>
           ) : null}
@@ -394,14 +430,20 @@ export function UserAccessForm({
               <form action={resetAction} className="space-y-3">
                 <input type="hidden" name="userId" value={userId} />
                 <div>
-                  <Label htmlFor="tempPassword">MDP temporaire (optionnel)</Label>
+                  <Label htmlFor="tempPassword">
+                    MDP temporaire (optionnel)
+                  </Label>
                   <Input
                     id="tempPassword"
                     name="tempPassword"
                     autoComplete="off"
                   />
                 </div>
-                <Button type="submit" variant="secondary" disabled={resetPending}>
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  disabled={resetPending}
+                >
                   Réinitialiser
                 </Button>
                 {resetState?.message ? (

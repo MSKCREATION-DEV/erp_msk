@@ -119,13 +119,14 @@ export function QuoteCreateForm({
   function addLineFromOffer(offerId: string) {
     const o = offers.find((x) => x.id === offerId);
     if (!o) return;
+    // Catalogue = XOF uniquement — en FR/EUR on préremplit le libellé, prix à saisir.
     setLines((prev) => [
       ...prev,
       {
         key: `${Date.now()}`,
         label: `${o.sku} · ${o.name}`,
         qty: 1,
-        unitPrice: o.priceXof ?? 0,
+        unitPrice: currency === "EUR" ? 0 : (o.priceXof ?? 0),
         catalogOfferId: o.id,
       },
     ]);
@@ -151,6 +152,18 @@ export function QuoteCreateForm({
     if (payload.length === 0) {
       setError("Ajoutez au moins une ligne de devis.");
       return;
+    }
+
+    if (currency === "EUR") {
+      const missingEur = payload.find(
+        (l) => l.catalogOfferId && !(l.unitPrice > 0),
+      );
+      if (missingEur) {
+        setError(
+          `Saisissez le prix en EUR pour « ${missingEur.label} » (catalogue = FCFA).`,
+        );
+        return;
+      }
     }
 
     const floorCheck = assertLinesAboveFloor({
@@ -250,12 +263,28 @@ export function QuoteCreateForm({
               id="regime"
               value={regime}
               disabled={pending}
-              onChange={(e) => setRegime(e.target.value as "ML" | "FR")}
+              onChange={(e) => {
+                const next = e.target.value as "ML" | "FR";
+                setRegime(next);
+                if (next === "FR") {
+                  // Ne pas coller des montants XOF catalogue en EUR.
+                  setLines((prev) =>
+                    prev.map((l) =>
+                      l.catalogOfferId ? { ...l, unitPrice: 0 } : l,
+                    ),
+                  );
+                }
+              }}
               className="flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3.5 text-sm shadow-sm focus:border-msk-blue focus:outline-none focus:ring-2 focus:ring-msk-blue/20"
             >
               <option value="ML">Mali (XOF, TVA 18 %)</option>
               <option value="FR">France (EUR, TVA 20 %)</option>
             </select>
+            {regime === "FR" ? (
+              <FieldHint>
+                Prix catalogue en FCFA — saisissez les montants en EUR manuellement.
+              </FieldHint>
+            ) : null}
           </div>
           <div>
             <FieldLabel htmlFor="validUntil">Validité</FieldLabel>

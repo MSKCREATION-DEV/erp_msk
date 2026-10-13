@@ -465,3 +465,130 @@ export async function removeOverrideAction(
   revalidatePath(`/administration/utilisateurs/${ov.userId}`);
   return { ok: true, message: "Override retiré" };
 }
+
+/**
+ * Synchronise les droits via overrides, à partir des cases cochées (= droits voulus).
+ *
+ * baseline = groupes + packs directs (sans overrides)
+ * désiré = cases cochées
+ * → GRANT = désiré − baseline
+ * → DENY  = baseline − désiré
+ * → pas d’override si désiré ∩ baseline (droit « normal »)
+ */
+export async function syncOverridesAction(
+  _prev: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "overrides.manage" });
+  const userId = String(formData.get("userId") ?? "");
+  if (!z.string().uuid().safeParse(userId).success) {
+    return { ok: false, error: "Utilisateur invalide" };
+  }
+
+  const desiredCodes = [
+    ...new Set(formData.getAll("permissionCodes").map(String).filter(Boolean)),
+  ];
+  const reason = String(formData.get("reason") ?? "") || undefined;
+
+  const target = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      groupMembers: {
+        include: { group: { select: { defaultPackId: true } } },
+      },
+      userPacks: { select: { packId: true } },
+      overrides: { select: { id: true } },
+    },
+  });
+  if (!target) return { ok: false, error: "Utilisateur introuvable" };
+  if (target.isSuperAdmin && !actor.isSuperAdmin) {
+    return { ok: false, error: "Seul le Super Admin peut modifier ce compte" };
+  }
+  if (target.isSuperAdmin) {
+    return {
+      ok: false,
+      error: "Le Super Admin a tous les droits — pas d’overrides",
+    };
+  }
+
+  const packIds = [
+    ...new Set([
+      ...target.userPacks.map((p) => p.packId),
+      ...target.groupMembers
+        .map((m) => m.group.defaultPackId)
+        .filter((id): id is string => Boolean(id)),
+    ]),
+  ];
+
+  const baselineCodes = new Set<string>();
+  if (packIds.length > 0) {
+    const packPerms = await prisma.packPermission.findMany({
+      where: { packId: { in: packIds } },
+      select: { permission: { select: { code: true } } },
+    });
+    for (const pp of packPerms) baselineCodes.add(pp.permission.code);
+  }
+
+  const desired = new Set(desiredCodes);
+  const grantCodes = desiredCodes.filter((c) => !baselineCodes.has(c));
+  const denyCodes = [...baselineCodes].filter((c) => !desired.has(c));
+  const allCodes = [...new Set([...grantCodes, ...denyCodes])];
+
+  const permRows =
+    allCodes.length > 0
+      ? await prisma.permission.findMany({
+          where: { code: { in: allCodes } },
+          select: { id: true, code: true },
+        })
+      : [];
+  if (permRows.length !== allCodes.length) {
+    return { ok: false, error: "Une ou plusieurs permissions sont inconnues" };
+  }
+  const idByCode = Object.fromEntries(permRows.map((p) => [p.code, p.id]));
+
+  await prisma.$transaction(async (tx) => {
+    await tx.userPermissionOverride.deleteMany({ where: { userId } });
+    for (const code of grantCodes) {
+      await tx.userPermissionOverride.create({
+        data: {
+          userId,
+          permissionId: idByCode[code]!,
+          effect: OverrideEffect.GRANT,
+          reason,
+        },
+      });
+    }
+    for (const code of denyCodes) {
+      await tx.userPermissionOverride.create({
+        data: {
+          userId,
+          permissionId: idByCode[code]!,
+          effect: OverrideEffect.DENY,
+          reason,
+        },
+      });
+    }
+  });
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "overrides.sync",
+    entityType: "user",
+    entityId: userId,
+    metadata: {
+      desired: desiredCodes.length,
+      grants: grantCodes,
+      denies: denyCodes,
+    },
+  });
+
+  revalidatePath(`/administration/utilisateurs/${userId}`);
+  const n = grantCodes.length + denyCodes.length;
+  return {
+    ok: true,
+    message:
+      n === 0
+        ? "Droits alignés sur groupes & packs (aucune exception)"
+        : `Droits enregistrés · ${grantCodes.length} GRANT · ${denyCodes.length} DENY`,
+  };
+}

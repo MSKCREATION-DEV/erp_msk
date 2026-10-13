@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { requireUser } from "@/lib/auth/session";
@@ -23,6 +22,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
 
@@ -148,18 +148,13 @@ export default async function CommercialFacturesPage({
                     "PAYEE",
                   ].includes(inv.status);
                   return (
-                    <tr
+                    <ClickableRowLink
                       key={inv.id}
-                      className="border-b border-msk-ink/5 hover:bg-msk-chalk/60"
+                      href={`/commercial/factures/${inv.id}`}
+                      className="border-b border-msk-ink/5"
                     >
-                      <td className="px-4 py-3">
-                        <Link
-                          prefetch={false}
-                          href={`/commercial/factures/${inv.id}`}
-                          className="font-medium text-msk-blue hover:underline"
-                        >
-                          {inv.number}
-                        </Link>
+                      <td className="px-4 py-3 font-medium text-msk-ink">
+                        {inv.number}
                       </td>
                       <td className="px-4 py-3">{inv.client.name}</td>
                       <td className="px-4 py-3">
@@ -182,7 +177,7 @@ export default async function CommercialFacturesPage({
                               ? "Brouillon"
                               : "À comptabiliser"}
                       </td>
-                    </tr>
+                    </ClickableRowLink>
                   );
                 })}
               </tbody>

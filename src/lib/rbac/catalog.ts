@@ -139,6 +139,10 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
     "ged.view_scoped",
     "orgchart.view",
   ],
+  /**
+   * Commercial terrain (groupe Commerciaux) — périmètre own.
+   * Vue Équipe / réassignation / import / scripts manage → pack admin_crm (direct).
+   */
   commercial: [
     "home.view",
     "self.profile.edit",
@@ -154,8 +158,6 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
     "crm.prospect.edit_own",
     "crm.activity.log",
     "crm.scripts.view",
-    "crm.view_team",
-    "crm.reassign",
     "crm.reports.own",
     "com.access",
     "com.catalogue.view",
@@ -317,9 +319,11 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
     "crm.org.view_own",
     "crm.deal.view_own",
     "crm.prospect.create",
+    "crm.prospect.edit_own",
     "crm.activity.log",
     "crm.scripts.view",
     "crm.view_team",
+    "crm.reassign",
     "crm.reports.own",
     "crm.reports.global",
     "com.access",
@@ -429,8 +433,16 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
 
 export const PACKS = [
   { code: "collaborateur", name: "Collaborateur", description: "Accès de base collaborateur" },
-  { code: "commercial", name: "Commercial", description: "CRM + devis own" },
-  { code: "admin_crm", name: "Admin CRM", description: "CRM équipe / global" },
+  {
+    code: "commercial",
+    name: "Commercial",
+    description: "CRM + devis / factures (dossiers suivis — sans Vue Équipe)",
+  },
+  {
+    code: "admin_crm",
+    name: "Admin CRM",
+    description: "CRM équipe, import, scripts, objectifs, catalogue",
+  },
   { code: "admin_rh", name: "Admin RH", description: "RH + validations" },
   { code: "comptable", name: "Comptable", description: "Compta SYSCOHADA opérationnelle" },
   { code: "admin_compta", name: "Admin Compta", description: "Clôture, plan, fiscalité, budget" },

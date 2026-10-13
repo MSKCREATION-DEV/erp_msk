@@ -7,6 +7,8 @@ import { prisma } from "@/lib/prisma";
 import { canAccessOwned } from "@/lib/commercial/scope";
 import {
   formatComMoney,
+  INVOICE_STATUS_LABELS,
+  quoteStatusTone,
   QUOTE_STATUS_LABELS,
 } from "@/lib/commercial/labels";
 import { PageHeader } from "@/components/ui/page-header";
@@ -78,7 +80,9 @@ export default async function CommercialDevisDetailPage({
         ]}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="blue">{QUOTE_STATUS_LABELS[quote.status]}</Badge>
+            <Badge tone={quoteStatusTone(quote.status)}>
+              {QUOTE_STATUS_LABELS[quote.status]}
+            </Badge>
             <Badge tone="muted">{quote.regime}</Badge>
             <Badge tone="muted">{quote.currency}</Badge>
           </div>
@@ -92,7 +96,7 @@ export default async function CommercialDevisDetailPage({
         canAccept={hasPermission(user, "com.devis.accept_reject")}
         canInvoice={hasPermission(user, "com.factures.create")}
         canPdf={canPdf}
-        gedDocumentId={quote.gedDocumentId}
+        gedDocumentId={pdfDoc?.id ?? null}
       />
 
       <div className="grid gap-4 lg:grid-cols-12">
@@ -171,7 +175,7 @@ export default async function CommercialDevisDetailPage({
                       {inv.number}
                     </Link>
                     <span className="ml-2 text-xs text-msk-ink/45">
-                      {inv.status}
+                      {INVOICE_STATUS_LABELS[inv.status]}
                     </span>
                   </li>
                 ))}

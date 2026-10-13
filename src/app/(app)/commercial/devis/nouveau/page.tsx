@@ -126,7 +126,7 @@ export default async function CommercialDevisNouveauPage({
           Créez d’abord un{" "}
           <Link
             prefetch={false}
-            href="/commercial/clients"
+            href="/commercial/clients/nouveau"
             className="font-medium text-msk-blue hover:underline"
           >
             client commercial

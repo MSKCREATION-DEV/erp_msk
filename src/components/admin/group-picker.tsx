@@ -16,39 +16,42 @@ export function GroupPicker({
   groups,
   name = "groupIds",
   defaultSelected = [],
+  selected,
   onChange,
 }: {
   groups: GroupOption[];
   name?: string;
   defaultSelected?: string[];
+  selected?: string[];
   onChange?: (ids: string[]) => void;
 }) {
-  const controlled = Boolean(onChange);
+  const controlled = selected != null || Boolean(onChange);
+  const current = selected ?? defaultSelected;
 
   function toggle(id: string, checked: boolean) {
     if (!onChange) return;
     const next = checked
-      ? [...defaultSelected, id]
-      : defaultSelected.filter((x) => x !== id);
+      ? [...current, id]
+      : current.filter((x) => x !== id);
     onChange(next);
   }
 
   return (
     <div className="grid gap-2 sm:grid-cols-2">
       {groups.map((g) => {
-        const isOn = defaultSelected.includes(g.id);
+        const isOn = current.includes(g.id);
         return (
           <label
             key={g.id}
             title={g.description ?? undefined}
             className={cn(
               "group flex cursor-pointer items-start gap-3 rounded-xl border border-msk-ink/10 bg-white px-3.5 py-3 transition",
-              "has-[:checked]:border-msk-blue has-[:checked]:bg-msk-blue/[0.04]",
+              isOn && "border-msk-blue bg-msk-blue/[0.04]",
             )}
           >
             <input
               type="checkbox"
-              name={controlled ? undefined : name}
+              name={controlled && onChange ? undefined : name}
               value={g.id}
               {...(controlled
                 ? {
@@ -59,17 +62,20 @@ export function GroupPicker({
                 : { defaultChecked: isOn })}
               className="peer sr-only"
             />
+            {controlled && onChange && isOn ? (
+              <input type="hidden" name={name} value={g.id} />
+            ) : null}
             <span
               className={cn(
                 "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 border-msk-ink/20 transition",
-                "group-has-[:checked]:border-msk-blue group-has-[:checked]:bg-msk-blue",
+                isOn && "border-msk-blue bg-msk-blue",
               )}
               aria-hidden
             >
               <Check
                 className={cn(
-                  "h-3 w-3 text-white opacity-0 transition",
-                  "group-has-[:checked]:opacity-100",
+                  "h-3 w-3 text-white transition",
+                  isOn ? "opacity-100" : "opacity-0",
                 )}
                 strokeWidth={3}
               />

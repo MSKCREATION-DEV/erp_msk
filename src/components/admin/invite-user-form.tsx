@@ -163,7 +163,7 @@ export function InviteUserForm({
             </p>
             <PackPicker
               packs={packs}
-              defaultSelected={selectedPackIds}
+              selected={selectedPackIds}
               compact
               onChange={setSelectedPackIds}
             />
@@ -178,7 +178,7 @@ export function InviteUserForm({
             </p>
             <GroupPicker
               groups={groups}
-              defaultSelected={selectedGroupIds}
+              selected={selectedGroupIds}
               onChange={setSelectedGroupIds}
             />
           </section>

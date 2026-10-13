@@ -88,6 +88,33 @@ export default async function UserDetailPage({
     ? await prisma.permission.count()
     : (resolved?.permissions.size ?? 0);
 
+  const effectivePermissionCodes = target.isSuperAdmin
+    ? permissions.map((p) => p.code)
+    : (provenance?.entries.filter((e) => e.effective).map((e) => e.code) ??
+      [...(resolved?.permissions ?? [])]);
+
+  const permissionMarks: Record<
+    string,
+    { label: string; tone?: "success" | "coral" | "blue" | "muted" | "ink" }
+  > = {};
+  if (provenance && !provenance.isSuperAdmin) {
+    for (const entry of provenance.entries) {
+      const hasDeny = entry.sources.some((s) => s.kind === "override_deny");
+      const hasGrant = entry.sources.some((s) => s.kind === "override_grant");
+      const hasGroup = entry.sources.some((s) => s.kind === "group_pack");
+      const hasDirect = entry.sources.some((s) => s.kind === "direct_pack");
+      if (hasDeny) {
+        permissionMarks[entry.code] = { label: "DENY", tone: "coral" };
+      } else if (hasGrant) {
+        permissionMarks[entry.code] = { label: "GRANT", tone: "success" };
+      } else if (hasGroup) {
+        permissionMarks[entry.code] = { label: "Groupe", tone: "ink" };
+      } else if (hasDirect) {
+        permissionMarks[entry.code] = { label: "Pack", tone: "blue" };
+      }
+    }
+  }
+
   return (
     <PageShell>
       <PageHeader
@@ -153,6 +180,8 @@ export default async function UserDetailPage({
           reason: o.reason,
         }))}
         permissions={permissions}
+        effectivePermissionCodes={effectivePermissionCodes}
+        permissionMarks={permissionMarks}
         canManageAccess={hasPermission(actor, "users.manage_access")}
         canSuspend={hasPermission(actor, "users.suspend")}
         canReset={hasPermission(actor, "users.reset_password")}

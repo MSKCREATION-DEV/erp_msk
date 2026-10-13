@@ -25,6 +25,7 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ActionLink } from "@/components/ui/action-link";
+import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
 
@@ -151,18 +152,13 @@ export default async function CommercialDevisPage({
               </thead>
               <tbody>
                 {quotes.map((row) => (
-                  <tr
+                  <ClickableRowLink
                     key={row.id}
-                    className="border-b border-msk-ink/5 hover:bg-msk-chalk/60"
+                    href={`/commercial/devis/${row.id}`}
+                    className="border-b border-msk-ink/5"
                   >
-                    <td className="px-4 py-3">
-                      <Link
-                        prefetch={false}
-                        href={`/commercial/devis/${row.id}`}
-                        className="font-medium text-msk-blue hover:underline"
-                      >
-                        {row.number}
-                      </Link>
+                    <td className="px-4 py-3 font-medium text-msk-ink">
+                      {row.number}
                     </td>
                     <td className="px-4 py-3">{row.client.name}</td>
                     <td className="max-w-[14rem] truncate px-4 py-3 text-msk-ink/70">
@@ -179,7 +175,7 @@ export default async function CommercialDevisPage({
                     <td className="px-4 py-3 text-msk-ink/55">
                       {row.createdAt.toLocaleDateString("fr-FR")}
                     </td>
-                  </tr>
+                  </ClickableRowLink>
                 ))}
               </tbody>
             </table>

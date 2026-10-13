@@ -24,7 +24,11 @@ import {
 } from "@/lib/crm/labels";
 import { isTestOrgName } from "@/lib/crm/test-data";
 import { isDevisSlaBreached } from "@/lib/crm/devis-sla";
-import { formatComMoney, QUOTE_STATUS_LABELS } from "@/lib/commercial/labels";
+import {
+  formatComMoney,
+  INVOICE_STATUS_LABELS,
+  QUOTE_STATUS_LABELS,
+} from "@/lib/commercial/labels";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -780,7 +784,7 @@ export default async function CrmProspectDetailPage({
                                   Facture {inv.number}
                                 </Link>
                                 <span className="text-msk-ink/45">
-                                  {inv.status} ·{" "}
+                                  {INVOICE_STATUS_LABELS[inv.status]} ·{" "}
                                   {formatComMoney(inv.totalTtc, inv.currency)}
                                 </span>
                               </li>

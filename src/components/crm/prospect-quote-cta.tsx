@@ -218,17 +218,16 @@ export function ProspectQuoteCta({
               defaultObject={defaultObject}
               onCancel={() => setCreateOpen(false)}
               onSuccess={async (quoteId) => {
+                // Devis déjà créé : fermer + refresh même si PDF échoue
+                // (évite de retenter create → « Un devis existe déjà »).
+                setCreateOpen(false);
                 const fd = new FormData();
                 fd.set("quoteId", quoteId);
                 const pdf = await generateQuotePdfAction(fd);
-                if (!pdf.ok) {
-                  throw new Error(
-                    pdf.error ??
-                      "Devis créé, mais la génération PDF a échoué. Ouvrez le devis pour réessayer.",
-                  );
-                }
-                setCreateOpen(false);
                 router.refresh();
+                if (!pdf.ok) {
+                  router.push(`/commercial/devis/${quoteId}`);
+                }
               }}
             />
           ) : (

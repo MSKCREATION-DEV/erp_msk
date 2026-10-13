@@ -44,7 +44,6 @@ export function QuoteActions({
     fn: () => Promise<{
       ok: boolean;
       error?: string;
-      invoiceId?: string;
       documentId?: string;
     }>,
   ) {
@@ -58,10 +57,7 @@ export function QuoteActions({
       }
       setMsg(label);
       if (res.documentId) setDocId(res.documentId);
-      if (res.invoiceId) {
-        router.push(`/commercial/factures/${res.invoiceId}`);
-        return;
-      }
+      // createInvoiceFromQuoteAction → redirect() serveur
       router.refresh();
     });
   }
