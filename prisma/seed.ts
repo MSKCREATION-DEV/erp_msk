@@ -603,6 +603,12 @@ async function seedPhase2CatalogueCrm() {
       },
     });
   }
+  // Anciens codes hors parité Excel → inactifs (pas de delete).
+  const keepCodes = CRM_SCRIPTS_SEED.map((s) => s.code);
+  await prisma.crmScript.updateMany({
+    where: { code: { notIn: keepCodes } },
+    data: { active: false },
+  });
   console.log(`✓ CRM scripts ${CRM_SCRIPTS_SEED.length}`);
 }
 

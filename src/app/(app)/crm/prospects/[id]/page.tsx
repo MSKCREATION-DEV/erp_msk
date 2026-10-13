@@ -7,6 +7,7 @@ import {
   Globe2,
   Mail,
   MapPin,
+  MessageSquareText,
   Phone,
   UserRound,
 } from "lucide-react";
@@ -18,11 +19,12 @@ import { commercialTeamUserIds } from "@/lib/crm/team";
 import {
   ACTIVITY_LABELS,
   formatXof,
+  SOURCE_LABELS,
   STAGE_LABELS,
 } from "@/lib/crm/labels";
 import { isTestOrgName } from "@/lib/crm/test-data";
 import { isDevisSlaBreached } from "@/lib/crm/devis-sla";
-import { QUOTE_STATUS_LABELS } from "@/lib/commercial/labels";
+import { formatComMoney, QUOTE_STATUS_LABELS } from "@/lib/commercial/labels";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -30,8 +32,39 @@ import { Badge } from "@/components/ui/badge";
 import { ProspectDetailActions } from "@/components/crm/prospect-detail-actions";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { OfferConfigBadges } from "@/components/crm/offer-config-badges";
-import { CrmConvertButtons } from "@/components/commercial/crm-convert-buttons";
+import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 import { cn } from "@/lib/utils";
+
+const SCRIPT_CHANNELS = new Set([
+  "INSTAGRAM",
+  "LINKEDIN",
+  "WHATSAPP",
+  "EMAIL",
+  "TELEPHONE",
+]);
+
+function buildScriptsHref(opts: {
+  source: string | null | undefined;
+  prenom?: string | null;
+  entreprise: string;
+  offre?: string | null;
+  secteur?: string | null;
+  ville?: string | null;
+}): string {
+  const q = new URLSearchParams();
+  const source = opts.source ?? "";
+  if (SCRIPT_CHANNELS.has(source)) q.set("canal", source);
+  if (opts.prenom) q.set("prenom", opts.prenom);
+  if (opts.entreprise) q.set("entreprise", opts.entreprise);
+  if (opts.offre) q.set("offre", opts.offre);
+  if (opts.secteur) q.set("secteur", opts.secteur);
+  if (opts.ville) q.set("ville", opts.ville);
+  if (source && source in SOURCE_LABELS) {
+    q.set("source", SOURCE_LABELS[source as keyof typeof SOURCE_LABELS]);
+  }
+  const qs = q.toString();
+  return qs ? `/crm/scripts?${qs}` : "/crm/scripts";
+}
 
 export const metadata: Metadata = { title: "Fiche prospect" };
 
@@ -120,12 +153,26 @@ export default async function CrmProspectDetailPage({
           },
         },
       },
-      catalogOffer: { select: { id: true, name: true, sku: true } },
+      catalogOffer: {
+        select: {
+          id: true,
+          name: true,
+          sku: true,
+          priceXof: true,
+          floorPriceXof: true,
+        },
+      },
       opportunityOffers: {
         orderBy: { sortOrder: "asc" },
         include: {
           catalogOffer: {
-            select: { id: true, name: true, sku: true },
+            select: {
+              id: true,
+              name: true,
+              sku: true,
+              priceXof: true,
+              floorPriceXof: true,
+            },
           },
         },
       },
@@ -152,6 +199,7 @@ export default async function CrmProspectDetailPage({
           id: true,
           number: true,
           status: true,
+          currency: true,
           totalTtc: true,
           gedDocumentId: true,
           invoices: {
@@ -161,6 +209,7 @@ export default async function CrmProspectDetailPage({
               id: true,
               number: true,
               status: true,
+              currency: true,
               totalTtc: true,
             },
           },
@@ -193,8 +242,46 @@ export default async function CrmProspectDetailPage({
         { crmOrganizationId: deal.organizationId },
       ],
     },
-    select: { id: true },
+    select: { id: true, name: true, includeTravelDefault: true },
   });
+
+  const canCreateQuote = hasPermission(user, "com.devis.create");
+  const canManageClients = hasPermission(user, "com.clients.manage");
+
+  const [catalogOffers, quoteDocs] = await Promise.all([
+    canCreateQuote
+      ? prisma.catalogOffer.findMany({
+          where: { active: true },
+          orderBy: { sortOrder: "asc" },
+          select: {
+            id: true,
+            name: true,
+            sku: true,
+            priceXof: true,
+            floorPriceXof: true,
+          },
+        })
+      : Promise.resolve([]),
+    deal.comQuotes.some((q) => q.gedDocumentId)
+      ? prisma.document.findMany({
+          where: {
+            id: {
+              in: deal.comQuotes
+                .map((q) => q.gedDocumentId)
+                .filter((x): x is string => Boolean(x)),
+            },
+          },
+          select: {
+            id: true,
+            originalName: true,
+            mime: true,
+            size: true,
+          },
+        })
+      : Promise.resolve([]),
+  ]);
+
+  const docById = new Map(quoteDocs.map((d) => [d.id, d]));
 
   const lastActivity = deal.activities[0];
   const now = new Date();
@@ -223,11 +310,40 @@ export default async function CrmProspectDetailPage({
     uiStage !== "GAGNE" &&
     uiStage !== "PERDU";
 
-  const canCreateQuote = hasPermission(user, "com.devis.create");
-  const canManageClients = hasPermission(user, "com.clients.manage");
-  const canViewClient = hasPermission(user, "com.clients.view_own");
-  const showCommercialCta =
-    canCreateQuote || canManageClients || Boolean(linkedClient);
+  const quotePrefill = (() => {
+    const seen = new Set<string>();
+    const rows = [
+      ...deal.opportunityOffers.map((o) => o.catalogOffer),
+      ...(deal.catalogOffer ? [deal.catalogOffer] : []),
+    ].filter((o) => {
+      if (!("priceXof" in o)) return false;
+      if (seen.has(o.id)) return false;
+      seen.add(o.id);
+      return true;
+    }) as {
+      id: string;
+      name: string;
+      sku: string;
+      priceXof: number | null;
+    }[];
+    if (rows.length === 0) return undefined;
+    return rows.map((o) => ({
+      label: `${o.sku} · ${o.name}`,
+      qty: 1,
+      unitPrice: o.priceXof ?? 0,
+      catalogOfferId: o.id,
+    }));
+  })();
+
+  const quoteClients = linkedClient
+    ? [
+        {
+          id: linkedClient.id,
+          name: linkedClient.name,
+          includeTravelDefault: linkedClient.includeTravelDefault,
+        },
+      ]
+    : [];
 
   return (
     <PageShell>
@@ -250,6 +366,27 @@ export default async function CrmProspectDetailPage({
               <Badge tone="coral">TEST</Badge>
             ) : null}
             {overdue ? <Badge tone="coral">Relance en retard</Badge> : null}
+            {hasPermission(user, "crm.scripts.view") ? (
+              <Link
+                prefetch={false}
+                href={buildScriptsHref({
+                  source: deal.source,
+                  prenom:
+                    deal.organization.contacts[0]?.firstName ?? null,
+                  entreprise: deal.organization.name,
+                  offre:
+                    deal.opportunityOffers[0]?.catalogOffer.name ??
+                    deal.catalogOffer?.name ??
+                    null,
+                  secteur: deal.organization.sector,
+                  ville: deal.organization.city,
+                })}
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-msk-ink/15 bg-white px-3 text-sm font-medium text-msk-ink transition hover:bg-msk-chalk"
+              >
+                <MessageSquareText className="h-3.5 w-3.5" aria-hidden />
+                Scripts
+              </Link>
+            ) : null}
             <ProspectDetailActions
               opportunityId={deal.id}
               stage={deal.stage}
@@ -258,18 +395,17 @@ export default async function CrmProspectDetailPage({
               canEditStage={canEdit}
               canLogActivity={canLog}
               requireFollowUp={requireFollowUp}
+              quote={{
+                existingQuoteId: deal.comQuotes[0]?.id ?? null,
+                existingClientId: linkedClient?.id,
+                canCreateQuote,
+                canManageClients,
+                clients: quoteClients,
+                offers: catalogOffers,
+                initialLines: quotePrefill,
+                defaultObject: `Proposition — ${deal.organization.name}`,
+              }}
             />
-            {showCommercialCta ? (
-              <CrmConvertButtons
-                opportunityId={deal.id}
-                existingClientId={linkedClient?.id}
-                canManage={canManageClients}
-                canViewClient={canViewClient}
-                canCreateQuote={canCreateQuote}
-                preferQuoteAfterConvert
-                compact
-              />
-            ) : null}
           </div>
         }
       />
@@ -576,88 +712,85 @@ export default async function CrmProspectDetailPage({
         </div>
 
         <div className="xl:col-span-6">
-          <Section
-            title="Devis & factures"
-            action={
-              showCommercialCta ? (
-                <CrmConvertButtons
-                  opportunityId={deal.id}
-                  existingClientId={linkedClient?.id}
-                  canManage={canManageClients}
-                  canViewClient={canViewClient}
-                  canCreateQuote={canCreateQuote}
-                  preferQuoteAfterConvert
-                  compact
-                />
-              ) : null
-            }
-          >
+          <Section title="Devis & factures">
             {deal.comQuotes.length === 0 ? (
               <div className="rounded-xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-6 text-center">
                 <p className="text-sm text-msk-ink/50">
                   Aucun devis lié à ce prospect.
                 </p>
-                {showCommercialCta ? (
-                  <p className="mt-1 text-xs text-msk-ink/40">
-                    Utilisez « Créer un devis » ci-dessus — un client commercial
-                    sera créé si besoin.
-                  </p>
-                ) : null}
+                <p className="mt-1 text-xs text-msk-ink/40">
+                  Disponible au statut <strong>Intéressé</strong> via « Créer un
+                  devis ».
+                </p>
               </div>
             ) : (
-              <ul className="space-y-2.5">
-                {deal.comQuotes.map((q) => (
-                  <li
-                    key={q.id}
-                    className="rounded-xl border border-msk-ink/[0.06] px-3.5 py-3"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div>
+              <ul className="space-y-4">
+                {deal.comQuotes.map((q) => {
+                  const doc = q.gedDocumentId
+                    ? docById.get(q.gedDocumentId)
+                    : null;
+                  return (
+                    <li
+                      key={q.id}
+                      className="flex flex-col gap-3 rounded-2xl border border-msk-ink/[0.08] bg-white p-4 sm:flex-row sm:items-start"
+                    >
+                      {doc ? (
+                        <DocPdfThumb
+                          documentId={doc.id}
+                          title={doc.originalName || q.number}
+                          subtitle={`${QUOTE_STATUS_LABELS[q.status]} · ${formatComMoney(q.totalTtc, q.currency)}`}
+                          className="max-w-[9rem] shrink-0"
+                        />
+                      ) : (
+                        <div className="flex h-28 w-24 shrink-0 flex-col items-center justify-center rounded-xl border border-dashed border-msk-ink/15 bg-msk-chalk/40 text-center text-[10px] text-msk-ink/40">
+                          PDF
+                          <br />
+                          en attente
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
                         <Link
                           prefetch={false}
                           href={`/commercial/devis/${q.id}`}
                           className="text-sm font-semibold text-msk-blue hover:underline"
                         >
-                          Devis {q.number ?? q.id.slice(0, 8)}
+                          Devis {q.number}
                         </Link>
-                        <p className="text-xs text-msk-ink/45">
+                        <p className="mt-0.5 text-xs text-msk-ink/45">
                           {QUOTE_STATUS_LABELS[q.status]} ·{" "}
-                          {formatXof(q.totalTtc)}
+                          {formatComMoney(q.totalTtc, q.currency)}
                         </p>
+                        {!doc ? (
+                          <p className="mt-2 text-xs text-msk-ink/45">
+                            Ouvrez le devis pour générer le PDF (une seule fois).
+                          </p>
+                        ) : null}
+                        {q.invoices.length > 0 ? (
+                          <ul className="mt-2 space-y-1 border-t border-msk-ink/[0.05] pt-2">
+                            {q.invoices.map((inv) => (
+                              <li
+                                key={inv.id}
+                                className="flex justify-between gap-2 text-xs"
+                              >
+                                <Link
+                                  prefetch={false}
+                                  href={`/commercial/factures/${inv.id}`}
+                                  className="text-msk-blue hover:underline"
+                                >
+                                  Facture {inv.number}
+                                </Link>
+                                <span className="text-msk-ink/45">
+                                  {inv.status} ·{" "}
+                                  {formatComMoney(inv.totalTtc, inv.currency)}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
                       </div>
-                      {q.gedDocumentId ? (
-                        <Link
-                          prefetch={false}
-                          href={`/api/documents/${q.gedDocumentId}/download`}
-                          className="text-xs font-medium text-msk-blue hover:underline"
-                        >
-                          PDF
-                        </Link>
-                      ) : null}
-                    </div>
-                    {q.invoices.length > 0 ? (
-                      <ul className="mt-2 space-y-1 border-t border-msk-ink/[0.05] pt-2">
-                        {q.invoices.map((inv) => (
-                          <li
-                            key={inv.id}
-                            className="flex justify-between gap-2 text-xs"
-                          >
-                            <Link
-                              prefetch={false}
-                              href={`/commercial/factures/${inv.id}`}
-                              className="text-msk-blue hover:underline"
-                            >
-                              Facture {inv.number}
-                            </Link>
-                            <span className="text-msk-ink/45">
-                              {inv.status} · {formatXof(inv.totalTtc)}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null}
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </Section>

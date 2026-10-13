@@ -2,6 +2,7 @@
 
 import { createHash } from "crypto";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import {
   ComDocRegime,
@@ -122,7 +123,7 @@ function revalidateComptaBridge() {
 
 export async function createClientAction(
   formData: FormData,
-): Promise<ActionResult & { clientId?: string }> {
+): Promise<ActionResult> {
   const actor = await requireUser({ permission: "com.clients.manage" });
 
   const parsed = createClientSchema.safeParse({
@@ -175,7 +176,71 @@ export async function createClientAction(
   });
 
   revalidateCommercial([`/commercial/clients/${client.id}`]);
-  return { ok: true, message: "Client créé", clientId: client.id };
+  // Hors try/catch — voir https://nextjs.org/docs/app/guides/redirecting
+  redirect(`/commercial/clients/${client.id}`);
+}
+
+export async function updateClientAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "com.clients.manage" });
+  const clientId = String(formData.get("clientId") ?? "").trim();
+  if (!clientId) {
+    return { ok: false, error: "Client introuvable." };
+  }
+
+  const existing = await prisma.comClient.findUnique({
+    where: { id: clientId },
+    select: { id: true, ownerId: true },
+  });
+  if (!existing) {
+    return { ok: false, error: "Client introuvable." };
+  }
+  if (!canAccessOwned(actor, existing.ownerId)) {
+    return { ok: false, error: "Accès refusé." };
+  }
+
+  const parsed = createClientSchema.safeParse({
+    name: String(formData.get("name") ?? ""),
+    contactName: String(formData.get("contactName") ?? "").trim() || null,
+    email: String(formData.get("email") ?? "").trim(),
+    phone: String(formData.get("phone") ?? "").trim() || null,
+    address: String(formData.get("address") ?? "").trim() || null,
+    city: String(formData.get("city") ?? "").trim() || null,
+    country: String(formData.get("country") ?? "ML").trim() || "ML",
+    notes: String(formData.get("notes") ?? "").trim() || null,
+    includeTravelDefault: formData.get("includeTravelDefault") === "on",
+  });
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Données invalides" };
+  }
+  const data = parsed.data;
+
+  await prisma.comClient.update({
+    where: { id: clientId },
+    data: {
+      name: data.name,
+      normalizedName: normalizeClientName(data.name),
+      contactName: data.contactName,
+      email: data.email,
+      phone: data.phone,
+      address: data.address,
+      city: data.city,
+      country: data.country,
+      notes: data.notes,
+      includeTravelDefault: data.includeTravelDefault,
+    },
+  });
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "com.client.update",
+    entityType: "com_client",
+    entityId: clientId,
+  });
+
+  revalidateCommercial([`/commercial/clients/${clientId}`]);
+  return { ok: true, message: "Client mis à jour" };
 }
 
 export async function convertOpportunityToClientAction(
@@ -286,6 +351,9 @@ export async function createQuoteAction(
 ): Promise<ActionResult & { quoteId?: string }> {
   const actor = await requireUser({ permission: "com.devis.create" });
 
+  /** Modal fiche prospect : retour JSON (pas de redirect App Router). */
+  const stayOnPage = formData.get("stayOnPage") === "1";
+
   const regimeRaw = String(formData.get("regime") ?? "ML");
   const regime = regimeSchema.safeParse(regimeRaw).success
     ? (regimeRaw as ComDocRegime)
@@ -364,11 +432,32 @@ export async function createQuoteAction(
   if (opportunityId) {
     const deal = await prisma.crmOpportunity.findUnique({
       where: { id: opportunityId },
-      select: { id: true, organizationId: true, ownerId: true },
+      select: { id: true, organizationId: true, ownerId: true, stage: true },
     });
     if (!deal) return { ok: false, error: "Prospect lié introuvable" };
     if (!(await assertCrmDealAccess(actor, deal.ownerId))) {
       return { ok: false, error: "Prospect hors périmètre CRM" };
+    }
+    const uiStage =
+      deal.stage === CrmPipelineStage.NEGOCIATION
+        ? CrmPipelineStage.DEVIS_ENVOYE
+        : deal.stage;
+    // Un devis lié à un prospect : uniquement au statut Intéressé, et un seul.
+    if (uiStage !== CrmPipelineStage.INTERESSE) {
+      return {
+        ok: false,
+        error:
+          "Devis possible uniquement au statut Intéressé. Changez d’abord le statut du prospect.",
+      };
+    }
+    const existingCount = await prisma.comQuote.count({
+      where: { opportunityId },
+    });
+    if (existingCount > 0) {
+      return {
+        ok: false,
+        error: "Un devis existe déjà pour ce prospect.",
+      };
     }
     if (
       client.crmOrganizationId &&
@@ -419,43 +508,59 @@ export async function createQuoteAction(
     includeTravel,
   });
 
-  const quote = await prisma.$transaction(async (tx) => {
-    const number = await nextComNumber("DEVIS", new Date().getFullYear(), tx);
-    return tx.comQuote.create({
-      data: {
-        number,
-        status: ComQuoteStatus.BROUILLON,
-        regime: quoteRegime,
-        currency,
-        vatEnabled,
-        vatRate,
-        promoEnabled: quotePromo,
-        promoPercent,
-        includeTravel,
-        object,
-        missionNote,
-        validUntil:
-          validUntil && !Number.isNaN(validUntil.getTime()) ? validUntil : null,
-        totalHt: totals.totalHt,
-        totalVat: totals.totalVat,
-        totalTtc: totals.totalTtc,
-        clientId,
-        opportunityId,
-        ownerId: actor.id,
-        createdById: actor.id,
-        lines: {
-          create: lines.map((l, i) => ({
-            sortOrder: i,
-            label: l.label,
-            qty: l.qty,
-            unitPrice: l.unitPrice,
-            catalogOfferId: l.catalogOfferId || null,
-            isTravel: Boolean(l.isTravel),
-          })),
+  let quote: { id: string };
+  try {
+    quote = await prisma.$transaction(async (tx) => {
+      const number = await nextComNumber("DEVIS", new Date().getFullYear(), tx);
+      return tx.comQuote.create({
+        data: {
+          number,
+          status: ComQuoteStatus.BROUILLON,
+          regime: quoteRegime,
+          currency,
+          vatEnabled,
+          vatRate,
+          promoEnabled: quotePromo,
+          promoPercent,
+          includeTravel,
+          object,
+          missionNote,
+          validUntil:
+            validUntil && !Number.isNaN(validUntil.getTime())
+              ? validUntil
+              : null,
+          totalHt: totals.totalHt,
+          totalVat: totals.totalVat,
+          totalTtc: totals.totalTtc,
+          clientId,
+          opportunityId,
+          ownerId: actor.id,
+          createdById: actor.id,
+          lines: {
+            create: lines.map((l, i) => ({
+              sortOrder: i,
+              label: l.label,
+              qty: l.qty,
+              unitPrice: l.unitPrice,
+              catalogOfferId: l.catalogOfferId || null,
+              isTravel: Boolean(l.isTravel),
+            })),
+          },
         },
-      },
+      });
     });
-  });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2002"
+    ) {
+      return {
+        ok: false,
+        error: "Un devis existe déjà pour ce prospect.",
+      };
+    }
+    throw e;
+  }
 
   await writeAudit({
     actorId: actor.id,
@@ -468,7 +573,12 @@ export async function createQuoteAction(
     `/commercial/devis/${quote.id}`,
     ...(opportunityId ? [`/crm/prospects/${opportunityId}`] : []),
   ]);
-  return { ok: true, message: "Devis créé", quoteId: quote.id };
+
+  if (stayOnPage) {
+    return { ok: true, message: "Devis créé", quoteId: quote.id };
+  }
+  // https://nextjs.org/docs/app/guides/redirecting
+  redirect(`/commercial/devis/${quote.id}`);
 }
 
 export async function updateQuoteStatusAction(
@@ -668,10 +778,21 @@ export async function generateQuotePdfAction(
     },
   });
 
-  await prisma.comQuote.update({
-    where: { id: quote.id },
+  const claimed = await prisma.comQuote.updateMany({
+    where: { id: quote.id, gedDocumentId: null },
     data: { gedDocumentId: doc.id },
   });
+  if (claimed.count === 0) {
+    const current = await prisma.comQuote.findUnique({
+      where: { id: quote.id },
+      select: { gedDocumentId: true },
+    });
+    return {
+      ok: true,
+      message: "PDF déjà généré — ouvrez la miniature",
+      documentId: current?.gedDocumentId ?? doc.id,
+    };
+  }
 
   await writeAudit({
     actorId: actor.id,
@@ -681,7 +802,11 @@ export async function generateQuotePdfAction(
     metadata: { documentId: doc.id },
   });
 
-  revalidateCommercial([`/commercial/devis/${quote.id}`, "/ged"]);
+  revalidateCommercial([
+    `/commercial/devis/${quote.id}`,
+    ...(quote.opportunityId ? [`/crm/prospects/${quote.opportunityId}`] : []),
+    "/ged",
+  ]);
   return { ok: true, message: "PDF généré et classé en GED", documentId: doc.id };
 }
 
@@ -938,10 +1063,21 @@ export async function generateInvoicePdfAction(
     },
   });
 
-  await prisma.comInvoice.update({
-    where: { id: invoice.id },
+  const claimed = await prisma.comInvoice.updateMany({
+    where: { id: invoice.id, gedDocumentId: null },
     data: { gedDocumentId: doc.id },
   });
+  if (claimed.count === 0) {
+    const current = await prisma.comInvoice.findUnique({
+      where: { id: invoice.id },
+      select: { gedDocumentId: true },
+    });
+    return {
+      ok: true,
+      message: "PDF déjà généré — ouvrez la miniature",
+      documentId: current?.gedDocumentId ?? doc.id,
+    };
+  }
 
   await writeAudit({
     actorId: actor.id,
@@ -951,7 +1087,11 @@ export async function generateInvoicePdfAction(
     metadata: { documentId: doc.id },
   });
 
-  revalidateCommercial([`/commercial/factures/${invoice.id}`, "/ged"]);
+  revalidateCommercial([
+    `/commercial/factures/${invoice.id}`,
+    `/commercial/clients/${invoice.clientId}`,
+    "/ged",
+  ]);
   return { ok: true, message: "PDF facture classé en GED", documentId: doc.id };
 }
 

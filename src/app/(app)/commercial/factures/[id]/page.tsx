@@ -17,9 +17,26 @@ import { Badge } from "@/components/ui/badge";
 import { InvoiceActions } from "@/components/commercial/invoice-actions";
 import { PaymentForm } from "@/components/commercial/payment-form";
 import { ProposeInvoiceButton } from "@/components/comptabilite/propose-invoice-button";
-import { DocDownloadButton } from "@/components/rh/doc-download-button";
+import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 
 export const metadata: Metadata = { title: "Facture" };
+
+function MetaItem({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-w-0">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+        {label}
+      </p>
+      <div className="mt-1 text-sm text-msk-ink">{children}</div>
+    </div>
+  );
+}
 
 export default async function CommercialFactureDetailPage({
   params,
@@ -56,6 +73,13 @@ export default async function CommercialFactureDetailPage({
     select: { id: true, number: true, status: true },
   });
 
+  const pdfDoc = invoice.gedDocumentId
+    ? await prisma.document.findUnique({
+        where: { id: invoice.gedDocumentId },
+        select: { id: true, originalName: true },
+      })
+    : null;
+
   const remaining = Math.max(0, invoice.totalTtc - invoice.amountPaid);
   const canPay =
     canCom &&
@@ -65,6 +89,7 @@ export default async function CommercialFactureDetailPage({
     canCptPropose &&
     ["EMISE", "PARTIELLEMENT_PAYEE", "PAYEE"].includes(invoice.status);
   const showComActions = canCom;
+  const canPdf = hasPermission(user, "com.factures.create");
   const needsPdf =
     invoice.status !== "BROUILLON" &&
     invoice.status !== "ANNULEE" &&
@@ -74,7 +99,7 @@ export default async function CommercialFactureDetailPage({
     <PageShell>
       <PageHeader
         title={invoice.number}
-        description={invoice.client.name}
+        description={invoice.object ?? invoice.client.name}
         backHref={canCom ? "/commercial/factures" : "/comptabilite/a-comptabiliser"}
         backLabel={canCom ? "Retour aux factures" : "Retour à comptabiliser"}
         breadcrumbs={
@@ -93,19 +118,21 @@ export default async function CommercialFactureDetailPage({
                 { label: invoice.number },
               ]
         }
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge tone="blue">{INVOICE_STATUS_LABELS[invoice.status]}</Badge>
+            <Badge tone="muted">{invoice.currency}</Badge>
+            {cptEntry ? (
+              <Badge tone="success">
+                Compta ·{" "}
+                {cptEntry.status === "VALIDATED" ? "validée" : "brouillon"}
+              </Badge>
+            ) : canProposeEntry ? (
+              <Badge tone="coral">À comptabiliser</Badge>
+            ) : null}
+          </div>
+        }
       />
-
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge tone="blue">{INVOICE_STATUS_LABELS[invoice.status]}</Badge>
-        <Badge tone="muted">{invoice.currency}</Badge>
-        {cptEntry ? (
-          <Badge tone="success">
-            Compta · {cptEntry.status === "VALIDATED" ? "validée" : "brouillon"}
-          </Badge>
-        ) : canProposeEntry ? (
-          <Badge tone="coral">À comptabiliser</Badge>
-        ) : null}
-      </div>
 
       {needsPdf ? (
         <Surface className="border-msk-coral/30 bg-msk-coral/[0.04] p-4">
@@ -113,8 +140,8 @@ export default async function CommercialFactureDetailPage({
             PDF non classé en GED
           </p>
           <p className="mt-1 text-sm text-msk-ink/70">
-            Générez le PDF pour classer la facture dans le dossier client
-            (signature du responsable commercial).
+            Générez le PDF une seule fois pour classer la facture dans le
+            dossier client.
           </p>
         </Surface>
       ) : null}
@@ -124,15 +151,8 @@ export default async function CommercialFactureDetailPage({
           invoiceId={invoice.id}
           status={invoice.status}
           canIssue={hasPermission(user, "com.factures.issue")}
-          canPdf={hasPermission(user, "com.factures.create")}
+          canPdf={canPdf}
           gedDocumentId={invoice.gedDocumentId}
-        />
-      ) : invoice.gedDocumentId ? (
-        <DocDownloadButton
-          documentId={invoice.gedDocumentId}
-          label="Voir / Télécharger la facture"
-          variant="primary"
-          size="sm"
         />
       ) : null}
 
@@ -151,79 +171,132 @@ export default async function CommercialFactureDetailPage({
         />
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Surface className="space-y-2 p-5 text-sm lg:col-span-1">
-          <p>
-            <span className="text-msk-ink/45">Client </span>
-            {canCom ? (
-              <Link
-                prefetch={false}
-                href={`/commercial/clients/${invoice.clientId}`}
-                className="text-msk-blue hover:underline"
-              >
-                {invoice.client.name}
-              </Link>
-            ) : (
-              <span>{invoice.client.name}</span>
-            )}
-          </p>
-          {invoice.quote && canCom ? (
-            <p>
-              <span className="text-msk-ink/45">Devis </span>
-              <Link
-                prefetch={false}
-                href={`/commercial/devis/${invoice.quote.id}`}
-                className="text-msk-blue hover:underline"
-              >
-                {invoice.quote.number}
-              </Link>
-            </p>
-          ) : null}
-          {cptEntry ? (
-            <p>
-              <span className="text-msk-ink/45">Écriture </span>
-              <Link
-                prefetch={false}
-                href={`/comptabilite/ecritures/${cptEntry.id}`}
-                className="text-msk-blue hover:underline"
-              >
-                {cptEntry.number}
-              </Link>
-            </p>
-          ) : null}
-          <p>TTC {formatComMoney(invoice.totalTtc, invoice.currency)}</p>
-          <p>Payé {formatComMoney(invoice.amountPaid, invoice.currency)}</p>
-          <p className="font-semibold">
-            Reste {formatComMoney(remaining, invoice.currency)}
-          </p>
+      <div className="grid gap-4 lg:grid-cols-12">
+        <Surface className="space-y-5 p-5 sm:p-6 lg:col-span-4">
+          <h2 className="text-sm font-semibold tracking-tight text-msk-ink">
+            Synthèse
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            <MetaItem label="Client">
+              {canCom ? (
+                <Link
+                  prefetch={false}
+                  href={`/commercial/clients/${invoice.clientId}`}
+                  className="font-medium text-msk-blue hover:underline"
+                >
+                  {invoice.client.name}
+                </Link>
+              ) : (
+                invoice.client.name
+              )}
+            </MetaItem>
+            {invoice.quote && canCom ? (
+              <MetaItem label="Devis">
+                <Link
+                  prefetch={false}
+                  href={`/commercial/devis/${invoice.quote.id}`}
+                  className="font-medium text-msk-blue hover:underline"
+                >
+                  {invoice.quote.number}
+                </Link>
+              </MetaItem>
+            ) : null}
+            {cptEntry ? (
+              <MetaItem label="Écriture">
+                <Link
+                  prefetch={false}
+                  href={`/comptabilite/ecritures/${cptEntry.id}`}
+                  className="font-medium text-msk-blue hover:underline"
+                >
+                  {cptEntry.number}
+                </Link>
+              </MetaItem>
+            ) : null}
+            {invoice.object ? (
+              <MetaItem label="Objet">{invoice.object}</MetaItem>
+            ) : null}
+          </div>
+
+          <div className="rounded-2xl border border-msk-ink/[0.08] bg-msk-chalk/40 px-4 py-3.5 text-sm">
+            <div className="flex justify-between text-msk-ink/60">
+              <span>TTC</span>
+              <span className="tabular-nums">
+                {formatComMoney(invoice.totalTtc, invoice.currency)}
+              </span>
+            </div>
+            <div className="mt-1 flex justify-between text-msk-ink/60">
+              <span>Payé</span>
+              <span className="tabular-nums">
+                {formatComMoney(invoice.amountPaid, invoice.currency)}
+              </span>
+            </div>
+            <div className="mt-2 flex justify-between border-t border-msk-ink/10 pt-2 text-base font-semibold text-msk-ink">
+              <span>Reste</span>
+              <span className="tabular-nums">
+                {formatComMoney(remaining, invoice.currency)}
+              </span>
+            </div>
+          </div>
         </Surface>
 
-        <Surface className="overflow-x-auto p-0 lg:col-span-2">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-msk-ink/10 text-msk-ink/45">
-              <tr>
-                <th className="px-4 py-3 font-medium">Libellé</th>
-                <th className="px-4 py-3 font-medium">Qté</th>
-                <th className="px-4 py-3 font-medium">P.U.</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoice.lines.map((l) => (
-                <tr key={l.id} className="border-b border-msk-ink/5">
-                  <td className="px-4 py-2">{l.label}</td>
-                  <td className="px-4 py-2">{l.qty}</td>
-                  <td className="px-4 py-2">
-                    {formatComMoney(l.unitPrice, invoice.currency)}
-                  </td>
+        <Surface className="overflow-hidden p-0 lg:col-span-5">
+          <div className="border-b border-msk-ink/[0.06] px-5 py-4 sm:px-6">
+            <h2 className="text-sm font-semibold tracking-tight text-msk-ink">
+              Lignes
+            </h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-msk-ink/10 text-msk-ink/45">
+                <tr>
+                  <th className="px-5 py-3 font-medium sm:px-6">Libellé</th>
+                  <th className="px-3 py-3 font-medium">Qté</th>
+                  <th className="px-5 py-3 font-medium sm:px-6">P.U.</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {invoice.lines.map((l) => (
+                  <tr key={l.id} className="border-b border-msk-ink/5">
+                    <td className="px-5 py-2.5 sm:px-6">{l.label}</td>
+                    <td className="px-3 py-2.5 tabular-nums">{l.qty}</td>
+                    <td className="px-5 py-2.5 tabular-nums sm:px-6">
+                      {formatComMoney(l.unitPrice, invoice.currency)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Surface>
+
+        <Surface className="flex flex-col p-5 sm:p-6 lg:col-span-3">
+          <h2 className="mb-4 text-sm font-semibold tracking-tight text-msk-ink">
+            Document PDF
+          </h2>
+          {pdfDoc ? (
+            <DocPdfThumb
+              documentId={pdfDoc.id}
+              title={pdfDoc.originalName || invoice.number}
+              subtitle={`${INVOICE_STATUS_LABELS[invoice.status]} · ${formatComMoney(invoice.totalTtc, invoice.currency)}`}
+              className="max-w-[11rem]"
+            />
+          ) : (
+            <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-8 text-center">
+              <p className="text-sm text-msk-ink/50">Aucun PDF généré</p>
+              <p className="mt-1 text-xs text-msk-ink/40">
+                {canPdf && showComActions
+                  ? "Utilisez « Générer PDF » — une seule fois."
+                  : "Document non encore disponible."}
+              </p>
+            </div>
+          )}
         </Surface>
       </div>
 
-      <Surface className="p-5">
-        <h2 className="text-sm font-semibold text-msk-ink">Paiements</h2>
+      <Surface className="p-5 sm:p-6">
+        <h2 className="text-sm font-semibold tracking-tight text-msk-ink">
+          Paiements
+        </h2>
         {invoice.payments.length === 0 ? (
           <p className="mt-2 text-sm text-msk-ink/45">Aucun paiement.</p>
         ) : (

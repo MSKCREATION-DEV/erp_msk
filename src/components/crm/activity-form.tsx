@@ -15,10 +15,13 @@ import { ACTIVITY_LABELS } from "@/lib/crm/labels";
 export function ActivityForm({
   opportunityId,
   requireFollowUp = false,
+  /** Si fourni, clôture cette relance OPEN après journalisation. */
+  completeTaskId,
   onSuccess,
 }: {
   opportunityId: string;
   requireFollowUp?: boolean;
+  completeTaskId?: string;
   onSuccess?: () => void;
 }) {
   const router = useRouter();
@@ -38,6 +41,7 @@ export function ActivityForm({
     const fd = new FormData(form);
     fd.set("opportunityId", opportunityId);
     fd.set("type", type);
+    if (completeTaskId) fd.set("completeTaskId", completeTaskId);
     void run(async () => {
       const res = await logActivityAction(fd);
       if (!res.ok) {
@@ -60,6 +64,9 @@ export function ActivityForm({
       noValidate
     >
       <input type="hidden" name="opportunityId" value={opportunityId} />
+      {completeTaskId ? (
+        <input type="hidden" name="completeTaskId" value={completeTaskId} />
+      ) : null}
       <OptionPickerSingle
         label="Type d’action"
         required
@@ -124,7 +131,11 @@ export function ActivityForm({
       <FieldError>{error}</FieldError>
       <div className="flex justify-end gap-2 pt-1">
         <Button type="submit" disabled={pending}>
-          {pending ? "Enregistrement…" : "Enregistrer l’action"}
+          {pending
+            ? "Enregistrement…"
+            : completeTaskId
+              ? "Clôturer la relance"
+              : "Enregistrer l’action"}
         </Button>
       </div>
     </form>

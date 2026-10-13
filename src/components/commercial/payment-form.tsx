@@ -5,7 +5,7 @@ import { useState } from "react";
 import { recordPaymentAction } from "@/actions/commercial";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FieldError, FieldLabel } from "@/components/ui/field-label";
 import { usePendingAction } from "@/hooks/use-pending-action";
 
 export function PaymentForm({
@@ -37,12 +37,15 @@ export function PaymentForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="space-y-3"
+      className="space-y-4"
+      noValidate
       aria-busy={pending || undefined}
     >
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-3">
         <div>
-          <Label htmlFor="amount">Montant *</Label>
+          <FieldLabel htmlFor="amount" required>
+            Montant
+          </FieldLabel>
           <Input
             id="amount"
             name="amount"
@@ -52,16 +55,17 @@ export function PaymentForm({
             defaultValue={remaining > 0 ? remaining : undefined}
             required
             disabled={pending}
+            placeholder="Ex. 150000"
           />
         </div>
         <div>
-          <Label htmlFor="method">Mode</Label>
+          <FieldLabel htmlFor="method">Mode</FieldLabel>
           <select
             id="method"
             name="method"
             disabled={pending}
             defaultValue="VIREMENT"
-            className="mt-1 flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
+            className="flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3.5 text-sm shadow-sm focus:border-msk-blue focus:outline-none focus:ring-2 focus:ring-msk-blue/20 disabled:opacity-50"
           >
             <option value="VIREMENT">Virement</option>
             <option value="ESPECES">Espèces</option>
@@ -70,7 +74,7 @@ export function PaymentForm({
           </select>
         </div>
         <div>
-          <Label htmlFor="paidAt">Date</Label>
+          <FieldLabel htmlFor="paidAt">Date</FieldLabel>
           <Input
             id="paidAt"
             name="paidAt"
@@ -80,12 +84,8 @@ export function PaymentForm({
           />
         </div>
       </div>
-      <div>
-        <Label htmlFor="note">Note</Label>
-        <Input id="note" name="note" disabled={pending} />
-      </div>
-      {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
-      <Button type="submit" disabled={pending || remaining <= 0}>
+      <FieldError>{error}</FieldError>
+      <Button type="submit" size="sm" disabled={pending}>
         {pending ? "Enregistrement…" : "Enregistrer le paiement"}
       </Button>
     </form>

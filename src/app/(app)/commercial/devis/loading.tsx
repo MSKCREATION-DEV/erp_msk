@@ -1,8 +1,5 @@
+import { PageSkeleton } from "@/components/ui/skeleton";
+
 export default function DevisLoading() {
-  return (
-    <div className="animate-pulse space-y-4 p-6">
-      <div className="h-8 w-32 rounded-lg bg-msk-ink/10" />
-      <div className="h-48 rounded-xl bg-msk-ink/5" />
-    </div>
-  );
+  return <PageSkeleton cards={1} />;
 }

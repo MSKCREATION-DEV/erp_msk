@@ -51,3 +51,19 @@ export function normalizeClientName(name: string): string {
     .toLowerCase()
     .replace(/\s+/g, " ");
 }
+
+export type ComBadgeTone = "muted" | "success" | "coral" | "blue";
+
+export function quoteStatusTone(status: string): ComBadgeTone {
+  if (status === "ACCEPTE") return "success";
+  if (status === "REFUSE" || status === "ANNULE") return "coral";
+  if (status === "ENVOYE") return "blue";
+  return "muted";
+}
+
+export function invoiceStatusTone(status: string): ComBadgeTone {
+  if (status === "PAYEE") return "success";
+  if (status === "ANNULEE") return "coral";
+  if (status === "EMISE" || status === "PARTIELLEMENT_PAYEE") return "blue";
+  return "muted";
+}

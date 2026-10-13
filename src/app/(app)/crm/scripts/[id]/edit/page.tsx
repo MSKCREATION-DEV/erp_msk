@@ -5,12 +5,6 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ScriptForm } from "@/components/crm/script-form";
 
 export const metadata: Metadata = { title: "Éditer script" };
@@ -30,34 +24,26 @@ export default async function CrmScriptEditPage({
     <PageShell>
       <PageHeader
         title={script.title}
-        description={script.code}
+        description={`Code : ${script.code}`}
         backHref="/crm/scripts"
         backLabel="Retour aux scripts"
         breadcrumbs={[
-          { label: "CRM", href: "/crm" },
+          { label: "Commercial", href: "/commercial" },
           { label: "Scripts", href: "/crm/scripts" },
           { label: "Éditer" },
         ]}
       />
-      <Card className="max-w-xl">
-        <CardHeader>
-          <CardTitle>Modifier le script</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ScriptForm
-            redirectTo="/crm/scripts"
-            initial={{
-              id: script.id,
-              code: script.code,
-              channel: script.channel,
-              title: script.title,
-              body: script.body,
-              tips: script.tips ?? "",
-              sortOrder: String(script.sortOrder),
-            }}
-          />
-        </CardContent>
-      </Card>
+      <ScriptForm
+        initial={{
+          id: script.id,
+          code: script.code,
+          channel: script.channel,
+          title: script.title,
+          body: script.body,
+          tips: script.tips ?? "",
+          sortOrder: String(script.sortOrder),
+        }}
+      />
     </PageShell>
   );
 }

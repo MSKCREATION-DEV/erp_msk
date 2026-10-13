@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FileCheck2 } from "lucide-react";
 import {
   createInvoiceFromQuoteAction,
   generateQuotePdfAction,
@@ -9,7 +10,6 @@ import {
 } from "@/actions/commercial";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
-import { DocDownloadButton } from "@/components/rh/doc-download-button";
 import type { ComQuoteStatus } from "@prisma/client";
 
 export function QuoteActions({
@@ -67,7 +67,7 @@ export function QuoteActions({
   }
 
   function generatePdf() {
-    act("PDF généré — utilisez Voir / Télécharger", async () => {
+    act("PDF généré — miniature ci-dessous", async () => {
       const fd = new FormData();
       fd.set("quoteId", quoteId);
       return generateQuotePdfAction(fd);
@@ -79,33 +79,31 @@ export function QuoteActions({
       <div className="flex flex-wrap items-center gap-2">
         {canPdf ? (
           docId ? (
-            <DocDownloadButton
-              documentId={docId}
-              label="Voir / Télécharger le devis"
-              variant="primary"
-              size="sm"
-            />
-          ) : (
             <Button
               type="button"
               variant="secondary"
+              size="sm"
+              disabled
+              title="Le PDF est déjà généré — consultez la miniature"
+            >
+              <FileCheck2 className="h-4 w-4" aria-hidden />
+              PDF déjà généré
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              size="sm"
               disabled={pending}
               onClick={generatePdf}
             >
               {pending ? "Génération…" : "Générer PDF"}
             </Button>
           )
-        ) : docId ? (
-          <DocDownloadButton
-            documentId={docId}
-            label="Voir / Télécharger le devis"
-            variant="primary"
-            size="sm"
-          />
         ) : null}
         {canSend && status === "BROUILLON" ? (
           <Button
             type="button"
+            size="sm"
             disabled={pending}
             onClick={() =>
               act("Devis envoyé", async () => {
@@ -123,6 +121,7 @@ export function QuoteActions({
           <>
             <Button
               type="button"
+              size="sm"
               disabled={pending}
               onClick={() =>
                 act("Devis accepté", async () => {
@@ -138,6 +137,7 @@ export function QuoteActions({
             <Button
               type="button"
               variant="secondary"
+              size="sm"
               disabled={pending}
               onClick={() =>
                 act("Devis refusé", async () => {
@@ -155,6 +155,7 @@ export function QuoteActions({
         {canInvoice && (status === "ACCEPTE" || status === "ENVOYE") ? (
           <Button
             type="button"
+            size="sm"
             disabled={pending}
             onClick={() =>
               act("Facture créée", async () => {

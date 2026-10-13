@@ -13,7 +13,7 @@ import {
 } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
-import { hasPermission } from "@/lib/rbac/resolve";
+import { hasPermission, type SessionUser } from "@/lib/rbac/resolve";
 import { writeAudit } from "@/lib/audit";
 import { normalizeOrgName } from "@/lib/crm/labels";
 import {
@@ -377,6 +377,9 @@ export async function logActivityAction(
     };
   }
 
+  const completeTaskId = String(formData.get("completeTaskId") ?? "").trim();
+  const now = new Date();
+
   await prisma.crmActivity.create({
     data: {
       opportunityId,
@@ -391,13 +394,38 @@ export async function logActivityAction(
   await prisma.crmOpportunity.update({
     where: { id: opportunityId },
     data: {
-      lastActivityAt: new Date(),
+      lastActivityAt: now,
       nextAction: nextAction ?? deal.nextAction,
       followUpAt: hasNewFollowUp ? followUpAt : deal.followUpAt,
     },
   });
 
+  // Clôturer la relance en cours (file Relances) + éviter les doublons OPEN
+  if (completeTaskId) {
+    const task = await prisma.crmTask.findUnique({
+      where: { id: completeTaskId },
+    });
+    if (
+      task &&
+      task.status === CrmTaskStatus.OPEN &&
+      task.opportunityId === opportunityId
+    ) {
+      await prisma.crmTask.update({
+        where: { id: completeTaskId },
+        data: { status: CrmTaskStatus.DONE, completedAt: now },
+      });
+    }
+  }
+
   if (hasNewFollowUp && followUpAt) {
+    await prisma.crmTask.updateMany({
+      where: {
+        opportunityId,
+        status: CrmTaskStatus.OPEN,
+        ...(completeTaskId ? { id: { not: completeTaskId } } : {}),
+      },
+      data: { status: CrmTaskStatus.DONE, completedAt: now },
+    });
     await prisma.crmTask.create({
       data: {
         organizationId: deal.organizationId,
@@ -416,32 +444,58 @@ export async function logActivityAction(
   return { ok: true, message: "Activité enregistrée" };
 }
 
-export async function completeTaskAction(
+function canActOnTask(actor: SessionUser, assigneeId: string): boolean {
+  return (
+    assigneeId === actor.id ||
+    actor.isSuperAdmin ||
+    hasPermission(actor, "crm.view_team") ||
+    hasPermission(actor, "crm.reports.global")
+  );
+}
+
+/** Reporter une relance de +1 / +3 / +7 jours (sans journal). */
+export async function rescheduleTaskAction(
   formData: FormData,
 ): Promise<ActionResult> {
   const actor = await requireUser({ permission: "crm.activity.log" });
-  const id = String(formData.get("taskId") ?? "");
-  if (!id) return { ok: false, error: "Tâche manquante" };
+  const id = String(formData.get("taskId") ?? "").trim();
+  const daysRaw = Number.parseInt(String(formData.get("days") ?? ""), 10);
+  if (!id) return { ok: false, error: "Relance manquante" };
+  if (![1, 3, 7].includes(daysRaw)) {
+    return { ok: false, error: "Délai invalide (1, 3 ou 7 jours)" };
+  }
 
   const task = await prisma.crmTask.findUnique({ where: { id } });
-  if (!task) return { ok: false, error: "Tâche introuvable" };
-  if (
-    task.assigneeId !== actor.id &&
-    !hasPermission(actor, "crm.view_team") &&
-    !hasPermission(actor, "crm.reports.global") &&
-    !actor.isSuperAdmin
-  ) {
+  if (!task || task.status !== CrmTaskStatus.OPEN) {
+    return { ok: false, error: "Relance introuvable" };
+  }
+  if (!canActOnTask(actor, task.assigneeId)) {
     return { ok: false, error: "Pas assigné à cette tâche" };
   }
 
+  const base = new Date();
+  base.setHours(12, 0, 0, 0);
+  base.setDate(base.getDate() + daysRaw);
+
   await prisma.crmTask.update({
     where: { id },
-    data: { status: CrmTaskStatus.DONE, completedAt: new Date() },
+    data: { dueAt: base },
   });
+
+  if (task.opportunityId) {
+    await prisma.crmOpportunity.update({
+      where: { id: task.opportunityId },
+      data: { followUpAt: base },
+    });
+    revalidatePath(`/crm/prospects/${task.opportunityId}`);
+  }
 
   revalidatePath("/crm/relances");
   revalidatePath("/crm");
-  return { ok: true, message: "Relance terminée" };
+  return {
+    ok: true,
+    message: `Relance reportée de ${daysRaw} jour${daysRaw > 1 ? "s" : ""}`,
+  };
 }
 
 export async function saveWeeklyReportAction(
@@ -713,7 +767,7 @@ export async function upsertCrmScriptAction(
   });
 
   revalidatePath("/crm/scripts");
-  return { ok: true, message: "Script enregistré" };
+  redirect("/crm/scripts");
 }
 
 export async function toggleCrmScriptAction(

@@ -7,9 +7,27 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { StageForm } from "@/components/crm/stage-form";
 import { ActivityForm } from "@/components/crm/activity-form";
+import {
+  ProspectQuoteCta,
+} from "@/components/crm/prospect-quote-cta";
+import type { QuotePrefillLine } from "@/components/commercial/quote-form";
+
+type OfferOpt = {
+  id: string;
+  name: string;
+  sku: string;
+  priceXof: number | null;
+  floorPriceXof: number | null;
+};
+
+type ClientOpt = {
+  id: string;
+  name: string;
+  includeTravelDefault: boolean;
+};
 
 /**
- * Actions fiche prospect — statut & journal via modales (page lisible, sans sidebar formulaires).
+ * Actions fiche prospect — statut & journal via modales + CTA devis (gate Intéressé).
  */
 export function ProspectDetailActions({
   opportunityId,
@@ -19,6 +37,7 @@ export function ProspectDetailActions({
   canEditStage,
   canLogActivity,
   requireFollowUp,
+  quote,
 }: {
   opportunityId: string;
   stage: CrmPipelineStage;
@@ -27,11 +46,21 @@ export function ProspectDetailActions({
   canEditStage: boolean;
   canLogActivity: boolean;
   requireFollowUp: boolean;
+  quote?: {
+    existingQuoteId?: string | null;
+    existingClientId?: string | null;
+    canCreateQuote: boolean;
+    canManageClients: boolean;
+    clients: ClientOpt[];
+    offers: OfferOpt[];
+    initialLines?: QuotePrefillLine[];
+    defaultObject?: string;
+  };
 }) {
   const [stageOpen, setStageOpen] = useState(false);
   const [activityOpen, setActivityOpen] = useState(false);
 
-  if (!canEditStage && !canLogActivity) return null;
+  if (!canEditStage && !canLogActivity && !quote?.canCreateQuote) return null;
 
   return (
     <>
@@ -50,13 +79,28 @@ export function ProspectDetailActions({
         {canLogActivity ? (
           <Button
             type="button"
-            variant="secondary"
             size="sm"
             onClick={() => setActivityOpen(true)}
           >
             <ClipboardList className="h-4 w-4" aria-hidden />
             Enregistrer une action
           </Button>
+        ) : null}
+        {quote ? (
+          <ProspectQuoteCta
+            opportunityId={opportunityId}
+            stage={stage}
+            existingQuoteId={quote.existingQuoteId}
+            existingClientId={quote.existingClientId}
+            canCreateQuote={quote.canCreateQuote}
+            canManageClients={quote.canManageClients}
+            canOpenStage={canEditStage}
+            onOpenStage={() => setStageOpen(true)}
+            clients={quote.clients}
+            offers={quote.offers}
+            initialLines={quote.initialLines}
+            defaultObject={quote.defaultObject}
+          />
         ) : null}
       </div>
 

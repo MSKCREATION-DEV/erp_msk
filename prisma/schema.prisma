@@ -865,7 +865,8 @@ model ComQuote {
 
   @@index([clientId])
   @@index([ownerId, status])
-  @@index([opportunityId])
+  /// Un seul devis lié par prospect (NULL autorisé plusieurs fois en PG).
+  @@unique([opportunityId])
   @@map("com_quotes")
 }
 

@@ -2,13 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FileCheck2 } from "lucide-react";
 import {
   generateInvoicePdfAction,
   issueInvoiceAction,
 } from "@/actions/commercial";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
-import { DocDownloadButton } from "@/components/rh/doc-download-button";
 import type { ComInvoiceStatus } from "@prisma/client";
 
 export function InvoiceActions({
@@ -36,6 +36,7 @@ export function InvoiceActions({
 
   function generatePdf() {
     setError(null);
+    setMsg(null);
     void run(async () => {
       const fd = new FormData();
       fd.set("invoiceId", invoiceId);
@@ -45,7 +46,7 @@ export function InvoiceActions({
         return;
       }
       if (res.documentId) setDocId(res.documentId);
-      setMsg("PDF généré — utilisez Voir / Télécharger");
+      setMsg("PDF généré — miniature ci-dessous");
       router.refresh();
     });
   }
@@ -56,9 +57,11 @@ export function InvoiceActions({
         {canIssue && status === "BROUILLON" ? (
           <Button
             type="button"
+            size="sm"
             disabled={pending}
             onClick={() => {
               setError(null);
+              setMsg(null);
               void run(async () => {
                 const fd = new FormData();
                 fd.set("invoiceId", invoiceId);
@@ -71,34 +74,31 @@ export function InvoiceActions({
               });
             }}
           >
-            Émettre
+            {pending ? "Émission…" : "Émettre"}
           </Button>
         ) : null}
         {canPdf ? (
           docId ? (
-            <DocDownloadButton
-              documentId={docId}
-              label="Voir / Télécharger la facture"
-              variant="primary"
-              size="sm"
-            />
-          ) : (
             <Button
               type="button"
               variant="secondary"
+              size="sm"
+              disabled
+              title="Le PDF est déjà généré — consultez la miniature"
+            >
+              <FileCheck2 className="h-4 w-4" aria-hidden />
+              PDF déjà généré
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              size="sm"
               disabled={pending}
               onClick={generatePdf}
             >
               {pending ? "Génération…" : "Générer PDF"}
             </Button>
           )
-        ) : docId ? (
-          <DocDownloadButton
-            documentId={docId}
-            label="Voir / Télécharger la facture"
-            variant="primary"
-            size="sm"
-          />
         ) : null}
       </div>
       {pending ? (

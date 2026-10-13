@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { comOwnerScopeWhere } from "@/lib/commercial/scope";
+import { STAGE_LABELS } from "@/lib/crm/labels";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Surface } from "@/components/ui/surface";
 import { QuoteCreateForm } from "@/components/commercial/quote-form";
 
 export const metadata: Metadata = { title: "Nouveau devis" };
@@ -51,6 +47,7 @@ export default async function CommercialDevisNouveauPage({
           select: {
             id: true,
             title: true,
+            stage: true,
             organization: { select: { name: true } },
             catalogOffer: {
               select: {
@@ -73,6 +70,7 @@ export default async function CommercialDevisNouveauPage({
                 },
               },
             },
+            _count: { select: { comQuotes: true } },
           },
         })
       : Promise.resolve(null),
@@ -99,6 +97,12 @@ export default async function CommercialDevisNouveauPage({
     }));
   })();
 
+  const oppStage =
+    opportunity?.stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : opportunity?.stage;
+  const oppBlocked =
+    opportunity != null &&
+    (oppStage !== "INTERESSE" || opportunity._count.comQuotes > 0);
+
   return (
     <PageShell>
       <PageHeader
@@ -106,7 +110,7 @@ export default async function CommercialDevisNouveauPage({
         description={
           opportunity
             ? `Depuis ${opportunity.organization.name} — lignes préremplies si offres liées.`
-            : "Lignes catalogue ou libres — PDF après création."
+            : "Proposition commerciale — client, lignes, régime fiscal."
         }
         backHref="/commercial/devis"
         backLabel="Retour aux devis"
@@ -116,35 +120,70 @@ export default async function CommercialDevisNouveauPage({
           { label: "Nouveau" },
         ]}
       />
-      <Card className="max-w-3xl">
-        <CardHeader>
-          <CardTitle>Créer un devis</CardTitle>
-          <CardDescription>
-            Régime ML (XOF, TVA 18 %) par défaut. Plancher catalogue respecté.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {clients.length === 0 ? (
-            <p className="text-sm text-msk-ink/55">
-              Créez d’abord un client avant d’émettre un devis.
+
+      {clients.length === 0 ? (
+        <Surface className="p-8 text-center text-sm text-msk-ink/55">
+          Créez d’abord un{" "}
+          <Link
+            prefetch={false}
+            href="/commercial/clients"
+            className="font-medium text-msk-blue hover:underline"
+          >
+            client commercial
+          </Link>{" "}
+          avant d’émettre un devis.
+        </Surface>
+      ) : oppBlocked && opportunity ? (
+        <Surface className="space-y-3 p-6 sm:p-8">
+          <h2 className="text-lg font-semibold text-msk-ink">
+            Devis non disponible
+          </h2>
+          {opportunity._count.comQuotes > 0 ? (
+            <p className="text-sm text-msk-ink/70">
+              Un devis existe déjà pour{" "}
+              <strong>{opportunity.organization.name}</strong>. Ouvrez la fiche
+              prospect pour le consulter.
             </p>
           ) : (
-            <QuoteCreateForm
-              clients={clients}
-              offers={offers}
-              defaultClientId={sp.clientId}
-              defaultOpportunityId={sp.opportunityId}
-              defaultIncludeTravel={defaultClient?.includeTravelDefault}
-              initialLines={prefillFromOffers}
-              defaultObject={
-                opportunity
-                  ? `Proposition — ${opportunity.organization.name}`
-                  : undefined
-              }
-            />
+            <p className="text-sm text-msk-ink/70">
+              Statut actuel :{" "}
+              <strong>{STAGE_LABELS[opportunity.stage]}</strong>. Un devis lié
+              au prospect n’est possible qu’au statut <strong>Intéressé</strong>
+              .
+            </p>
           )}
-        </CardContent>
-      </Card>
+          <div className="flex flex-wrap gap-2 pt-2">
+            <Link
+              prefetch={false}
+              href={`/crm/prospects/${opportunity.id}`}
+              className="inline-flex h-10 items-center justify-center rounded-lg bg-msk-blue px-4 text-sm font-medium text-white hover:bg-msk-blue/90"
+            >
+              Ouvrir la fiche prospect
+            </Link>
+            <Link
+              prefetch={false}
+              href="/commercial/devis"
+              className="inline-flex h-10 items-center justify-center rounded-lg border border-msk-ink/15 bg-white px-4 text-sm font-medium text-msk-ink hover:bg-msk-chalk/60"
+            >
+              Retour aux devis
+            </Link>
+          </div>
+        </Surface>
+      ) : (
+        <QuoteCreateForm
+          clients={clients}
+          offers={offers}
+          defaultClientId={sp.clientId}
+          defaultOpportunityId={sp.opportunityId}
+          defaultIncludeTravel={defaultClient?.includeTravelDefault}
+          initialLines={prefillFromOffers}
+          defaultObject={
+            opportunity
+              ? `Proposition — ${opportunity.organization.name}`
+              : undefined
+          }
+        />
+      )}
     </PageShell>
   );
 }
