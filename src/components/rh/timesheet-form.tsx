@@ -79,7 +79,7 @@ export function TimesheetForm() {
           value={weekStart}
           disabled={pending}
           onChange={(e) => setWeekStart(mondayOf(e.target.value))}
-          className="max-w-[200px]"
+          className="max-w-50"
         />
       </div>
 

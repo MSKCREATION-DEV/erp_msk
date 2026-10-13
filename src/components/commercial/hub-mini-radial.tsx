@@ -17,15 +17,17 @@ export type HubMiniRadialProps = {
   value: number;
   max: number;
   color: string;
-  /** KPI court (chiffre) dans le creux du demi-cercle. */
+  /** KPI sous l’arc (jamais collé au trait). */
   centerLabel: ReactNode;
   caption?: string;
   trackColor?: string;
+  /** `lg` = conversion / montants plus lisibles. */
+  size?: "sm" | "lg";
   className?: string;
 };
 
 /**
- * Mini radial empilé (shadcn radial-stacked) — réutilisable sur cartes métriques.
+ * Mini radial empilé (shadcn radial-stacked) — arc puis KPI + légende avec air.
  * @see https://ui.shadcn.com/charts/radial
  */
 export function HubMiniRadial({
@@ -35,16 +37,24 @@ export function HubMiniRadial({
   centerLabel,
   caption,
   trackColor = "rgba(13, 19, 48, 0.08)",
+  size = "sm",
   className,
 }: HubMiniRadialProps) {
   const ceiling = Math.max(1, max);
   const done = Math.min(Math.max(0, value), ceiling);
   const rest = Math.max(0, ceiling - done);
   const data = [{ name: "kpi", done, rest }];
+  const large = size === "lg";
 
   return (
-    <div className={cn("flex w-[96px] flex-col items-center", className)}>
-      <div className="relative h-[64px] w-full">
+    <div
+      className={cn(
+        "flex flex-col items-center",
+        large ? "w-30" : "w-25",
+        className,
+      )}
+    >
+      <div className={cn("w-full", large ? "h-14" : "h-12")}>
         <ChartContainer
           config={config}
           className="aspect-auto! h-full w-full"
@@ -52,8 +62,8 @@ export function HubMiniRadial({
           <RadialBarChart
             data={data}
             endAngle={180}
-            innerRadius={28}
-            outerRadius={42}
+            innerRadius={large ? 34 : 28}
+            outerRadius={large ? 50 : 40}
             cx="50%"
             cy="100%"
           >
@@ -73,14 +83,22 @@ export function HubMiniRadial({
             />
           </RadialBarChart>
         </ChartContainer>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0.5 flex justify-center">
-          <span className="text-center text-xl font-semibold tabular-nums leading-none tracking-tight text-msk-ink">
-            {centerLabel}
-          </span>
-        </div>
       </div>
+      <p
+        className={cn(
+          "mt-0 text-center font-semibold tabular-nums leading-none tracking-tight text-msk-ink",
+          large ? "text-2xl" : "text-xl",
+        )}
+      >
+        {centerLabel}
+      </p>
       {caption ? (
-        <p className="mt-1 max-w-[104px] text-center text-[11px] leading-tight text-msk-ink/45">
+        <p
+          className={cn(
+            "mt-1 max-w-30 text-center leading-tight text-msk-ink/45",
+            large ? "text-xs" : "text-[11px]",
+          )}
+        >
           {caption}
         </p>
       ) : null}

@@ -59,7 +59,7 @@ export function BankMatchForm({
         value={entryId}
         disabled={pending}
         onChange={(e) => setEntryId(e.target.value)}
-        className="h-9 min-w-[220px] rounded-lg border border-msk-ink/15 bg-white px-2 text-sm"
+        className="h-9 min-w-55 rounded-lg border border-msk-ink/15 bg-white px-2 text-sm"
       >
         <option value="">— écriture validée —</option>
         {entries.map((e) => (

@@ -64,7 +64,7 @@ export function GenerateDemoButton({ templateId }: { templateId: string }) {
           <span className="text-xs text-msk-coral">{state.error}</span>
         ) : null}
         {state?.ok && state.message ? (
-          <span className="max-w-[240px] text-right text-xs text-msk-blue">
+          <span className="max-w-60 text-right text-xs text-msk-blue">
             {state.message}
           </span>
         ) : null}

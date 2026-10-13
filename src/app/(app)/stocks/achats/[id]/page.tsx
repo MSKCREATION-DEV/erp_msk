@@ -126,7 +126,7 @@ export default async function StocksAchatDetailPage({ params }: Props) {
         <div className="border-b border-msk-paper px-4 py-3">
           <h2 className="text-sm font-semibold text-msk-ink">Lignes</h2>
         </div>
-        <table className="w-full min-w-[640px] text-left text-sm">
+        <table className="w-full min-w-160 text-left text-sm">
           <thead className="border-b border-msk-paper bg-msk-chalk/60 text-xs tracking-caps uppercase text-msk-ink/45">
             <tr>
               <th className="px-4 py-3 font-semibold">Libellé</th>

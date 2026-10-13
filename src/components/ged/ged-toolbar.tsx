@@ -188,7 +188,7 @@ function ToolbarMenu({
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "inline-flex h-8 max-w-[14rem] items-center gap-1.5 rounded-lg border border-msk-ink/[0.12] bg-white px-2.5 text-xs font-medium text-msk-ink transition hover:border-msk-blue/30 hover:bg-msk-chalk/60 sm:text-sm",
+          "inline-flex h-8 max-w-56 items-center gap-1.5 rounded-lg border border-msk-ink/[0.12] bg-white px-2.5 text-xs font-medium text-msk-ink transition hover:border-msk-blue/30 hover:bg-msk-chalk/60 sm:text-sm",
           open && "border-msk-blue/40 bg-msk-blue/[0.04] text-msk-blue",
         )}
       >

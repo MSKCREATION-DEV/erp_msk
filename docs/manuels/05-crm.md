@@ -1,21 +1,21 @@
 # Manuel — CRM / Suivi commercial (prospects, relances, scripts)
 
-**Version** : 2026-10-12 · Phase COM E2E  
+**Version** : 2026-10-13 · Phase COM E2E  
 **Public** : Commerciaux, Admin CRM, Direction
 
 ## À retenir
 
 Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 
-- **Menu** `/commercial` = hub cartes  
-- **Tableau de bord** `/crm` = indicateurs live  
+- **Menu** `/commercial` = hub cartes (`MetricNavCard`)  
+- **Tableau de bord** `/crm` = Indicateurs + Conversion + Répartition  
 - Tabs filtrées selon droits (pas de **Vue Équipe** pour un collab « own only »)
 
 | Zone | Route | Notes |
 |---|---|---|
 | Menu | `/commercial` | Cartes modules |
-| Tableau de bord | `/crm` | KPI, graphs, urgences (SLA devis 24h) |
-| Prospects | `/crm/prospects` | Liste · Par étapes (`?vue=etapes`) · filtres |
+| Tableau de bord | `/crm` | Indicateurs (Ouverts / Intéressés / Relances à venir+retard / Sans devis) · Conversion Signé\|En cours · Répartition cliquable · Objectifs |
+| Prospects | `/crm/prospects` | Liste · Par étapes · filtres URL `?stages=` |
 | Relances | `/crm/relances` | Aujourd’hui / retard / semaine |
 | Scripts | `/crm/scripts` | Copier messages |
 | Vue Équipe | `/crm/equipe` | Lead / Direction seulement |
@@ -56,5 +56,6 @@ En haut de Prospects : **Portefeuille** · **Intéressés** · **Retards** (radi
 
 | Date | Note |
 |---|---|
+| 2026-10-13 | Tableau de bord : MetricNavCard, Conversion Signé/En cours, Répartition filtres URL, Objectifs radial |
 | 2026-10-12 | Menu / Tableau de bord / Vue Équipe / Rapport ; client dès Intéressé ; SLA 24h |
 | 2026-10-10 | Conversion CRM → Commercial (v1) |

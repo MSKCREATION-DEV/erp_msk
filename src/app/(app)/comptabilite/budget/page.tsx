@@ -98,7 +98,7 @@ export default async function ComptabiliteBudgetPage({
         </Surface>
       ) : (
         <Surface className="overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-sm">
+          <table className="w-full min-w-180 text-left text-sm">
             <thead className="border-b border-msk-ink/10 text-msk-ink/45">
               <tr>
                 <th className="px-4 py-3 font-medium">Mois</th>

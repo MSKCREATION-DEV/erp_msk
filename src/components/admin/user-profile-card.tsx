@@ -87,7 +87,7 @@ export function UserProfileCard({
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 sm:min-w-[280px]">
+          <div className="grid grid-cols-3 gap-3 sm:min-w-70">
             <Stat label="Permissions" value={String(permissionCount)} />
             <Stat label="Groupes" value={String(groupCodes.length)} />
             <Stat label="Packs" value={String(packCodes.length)} />

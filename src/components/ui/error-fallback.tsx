@@ -83,7 +83,7 @@ export function ErrorFallback({
         <div className="mt-7 flex flex-col-reverse gap-2 sm:flex-row sm:justify-center">
           <Link prefetch={false}
             href="/accueil"
-            className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border border-msk-ink/15 bg-white px-3 text-sm font-medium tracking-tight text-msk-ink transition hover:bg-msk-chalk focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/30 sm:min-w-[9rem]"
+            className="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border border-msk-ink/15 bg-white px-3 text-sm font-medium tracking-tight text-msk-ink transition hover:bg-msk-chalk focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/30 sm:min-w-36"
           >
             <Home className="h-4 w-4" />
             Accueil
@@ -93,7 +93,7 @@ export function ErrorFallback({
               type="button"
               variant="primary"
               size="sm"
-              className="sm:min-w-[9rem]"
+              className="sm:min-w-36"
               onClick={reset}
             >
               <RefreshCw className="h-4 w-4" />

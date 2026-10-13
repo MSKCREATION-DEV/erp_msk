@@ -69,7 +69,7 @@ export default async function ComptabiliteGrandLivrePage({
           <select
             name="accountId"
             defaultValue={accountId ?? ""}
-            className="h-11 min-w-[220px] rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
+            className="h-11 min-w-55 rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
           >
             <option value="">Tous les comptes</option>
             {accounts.map((a) => (
@@ -93,7 +93,7 @@ export default async function ComptabiliteGrandLivrePage({
         </Surface>
       ) : (
         <Surface className="overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left text-sm">
+          <table className="w-full min-w-190 text-left text-sm">
             <thead className="border-b border-msk-ink/10 text-msk-ink/45">
               <tr>
                 <th className="px-4 py-3 font-medium">Compte</th>

@@ -37,6 +37,45 @@ export const STAGE_ORDER: CrmPipelineStage[] = [
   "PERDU",
 ];
 
+/**
+ * Couleurs distinctes par statut (1 teinte = 1 stage — pas de bleus quasi-identiques).
+ * Aligné charte MSK + accents data-viz lisibles.
+ */
+export const STAGE_COLORS: Record<CrmPipelineStage, string> = {
+  NOUVEAU: "#00ACEE",
+  CONTACTE: "#1D73BC",
+  QUALIFICATION: "#2A3D8E",
+  INTERESSE: "#0F766E",
+  DEVIS_ENVOYE: "#C27803",
+  NEGOCIATION: "#C27803",
+  GAGNE: "#0D1330",
+  PERDU: "#FF5A3C",
+};
+
+/** Dossiers encore ouverts (hors Client / Perdu). */
+export const OPEN_PIPELINE_STAGES: CrmPipelineStage[] = [
+  "NOUVEAU",
+  "CONTACTE",
+  "QUALIFICATION",
+  "INTERESSE",
+  "DEVIS_ENVOYE",
+  "NEGOCIATION",
+];
+
+/** Stages BDD à passer dans `?stages=` pour un filtre UI (NEGOCIATION ↔ Devis envoyé). */
+export function stagesForFilter(stage: CrmPipelineStage): CrmPipelineStage[] {
+  if (stage === "DEVIS_ENVOYE" || stage === "NEGOCIATION") {
+    return ["DEVIS_ENVOYE", "NEGOCIATION"];
+  }
+  return [stage];
+}
+
+/** URL listing prospects filtrée par statut(s). */
+export function prospectsStagesHref(stages: CrmPipelineStage[]): string {
+  const unique = [...new Set(stages)];
+  return `/crm/prospects?stages=${unique.join(",")}`;
+}
+
 /** Tous les stages BDD (incl. legacy Négociation) — affichage / mapping uniquement. */
 export const STAGE_ORDER_ALL: CrmPipelineStage[] = [
   ...STAGE_ORDER.slice(0, 5),

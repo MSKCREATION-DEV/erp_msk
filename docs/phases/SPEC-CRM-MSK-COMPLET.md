@@ -154,7 +154,7 @@ Tout le reste Excel + améliorations vit **ici**, pas dans la liste :
 | Clients | statut Client |
 | Perdus | nb (jamais un montant « € » erroné) |
 | CA signé | budgets / devis des Clients |
-| CA en cours | budgets des statuts ouverts (hors Client / Perdu) |
+| Montant en cours (pipeline) | budgets (`budgetXof`) des statuts ouverts (hors Client / Perdu) — affiché dans Conversion, pas en KPI isolé |
 
 ### 4.2 Taux
 

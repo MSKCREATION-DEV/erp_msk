@@ -31,7 +31,7 @@ export function StageBarChart({
         {title}
       </p>
       <p className="mt-1 text-sm text-msk-ink/50">{subtitle}</p>
-      <ChartContainer config={chartConfig} className="mt-4 min-h-[220px] w-full">
+      <ChartContainer config={chartConfig} className="mt-4 min-h-55 w-full">
         <BarChart accessibilityLayer data={data} margin={{ left: 0, right: 8 }}>
           <CartesianGrid vertical={false} />
           <XAxis

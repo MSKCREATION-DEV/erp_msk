@@ -28,6 +28,24 @@ Menu `/commercial` (**pas** de tabs) :
 
 Cartes blanches (`MetricNavCard`) : icône + titre/sous-titre alignés, flèche ; KPI / radial en bas à droite.
 
+### Tableau de bord `/crm`
+
+Grille **Indicateurs** (3 ou 4 colonnes égales) — `MetricNavCard` + `HubMiniRadial` :
+
+| Carte | Contenu | Lien |
+|---|---|---|
+| Sans devis *(si SLA)* | Intéressés > 24 h sans devis | `?devisRetard=1` |
+| Ouverts | Dossiers hors Client / Perdu | `?stages=` ouverts |
+| Intéressés | Statut Intéressé | `?stages=INTERESSE` |
+| Relances | **À venir** + **en retard** (2 radiaux) | `/crm/relances` |
+
+Puis :
+
+- **Conversion prospects → clients** (`ConversionPipelineCard`) : Signé \| En cours — montants = `budgetXof` ; taux = clients ÷ dossiers visibles  
+- **Répartition des prospects** : `STAGE_COLORS` distinctes ; légende + segments cliquables → `/crm/prospects?stages=…`  
+- Priorités + **Objectifs semaine** (`RadialShape` + `ActionLink` Paramétrer)  
+- CTA header : **Nouveau prospect** (`ActionLink` + icône)
+
 Sous-pages — `commercialNavItems` (`src/lib/commercial/nav.ts`) :
 
 `Menu` · `Tableau de bord` · `Prospects` · `Relances` · `Scripts` · `Vue Équipe`* · `Rapport` · `Clients` · `Devis` · `Factures` · `Offres`
@@ -113,7 +131,7 @@ Tableau de bord → Vue Équipe → portefeuille collab
 |---|---|
 | `/commercial` | Menu |
 | `/crm` | Tableau de bord |
-| `/crm/prospects` (+ `?vue=etapes`, `?devisRetard=1`) | Prospects |
+| `/crm/prospects` (+ `?vue=etapes`, `?stages=`, `?devisRetard=1`) | Prospects (filtres URL) |
 | `/crm/prospects/nouveau` · `/[id]` · `/import` | Création / fiche / import |
 | `/crm/relances` · `/scripts` · `/equipe` · `/rapport-semaine` · `/objectifs` | Suivi |
 | `/commercial/clients` · `/devis` · `/factures` | Documentaire |
@@ -130,4 +148,4 @@ Tableau de bord → Vue Équipe → portefeuille collab
 
 ---
 
-*Aligné implémentation 2026-10-12.*
+*Aligné implémentation 2026-10-13 (hub MetricNavCard + tableau de bord Indicateurs / Conversion / Répartition).*

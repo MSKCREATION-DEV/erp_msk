@@ -19,8 +19,8 @@ export function Sidebar({ user }: { user: SessionUser }) {
       : `${user.firstName} ${user.lastName}`;
 
   return (
-    <aside className="flex h-full w-[248px] shrink-0 flex-col overflow-hidden border-r border-msk-ink/[0.07] bg-white">
-      <div className="flex h-[64px] items-center px-4">
+    <aside className="flex h-full w-62 shrink-0 flex-col overflow-hidden border-r border-msk-ink/[0.07] bg-white">
+      <div className="flex h-16 items-center px-4">
         <Logo variant="bloc" size="sm" href="/accueil" priority />
       </div>
 

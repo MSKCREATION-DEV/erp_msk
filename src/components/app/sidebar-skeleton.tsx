@@ -4,11 +4,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function SidebarSkeleton() {
   return (
     <aside
-      className="flex h-full w-[248px] shrink-0 flex-col overflow-hidden border-r border-msk-ink/[0.07] bg-white"
+      className="flex h-full w-62 shrink-0 flex-col overflow-hidden border-r border-msk-ink/[0.07] bg-white"
       aria-busy
       aria-label="Chargement navigation"
     >
-      <div className="flex h-[64px] items-center px-4">
+      <div className="flex h-16 items-center px-4">
         <Skeleton className="h-8 w-28" />
       </div>
       <div className="flex flex-1 flex-col gap-2 px-3 py-5">

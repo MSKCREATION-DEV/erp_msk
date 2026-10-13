@@ -158,10 +158,10 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 
       <Dialog.Root open={open} onOpenChange={onOpenChange}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-[60] bg-msk-ink/45 backdrop-blur-[2px]" />
+          <Dialog.Overlay className="fixed inset-0 z-60 bg-msk-ink/45 backdrop-blur-[2px]" />
           <Dialog.Content
             className={cn(
-              "fixed left-1/2 top-1/2 z-[60] w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-msk-ink/[0.08] bg-white shadow-2xl shadow-msk-ink/25 outline-none",
+              "fixed left-1/2 top-1/2 z-60 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-msk-ink/[0.08] bg-white shadow-2xl shadow-msk-ink/25 outline-none",
               "focus:outline-none",
             )}
             onEscapeKeyDown={(e) => {
@@ -226,7 +226,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                 type="button"
                 variant="secondary"
                 size="sm"
-                className="sm:min-w-[7rem]"
+                className="sm:min-w-28"
                 disabled={pending}
                 onClick={() => finish(false)}
               >
@@ -236,7 +236,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                 type="button"
                 variant={styles.button}
                 size="sm"
-                className="sm:min-w-[7rem]"
+                className="sm:min-w-28"
                 data-confirm-primary
                 disabled={pending}
                 onClick={() => void onConfirm()}

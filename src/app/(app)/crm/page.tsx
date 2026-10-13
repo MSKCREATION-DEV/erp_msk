@@ -2,30 +2,42 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CrmPipelineStage, CrmTaskStatus } from "@prisma/client";
+import {
+  Bell,
+  FileWarning,
+  FolderOpen,
+  Settings2,
+  Sparkles,
+  UserPlus,
+} from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { dealOwnerScopeWhere } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
-import { formatXof, STAGE_LABELS, STAGE_ORDER } from "@/lib/crm/labels";
+import {
+  OPEN_PIPELINE_STAGES,
+  STAGE_LABELS,
+  STAGE_ORDER,
+  prospectsStagesHref,
+} from "@/lib/crm/labels";
 import { GOAL_LABELS, resolveGoals, type GoalMetric } from "@/lib/crm/goals";
 import { weekStartMonday } from "@/lib/crm/week";
 import { computeWeekStats } from "@/lib/crm/week-stats";
 import { isTestOrgName } from "@/lib/crm/test-data";
+import { isDevisSlaBreached } from "@/lib/crm/devis-sla";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
-import { KpiGrid } from "@/components/ui/kpi-card";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { ActionLink } from "@/components/ui/action-link";
+import { MetricNavCard, METRIC_NAV_TONE_CHART } from "@/components/ui/metric-nav-card";
+import { HubMiniRadial } from "@/components/commercial/hub-mini-radial";
+import { RadialShape } from "@/components/ui/radial-shape";
 import { StageDonutChart } from "@/components/crm/stage-donut-chart";
-import { ConversionRadial } from "@/components/crm/conversion-radial";
-import { isDevisSlaBreached } from "@/lib/crm/devis-sla";
+import { ConversionPipelineCard } from "@/components/crm/conversion-pipeline-card";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
-
-const linkBtn =
-  "inline-flex h-9 items-center justify-center rounded-lg px-3 text-sm font-medium transition";
-const linkPrimary = `${linkBtn} bg-msk-blue text-white hover:bg-msk-blue/90`;
 
 function normalizeStage(stage: CrmPipelineStage): CrmPipelineStage {
   return stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage;
@@ -85,8 +97,8 @@ export default async function CrmDashboardPage() {
     (d) => d.stage !== "GAGNE" && d.stage !== "PERDU",
   );
   const won = deals.filter((d) => d.stage === "GAGNE");
-  const caEnCours = openDeals.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
-  const caSigne = won.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
+  const montantEnCours = openDeals.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
+  const montantSigne = won.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
   const conversionPct =
     deals.length > 0 ? (won.length / deals.length) * 100 : 0;
   const interesses = byStage.find((x) => x.stage === "INTERESSE")?.count ?? 0;
@@ -104,8 +116,7 @@ export default async function CrmDashboardPage() {
     .filter((d) => {
       const st = normalizeStage(d.stage);
       if (st === "GAGNE" || st === "PERDU") return false;
-      const late =
-        d.followUpAt != null && d.followUpAt.getTime() < now;
+      const late = d.followUpAt != null && d.followUpAt.getTime() < now;
       return late || st === "INTERESSE" || st === "NOUVEAU";
     })
     .slice(0, 5);
@@ -142,6 +153,10 @@ export default async function CrmDashboardPage() {
     },
   ];
 
+  const openScale = Math.max(5, openDeals.length);
+  const interesseScale = Math.max(5, interesses);
+  const relancesAvenir = Math.max(0, openTasks - overdue);
+
   return (
     <PageShell>
       <PageHeader
@@ -152,76 +167,121 @@ export default async function CrmDashboardPage() {
         ]}
         actions={
           hasPermission(user, "crm.prospect.create") ? (
-            <Link
-              prefetch={false}
-              href="/crm/prospects/nouveau"
-              className={linkPrimary}
-            >
-              Nouveau
-            </Link>
+            <ActionLink href="/crm/prospects/nouveau" icon={UserPlus}>
+              Nouveau prospect
+            </ActionLink>
           ) : null
         }
       />
 
-      {(overdue > 0 || devisUrgent.length > 0) && (
-        <Surface className="border-msk-coral/25 bg-msk-coral/[0.04] p-4">
-          <p className="text-sm font-semibold text-msk-coral">À traiter</p>
-          <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-            {overdue > 0 ? (
-              <li>
-                <Link
-                  prefetch={false}
-                  href="/crm/relances"
-                  className="text-msk-blue hover:underline"
-                >
-                  {overdue} relance{overdue > 1 ? "s" : ""} en retard
-                </Link>
-              </li>
-            ) : null}
-            {devisUrgent.length > 0 ? (
-              <li>
-                <Link
-                  prefetch={false}
-                  href="/crm/prospects?devisRetard=1"
-                  className="text-msk-blue hover:underline"
-                >
-                  {devisUrgent.length} Intéressé
-                  {devisUrgent.length > 1 ? "s" : ""} sans devis (&gt; 24h)
-                </Link>
-              </li>
-            ) : null}
-          </ul>
-        </Surface>
-      )}
-
-      <KpiGrid
-        className="sm:grid-cols-2 xl:grid-cols-4"
-        items={[
-          {
-            label: "Ouverts",
-            value: String(openDeals.length),
-          },
-          {
-            label: "Intéressés",
-            value: String(interesses),
-          },
-          {
-            label: "Relances dues",
-            value: String(openTasks),
-            hint: overdue > 0 ? `${overdue} en retard` : undefined,
-          },
-          {
-            label: "CA en cours",
-            value: formatXof(caEnCours),
-          },
-        ]}
-      />
+      <section aria-labelledby="crm-indicateurs" className="space-y-3">
+        <h2
+          id="crm-indicateurs"
+          className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/40"
+        >
+          Indicateurs
+        </h2>
+        <div
+          className={
+            devisUrgent.length > 0
+              ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+              : "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+          }
+        >
+          {devisUrgent.length > 0 ? (
+            <MetricNavCard
+              href="/crm/prospects?devisRetard=1"
+              icon={FileWarning}
+              tone="coral"
+              title="Sans devis"
+              description="Intéressés depuis plus de 24 h sans proposition."
+              footer={
+                <HubMiniRadial
+                  value={devisUrgent.length}
+                  max={Math.max(5, devisUrgent.length)}
+                  color={METRIC_NAV_TONE_CHART.coral}
+                  centerLabel={devisUrgent.length}
+                  caption={
+                    devisUrgent.length > 1
+                      ? "dossiers à proposer"
+                      : "dossier à proposer"
+                  }
+                />
+              }
+            />
+          ) : null}
+          <MetricNavCard
+            href={prospectsStagesHref(OPEN_PIPELINE_STAGES)}
+            icon={FolderOpen}
+            tone="blue"
+            title="Ouverts"
+            description="Dossiers encore actifs (hors client / perdu)."
+            footer={
+              <HubMiniRadial
+                value={openDeals.length}
+                max={openScale}
+                color={METRIC_NAV_TONE_CHART.blue}
+                centerLabel={openDeals.length}
+                caption={
+                  openDeals.length > 1 ? "dossiers ouverts" : "dossier ouvert"
+                }
+              />
+            }
+          />
+          <MetricNavCard
+            href={prospectsStagesHref(["INTERESSE"])}
+            icon={Sparkles}
+            tone="cyan"
+            title="Intéressés"
+            description="Prospects prêts à recevoir une proposition."
+            footer={
+              <HubMiniRadial
+                value={interesses}
+                max={interesseScale}
+                color="#1384CB"
+                centerLabel={interesses}
+                caption={interesses > 1 ? "intéressés" : "intéressé"}
+              />
+            }
+          />
+          <MetricNavCard
+            href="/crm/relances"
+            icon={Bell}
+            tone="coral"
+            title="Relances"
+            description="À venir et en retard — tout le suivi à faire."
+            footer={
+              <div className="flex w-full items-end justify-end gap-2">
+                <HubMiniRadial
+                  className="w-20"
+                  value={relancesAvenir}
+                  max={Math.max(5, relancesAvenir, overdue)}
+                  color={METRIC_NAV_TONE_CHART.blue}
+                  centerLabel={relancesAvenir}
+                  caption="à venir"
+                />
+                <HubMiniRadial
+                  className="w-20"
+                  value={overdue}
+                  max={Math.max(5, relancesAvenir, overdue)}
+                  color={METRIC_NAV_TONE_CHART.coral}
+                  centerLabel={overdue}
+                  caption="en retard"
+                />
+              </div>
+            }
+          />
+        </div>
+      </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <ConversionRadial
+        <ConversionPipelineCard
           ratePercent={conversionPct}
-          caSigne={caSigne}
-          overdue={overdue}
+          signedAmount={montantSigne}
+          signedCount={won.length}
+          pipelineAmount={montantEnCours}
+          pipelineCount={openDeals.length}
+          totalDeals={deals.length}
         />
         <StageDonutChart data={byStage} />
       </div>
@@ -276,41 +336,32 @@ export default async function CrmDashboardPage() {
 
       {isLead ? (
         <Surface className="p-5">
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
               Objectifs semaine
             </p>
-            <Link
-              prefetch={false}
+            <ActionLink
               href="/crm/objectifs"
-              className="text-xs font-medium text-msk-blue hover:underline"
+              icon={Settings2}
+              variant="secondary"
             >
               Paramétrer
-            </Link>
+            </ActionLink>
           </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {goalProgress.map((g) => {
-              const pct =
-                g.target > 0
-                  ? Math.min(100, Math.round((g.current / g.target) * 100))
-                  : 0;
-              return (
-                <div key={g.metric}>
-                  <div className="flex justify-between text-xs text-msk-ink/55">
-                    <span>{g.label}</span>
-                    <span className="tabular-nums font-medium text-msk-ink">
-                      {g.current}/{g.target}
-                    </span>
-                  </div>
-                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-msk-ink/[0.08]">
-                    <div
-                      className="h-full rounded-full bg-msk-blue"
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {goalProgress.map((g) => (
+              <RadialShape
+                key={g.metric}
+                current={g.current}
+                target={g.target}
+                label={g.label}
+                color={
+                  g.metric === "FOLLOW_UPS"
+                    ? METRIC_NAV_TONE_CHART.coral
+                    : METRIC_NAV_TONE_CHART.blue
+                }
+              />
+            ))}
           </div>
         </Surface>
       ) : null}

@@ -96,7 +96,7 @@ export function MetricNavKpi({
   hint?: string;
 }) {
   return (
-    <div className="min-w-[4.5rem] text-center">
+    <div className="min-w-18 text-center">
       <p className="text-lg font-semibold tabular-nums leading-none text-msk-ink">
         {value}
       </p>

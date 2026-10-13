@@ -50,7 +50,7 @@ function PersonNode({
     <article
       className={cn(
         "flex flex-col items-center text-center",
-        size === "sm" ? "w-[8.5rem]" : "w-[10.5rem] sm:w-[11.5rem]",
+        size === "sm" ? "w-34" : "w-42 sm:w-46",
       )}
     >
       <UserAvatar
@@ -58,12 +58,12 @@ function PersonNode({
         lastName={lastName}
         src={node.photoPath}
         size={avatarSize}
-        className="ring-[3px] ring-[#00ACEE]/75 ring-offset-2 ring-offset-[#0D1330]"
+        className="ring-3 ring-[#00ACEE]/75 ring-offset-2 ring-offset-[#0D1330]"
       />
       <h3 className="mt-3 text-[13px] font-semibold leading-snug text-white sm:text-sm">
         {formatDisplayName(node.fullName)}
       </h3>
-      <p className="mt-1 max-w-[11rem] text-[11px] leading-snug text-[#7EB8E8] sm:text-xs">
+      <p className="mt-1 max-w-44 text-[11px] leading-snug text-[#7EB8E8] sm:text-xs">
         {node.title}
       </p>
       {node.email ? (
@@ -307,7 +307,7 @@ export function OrgChart({ nodes }: { nodes: OrgChartNode[] }) {
       </p>
 
       <div className="overflow-x-auto rounded-2xl bg-[#0D1330] px-3 py-10 shadow-lg sm:px-10 sm:py-12">
-        <div className="mx-auto flex w-full min-w-[40rem] max-w-4xl flex-col items-stretch">
+        <div className="mx-auto flex w-full min-w-160 max-w-4xl flex-col items-stretch">
           {/* L0 — Mathieu · Isdalinia */}
           <PeopleRow people={l0} size="lg" className="px-[8%]" />
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { CrmSource } from "@prisma/client";
+import { MessageSquarePlus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -10,15 +11,12 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { ActionLink } from "@/components/ui/action-link";
 import { ScriptCopyButton } from "@/components/crm/script-copy-button";
 import { ScriptToggleButton } from "@/components/crm/script-toggle-button";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Scripts CRM" };
-
-const linkBtn =
-  "inline-flex h-9 items-center justify-center rounded-lg px-3 text-sm font-medium transition";
-const linkPrimary = `${linkBtn} bg-msk-blue text-white hover:bg-msk-blue/90`;
 
 const CHANNEL_FILTERS: (CrmSource | "ALL")[] = [
   "ALL",
@@ -66,13 +64,9 @@ export default async function CrmScriptsPage({
         ]}
         actions={
           canManage ? (
-            <Link
-              prefetch={false}
-              href="/crm/scripts/nouveau"
-              className={linkPrimary}
-            >
+            <ActionLink href="/crm/scripts/nouveau" icon={MessageSquarePlus}>
               Nouveau script
-            </Link>
+            </ActionLink>
           ) : null
         }
       />

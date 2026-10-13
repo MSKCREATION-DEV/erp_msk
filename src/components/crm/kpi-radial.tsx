@@ -26,7 +26,7 @@ export function KpiRadial({
 
   return (
     <Surface className="flex items-center gap-3 p-4">
-      <div className="relative h-[88px] w-[88px] shrink-0">
+      <div className="relative h-22 w-22 shrink-0">
         <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
           <circle
             cx="50"

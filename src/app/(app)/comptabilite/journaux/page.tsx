@@ -36,7 +36,7 @@ export default async function ComptabiliteJournauxPage() {
       />
 
       <Surface className="overflow-x-auto">
-        <table className="w-full min-w-[560px] text-left text-sm">
+        <table className="w-full min-w-140 text-left text-sm">
           <thead className="border-b border-msk-ink/10 text-msk-ink/45">
             <tr>
               <th className="px-4 py-3 font-medium">Code</th>

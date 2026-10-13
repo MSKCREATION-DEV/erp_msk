@@ -104,7 +104,7 @@ export function SignaturePreviewCard({
         description="Aperçu signature"
         size="md"
       >
-        <div className="flex min-h-[200px] items-center justify-center bg-[linear-gradient(45deg,#eee_25%,transparent_25%,transparent_75%,#eee_75%,#eee),linear-gradient(45deg,#eee_25%,transparent_25%,transparent_75%,#eee_75%,#eee)] bg-[length:16px_16px] bg-[position:0_0,8px_8px] p-8">
+        <div className="flex min-h-50 items-center justify-center bg-[linear-gradient(45deg,#eee_25%,transparent_25%,transparent_75%,#eee_75%,#eee),linear-gradient(45deg,#eee_25%,transparent_25%,transparent_75%,#eee_75%,#eee)] bg-[length:16px_16px] bg-[position:0_0,8px_8px] p-8">
           {item.previewUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img

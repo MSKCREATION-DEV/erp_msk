@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import type { CrmPipelineStage, CrmSource, Prisma } from "@prisma/client";
+import { FileUp, UserPlus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -12,23 +13,20 @@ import {
   formatXof,
   SOURCE_LABELS,
   STAGE_LABELS,
+  stagesForFilter,
 } from "@/lib/crm/labels";
 import { isTestOrgName } from "@/lib/crm/test-data";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { ActionLink } from "@/components/ui/action-link";
 import { ProspectsFilterButton } from "@/components/crm/prospects-filter-modal";
 import { ProspectsBoard } from "@/components/crm/prospects-board";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Prospects" };
-
-const linkBtn =
-  "inline-flex h-9 items-center justify-center rounded-lg px-3 text-sm font-medium transition";
-const linkPrimary = `${linkBtn} bg-msk-blue text-white hover:bg-msk-blue/90`;
-const linkSecondary = `${linkBtn} border border-msk-ink/15 bg-white text-msk-ink hover:bg-msk-chalk`;
 
 function stageTone(stage: string): "muted" | "success" | "coral" | "blue" {
   if (stage === "GAGNE") return "success";
@@ -54,11 +52,12 @@ export default async function CrmProspectsPage({
     ...dealOwnerScopeWhere(user, teamIds),
   };
 
-  if (sp.stages) {
-    const stages = sp.stages
-      .split(",")
-      .filter(Boolean) as CrmPipelineStage[];
-    if (stages.length) where.stage = { in: stages };
+  const stageFilterRaw = sp.stages
+    ? (sp.stages.split(",").filter(Boolean) as CrmPipelineStage[])
+    : [];
+  if (stageFilterRaw.length) {
+    const stages = [...new Set(stageFilterRaw.flatMap(stagesForFilter))];
+    where.stage = { in: stages };
   }
   if (sp.source) where.source = sp.source as CrmSource;
   if (sp.owner) where.ownerId = sp.owner;
@@ -260,26 +259,55 @@ export default async function CrmProspectsPage({
               <ProspectsFilterButton owners={owners} />
             </Suspense>
             {canImport ? (
-              <Link
-                prefetch={false}
+              <ActionLink
                 href="/crm/prospects/import"
-                className={linkSecondary}
+                icon={FileUp}
+                variant="secondary"
               >
                 Importer
-              </Link>
+              </ActionLink>
             ) : null}
             {canCreate ? (
-              <Link
-                prefetch={false}
-                href="/crm/prospects/nouveau"
-                className={linkPrimary}
-              >
-                Nouveau
-              </Link>
+              <ActionLink href="/crm/prospects/nouveau" icon={UserPlus}>
+                Nouveau prospect
+              </ActionLink>
             ) : null}
           </div>
         }
       />
+
+      {(stageFilterRaw.length > 0 ||
+        sp.late === "1" ||
+        sp.devisRetard === "1") && (
+        <Surface className="flex flex-wrap items-center gap-2 px-4 py-3">
+          <span className="text-xs font-medium text-msk-ink/45">
+            Filtres actifs
+          </span>
+          {[
+            ...new Map(
+              stageFilterRaw.map((s) => [
+                STAGE_LABELS[s] ?? s,
+                STAGE_LABELS[s] ?? s,
+              ]),
+            ).values(),
+          ].map((label) => (
+            <Badge key={label} tone="blue">
+              {label}
+            </Badge>
+          ))}
+          {sp.late === "1" ? <Badge tone="coral">Relances en retard</Badge> : null}
+          {sp.devisRetard === "1" ? (
+            <Badge tone="coral">Intéressé sans devis</Badge>
+          ) : null}
+          <Link
+            prefetch={false}
+            href={vue === "etapes" ? "/crm/prospects?vue=etapes" : "/crm/prospects"}
+            className="ml-auto text-xs font-medium text-msk-blue hover:underline"
+          >
+            Effacer
+          </Link>
+        </Surface>
+      )}
 
       {ownKpis ? (
         <div className="grid gap-3 sm:grid-cols-3">
@@ -307,7 +335,7 @@ export default async function CrmProspectsPage({
       ) : (
         <Surface className="overflow-hidden p-0">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1040px] text-left text-sm">
+            <table className="w-full min-w-260 text-left text-sm">
               <thead className="border-b border-msk-ink/[0.08] bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Entreprise</th>
@@ -386,7 +414,7 @@ export default async function CrmProspectsPage({
                             {STAGE_LABELS[uiStage]}
                           </Badge>
                         </td>
-                        <td className="max-w-[180px] truncate px-4 py-3 text-msk-ink/70">
+                        <td className="max-w-45 truncate px-4 py-3 text-msk-ink/70">
                           {d.nextAction || "—"}
                         </td>
                         <td className="px-4 py-3">

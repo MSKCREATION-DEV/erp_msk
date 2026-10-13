@@ -115,7 +115,7 @@ function NavItemRow({
   const className = cn(
     "relative flex w-full items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[13px] font-medium transition-colors",
     (active || pending) &&
-      "bg-msk-blue/[0.1] text-msk-blue before:absolute before:inset-y-1.5 before:left-0 before:w-[3px] before:rounded-r-full before:bg-msk-blue",
+      "bg-msk-blue/[0.1] text-msk-blue before:absolute before:inset-y-1.5 before:left-0 before:w-0.75 before:rounded-r-full before:bg-msk-blue",
     !active &&
       !pending &&
       !item.soon &&
@@ -128,7 +128,7 @@ function NavItemRow({
     <>
       <Icon
         className={cn(
-          "h-[18px] w-[18px] shrink-0",
+          "h-4.5 w-4.5 shrink-0",
           active || pending ? "text-msk-blue" : "text-msk-ink/40",
         )}
         strokeWidth={1.75}
