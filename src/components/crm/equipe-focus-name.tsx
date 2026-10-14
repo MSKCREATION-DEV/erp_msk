@@ -4,25 +4,32 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { cn } from "@/lib/utils";
 
-/** Clic sur le nom → focus `?owner=` (pending visible). */
+/** Clic sur le nom → focus `?owner=` en conservant la période (query fournie par le serveur). */
 export function EquipeFocusName({
   ownerId,
   name,
   subtitle,
   focused,
+  /** Query actuelle sans `owner` (ex. `periode=mois&mois=2026-09`). */
+  baseQuery = "",
 }: {
   ownerId: string;
   name: string;
   subtitle: string;
   focused: boolean;
+  baseQuery?: string;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
 
   function focusCollab() {
     if (focused) return;
+    const p = new URLSearchParams(baseQuery);
+    p.set("owner", ownerId);
+    const href = `/crm/equipe?${p.toString()}`;
     start(() => {
-      router.push(`/crm/equipe?owner=${ownerId}`);
+      router.replace(href, { scroll: false });
+      router.refresh();
     });
   }
 

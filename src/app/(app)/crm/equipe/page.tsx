@@ -12,6 +12,8 @@ import { resolveGoalsSnapshots } from "@/lib/crm/goals";
 import { listWeekOptions, parseWeekParam } from "@/lib/crm/week";
 import { outreachCountByOwnerInPeriod } from "@/lib/crm/follow-up-count";
 import {
+  buildCrmScopeHref,
+  crmScopeToSearchParams,
   dateRangeFilter,
   parseCrmOwner,
   parseCrmPeriod,
@@ -158,22 +160,17 @@ export default async function CrmEquipePage({
     ? byOwner.get(filterOwner)?.name
     : null;
 
-  const clearScopeHref = (() => {
-    const p = new URLSearchParams();
-    if (period.mode !== "semaine") p.set("periode", period.mode);
-    if (period.mode === "mois") p.set("mois", period.mois);
-    if (period.mode === "jour") p.set("on", period.on);
-    if (period.mode === "plage") {
-      p.set("from", period.fromIso);
-      p.set("to", period.toIso);
-    }
-    if (period.mode === "semaine") {
-      const current = weeks.find((w) => w.isCurrent)?.value;
-      if (period.semaine !== current) p.set("semaine", period.semaine);
-    }
-    const s = p.toString();
-    return s ? `/crm/equipe?${s}` : "/crm/equipe";
-  })();
+  const periodOnlyParams = crmScopeToSearchParams({
+    period,
+    ownerId: null,
+    canFilterOwners: true,
+  });
+  const baseQuery = periodOnlyParams.toString();
+  const clearScopeHref = buildCrmScopeHref("/crm/equipe", {
+    period,
+    ownerId: null,
+    canFilterOwners: true,
+  });
 
   return (
     <PageShell>
@@ -181,7 +178,7 @@ export default async function CrmEquipePage({
         title="Vue Équipe"
         description={
           filteredName
-            ? `${filteredName} — prospects, rapport et accès rapides · ${period.label}.`
+            ? `${filteredName} — stocks à date · relances ${period.label.toLowerCase()}.`
             : `Cliquez le nom d’une carte pour voir un collaborateur · ${period.label}.`
         }
         backHref="/commercial"
@@ -210,7 +207,11 @@ export default async function CrmEquipePage({
           clearAriaLabel="Voir toute l’équipe"
         >
           <ActionLink
-            href={`/crm/rapport-semaine?owner=${filterOwner}&semaine=${period.semaine}`}
+            href={buildCrmScopeHref("/crm/rapport-semaine", {
+              period: { ...period, mode: "semaine" },
+              ownerId: filterOwner,
+              canFilterOwners: true,
+            })}
             icon={FileText}
             variant="secondary"
             size="sm"
@@ -247,6 +248,13 @@ export default async function CrmEquipePage({
               byStage={row.byStage}
               goals={goalByOwner.get(ownerId) ?? []}
               focused={filterOwner === ownerId}
+              periodLabel={period.label}
+              baseQuery={baseQuery}
+              rapportHref={buildCrmScopeHref("/crm/rapport-semaine", {
+                period: { ...period, mode: "semaine" },
+                ownerId,
+                canFilterOwners: true,
+              })}
             />
           ))}
         </div>

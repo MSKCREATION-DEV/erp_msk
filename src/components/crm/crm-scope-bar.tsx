@@ -98,8 +98,10 @@ export function CrmScopeBar({
     }
 
     const qs = p.toString();
+    const href = qs ? `${pathname}?${qs}` : pathname;
     start(() => {
-      router.push(qs ? `${pathname}?${qs}` : pathname);
+      router.replace(href, { scroll: false });
+      router.refresh();
     });
   }
 

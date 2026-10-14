@@ -19,7 +19,10 @@ import {
 } from "@/lib/crm/goals";
 import { listWeekOptions, parseWeekParam } from "@/lib/crm/week";
 import { computeWeekStats } from "@/lib/crm/week-stats";
-import { parseCrmPeriod } from "@/lib/crm/scope-period";
+import {
+  buildCrmScopeHref,
+  parseCrmPeriod,
+} from "@/lib/crm/scope-period";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -49,12 +52,29 @@ export default async function CrmObjectifsPage({
   const canManage =
     user.isSuperAdmin || hasPermission(user, "crm.reports.global");
 
+  /** Objectifs = semaine uniquement (ignore periode=mois|jour héritée d’un autre écran). */
   const period = parseCrmPeriod({
-    ...sp,
-    periode: sp.periode ?? "semaine",
+    semaine: sp.semaine,
+    periode: "semaine",
   });
   const weekStart = parseWeekParam(period.semaine);
   const weeks = listWeekOptions({ fromYear: new Date().getFullYear() - 1 });
+
+  const weekHref = (extra?: Record<string, string | undefined>) =>
+    buildCrmScopeHref("/crm/objectifs", {
+      period,
+      ownerId: null,
+      canFilterOwners: false,
+      keep: extra,
+    });
+
+  const collabHref = (collabId: string) =>
+    buildCrmScopeHref("/crm/objectifs", {
+      period,
+      ownerId: collabId,
+      canFilterOwners: true,
+      ownerParamKey: "collab",
+    });
 
   // Séquentiel — pool Prisma connection_limit=1 (pas de Promise.all prisma)
   const myGoals = await resolveGoals(user.id);
@@ -121,7 +141,7 @@ export default async function CrmObjectifsPage({
     canManage && mode === "synthese" ? (
       <div className="flex flex-wrap gap-2">
         <ActionLink
-          href="/crm/objectifs?vue=equipe"
+          href={weekHref({ vue: "equipe" })}
           icon={Settings2}
           variant="secondary"
         >
@@ -189,8 +209,12 @@ export default async function CrmObjectifsPage({
       {mode === "synthese" ? (
         <GoalsProgressStrip
           progress={myProgress}
-          title="Ma semaine"
-          detailHref="/crm/rapport-semaine"
+          title={`Ma semaine · ${period.label}`}
+          detailHref={buildCrmScopeHref("/crm/rapport-semaine", {
+            period,
+            ownerId: user.id,
+            canFilterOwners: canManage,
+          })}
           detailLabel="Voir mon rapport"
         />
       ) : null}
@@ -217,7 +241,7 @@ export default async function CrmObjectifsPage({
                 </p>
               </div>
               <ActionLink
-                href="/crm/objectifs?vue=equipe"
+                href={weekHref({ vue: "equipe" })}
                 icon={Settings2}
                 variant="ghost"
                 size="sm"
@@ -241,7 +265,7 @@ export default async function CrmObjectifsPage({
                   {teamSnapshots.map((row) => (
                     <ClickableRowLink
                       key={row.id}
-                      href={`/crm/objectifs?collab=${row.id}`}
+                      href={collabHref(row.id)}
                     >
                       <td className="px-3 py-2.5 font-medium text-msk-ink">
                         {row.firstName} {row.lastName}
@@ -289,7 +313,7 @@ export default async function CrmObjectifsPage({
             </div>
             <div className="flex flex-wrap gap-2">
               <ActionLink
-                href="/crm/objectifs?vue=equipe"
+                href={weekHref({ vue: "equipe" })}
                 icon={Settings2}
                 variant="secondary"
               >
@@ -297,7 +321,7 @@ export default async function CrmObjectifsPage({
               </ActionLink>
               {members[0] ? (
                 <ActionLink
-                  href={`/crm/objectifs?collab=${members[0].id}`}
+                  href={collabHref(members[0].id)}
                   icon={UserRound}
                   variant="primary"
                 >
@@ -332,11 +356,15 @@ export default async function CrmObjectifsPage({
         <>
           <ScopeFocusBanner
             label={`${focusCollab.firstName} ${focusCollab.lastName}`}
-            clearHref="/crm/objectifs"
+            clearHref={weekHref()}
             clearAriaLabel="Retour à la vue d’ensemble"
           >
             <ActionLink
-              href={`/crm/rapport-semaine?owner=${focusCollab.id}`}
+              href={buildCrmScopeHref("/crm/rapport-semaine", {
+                period,
+                ownerId: focusCollab.id,
+                canFilterOwners: true,
+              })}
               icon={FileText}
               variant="secondary"
               size="sm"
@@ -355,8 +383,12 @@ export default async function CrmObjectifsPage({
 
           <GoalsProgressStrip
             progress={collabProgress}
-            title={`Avancement · ${focusCollab.firstName}`}
-            detailHref={`/crm/rapport-semaine?owner=${focusCollab.id}`}
+            title={`Avancement · ${focusCollab.firstName} · ${period.label}`}
+            detailHref={buildCrmScopeHref("/crm/rapport-semaine", {
+              period,
+              ownerId: focusCollab.id,
+              canFilterOwners: true,
+            })}
             detailLabel="Rapport détaillé"
           />
 
@@ -371,6 +403,11 @@ export default async function CrmObjectifsPage({
               <GoalsCollabNav
                 members={members}
                 selectedId={focusCollab.id}
+                semaine={
+                  period.semaine !== weeks.find((w) => w.isCurrent)?.value
+                    ? period.semaine
+                    : undefined
+                }
               />
             </div>
             <div className="border-t border-msk-ink/[0.06] pt-5">

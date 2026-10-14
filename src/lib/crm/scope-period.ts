@@ -238,17 +238,19 @@ export function parseCrmPeriod(
   };
 }
 
-/** Résout `?owner=` — null = toute l’équipe (si autorisé). */
+/** Résout `?owner=` (ou clé custom) — null = toute l’équipe (si autorisé). */
 export function parseCrmOwner(
   sp: Record<string, string | undefined>,
   user: SessionUser,
   allowedOwnerIds: string[],
+  opts?: { paramKey?: "owner" | "collab" },
 ): CrmOwnerScope {
   const canFilter = canFilterCrmOwners(user);
   if (!canFilter) {
     return { ownerId: user.id, canFilterOwners: false };
   }
-  const raw = sp.owner?.trim();
+  const key = opts?.paramKey ?? "owner";
+  const raw = (sp[key] ?? (key === "collab" ? sp.owner : undefined))?.trim();
   if (!raw || raw === "all") {
     return { ownerId: null, canFilterOwners: true };
   }
@@ -256,6 +258,52 @@ export function parseCrmOwner(
     return { ownerId: raw, canFilterOwners: true };
   }
   return { ownerId: null, canFilterOwners: true };
+}
+
+/**
+ * IDs de suivi à interroger selon le filtre collab.
+ * - collab choisi → `[ownerId]`
+ * - toute l’équipe (autorisé) → `memberIds`
+ * - commercial own → `[userId]`
+ */
+export function resolveCrmOwnerIds(opts: {
+  ownerId: string | null;
+  canFilterOwners: boolean;
+  memberIds: string[];
+  userId: string;
+}): string[] {
+  if (opts.ownerId) return [opts.ownerId];
+  if (opts.canFilterOwners) {
+    const ids = [...new Set(opts.memberIds.filter(Boolean))];
+    return ids.length > 0 ? ids : [opts.userId];
+  }
+  return [opts.userId];
+}
+
+/** Construit une URL avec période + owner (et params à conserver). */
+export function buildCrmScopeHref(
+  path: string,
+  opts: {
+    period: CrmPeriodScope;
+    ownerId?: string | null;
+    canFilterOwners?: boolean;
+    ownerParamKey?: "owner" | "collab";
+    keep?: Record<string, string | undefined>;
+  },
+): string {
+  const p = crmScopeToSearchParams({
+    period: opts.period,
+    ownerId: opts.ownerId ?? null,
+    canFilterOwners: opts.canFilterOwners ?? true,
+    keep: opts.keep,
+  });
+  if (opts.ownerParamKey === "collab" && p.has("owner")) {
+    const v = p.get("owner")!;
+    p.delete("owner");
+    p.set("collab", v);
+  }
+  const qs = p.toString();
+  return qs ? `${path}?${qs}` : path;
 }
 
 /** Clause Prisma `{ field: { gte, lte } }`. */

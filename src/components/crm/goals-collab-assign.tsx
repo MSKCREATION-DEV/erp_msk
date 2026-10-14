@@ -22,9 +22,12 @@ function ChipPendingLabel({ label }: { label: string }) {
 export function GoalsCollabNav({
   members,
   selectedId,
+  /** Conserve la semaine sélectionnée (ex. `semaine=2026-10-06`). */
+  semaine,
 }: {
   members: CollabOption[];
   selectedId: string;
+  semaine?: string;
 }) {
   if (members.length === 0) {
     return (
@@ -37,11 +40,14 @@ export function GoalsCollabNav({
       {members.map((m) => {
         const active = m.id === selectedId;
         const label = `${m.firstName} ${m.lastName}`;
+        const p = new URLSearchParams();
+        p.set("collab", m.id);
+        if (semaine) p.set("semaine", semaine);
         return (
           <Link
             key={m.id}
             prefetch={false}
-            href={`/crm/objectifs?collab=${m.id}`}
+            href={`/crm/objectifs?${p.toString()}`}
             className={cn(
               "inline-flex h-9 items-center rounded-lg px-3 text-sm font-medium transition",
               active

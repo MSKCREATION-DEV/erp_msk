@@ -12,7 +12,6 @@ import {
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { dealOwnerScopeWhere } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
 import {
   OPEN_PIPELINE_STAGES,
@@ -20,7 +19,11 @@ import {
   STAGE_ORDER,
   prospectsStagesHref,
 } from "@/lib/crm/labels";
-import { buildGoalProgress, resolveGoals } from "@/lib/crm/goals";
+import {
+  buildGoalProgress,
+  loadTeamGoals,
+  resolveGoals,
+} from "@/lib/crm/goals";
 import { listWeekOptions, parseWeekParam } from "@/lib/crm/week";
 import { computeWeekStats } from "@/lib/crm/week-stats";
 import { isTestOrgName } from "@/lib/crm/test-data";
@@ -30,9 +33,11 @@ import {
   outreachCountByOpportunityIds,
 } from "@/lib/crm/follow-up-count";
 import {
+  buildCrmScopeHref,
   dateRangeFilter,
   parseCrmOwner,
   parseCrmPeriod,
+  resolveCrmOwnerIds,
 } from "@/lib/crm/scope-period";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -49,6 +54,12 @@ import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
+
+function withOwnerQuery(href: string, ownerId: string | null): string {
+  if (!ownerId) return href;
+  const sep = href.includes("?") ? "&" : "?";
+  return `${href}${sep}owner=${ownerId}`;
+}
 
 export default async function CrmDashboardPage({
   searchParams,
@@ -81,29 +92,22 @@ export default async function CrmDashboardPage({
     user,
     owners.map((o) => o.value),
   );
+  const ownerIds = resolveCrmOwnerIds({
+    ownerId: ownerScope.ownerId,
+    canFilterOwners: ownerScope.canFilterOwners,
+    memberIds,
+    userId: user.id,
+  });
+  const ownerWhere = { ownerId: { in: ownerIds } };
+  const assigneeWhere = { assigneeId: { in: ownerIds } };
+
   const weeks = listWeekOptions({ fromYear: new Date().getFullYear() - 1 });
   const weekStart = parseWeekParam(period.semaine);
   const occurredBetween = dateRangeFilter(period.from, period.to);
 
-  const baseScope = dealOwnerScopeWhere(user, teamIds);
-  const scope = {
-    ...baseScope,
-    ...(ownerScope.ownerId ? { ownerId: ownerScope.ownerId } : {}),
-  };
-
-  const assigneeScope = ownerScope.ownerId
-    ? { assigneeId: ownerScope.ownerId }
-    : canManageGoals
-      ? {}
-      : hasPermission(user, "crm.view_team")
-        ? { assigneeId: { in: memberIds } }
-        : { assigneeId: user.id };
-
-  const statsUserId = ownerScope.ownerId ?? user.id;
-
   // Séquentiel — pool Prisma connection_limit=1 (évite P2024)
   const deals = await prisma.crmOpportunity.findMany({
-    where: scope,
+    where: ownerWhere,
     include: {
       organization: { select: { name: true } },
       comQuotes: { select: { id: true }, take: 1 },
@@ -112,24 +116,39 @@ export default async function CrmDashboardPage({
     take: 500,
   });
   const openTasks = await prisma.crmTask.count({
-    where: { status: CrmTaskStatus.OPEN, ...assigneeScope },
+    where: { status: CrmTaskStatus.OPEN, ...assigneeWhere },
   });
   const overdue = await prisma.crmTask.count({
     where: {
       status: CrmTaskStatus.OPEN,
       dueAt: { lt: new Date() },
-      ...assigneeScope,
+      ...assigneeWhere,
     },
   });
-  const goals = await resolveGoals(statsUserId);
-  const weekStats = await computeWeekStats(statsUserId, weekStart);
-  const relancesFaites = await countOutreachInPeriod({
-    ownerIds: ownerScope.ownerId
-      ? [ownerScope.ownerId]
+
+  const goals =
+    ownerScope.ownerId != null
+      ? await resolveGoals(ownerScope.ownerId)
       : ownerScope.canFilterOwners
-        ? memberIds
-        : [user.id],
+        ? await loadTeamGoals()
+        : await resolveGoals(user.id);
+
+  const weekStats = await computeWeekStats(ownerIds, weekStart);
+  const relancesFaites = await countOutreachInPeriod({
+    ownerIds,
     occurredBetween,
+  });
+
+  const wonRows = await prisma.crmOpportunity.findMany({
+    where: {
+      ...ownerWhere,
+      stage: "GAGNE",
+      OR: [
+        { wonAt: occurredBetween },
+        { wonAt: null, updatedAt: occurredBetween },
+      ],
+    },
+    select: { budgetXof: true },
   });
 
   const now = Date.now();
@@ -148,15 +167,12 @@ export default async function CrmDashboardPage({
     openDeals.map((d) => d.id),
   );
 
-  const wonInPeriod = deals.filter((d) => {
-    if (d.stage !== "GAGNE") return false;
-    const t = (d.wonAt ?? d.updatedAt).getTime();
-    return t >= period.from.getTime() && t <= period.to.getTime();
-  });
+  const wonCount = wonRows.length;
   const montantEnCours = openDeals.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
-  const montantSigne = wonInPeriod.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
+  const montantSigne = wonRows.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
+  const conversionDenom = wonCount + openDeals.length;
   const conversionPct =
-    deals.length > 0 ? (wonInPeriod.length / deals.length) * 100 : 0;
+    conversionDenom > 0 ? (wonCount / conversionDenom) * 100 : 0;
   const interesses = byStage.find((x) => x.stage === "INTERESSE")?.count ?? 0;
 
   const devisUrgent = deals.filter((d) =>
@@ -189,6 +205,13 @@ export default async function CrmDashboardPage({
 
   const stockHint = "à date";
   const eventHint = period.label;
+  const focusOwner = ownerScope.ownerId;
+  const goalsHref = buildCrmScopeHref("/crm/objectifs", {
+    period: { ...period, mode: "semaine" },
+    ownerId: focusOwner,
+    canFilterOwners: ownerScope.canFilterOwners,
+    ownerParamKey: "collab",
+  });
 
   return (
     <PageShell>
@@ -232,7 +255,7 @@ export default async function CrmDashboardPage({
         <div className={indicatorCols}>
           {showDevis ? (
             <MetricNavCard
-              href="/crm/prospects?devisRetard=1"
+              href={withOwnerQuery("/crm/prospects?devisRetard=1", focusOwner)}
               icon={FileWarning}
               tone="coral"
               title="Sans devis"
@@ -253,7 +276,10 @@ export default async function CrmDashboardPage({
             />
           ) : null}
           <MetricNavCard
-            href={prospectsStagesHref(OPEN_PIPELINE_STAGES)}
+            href={withOwnerQuery(
+              prospectsStagesHref(OPEN_PIPELINE_STAGES),
+              focusOwner,
+            )}
             icon={FolderOpen}
             tone="blue"
             title="Ouverts"
@@ -271,7 +297,10 @@ export default async function CrmDashboardPage({
             }
           />
           <MetricNavCard
-            href={prospectsStagesHref(["INTERESSE"])}
+            href={withOwnerQuery(
+              prospectsStagesHref(["INTERESSE"]),
+              focusOwner,
+            )}
             icon={Sparkles}
             tone="cyan"
             title="Intéressés"
@@ -287,7 +316,7 @@ export default async function CrmDashboardPage({
             }
           />
           <MetricNavCard
-            href="/crm/relances"
+            href={withOwnerQuery("/crm/relances", focusOwner)}
             icon={Bell}
             tone="coral"
             title="Relances"
@@ -328,10 +357,11 @@ export default async function CrmDashboardPage({
         <ConversionPipelineCard
           ratePercent={conversionPct}
           signedAmount={montantSigne}
-          signedCount={wonInPeriod.length}
+          signedCount={wonCount}
           openAmount={montantEnCours}
           openCount={openDeals.length}
-          totalDeals={deals.length}
+          totalDeals={conversionDenom}
+          periodLabel={period.label}
         />
         <StageDonutChart data={byStage} />
       </div>
@@ -343,7 +373,7 @@ export default async function CrmDashboardPage({
           </h2>
           <Link
             prefetch={false}
-            href="/crm/prospects"
+            href={withOwnerQuery("/crm/prospects", focusOwner)}
             className="text-sm font-medium text-msk-blue hover:underline"
           >
             Tous les prospects
@@ -394,7 +424,14 @@ export default async function CrmDashboardPage({
       <GoalsProgressStrip
         progress={goalProgress}
         compact
-        detailHref="/crm/objectifs"
+        title={
+          ownerScope.ownerId
+            ? `Objectifs · ${owners.find((o) => o.value === ownerScope.ownerId)?.label ?? "Collaborateur"} · semaine`
+            : ownerScope.canFilterOwners
+              ? "Objectifs équipe · semaine"
+              : "Objectifs · semaine"
+        }
+        detailHref={goalsHref}
         detailLabel={canManageGoals ? "Assigner" : "Voir le détail"}
       />
     </PageShell>

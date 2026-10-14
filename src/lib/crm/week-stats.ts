@@ -33,21 +33,22 @@ function asIdList(authorId: string | string[]): string[] {
 }
 
 /**
- * Stats semaine pour 1 ou N owners.
+ * Stats d’activité sur une plage pour 1 ou N owners (suivi = `ownerId`).
+ * Activités comptées via `opportunity.ownerId` (pas `actorId`) pour coller au filtre collab.
  * Requêtes **séquentielles** — pool Prisma `connection_limit=1`.
  */
-export async function computeWeekStats(
+export async function computePeriodStats(
   authorId: string | string[],
-  weekStart: Date,
+  from: Date,
+  to: Date,
 ): Promise<WeekStats> {
   const ids = asIdList(authorId);
   if (ids.length === 0) return { ...EMPTY_STATS };
 
-  const from = weekStart;
-  const to = weekEndSunday(weekStart);
   const ownerIn = { ownerId: { in: ids } };
-  const actorIn = { actorId: { in: ids } };
+  const oppOwner = { opportunity: { ownerId: { in: ids } } };
   const assigneeIn = { assigneeId: { in: ids } };
+  const occurred = { occurredAt: { gte: from, lte: to } };
 
   const [
     newProspects,
@@ -66,16 +67,16 @@ export async function computeWeekStats(
     () =>
       prisma.crmActivity.count({
         where: {
-          ...actorIn,
-          occurredAt: { gte: from, lte: to },
+          ...oppOwner,
+          ...occurred,
           type: { in: ["APPEL", "WHATSAPP", "INSTAGRAM", "LINKEDIN", "EMAIL"] },
         },
       }),
     () =>
       prisma.crmActivity.count({
         where: {
-          ...actorIn,
-          occurredAt: { gte: from, lte: to },
+          ...oppOwner,
+          ...occurred,
           type: "RDV",
         },
       }),
@@ -90,8 +91,8 @@ export async function computeWeekStats(
     () =>
       prisma.crmActivity.count({
         where: {
-          ...actorIn,
-          occurredAt: { gte: from, lte: to },
+          ...oppOwner,
+          ...occurred,
           type: { in: OUTREACH_ACTIVITY_TYPES },
         },
       }),
@@ -112,8 +113,8 @@ export async function computeWeekStats(
     () =>
       prisma.crmActivity.count({
         where: {
-          ...actorIn,
-          occurredAt: { gte: from, lte: to },
+          ...oppOwner,
+          ...occurred,
           type: { in: ["NOTE", "RDV", "APPEL"] },
           summary: { contains: "réponse", mode: "insensitive" },
         },
@@ -130,6 +131,16 @@ export async function computeWeekStats(
     followUpsDone,
     relancesJournalisees,
   };
+}
+
+/**
+ * Stats semaine pour 1 ou N owners.
+ */
+export async function computeWeekStats(
+  authorId: string | string[],
+  weekStart: Date,
+): Promise<WeekStats> {
+  return computePeriodStats(authorId, weekStart, weekEndSunday(weekStart));
 }
 
 /** Stats par collaborateur — une série par user (pas de Promise.all). */

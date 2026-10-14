@@ -21,6 +21,9 @@ export function EquipeCollabCard({
   byStage,
   goals,
   focused,
+  periodLabel,
+  baseQuery = "",
+  rapportHref,
 }: {
   ownerId: string;
   name: string;
@@ -28,11 +31,15 @@ export function EquipeCollabCard({
   caOpen: number;
   interesses: number;
   overdue: number;
-  /** Relances journalisées cette semaine (même métrique que Objectifs). */
+  /** Relances journalisées sur la période filtrée. */
   relancesFaites: number;
   byStage: Record<string, number>;
   goals: GoalProgressItem[];
   focused: boolean;
+  periodLabel: string;
+  /** Query période sans owner (focus nom). */
+  baseQuery?: string;
+  rapportHref: string;
 }) {
   return (
     <Surface
@@ -43,11 +50,12 @@ export function EquipeCollabCard({
           ownerId={ownerId}
           name={name}
           focused={focused}
+          baseQuery={baseQuery}
           subtitle={`${total} prospect${total > 1 ? "s" : ""} · montant en cours ${formatXof(caOpen)}`}
         />
         <div className="flex flex-wrap gap-2">
           <ActionLink
-            href={`/crm/rapport-semaine?owner=${ownerId}`}
+            href={rapportHref}
             icon={FileText}
             variant="secondary"
             size="sm"
@@ -66,23 +74,23 @@ export function EquipeCollabCard({
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiRadial label="Prospects" value={total} hint="hors clients" />
+        <KpiRadial label="Prospects" value={total} hint="à date · hors clients" />
         <KpiRadial
           label="Intéressés"
           value={interesses}
-          hint="à convertir"
+          hint="à date"
         />
         <KpiRadial
           label="Retards"
           value={overdue}
           tone={overdue > 0 ? "coral" : "blue"}
-          hint="relances dues"
+          hint="à date"
         />
         <KpiRadial
           label="Relances faites"
           value={relancesFaites}
           tone={relancesFaites > 0 ? "coral" : "blue"}
-          hint="cette semaine"
+          hint={periodLabel.toLowerCase()}
         />
       </div>
 

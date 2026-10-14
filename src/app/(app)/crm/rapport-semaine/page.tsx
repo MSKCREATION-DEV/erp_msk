@@ -36,6 +36,7 @@ import { ActionLink } from "@/components/ui/action-link";
 import {
   parseCrmOwner,
   parseCrmPeriod,
+  resolveCrmOwnerIds,
 } from "@/lib/crm/scope-period";
 
 export const metadata: Metadata = { title: "Rapport commercial" };
@@ -67,9 +68,10 @@ export default async function CrmRapportPage({
       }))
     : [];
 
+  /** Rapport = semaine uniquement (ignore periode héritée d’un autre écran). */
   const period = parseCrmPeriod({
-    ...sp,
-    periode: sp.periode ?? "semaine",
+    semaine: sp.semaine,
+    periode: "semaine",
   });
   const ownerScope = parseCrmOwner(
     sp,
@@ -98,16 +100,16 @@ export default async function CrmRapportPage({
   const weekFri = weekEndFriday(weekStart);
   const weekSun = weekEndSunday(weekStart);
 
-  const statsOwnerIds =
-    scopeMode === "all" ? memberIds : [focusOwnerId!];
+  const statsOwnerIds = resolveCrmOwnerIds({
+    ownerId: ownerScope.ownerId,
+    canFilterOwners: canGlobal,
+    memberIds,
+    userId: user.id,
+  });
 
   const baseDealWhere = {
     ...dealOwnerScopeWhere(user, teamIds),
-    ...(scopeMode === "user" && focusOwnerId
-      ? { ownerId: focusOwnerId }
-      : scopeMode === "all"
-        ? { ownerId: { in: memberIds } }
-        : {}),
+    ownerId: { in: statsOwnerIds },
   };
 
   // Séquentiel — pool Prisma connection_limit=1

@@ -18,6 +18,7 @@ export function ConversionPipelineCard({
   openAmount,
   openCount,
   totalDeals,
+  periodLabel,
 }: {
   ratePercent: number;
   signedAmount: number;
@@ -26,6 +27,8 @@ export function ConversionPipelineCard({
   openAmount: number;
   openCount: number;
   totalDeals: number;
+  /** Libellé période pour le montant signé (événements). */
+  periodLabel?: string;
 }) {
   const pct = Math.max(0, Math.min(100, ratePercent));
   const amountCeiling = Math.max(signedAmount + openAmount, 1);
@@ -36,9 +39,12 @@ export function ConversionPipelineCard({
         Conversion prospects vers clients
       </p>
       <p className="mt-1 text-sm text-msk-ink/50">
-        Taux = clients ÷ tous les dossiers visibles
-        {totalDeals > 0 ? ` (${signedCount}/${totalDeals})` : ""}.
-        Montants = budgets renseignés sur les fiches.
+        Signé = clients gagnés
+        {periodLabel ? ` sur ${periodLabel.toLowerCase()}` : ""}
+        {signedCount > 0 || totalDeals > 0
+          ? ` (${signedCount} client${signedCount > 1 ? "s" : ""})`
+          : ""}
+        . En cours = dossiers ouverts à date. Montants = budgets renseignés.
       </p>
 
       <div className="mt-5 grid gap-6 sm:grid-cols-2 sm:gap-0 sm:divide-x sm:divide-msk-ink/[0.08]">
@@ -59,8 +65,9 @@ export function ConversionPipelineCard({
               {formatXof(signedAmount)}
             </p>
             <p className="mt-1.5 text-center text-xs text-msk-ink/45">
-              montant signé · {signedCount} client
-              {signedCount > 1 ? "s" : ""}
+              montant signé
+              {periodLabel ? ` · ${periodLabel.toLowerCase()}` : ""} ·{" "}
+              {signedCount} client{signedCount > 1 ? "s" : ""}
             </p>
           </div>
         </div>

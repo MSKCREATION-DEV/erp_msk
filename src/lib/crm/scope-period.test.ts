@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import {
+  buildCrmScopeHref,
   crmScopeToSearchParams,
   dateRangeFilter,
   parseCrmPeriod,
+  resolveCrmOwnerIds,
 } from "./scope-period";
 import { weekStartIso, weekStartMonday } from "./week";
 
@@ -95,6 +97,48 @@ const currentIso = weekStartIso(currentWeek);
   assert.equal(qs.get("periode"), "mois");
   assert.equal(qs.get("mois"), "2026-08");
   assert.equal(qs.get("owner"), "628357b3-ca62-418a-809d-a541eccc29b4");
+}
+
+{
+  const ids = resolveCrmOwnerIds({
+    ownerId: "a",
+    canFilterOwners: true,
+    memberIds: ["a", "b"],
+    userId: "me",
+  });
+  assert.deepEqual(ids, ["a"]);
+}
+
+{
+  const ids = resolveCrmOwnerIds({
+    ownerId: null,
+    canFilterOwners: true,
+    memberIds: ["a", "b"],
+    userId: "me",
+  });
+  assert.deepEqual(ids, ["a", "b"]);
+}
+
+{
+  const ids = resolveCrmOwnerIds({
+    ownerId: null,
+    canFilterOwners: false,
+    memberIds: ["a", "b"],
+    userId: "me",
+  });
+  assert.deepEqual(ids, ["me"]);
+}
+
+{
+  const period = parseCrmPeriod({ periode: "mois", mois: "2026-08" });
+  const href = buildCrmScopeHref("/crm", {
+    period,
+    ownerId: "628357b3-ca62-418a-809d-a541eccc29b4",
+    canFilterOwners: true,
+  });
+  assert.match(href, /periode=mois/);
+  assert.match(href, /mois=2026-08/);
+  assert.match(href, /owner=628357b3-ca62-418a-809d-a541eccc29b4/);
 }
 
 console.log("scope-period.test.ts OK");
