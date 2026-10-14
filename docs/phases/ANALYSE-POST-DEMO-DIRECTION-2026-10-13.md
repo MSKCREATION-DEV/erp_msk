@@ -405,7 +405,7 @@ flowchart TD
 | **LOT-A** | P0-1 Griser devis/facture | Non | Décision message + exceptions | Hub/nav/URL ; convert sans devis — **implémenté 2026-10-14** (`COM_DOCS_GATED`) |
 | **LOT-B** | P0-2 Commentaire Contacté | Non | — | Stage Contacté bloquant + journal — **implémenté 2026-10-14** |
 | **LOT-C** | P0-3 Édition prospect (champs cœur) | Non | Droits edit | `/edit` + audit ; pas multi-contacts — **implémenté 2026-10-14** |
-| **LOT-D** | P1-1 Transformer en client | Non | LOT-A (CTA devis mort) | Bouton fiche ; pont intact |
+| **LOT-D** | P1-1 Transformer en client | Non | LOT-A (CTA devis mort) | Bouton fiche ; pont intact — **implémenté 2026-10-14** (auto GAGNE + confirm) |
 | **LOT-E** | P1-4 Visibilité + réassign UI | Non (RBAC/packs) | GO modèle shared-read | Yaye voit Madina ; mute si non owner |
 | **LOT-F** | P1-5 Doublons create | Index additifs possibles | LOT-C idéal | Alerte wizard + journal si ignore |
 | **LOT-G** | P1-3 Compteur relances | Non ou compteur dérivé | Définition métier | Badge N× fiche + dashboard |

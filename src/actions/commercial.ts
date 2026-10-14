@@ -278,22 +278,79 @@ export async function convertOpportunityToClientAction(
     return {
       ok: false,
       error:
-        "Création client dès le statut Intéressé (pour devis) ou Client.",
+        "Passez d’abord le prospect en Intéressé (ou Devis envoyé / Client) avant de transformer.",
     };
   }
   if (!(await assertCrmDealAccess(actor, deal.ownerId))) {
     return { ok: false, error: "Opportunité hors périmètre CRM" };
   }
 
+  const now = new Date();
+  const dealId = deal.id;
+  const dealOrgId = deal.organizationId;
+  const previousWonAt = deal.wonAt;
+
   const existing = await prisma.comClient.findFirst({
     where: {
       OR: [
-        { sourceOpportunityId: deal.id },
-        { crmOrganizationId: deal.organizationId },
+        { sourceOpportunityId: dealId },
+        { crmOrganizationId: dealOrgId },
       ],
     },
   });
+
+  /** LOT-D : fermer le parcours CRM → statut Client (GAGNE) + wonAt. */
+  async function markDealAsWon(
+    tx: Prisma.TransactionClient,
+    opts: { alreadyWon: boolean },
+  ) {
+    if (opts.alreadyWon && previousWonAt) return;
+    await tx.crmOpportunity.update({
+      where: { id: dealId },
+      data: {
+        stage: CrmPipelineStage.GAGNE,
+        wonAt: previousWonAt ?? now,
+        lostAt: null,
+        lossReason: null,
+        lossNote: null,
+        lastActivityAt: now,
+      },
+    });
+  }
+
   if (existing) {
+    const alreadyWon = deal.stage === CrmPipelineStage.GAGNE;
+    if (!alreadyWon || !previousWonAt) {
+      await prisma.$transaction(async (tx) => {
+        await markDealAsWon(tx, { alreadyWon });
+        if (!alreadyWon) {
+          await tx.crmActivity.create({
+            data: {
+              opportunityId: dealId,
+              organizationId: dealOrgId,
+              type: "NOTE",
+              summary: "Dossier passé en Client (lié au client commercial)",
+              body: `Client commercial déjà existant : ${existing.name}`,
+              actorId: actor.id,
+              occurredAt: now,
+            },
+          });
+        }
+      });
+      await writeAudit({
+        actorId: actor.id,
+        action: "com.client.convert_crm_sync_stage",
+        entityType: "com_client",
+        entityId: existing.id,
+        metadata: { opportunityId: dealId, syncedStage: "GAGNE" },
+      });
+    }
+    revalidateCommercial([
+      `/commercial/clients/${existing.id}`,
+      `/crm/prospects/${dealId}`,
+    ]);
+    revalidatePath("/crm/prospects");
+    revalidatePath("/crm");
     return {
       ok: true,
       message: "Client déjà lié",
@@ -318,13 +375,13 @@ export async function convertOpportunityToClientAction(
         city: deal.organization.city,
         country: deal.organization.country,
         notes: deal.organization.notes,
-        crmOrganizationId: deal.organizationId,
-        sourceOpportunityId: deal.id,
+        crmOrganizationId: dealOrgId,
+        sourceOpportunityId: dealId,
         ownerId: deal.ownerId,
         createdById: actor.id,
       },
     });
-    return tx.comClient.update({
+    const withFolder = await tx.comClient.update({
       where: { id: created.id },
       data: {
         gedFolderCode: buildClientGedFolderCode(
@@ -333,6 +390,24 @@ export async function convertOpportunityToClientAction(
         ),
       },
     });
+
+    await markDealAsWon(tx, {
+      alreadyWon: deal.stage === CrmPipelineStage.GAGNE,
+    });
+
+    await tx.crmActivity.create({
+      data: {
+        opportunityId: dealId,
+        organizationId: dealOrgId,
+        type: "NOTE",
+        summary: "Transformé en client commercial",
+        body: `Client créé : ${withFolder.name} (${withFolder.gedFolderCode}). Statut CRM passé à Client.`,
+        actorId: actor.id,
+        occurredAt: now,
+      },
+    });
+
+    return withFolder;
   });
 
   await writeAudit({
@@ -340,13 +415,18 @@ export async function convertOpportunityToClientAction(
     action: "com.client.convert_crm",
     entityType: "com_client",
     entityId: client.id,
-    metadata: { opportunityId: deal.id },
+    metadata: {
+      opportunityId: dealId,
+      stageSet: "GAGNE",
+    },
   });
 
   revalidateCommercial([
     `/commercial/clients/${client.id}`,
-    `/crm/prospects/${deal.id}`,
+    `/crm/prospects/${dealId}`,
   ]);
+  revalidatePath("/crm/prospects");
+  revalidatePath("/crm");
   return { ok: true, message: "Client créé depuis le CRM", clientId: client.id };
 }
 

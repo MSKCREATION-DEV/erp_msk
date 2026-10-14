@@ -119,6 +119,7 @@ function ProspectConvertCta({
 }) {
   const { pending, run } = usePendingAction();
   const [blockedOpen, setBlockedOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const uiStage = stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage;
@@ -138,6 +139,20 @@ function ProspectConvertCta({
 
   if (!canManageClients) return null;
 
+  function runConvert() {
+    setError(null);
+    void run(async () => {
+      const fd = new FormData();
+      fd.set("opportunityId", opportunityId);
+      const res = await convertOpportunityToClientRedirectAction(fd);
+      if (res && !res.ok) {
+        setConfirmOpen(false);
+        setError(res.error ?? "Impossible de créer le client");
+        setBlockedOpen(true);
+      }
+    });
+  }
+
   return (
     <>
       <Button
@@ -149,21 +164,61 @@ function ProspectConvertCta({
             setBlockedOpen(true);
             return;
           }
-          setError(null);
-          void run(async () => {
-            const fd = new FormData();
-            fd.set("opportunityId", opportunityId);
-            const res = await convertOpportunityToClientRedirectAction(fd);
-            if (res && !res.ok) {
-              setError(res.error ?? "Impossible de créer le client");
-              setBlockedOpen(true);
-            }
-          });
+          setConfirmOpen(true);
         }}
       >
         <UserCheck className="h-4 w-4" aria-hidden />
         {pending ? "Conversion…" : "Transformer en client"}
       </Button>
+
+      <Modal
+        open={confirmOpen}
+        onOpenChange={(open) => {
+          if (!pending) setConfirmOpen(open);
+        }}
+        title="Transformer en client ?"
+        description="Fermeture du parcours commercial CRM."
+        size="md"
+        footer={
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={pending}
+              onClick={() => setConfirmOpen(false)}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              disabled={pending}
+              onClick={() => runConvert()}
+            >
+              <UserCheck className="h-4 w-4" aria-hidden />
+              {pending ? "Conversion…" : "Confirmer"}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-3 p-5 text-sm text-msk-ink/75">
+          <p>
+            Cette action va :
+          </p>
+          <ul className="list-inside list-disc space-y-1.5 text-msk-ink/70">
+            <li>créer le <strong>client commercial</strong> (dossier GED) ;</li>
+            <li>
+              passer le statut CRM à <strong>Client</strong> ;
+            </li>
+            <li>enregistrer une ligne dans le journal d’activités.</li>
+          </ul>
+          <p className="text-xs text-msk-ink/45">
+            Les devis restent gelés pour l’instant — vous pourrez les rouvrir
+            plus tard depuis la fiche client.
+          </p>
+        </div>
+      </Modal>
 
       <Modal
         open={blockedOpen}

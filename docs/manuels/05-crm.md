@@ -41,9 +41,9 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 2. Enrichir fiche (contacts, offres, journal, relance) — **Modifier** via `/crm/prospects/[id]/edit`  
 3. Relances + scripts  
 4. Passage en **Contacté** : **canal + commentaire obligatoires** (comment on a contacté + ce qui a été dit, ou « pas de réponse ») → ligne créée dans le journal  
-5. Dès **Intéressé** → **Transformer en client** (devis gelés temporairement — Direction 13/10)  
-6. Quand devis réouverts : devis envoyé → statut CRM **Devis envoyé** automatiquement  
-7. Accord → statut **Client** + facturation côté Commercial  
+5. Dès **Intéressé** → **Transformer en client** (confirmation) → crée le client commercial **et** passe le statut CRM à **Client** ; bandeau + lien fiche client  
+6. Devis gelés temporairement (Direction 13/10) — réouverture ultérieure depuis la fiche client  
+7. Facturation côté Commercial quand devis/factures seront réouverts
 
 > **En qualification** : échange en cours, pas encore prêt pour devis. Libellé plus clair (« En discussion ») prévu en polish UX (LOT-I) — pas encore appliqué.
 
@@ -62,7 +62,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
-| 2026-10-14 | LOT-C : édition prospect (page dédiée) ; LOT-B commentaire Contacté |
+| 2026-10-14 | LOT-D : transform → Client auto ; LOT-C édition ; LOT-B Contacté |
 | 2026-10-13 | Objectifs : dashboard tous collabs, page admin assignation, Vue Équipe enrichie, rapport reflète cibles |
 | 2026-10-13 | Tableau de bord : MetricNavCard, Conversion Signé/En cours, Répartition filtres URL |
 | 2026-10-12 | Menu / Tableau de bord / Vue Équipe / Rapport ; client dès Intéressé ; SLA 24h |

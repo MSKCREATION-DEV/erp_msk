@@ -372,6 +372,9 @@ export default async function CrmProspectDetailPage({
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone={stageTone(uiStage)}>{STAGE_LABELS[uiStage]}</Badge>
+            {linkedClient ? (
+              <Badge tone="success">Client commercial</Badge>
+            ) : null}
             {isTestOrgName(deal.organization.name) ? (
               <Badge tone="coral">TEST</Badge>
             ) : null}
@@ -429,6 +432,26 @@ export default async function CrmProspectDetailPage({
           </div>
         }
       />
+
+      {linkedClient ? (
+        <Surface className="flex flex-wrap items-center justify-between gap-3 border border-msk-blue/20 bg-msk-blue/[0.04] px-5 py-3.5">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-msk-ink">
+              Ce prospect est un client commercial
+            </p>
+            <p className="mt-0.5 text-xs text-msk-ink/55">
+              Dossier lié — pas de double saisie. Statut CRM attendu : Client.
+            </p>
+          </div>
+          <Link
+            prefetch={false}
+            href={`/commercial/clients/${linkedClient.id}`}
+            className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white transition hover:bg-msk-blue/90"
+          >
+            Ouvrir la fiche client
+          </Link>
+        </Surface>
+      ) : null}
 
       {/* Bandeau identité — origine explicite + méta sans doublons */}
       <Surface className="overflow-hidden p-0">

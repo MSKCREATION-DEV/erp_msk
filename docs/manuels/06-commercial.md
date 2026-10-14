@@ -11,7 +11,7 @@ Client → Devis → Facture → Paiements → (Compta VE).
 
 **Gel temporaire (Direction 13/10) :** les modules **Devis** et **Factures** sont grisés dans le Menu Commercial. Continuer le process devis hors plateforme tant que la numérotation et les règles comptables ne sont pas figées. Les **Clients**, le **CRM** et le **catalogue** restent ouverts.
 
-Depuis un prospect **Intéressé** (ou plus) : bouton **Transformer en client** (sans ouvrir un devis).
+Depuis un prospect **Intéressé** (ou plus) : bouton **Transformer en client** (confirmation) → crée le client + passe le CRM en **Client** (sans ouvrir un devis).
 
 Numérotation séquentielle (quand réouvert). PDF rangés en GED client. Signature PDF = **responsable** du devis/facture (owner).
 
