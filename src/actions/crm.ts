@@ -17,10 +17,14 @@ import { hasPermission, type SessionUser } from "@/lib/rbac/resolve";
 import { writeAudit } from "@/lib/audit";
 import { normalizeOrgName } from "@/lib/crm/labels";
 import {
+  CONTACT_COMMENT_MIN_LEN,
+  CONTACT_STAGE_CHANNELS,
   followUpRequiredForStage,
+  isEnteringContacte,
   MIN_ACTIVITIES_BEFORE_LOST,
   normalizeUiStage,
 } from "@/lib/crm/guide-rules";
+import { ACTIVITY_LABELS } from "@/lib/crm/labels";
 import { GOAL_METRICS } from "@/lib/crm/goals";
 import type { ActionResult } from "@/actions/auth";
 
@@ -28,6 +32,7 @@ const stageSchema = z.nativeEnum(CrmPipelineStage);
 const sourceSchema = z.nativeEnum(CrmSource);
 const activitySchema = z.nativeEnum(CrmActivityType);
 const lossSchema = z.nativeEnum(CrmLossReason);
+const contactChannelSchema = z.enum(CONTACT_STAGE_CHANNELS);
 
 const createProspectSchema = z
   .object({
@@ -268,6 +273,8 @@ export async function updateOpportunityStageAction(
   const stageRaw = String(formData.get("stage") ?? "");
   const lossReasonRaw = String(formData.get("lossReason") ?? "");
   const lossNote = String(formData.get("lossNote") ?? "").trim() || null;
+  const contactChannelRaw = String(formData.get("contactChannel") ?? "").trim();
+  const contactComment = String(formData.get("contactComment") ?? "").trim();
 
   const stageParsed = stageSchema.safeParse(stageRaw);
   if (!id || !stageParsed.success) {
@@ -303,6 +310,25 @@ export async function updateOpportunityStageAction(
     }
   }
 
+  const enteringContacte = isEnteringContacte(deal.stage, stage);
+  let contactChannel: CrmActivityType | null = null;
+  if (enteringContacte) {
+    const channelParsed = contactChannelSchema.safeParse(contactChannelRaw);
+    if (!channelParsed.success) {
+      return {
+        ok: false,
+        error: "Canal de contact obligatoire (appel, WhatsApp…).",
+      };
+    }
+    if (contactComment.length < CONTACT_COMMENT_MIN_LEN) {
+      return {
+        ok: false,
+        error: `Commentaire obligatoire (min. ${CONTACT_COMMENT_MIN_LEN} caractères) : comment vous avez contacté et ce qui a été dit, ou « pas de réponse ».`,
+      };
+    }
+    contactChannel = channelParsed.data;
+  }
+
   if (
     followUpRequiredForStage(stage) &&
     !deal.followUpAt &&
@@ -317,18 +343,47 @@ export async function updateOpportunityStageAction(
 
   const enteringInteresse =
     stage === "INTERESSE" && deal.stage !== "INTERESSE";
+  const now = new Date();
 
-  await prisma.crmOpportunity.update({
-    where: { id },
-    data: {
-      stage,
-      lossReason: stage === "PERDU" ? (lossReasonRaw as CrmLossReason) : null,
-      lossNote: stage === "PERDU" ? lossNote : null,
-      wonAt: stage === "GAGNE" ? new Date() : deal.wonAt,
-      lostAt: stage === "PERDU" ? new Date() : null,
-      interestedAt: enteringInteresse ? new Date() : deal.interestedAt,
-    },
+  await prisma.$transaction(async (tx) => {
+    await tx.crmOpportunity.update({
+      where: { id },
+      data: {
+        stage,
+        lossReason: stage === "PERDU" ? (lossReasonRaw as CrmLossReason) : null,
+        lossNote: stage === "PERDU" ? lossNote : null,
+        wonAt: stage === "GAGNE" ? now : deal.wonAt,
+        lostAt: stage === "PERDU" ? now : null,
+        interestedAt: enteringInteresse ? now : deal.interestedAt,
+        lastActivityAt: enteringContacte ? now : deal.lastActivityAt,
+      },
+    });
+
+    if (enteringContacte && contactChannel) {
+      const channelLabel = ACTIVITY_LABELS[contactChannel];
+      await tx.crmActivity.create({
+        data: {
+          opportunityId: id,
+          organizationId: deal.organizationId,
+          type: contactChannel,
+          summary: `Passage en Contacté · ${channelLabel}`,
+          body: contactComment,
+          actorId: actor.id,
+          occurredAt: now,
+        },
+      });
+    }
   });
+
+  if (enteringContacte && contactChannel) {
+    await writeAudit({
+      actorId: actor.id,
+      action: "crm.stage.contacte",
+      entityType: "crm_opportunity",
+      entityId: id,
+      metadata: { channel: contactChannel },
+    });
+  }
 
   revalidatePath("/crm");
   revalidatePath(`/crm/prospects/${id}`);

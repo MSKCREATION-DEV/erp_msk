@@ -83,6 +83,7 @@ Effort : **S** &lt; 0,5 j · **M** 0,5–2 j · **L** &gt; 2 j (ordre de grandeu
 | P2-5 | Offres liées config catalogue | `optionSchema` / `SCHEMA_RS` **déjà là** | **Keep** (+ polish) | — | Seed SKU |
 | P2-6 | Calendrier filtres rapports + compare mois | Select semaines prédéfinies (`listWeekOptions`) | **Change** | M–L | Couplé P1-2 |
 | P2-7 | Clarifier UX « Synthèse » | Plusieurs libellés « Synthèse » / « Synthèse équipe » / bouton retour sur `/crm/objectifs` | **Change** UI | S | — |
+| P2-9 | Libellé Qualification → « En discussion » + aide | `QUALIFICATION` peu compris terrain (Samba 14/10) | **Change** UI labels | S | LOT-I / polish — **après** LOT-B |
 | P2-8 | Logs admin toutes actions | `AuditLog` + `writeAudit` partiel ; UI = audits d’un user admin | **Change** couverture + UI | M | `audit.view` |
 
 ### 1.4 Hors scope cette vague (rappel)
@@ -405,14 +406,14 @@ flowchart TD
 | Lot | Items | Migrations | Prérequis | Gate focus |
 |-----|-------|------------|-----------|------------|
 | **LOT-A** | P0-1 Griser devis/facture | Non | Décision message + exceptions | Hub/nav/URL ; convert sans devis — **implémenté 2026-10-14** (`COM_DOCS_GATED`) |
-| **LOT-B** | P0-2 Commentaire Contacté | Non | — | Stage Contacté bloquant + journal |
+| **LOT-B** | P0-2 Commentaire Contacté | Non | — | Stage Contacté bloquant + journal — **implémenté 2026-10-14** |
 | **LOT-C** | P0-3 Édition prospect (champs cœur) | Non | Droits edit | `/edit` + audit ; pas multi-contacts |
 | **LOT-D** | P1-1 Transformer en client | Non | LOT-A (CTA devis mort) | Bouton fiche ; pont intact |
 | **LOT-E** | P1-4 Visibilité + réassign UI | Non (RBAC/packs) | GO modèle shared-read | Yaye voit Madina ; mute si non owner |
 | **LOT-F** | P1-5 Doublons create | Index additifs possibles | LOT-C idéal | Alerte wizard + journal si ignore |
 | **LOT-G** | P1-3 Compteur relances | Non ou compteur dérivé | Définition métier | Badge N× fiche + dashboard |
 | **LOT-H** | P1-2 strate A `CLIENTS_SIGNED` | Non (metric string) | Définition « signé » | Objectif + progression semaine |
-| **LOT-I** | P2-7 Synthèse + P2-2 labels + P2-4 secteurs (option) | Non ou constante | — | UX Direction claire |
+| **LOT-I** | P2-7 Synthèse + P2-9 libellé « En discussion » + P2-2 labels + P2-4 secteurs (option) | Non ou constante | Après LOT-B | UX Direction claire |
 | **LOT-J** | P1-2 strate B + P2-6 périodes | **Oui — Break** | Fiche §0bis + GO | Mois/année + compare |
 
 **Lots P2 reportés (après I ou parallèle) :**

@@ -25,7 +25,7 @@ Pôles **URGENTS** pour MSK :
 | Phase 6 Compta | **OK** + COM-6 bridge facture→VE |
 | Phase 7A Stocks + 7B Ops | **Livrées** |
 | **Phase COM E2E** (plan 2 phases) | **Livrée** — CRM + COM-4…7 · docs [`PLAN-2-PHASES-COM-RH.md`](./PLAN-2-PHASES-COM-RH.md) |
-| **POST-DEMO CRM** (Direction 13/10) | Analyse OK · **LOT-A OK** (gel devis/facture) · **prochain = GO LOT-B** · [`ANALYSE-POST-DEMO-DIRECTION-2026-10-13.md`](./ANALYSE-POST-DEMO-DIRECTION-2026-10-13.md) · [`LOT-B-COMMENTAIRE-CONTACTE.md`](./LOT-B-COMMENTAIRE-CONTACTE.md) |
+| **POST-DEMO CRM** (Direction 13/10) | Analyse OK · **LOT-A OK** · **LOT-B OK** (commentaire Contacté) · **prochain = LOT-C** édition prospect · dette UX : Qualification → « En discussion » (LOT-I) · [`LOT-B-COMMENTAIRE-CONTACTE.md`](./LOT-B-COMMENTAIRE-CONTACTE.md) |
 | Phase RH (Direction 11/10) | Après vague POST-DEMO CRM — SPEC puis GO |
 | Phase 8 Automatisations | Doc — attendre « Phase 8 GO » |
 | Deploy | `main` ≈ `dev` · [VERCEL.md](../deploy/VERCEL.md) |
@@ -49,4 +49,4 @@ Voir `.cursor/rules/phase-quality.mdc` · `ui-never-freeze.mdc` · `list-create-
 
 ---
 
-*Maj 2026-10-14 — LOT-A OK (gel devis/facture) sur `dev`/`main` ; prochain GO = LOT-B (commentaire Contacté) ; RH ensuite.*
+*Maj 2026-10-14 — LOT-A + LOT-B OK ; prochain = LOT-C (édition prospect) ; dette libellé « En discussion » en LOT-I ; RH ensuite.*

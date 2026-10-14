@@ -1,10 +1,18 @@
 # LOT-B — Commentaire obligatoire au passage « Contacté »
 
-**Statut :** prêt à planifier / GO Samba  
+**Statut :** **LOT-B OK** (2026-10-14) — build + tests unitaires OK ; smoke UI terrain recommandé  
 **Priorité :** P0 Direction (cas Madina)  
 **Prérequis :** LOT-A OK  
 **Migrations :** aucune  
 **Verdict :** Change (UI + validation serveur + journal)
+
+### Dette UX (après LOT-B — ne pas faire dans ce lot)
+
+| Item | Action | Pourquoi |
+|------|--------|----------|
+| Libellé `QUALIFICATION` | Passer à **« En discussion »** (+ courte aide / tooltip sur fiche et picker) | Statut peu compris en terrain ; Direction / Samba veulent plus de clarté pour toute l’équipe |
+
+Reporter dans un lot UX ultérieur (ex. polish P2 / LOT-I) — **pas** dans LOT-B.
 
 Réf. métier : [`rapport-reunion-direction-demo-erp-2026-10-13.md`](../rapport-reunion-direction-demo-erp-2026-10-13.md) §3.8  
 Réf. analyse : [`ANALYSE-POST-DEMO-DIRECTION-2026-10-13.md`](./ANALYSE-POST-DEMO-DIRECTION-2026-10-13.md) §2.2

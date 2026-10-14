@@ -1,6 +1,6 @@
 # Manuel — CRM / Suivi commercial (prospects, relances, scripts)
 
-**Version** : 2026-10-13 · Phase COM E2E  
+**Version** : 2026-10-14 · LOT-B (commentaire Contacté)  
 **Public** : Commerciaux, Admin CRM, Direction
 
 ## À retenir
@@ -40,9 +40,12 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 1. **Nouveau** `/crm/prospects/nouveau` (wizard)  
 2. Enrichir fiche (contacts, offres, journal, relance)  
 3. Relances + scripts  
-4. Dès **Intéressé** → **Client + devis** (crée le client Commercial si besoin)  
-5. Devis envoyé → statut CRM **Devis envoyé** automatiquement  
-6. Accord → statut **Client** + facturation côté Commercial  
+4. Passage en **Contacté** : **canal + commentaire obligatoires** (comment on a contacté + ce qui a été dit, ou « pas de réponse ») → ligne créée dans le journal  
+5. Dès **Intéressé** → **Transformer en client** (devis gelés temporairement — Direction 13/10)  
+6. Quand devis réouverts : devis envoyé → statut CRM **Devis envoyé** automatiquement  
+7. Accord → statut **Client** + facturation côté Commercial  
+
+> **En qualification** : échange en cours, pas encore prêt pour devis. Libellé plus clair (« En discussion ») prévu en polish UX (LOT-I) — pas encore appliqué.
 
 ## Collab sans Vue Équipe
 
@@ -59,6 +62,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
+| 2026-10-14 | LOT-B : commentaire + canal obligatoires au passage Contacté (journal auto) |
 | 2026-10-13 | Objectifs : dashboard tous collabs, page admin assignation, Vue Équipe enrichie, rapport reflète cibles |
 | 2026-10-13 | Tableau de bord : MetricNavCard, Conversion Signé/En cours, Répartition filtres URL |
 | 2026-10-12 | Menu / Tableau de bord / Vue Équipe / Rapport ; client dès Intéressé ; SLA 24h |
