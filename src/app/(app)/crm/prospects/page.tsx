@@ -9,6 +9,7 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { runSeries } from "@/lib/db/serial";
 import {
+  canReassignCrmDeal,
   crmProspectListScopeWhere,
   crmVisibility,
   dealOwnerScopeWhere,
@@ -41,6 +42,7 @@ import { KpiRadial } from "@/components/crm/kpi-radial";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
+import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
 import {
   opportunityIdsWithMinOutreach,
   outreachCountByOpportunityIds,
@@ -274,21 +276,22 @@ export default async function CrmProspectsPage({
   }
 
   /** Filtre « Suivi par » disponible pour tous (lecture partagée LOT-E). */
-  const owners = (
-    await prisma.user.findMany({
-      where: {
-        id: { in: Array.from(new Set([user.id, ...teamIds])) },
-        status: "ACTIVE",
-      },
-      select: { id: true, firstName: true, lastName: true },
-      orderBy: { firstName: "asc" },
-    })
-  ).map((u) => ({
+  const teamUsers = await prisma.user.findMany({
+    where: {
+      id: { in: Array.from(new Set([user.id, ...teamIds])) },
+      status: "ACTIVE",
+    },
+    select: { id: true, firstName: true, lastName: true },
+    orderBy: { firstName: "asc" },
+  });
+  const owners = teamUsers.map((u) => ({
     value: u.id,
     label: `${u.firstName} ${u.lastName}`,
   }));
 
   const canCreate = hasPermission(user, "crm.prospect.create");
+  const canReassign = canReassignCrmDeal(user);
+  const commercials = canReassign ? teamUsers : [];
   const stageFilterRaw = sp.stages
     ? (sp.stages.split(",").filter(Boolean) as CrmPipelineStage[])
     : [];
@@ -471,13 +474,16 @@ export default async function CrmProspectsPage({
                 <th className="px-4 py-3 font-semibold">Suivi par</th>
                 <th className="px-4 py-3 font-semibold">Créé</th>
                 <th className="px-4 py-3 font-semibold">Créé par</th>
+                {canReassign ? (
+                  <th className="px-4 py-3 font-semibold">Affecter</th>
+                ) : null}
               </tr>
             </thead>
             <tbody className="divide-y divide-msk-ink/[0.06]">
               {deals.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={11}
+                    colSpan={canReassign ? 12 : 11}
                     className="px-4 py-10 text-center text-msk-ink/40"
                   >
                     {qTrim
@@ -569,6 +575,30 @@ export default async function CrmProspectsPage({
                       <td className="px-4 py-3 text-xs text-msk-ink/60">
                         {d.createdBy.firstName} {d.createdBy.lastName}
                       </td>
+                      {canReassign ? (
+                        <td
+                          className="px-4 py-3"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span className="inline-flex justify-center">
+                            <AssignProspectForm
+                              commercials={commercials}
+                              opportunityId={d.id}
+                              currentOwnerId={d.ownerId}
+                              prospects={[
+                                {
+                                  id: d.id,
+                                  label: d.organization.name,
+                                  ownerId: d.ownerId,
+                                  ownerLabel: `${d.owner.firstName} ${d.owner.lastName}`,
+                                },
+                              ]}
+                              triggerLabel="Affecter"
+                              iconOnly
+                            />
+                          </span>
+                        </td>
+                      ) : null}
                     </ClickableRowLink>
                   );
                 })

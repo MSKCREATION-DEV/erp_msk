@@ -41,7 +41,7 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ProspectDetailActions } from "@/components/crm/prospect-detail-actions";
-import { ProspectReassignForm } from "@/components/crm/prospect-reassign-form";
+import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
 import { AssignmentRequestForm } from "@/components/crm/assignment-request-form";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { OriginChip } from "@/components/crm/origin-chip";
@@ -436,10 +436,19 @@ export default async function CrmProspectDetailPage({
               </Link>
             ) : null}
             {canReassign ? (
-              <ProspectReassignForm
+              <AssignProspectForm
+                commercials={reassignCandidates}
                 opportunityId={deal.id}
                 currentOwnerId={deal.ownerId}
-                candidates={reassignCandidates}
+                prospects={[
+                  {
+                    id: deal.id,
+                    label: deal.organization.name,
+                    ownerId: deal.ownerId,
+                    ownerLabel: `${deal.owner.firstName} ${deal.owner.lastName}`,
+                  },
+                ]}
+                triggerLabel="Affecter"
               />
             ) : null}
             {hasPermission(user, "crm.scripts.view") ? (

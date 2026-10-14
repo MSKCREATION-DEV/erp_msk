@@ -4,73 +4,134 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { canReassignCrmDeal } from "@/lib/crm/scope";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import { prisma } from "@/lib/prisma";
-import { STAGE_LABELS } from "@/lib/crm/labels";
+import { STAGE_LABELS, STAGE_ORDER } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { AssignmentResolveActions } from "@/components/crm/assignment-resolve-actions";
+import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
 
 export const metadata: Metadata = { title: "Affectations" };
+
+const OPEN_STAGES = STAGE_ORDER.filter((s) => s !== "GAGNE");
 
 export default async function CrmAffectationsPage() {
   const user = await requireUser();
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
   if (!canReassignCrmDeal(user)) redirect("/crm/prospects");
 
-  const pending = await prisma.crmAssignmentRequest.findMany({
-    where: { status: "PENDING" },
-    orderBy: { createdAt: "asc" },
-    include: {
-      requester: { select: { firstName: true, lastName: true, email: true } },
-      opportunity: {
-        select: {
-          id: true,
-          stage: true,
-          title: true,
-          organization: { select: { name: true } },
-          owner: { select: { firstName: true, lastName: true } },
-        },
-      },
-    },
-    take: 100,
-  });
+  const teamIds = await commercialTeamUserIds();
+  const memberIds = [...new Set([user.id, ...teamIds])];
 
-  const recent = await prisma.crmAssignmentRequest.findMany({
-    where: { status: { in: ["APPROVED", "REJECTED", "CANCELLED"] } },
-    orderBy: { resolvedAt: "desc" },
-    take: 20,
-    include: {
-      requester: { select: { firstName: true, lastName: true } },
-      resolvedBy: { select: { firstName: true, lastName: true } },
-      opportunity: {
-        select: {
-          id: true,
-          organization: { select: { name: true } },
+  const [commercials, assignableDeals, pending, recent] = await Promise.all([
+    prisma.user.findMany({
+      where: { id: { in: memberIds }, status: "ACTIVE" },
+      select: { id: true, firstName: true, lastName: true },
+      orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
+    }),
+    prisma.crmOpportunity.findMany({
+      where: {
+        stage: { in: [...OPEN_STAGES, "NEGOCIATION"] },
+        comClients: { none: {} },
+      },
+      select: {
+        id: true,
+        ownerId: true,
+        organization: { select: { name: true } },
+        owner: { select: { firstName: true, lastName: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 500,
+    }),
+    prisma.crmAssignmentRequest.findMany({
+      where: { status: "PENDING" },
+      orderBy: { createdAt: "asc" },
+      include: {
+        requester: { select: { firstName: true, lastName: true, email: true } },
+        opportunity: {
+          select: {
+            id: true,
+            stage: true,
+            title: true,
+            ownerId: true,
+            organization: { select: { name: true } },
+            owner: { select: { firstName: true, lastName: true } },
+          },
         },
       },
-    },
-  });
+      take: 100,
+    }),
+    prisma.crmAssignmentRequest.findMany({
+      where: { status: { in: ["APPROVED", "REJECTED", "CANCELLED"] } },
+      orderBy: { resolvedAt: "desc" },
+      take: 20,
+      include: {
+        requester: { select: { firstName: true, lastName: true } },
+        resolvedBy: { select: { firstName: true, lastName: true } },
+        opportunity: {
+          select: {
+            id: true,
+            organization: { select: { name: true } },
+          },
+        },
+      },
+    }),
+  ]);
+
+  const prospectOpts = assignableDeals.map((d) => ({
+    id: d.id,
+    label: d.organization.name,
+    ownerId: d.ownerId,
+    ownerLabel: `${d.owner.firstName} ${d.owner.lastName}`,
+  }));
 
   return (
     <PageShell>
       <PageHeader
         title="Affectations"
-        description="Demandes des commerciaux pour reprendre le suivi d’un dossier."
+        description="Affectez un prospect à un commercial, ou traitez les demandes de reprise de suivi."
         backHref="/commercial"
         backLabel="Retour Commercial"
         breadcrumbs={[
           { label: "Commercial", href: "/commercial" },
           { label: "Affectations" },
         ]}
+        actions={
+          <AssignProspectForm
+            commercials={commercials}
+            prospects={prospectOpts}
+            triggerLabel="Affecter un prospect"
+            triggerVariant="primary"
+          />
+        }
       />
+
+      <Surface className="space-y-3 p-5">
+        <div>
+          <h2 className="text-sm font-semibold text-msk-ink">
+            Affectation directe
+          </h2>
+          <p className="mt-1 text-xs text-msk-ink/50">
+            Direction, Admin CRM et profils habilités (`crm.reassign`) peuvent
+            confier n’importe quel prospect ouvert à un collaborateur commercial.
+          </p>
+        </div>
+        <AssignProspectForm
+          commercials={commercials}
+          prospects={prospectOpts}
+          triggerLabel="Choisir prospect et commercial"
+          triggerVariant="secondary"
+        />
+      </Surface>
 
       <Surface className="overflow-hidden p-0">
         <div className="border-b border-msk-ink/[0.06] bg-msk-chalk/40 px-4 py-2.5">
           <h2 className="text-sm font-semibold text-msk-ink">
-            En attente
+            Demandes en attente
             <Badge tone={pending.length > 0 ? "coral" : "muted"} className="ml-2">
               {pending.length}
             </Badge>
@@ -111,7 +172,24 @@ export default async function CrmAffectationsPage() {
                       <p className="text-sm text-msk-ink/75">{r.message}</p>
                     ) : null}
                   </div>
-                  <AssignmentResolveActions requestId={r.id} />
+                  <div className="flex flex-col gap-2 sm:items-end">
+                    <AssignmentResolveActions requestId={r.id} />
+                    <AssignProspectForm
+                      commercials={commercials}
+                      opportunityId={r.opportunity.id}
+                      currentOwnerId={r.opportunity.ownerId}
+                      prospects={[
+                        {
+                          id: r.opportunity.id,
+                          label: r.opportunity.organization.name,
+                          ownerId: r.opportunity.ownerId,
+                          ownerLabel: `${r.opportunity.owner.firstName} ${r.opportunity.owner.lastName}`,
+                        },
+                      ]}
+                      triggerLabel="Affecter à un autre"
+                      triggerSize="sm"
+                    />
+                  </div>
                 </li>
               );
             })}

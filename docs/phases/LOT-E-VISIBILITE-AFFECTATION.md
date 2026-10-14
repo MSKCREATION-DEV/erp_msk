@@ -25,14 +25,15 @@
 | Action | `reassignProspectAction` + journal + audit `crm.reassign` |
 | Tests | `src/lib/crm/scope.test.ts` |
 
-## Demande d’affectation (complément)
+## Affectation (Direction / Admin / habilités)
 
 | Qui | Où |
 |-----|-----|
-| Commercial (lecture seule) | Fiche prospect → **Demander le suivi** |
-| Direction / Admin (`crm.reassign`) | Onglet **Affectations** `/crm/affectations` — Approuver / Refuser |
+| `crm.reassign` (Direction, Admin CRM, Super Admin…) | Fiche → **Affecter** · Liste prospects → icône · `/crm/affectations` → affectation directe |
+| Commercial (lecture seule) | Fiche → **Demander le suivi** |
+| Traitement demandes | `/crm/affectations` — Approuver (→ demandeur) / Refuser / Affecter à un autre |
 
-Approuver = réassigne org + deal + tâches OPEN au demandeur.
+Réassignation = sync `organization.ownerId` + `opportunity.ownerId` + tâches OPEN.
 
 ## Hors scope
 
