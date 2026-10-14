@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { crmVisibility, dealOwnerScopeWhere } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
 import { STAGE_ORDER } from "@/lib/crm/labels";
+import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { resolveGoalsSnapshots } from "@/lib/crm/goals";
 import { weekStartMonday } from "@/lib/crm/week";
 import { PageHeader } from "@/components/ui/page-header";
@@ -93,7 +94,7 @@ export default async function CrmEquipePage({
     }
     const row = byOwner.get(d.ownerId)!;
     row.total += 1;
-    const stage = d.stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : d.stage;
+    const stage = normalizeUiStage(d.stage);
     row.byStage[stage] = (row.byStage[stage] ?? 0) + 1;
     if (stage === "GAGNE") row.clients += 1;
     if (stage === "INTERESSE") row.interesses += 1;

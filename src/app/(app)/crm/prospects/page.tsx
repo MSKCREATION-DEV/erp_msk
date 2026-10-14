@@ -43,6 +43,7 @@ import {
   opportunityIdsWithMinOutreach,
   outreachCountByOpportunityIds,
 } from "@/lib/crm/follow-up-count";
+import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Prospects" };
@@ -444,7 +445,7 @@ export default async function CrmProspectsPage({
                     d.stage !== "GAGNE" &&
                     d.stage !== "PERDU";
                   const uiStage =
-                    d.stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : d.stage;
+                    normalizeUiStage(d.stage);
                   return (
                     <ClickableRowLink
                       key={d.id}

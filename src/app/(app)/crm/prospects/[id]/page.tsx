@@ -46,6 +46,7 @@ import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { OfferConfigBadges } from "@/components/crm/offer-config-badges";
 import { countOutreachActivities } from "@/lib/crm/follow-up-count";
+import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 import {
   COM_DOCS_GATED,
@@ -320,7 +321,7 @@ export default async function CrmProspectDetailPage({
     deal.followUpAt < now &&
     deal.stage !== "GAGNE" &&
     deal.stage !== "PERDU";
-  const uiStage = deal.stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : deal.stage;
+  const uiStage = normalizeUiStage(deal.stage);
   const devisDue = isDevisSlaBreached({
     stage: deal.stage,
     interestedAt: deal.interestedAt,

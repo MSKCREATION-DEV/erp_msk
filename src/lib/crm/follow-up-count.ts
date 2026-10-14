@@ -65,6 +65,17 @@ export async function outreachCountByOpportunityIds(
   return map;
 }
 
+/** Filtre pur Map id→count (testable sans DB). */
+export function idsMeetingMinOutreach(
+  counts: Map<string, number>,
+  min: number,
+): string[] {
+  if (min <= 0) return [...counts.keys()];
+  return [...counts.entries()]
+    .filter(([, n]) => n >= min)
+    .map(([id]) => id);
+}
+
 /** IDs de deals ayant au moins `min` relances (parmi une liste). */
 export async function opportunityIdsWithMinOutreach(
   opportunityIds: string[],
@@ -72,11 +83,14 @@ export async function opportunityIdsWithMinOutreach(
 ): Promise<string[]> {
   if (min <= 0) return [...new Set(opportunityIds.filter(Boolean))];
   const map = await outreachCountByOpportunityIds(opportunityIds);
-  return [...map.entries()]
-    .filter(([, n]) => n >= min)
-    .map(([id]) => id);
+  return idsMeetingMinOutreach(map, min);
 }
 
 export function formatRelanceCount(n: number): string {
-  return `${n}×`;
+  return `${Math.max(0, Math.trunc(n))}×`;
+}
+
+/** NOTE exclue du compteur historique. */
+export function isOutreachActivityType(type: CrmActivityType): boolean {
+  return (OUTREACH_ACTIVITY_TYPES as readonly string[]).includes(type);
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CrmPipelineStage, CrmTaskStatus } from "@prisma/client";
+import { CrmTaskStatus } from "@prisma/client";
 import {
   Bell,
   FileWarning,
@@ -41,12 +41,9 @@ import { StageDonutChart } from "@/components/crm/stage-donut-chart";
 import { ConversionPipelineCard } from "@/components/crm/conversion-pipeline-card";
 import { GoalsProgressStrip } from "@/components/crm/goals-progress-strip";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
+import { normalizeUiStage } from "@/lib/crm/guide-rules";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
-
-function normalizeStage(stage: CrmPipelineStage): CrmPipelineStage {
-  return stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage;
-}
 
 export default async function CrmDashboardPage() {
   const user = await requireUser();
@@ -94,7 +91,7 @@ export default async function CrmDashboardPage() {
     stage,
     key: stage.toLowerCase(),
     statut: STAGE_LABELS[stage],
-    count: deals.filter((d) => normalizeStage(d.stage) === stage).length,
+    count: deals.filter((d) => normalizeUiStage(d.stage) === stage).length,
   }));
 
   const openDeals = deals.filter(
@@ -125,7 +122,7 @@ export default async function CrmDashboardPage() {
 
   const aTraiter = deals
     .filter((d) => {
-      const st = normalizeStage(d.stage);
+      const st = normalizeUiStage(d.stage);
       if (st === "GAGNE" || st === "PERDU") return false;
       const late = d.followUpAt != null && d.followUpAt.getTime() < now;
       return late || st === "INTERESSE" || st === "NOUVEAU";
@@ -319,7 +316,7 @@ export default async function CrmDashboardPage() {
                     ) : null}
                   </p>
                   <p className="truncate text-xs text-msk-ink/45">
-                    {d.nextAction || STAGE_LABELS[normalizeStage(d.stage)]}
+                    {d.nextAction || STAGE_LABELS[normalizeUiStage(d.stage)]}
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
@@ -328,7 +325,7 @@ export default async function CrmDashboardPage() {
                     showZero={false}
                   />
                   <Badge tone="muted">
-                    {STAGE_LABELS[normalizeStage(d.stage)]}
+                    {STAGE_LABELS[normalizeUiStage(d.stage)]}
                   </Badge>
                 </div>
               </Link>

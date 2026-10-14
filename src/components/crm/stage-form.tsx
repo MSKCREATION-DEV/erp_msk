@@ -13,6 +13,7 @@ import { usePendingAction } from "@/hooks/use-pending-action";
 import {
   CONTACT_COMMENT_MIN_LEN,
   CONTACT_STAGE_CHANNELS,
+  normalizeUiStage,
 } from "@/lib/crm/guide-rules";
 import { RELANCE_GUIDE_THRESHOLD } from "@/lib/crm/follow-up-count";
 import {
@@ -22,10 +23,6 @@ import {
   STAGE_LABELS,
   STAGE_ORDER,
 } from "@/lib/crm/labels";
-
-function toUiStage(stage: CrmPipelineStage): CrmPipelineStage {
-  return stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage;
-}
 
 export function StageForm({
   opportunityId,
@@ -42,7 +39,9 @@ export function StageForm({
 }) {
   const router = useRouter();
   const { pending, run } = usePendingAction();
-  const [current, setCurrent] = useState<CrmPipelineStage>(toUiStage(stage));
+  const [current, setCurrent] = useState<CrmPipelineStage>(
+    normalizeUiStage(stage),
+  );
   const [lossReason, setLossReason] = useState<CrmLossReason | null>("BUDGET");
   const [contactChannel, setContactChannel] = useState<CrmActivityType | null>(
     null,
@@ -51,7 +50,7 @@ export function StageForm({
   const [error, setError] = useState<string | null>(null);
 
   const enteringContacte =
-    current === "CONTACTE" && toUiStage(stage) !== "CONTACTE";
+    current === "CONTACTE" && normalizeUiStage(stage) !== "CONTACTE";
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
