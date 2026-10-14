@@ -90,6 +90,13 @@ export function formatRelanceCount(n: number): string {
   return `${Math.max(0, Math.trunc(n))}×`;
 }
 
+/** Somme des N relances d’une Map id→count. */
+export function sumOutreachCounts(counts: Map<string, number>): number {
+  let total = 0;
+  for (const n of counts.values()) total += n;
+  return total;
+}
+
 /** NOTE exclue du compteur historique. */
 export function isOutreachActivityType(type: CrmActivityType): boolean {
   return (OUTREACH_ACTIVITY_TYPES as readonly string[]).includes(type);

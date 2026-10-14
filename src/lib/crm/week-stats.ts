@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { weekEndSunday } from "@/lib/crm/week";
+import { OUTREACH_ACTIVITY_TYPES } from "@/lib/crm/follow-up-count";
 import { mapSeries, runSeries } from "@/lib/db/serial";
 
 export type WeekStats = {
@@ -9,7 +10,10 @@ export type WeekStats = {
   inDiscussion: number;
   qualified: number;
   meetings: number;
+  /** Tasks DONE (objectifs FOLLOW_UPS). */
   followUpsDone: number;
+  /** Activités de suivi outreach (LOT-G — hors NOTE). */
+  relancesJournalisees: number;
 };
 
 const EMPTY_STATS: WeekStats = {
@@ -20,6 +24,7 @@ const EMPTY_STATS: WeekStats = {
   qualified: 0,
   meetings: 0,
   followUpsDone: 0,
+  relancesJournalisees: 0,
 };
 
 function asIdList(authorId: string | string[]): string[] {
@@ -49,6 +54,7 @@ export async function computeWeekStats(
     firstContacts,
     meetings,
     followUpsDone,
+    relancesJournalisees,
     inDiscussion,
     qualified,
     replies,
@@ -79,6 +85,14 @@ export async function computeWeekStats(
           ...assigneeIn,
           status: "DONE",
           completedAt: { gte: from, lte: to },
+        },
+      }),
+    () =>
+      prisma.crmActivity.count({
+        where: {
+          ...actorIn,
+          occurredAt: { gte: from, lte: to },
+          type: { in: OUTREACH_ACTIVITY_TYPES },
         },
       }),
     () =>
@@ -114,6 +128,7 @@ export async function computeWeekStats(
     qualified,
     meetings,
     followUpsDone,
+    relancesJournalisees,
   };
 }
 

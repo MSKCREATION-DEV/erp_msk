@@ -241,7 +241,7 @@ export default async function CrmRapportPage({
         </Surface>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <KpiRadial
           label="Nouveaux (semaine)"
           value={weekStats.newProspects}
@@ -251,6 +251,11 @@ export default async function CrmRapportPage({
           label="Premiers contacts"
           value={weekStats.firstContacts}
           target={goals.FIRST_CONTACTS}
+        />
+        <KpiRadial
+          label="Relances faites"
+          value={weekStats.relancesJournalisees}
+          hint="actions de suivi (hors notes)"
         />
         <KpiRadial
           label="En échange"

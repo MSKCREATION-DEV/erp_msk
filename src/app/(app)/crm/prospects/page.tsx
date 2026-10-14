@@ -17,6 +17,7 @@ import { commercialTeamUserIds } from "@/lib/crm/team";
 import {
   SOURCE_LABELS,
   STAGE_LABELS,
+  STAGE_ORDER,
   stagesForFilter,
 } from "@/lib/crm/labels";
 import { isTestOrgName } from "@/lib/crm/test-data";
@@ -38,10 +39,12 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { ProspectsFilterButton } from "@/components/crm/prospects-filter-modal";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
+import { OriginChip } from "@/components/crm/origin-chip";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import {
   opportunityIdsWithMinOutreach,
   outreachCountByOpportunityIds,
+  sumOutreachCounts,
 } from "@/lib/crm/follow-up-count";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { cn } from "@/lib/utils";
@@ -55,6 +58,9 @@ function stageTone(stage: string): "muted" | "success" | "coral" | "blue" {
   return "muted";
 }
 
+/** Statuts listables — jamais Client (GAGNE) : dossier passé côté Clients. */
+const PROSPECT_LIST_STAGES = STAGE_ORDER.filter((s) => s !== "GAGNE");
+
 function buildProspectWhere(
   sp: Record<string, string | undefined>,
   scope: Prisma.CrmOpportunityWhereInput,
@@ -63,16 +69,27 @@ function buildProspectWhere(
   const where: Prisma.CrmOpportunityWhereInput = { ...scope };
   const andParts: Prisma.CrmOpportunityWhereInput[] = [];
 
-  const stageFilterRaw = sp.stages
+  const stageFilterRaw = (sp.stages
     ? (sp.stages.split(",").filter(Boolean) as CrmPipelineStage[])
-    : [];
+    : []
+  ).filter((s) => s !== "GAGNE");
   if (stageFilterRaw.length) {
     where.stage = { in: [...new Set(stageFilterRaw.flatMap(stagesForFilter))] };
+  } else {
+    /** Listing = prospects uniquement (hors Client). */
+    where.stage = { in: [...PROSPECT_LIST_STAGES, "NEGOCIATION"] };
   }
   if (sp.source) where.source = sp.source as CrmSource;
   if (sp.owner) where.ownerId = sp.owner;
 
-  if (sp.from || sp.to) {
+  /** Date précise `?on=` ou plage `?from=` / `?to=`. */
+  if (sp.on) {
+    const start = new Date(sp.on);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(sp.on);
+    end.setHours(23, 59, 59, 999);
+    where.createdAt = { gte: start, lte: end };
+  } else if (sp.from || sp.to) {
     where.createdAt = {};
     if (sp.from) where.createdAt.gte = new Date(sp.from);
     if (sp.to) {
@@ -85,9 +102,8 @@ function buildProspectWhere(
   if (sp.late === "1") {
     where.followUpAt = { lt: now };
     where.stage = {
-      ...(typeof where.stage === "object" ? where.stage : {}),
-      notIn: ["GAGNE", "PERDU"],
-    } as Prisma.EnumCrmPipelineStageFilter;
+      in: PROSPECT_LIST_STAGES.filter((s) => s !== "PERDU"),
+    };
   }
 
   if (sp.devisRetard === "1") {
@@ -223,8 +239,17 @@ export default async function CrmProspectsPage({
     prospects: number;
     interesses: number;
     retards: number;
+    relancesFaites: number;
   } | null = null;
   if (showOwnKpis) {
+    const ownOpenIds = (
+      await prisma.crmOpportunity.findMany({
+        where: openOwn,
+        select: { id: true },
+        take: 2000,
+      })
+    ).map((d) => d.id);
+    const ownOutreachMap = await outreachCountByOpportunityIds(ownOpenIds);
     const [prospects, interesses, retards] = await runSeries([
       () => prisma.crmOpportunity.count({ where: openOwn }),
       () =>
@@ -236,7 +261,12 @@ export default async function CrmProspectsPage({
           where: { ...openOwn, followUpAt: { lt: now } },
         }),
     ]);
-    ownKpis = { prospects, interesses, retards };
+    ownKpis = {
+      prospects,
+      interesses,
+      retards,
+      relancesFaites: sumOutreachCounts(ownOutreachMap),
+    };
   }
 
   /** Filtre « Suivi par » disponible pour tous (lecture partagée LOT-E). */
@@ -289,6 +319,7 @@ export default async function CrmProspectsPage({
     Boolean(sp.owner) ||
     Boolean(sp.from) ||
     Boolean(sp.to) ||
+    Boolean(sp.on) ||
     (Number.isFinite(relancesMin) && relancesMin > 0);
 
   return (
@@ -331,7 +362,7 @@ export default async function CrmProspectsPage({
       ) : null}
 
       {ownKpis ? (
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <KpiRadial
             label="Prospects"
             value={ownKpis.prospects}
@@ -347,6 +378,11 @@ export default async function CrmProspectsPage({
             value={ownKpis.retards}
             tone={ownKpis.retards > 0 ? "coral" : "blue"}
             hint="relances dues"
+          />
+          <KpiRadial
+            label="Relances faites"
+            value={ownKpis.relancesFaites}
+            hint="actions de suivi journalisées"
           />
         </div>
       ) : null}
@@ -397,6 +433,15 @@ export default async function CrmProspectsPage({
                   Relancés ≥ {relancesMin}×
                 </Badge>
               ) : null}
+              {sp.on ? (
+                <Badge tone="blue">Créé le {sp.on}</Badge>
+              ) : null}
+              {!sp.on && (sp.from || sp.to) ? (
+                <Badge tone="blue">
+                  Créé {sp.from ? `du ${sp.from}` : ""}
+                  {sp.to ? ` au ${sp.to}` : ""}
+                </Badge>
+              ) : null}
               <Link
                 prefetch={false}
                 href="/crm/prospects"
@@ -408,7 +453,7 @@ export default async function CrmProspectsPage({
           ) : null}
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-280 text-left text-sm">
+          <table className="w-full min-w-280 text-center text-sm">
             <thead className="border-b border-msk-ink/[0.08] bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
               <tr>
                 <th className="px-4 py-3 font-semibold">Entreprise</th>
@@ -452,27 +497,25 @@ export default async function CrmProspectsPage({
                       href={`/crm/prospects/${d.id}`}
                     >
                       <td className="px-4 py-3">
-                        <span className="font-medium text-msk-ink">
+                        <span className="inline-flex flex-wrap items-center justify-center gap-1.5 font-medium text-msk-ink">
                           {d.organization.name}
+                          {isTestOrgName(d.organization.name) ? (
+                            <Badge tone="coral">TEST</Badge>
+                          ) : null}
                         </span>
-                        {isTestOrgName(d.organization.name) ? (
-                          <Badge tone="coral" className="ml-1.5 align-middle">
-                            TEST
-                          </Badge>
-                        ) : null}
                       </td>
                       <td className="px-4 py-3 text-msk-ink/75">
                         {c ? (
-                          <>
+                          <span className="inline-flex flex-col items-center">
                             <span className="font-medium text-msk-ink">
                               {c.firstName} {c.lastName}
                             </span>
                             {c.jobTitle ? (
-                              <p className="text-xs font-medium text-msk-ink/55">
+                              <span className="text-xs font-medium text-msk-ink/55">
                                 {c.jobTitle}
-                              </p>
+                              </span>
                             ) : null}
-                          </>
+                          </span>
                         ) : (
                           "—"
                         )}
@@ -481,34 +524,37 @@ export default async function CrmProspectsPage({
                         {c?.phone?.trim() ? c.phone : "—"}
                       </td>
                       <td className="px-4 py-3">
-                        {d.source ? (
-                          <Badge tone="blue">{SOURCE_LABELS[d.source]}</Badge>
-                        ) : (
-                          "—"
-                        )}
+                        <span className="inline-flex justify-center">
+                          <OriginChip source={d.source} size="compact" />
+                        </span>
                       </td>
                       <td className="px-4 py-3">
-                        <Badge tone={stageTone(uiStage)}>
-                          {STAGE_LABELS[uiStage]}
-                        </Badge>
+                        <span className="inline-flex justify-center">
+                          <Badge tone={stageTone(uiStage)}>
+                            {STAGE_LABELS[uiStage]}
+                          </Badge>
+                        </span>
                       </td>
                       <td className="px-4 py-3">
-                        <RelanceCountBadge
-                          count={outreachMap.get(d.id) ?? 0}
-                        />
+                        <span className="inline-flex justify-center">
+                          <RelanceCountBadge
+                            count={outreachMap.get(d.id) ?? 0}
+                            compact
+                          />
+                        </span>
                       </td>
                       <td className="max-w-45 truncate px-4 py-3 text-msk-ink/70">
                         {d.nextAction || "—"}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="inline-flex flex-wrap items-center justify-center gap-1.5">
                           <span>
                             {d.followUpAt
                               ? d.followUpAt.toLocaleDateString("fr-FR")
                               : "—"}
                           </span>
                           {overdue ? <Badge tone="coral">Retard</Badge> : null}
-                        </div>
+                        </span>
                       </td>
                       <td className="px-4 py-3 text-xs text-msk-ink/70">
                         {d.owner.firstName} {d.owner.lastName}

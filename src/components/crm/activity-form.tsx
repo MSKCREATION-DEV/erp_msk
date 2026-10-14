@@ -11,6 +11,16 @@ import { FieldError, FieldHint, FieldLabel } from "@/components/ui/field-label";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { ACTIVITY_LABELS } from "@/lib/crm/labels";
+import {
+  isOutreachActivityType,
+  OUTREACH_ACTIVITY_TYPES,
+} from "@/lib/crm/follow-up-count";
+
+/** Types proposés : canaux de suivi d’abord, Note en dernier. */
+const ACTIVITY_TYPE_ORDER: CrmActivityType[] = [
+  ...OUTREACH_ACTIVITY_TYPES,
+  "NOTE",
+];
 
 export function ActivityForm({
   opportunityId,
@@ -28,17 +38,31 @@ export function ActivityForm({
   const formId = useId();
   const { pending, run } = usePendingAction();
   const [error, setError] = useState<string | null>(null);
-  const [type, setType] = useState<CrmActivityType | null>("NOTE");
+  /** Défaut Appel — une Note ne compte pas comme relance historique. */
+  const [type, setType] = useState<CrmActivityType | null>("APPEL");
+
+  const isClosingRelance = Boolean(completeTaskId);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     if (!type) {
-      setError("Choisissez un type d’action");
+      setError("Choisissez comment vous avez contacté le prospect");
+      return;
+    }
+    if (isClosingRelance && !isOutreachActivityType(type)) {
+      setError(
+        "Pour clôturer une relance, choisissez un canal de suivi (appel, WhatsApp…) — pas une note seule.",
+      );
       return;
     }
     const form = e.currentTarget;
     const fd = new FormData(form);
+    const summary = String(fd.get("summary") ?? "").trim();
+    if (summary.length < 3) {
+      setError("Indiquez un court résumé de l’échange");
+      return;
+    }
     fd.set("opportunityId", opportunityId);
     fd.set("type", type);
     if (completeTaskId) fd.set("completeTaskId", completeTaskId);
@@ -49,7 +73,7 @@ export function ActivityForm({
         return;
       }
       form.reset();
-      setType("NOTE");
+      setType("APPEL");
       onSuccess?.();
       router.refresh();
     });
@@ -67,39 +91,53 @@ export function ActivityForm({
       {completeTaskId ? (
         <input type="hidden" name="completeTaskId" value={completeTaskId} />
       ) : null}
+
+      <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/[0.04] px-3.5 py-2.5 text-xs leading-relaxed text-msk-ink/70">
+        {isClosingRelance
+          ? "Journalisez le canal utilisé et ce qui a été dit — cela incrémente le compteur Relances et clôture la tâche."
+          : "Chaque action de suivi (hors note) compte dans l’historique Relancé N× du dossier."}
+      </p>
+
       <OptionPickerSingle
-        label="Type d’action"
+        label="Canal / type d’action"
         required
-        options={Object.entries(ACTIVITY_LABELS).map(([k, v]) => ({
+        options={ACTIVITY_TYPE_ORDER.map((k) => ({
           value: k,
-          label: v,
+          label:
+            k === "NOTE"
+              ? `${ACTIVITY_LABELS[k]} (ne compte pas comme relance)`
+              : ACTIVITY_LABELS[k],
         }))}
         value={type}
-        onChange={(v) => setType((v as CrmActivityType) ?? "NOTE")}
+        onChange={(v) => setType((v as CrmActivityType) ?? "APPEL")}
         disabled={pending}
-        placeholder="Choisir le type"
+        placeholder="Comment avez-vous contacté ?"
         modalTitle="Type d’action"
       />
       <div>
         <FieldLabel htmlFor={`${formId}-summary`} required>
-          Résumé
+          Résumé de l’échange
         </FieldLabel>
         <Input
           id={`${formId}-summary`}
           name="summary"
           required
           disabled={pending}
-          placeholder="Ex. Appel — intéressée par le site vitrine"
+          placeholder="Ex. Appel — intéressée par le site vitrine, rappelle vendredi"
         />
+        <FieldHint>
+          Visible dans le journal — précisez le résultat (répondu, pas de
+          réponse, RDV pris…).
+        </FieldHint>
       </div>
       <div>
-        <FieldLabel htmlFor={`${formId}-body`}>Détail</FieldLabel>
+        <FieldLabel htmlFor={`${formId}-body`}>Commentaire détaillé</FieldLabel>
         <Textarea
           id={`${formId}-body`}
           name="body"
           rows={3}
           disabled={pending}
-          placeholder="Notes de l’échange, objections, prochaine étape évoquée…"
+          placeholder="Objections, budget évoqué, prochaine étape convenue…"
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -115,8 +153,12 @@ export function ActivityForm({
             disabled={pending}
           />
           {requireFollowUp ? (
-            <FieldHint>Obligatoire — aucune date de relance sur ce dossier.</FieldHint>
-          ) : null}
+            <FieldHint>
+              Obligatoire — aucune date de relance sur ce dossier.
+            </FieldHint>
+          ) : (
+            <FieldHint>Planifie la prochaine date dans la file Relances.</FieldHint>
+          )}
         </div>
         <div>
           <FieldLabel htmlFor={`${formId}-next`}>Prochaine action</FieldLabel>

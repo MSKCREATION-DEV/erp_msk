@@ -5,6 +5,7 @@ import {
   isOutreachActivityType,
   OUTREACH_ACTIVITY_TYPES,
   RELANCE_GUIDE_THRESHOLD,
+  sumOutreachCounts,
 } from "./follow-up-count";
 import { MIN_ACTIVITIES_BEFORE_LOST } from "./guide-rules";
 
@@ -31,5 +32,6 @@ const counts = new Map([
 assert.deepEqual(idsMeetingMinOutreach(counts, 3).sort(), ["c", "d"]);
 assert.deepEqual(idsMeetingMinOutreach(counts, 0).sort(), ["a", "b", "c", "d"]);
 assert.deepEqual(idsMeetingMinOutreach(new Map(), 3), []);
+assert.equal(sumOutreachCounts(counts), 10);
 
 console.log("follow-up-count.test.ts OK");

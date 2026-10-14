@@ -2,7 +2,6 @@ import Link from "next/link";
 import { FileText, FolderOpen, Target } from "lucide-react";
 import { STAGE_LABELS, STAGE_ORDER, formatXof } from "@/lib/crm/labels";
 import type { GoalProgressItem } from "@/lib/crm/goals";
-import { RELANCE_GUIDE_THRESHOLD } from "@/lib/crm/follow-up-count";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ActionLink } from "@/components/ui/action-link";
@@ -18,7 +17,7 @@ export function EquipeCollabCard({
   caOpen,
   interesses,
   overdue,
-  relancesHot,
+  relancesFaites,
   byStage,
   goals,
   canManageGoals,
@@ -30,8 +29,8 @@ export function EquipeCollabCard({
   caOpen: number;
   interesses: number;
   overdue: number;
-  /** Dossiers ouverts avec ≥ seuil relances historiques. */
-  relancesHot: number;
+  /** Total relances journalisées sur dossiers ouverts. */
+  relancesFaites: number;
   byStage: Record<string, number>;
   goals: GoalProgressItem[];
   canManageGoals: boolean;
@@ -92,10 +91,10 @@ export function EquipeCollabCard({
           hint="relances dues"
         />
         <KpiRadial
-          label={`Relancés ${RELANCE_GUIDE_THRESHOLD}×+`}
-          value={relancesHot}
-          tone={relancesHot > 0 ? "coral" : "blue"}
-          hint="ouverts, historique"
+          label="Relances faites"
+          value={relancesFaites}
+          tone={relancesFaites > 0 ? "coral" : "blue"}
+          hint="suivi journalisé"
         />
       </div>
 

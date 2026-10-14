@@ -28,7 +28,7 @@ import { isTestOrgName } from "@/lib/crm/test-data";
 import { isDevisSlaBreached } from "@/lib/crm/devis-sla";
 import {
   outreachCountByOpportunityIds,
-  RELANCE_GUIDE_THRESHOLD,
+  sumOutreachCounts,
 } from "@/lib/crm/follow-up-count";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -100,9 +100,7 @@ export default async function CrmDashboardPage() {
   const outreachMap = await outreachCountByOpportunityIds(
     openDeals.map((d) => d.id),
   );
-  const relances3plus = openDeals.filter(
-    (d) => (outreachMap.get(d.id) ?? 0) >= RELANCE_GUIDE_THRESHOLD,
-  ).length;
+  const relancesFaites = sumOutreachCounts(outreachMap);
 
   const won = deals.filter((d) => d.stage === "GAGNE");
   const montantEnCours = openDeals.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
@@ -221,19 +219,21 @@ export default async function CrmDashboardPage() {
             }
           />
           <MetricNavCard
-            href={`/crm/prospects?relancesMin=${RELANCE_GUIDE_THRESHOLD}`}
+            href="/crm/relances"
             icon={Repeat2}
             tone="coral"
-            title={`Relancés ${RELANCE_GUIDE_THRESHOLD}×+`}
-            description="Dossiers ouverts déjà relancés au moins 3 fois (suivi)."
+            title="Relances faites"
+            description="Total des actions de suivi journalisées sur les dossiers ouverts."
             footer={
               <HubMiniRadial
-                value={relances3plus}
-                max={Math.max(5, relances3plus, openDeals.length)}
+                value={relancesFaites}
+                max={Math.max(5, relancesFaites)}
                 color={METRIC_NAV_TONE_CHART.coral}
-                centerLabel={relances3plus}
+                centerLabel={relancesFaites}
                 caption={
-                  relances3plus > 1 ? "dossiers ≥ 3×" : "dossier ≥ 3×"
+                  relancesFaites > 1
+                    ? "relances journalisées"
+                    : "relance journalisée"
                 }
               />
             }
@@ -323,6 +323,7 @@ export default async function CrmDashboardPage() {
                   <RelanceCountBadge
                     count={outreachMap.get(d.id) ?? 0}
                     showZero={false}
+                    compact
                   />
                   <Badge tone="muted">
                     {STAGE_LABELS[normalizeUiStage(d.stage)]}

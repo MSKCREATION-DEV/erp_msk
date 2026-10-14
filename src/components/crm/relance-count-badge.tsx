@@ -6,18 +6,22 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * LOT-G — badge historique « Relancé N× ».
+ * LOT-G — badge historique de relances.
+ * `compact` = nombre seul (tableaux) · défaut = « Relancé N× » (fiche).
  * 0 muted · 1–2 blue · ≥3 coral (seuil GUIDE Perdu).
  */
 export function RelanceCountBadge({
   count,
   className,
   showZero = true,
+  compact = false,
 }: {
   count: number;
   className?: string;
   /** Si false, masque le badge quand count === 0. */
   showZero?: boolean;
+  /** Tableaux : affiche seulement `N×`. */
+  compact?: boolean;
 }) {
   if (!showZero && count <= 0) return null;
   const n = Math.max(0, count);
@@ -26,10 +30,10 @@ export function RelanceCountBadge({
   return (
     <Badge
       tone={tone}
-      className={cn("tabular-nums", className)}
+      className={cn("min-w-8 tabular-nums", className)}
       title={`${n} relance${n > 1 ? "s" : ""} journalisée${n > 1 ? "s" : ""} (hors notes)`}
     >
-      Relancé {formatRelanceCount(n)}
+      {compact ? formatRelanceCount(n) : `Relancé ${formatRelanceCount(n)}`}
     </Badge>
   );
 }

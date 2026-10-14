@@ -174,6 +174,7 @@ export async function resolveGoalsSnapshots(
       qualified: 0,
       meetings: 0,
       followUpsDone: 0,
+      relancesJournalisees: 0,
     };
     return {
       userId: m.id,

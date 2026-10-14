@@ -17,7 +17,10 @@ import { Badge } from "@/components/ui/badge";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { RelanceActions } from "@/components/crm/relance-actions";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
-import { outreachCountByOpportunityIds } from "@/lib/crm/follow-up-count";
+import {
+  outreachCountByOpportunityIds,
+  sumOutreachCounts,
+} from "@/lib/crm/follow-up-count";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Relances" };
@@ -121,7 +124,7 @@ function RelanceTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-200 text-left text-sm">
+          <table className="w-full min-w-200 text-center text-sm">
         <thead className="border-b border-msk-ink/[0.08] bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
           <tr>
             <th className="px-4 py-3 font-semibold">Entreprise</th>
@@ -131,7 +134,7 @@ function RelanceTable({
             <th className="px-4 py-3 font-semibold">À faire</th>
             <th className="px-4 py-3 font-semibold">Échéance</th>
             <th className="px-4 py-3 font-semibold">Suivi par</th>
-            <th className="px-4 py-3 text-right font-semibold">Actions</th>
+            <th className="px-4 py-3 font-semibold">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-msk-ink/[0.06]">
@@ -201,6 +204,7 @@ function RelanceTable({
                   {t.opportunity ? (
                     <RelanceCountBadge
                       count={outreachMap.get(t.opportunity.id) ?? 0}
+                      compact
                     />
                   ) : (
                     "—"
@@ -289,6 +293,7 @@ export default async function CrmRelancesPage({
       .map((t) => t.opportunity?.id)
       .filter((id): id is string => Boolean(id)),
   );
+  const relancesFaites = sumOutreachCounts(outreachMap);
 
   const now = new Date();
   const sod = startOfDay(now);
@@ -371,7 +376,7 @@ export default async function CrmRelancesPage({
         ]}
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <KpiRadial
           label="En retard"
           value={overdue.length}
@@ -392,6 +397,11 @@ export default async function CrmRelancesPage({
           label="À faire"
           value={tasks.length}
           hint={tasks.length === 0 ? "à jour" : "ouvertes"}
+        />
+        <KpiRadial
+          label="Relances faites"
+          value={relancesFaites}
+          hint="historique sur ces dossiers"
         />
       </div>
 

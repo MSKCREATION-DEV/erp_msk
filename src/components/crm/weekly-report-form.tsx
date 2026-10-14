@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import type { WeekStats } from "@/lib/crm/week-stats";
 
+/** Champs éditables du rapport saisi — `relancesJournalisees` est dérivé (KPI auto). */
 const FIELDS: { key: keyof WeekStats; label: string }[] = [
   { key: "newProspects", label: "Nouveaux prospects" },
   { key: "firstContacts", label: "Premiers contacts" },
@@ -16,7 +17,7 @@ const FIELDS: { key: keyof WeekStats; label: string }[] = [
   { key: "inDiscussion", label: "En discussion (stock)" },
   { key: "qualified", label: "Qualifiés (stock)" },
   { key: "meetings", label: "RDV" },
-  { key: "followUpsDone", label: "Relances faites" },
+  { key: "followUpsDone", label: "Tâches relance clôturées" },
 ];
 
 export function WeeklyReportForm({
