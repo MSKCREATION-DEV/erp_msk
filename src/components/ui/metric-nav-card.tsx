@@ -35,6 +35,9 @@ export type MetricNavCardProps = {
   /** Bloc bas (KPI texte ou mini-chart) — aligné à droite. */
   footer?: ReactNode;
   className?: string;
+  /** Carte visible mais non cliquable (module gelé). */
+  gated?: boolean;
+  gatedHint?: string;
 };
 
 /**
@@ -49,40 +52,77 @@ export function MetricNavCard({
   description,
   footer,
   className,
+  gated = false,
+  gatedHint,
 }: MetricNavCardProps) {
-  return (
-    <Link
-      prefetch={false}
-      href={href}
-      className={cn(shellClass, className)}
-    >
+  const body = (
+    <>
       <div className="flex items-center gap-3">
         <span
           className={cn(
             "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-            METRIC_NAV_TONE_ICON[tone],
+            gated
+              ? "bg-msk-ink/[0.04] text-msk-ink/35"
+              : METRIC_NAV_TONE_ICON[tone],
           )}
         >
           <Icon className="h-5 w-5" aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-base font-semibold leading-tight text-msk-ink">
+          <h3
+            className={cn(
+              "truncate text-base font-semibold leading-tight",
+              gated ? "text-msk-ink/45" : "text-msk-ink",
+            )}
+          >
             {title}
           </h3>
-          <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-msk-ink/50">
-            {description}
+          <p
+            className={cn(
+              "mt-0.5 line-clamp-2 text-[13px] leading-snug",
+              gated ? "text-msk-ink/35" : "text-msk-ink/50",
+            )}
+          >
+            {gated && gatedHint ? gatedHint : description}
           </p>
         </div>
-        <ArrowRight
-          className="h-4 w-4 shrink-0 text-msk-blue/55 transition group-hover:translate-x-0.5 group-hover:text-msk-blue"
-          aria-hidden
-        />
+        {gated ? (
+          <span className="shrink-0 rounded-md border border-msk-ink/10 bg-msk-chalk/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-msk-ink/40">
+            Bientôt
+          </span>
+        ) : (
+          <ArrowRight
+            className="h-4 w-4 shrink-0 text-msk-blue/55 transition group-hover:translate-x-0.5 group-hover:text-msk-blue"
+            aria-hidden
+          />
+        )}
       </div>
-      {footer ? (
+      {footer && !gated ? (
         <div className="mt-auto flex justify-end pt-3">{footer}</div>
       ) : (
         <div className="mt-auto" aria-hidden />
       )}
+    </>
+  );
+
+  if (gated) {
+    return (
+      <div
+        aria-disabled="true"
+        className={cn(
+          shellClass,
+          "cursor-not-allowed opacity-70 shadow-none hover:border-msk-ink/[0.08] hover:shadow-none",
+          className,
+        )}
+      >
+        {body}
+      </div>
+    );
+  }
+
+  return (
+    <Link prefetch={false} href={href} className={cn(shellClass, className)}>
+      {body}
     </Link>
   );
 }

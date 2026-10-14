@@ -10,9 +10,10 @@ import {
   ClientForm,
   type ClientFormInitial,
 } from "@/components/commercial/client-form";
+import { COM_DOCS_GATED } from "@/lib/commercial/gates";
 
 /**
- * Actions fiche client — Modifier (modal) · Nouveau devis.
+ * Actions fiche client — Modifier (modal) · Nouveau devis (si non gelé).
  */
 export function ClientDetailActions({
   clientId,
@@ -27,8 +28,9 @@ export function ClientDetailActions({
 }) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
+  const showNewQuote = canCreateQuote && !COM_DOCS_GATED;
 
-  if (!canEdit && !canCreateQuote) return null;
+  if (!canEdit && !showNewQuote) return null;
 
   return (
     <>
@@ -44,7 +46,7 @@ export function ClientDetailActions({
             Modifier
           </Button>
         ) : null}
-        {canCreateQuote ? (
+        {showNewQuote ? (
           <ActionLink
             href={`/commercial/devis/nouveau?clientId=${clientId}`}
             icon={FilePlus2}

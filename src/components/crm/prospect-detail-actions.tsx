@@ -11,6 +11,7 @@ import {
   ProspectQuoteCta,
 } from "@/components/crm/prospect-quote-cta";
 import type { QuotePrefillLine } from "@/components/commercial/quote-form";
+import { COM_DOCS_GATED } from "@/lib/commercial/gates";
 
 type OfferOpt = {
   id: string;
@@ -60,7 +61,14 @@ export function ProspectDetailActions({
   const [stageOpen, setStageOpen] = useState(false);
   const [activityOpen, setActivityOpen] = useState(false);
 
-  if (!canEditStage && !canLogActivity && !quote?.canCreateQuote) return null;
+  const showQuoteCta = Boolean(
+    quote &&
+      (COM_DOCS_GATED
+        ? quote.canManageClients || quote.existingClientId
+        : quote.canCreateQuote),
+  );
+
+  if (!canEditStage && !canLogActivity && !showQuoteCta) return null;
 
   return (
     <>
@@ -86,7 +94,7 @@ export function ProspectDetailActions({
             Enregistrer une action
           </Button>
         ) : null}
-        {quote ? (
+        {showQuoteCta && quote ? (
           <ProspectQuoteCta
             opportunityId={opportunityId}
             stage={stage}

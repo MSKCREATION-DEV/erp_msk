@@ -1,3 +1,8 @@
+import {
+  COM_DOCS_GATED,
+  COM_DOCS_GATED_MESSAGE,
+} from "@/lib/commercial/gates";
+
 /**
  * Modules du hub Commercial — sections métier (proposition v2 + charte MSK).
  */
@@ -12,6 +17,9 @@ export type CommercialModule = {
   /** Accent MSK (pas de violet). */
   tone: "blue" | "coral" | "cyan" | "ink";
   permission?: string;
+  /** Visible grisé, non navigable (ex. devis/facture Direction 13/10). */
+  gated?: boolean;
+  gatedHint?: string;
 };
 
 /** Ordre d’affichage : Pilotage d’abord. */
@@ -118,6 +126,8 @@ export const COMMERCIAL_MODULES: CommercialModule[] = [
     section: "vente",
     tone: "cyan",
     permission: "com.access",
+    gated: COM_DOCS_GATED,
+    gatedHint: COM_DOCS_GATED_MESSAGE,
   },
   {
     id: "factures",
@@ -127,6 +137,8 @@ export const COMMERCIAL_MODULES: CommercialModule[] = [
     section: "vente",
     tone: "cyan",
     permission: "com.access",
+    gated: COM_DOCS_GATED,
+    gatedHint: COM_DOCS_GATED_MESSAGE,
   },
   {
     id: "clients",

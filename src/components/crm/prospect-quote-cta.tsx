@@ -3,9 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { CrmPipelineStage } from "@prisma/client";
-import { FileSpreadsheet, GitBranch } from "lucide-react";
+import { FileSpreadsheet, GitBranch, UserCheck } from "lucide-react";
 import {
   convertOpportunityToClientAction,
+  convertOpportunityToClientRedirectAction,
   generateQuotePdfAction,
 } from "@/actions/commercial";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,10 @@ import {
 } from "@/components/commercial/quote-form";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { STAGE_LABELS } from "@/lib/crm/labels";
+import {
+  COM_DOCS_GATED,
+  COM_DOCS_GATED_HINT,
+} from "@/lib/commercial/gates";
 
 type OfferOpt = {
   id: string;
@@ -32,13 +37,201 @@ type ClientOpt = {
   includeTravelDefault: boolean;
 };
 
+const CONVERTIBLE = new Set(["INTERESSE", "DEVIS_ENVOYE", "GAGNE"]);
+
 /**
- * CTA devis sur fiche prospect :
- * - hors Intéressé → info (pas de création)
- * - Intéressé sans devis → modal création
- * - devis déjà existant → lien vers la fiche devis
+ * CTA commercial sur fiche prospect :
+ * - si devis gelés (Direction) → Transformer en client / Voir le client
+ * - sinon → flux devis (Intéressé → modal création)
  */
 export function ProspectQuoteCta({
+  opportunityId,
+  stage,
+  existingQuoteId,
+  existingClientId,
+  canCreateQuote,
+  canManageClients,
+  canOpenStage,
+  onOpenStage,
+  clients,
+  offers,
+  initialLines,
+  defaultObject,
+}: {
+  opportunityId: string;
+  stage: CrmPipelineStage;
+  existingQuoteId?: string | null;
+  existingClientId?: string | null;
+  canCreateQuote: boolean;
+  canManageClients: boolean;
+  canOpenStage?: boolean;
+  onOpenStage?: () => void;
+  clients: ClientOpt[];
+  offers: OfferOpt[];
+  initialLines?: QuotePrefillLine[];
+  defaultObject?: string;
+}) {
+  if (COM_DOCS_GATED) {
+    return (
+      <ProspectConvertCta
+        opportunityId={opportunityId}
+        stage={stage}
+        existingClientId={existingClientId}
+        canManageClients={canManageClients}
+        canOpenStage={canOpenStage}
+        onOpenStage={onOpenStage}
+      />
+    );
+  }
+
+  return (
+    <ProspectDevisCta
+      opportunityId={opportunityId}
+      stage={stage}
+      existingQuoteId={existingQuoteId}
+      existingClientId={existingClientId}
+      canCreateQuote={canCreateQuote}
+      canManageClients={canManageClients}
+      canOpenStage={canOpenStage}
+      onOpenStage={onOpenStage}
+      clients={clients}
+      offers={offers}
+      initialLines={initialLines}
+      defaultObject={defaultObject}
+    />
+  );
+}
+
+function ProspectConvertCta({
+  opportunityId,
+  stage,
+  existingClientId,
+  canManageClients,
+  canOpenStage,
+  onOpenStage,
+}: {
+  opportunityId: string;
+  stage: CrmPipelineStage;
+  existingClientId?: string | null;
+  canManageClients: boolean;
+  canOpenStage?: boolean;
+  onOpenStage?: () => void;
+}) {
+  const { pending, run } = usePendingAction();
+  const [blockedOpen, setBlockedOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const uiStage = stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage;
+  const canConvert = CONVERTIBLE.has(uiStage);
+
+  if (existingClientId) {
+    return (
+      <ActionLink
+        href={`/commercial/clients/${existingClientId}`}
+        icon={UserCheck}
+        variant="secondary"
+      >
+        Voir le client
+      </ActionLink>
+    );
+  }
+
+  if (!canManageClients) return null;
+
+  return (
+    <>
+      <Button
+        type="button"
+        size="sm"
+        disabled={pending}
+        onClick={() => {
+          if (!canConvert) {
+            setBlockedOpen(true);
+            return;
+          }
+          setError(null);
+          void run(async () => {
+            const fd = new FormData();
+            fd.set("opportunityId", opportunityId);
+            const res = await convertOpportunityToClientRedirectAction(fd);
+            if (res && !res.ok) {
+              setError(res.error ?? "Impossible de créer le client");
+              setBlockedOpen(true);
+            }
+          });
+        }}
+      >
+        <UserCheck className="h-4 w-4" aria-hidden />
+        {pending ? "Conversion…" : "Transformer en client"}
+      </Button>
+
+      <Modal
+        open={blockedOpen}
+        onOpenChange={setBlockedOpen}
+        title={
+          canConvert ? "Conversion impossible" : "Statut Intéressé requis"
+        }
+        description={
+          canConvert
+            ? undefined
+            : "La conversion client démarre au statut Intéressé."
+        }
+        size="md"
+        footer={
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setBlockedOpen(false)}
+            >
+              Fermer
+            </Button>
+            {!canConvert && canOpenStage && onOpenStage ? (
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  setBlockedOpen(false);
+                  onOpenStage();
+                }}
+              >
+                <GitBranch className="h-4 w-4" aria-hidden />
+                Changer le statut
+              </Button>
+            ) : null}
+          </div>
+        }
+      >
+        <div className="space-y-3 p-5 text-sm text-msk-ink/75">
+          {!canConvert ? (
+            <>
+              <p>
+                Statut actuel :{" "}
+                <span className="font-semibold text-msk-ink">
+                  {STAGE_LABELS[stage]}
+                </span>
+                .
+              </p>
+              <p>
+                Passez le prospect en <strong>Intéressé</strong>, puis
+                transformez-le en client depuis cette fiche.
+              </p>
+              <p className="text-xs text-msk-ink/45">{COM_DOCS_GATED_HINT}</p>
+            </>
+          ) : null}
+          {error ? (
+            <p className="rounded-lg border border-msk-coral/25 bg-msk-coral/5 px-3 py-2 text-msk-coral">
+              {error}
+            </p>
+          ) : null}
+        </div>
+      </Modal>
+    </>
+  );
+}
+
+function ProspectDevisCta({
   opportunityId,
   stage,
   existingQuoteId,
@@ -218,8 +411,6 @@ export function ProspectQuoteCta({
               defaultObject={defaultObject}
               onCancel={() => setCreateOpen(false)}
               onSuccess={async (quoteId) => {
-                // Devis déjà créé : fermer + refresh même si PDF échoue
-                // (évite de retenter create → « Un devis existe déjà »).
                 setCreateOpen(false);
                 const fd = new FormData();
                 fd.set("quoteId", quoteId);

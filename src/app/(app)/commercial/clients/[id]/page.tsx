@@ -25,6 +25,10 @@ import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 import { ClientDetailActions } from "@/components/commercial/client-detail-actions";
+import {
+  COM_DOCS_GATED,
+  COM_DOCS_GATED_HINT,
+} from "@/lib/commercial/gates";
 
 export const metadata: Metadata = { title: "Fiche client" };
 
@@ -269,7 +273,7 @@ export default async function CommercialClientDetailPage({
           <Section
             title="Devis récents"
             action={
-              canCreateQuote ? (
+              canCreateQuote && !COM_DOCS_GATED ? (
                 <Link
                   prefetch={false}
                   href={`/commercial/devis/nouveau?clientId=${client.id}`}
@@ -280,7 +284,12 @@ export default async function CommercialClientDetailPage({
               ) : null
             }
           >
-            {client.quotes.length === 0 ? (
+            {COM_DOCS_GATED ? (
+              <div className="rounded-2xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-8 text-center">
+                <p className="text-sm text-msk-ink/50">Devis temporairement gelés</p>
+                <p className="mt-1 text-xs text-msk-ink/40">{COM_DOCS_GATED_HINT}</p>
+              </div>
+            ) : client.quotes.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-8 text-center">
                 <p className="text-sm text-msk-ink/50">Aucun devis</p>
                 <p className="mt-1 text-xs text-msk-ink/40">
@@ -331,7 +340,12 @@ export default async function CommercialClientDetailPage({
 
         <div className="lg:col-span-4">
           <Section title="Factures récentes">
-            {client.invoices.length === 0 ? (
+            {COM_DOCS_GATED ? (
+              <div className="rounded-2xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-8 text-center">
+                <p className="text-sm text-msk-ink/50">Factures temporairement gelées</p>
+                <p className="mt-1 text-xs text-msk-ink/40">{COM_DOCS_GATED_HINT}</p>
+              </div>
+            ) : client.invoices.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-8 text-center">
                 <p className="text-sm text-msk-ink/50">Aucune facture</p>
                 <p className="mt-1 text-xs text-msk-ink/40">

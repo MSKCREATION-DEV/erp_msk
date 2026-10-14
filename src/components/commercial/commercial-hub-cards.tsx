@@ -87,8 +87,12 @@ function ModuleCard({
       tone={module.tone}
       title={module.title}
       description={module.description}
+      gated={module.gated}
+      gatedHint={module.gatedHint}
       footer={
-        kpi ? <MetricNavKpi value={kpi.value} hint={kpi.hint} /> : undefined
+        kpi && !module.gated ? (
+          <MetricNavKpi value={kpi.value} hint={kpi.hint} />
+        ) : undefined
       }
     />
   );

@@ -37,6 +37,10 @@ import { ProspectDetailActions } from "@/components/crm/prospect-detail-actions"
 import { OriginChip } from "@/components/crm/origin-chip";
 import { OfferConfigBadges } from "@/components/crm/offer-config-badges";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
+import {
+  COM_DOCS_GATED,
+  COM_DOCS_GATED_HINT,
+} from "@/lib/commercial/gates";
 import { cn } from "@/lib/utils";
 
 const SCRIPT_CHANNELS = new Set([
@@ -717,7 +721,18 @@ export default async function CrmProspectDetailPage({
 
         <div className="xl:col-span-6">
           <Section title="Devis & factures">
-            {deal.comQuotes.length === 0 ? (
+            {COM_DOCS_GATED ? (
+              <div className="rounded-xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-6 text-center">
+                <p className="text-sm text-msk-ink/50">
+                  Devis et factures temporairement gelés
+                </p>
+                <p className="mt-1 text-xs text-msk-ink/40">{COM_DOCS_GATED_HINT}</p>
+                <p className="mt-2 text-xs text-msk-ink/45">
+                  Utilisez « Transformer en client » dès le statut{" "}
+                  <strong>Intéressé</strong>.
+                </p>
+              </div>
+            ) : deal.comQuotes.length === 0 ? (
               <div className="rounded-xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-6 text-center">
                 <p className="text-sm text-msk-ink/50">
                   Aucun devis lié à ce prospect.

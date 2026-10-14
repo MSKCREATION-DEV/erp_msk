@@ -33,6 +33,10 @@ import { uploadGedObject } from "@/lib/ged/storage";
 import { getSignaturePngBytes } from "@/lib/signatures/resolve";
 import { formatDateFr } from "@/lib/pdf/winansi";
 import type { ActionResult } from "@/actions/auth";
+import {
+  COM_DOCS_GATED,
+  COM_DOCS_GATED_MESSAGE,
+} from "@/lib/commercial/gates";
 
 const regimeSchema = z.nativeEnum(ComDocRegime);
 const paymentMethodSchema = z.nativeEnum(ComPaymentMethod);
@@ -346,9 +350,21 @@ export async function convertOpportunityToClientAction(
   return { ok: true, message: "Client créé depuis le CRM", clientId: client.id };
 }
 
+/** Conversion + redirect fiche client (CTA « Transformer en client »). */
+export async function convertOpportunityToClientRedirectAction(
+  formData: FormData,
+): Promise<ActionResult & { clientId?: string }> {
+  const res = await convertOpportunityToClientAction(formData);
+  if (!res.ok || !res.clientId) return res;
+  redirect(`/commercial/clients/${res.clientId}`);
+}
+
 export async function createQuoteAction(
   formData: FormData,
 ): Promise<ActionResult & { quoteId?: string }> {
+  if (COM_DOCS_GATED) {
+    return { ok: false, error: COM_DOCS_GATED_MESSAGE };
+  }
   const actor = await requireUser({ permission: "com.devis.create" });
 
   /** Modal fiche prospect : retour JSON (pas de redirect App Router). */
@@ -816,6 +832,9 @@ export async function generateQuotePdfAction(
 export async function createInvoiceFromQuoteAction(
   formData: FormData,
 ): Promise<ActionResult & { invoiceId?: string }> {
+  if (COM_DOCS_GATED) {
+    return { ok: false, error: COM_DOCS_GATED_MESSAGE };
+  }
   const actor = await requireUser({ permission: "com.factures.create" });
   const quoteId = String(formData.get("quoteId") ?? "").trim();
   if (!quoteId) return { ok: false, error: "Devis manquant" };

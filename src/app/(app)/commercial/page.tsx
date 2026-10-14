@@ -13,6 +13,7 @@ import { dealOwnerScopeWhere } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
 import { COMMERCIAL_MODULES } from "@/lib/commercial/modules";
 import { canSeeCrmTeamView } from "@/lib/commercial/nav";
+import { COM_DOCS_GATED } from "@/lib/commercial/gates";
 import { CommercialHubGrid } from "@/components/commercial/commercial-hub-cards";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -126,7 +127,7 @@ export default async function CommercialHubPage() {
                 + Nouveau prospect
               </Link>
             ) : null}
-            {canCreateQuote ? (
+            {canCreateQuote && !COM_DOCS_GATED ? (
               <Link
                 prefetch={false}
                 href="/commercial/devis/nouveau"

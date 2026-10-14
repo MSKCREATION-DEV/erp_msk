@@ -1,6 +1,7 @@
 import type { SessionUser } from "@/lib/rbac/resolve";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { crmVisibility } from "@/lib/crm/scope";
+import { COM_DOCS_GATED } from "@/lib/commercial/gates";
 import type { CommercialSubnavItem } from "@/components/commercial/commercial-subnav";
 
 /** Vue Équipe : lead / manager — pas les collabs « own only ». */
@@ -41,8 +42,10 @@ export function commercialNavItems(user: SessionUser): CommercialSubnavItem[] {
   }
   if (canCom) {
     items.push({ href: "/commercial/clients", label: "Clients" });
-    items.push({ href: "/commercial/devis", label: "Devis" });
-    items.push({ href: "/commercial/factures", label: "Factures" });
+    if (!COM_DOCS_GATED) {
+      items.push({ href: "/commercial/devis", label: "Devis" });
+      items.push({ href: "/commercial/factures", label: "Factures" });
+    }
   }
   if (canCatalogue) {
     items.push({
