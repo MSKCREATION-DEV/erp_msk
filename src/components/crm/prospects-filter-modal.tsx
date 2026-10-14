@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,48 @@ type DateMode = "none" | "exact" | "range";
 /** Statuts filtrables — Client exclu (dossier côté Clients). */
 const FILTER_STAGES = STAGE_ORDER.filter((s) => s !== "GAGNE");
 
+function dateModeFromParams(sp: URLSearchParams): DateMode {
+  if (sp.get("on")) return "exact";
+  if (sp.get("from") || sp.get("to")) return "range";
+  return "none";
+}
+
+/**
+ * Compteur Filtrer — source de vérité = URL.
+ * `owner` est exclu : géré par le bandeau Focus (sinon Filtrer (1) sticky après croix).
+ */
+function countActiveFilters(sp: URLSearchParams): number {
+  const stages =
+    sp
+      .get("stages")
+      ?.split(",")
+      .filter((s) => s && s !== "GAGNE") ?? [];
+  const mode = dateModeFromParams(sp);
+  return [
+    stages.length > 0,
+    Boolean(sp.get("source")),
+    mode === "exact" ? Boolean(sp.get("on")) : mode === "range" && (Boolean(sp.get("from")) || Boolean(sp.get("to"))),
+    sp.get("late") === "1",
+  ].filter(Boolean).length;
+}
+
+function stateFromSearchParams(sp: URLSearchParams) {
+  return {
+    stages:
+      sp
+        .get("stages")
+        ?.split(",")
+        .filter((s) => s && s !== "GAGNE") ?? [],
+    source: sp.get("source") || null,
+    ownerId: sp.get("owner") || null,
+    dateMode: dateModeFromParams(sp),
+    on: sp.get("on") ?? "",
+    from: sp.get("from") ?? "",
+    to: sp.get("to") ?? "",
+    late: sp.get("late") === "1",
+  };
+}
+
 /** Filtres structurés — la recherche texte reste dans `ListSearchForm` (`?q=`). */
 export function ProspectsFilterButton({
   owners,
@@ -30,41 +72,33 @@ export function ProspectsFilterButton({
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
 
-  const initialOn = sp.get("on") ?? "";
-  const initialFrom = sp.get("from") ?? "";
-  const initialTo = sp.get("to") ?? "";
-  const initialMode: DateMode = initialOn
-    ? "exact"
-    : initialFrom || initialTo
-      ? "range"
-      : "none";
+  const initial = stateFromSearchParams(sp);
+  const [stages, setStages] = useState<string[]>(initial.stages);
+  const [source, setSource] = useState<string | null>(initial.source);
+  const [ownerId, setOwnerId] = useState<string | null>(initial.ownerId);
+  const [dateMode, setDateMode] = useState<DateMode>(initial.dateMode);
+  const [on, setOn] = useState(initial.on);
+  const [from, setFrom] = useState(initial.from);
+  const [to, setTo] = useState(initial.to);
+  const [late, setLate] = useState(initial.late);
 
-  const [stages, setStages] = useState<string[]>(
-    () =>
-      sp
-        .get("stages")
-        ?.split(",")
-        .filter((s) => s && s !== "GAGNE") ?? [],
-  );
-  const [source, setSource] = useState<string | null>(
-    () => sp.get("source") || null,
-  );
-  const [ownerId, setOwnerId] = useState<string | null>(
-    () => sp.get("owner") || null,
-  );
-  const [dateMode, setDateMode] = useState<DateMode>(initialMode);
-  const [on, setOn] = useState(initialOn);
-  const [from, setFrom] = useState(initialFrom);
-  const [to, setTo] = useState(initialTo);
-  const [late, setLate] = useState(() => sp.get("late") === "1");
+  const qsKey = sp.toString();
 
-  const activeCount = [
-    stages.length > 0,
-    Boolean(source),
-    Boolean(ownerId),
-    dateMode === "exact" ? Boolean(on) : dateMode === "range" && (Boolean(from) || Boolean(to)),
-    late,
-  ].filter(Boolean).length;
+  /** Sync état local ↔ URL (croix focus, Effacer, navigation arrière). */
+  useEffect(() => {
+    const next = stateFromSearchParams(sp);
+    setStages(next.stages);
+    setSource(next.source);
+    setOwnerId(next.ownerId);
+    setDateMode(next.dateMode);
+    setOn(next.on);
+    setFrom(next.from);
+    setTo(next.to);
+    setLate(next.late);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- qsKey = snapshot URL
+  }, [qsKey]);
+
+  const activeCount = countActiveFilters(sp);
 
   function apply() {
     const params = new URLSearchParams();

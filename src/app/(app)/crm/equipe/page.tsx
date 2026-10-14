@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { FileText, FolderOpen, Target, Users } from "lucide-react";
+import { FileText, FolderOpen, Users } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -54,8 +54,6 @@ export default async function CrmEquipePage({
   if (vis === "own") redirect("/crm/prospects");
 
   const sp = await searchParams;
-  const canManageGoals =
-    user.isSuperAdmin || hasPermission(user, "crm.reports.global");
 
   const teamIds = await commercialTeamUserIds();
   const weekStart = weekStartMonday();
@@ -144,24 +142,12 @@ export default async function CrmEquipePage({
         title="Vue Équipe"
         description={
           filteredName
-            ? `${filteredName} — prospects, objectifs et accès rapides.`
-            : "Cliquez le nom d’une carte pour voir un collaborateur. Objectifs, rapport et prospects suivent le même filtre."
+            ? `${filteredName} — prospects, rapport et accès rapides.`
+            : "Cliquez le nom d’une carte pour voir un collaborateur. Rapport et prospects suivent le même filtre."
         }
         backHref="/commercial"
         backLabel="Retour Menu"
         breadcrumbs={[{ label: "Commercial", href: "/commercial" }]}
-        actions={
-          /** Pas d’Objectifs en en-tête quand un collab est déjà en focus. */
-          canManageGoals && !filterOwner ? (
-            <ActionLink
-              href="/crm/objectifs"
-              icon={Target}
-              variant="secondary"
-            >
-              Objectifs
-            </ActionLink>
-          ) : null
-        }
       />
 
       {filterOwner && filteredName ? (
@@ -211,7 +197,6 @@ export default async function CrmEquipePage({
               }
               byStage={row.byStage}
               goals={goalByOwner.get(ownerId) ?? []}
-              canManageGoals={canManageGoals}
               focused={filterOwner === ownerId}
             />
           ))}
@@ -222,7 +207,7 @@ export default async function CrmEquipePage({
         <p className="flex items-center gap-1.5 text-xs text-msk-ink/40">
           <Users className="h-3.5 w-3.5" aria-hidden />
           Astuce : clic sur le nom d’une carte pour voir ce collaborateur —
-          Objectifs, Rapport et Prospects suivent le même filtre.
+          Rapport et Prospects suivent le même filtre.
         </p>
       ) : null}
     </PageShell>

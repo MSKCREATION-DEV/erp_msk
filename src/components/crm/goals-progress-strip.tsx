@@ -5,11 +5,11 @@ import { METRIC_NAV_TONE_CHART } from "@/components/ui/metric-nav-card";
 import type { GoalProgressItem } from "@/lib/crm/goals";
 import { cn } from "@/lib/utils";
 
-/** Bandeau minimal objectifs (dashboard) — détail sur /crm/objectifs. */
+/** Bandeau minimal objectifs (dashboard) — lien détail optionnel. */
 export function GoalsProgressStrip({
   progress,
   title = "Objectifs semaine",
-  detailHref = "/crm/objectifs",
+  detailHref,
   detailLabel = "Voir le détail",
   compact = false,
   /** Sans Surface (déjà dans une carte parent). */
@@ -17,6 +17,7 @@ export function GoalsProgressStrip({
 }: {
   progress: GoalProgressItem[];
   title?: string;
+  /** Si omis : pas de CTA (ex. Vue Équipe). */
   detailHref?: string;
   detailLabel?: string;
   compact?: boolean;
@@ -28,13 +29,15 @@ export function GoalsProgressStrip({
         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
           {title}
         </p>
-        <Link
-          prefetch={false}
-          href={detailHref}
-          className="text-sm font-medium text-msk-blue hover:underline"
-        >
-          {detailLabel}
-        </Link>
+        {detailHref ? (
+          <Link
+            prefetch={false}
+            href={detailHref}
+            className="text-sm font-medium text-msk-blue hover:underline"
+          >
+            {detailLabel}
+          </Link>
+        ) : null}
       </div>
       <div
         className={cn(

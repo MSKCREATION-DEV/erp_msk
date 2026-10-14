@@ -20,7 +20,6 @@ export function EquipeCollabCard({
   relancesFaites,
   byStage,
   goals,
-  canManageGoals,
   focused,
 }: {
   ownerId: string;
@@ -33,7 +32,6 @@ export function EquipeCollabCard({
   relancesFaites: number;
   byStage: Record<string, number>;
   goals: GoalProgressItem[];
-  canManageGoals: boolean;
   focused: boolean;
 }) {
   return (
@@ -94,12 +92,6 @@ export function EquipeCollabCard({
           title="Objectifs semaine"
           compact
           embedded
-          detailHref={
-            canManageGoals
-              ? `/crm/objectifs?collab=${ownerId}`
-              : `/crm/rapport-semaine?owner=${ownerId}`
-          }
-          detailLabel={canManageGoals ? "Ajuster" : "Rapport"}
         />
       ) : null}
 

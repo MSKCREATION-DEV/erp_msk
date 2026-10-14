@@ -317,13 +317,17 @@ export default async function CrmProspectsPage({
   delete listParams.vue;
   delete listParams.page;
 
+  /**
+   * Filtres « techniques » (hors focus collaborateur `owner`).
+   * Le focus a son propre bandeau + croix — ne pas le compter ici
+   * (sinon Filtrer/Effacer restent à 1 après retrait du focus côté client).
+   */
   const hasActiveFilters =
     stageFilterRaw.length > 0 ||
     sp.late === "1" ||
     sp.devisRetard === "1" ||
     Boolean(qTrim) ||
     Boolean(sp.source) ||
-    Boolean(sp.owner) ||
     Boolean(sp.from) ||
     Boolean(sp.to) ||
     Boolean(sp.on) ||
@@ -451,7 +455,11 @@ export default async function CrmProspectsPage({
               ) : null}
               <Link
                 prefetch={false}
-                href="/crm/prospects"
+                href={
+                  sp.owner
+                    ? `/crm/prospects?owner=${encodeURIComponent(sp.owner)}`
+                    : "/crm/prospects"
+                }
                 className="ml-1 text-xs font-medium text-msk-blue hover:underline"
               >
                 Effacer
