@@ -265,6 +265,232 @@ export async function createProspectAction(
   redirect(`/crm/prospects/${deal.id}`);
 }
 
+const updateProspectSchema = z
+  .object({
+    opportunityId: z.string().min(8).max(40),
+    orgName: z
+      .string()
+      .trim()
+      .min(1, "Entreprise obligatoire")
+      .max(200, "Nom d’entreprise trop long"),
+    contactFirst: z
+      .string()
+      .trim()
+      .min(1, "Prénom du contact obligatoire")
+      .max(100),
+    contactLast: z.string().trim().max(100).optional().default(""),
+    source: sourceSchema,
+    phone: z.string().trim().max(40).optional().default(""),
+    email: z
+      .string()
+      .trim()
+      .max(200)
+      .optional()
+      .default("")
+      .refine(
+        (v) => !v || z.string().email().safeParse(v).success,
+        "E-mail invalide",
+      ),
+    jobTitle: z.string().trim().max(120).optional().default(""),
+    sector: z.string().trim().max(120).optional().default(""),
+    city: z.string().trim().max(120).optional().default(""),
+    country: z.string().trim().max(4).optional().default("ML"),
+    website: z.string().trim().max(300).optional().default(""),
+    budgetXof: z.string().trim().optional().default(""),
+    nextAction: z.string().trim().max(300).optional().default(""),
+    followUpAt: z.string().trim().optional().default(""),
+    notes: z.string().trim().max(4000).optional().default(""),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.phone && !data.email) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Téléphone ou e-mail obligatoire",
+        path: ["phone"],
+      });
+    }
+    if (data.nextAction && !data.followUpAt) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "GUIDE : date de relance obligatoire si une prochaine action est renseignée.",
+        path: ["followUpAt"],
+      });
+    }
+    if (data.followUpAt) {
+      const d = new Date(data.followUpAt);
+      if (Number.isNaN(d.getTime())) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Date de relance invalide",
+          path: ["followUpAt"],
+        });
+      }
+    }
+  });
+
+function canEditProspectDeal(actor: SessionUser, ownerId: string): boolean {
+  if (actor.isSuperAdmin) return true;
+  if (!hasPermission(actor, "crm.prospect.edit_own")) return false;
+  return (
+    ownerId === actor.id ||
+    hasPermission(actor, "crm.reassign") ||
+    hasPermission(actor, "crm.view_team") ||
+    hasPermission(actor, "crm.reports.global")
+  );
+}
+
+/**
+ * LOT-C — édition identité / contact primaire / suivi (pas multi-contacts ni offres).
+ * Ne synchronise pas un ComClient déjà lié.
+ */
+export async function updateProspectAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.prospect.edit_own" });
+
+  const sourceRaw = fdString(formData, "source").trim();
+  const parsed = updateProspectSchema.safeParse({
+    opportunityId: fdString(formData, "opportunityId"),
+    orgName: fdString(formData, "orgName"),
+    contactFirst: fdString(formData, "contactFirst"),
+    contactLast: fdString(formData, "contactLast"),
+    source: sourceRaw || undefined,
+    phone: fdString(formData, "phone"),
+    email: fdString(formData, "email"),
+    jobTitle: fdString(formData, "jobTitle"),
+    sector: fdString(formData, "sector"),
+    city: fdString(formData, "city"),
+    country: fdString(formData, "country") || "ML",
+    website: fdString(formData, "website"),
+    budgetXof: fdString(formData, "budgetXof"),
+    nextAction: fdString(formData, "nextAction"),
+    followUpAt: fdString(formData, "followUpAt"),
+    notes: fdString(formData, "notes"),
+  });
+
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    let message = issue?.message ?? "Données invalides";
+    if (issue?.path[0] === "source") message = "Origine obligatoire";
+    return { ok: false, error: message };
+  }
+
+  const data = parsed.data;
+  const deal = await prisma.crmOpportunity.findUnique({
+    where: { id: data.opportunityId },
+    include: {
+      organization: {
+        include: {
+          contacts: { where: { isPrimary: true }, take: 1 },
+        },
+      },
+    },
+  });
+  if (!deal) return { ok: false, error: "Prospect introuvable" };
+  if (!canEditProspectDeal(actor, deal.ownerId)) {
+    return { ok: false, error: "Pas le droit de modifier ce prospect" };
+  }
+
+  const budgetRaw = data.budgetXof.replace(/\s/g, "");
+  const budgetXof = budgetRaw ? Number.parseInt(budgetRaw, 10) : null;
+  const followUpAt = data.followUpAt ? new Date(data.followUpAt) : null;
+  const followUpOk =
+    followUpAt && !Number.isNaN(followUpAt.getTime()) ? followUpAt : null;
+  const primary = deal.organization.contacts[0];
+  const changed: string[] = [];
+
+  if (deal.organization.name !== data.orgName) changed.push("orgName");
+  if ((deal.organization.sector ?? "") !== data.sector) changed.push("sector");
+  if ((deal.organization.city ?? "") !== data.city) changed.push("city");
+  if (deal.organization.country !== (data.country || "ML")) changed.push("country");
+  if ((deal.organization.website ?? "") !== data.website) changed.push("website");
+  if ((deal.organization.notes ?? "") !== data.notes) changed.push("notes");
+  if (deal.organization.source !== data.source) changed.push("source");
+  if ((deal.budgetXof ?? null) !== (Number.isFinite(budgetXof) ? budgetXof : null)) {
+    changed.push("budgetXof");
+  }
+  if ((deal.nextAction ?? "") !== data.nextAction) changed.push("nextAction");
+  const prevFollow = deal.followUpAt?.toISOString().slice(0, 10) ?? "";
+  const nextFollow = followUpOk?.toISOString().slice(0, 10) ?? "";
+  if (prevFollow !== nextFollow) changed.push("followUpAt");
+  if (primary) {
+    if (primary.firstName !== data.contactFirst) changed.push("contactFirst");
+    if ((primary.lastName ?? "") !== data.contactLast) changed.push("contactLast");
+    if ((primary.jobTitle ?? "") !== data.jobTitle) changed.push("jobTitle");
+    if ((primary.phone ?? "") !== data.phone) changed.push("phone");
+    if ((primary.email ?? "") !== data.email) changed.push("email");
+  } else {
+    changed.push("contact");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.crmOrganization.update({
+      where: { id: deal.organizationId },
+      data: {
+        name: data.orgName,
+        normalizedName: normalizeOrgName(data.orgName),
+        sector: data.sector || null,
+        city: data.city || null,
+        country: data.country || "ML",
+        website: data.website || null,
+        source: data.source,
+        notes: data.notes || null,
+      },
+    });
+
+    if (primary) {
+      await tx.crmContact.update({
+        where: { id: primary.id },
+        data: {
+          firstName: data.contactFirst,
+          lastName: data.contactLast || "—",
+          jobTitle: data.jobTitle || null,
+          phone: data.phone || null,
+          email: data.email || null,
+        },
+      });
+    } else {
+      await tx.crmContact.create({
+        data: {
+          organizationId: deal.organizationId,
+          firstName: data.contactFirst,
+          lastName: data.contactLast || "—",
+          jobTitle: data.jobTitle || null,
+          phone: data.phone || null,
+          email: data.email || null,
+          isPrimary: true,
+        },
+      });
+    }
+
+    await tx.crmOpportunity.update({
+      where: { id: deal.id },
+      data: {
+        title:
+          deal.title === deal.organization.name ? data.orgName : deal.title,
+        source: data.source,
+        budgetXof: Number.isFinite(budgetXof) ? budgetXof : null,
+        nextAction: data.nextAction || null,
+        followUpAt: followUpOk,
+      },
+    });
+  });
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "crm.prospect.update",
+    entityType: "crm_opportunity",
+    entityId: deal.id,
+    metadata: { fields: changed },
+  });
+
+  revalidatePath("/crm");
+  revalidatePath("/crm/prospects");
+  revalidatePath(`/crm/prospects/${deal.id}`);
+  redirect(`/crm/prospects/${deal.id}`);
+}
+
 export async function updateOpportunityStageAction(
   formData: FormData,
 ): Promise<ActionResult> {

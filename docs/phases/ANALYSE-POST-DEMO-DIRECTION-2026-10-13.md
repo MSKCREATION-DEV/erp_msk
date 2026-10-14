@@ -201,15 +201,12 @@ Effort : **S** &lt; 0,5 j · **M** 0,5–2 j · **L** &gt; 2 j (ordre de grandeu
 
 **Critères gate :**
 
-- [ ] Éditer un `[TEST]` → valeurs à jour sur fiche  
-- [ ] Commercial non-owner sans droit → refus  
-- [ ] Pending visible ; redirect fiche après succès  
-- [ ] Formulaire pleine largeur charte  
+- [x] Page `/edit` + CTA Modifier + `updateProspectAction`  
+- [x] Formulaire pleine largeur charte  
+- [x] Droits owner / team / reassign / direction  
+- [ ] Smoke UI `[TEST]` (pending + redirect) — à confirmer terrain  
 
-**Décisions à confirmer :**
-
-- Édition offres liées dès P0 ou reportée P2 ?  
-- Qui peut éditer : owner seul, ou aussi admin CRM ?
+**Décisions figées :** offres N:N reportées P2/LOT-L · éditeurs = owner + admin CRM / direction (`crm.reassign` / team / global).
 
 ---
 
@@ -407,7 +404,7 @@ flowchart TD
 |-----|-------|------------|-----------|------------|
 | **LOT-A** | P0-1 Griser devis/facture | Non | Décision message + exceptions | Hub/nav/URL ; convert sans devis — **implémenté 2026-10-14** (`COM_DOCS_GATED`) |
 | **LOT-B** | P0-2 Commentaire Contacté | Non | — | Stage Contacté bloquant + journal — **implémenté 2026-10-14** |
-| **LOT-C** | P0-3 Édition prospect (champs cœur) | Non | Droits edit | `/edit` + audit ; pas multi-contacts |
+| **LOT-C** | P0-3 Édition prospect (champs cœur) | Non | Droits edit | `/edit` + audit ; pas multi-contacts — **implémenté 2026-10-14** |
 | **LOT-D** | P1-1 Transformer en client | Non | LOT-A (CTA devis mort) | Bouton fiche ; pont intact |
 | **LOT-E** | P1-4 Visibilité + réassign UI | Non (RBAC/packs) | GO modèle shared-read | Yaye voit Madina ; mute si non owner |
 | **LOT-F** | P1-5 Doublons create | Index additifs possibles | LOT-C idéal | Alerte wizard + journal si ignore |

@@ -8,6 +8,7 @@ import {
   Mail,
   MapPin,
   MessageSquareText,
+  Pencil,
   Phone,
   UserRound,
 } from "lucide-react";
@@ -237,11 +238,12 @@ export default async function CrmProspectDetailPage({
   }
 
   const canEdit =
-    hasPermission(user, "crm.prospect.edit_own") &&
-    (deal.ownerId === user.id ||
-      hasPermission(user, "crm.view_team") ||
-      hasPermission(user, "crm.reports.global") ||
-      user.isSuperAdmin);
+    user.isSuperAdmin ||
+    (hasPermission(user, "crm.prospect.edit_own") &&
+      (deal.ownerId === user.id ||
+        hasPermission(user, "crm.reassign") ||
+        hasPermission(user, "crm.view_team") ||
+        hasPermission(user, "crm.reports.global")));
 
   const linkedClient = await prisma.comClient.findFirst({
     where: {
@@ -374,6 +376,16 @@ export default async function CrmProspectDetailPage({
               <Badge tone="coral">TEST</Badge>
             ) : null}
             {overdue ? <Badge tone="coral">Relance en retard</Badge> : null}
+            {canEdit ? (
+              <Link
+                prefetch={false}
+                href={`/crm/prospects/${deal.id}/edit`}
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-msk-ink/15 bg-white px-3 text-sm font-medium text-msk-ink transition hover:bg-msk-chalk"
+              >
+                <Pencil className="h-3.5 w-3.5" aria-hidden />
+                Modifier
+              </Link>
+            ) : null}
             {hasPermission(user, "crm.scripts.view") ? (
               <Link
                 prefetch={false}

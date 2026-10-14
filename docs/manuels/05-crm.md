@@ -38,7 +38,7 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 ## Cycle prospect
 
 1. **Nouveau** `/crm/prospects/nouveau` (wizard)  
-2. Enrichir fiche (contacts, offres, journal, relance)  
+2. Enrichir fiche (contacts, offres, journal, relance) — **Modifier** via `/crm/prospects/[id]/edit`  
 3. Relances + scripts  
 4. Passage en **Contacté** : **canal + commentaire obligatoires** (comment on a contacté + ce qui a été dit, ou « pas de réponse ») → ligne créée dans le journal  
 5. Dès **Intéressé** → **Transformer en client** (devis gelés temporairement — Direction 13/10)  
@@ -62,7 +62,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
-| 2026-10-14 | LOT-B : commentaire + canal obligatoires au passage Contacté (journal auto) |
+| 2026-10-14 | LOT-C : édition prospect (page dédiée) ; LOT-B commentaire Contacté |
 | 2026-10-13 | Objectifs : dashboard tous collabs, page admin assignation, Vue Équipe enrichie, rapport reflète cibles |
 | 2026-10-13 | Tableau de bord : MetricNavCard, Conversion Signé/En cours, Répartition filtres URL |
 | 2026-10-12 | Menu / Tableau de bord / Vue Équipe / Rapport ; client dès Intéressé ; SLA 24h |

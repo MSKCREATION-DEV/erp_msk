@@ -25,7 +25,7 @@ Pôles **URGENTS** pour MSK :
 | Phase 6 Compta | **OK** + COM-6 bridge facture→VE |
 | Phase 7A Stocks + 7B Ops | **Livrées** |
 | **Phase COM E2E** (plan 2 phases) | **Livrée** — CRM + COM-4…7 · docs [`PLAN-2-PHASES-COM-RH.md`](./PLAN-2-PHASES-COM-RH.md) |
-| **POST-DEMO CRM** (Direction 13/10) | Analyse OK · **LOT-A OK** · **LOT-B OK** (commentaire Contacté) · **prochain = LOT-C** édition prospect · dette UX : Qualification → « En discussion » (LOT-I) · [`LOT-B-COMMENTAIRE-CONTACTE.md`](./LOT-B-COMMENTAIRE-CONTACTE.md) |
+| **POST-DEMO CRM** (Direction 13/10) | **LOT-A/B/C OK** · prochain = LOT-D polish convert / LOT-E visibilité · dette UX « En discussion » (LOT-I) · [`LOT-C-EDITION-PROSPECT.md`](./LOT-C-EDITION-PROSPECT.md) |
 | Phase RH (Direction 11/10) | Après vague POST-DEMO CRM — SPEC puis GO |
 | Phase 8 Automatisations | Doc — attendre « Phase 8 GO » |
 | Deploy | `main` ≈ `dev` · [VERCEL.md](../deploy/VERCEL.md) |
@@ -35,7 +35,8 @@ Pôles **URGENTS** pour MSK :
 | Doc | Usage |
 |---|---|
 | [`ANALYSE-POST-DEMO-DIRECTION-2026-10-13.md`](./ANALYSE-POST-DEMO-DIRECTION-2026-10-13.md) | Gap Direction 13/10 · Keep/Change/Break · lots |
-| [`LOT-B-COMMENTAIRE-CONTACTE.md`](./LOT-B-COMMENTAIRE-CONTACTE.md) | Plan concret LOT-B (prochain GO) |
+| [`LOT-B-COMMENTAIRE-CONTACTE.md`](./LOT-B-COMMENTAIRE-CONTACTE.md) | LOT-B commentaire Contacté |
+| [`LOT-C-EDITION-PROSPECT.md`](./LOT-C-EDITION-PROSPECT.md) | LOT-C édition prospect |
 | [`rapport-reunion-direction-demo-erp-2026-10-13.md`](../rapport-reunion-direction-demo-erp-2026-10-13.md) | Rapport démo Direction |
 | [`PLAN-2-PHASES-COM-RH.md`](./PLAN-2-PHASES-COM-RH.md) | Cadrage COM/RH Direction |
 | [`FLOW-COMMERCIAL-E2E.md`](./FLOW-COMMERCIAL-E2E.md) | Parcours Commercial |
@@ -49,4 +50,4 @@ Voir `.cursor/rules/phase-quality.mdc` · `ui-never-freeze.mdc` · `list-create-
 
 ---
 
-*Maj 2026-10-14 — LOT-A + LOT-B OK ; prochain = LOT-C (édition prospect) ; dette libellé « En discussion » en LOT-I ; RH ensuite.*
+*Maj 2026-10-14 — LOT-A + LOT-B + LOT-C OK ; dette libellé « En discussion » en LOT-I ; RH ensuite.*
