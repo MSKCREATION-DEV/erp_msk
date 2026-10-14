@@ -110,24 +110,6 @@ export default async function CrmAffectationsPage() {
         }
       />
 
-      <Surface className="space-y-3 p-5">
-        <div>
-          <h2 className="text-sm font-semibold text-msk-ink">
-            Affectation directe
-          </h2>
-          <p className="mt-1 text-xs text-msk-ink/50">
-            Direction, Admin CRM et profils habilités (`crm.reassign`) peuvent
-            confier n’importe quel prospect ouvert à un collaborateur commercial.
-          </p>
-        </div>
-        <AssignProspectForm
-          commercials={commercials}
-          prospects={prospectOpts}
-          triggerLabel="Choisir prospect et commercial"
-          triggerVariant="secondary"
-        />
-      </Surface>
-
       <Surface className="overflow-hidden p-0">
         <div className="border-b border-msk-ink/[0.06] bg-msk-chalk/40 px-4 py-2.5">
           <h2 className="text-sm font-semibold text-msk-ink">

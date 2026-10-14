@@ -4,7 +4,6 @@ import {
   FileText,
   FolderOpen,
   Settings2,
-  Target,
   Users,
   UserRound,
 } from "lucide-react";
@@ -102,7 +101,7 @@ export default async function CrmObjectifsPage({
       )
     : [];
 
-  /** Collab focus : pas de 2ᵉ « Vue d’ensemble » (le bandeau × suffit). */
+  /** Assignation globale / collab : retour via fil d’Ariane ou « Retour aux objectifs ». */
   const headerActions =
     canManage && mode === "synthese" ? (
       <div className="flex flex-wrap gap-2">
@@ -117,10 +116,6 @@ export default async function CrmObjectifsPage({
           Vue Équipe
         </ActionLink>
       </div>
-    ) : canManage && mode === "equipe" ? (
-      <ActionLink href="/crm/objectifs" icon={Target} variant="secondary">
-        Vue d’ensemble
-      </ActionLink>
     ) : null;
 
   const description =
