@@ -410,7 +410,7 @@ flowchart TD
 | **LOT-F** | P1-5 Doublons create | Index additifs possibles | LOT-C idéal | Alerte wizard + journal si ignore |
 | **LOT-G** | P1-3 Compteur relances | Non ou compteur dérivé | Définition métier | Badge N× fiche + dashboard |
 | **LOT-H** | P1-2 strate A `CLIENTS_SIGNED` | Non (metric string) | Définition « signé » | Objectif + progression semaine |
-| **LOT-I** | P2-7 Synthèse + P2-9 libellé « En discussion » + P2-2 labels + P2-4 secteurs (option) | Non ou constante | Après LOT-B | UX Direction claire |
+| **LOT-I** | P2-7 Synthèse + P2-9 « En discussion » + P2-2 + P2-4 | **OK** 2026-10-14 | Après LOT-B | UX Direction claire |
 | **LOT-J** | P1-2 strate B + P2-6 périodes | **Oui — Break** | Fiche §0bis + GO | Mois/année + compare |
 
 **Lots P2 reportés (après I ou parallèle) :**

@@ -24,6 +24,7 @@ import {
   ACTIVITY_LABELS,
   formatXof,
   SOURCE_LABELS,
+  STAGE_HINTS,
   STAGE_LABELS,
 } from "@/lib/crm/labels";
 import { isTestOrgName } from "@/lib/crm/test-data";
@@ -454,6 +455,12 @@ export default async function CrmProspectDetailPage({
         }
       />
 
+      {uiStage === "QUALIFICATION" && STAGE_HINTS.QUALIFICATION ? (
+        <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/[0.04] px-4 py-2.5 text-sm text-msk-ink/65">
+          {STAGE_HINTS.QUALIFICATION}
+        </p>
+      ) : null}
+
       {readOnlyShared ? (
         <Surface className="border border-msk-ink/10 bg-msk-chalk/50 px-5 py-3.5">
           <p className="text-sm font-semibold text-msk-ink">
@@ -645,16 +652,21 @@ export default async function CrmProspectDetailPage({
                 )}
               </li>
             </ul>
-            {deal.organization.notes ? (
-              <div className="mt-4 border-t border-msk-ink/[0.06] pt-4">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
-                  Notes
-                </p>
+            <div className="mt-4 border-t border-msk-ink/[0.06] pt-4">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                Résumé entreprise
+              </p>
+              {deal.organization.notes ? (
                 <p className="mt-1.5 whitespace-pre-wrap text-sm text-msk-ink/70">
                   {deal.organization.notes}
                 </p>
-              </div>
-            ) : null}
+              ) : (
+                <p className="mt-1.5 text-sm text-msk-ink/40">
+                  Aucun résumé — utile pour situer l’activité sans confondre avec
+                  le contact.
+                </p>
+              )}
+            </div>
           </Section>
         </div>
 

@@ -255,7 +255,7 @@ export default async function CrmRapportPage({
         <KpiRadial
           label="En échange"
           value={inExchange}
-          hint="Contacté + En qualification"
+          hint="Contacté + En discussion"
         />
         <KpiRadial
           label="Prêts à convertir"

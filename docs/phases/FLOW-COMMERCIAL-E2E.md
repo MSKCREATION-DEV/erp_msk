@@ -63,7 +63,7 @@ Pages réceptrices : bandeau **Focus collaborateur** quand un filtre est actif.
 
 Cascade technique (jamais en UI) : USER > TEAM > défauts. Édition = Direction uniquement.  
 **Interdit UI** : Portefeuille, pôle, TEAM/USER, focuser, « Paramétrer le pôle ».  
-Statuts : **En qualification** ≠ **Devis envoyé**.  
+Statuts : **En discussion** ≠ **Devis envoyé**.  
 Pending : `usePendingAction` / `useLinkStatus` / `GetFilterForm`.
 
 Sous-pages — `commercialNavItems` (`src/lib/commercial/nav.ts`) :

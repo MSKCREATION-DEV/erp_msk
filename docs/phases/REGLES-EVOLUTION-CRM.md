@@ -258,8 +258,8 @@ Si une case non → **ne pas merger**.
 **Périmètre mental :** « Commercial complet » = suivi **et** documentaire **et** prix **et** encaissement — un seul produit, une seule phase.
 
 **État (2026-10-12) :** Phase COMMERCIAL livrée (CRM-0…8 + UX + COM-4…7) sur `dev`/`main`.  
-**État (2026-10-14) :** Analyse post-démo — **LOT-A/B/C/D OK**. Dette UX : Qualification → « En discussion » (LOT-I).  
-**Prochaine étape :** GO **LOT-F** (doublons à la création) · dette **LOT-I** (« En discussion ») · **Phase RH** ensuite.
+**État (2026-10-14) :** Analyse post-démo — **LOT-A…E + I OK**.
+**Prochaine étape :** GO **LOT-F** (doublons à la création) · **Phase RH** ensuite.
 
 ---
 

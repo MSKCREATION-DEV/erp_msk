@@ -16,6 +16,12 @@ import { FormShell } from "@/components/ui/form-shell";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { SOURCE_LABELS } from "@/lib/crm/labels";
+import {
+  composeSectorValue,
+  CRM_SECTOR_OTHER,
+  resolveSectorSelection,
+  SECTOR_PICKER_OPTIONS,
+} from "@/lib/crm/sectors";
 
 const SOURCE_OPTIONS = (
   [
@@ -61,6 +67,11 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
   const { pending, run } = usePendingAction();
   const [error, setError] = useState<string | null>(null);
   const [source, setSource] = useState<CrmSource | null>(initial.source);
+  const initialSector = resolveSectorSelection(initial.sector);
+  const [sectorPreset, setSectorPreset] = useState<string | null>(
+    initialSector.preset,
+  );
+  const [sectorOther, setSectorOther] = useState(initialSector.otherDetail);
   const [nextActionDraft, setNextActionDraft] = useState(initial.nextAction);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -72,6 +83,14 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
       setError("Origine obligatoire");
       return;
     }
+    if (
+      sectorPreset === CRM_SECTOR_OTHER &&
+      sectorOther.trim().length < 2
+    ) {
+      setError("Précisez le secteur (min. 2 caractères) ou choisissez une liste.");
+      return;
+    }
+    fd.set("sector", composeSectorValue(sectorPreset, sectorOther));
     const phone = String(fd.get("phone") ?? "").trim();
     const email = String(fd.get("email") ?? "").trim();
     if (!phone && !email) {
@@ -162,14 +181,32 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
               />
             </div>
             <div>
-              <FieldLabel htmlFor="sector">Secteur</FieldLabel>
-              <Input
-                id="sector"
-                name="sector"
-                defaultValue={initial.sector}
-                placeholder="Ex. Agroalimentaire, BTP…"
+              <OptionPickerSingle
+                label="Secteur"
+                options={SECTOR_PICKER_OPTIONS}
+                value={sectorPreset}
+                onChange={(v) => {
+                  setSectorPreset(v);
+                  if (v !== CRM_SECTOR_OTHER) setSectorOther("");
+                }}
                 disabled={pending}
+                placeholder="Choisir un secteur"
+                modalTitle="Secteur d’activité"
               />
+              {sectorPreset === CRM_SECTOR_OTHER ? (
+                <div className="mt-2">
+                  <FieldLabel htmlFor="sectorOther" required>
+                    Précisez le secteur
+                  </FieldLabel>
+                  <Input
+                    id="sectorOther"
+                    value={sectorOther}
+                    onChange={(e) => setSectorOther(e.target.value)}
+                    placeholder="Ex. Énergie solaire, artisanat…"
+                    disabled={pending}
+                  />
+                </div>
+              ) : null}
             </div>
             <div>
               <FieldLabel htmlFor="city">Ville</FieldLabel>
@@ -204,7 +241,7 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
               />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
-              <FieldLabel htmlFor="notes">Notes / résumé entreprise</FieldLabel>
+              <FieldLabel htmlFor="notes">Résumé entreprise</FieldLabel>
               <Textarea
                 id="notes"
                 name="notes"
@@ -213,7 +250,10 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
                 placeholder="Type d’activité, contexte, info utile pour l’équipe…"
                 disabled={pending}
               />
-              <FieldHint>Visible dans l’ERP uniquement — pas sur les devis.</FieldHint>
+              <FieldHint>
+                Visible dans l’ERP uniquement — pas sur les devis. Distinct du
+                contact principal.
+              </FieldHint>
             </div>
           </div>
         </section>

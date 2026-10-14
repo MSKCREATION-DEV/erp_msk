@@ -14,7 +14,13 @@ import {
   CONTACT_COMMENT_MIN_LEN,
   CONTACT_STAGE_CHANNELS,
 } from "@/lib/crm/guide-rules";
-import { ACTIVITY_LABELS, LOSS_LABELS, STAGE_LABELS, STAGE_ORDER } from "@/lib/crm/labels";
+import {
+  ACTIVITY_LABELS,
+  LOSS_LABELS,
+  STAGE_HINTS,
+  STAGE_LABELS,
+  STAGE_ORDER,
+} from "@/lib/crm/labels";
 
 function toUiStage(stage: CrmPipelineStage): CrmPipelineStage {
   return stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage;
@@ -95,6 +101,7 @@ export function StageForm({
         options={STAGE_ORDER.map((s) => ({
           value: s,
           label: STAGE_LABELS[s],
+          description: STAGE_HINTS[s],
         }))}
         value={current}
         onChange={(v) => {
@@ -106,6 +113,11 @@ export function StageForm({
         placeholder="Choisir le statut"
         modalTitle="Statut du prospect"
       />
+      {STAGE_HINTS[current] ? (
+        <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/[0.04] px-3 py-2 text-xs text-msk-ink/65">
+          {STAGE_HINTS[current]}
+        </p>
+      ) : null}
       {!hasFollowUp &&
       current !== "GAGNE" &&
       current !== "PERDU" &&

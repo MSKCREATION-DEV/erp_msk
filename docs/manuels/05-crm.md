@@ -1,11 +1,13 @@
 # Manuel — CRM / Suivi commercial (prospects, relances, scripts)
 
-**Version** : 2026-10-14 · LOT-E (lecture partagée)  
+**Version** : 2026-10-14 · LOT-I (En discussion)  
 **Public** : Commerciaux, Admin CRM, Direction
 
 ## À retenir
 
 **Lecture partagée / écriture affectée :** tous les commerciaux voient tous les prospects (anti-doublon). Journaliser, changer le statut ou éditer = réservé au **suivi** (ou Admin CRM / Direction via « Changer le suivi »).
+
+**En discussion** (ex-« En qualification ») : échange en cours — besoin / budget / timing à clarifier ; pas encore prêt pour un devis.
 
 Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 
@@ -30,7 +32,9 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 |---|---|
 | **Suivi par** | Qui porte le dossier |
 | **Créé par** | Qui a créé la fiche |
-| **Statut** | 7 étapes LISTES (Négociation absente) |
+| **Statut** | 7 étapes LISTES — dont **En discussion** (échange) |
+| **Résumé entreprise** | Contexte activité (pas le contact) |
+| **Secteur** | Liste MSK + Autre (précision) |
 | **Origine** | Source du contact |
 | **Client** | Statut gagné (plus « Gagné ») |
 | **Prospects** | Jamais « Portefeuille » |
@@ -47,8 +51,6 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 6. Devis gelés temporairement (Direction 13/10) — réouverture ultérieure depuis la fiche client  
 7. Facturation côté Commercial quand devis/factures seront réouverts
 
-> **En qualification** : échange en cours, pas encore prêt pour devis. Libellé plus clair (« En discussion ») prévu en polish UX (LOT-I) — pas encore appliqué.
-
 ## Collab sans Vue Équipe
 
 En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux).
@@ -64,7 +66,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
-| 2026-10-14 | LOT-E : lecture partagée + Changer le suivi ; LOT-D transform Client ; LOT-C édition ; LOT-B Contacté |
+| 2026-10-14 | LOT-I : En discussion + secteurs + résumé ; LOT-E lecture partagée ; LOT-D…B |
 | 2026-10-13 | Objectifs : dashboard tous collabs, page admin assignation, Vue Équipe enrichie, rapport reflète cibles |
 | 2026-10-13 | Tableau de bord : MetricNavCard, Conversion Signé/En cours, Répartition filtres URL |
 | 2026-10-12 | Menu / Tableau de bord / Vue Équipe / Rapport ; client dès Intéressé ; SLA 24h |

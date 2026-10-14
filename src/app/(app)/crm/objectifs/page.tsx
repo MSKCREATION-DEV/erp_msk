@@ -118,7 +118,7 @@ export default async function CrmObjectifsPage({
       </div>
     ) : canManage && mode !== "synthese" ? (
       <ActionLink href="/crm/objectifs" icon={Target} variant="secondary">
-        Synthèse
+        Vue d’ensemble
       </ActionLink>
     ) : null;
 
@@ -128,7 +128,7 @@ export default async function CrmObjectifsPage({
       : mode === "equipe"
         ? "Objectifs communs à toute l’équipe commerciale."
         : canManage
-          ? "Synthèse de l’équipe, puis assignation globale ou par collaborateur."
+          ? "Vue d’ensemble de l’équipe, puis assignation globale ou par collaborateur."
           : "Vos objectifs de la semaine (fixés par la Direction).";
 
   return (
@@ -138,7 +138,9 @@ export default async function CrmObjectifsPage({
         description={description}
         backHref={mode === "synthese" ? "/crm" : "/crm/objectifs"}
         backLabel={
-          mode === "synthese" ? "Retour tableau de bord" : "Retour synthèse"
+          mode === "synthese"
+            ? "Retour tableau de bord"
+            : "Retour aux objectifs"
         }
         breadcrumbs={[
           { label: "Commercial", href: "/commercial" },
@@ -176,7 +178,7 @@ export default async function CrmObjectifsPage({
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="text-sm font-semibold text-msk-ink">
-                  Synthèse équipe
+                  Progression de l’équipe
                 </h2>
                 <p className="mt-1 text-xs text-msk-ink/45">
                   Cliquez une ligne pour fixer les objectifs d’un collaborateur.
@@ -299,7 +301,7 @@ export default async function CrmObjectifsPage({
           <ScopeFocusBanner
             label={`${focusCollab.firstName} ${focusCollab.lastName}`}
             clearHref="/crm/objectifs"
-            clearLabel="Synthèse"
+            clearLabel="Vue d’ensemble"
           >
             <ActionLink
               href={`/crm/equipe?owner=${focusCollab.id}`}

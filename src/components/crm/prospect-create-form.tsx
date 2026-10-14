@@ -18,6 +18,11 @@ import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import { ProspectOffersStep } from "@/components/crm/prospect-offers-step";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { SOURCE_LABELS } from "@/lib/crm/labels";
+import {
+  composeSectorValue,
+  CRM_SECTOR_OTHER,
+  SECTOR_PICKER_OPTIONS,
+} from "@/lib/crm/sectors";
 import { cn } from "@/lib/utils";
 
 const STEPS = [
@@ -94,6 +99,8 @@ export function ProspectCreateForm({
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [source, setSource] = useState<CrmSource | null>(null);
+  const [sectorPreset, setSectorPreset] = useState<string | null>(null);
+  const [sectorOther, setSectorOther] = useState("");
   const [nextActionDraft, setNextActionDraft] = useState("");
   const [offerIds, setOfferIds] = useState<string[]>([]);
   const [configs, setConfigs] = useState<
@@ -156,6 +163,16 @@ export function ProspectCreateForm({
       setError("Complétez les champs obligatoires avant de continuer.");
       return;
     }
+    if (
+      step === 0 &&
+      sectorPreset === CRM_SECTOR_OTHER &&
+      sectorOther.trim().length < 2
+    ) {
+      setError(
+        "Précisez le secteur (min. 2 caractères) ou choisissez une liste.",
+      );
+      return;
+    }
     setFieldErrors({});
     setError(null);
     setStep(next);
@@ -191,6 +208,15 @@ export function ProspectCreateForm({
     setError(null);
     setFieldErrors({});
     if (source) fd.set("source", source);
+    if (
+      sectorPreset === CRM_SECTOR_OTHER &&
+      sectorOther.trim().length < 2
+    ) {
+      setError("Précisez le secteur (min. 2 caractères) ou choisissez une liste.");
+      setStep(0);
+      return;
+    }
+    fd.set("sector", composeSectorValue(sectorPreset, sectorOther));
     const links: OfferRow[] = offerIds.map((id) => ({
       catalogOfferId: id,
       config: configs[id] ?? {},
@@ -375,13 +401,32 @@ export function ProspectCreateForm({
               <FieldError>{fieldErrors.orgName}</FieldError>
             </div>
             <div>
-              <FieldLabel htmlFor="sector">Secteur</FieldLabel>
-              <Input
-                id="sector"
-                name="sector"
-                placeholder="Ex. Agroalimentaire, BTP…"
+              <OptionPickerSingle
+                label="Secteur"
+                options={SECTOR_PICKER_OPTIONS}
+                value={sectorPreset}
+                onChange={(v) => {
+                  setSectorPreset(v);
+                  if (v !== CRM_SECTOR_OTHER) setSectorOther("");
+                }}
                 disabled={pending}
+                placeholder="Choisir un secteur"
+                modalTitle="Secteur d’activité"
               />
+              {sectorPreset === CRM_SECTOR_OTHER ? (
+                <div className="mt-2">
+                  <FieldLabel htmlFor="sectorOther" required>
+                    Précisez le secteur
+                  </FieldLabel>
+                  <Input
+                    id="sectorOther"
+                    value={sectorOther}
+                    onChange={(e) => setSectorOther(e.target.value)}
+                    placeholder="Ex. Énergie solaire, artisanat…"
+                    disabled={pending}
+                  />
+                </div>
+              ) : null}
             </div>
             <div>
               <FieldLabel htmlFor="city">Ville</FieldLabel>
@@ -403,15 +448,18 @@ export function ProspectCreateForm({
               />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
-              <FieldLabel htmlFor="notes">Notes internes</FieldLabel>
+              <FieldLabel htmlFor="notes">Résumé entreprise</FieldLabel>
               <Textarea
                 id="notes"
                 name="notes"
                 rows={3}
-                placeholder="Contexte, besoin exprimé, info utile pour l’équipe…"
+                placeholder="Type d’activité, contexte, besoin exprimé — utile pour toute l’équipe…"
                 disabled={pending}
               />
-              <FieldHint>Visible uniquement dans l’ERP, pas sur les devis.</FieldHint>
+              <FieldHint>
+                Visible dans l’ERP uniquement — pas sur les devis. Distinct du
+                contact principal.
+              </FieldHint>
             </div>
           </div>
         </section>

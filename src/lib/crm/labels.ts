@@ -15,20 +15,32 @@ export const PILLAR_LABELS: Record<CatalogPillar, string> = {
 };
 
 /**
- * Libellés statut — distincts et compréhensibles :
- * - Qualification = échange / critères (pas encore devis)
+ * Libellés statut — distincts et compréhensibles (LOT-I) :
+ * - En discussion = échange en cours (ex-QUALIFICATION)
  * - Devis envoyé = proposition commerciale déjà transmise
  */
 export const STAGE_LABELS: Record<CrmPipelineStage, string> = {
   NOUVEAU: "À contacter",
   CONTACTE: "Contacté",
-  QUALIFICATION: "En qualification",
+  QUALIFICATION: "En discussion",
   INTERESSE: "Intéressé",
   DEVIS_ENVOYE: "Devis envoyé",
   /** Masqué en UI — traité comme Devis envoyé (métier MSK). */
   NEGOCIATION: "Devis envoyé",
   GAGNE: "Client",
   PERDU: "Perdu",
+};
+
+/** Aide courte (picker statut + fiche) — LOT-I. */
+export const STAGE_HINTS: Partial<Record<CrmPipelineStage, string>> = {
+  NOUVEAU: "Pas encore contacté — à appeler ou écrire.",
+  CONTACTE: "Premier contact fait — journaliser la suite.",
+  QUALIFICATION:
+    "Échange en cours : besoin / budget / timing à clarifier. Pas encore prêt pour un devis.",
+  INTERESSE: "Intérêt confirmé — prêt pour proposition / client commercial.",
+  DEVIS_ENVOYE: "Proposition déjà envoyée — suivi de réponse.",
+  GAGNE: "Devenu client MSK.",
+  PERDU: "Dossier clos sans signature.",
 };
 
 /** Ordre UI métier (7 statuts LISTES — sans Négociation). */
@@ -134,7 +146,13 @@ export function mapExcelStatus(raw: string): CrmPipelineStage {
   if (s.includes("PERDU")) return "PERDU";
   if (s.includes("DEVIS")) return "DEVIS_ENVOYE";
   if (s.includes("INTERESS")) return "INTERESSE";
-  if (s.includes("EN COURS") || s.includes("QUALIF")) return "QUALIFICATION";
+  if (
+    s.includes("DISCUSSION") ||
+    s.includes("EN COURS") ||
+    s.includes("QUALIF")
+  ) {
+    return "QUALIFICATION";
+  }
   if (s.includes("CONTACT")) return "CONTACTE";
   if (s.includes("A CONTACTER") || s.includes("NOUVEAU")) return "NOUVEAU";
   return "NOUVEAU";
