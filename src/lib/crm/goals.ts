@@ -125,7 +125,8 @@ export function buildGoalProgress(
     NEW_PROSPECTS: weekStats.newProspects,
     FIRST_CONTACTS: weekStats.firstContacts,
     MEETINGS: weekStats.meetings,
-    FOLLOW_UPS: weekStats.followUpsDone,
+    /** Aligné LOT-G : activités de suivi journalisées (pas les tasks DONE). */
+    FOLLOW_UPS: weekStats.relancesJournalisees,
   };
   return GOAL_METRICS.map((metric) => {
     const target = goals[metric];

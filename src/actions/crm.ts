@@ -757,9 +757,242 @@ export async function reassignProspectAction(
   revalidatePath(`/crm/prospects/${deal.id}`);
   revalidatePath("/crm/relances");
   revalidatePath("/crm/equipe");
+  revalidatePath("/crm/affectations");
   return {
     ok: true,
     message: `Suivi confié à ${newOwner.firstName} ${newOwner.lastName}`,
+  };
+}
+
+/**
+ * Commercial en lecture seule — demande à récupérer le suivi.
+ * Direction / Admin traimtent dans `/crm/affectations`.
+ */
+export async function requestAssignmentAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.access" });
+  const opportunityId = String(formData.get("opportunityId") ?? "").trim();
+  const message = String(formData.get("message") ?? "").trim() || null;
+  if (!opportunityId) return { ok: false, error: "Prospect manquant" };
+
+  const deal = await prisma.crmOpportunity.findUnique({
+    where: { id: opportunityId },
+    select: {
+      id: true,
+      ownerId: true,
+      organizationId: true,
+      organization: { select: { name: true } },
+      comClients: { select: { id: true }, take: 1 },
+    },
+  });
+  if (!deal) return { ok: false, error: "Prospect introuvable" };
+  if (deal.comClients.length > 0) {
+    return {
+      ok: false,
+      error: "Ce dossier est déjà un client commercial — ouvrez la fiche client.",
+    };
+  }
+  if (canMutateCrmDeal(actor, deal.ownerId)) {
+    return { ok: false, error: "Vous suivez déjà ce dossier" };
+  }
+
+  const existing = await prisma.crmAssignmentRequest.findFirst({
+    where: {
+      opportunityId,
+      requesterId: actor.id,
+      status: "PENDING",
+    },
+    select: { id: true },
+  });
+  if (existing) {
+    return { ok: false, error: "Une demande est déjà en attente pour ce dossier" };
+  }
+
+  const req = await prisma.crmAssignmentRequest.create({
+    data: {
+      opportunityId,
+      requesterId: actor.id,
+      message,
+    },
+  });
+
+  await prisma.crmActivity.create({
+    data: {
+      opportunityId: deal.id,
+      organizationId: deal.organizationId,
+      type: CrmActivityType.NOTE,
+      summary: `Demande d’affectation par ${actor.firstName} ${actor.lastName}`,
+      body: message,
+      actorId: actor.id,
+      occurredAt: new Date(),
+    },
+  });
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "crm.assignment.request",
+    entityType: "crm_assignment_request",
+    entityId: req.id,
+    metadata: { opportunityId },
+  });
+
+  revalidatePath(`/crm/prospects/${opportunityId}`);
+  revalidatePath("/crm/affectations");
+  return {
+    ok: true,
+    message: "Demande envoyée — la Direction / Admin CRM la traitera.",
+  };
+}
+
+const resolveAssignmentSchema = z.object({
+  requestId: z.string().trim().min(1),
+  decision: z.enum(["APPROVE", "REJECT"]),
+  resolveNote: z.string().trim().optional(),
+});
+
+/** Approuve (réassigne au demandeur) ou refuse une demande. */
+export async function resolveAssignmentRequestAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.reassign" });
+  if (!canReassignCrmDeal(actor)) {
+    return { ok: false, error: "Pas le droit de traiter les affectations" };
+  }
+
+  const parsed = resolveAssignmentSchema.safeParse({
+    requestId: String(formData.get("requestId") ?? ""),
+    decision: String(formData.get("decision") ?? ""),
+    resolveNote: String(formData.get("resolveNote") ?? "").trim() || undefined,
+  });
+  if (!parsed.success) return { ok: false, error: "Décision invalide" };
+
+  const req = await prisma.crmAssignmentRequest.findUnique({
+    where: { id: parsed.data.requestId },
+    include: {
+      opportunity: {
+        select: {
+          id: true,
+          ownerId: true,
+          organizationId: true,
+          organization: { select: { name: true } },
+        },
+      },
+      requester: {
+        select: { id: true, firstName: true, lastName: true, status: true },
+      },
+    },
+  });
+  if (!req || req.status !== "PENDING") {
+    return { ok: false, error: "Demande introuvable ou déjà traitée" };
+  }
+
+  const now = new Date();
+
+  if (parsed.data.decision === "REJECT") {
+    await prisma.crmAssignmentRequest.update({
+      where: { id: req.id },
+      data: {
+        status: "REJECTED",
+        resolvedAt: now,
+        resolvedById: actor.id,
+        resolveNote: parsed.data.resolveNote ?? null,
+      },
+    });
+    await writeAudit({
+      actorId: actor.id,
+      action: "crm.assignment.reject",
+      entityType: "crm_assignment_request",
+      entityId: req.id,
+    });
+    revalidatePath("/crm/affectations");
+    revalidatePath(`/crm/prospects/${req.opportunityId}`);
+    return { ok: true, message: "Demande refusée" };
+  }
+
+  if (req.requester.status !== "ACTIVE") {
+    return { ok: false, error: "Le demandeur n’est plus actif" };
+  }
+
+  const teamIds = await commercialTeamUserIds();
+  if (!teamIds.includes(req.requesterId) && !actor.isSuperAdmin) {
+    return {
+      ok: false,
+      error: "Le demandeur doit être dans le groupe Commerciaux",
+    };
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.crmOrganization.update({
+      where: { id: req.opportunity.organizationId },
+      data: { ownerId: req.requesterId },
+    });
+    await tx.crmOpportunity.update({
+      where: { id: req.opportunityId },
+      data: { ownerId: req.requesterId },
+    });
+    await tx.crmTask.updateMany({
+      where: {
+        opportunityId: req.opportunityId,
+        status: CrmTaskStatus.OPEN,
+      },
+      data: { assigneeId: req.requesterId },
+    });
+    await tx.crmActivity.create({
+      data: {
+        opportunityId: req.opportunityId,
+        organizationId: req.opportunity.organizationId,
+        type: CrmActivityType.NOTE,
+        summary: `Suivi confié à ${req.requester.firstName} ${req.requester.lastName} (demande approuvée)`,
+        body: parsed.data.resolveNote ?? null,
+        actorId: actor.id,
+        occurredAt: now,
+      },
+    });
+    await tx.crmAssignmentRequest.update({
+      where: { id: req.id },
+      data: {
+        status: "APPROVED",
+        resolvedAt: now,
+        resolvedById: actor.id,
+        resolveNote: parsed.data.resolveNote ?? null,
+      },
+    });
+    await tx.crmAssignmentRequest.updateMany({
+      where: {
+        opportunityId: req.opportunityId,
+        status: "PENDING",
+        id: { not: req.id },
+      },
+      data: {
+        status: "CANCELLED",
+        resolvedAt: now,
+        resolvedById: actor.id,
+        resolveNote: "Annulée — autre demande approuvée",
+      },
+    });
+  });
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "crm.assignment.approve",
+    entityType: "crm_assignment_request",
+    entityId: req.id,
+    metadata: {
+      opportunityId: req.opportunityId,
+      toOwnerId: req.requesterId,
+    },
+  });
+
+  revalidatePath("/crm/affectations");
+  revalidatePath("/crm");
+  revalidatePath("/crm/prospects");
+  revalidatePath(`/crm/prospects/${req.opportunityId}`);
+  revalidatePath("/crm/relances");
+  revalidatePath("/crm/equipe");
+  return {
+    ok: true,
+    message: `Suivi confié à ${req.requester.firstName} ${req.requester.lastName}`,
   };
 }
 

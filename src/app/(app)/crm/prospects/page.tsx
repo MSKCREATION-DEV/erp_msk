@@ -67,7 +67,10 @@ function buildProspectWhere(
   now: Date,
 ): Prisma.CrmOpportunityWhereInput {
   const where: Prisma.CrmOpportunityWhereInput = { ...scope };
-  const andParts: Prisma.CrmOpportunityWhereInput[] = [];
+  const andParts: Prisma.CrmOpportunityWhereInput[] = [
+    /** Jamais les Clients (statut GAGNE **ou** fiche ComClient liée). */
+    { comClients: { none: {} } },
+  ];
 
   const stageFilterRaw = (sp.stages
     ? (sp.stages.split(",").filter(Boolean) as CrmPipelineStage[])
@@ -76,7 +79,7 @@ function buildProspectWhere(
   if (stageFilterRaw.length) {
     where.stage = { in: [...new Set(stageFilterRaw.flatMap(stagesForFilter))] };
   } else {
-    /** Listing = prospects uniquement (hors Client). */
+    /** Listing = prospects uniquement (hors statut Client). */
     where.stage = { in: [...PROSPECT_LIST_STAGES, "NEGOCIATION"] };
   }
   if (sp.source) where.source = sp.source as CrmSource;
@@ -205,6 +208,7 @@ export default async function CrmProspectsPage({
   const openOwn: Prisma.CrmOpportunityWhereInput = {
     ...ownScope,
     stage: { notIn: ["GAGNE", "PERDU"] },
+    comClients: { none: {} },
   };
 
   const dealInclude = {

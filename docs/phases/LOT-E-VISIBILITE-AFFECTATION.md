@@ -25,9 +25,17 @@
 | Action | `reassignProspectAction` + journal + audit `crm.reassign` |
 | Tests | `src/lib/crm/scope.test.ts` |
 
+## Demande d’affectation (complément)
+
+| Qui | Où |
+|-----|-----|
+| Commercial (lecture seule) | Fiche prospect → **Demander le suivi** |
+| Direction / Admin (`crm.reassign`) | Onglet **Affectations** `/crm/affectations` — Approuver / Refuser |
+
+Approuver = réassigne org + deal + tâches OPEN au demandeur.
+
 ## Hors scope
 
-- Demande d’affectation par le commercial (lot ultérieur)  
 - Journal admin filtrable (LOT-N)  
 - Relances : restent perso / team selon `crmVisibility`
 

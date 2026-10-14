@@ -42,6 +42,7 @@ import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ProspectDetailActions } from "@/components/crm/prospect-detail-actions";
 import { ProspectReassignForm } from "@/components/crm/prospect-reassign-form";
+import { AssignmentRequestForm } from "@/components/crm/assignment-request-form";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { OfferConfigBadges } from "@/components/crm/offer-config-badges";
@@ -257,6 +258,15 @@ export default async function CrmProspectDetailPage({
   }
 
   const outreachCount = await countOutreachActivities(deal.id);
+
+  const pendingAssignment = await prisma.crmAssignmentRequest.findFirst({
+    where: {
+      opportunityId: deal.id,
+      requesterId: user.id,
+      status: "PENDING",
+    },
+    select: { id: true },
+  });
 
   const canMutate = canMutateCrmDeal(user, deal.ownerId);
   const canEdit =
@@ -490,8 +500,16 @@ export default async function CrmProspectDetailPage({
           </p>
           <p className="mt-0.5 text-xs text-msk-ink/55">
             Vous voyez ce dossier pour éviter les doublons. Pour journaliser ou
-            modifier, demandez une affectation à la Direction / Admin CRM.
+            modifier, demandez le suivi — la Direction / Admin CRM traitera
+            dans{" "}
+            <span className="font-medium text-msk-ink/70">Affectations</span>.
           </p>
+          {!linkedClient ? (
+            <AssignmentRequestForm
+              opportunityId={deal.id}
+              alreadyPending={Boolean(pendingAssignment)}
+            />
+          ) : null}
         </Surface>
       ) : null}
 

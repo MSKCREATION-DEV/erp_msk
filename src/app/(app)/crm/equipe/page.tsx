@@ -16,19 +16,17 @@ import { Surface } from "@/components/ui/surface";
 import { ActionLink } from "@/components/ui/action-link";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { EquipeCollabCard } from "@/components/crm/equipe-collab-card";
-import { outreachCountByOpportunityIds } from "@/lib/crm/follow-up-count";
 
 export const metadata: Metadata = { title: "Vue Équipe" };
 
 type OwnerRow = {
   name: string;
+  /** Prospects actifs (hors Client). */
   total: number;
   overdue: number;
   caOpen: number;
   clients: number;
   interesses: number;
-  /** Total actions de suivi journalisées (ouverts). */
-  relancesFaites: number;
   byStage: Record<string, number>;
 };
 
@@ -40,7 +38,6 @@ function emptyRow(name: string): OwnerRow {
     caOpen: 0,
     clients: 0,
     interesses: 0,
-    relancesFaites: 0,
     byStage: Object.fromEntries(STAGE_ORDER.map((s) => [s, 0])),
   };
 }
@@ -75,10 +72,6 @@ export default async function CrmEquipePage({
     },
   });
 
-  const outreachMap = await outreachCountByOpportunityIds(
-    deals.map((d) => d.id),
-  );
-
   const now = Date.now();
   const byOwner = new Map<string, OwnerRow>();
 
@@ -90,14 +83,16 @@ export default async function CrmEquipePage({
       );
     }
     const row = byOwner.get(d.ownerId)!;
-    row.total += 1;
     const stage = normalizeUiStage(d.stage);
     row.byStage[stage] = (row.byStage[stage] ?? 0) + 1;
-    if (stage === "GAGNE") row.clients += 1;
+    if (stage === "GAGNE") {
+      row.clients += 1;
+    } else {
+      row.total += 1;
+    }
     if (stage === "INTERESSE") row.interesses += 1;
     if (stage !== "GAGNE" && stage !== "PERDU") {
       row.caOpen += d.budgetXof ?? 0;
-      row.relancesFaites += outreachMap.get(d.id) ?? 0;
     }
     if (
       d.followUpAt &&
@@ -222,7 +217,11 @@ export default async function CrmEquipePage({
               caOpen={row.caOpen}
               interesses={row.interesses}
               overdue={row.overdue}
-              relancesFaites={row.relancesFaites}
+              relancesFaites={
+                goalByOwner
+                  .get(ownerId)
+                  ?.find((g) => g.metric === "FOLLOW_UPS")?.current ?? 0
+              }
               byStage={row.byStage}
               goals={goalByOwner.get(ownerId) ?? []}
               canManageGoals={canManageGoals}

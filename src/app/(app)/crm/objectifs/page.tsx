@@ -102,6 +102,7 @@ export default async function CrmObjectifsPage({
       )
     : [];
 
+  /** Collab focus : pas de 2ᵉ « Vue d’ensemble » (le bandeau × suffit). */
   const headerActions =
     canManage && mode === "synthese" ? (
       <div className="flex flex-wrap gap-2">
@@ -116,7 +117,7 @@ export default async function CrmObjectifsPage({
           Vue Équipe
         </ActionLink>
       </div>
-    ) : canManage && mode !== "synthese" ? (
+    ) : canManage && mode === "equipe" ? (
       <ActionLink href="/crm/objectifs" icon={Target} variant="secondary">
         Vue d’ensemble
       </ActionLink>
@@ -303,14 +304,6 @@ export default async function CrmObjectifsPage({
             clearHref="/crm/objectifs"
             clearLabel="Vue d’ensemble"
           >
-            <ActionLink
-              href={`/crm/equipe?owner=${focusCollab.id}`}
-              icon={Users}
-              variant="secondary"
-              size="sm"
-            >
-              Vue Équipe
-            </ActionLink>
             <ActionLink
               href={`/crm/rapport-semaine?owner=${focusCollab.id}`}
               icon={FileText}

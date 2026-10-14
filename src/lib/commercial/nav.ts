@@ -36,6 +36,12 @@ export function commercialNavItems(user: SessionUser): CommercialSubnavItem[] {
   if (canCrm && canTeam) {
     items.push({ href: "/crm/equipe", label: "Vue Équipe" });
   }
+  if (
+    canCrm &&
+    (user.isSuperAdmin || hasPermission(user, "crm.reassign"))
+  ) {
+    items.push({ href: "/crm/affectations", label: "Affectations" });
+  }
   if (canCrm) {
     items.push({ href: "/crm/rapport-semaine", label: "Rapport" });
     items.push({ href: "/crm/objectifs", label: "Objectifs" });

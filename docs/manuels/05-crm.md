@@ -5,7 +5,7 @@
 
 ## À retenir
 
-**Lecture partagée / écriture affectée :** tous les commerciaux voient tous les prospects (anti-doublon). Journaliser, changer le statut ou éditer = réservé au **suivi** (ou Admin CRM / Direction via « Changer le suivi »).
+**Lecture partagée / écriture affectée :** tous les commerciaux voient tous les prospects (anti-doublon). Journaliser, changer le statut ou éditer = réservé au **suivi**. Sinon : **Demander le suivi** sur la fiche → traité dans **Affectations** (Direction / Admin CRM). Les **Clients** n’apparaissent jamais dans le listing Prospects.
 
 **En discussion** (ex-« En qualification ») : échange en cours — besoin / budget / timing à clarifier ; pas encore prêt pour un devis.
 

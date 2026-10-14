@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText, FolderOpen, Target } from "lucide-react";
+import { FileText, FolderOpen } from "lucide-react";
 import { STAGE_LABELS, STAGE_ORDER, formatXof } from "@/lib/crm/labels";
 import type { GoalProgressItem } from "@/lib/crm/goals";
 import { Surface } from "@/components/ui/surface";
@@ -29,7 +29,7 @@ export function EquipeCollabCard({
   caOpen: number;
   interesses: number;
   overdue: number;
-  /** Total relances journalisées sur dossiers ouverts. */
+  /** Relances journalisées cette semaine (même métrique que Objectifs). */
   relancesFaites: number;
   byStage: Record<string, number>;
   goals: GoalProgressItem[];
@@ -48,16 +48,6 @@ export function EquipeCollabCard({
           subtitle={`${total} prospect${total > 1 ? "s" : ""} · montant pipeline ${formatXof(caOpen)}`}
         />
         <div className="flex flex-wrap gap-2">
-          {canManageGoals ? (
-            <ActionLink
-              href={`/crm/objectifs?collab=${ownerId}`}
-              icon={Target}
-              variant="secondary"
-              size="sm"
-            >
-              Objectifs
-            </ActionLink>
-          ) : null}
           <ActionLink
             href={`/crm/rapport-semaine?owner=${ownerId}`}
             icon={FileText}
@@ -78,7 +68,7 @@ export function EquipeCollabCard({
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiRadial label="Prospects" value={total} hint="dossiers suivis" />
+        <KpiRadial label="Prospects" value={total} hint="hors clients" />
         <KpiRadial
           label="Intéressés"
           value={interesses}
@@ -94,7 +84,7 @@ export function EquipeCollabCard({
           label="Relances faites"
           value={relancesFaites}
           tone={relancesFaites > 0 ? "coral" : "blue"}
-          hint="suivi journalisé"
+          hint="cette semaine"
         />
       </div>
 
@@ -109,7 +99,7 @@ export function EquipeCollabCard({
               ? `/crm/objectifs?collab=${ownerId}`
               : `/crm/rapport-semaine?owner=${ownerId}`
           }
-          detailLabel={canManageGoals ? "Objectifs" : "Rapport"}
+          detailLabel={canManageGoals ? "Ajuster" : "Rapport"}
         />
       ) : null}
 
@@ -117,12 +107,14 @@ export function EquipeCollabCard({
         {STAGE_ORDER.map((s) => {
           const n = byStage[s] ?? 0;
           if (n === 0) return null;
+          const href =
+            s === "GAGNE"
+              ? `/commercial/clients`
+              : `/crm/prospects?owner=${ownerId}&stages=${
+                  s === "DEVIS_ENVOYE" ? "DEVIS_ENVOYE,NEGOCIATION" : s
+                }`;
           return (
-            <Link
-              key={s}
-              prefetch={false}
-              href={`/crm/prospects?owner=${ownerId}&stages=${s === "DEVIS_ENVOYE" ? "DEVIS_ENVOYE,NEGOCIATION" : s}`}
-            >
+            <Link key={s} prefetch={false} href={href}>
               <Badge
                 tone={
                   s === "PERDU"

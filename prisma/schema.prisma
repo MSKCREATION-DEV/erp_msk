@@ -125,6 +125,13 @@ enum CrmActivityType {
   AUTRE
 }
 
+enum CrmAssignmentRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
 enum CrmTaskStatus {
   OPEN
   DONE
@@ -237,6 +244,8 @@ model User {
   crmTasksCreated  CrmTask[]      @relation("CrmTaskCreator")
   crmWeeklyReports CrmWeeklyReport[] @relation("CrmWeeklyReportAuthor")
   crmWeeklyGoals    CrmWeeklyGoal[]   @relation("CrmWeeklyGoalUser")
+  crmAssignmentRequests CrmAssignmentRequest[] @relation("CrmAssignmentRequester")
+  crmAssignmentResolved CrmAssignmentRequest[] @relation("CrmAssignmentResolver")
   comClientsOwned  ComClient[]     @relation("ComClientOwner")
   comClientsCreated ComClient[]    @relation("ComClientCreator")
   comQuotesOwned   ComQuote[]      @relation("ComQuoteOwner")
@@ -694,11 +703,34 @@ model CrmOpportunity {
   opportunityOffers CrmOpportunityOffer[]
   comClients   ComClient[]
   comQuotes    ComQuote[]
+  assignmentRequests CrmAssignmentRequest[]
 
   @@index([ownerId, stage])
   @@index([organizationId])
   @@index([followUpAt])
   @@map("crm_opportunities")
+}
+
+/// Demande d’affectation du suivi (commercial → Direction / Admin CRM).
+model CrmAssignmentRequest {
+  id            String                      @id @default(cuid())
+  opportunityId String
+  requesterId   String                      @db.Uuid
+  message       String?
+  status        CrmAssignmentRequestStatus  @default(PENDING)
+  createdAt     DateTime                    @default(now())
+  resolvedAt    DateTime?
+  resolvedById  String?                     @db.Uuid
+  resolveNote   String?
+
+  opportunity CrmOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  requester   User           @relation("CrmAssignmentRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  resolvedBy  User?          @relation("CrmAssignmentResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([opportunityId, status])
+  @@index([requesterId])
+  @@map("crm_assignment_requests")
 }
 
 /// Offres proposées à un prospect (N:N) + config options.
