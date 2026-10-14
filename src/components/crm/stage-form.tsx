@@ -14,6 +14,7 @@ import {
   CONTACT_COMMENT_MIN_LEN,
   CONTACT_STAGE_CHANNELS,
 } from "@/lib/crm/guide-rules";
+import { RELANCE_GUIDE_THRESHOLD } from "@/lib/crm/follow-up-count";
 import {
   ACTIVITY_LABELS,
   LOSS_LABELS,
@@ -172,9 +173,11 @@ export function StageForm({
 
       {current === "PERDU" ? (
         <div className="space-y-3 rounded-xl border border-msk-ink/[0.08] bg-msk-chalk/40 p-3.5">
-          {activityCount < 3 ? (
+          {activityCount < RELANCE_GUIDE_THRESHOLD ? (
             <p className="text-xs text-msk-coral">
-              GUIDE : {activityCount}/3 actions — minimum 3 avant Perdu.
+              GUIDE : {activityCount}/{RELANCE_GUIDE_THRESHOLD} relances
+              (appel, WhatsApp…) — minimum {RELANCE_GUIDE_THRESHOLD} avant
+              Perdu.
             </p>
           ) : null}
           <OptionPickerSingle

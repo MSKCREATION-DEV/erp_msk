@@ -12,13 +12,16 @@ export function Badge({
   children,
   tone = "ink",
   className,
+  title,
 }: {
   children: React.ReactNode;
   tone?: keyof typeof tones;
   className?: string;
+  title?: string;
 }) {
   return (
     <span
+      title={title}
       className={cn(
         "inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium tracking-tight",
         tones[tone],

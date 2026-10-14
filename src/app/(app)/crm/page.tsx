@@ -6,6 +6,7 @@ import {
   Bell,
   FileWarning,
   FolderOpen,
+  Repeat2,
   Sparkles,
   UserPlus,
 } from "lucide-react";
@@ -25,6 +26,10 @@ import { weekStartMonday } from "@/lib/crm/week";
 import { computeWeekStats } from "@/lib/crm/week-stats";
 import { isTestOrgName } from "@/lib/crm/test-data";
 import { isDevisSlaBreached } from "@/lib/crm/devis-sla";
+import {
+  outreachCountByOpportunityIds,
+  RELANCE_GUIDE_THRESHOLD,
+} from "@/lib/crm/follow-up-count";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -35,6 +40,7 @@ import { HubMiniRadial } from "@/components/commercial/hub-mini-radial";
 import { StageDonutChart } from "@/components/crm/stage-donut-chart";
 import { ConversionPipelineCard } from "@/components/crm/conversion-pipeline-card";
 import { GoalsProgressStrip } from "@/components/crm/goals-progress-strip";
+import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
 
@@ -94,6 +100,13 @@ export default async function CrmDashboardPage() {
   const openDeals = deals.filter(
     (d) => d.stage !== "GAGNE" && d.stage !== "PERDU",
   );
+  const outreachMap = await outreachCountByOpportunityIds(
+    openDeals.map((d) => d.id),
+  );
+  const relances3plus = openDeals.filter(
+    (d) => (outreachMap.get(d.id) ?? 0) >= RELANCE_GUIDE_THRESHOLD,
+  ).length;
+
   const won = deals.filter((d) => d.stage === "GAGNE");
   const montantEnCours = openDeals.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
   const montantSigne = won.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
@@ -124,6 +137,10 @@ export default async function CrmDashboardPage() {
   const openScale = Math.max(5, openDeals.length);
   const interesseScale = Math.max(5, interesses);
   const relancesAvenir = Math.max(0, openTasks - overdue);
+  const showDevis = devisUrgent.length > 0;
+  const indicatorCols = showDevis
+    ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-5"
+    : "grid gap-3 sm:grid-cols-2 xl:grid-cols-4";
 
   return (
     <PageShell>
@@ -149,14 +166,8 @@ export default async function CrmDashboardPage() {
         >
           Indicateurs
         </h2>
-        <div
-          className={
-            devisUrgent.length > 0
-              ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
-              : "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-          }
-        >
-          {devisUrgent.length > 0 ? (
+        <div className={indicatorCols}>
+          {showDevis ? (
             <MetricNavCard
               href="/crm/prospects?devisRetard=1"
               icon={FileWarning}
@@ -209,6 +220,24 @@ export default async function CrmDashboardPage() {
                 color="#1384CB"
                 centerLabel={interesses}
                 caption={interesses > 1 ? "intéressés" : "intéressé"}
+              />
+            }
+          />
+          <MetricNavCard
+            href={`/crm/prospects?relancesMin=${RELANCE_GUIDE_THRESHOLD}`}
+            icon={Repeat2}
+            tone="coral"
+            title={`Relancés ${RELANCE_GUIDE_THRESHOLD}×+`}
+            description="Dossiers ouverts déjà relancés au moins 3 fois (suivi)."
+            footer={
+              <HubMiniRadial
+                value={relances3plus}
+                max={Math.max(5, relances3plus, openDeals.length)}
+                color={METRIC_NAV_TONE_CHART.coral}
+                centerLabel={relances3plus}
+                caption={
+                  relances3plus > 1 ? "dossiers ≥ 3×" : "dossier ≥ 3×"
+                }
               />
             }
           />
@@ -293,9 +322,15 @@ export default async function CrmDashboardPage() {
                     {d.nextAction || STAGE_LABELS[normalizeStage(d.stage)]}
                   </p>
                 </div>
-                <Badge tone="muted">
-                  {STAGE_LABELS[normalizeStage(d.stage)]}
-                </Badge>
+                <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                  <RelanceCountBadge
+                    count={outreachMap.get(d.id) ?? 0}
+                    showZero={false}
+                  />
+                  <Badge tone="muted">
+                    {STAGE_LABELS[normalizeStage(d.stage)]}
+                  </Badge>
+                </div>
               </Link>
             ))
           )}

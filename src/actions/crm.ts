@@ -32,6 +32,7 @@ import {
   canReassignCrmDeal,
 } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
+import { countOutreachActivities } from "@/lib/crm/follow-up-count";
 import {
   mirrorPhoneEmail,
   normalizeChannelValue,
@@ -794,10 +795,11 @@ export async function updateOpportunityStageAction(
     if (!loss.success) {
       return { ok: false, error: "Motif de perte obligatoire" };
     }
-    if (deal._count.activities < MIN_ACTIVITIES_BEFORE_LOST) {
+    const outreachCount = await countOutreachActivities(id);
+    if (outreachCount < MIN_ACTIVITIES_BEFORE_LOST) {
       return {
         ok: false,
-        error: `GUIDE : au moins ${MIN_ACTIVITIES_BEFORE_LOST} actions journalisées avant de marquer Perdu (${deal._count.activities}/${MIN_ACTIVITIES_BEFORE_LOST}).`,
+        error: `GUIDE : au moins ${MIN_ACTIVITIES_BEFORE_LOST} relances journalisées (appel, WhatsApp…) avant de marquer Perdu (${outreachCount}/${MIN_ACTIVITIES_BEFORE_LOST}).`,
       };
     }
   }

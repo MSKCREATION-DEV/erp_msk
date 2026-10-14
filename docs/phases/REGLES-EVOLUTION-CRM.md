@@ -259,7 +259,7 @@ Si une case non → **ne pas merger**.
 
 **État (2026-10-12) :** Phase COMMERCIAL livrée (CRM-0…8 + UX + COM-4…7) sur `dev`/`main`.  
 **État (2026-10-14) :** Analyse post-démo — **LOT-A…F + I OK**.
-**Prochaine étape :** GO **LOT-G** (compteur relances) · **Phase RH** ensuite.
+**Prochaine étape :** GO **LOT-H** (objectifs clients) · **Phase RH** ensuite. Compteur relances = [`LOT-G-COMPTEUR-RELANCES.md`](./LOT-G-COMPTEUR-RELANCES.md).
 
 ---
 

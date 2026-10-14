@@ -408,7 +408,7 @@ flowchart TD
 | **LOT-D** | P1-1 Transformer en client | Non | LOT-A (CTA devis mort) | Bouton fiche ; pont intact — **implémenté 2026-10-14** (auto GAGNE + confirm) |
 | **LOT-E** | P1-4 Visibilité + réassign UI | **OK** 2026-10-14 | shared-read / owned-write | Yaye voit Madina ; mute si non owner |
 | **LOT-F** | P1-5 Doublons + canaux + RS | **OK** 2026-10-14 | LOT-C / I | Wizard exact/fuzzy + channels + social |
-| **LOT-G** | P1-3 Compteur relances | Non ou compteur dérivé | Définition métier | Badge N× fiche + dashboard |
+| **LOT-G** | P1-3 Compteur relances | **OK** (activités outreach) | — | Badge N× partout · Perdu≥3 |
 | **LOT-H** | P1-2 strate A `CLIENTS_SIGNED` | Non (metric string) | Définition « signé » | Objectif + progression semaine |
 | **LOT-I** | P2-7 Synthèse + P2-9 « En discussion » + P2-2 + P2-4 | **OK** 2026-10-14 | Après LOT-B | UX Direction claire |
 | **LOT-J** | P1-2 strate B + P2-6 périodes | **Oui — Break** | Fiche §0bis + GO | Mois/année + compare |

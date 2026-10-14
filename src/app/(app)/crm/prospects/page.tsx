@@ -38,6 +38,11 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { ProspectsFilterButton } from "@/components/crm/prospects-filter-modal";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
+import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
+import {
+  opportunityIdsWithMinOutreach,
+  outreachCountByOpportunityIds,
+} from "@/lib/crm/follow-up-count";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Prospects" };
@@ -154,7 +159,28 @@ export default async function CrmProspectsPage({
   const requestedPage = parsePage(sp.page);
   /** LOT-E : liste partagée (tous les commerciaux voient tous les dossiers). */
   const listScope = crmProspectListScopeWhere(user);
-  const where = buildProspectWhere(sp, listScope, now);
+  let where = buildProspectWhere(sp, listScope, now);
+
+  /** LOT-G : filtre historique relances (ex. ?relancesMin=3). */
+  const relancesMin = Number.parseInt(sp.relancesMin ?? "", 10);
+  if (Number.isFinite(relancesMin) && relancesMin > 0) {
+    const scopedIds = (
+      await prisma.crmOpportunity.findMany({
+        where,
+        select: { id: true },
+        take: 2000,
+      })
+    ).map((d) => d.id);
+    const matching = await opportunityIdsWithMinOutreach(
+      scopedIds,
+      relancesMin,
+    );
+    where = {
+      ...where,
+      id: { in: matching.length > 0 ? matching : ["__none__"] },
+    };
+  }
+
   const vis = crmVisibility(user);
   /** KPIs perso en tête : toujours « mes » dossiers. */
   const ownScope = dealOwnerScopeWhere(user, teamIds);
@@ -187,6 +213,10 @@ export default async function CrmProspectsPage({
     skip: pageSkip(page, pageSize),
     take: pageSize,
   });
+
+  const outreachMap = await outreachCountByOpportunityIds(
+    deals.map((d) => d.id),
+  );
 
   let ownKpis: {
     prospects: number;
@@ -257,7 +287,8 @@ export default async function CrmProspectsPage({
     Boolean(sp.source) ||
     Boolean(sp.owner) ||
     Boolean(sp.from) ||
-    Boolean(sp.to);
+    Boolean(sp.to) ||
+    (Number.isFinite(relancesMin) && relancesMin > 0);
 
   return (
     <PageShell>
@@ -360,6 +391,11 @@ export default async function CrmProspectsPage({
               {sp.devisRetard === "1" ? (
                 <Badge tone="coral">Intéressé sans devis</Badge>
               ) : null}
+              {Number.isFinite(relancesMin) && relancesMin > 0 ? (
+                <Badge tone="coral">
+                  Relancés ≥ {relancesMin}×
+                </Badge>
+              ) : null}
               <Link
                 prefetch={false}
                 href="/crm/prospects"
@@ -379,6 +415,7 @@ export default async function CrmProspectsPage({
                 <th className="px-4 py-3 font-semibold">Téléphone</th>
                 <th className="px-4 py-3 font-semibold">Origine</th>
                 <th className="px-4 py-3 font-semibold">Statut</th>
+                <th className="px-4 py-3 font-semibold">Relances</th>
                 <th className="px-4 py-3 font-semibold">Prochaine action</th>
                 <th className="px-4 py-3 font-semibold">Relance</th>
                 <th className="px-4 py-3 font-semibold">Suivi par</th>
@@ -390,7 +427,7 @@ export default async function CrmProspectsPage({
               {deals.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={10}
+                    colSpan={11}
                     className="px-4 py-10 text-center text-msk-ink/40"
                   >
                     {qTrim
@@ -453,6 +490,11 @@ export default async function CrmProspectsPage({
                         <Badge tone={stageTone(uiStage)}>
                           {STAGE_LABELS[uiStage]}
                         </Badge>
+                      </td>
+                      <td className="px-4 py-3">
+                        <RelanceCountBadge
+                          count={outreachMap.get(d.id) ?? 0}
+                        />
                       </td>
                       <td className="max-w-45 truncate px-4 py-3 text-msk-ink/70">
                         {d.nextAction || "—"}

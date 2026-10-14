@@ -1,6 +1,6 @@
 # Manuel — CRM / Suivi commercial (prospects, relances, scripts)
 
-**Version** : 2026-10-14 · LOT-F (doublons)  
+**Version** : 2026-10-14 · LOT-G (compteur relances)  
 **Public** : Commerciaux, Admin CRM, Direction
 
 ## À retenir
@@ -11,6 +11,8 @@
 
 **Création :** contrôle doublons (nom exact → ouvrir fiche existante ; nom proche → alerte + continuer) · multi-moyens de contact · réseaux sociaux entreprise optionnels.
 
+**Relancé N× :** historique des actions de suivi (appel, WhatsApp, e-mail, RDV… — pas les notes). Visible sur dashboard, liste, fiche, relances et Vue Équipe. **Perdu** exige au moins **3** de ces relances.
+
 Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 
 - **Menu** `/commercial` = hub cartes (`MetricNavCard`)  
@@ -20,9 +22,9 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 | Zone | Route | Notes |
 |---|---|---|
 | Menu | `/commercial` | Cartes modules |
-| Tableau de bord | `/crm` | Indicateurs (Ouverts / Intéressés / Relances à venir+retard / Sans devis) · Conversion Signé\|En cours · Répartition cliquable · Objectifs |
-| Prospects | `/crm/prospects` | Liste paginée · recherche · filtres URL `?stages=` |
-| Relances | `/crm/relances` | Aujourd’hui / retard / semaine |
+| Tableau de bord | `/crm` | Indicateurs (Ouverts / Intéressés / Relancés 3×+ / Relances à venir+retard / Sans devis) · Conversion Signé\|En cours · Répartition · Objectifs |
+| Prospects | `/crm/prospects` | Liste · badge Relancé N× · filtres `?stages=` · `?relancesMin=3` |
+| Relances | `/crm/relances` | Aujourd’hui / retard / semaine · badge N× |
 | Scripts | `/crm/scripts` | Copier messages |
 | Vue Équipe | `/crm/equipe` | Prospects + objectifs semaine (si `view_team` / lead — pas « own only ») |
 | Rapport | `/crm/rapport-semaine` | Par **semaine** (lundi–vendredi) · Direction : toute l’équipe ou un collaborateur |
@@ -68,7 +70,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
-| 2026-10-14 | LOT-F doublons + canaux + RS ; LOT-I En discussion ; LOT-E…B |
+| 2026-10-14 | LOT-G Relancé N× partout + GUIDE Perdu ; LOT-F doublons ; LOT-I En discussion ; LOT-E…B |
 | 2026-10-13 | Objectifs : dashboard tous collabs, page admin assignation, Vue Équipe enrichie, rapport reflète cibles |
 | 2026-10-13 | Tableau de bord : MetricNavCard, Conversion Signé/En cours, Répartition filtres URL |
 | 2026-10-12 | Menu / Tableau de bord / Vue Équipe / Rapport ; client dès Intéressé ; SLA 24h |

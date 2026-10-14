@@ -42,8 +42,10 @@ import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ProspectDetailActions } from "@/components/crm/prospect-detail-actions";
 import { ProspectReassignForm } from "@/components/crm/prospect-reassign-form";
+import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { OfferConfigBadges } from "@/components/crm/offer-config-badges";
+import { countOutreachActivities } from "@/lib/crm/follow-up-count";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 import {
   COM_DOCS_GATED,
@@ -215,7 +217,6 @@ export default async function CrmProspectDetailPage({
           actor: { select: { firstName: true, lastName: true } },
         },
       },
-      _count: { select: { activities: true } },
       tasks: {
         where: { status: "OPEN" },
         orderBy: { dueAt: "asc" },
@@ -253,6 +254,8 @@ export default async function CrmProspectDetailPage({
   if (!hasPermission(user, "crm.access") && !user.isSuperAdmin) {
     redirect("/crm/prospects");
   }
+
+  const outreachCount = await countOutreachActivities(deal.id);
 
   const canMutate = canMutateCrmDeal(user, deal.ownerId);
   const canEdit =
@@ -403,6 +406,7 @@ export default async function CrmProspectDetailPage({
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone={stageTone(uiStage)}>{STAGE_LABELS[uiStage]}</Badge>
+            <RelanceCountBadge count={outreachCount} />
             {linkedClient ? (
               <Badge tone="success">Client commercial</Badge>
             ) : null}
@@ -451,7 +455,7 @@ export default async function CrmProspectDetailPage({
             <ProspectDetailActions
               opportunityId={deal.id}
               stage={deal.stage}
-              activityCount={deal._count.activities}
+              activityCount={outreachCount}
               hasFollowUp={deal.followUpAt != null}
               canEditStage={canEdit}
               canLogActivity={canLog}

@@ -1,6 +1,9 @@
 import type { CrmActivityType, CrmPipelineStage } from "@prisma/client";
 
-/** GUIDE MSK : min. 3 actions journalisées avant passage PERDU. */
+/**
+ * GUIDE MSK : min. 3 relances (activités de suivi, hors NOTE) avant PERDU.
+ * Aligné LOT-G — voir `OUTREACH_ACTIVITY_TYPES` dans follow-up-count.ts.
+ */
 export const MIN_ACTIVITIES_BEFORE_LOST = 3;
 
 /** Canaux autorisés au passage Contacté (LOT-B Direction). */
