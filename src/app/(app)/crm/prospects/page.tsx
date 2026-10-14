@@ -8,7 +8,11 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { runSeries } from "@/lib/db/serial";
-import { crmVisibility, dealOwnerScopeWhere } from "@/lib/crm/scope";
+import {
+  crmProspectListScopeWhere,
+  crmVisibility,
+  dealOwnerScopeWhere,
+} from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
 import {
   SOURCE_LABELS,
@@ -148,12 +152,15 @@ export default async function CrmProspectsPage({
   const now = new Date();
   const pageSize = DEFAULT_PAGE_SIZE;
   const requestedPage = parsePage(sp.page);
-  const scope = dealOwnerScopeWhere(user, teamIds);
-  const where = buildProspectWhere(sp, scope, now);
+  /** LOT-E : liste partagée (tous les commerciaux voient tous les dossiers). */
+  const listScope = crmProspectListScopeWhere(user);
+  const where = buildProspectWhere(sp, listScope, now);
   const vis = crmVisibility(user);
+  /** KPIs perso en tête : toujours « mes » dossiers. */
+  const ownScope = dealOwnerScopeWhere(user, teamIds);
   const showOwnKpis = vis === "own";
   const openOwn: Prisma.CrmOpportunityWhereInput = {
-    ...scope,
+    ...ownScope,
     stage: { notIn: ["GAGNE", "PERDU"] },
   };
 
@@ -165,6 +172,7 @@ export default async function CrmProspectsPage({
         contacts: { where: { isPrimary: true }, take: 1 },
       },
     },
+    owner: { select: { firstName: true, lastName: true } },
     createdBy: { select: { firstName: true, lastName: true } },
   } as const;
 
@@ -200,22 +208,20 @@ export default async function CrmProspectsPage({
     ownKpis = { prospects, interesses, retards };
   }
 
-  const owners =
-    vis === "own"
-      ? []
-      : (
-          await prisma.user.findMany({
-            where: {
-              id: { in: Array.from(new Set([user.id, ...teamIds])) },
-              status: "ACTIVE",
-            },
-            select: { id: true, firstName: true, lastName: true },
-            orderBy: { firstName: "asc" },
-          })
-        ).map((u) => ({
-          value: u.id,
-          label: `${u.firstName} ${u.lastName}`,
-        }));
+  /** Filtre « Suivi par » disponible pour tous (lecture partagée LOT-E). */
+  const owners = (
+    await prisma.user.findMany({
+      where: {
+        id: { in: Array.from(new Set([user.id, ...teamIds])) },
+        status: "ACTIVE",
+      },
+      select: { id: true, firstName: true, lastName: true },
+      orderBy: { firstName: "asc" },
+    })
+  ).map((u) => ({
+    value: u.id,
+    label: `${u.firstName} ${u.lastName}`,
+  }));
 
   const canCreate = hasPermission(user, "crm.prospect.create");
   const stageFilterRaw = sp.stages
@@ -375,6 +381,7 @@ export default async function CrmProspectsPage({
                 <th className="px-4 py-3 font-semibold">Statut</th>
                 <th className="px-4 py-3 font-semibold">Prochaine action</th>
                 <th className="px-4 py-3 font-semibold">Relance</th>
+                <th className="px-4 py-3 font-semibold">Suivi par</th>
                 <th className="px-4 py-3 font-semibold">Créé</th>
                 <th className="px-4 py-3 font-semibold">Créé par</th>
               </tr>
@@ -383,7 +390,7 @@ export default async function CrmProspectsPage({
               {deals.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={10}
                     className="px-4 py-10 text-center text-msk-ink/40"
                   >
                     {qTrim
@@ -459,6 +466,9 @@ export default async function CrmProspectsPage({
                           </span>
                           {overdue ? <Badge tone="coral">Retard</Badge> : null}
                         </div>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-msk-ink/70">
+                        {d.owner.firstName} {d.owner.lastName}
                       </td>
                       <td className="px-4 py-3 text-xs text-msk-ink/55">
                         {d.createdAt.toLocaleDateString("fr-FR")}

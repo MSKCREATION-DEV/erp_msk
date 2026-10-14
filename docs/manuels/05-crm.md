@@ -1,9 +1,11 @@
 # Manuel — CRM / Suivi commercial (prospects, relances, scripts)
 
-**Version** : 2026-10-14 · LOT-B (commentaire Contacté)  
+**Version** : 2026-10-14 · LOT-E (lecture partagée)  
 **Public** : Commerciaux, Admin CRM, Direction
 
 ## À retenir
+
+**Lecture partagée / écriture affectée :** tous les commerciaux voient tous les prospects (anti-doublon). Journaliser, changer le statut ou éditer = réservé au **suivi** (ou Admin CRM / Direction via « Changer le suivi »).
 
 Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 
@@ -62,7 +64,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
-| 2026-10-14 | LOT-D : transform → Client auto ; LOT-C édition ; LOT-B Contacté |
+| 2026-10-14 | LOT-E : lecture partagée + Changer le suivi ; LOT-D transform Client ; LOT-C édition ; LOT-B Contacté |
 | 2026-10-13 | Objectifs : dashboard tous collabs, page admin assignation, Vue Équipe enrichie, rapport reflète cibles |
 | 2026-10-13 | Tableau de bord : MetricNavCard, Conversion Signé/En cours, Répartition filtres URL |
 | 2026-10-12 | Menu / Tableau de bord / Vue Équipe / Rapport ; client dès Intéressé ; SLA 24h |

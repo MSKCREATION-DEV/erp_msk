@@ -3,8 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { crmVisibility } from "@/lib/crm/scope";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import { canMutateCrmDeal } from "@/lib/crm/scope";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { ProspectEditForm } from "@/components/crm/prospect-edit-form";
@@ -36,22 +35,14 @@ export default async function CrmProspectEditPage({
   });
   if (!deal) notFound();
 
-  const vis = crmVisibility(user);
-  if (vis === "own" && deal.ownerId !== user.id) redirect("/crm/prospects");
-  if (vis === "team") {
-    const team = await commercialTeamUserIds();
-    if (deal.ownerId !== user.id && !team.includes(deal.ownerId)) {
-      redirect("/crm/prospects");
-    }
+  if (!hasPermission(user, "crm.access") && !user.isSuperAdmin) {
+    redirect("/crm/prospects");
   }
 
+  /** LOT-E : édition réservée à l’affecté (+ admin / direction). */
   const canEdit =
-    user.isSuperAdmin ||
-    (hasPermission(user, "crm.prospect.edit_own") &&
-      (deal.ownerId === user.id ||
-        hasPermission(user, "crm.reassign") ||
-        hasPermission(user, "crm.view_team") ||
-        hasPermission(user, "crm.reports.global")));
+    canMutateCrmDeal(user, deal.ownerId) &&
+    (user.isSuperAdmin || hasPermission(user, "crm.prospect.edit_own"));
 
   if (!canEdit) redirect(`/crm/prospects/${deal.id}`);
 

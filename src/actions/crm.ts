@@ -26,6 +26,11 @@ import {
 } from "@/lib/crm/guide-rules";
 import { ACTIVITY_LABELS } from "@/lib/crm/labels";
 import { GOAL_METRICS } from "@/lib/crm/goals";
+import {
+  canMutateCrmDeal,
+  canReassignCrmDeal,
+} from "@/lib/crm/scope";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import type { ActionResult } from "@/actions/auth";
 
 const stageSchema = z.nativeEnum(CrmPipelineStage);
@@ -330,14 +335,10 @@ const updateProspectSchema = z
   });
 
 function canEditProspectDeal(actor: SessionUser, ownerId: string): boolean {
-  if (actor.isSuperAdmin) return true;
-  if (!hasPermission(actor, "crm.prospect.edit_own")) return false;
-  return (
-    ownerId === actor.id ||
-    hasPermission(actor, "crm.reassign") ||
-    hasPermission(actor, "crm.view_team") ||
-    hasPermission(actor, "crm.reports.global")
-  );
+  if (!hasPermission(actor, "crm.prospect.edit_own") && !actor.isSuperAdmin) {
+    return false;
+  }
+  return canMutateCrmDeal(actor, ownerId);
 }
 
 /**
@@ -491,6 +492,114 @@ export async function updateProspectAction(
   redirect(`/crm/prospects/${deal.id}`);
 }
 
+const reassignProspectSchema = z.object({
+  opportunityId: z.string().trim().min(1),
+  newOwnerId: z.string().trim().min(1),
+});
+
+/**
+ * LOT-E — changer le suivi (org + deal). Admin / direction (`crm.reassign`).
+ */
+export async function reassignProspectAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.reassign" });
+  if (!canReassignCrmDeal(actor)) {
+    return { ok: false, error: "Pas le droit de changer le suivi" };
+  }
+
+  const parsed = reassignProspectSchema.safeParse({
+    opportunityId: String(formData.get("opportunityId") ?? ""),
+    newOwnerId: String(formData.get("newOwnerId") ?? ""),
+  });
+  if (!parsed.success) {
+    return { ok: false, error: "Affectation invalide" };
+  }
+  const { opportunityId, newOwnerId } = parsed.data;
+
+  const deal = await prisma.crmOpportunity.findUnique({
+    where: { id: opportunityId },
+    select: {
+      id: true,
+      ownerId: true,
+      organizationId: true,
+      organization: { select: { name: true } },
+    },
+  });
+  if (!deal) return { ok: false, error: "Prospect introuvable" };
+  if (deal.ownerId === newOwnerId) {
+    return { ok: false, error: "Ce commercial suit déjà ce dossier" };
+  }
+
+  const teamIds = await commercialTeamUserIds();
+  if (!teamIds.includes(newOwnerId)) {
+    return {
+      ok: false,
+      error: "Le nouveau suivi doit être un membre du groupe Commerciaux",
+    };
+  }
+
+  const newOwner = await prisma.user.findFirst({
+    where: { id: newOwnerId, status: "ACTIVE" },
+    select: { id: true, firstName: true, lastName: true },
+  });
+  if (!newOwner) {
+    return { ok: false, error: "Utilisateur introuvable ou inactif" };
+  }
+
+  const now = new Date();
+  await prisma.$transaction(async (tx) => {
+    await tx.crmOrganization.update({
+      where: { id: deal.organizationId },
+      data: { ownerId: newOwnerId },
+    });
+    await tx.crmOpportunity.update({
+      where: { id: deal.id },
+      data: { ownerId: newOwnerId },
+    });
+    await tx.crmTask.updateMany({
+      where: {
+        opportunityId: deal.id,
+        status: CrmTaskStatus.OPEN,
+      },
+      data: { assigneeId: newOwnerId },
+    });
+    await tx.crmActivity.create({
+      data: {
+        opportunityId: deal.id,
+        organizationId: deal.organizationId,
+        type: CrmActivityType.NOTE,
+        summary: `Suivi réassigné à ${newOwner.firstName} ${newOwner.lastName}`,
+        body: `Ancien suivi : ${deal.ownerId}`,
+        actorId: actor.id,
+        occurredAt: now,
+      },
+    });
+  });
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "crm.reassign",
+    entityType: "crm_opportunity",
+    entityId: deal.id,
+    metadata: {
+      fromOwnerId: deal.ownerId,
+      toOwnerId: newOwnerId,
+      organizationId: deal.organizationId,
+    },
+  });
+
+  revalidatePath("/crm");
+  revalidatePath("/crm/prospects");
+  revalidatePath(`/crm/prospects/${deal.id}`);
+  revalidatePath("/crm/relances");
+  revalidatePath("/crm/equipe");
+  return {
+    ok: true,
+    message: `Suivi confié à ${newOwner.firstName} ${newOwner.lastName}`,
+  };
+}
+
 export async function updateOpportunityStageAction(
   formData: FormData,
 ): Promise<ActionResult> {
@@ -514,12 +623,7 @@ export async function updateOpportunityStageAction(
   });
   if (!deal) return { ok: false, error: "Opportunité introuvable" };
 
-  const canTeam =
-    actor.isSuperAdmin ||
-    hasPermission(actor, "crm.reports.global") ||
-    hasPermission(actor, "crm.reassign") ||
-    hasPermission(actor, "crm.view_team");
-  if (deal.ownerId !== actor.id && !canTeam) {
+  if (!canMutateCrmDeal(actor, deal.ownerId)) {
     return { ok: false, error: "Pas le droit de modifier ce deal" };
   }
 
@@ -638,11 +742,7 @@ export async function logActivityAction(
   });
   if (!deal) return { ok: false, error: "Deal introuvable" };
 
-  const canTeam =
-    actor.isSuperAdmin ||
-    hasPermission(actor, "crm.view_team") ||
-    hasPermission(actor, "crm.reports.global");
-  if (deal.ownerId !== actor.id && !canTeam) {
+  if (!canMutateCrmDeal(actor, deal.ownerId)) {
     return { ok: false, error: "Pas le droit sur ce prospect" };
   }
 

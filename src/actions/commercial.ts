@@ -26,8 +26,7 @@ import {
   canTransitionQuoteStatus,
   permissionForQuoteStatus,
 } from "@/lib/commercial/quote-transitions";
-import { crmVisibility } from "@/lib/crm/scope";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import { canMutateCrmDeal } from "@/lib/crm/scope";
 import { generateCommercialPdf } from "@/lib/pdf/commercial";
 import { uploadGedObject } from "@/lib/ged/storage";
 import { getSignaturePngBytes } from "@/lib/signatures/resolve";
@@ -98,18 +97,12 @@ function parseLinesJson(raw: string): z.infer<typeof lineSchema>[] | null {
   }
 }
 
-async function assertCrmDealAccess(
+/** LOT-E — conversion / devis liés : écriture réservée à l’affecté (+ reassign / direction). */
+function assertCrmDealAccess(
   actor: Awaited<ReturnType<typeof requireUser>>,
   ownerId: string,
-): Promise<boolean> {
-  const vis = crmVisibility(actor);
-  if (vis === "global") return true;
-  if (ownerId === actor.id) return true;
-  if (vis === "team") {
-    const team = await commercialTeamUserIds();
-    return team.includes(ownerId);
-  }
-  return false;
+): boolean {
+  return canMutateCrmDeal(actor, ownerId);
 }
 
 function revalidateCommercial(paths: string[] = []) {
@@ -281,7 +274,7 @@ export async function convertOpportunityToClientAction(
         "Passez d’abord le prospect en Intéressé (ou Devis envoyé / Client) avant de transformer.",
     };
   }
-  if (!(await assertCrmDealAccess(actor, deal.ownerId))) {
+  if (!assertCrmDealAccess(actor, deal.ownerId)) {
     return { ok: false, error: "Opportunité hors périmètre CRM" };
   }
 
@@ -531,7 +524,7 @@ export async function createQuoteAction(
       select: { id: true, organizationId: true, ownerId: true, stage: true },
     });
     if (!deal) return { ok: false, error: "Prospect lié introuvable" };
-    if (!(await assertCrmDealAccess(actor, deal.ownerId))) {
+    if (!assertCrmDealAccess(actor, deal.ownerId)) {
       return { ok: false, error: "Prospect hors périmètre CRM" };
     }
     const uiStage =

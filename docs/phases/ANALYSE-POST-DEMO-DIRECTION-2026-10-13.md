@@ -406,7 +406,7 @@ flowchart TD
 | **LOT-B** | P0-2 Commentaire Contacté | Non | — | Stage Contacté bloquant + journal — **implémenté 2026-10-14** |
 | **LOT-C** | P0-3 Édition prospect (champs cœur) | Non | Droits edit | `/edit` + audit ; pas multi-contacts — **implémenté 2026-10-14** |
 | **LOT-D** | P1-1 Transformer en client | Non | LOT-A (CTA devis mort) | Bouton fiche ; pont intact — **implémenté 2026-10-14** (auto GAGNE + confirm) |
-| **LOT-E** | P1-4 Visibilité + réassign UI | Non (RBAC/packs) | GO modèle shared-read | Yaye voit Madina ; mute si non owner |
+| **LOT-E** | P1-4 Visibilité + réassign UI | **OK** 2026-10-14 | shared-read / owned-write | Yaye voit Madina ; mute si non owner |
 | **LOT-F** | P1-5 Doublons create | Index additifs possibles | LOT-C idéal | Alerte wizard + journal si ignore |
 | **LOT-G** | P1-3 Compteur relances | Non ou compteur dérivé | Définition métier | Badge N× fiche + dashboard |
 | **LOT-H** | P1-2 strate A `CLIENTS_SIGNED` | Non (metric string) | Définition « signé » | Objectif + progression semaine |

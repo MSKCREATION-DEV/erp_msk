@@ -15,7 +15,10 @@ import {
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { crmVisibility } from "@/lib/crm/scope";
+import {
+  canMutateCrmDeal,
+  canReassignCrmDeal,
+} from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
 import {
   ACTIVITY_LABELS,
@@ -35,6 +38,7 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ProspectDetailActions } from "@/components/crm/prospect-detail-actions";
+import { ProspectReassignForm } from "@/components/crm/prospect-reassign-form";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { OfferConfigBadges } from "@/components/crm/offer-config-badges";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
@@ -228,22 +232,16 @@ export default async function CrmProspectDetailPage({
   });
   if (!deal) notFound();
 
-  const vis = crmVisibility(user);
-  if (vis === "own" && deal.ownerId !== user.id) redirect("/crm/prospects");
-  if (vis === "team") {
-    const team = await commercialTeamUserIds();
-    if (deal.ownerId !== user.id && !team.includes(deal.ownerId)) {
-      redirect("/crm/prospects");
-    }
+  /** LOT-E : lecture partagée — tout crm.access peut ouvrir la fiche. */
+  if (!hasPermission(user, "crm.access") && !user.isSuperAdmin) {
+    redirect("/crm/prospects");
   }
 
+  const canMutate = canMutateCrmDeal(user, deal.ownerId);
   const canEdit =
-    user.isSuperAdmin ||
-    (hasPermission(user, "crm.prospect.edit_own") &&
-      (deal.ownerId === user.id ||
-        hasPermission(user, "crm.reassign") ||
-        hasPermission(user, "crm.view_team") ||
-        hasPermission(user, "crm.reports.global")));
+    canMutate &&
+    (user.isSuperAdmin || hasPermission(user, "crm.prospect.edit_own"));
+  const canReassign = canReassignCrmDeal(user);
 
   const linkedClient = await prisma.comClient.findFirst({
     where: {
@@ -255,8 +253,10 @@ export default async function CrmProspectDetailPage({
     select: { id: true, name: true, includeTravelDefault: true },
   });
 
-  const canCreateQuote = hasPermission(user, "com.devis.create");
-  const canManageClients = hasPermission(user, "com.clients.manage");
+  const canCreateQuote =
+    canMutate && hasPermission(user, "com.devis.create");
+  const canManageClients =
+    canMutate && hasPermission(user, "com.clients.manage");
 
   const [catalogOffers, quoteDocs] = await Promise.all([
     canCreateQuote
@@ -313,12 +313,26 @@ export default async function CrmProspectDetailPage({
     null;
   const sameOwnerAsCreator = deal.ownerId === deal.createdById;
 
-  const canLog = hasPermission(user, "crm.activity.log");
+  const canLog =
+    canMutate && hasPermission(user, "crm.activity.log");
   const requireFollowUp =
     deal.followUpAt == null &&
     uiStage !== "NOUVEAU" &&
     uiStage !== "GAGNE" &&
     uiStage !== "PERDU";
+  const readOnlyShared = !canMutate;
+
+  const teamIds = canReassign ? await commercialTeamUserIds() : [];
+  const reassignCandidates = canReassign
+    ? await prisma.user.findMany({
+        where: {
+          id: { in: Array.from(new Set([user.id, ...teamIds])) },
+          status: "ACTIVE",
+        },
+        select: { id: true, firstName: true, lastName: true },
+        orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
+      })
+    : [];
 
   const quotePrefill = (() => {
     const seen = new Set<string>();
@@ -389,6 +403,13 @@ export default async function CrmProspectDetailPage({
                 Modifier
               </Link>
             ) : null}
+            {canReassign ? (
+              <ProspectReassignForm
+                opportunityId={deal.id}
+                currentOwnerId={deal.ownerId}
+                candidates={reassignCandidates}
+              />
+            ) : null}
             {hasPermission(user, "crm.scripts.view") ? (
               <Link
                 prefetch={false}
@@ -432,6 +453,19 @@ export default async function CrmProspectDetailPage({
           </div>
         }
       />
+
+      {readOnlyShared ? (
+        <Surface className="border border-msk-ink/10 bg-msk-chalk/50 px-5 py-3.5">
+          <p className="text-sm font-semibold text-msk-ink">
+            Lecture seule — suivi par {deal.owner.firstName}{" "}
+            {deal.owner.lastName}
+          </p>
+          <p className="mt-0.5 text-xs text-msk-ink/55">
+            Vous voyez ce dossier pour éviter les doublons. Pour journaliser ou
+            modifier, demandez une affectation à la Direction / Admin CRM.
+          </p>
+        </Surface>
+      ) : null}
 
       {linkedClient ? (
         <Surface className="flex flex-wrap items-center justify-between gap-3 border border-msk-blue/20 bg-msk-blue/[0.04] px-5 py-3.5">
