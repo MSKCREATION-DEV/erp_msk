@@ -361,7 +361,7 @@ export default async function CrmProspectsPage({
         <ScopeFocusBanner
           label={focusOwnerLabel}
           clearHref={clearOwnerHref}
-          clearLabel="Toute l’équipe"
+          clearAriaLabel="Voir toute l’équipe"
         />
       ) : null}
 

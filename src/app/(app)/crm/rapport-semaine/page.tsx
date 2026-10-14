@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { FolderOpen, Target, Users } from "lucide-react";
+import { FolderOpen, Target } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -202,24 +202,8 @@ export default async function CrmRapportPage({
         <ScopeFocusBanner
           label={scopeLabel}
           clearHref={clearHref}
-          clearLabel="Toute l’équipe"
+          clearAriaLabel="Voir toute l’équipe"
         >
-          <ActionLink
-            href={objectifsHref}
-            icon={Target}
-            variant="secondary"
-            size="sm"
-          >
-            Objectifs
-          </ActionLink>
-          <ActionLink
-            href={`/crm/equipe?owner=${focusOwnerId}`}
-            icon={Users}
-            variant="secondary"
-            size="sm"
-          >
-            Vue Équipe
-          </ActionLink>
           <ActionLink
             href={`/crm/prospects?owner=${focusOwnerId}`}
             icon={FolderOpen}

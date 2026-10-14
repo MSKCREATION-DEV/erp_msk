@@ -5,17 +5,19 @@ import { cn } from "@/lib/utils";
 
 /**
  * Bandeau de contexte quand une page réagit à un filtre collab (`?owner=` / `?collab=`).
+ * Fermeture = croix seule (pas de libellé « Toute l’équipe » / « Vue d’ensemble »).
  */
 export function ScopeFocusBanner({
   label,
   clearHref,
-  clearLabel = "Toute l’équipe",
+  clearAriaLabel = "Fermer le focus collaborateur",
   className,
   children,
 }: {
   label: string;
   clearHref: string;
-  clearLabel?: string;
+  /** Accessible name for the icon-only clear control. */
+  clearAriaLabel?: string;
   className?: string;
   children?: ReactNode;
 }) {
@@ -37,10 +39,11 @@ export function ScopeFocusBanner({
         <Link
           prefetch={false}
           href={clearHref}
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-msk-ink/12 bg-white px-3 text-sm font-medium text-msk-ink/70 transition hover:bg-msk-chalk"
+          aria-label={clearAriaLabel}
+          title={clearAriaLabel}
+          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-msk-ink/12 bg-white text-msk-ink/70 transition hover:bg-msk-chalk hover:text-msk-ink"
         >
-          <X className="h-3.5 w-3.5" aria-hidden />
-          {clearLabel}
+          <X className="h-4 w-4" aria-hidden />
         </Link>
       </div>
     </div>

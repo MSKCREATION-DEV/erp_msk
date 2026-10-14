@@ -302,7 +302,7 @@ export default async function CrmObjectifsPage({
           <ScopeFocusBanner
             label={`${focusCollab.firstName} ${focusCollab.lastName}`}
             clearHref="/crm/objectifs"
-            clearLabel="Vue d’ensemble"
+            clearAriaLabel="Retour à la vue d’ensemble"
           >
             <ActionLink
               href={`/crm/rapport-semaine?owner=${focusCollab.id}`}

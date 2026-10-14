@@ -151,13 +151,10 @@ export default async function CrmEquipePage({
         backLabel="Retour Menu"
         breadcrumbs={[{ label: "Commercial", href: "/commercial" }]}
         actions={
-          canManageGoals ? (
+          /** Pas d’Objectifs en en-tête quand un collab est déjà en focus. */
+          canManageGoals && !filterOwner ? (
             <ActionLink
-              href={
-                filterOwner
-                  ? `/crm/objectifs?collab=${filterOwner}`
-                  : "/crm/objectifs"
-              }
+              href="/crm/objectifs"
               icon={Target}
               variant="secondary"
             >
@@ -171,18 +168,8 @@ export default async function CrmEquipePage({
         <ScopeFocusBanner
           label={filteredName}
           clearHref="/crm/equipe"
-          clearLabel="Toute l’équipe"
+          clearAriaLabel="Voir toute l’équipe"
         >
-          {canManageGoals ? (
-            <ActionLink
-              href={`/crm/objectifs?collab=${filterOwner}`}
-              icon={Target}
-              variant="secondary"
-              size="sm"
-            >
-              Assigner objectifs
-            </ActionLink>
-          ) : null}
           <ActionLink
             href={`/crm/rapport-semaine?owner=${filterOwner}`}
             icon={FileText}
