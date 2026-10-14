@@ -283,18 +283,18 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
               />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
-              <FieldLabel htmlFor="notes">Résumé entreprise</FieldLabel>
+              <FieldLabel htmlFor="notes">Note</FieldLabel>
               <Textarea
                 id="notes"
                 name="notes"
                 rows={3}
                 defaultValue={initial.notes}
-                placeholder="Type d’activité, contexte, info utile pour l’équipe…"
+                placeholder="Contexte, besoin exprimé, points d’attention pour l’équipe…"
                 disabled={pending}
               />
               <FieldHint>
-                Visible dans l’ERP uniquement — pas sur les devis. Distinct du
-                contact principal.
+                Note libre sur ce prospect — visible sur la fiche, pas sur les
+                devis.
               </FieldHint>
             </div>
           </div>

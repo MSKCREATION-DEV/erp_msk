@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Star, Trash2 } from "lucide-react";
 import type { CrmContactChannelType } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,10 @@ const PLACEHOLDERS: Record<CrmContactChannelType, string> = {
   AUTRE: "Autre moyen…",
 };
 
+/**
+ * Moyens de contact — un seul principal via étoile (pattern CRM / carnets).
+ * Pas de libellé « Principal ? » : état clair, action évidente.
+ */
 export function ContactChannelsEditor({
   value,
   onChange,
@@ -72,7 +76,8 @@ export function ContactChannelsEditor({
         <div>
           <FieldLabel required>Moyens de contact</FieldLabel>
           <FieldHint>
-            Au moins un moyen · un seul principal (étoile).
+            Au moins un moyen · l’étoile marque le canal principal (appel,
+            WhatsApp…).
           </FieldHint>
         </div>
         <Button
@@ -92,8 +97,10 @@ export function ContactChannelsEditor({
           <li
             key={index}
             className={cn(
-              "grid gap-2 rounded-xl border border-msk-ink/10 bg-msk-chalk/40 p-3 sm:grid-cols-[140px_1fr_auto_auto]",
-              row.isPrimary && "border-msk-blue/30 bg-msk-blue/[0.04]",
+              "grid items-center gap-2 rounded-xl border p-3 transition sm:grid-cols-[132px_1fr_auto_auto]",
+              row.isPrimary
+                ? "border-msk-blue/35 bg-msk-blue/[0.04] shadow-sm shadow-msk-blue/5"
+                : "border-msk-ink/10 bg-msk-chalk/40",
             )}
           >
             <select
@@ -127,29 +134,50 @@ export function ContactChannelsEditor({
             />
             <button
               type="button"
-              disabled={disabled}
+              disabled={disabled || row.isPrimary}
               onClick={() => setPrimary(index)}
-              className={cn(
-                "inline-flex h-10 items-center justify-center rounded-lg border px-3 text-xs font-medium transition",
+              title={
                 row.isPrimary
-                  ? "border-msk-blue bg-msk-blue text-white"
-                  : "border-msk-ink/15 bg-white text-msk-ink/60 hover:border-msk-blue/40",
-              )}
+                  ? "Canal principal"
+                  : "Définir comme canal principal"
+              }
+              aria-label={
+                row.isPrimary
+                  ? "Canal principal"
+                  : "Définir comme canal principal"
+              }
               aria-pressed={row.isPrimary}
+              className={cn(
+                "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition",
+                row.isPrimary
+                  ? "cursor-default border-msk-blue/25 bg-msk-blue/10 text-msk-blue"
+                  : "border-msk-ink/12 bg-white text-msk-ink/35 hover:border-msk-blue/35 hover:bg-msk-blue/[0.04] hover:text-msk-blue",
+                disabled && "opacity-50",
+              )}
             >
-              {row.isPrimary ? "Principal" : "Principal ?"}
+              <Star
+                className={cn("h-4 w-4", row.isPrimary && "fill-current")}
+                aria-hidden
+              />
             </button>
             <Button
               type="button"
               variant="secondary"
               size="sm"
-              className="h-10"
+              className="h-10 w-10 shrink-0 px-0"
               disabled={disabled || value.length <= 1}
               onClick={() => removeRow(index)}
               aria-label="Retirer ce moyen"
+              title="Retirer"
             >
               <Trash2 className="h-4 w-4" aria-hidden />
             </Button>
+            {row.isPrimary ? (
+              <p className="sm:col-span-4 text-[11px] font-medium text-msk-blue">
+                Canal principal — utilisé en priorité sur la fiche et les
+                relances.
+              </p>
+            ) : null}
           </li>
         ))}
       </ul>

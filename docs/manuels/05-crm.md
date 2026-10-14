@@ -37,7 +37,7 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 | **Suivi par** | Qui porte le dossier |
 | **Créé par** | Qui a créé la fiche |
 | **Statut** | 7 étapes LISTES — dont **En discussion** (échange) |
-| **Notes** | Contexte activité / échanges longs (fiche, à droite d’Entreprise) |
+| **Note** | Note libre sur le prospect (création / édition / fiche à droite d’Entreprise) |
 | **Contacts** | Zone haute droite de la fiche (canaux inclus) |
 | **Secteur** | Liste MSK + Autre (précision) |
 | **Origine** | Source du contact |
