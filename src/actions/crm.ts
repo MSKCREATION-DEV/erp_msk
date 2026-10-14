@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import {
   CrmActivityType,
+  CrmContactChannelType,
   CrmLossReason,
   CrmPipelineStage,
   CrmSource,
@@ -31,6 +32,19 @@ import {
   canReassignCrmDeal,
 } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
+import {
+  mirrorPhoneEmail,
+  normalizeChannelValue,
+  parseChannelsJson,
+  validateChannels,
+  type ChannelInput,
+} from "@/lib/crm/channels";
+import { sanitizeUrl } from "@/lib/crm/social";
+import {
+  hasExactOrgDuplicate,
+  searchContactDuplicates,
+  searchOrgDuplicates,
+} from "@/lib/crm/duplicate-search";
 import type { ActionResult } from "@/actions/auth";
 
 const stageSchema = z.nativeEnum(CrmPipelineStage);
@@ -69,6 +83,11 @@ const createProspectSchema = z
     sector: z.string().trim().max(120).optional().default(""),
     city: z.string().trim().max(120).optional().default(""),
     website: z.string().trim().max(300).optional().default(""),
+    instagramUrl: z.string().trim().max(400).optional().default(""),
+    linkedinUrl: z.string().trim().max(400).optional().default(""),
+    tiktokUrl: z.string().trim().max(400).optional().default(""),
+    facebookUrl: z.string().trim().max(400).optional().default(""),
+    whatsappUrl: z.string().trim().max(400).optional().default(""),
     offerLabel: z.string().trim().max(200).optional().default(""),
     budgetXof: z.string().trim().optional().default(""),
     nextAction: z.string().trim().max(300).optional().default(""),
@@ -76,13 +95,7 @@ const createProspectSchema = z
     notes: z.string().trim().max(4000).optional().default(""),
   })
   .superRefine((data, ctx) => {
-    if (!data.phone && !data.email) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Téléphone ou e-mail obligatoire",
-        path: ["phone"],
-      });
-    }
+    // Channels validés à part (channelsJson) — phone/email restent fallback.
     if (data.nextAction && !data.followUpAt) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -109,6 +122,70 @@ function fdString(formData: FormData, key: string): string {
   return v == null ? "" : String(v);
 }
 
+function resolveChannelsFromForm(formData: FormData): ChannelInput[] | { error: string } {
+  const raw = fdString(formData, "channelsJson");
+  const parsed = parseChannelsJson(raw);
+  if (parsed && parsed.length > 0) {
+    const err = validateChannels(parsed);
+    if (err) return { error: err };
+    return parsed;
+  }
+  const phone = fdString(formData, "phone").trim();
+  const email = fdString(formData, "email").trim();
+  if (!phone && !email) {
+    return { error: "Au moins un moyen de contact est obligatoire." };
+  }
+  const fallback: ChannelInput[] = [];
+  if (phone) {
+    fallback.push({ type: "PHONE", value: phone, isPrimary: true });
+  }
+  if (email) {
+    fallback.push({
+      type: "EMAIL",
+      value: email,
+      isPrimary: fallback.length === 0,
+    });
+  }
+  return fallback;
+}
+
+/**
+ * LOT-F — candidats doublons entreprise (exact / fuzzy).
+ */
+export async function findOrgDuplicateCandidatesAction(
+  formData: FormData,
+): Promise<
+  | { ok: true; candidates: Awaited<ReturnType<typeof searchOrgDuplicates>> }
+  | { ok: false; error: string }
+> {
+  await requireUser({ permission: "crm.prospect.create" });
+  const orgName = fdString(formData, "orgName").trim();
+  if (orgName.length < 2) {
+    return { ok: false, error: "Indiquez le nom de l’entreprise." };
+  }
+  const candidates = await searchOrgDuplicates(orgName);
+  return { ok: true, candidates };
+}
+
+/**
+ * LOT-F — candidats doublons contact (tél / e-mail / canaux).
+ */
+export async function findContactDuplicateCandidatesAction(
+  formData: FormData,
+): Promise<
+  | {
+      ok: true;
+      candidates: Awaited<ReturnType<typeof searchContactDuplicates>>;
+    }
+  | { ok: false; error: string }
+> {
+  await requireUser({ permission: "crm.prospect.create" });
+  const channels = resolveChannelsFromForm(formData);
+  if ("error" in channels) return { ok: false, error: channels.error };
+  const candidates = await searchContactDuplicates(channels);
+  return { ok: true, candidates };
+}
+
 /** Succès → `redirect` Next.js (jamais return ok). Erreur → `{ ok: false }`. */
 export async function createProspectAction(
   formData: FormData,
@@ -128,6 +205,11 @@ export async function createProspectAction(
     sector: fdString(formData, "sector"),
     city: fdString(formData, "city"),
     website: fdString(formData, "website"),
+    instagramUrl: fdString(formData, "instagramUrl"),
+    linkedinUrl: fdString(formData, "linkedinUrl"),
+    tiktokUrl: fdString(formData, "tiktokUrl"),
+    facebookUrl: fdString(formData, "facebookUrl"),
+    whatsappUrl: fdString(formData, "whatsappUrl"),
     offerLabel: fdString(formData, "offerLabel"),
     budgetXof: fdString(formData, "budgetXof"),
     nextAction: fdString(formData, "nextAction"),
@@ -144,13 +226,20 @@ export async function createProspectAction(
     return { ok: false, error: message };
   }
 
+  const channelsOrErr = resolveChannelsFromForm(formData);
+  if ("error" in channelsOrErr) {
+    return { ok: false, error: channelsOrErr.error };
+  }
+  const channels = channelsOrErr;
+  const mirrored = mirrorPhoneEmail(channels);
+
   const data = parsed.data;
   const orgName = data.orgName;
   const contactFirst = data.contactFirst;
   const contactLast = data.contactLast;
   const title = data.title || orgName;
-  const phone = data.phone || null;
-  const email = data.email || null;
+  const phone = mirrored.phone;
+  const email = mirrored.email;
   const jobTitle = data.jobTitle || null;
   const sector = data.sector || null;
   const city = data.city || null;
@@ -162,6 +251,14 @@ export async function createProspectAction(
   const followUpAt = data.followUpAt ? new Date(data.followUpAt) : null;
   const notes = data.notes || null;
   const src = data.source;
+
+  if (await hasExactOrgDuplicate(orgName)) {
+    return {
+      ok: false,
+      error:
+        "Une entreprise avec exactement le même nom existe déjà. Ouvrez la fiche existante.",
+    };
+  }
 
   type OfferLink = {
     catalogOfferId: string;
@@ -198,6 +295,11 @@ export async function createProspectAction(
       sector,
       city,
       website,
+      instagramUrl: sanitizeUrl(data.instagramUrl),
+      linkedinUrl: sanitizeUrl(data.linkedinUrl),
+      tiktokUrl: sanitizeUrl(data.tiktokUrl),
+      facebookUrl: sanitizeUrl(data.facebookUrl),
+      whatsappUrl: sanitizeUrl(data.whatsappUrl),
       source: src,
       notes,
       ownerId: actor.id,
@@ -210,6 +312,14 @@ export async function createProspectAction(
           phone,
           jobTitle,
           isPrimary: true,
+          channels: {
+            create: channels.map((c) => ({
+              type: c.type as CrmContactChannelType,
+              value: c.value.trim(),
+              normalizedValue: normalizeChannelValue(c.type, c.value),
+              isPrimary: c.isPrimary,
+            })),
+          },
         },
       },
     },
@@ -252,6 +362,21 @@ export async function createProspectAction(
         dueAt: followUpAt,
         assigneeId: actor.id,
         createdById: actor.id,
+      },
+    });
+  }
+
+  const ackFuzzy = fdString(formData, "acknowledgeFuzzy") === "1";
+  const fuzzyIds = fdString(formData, "fuzzyCandidateIds").trim();
+  if (ackFuzzy && fuzzyIds) {
+    await writeAudit({
+      actorId: actor.id,
+      action: "crm.duplicate.ignored",
+      entityType: "crm_opportunity",
+      entityId: deal.id,
+      metadata: {
+        orgName,
+        candidateIds: fuzzyIds.split(",").filter(Boolean).slice(0, 10),
       },
     });
   }
@@ -301,19 +426,17 @@ const updateProspectSchema = z
     city: z.string().trim().max(120).optional().default(""),
     country: z.string().trim().max(4).optional().default("ML"),
     website: z.string().trim().max(300).optional().default(""),
+    instagramUrl: z.string().trim().max(400).optional().default(""),
+    linkedinUrl: z.string().trim().max(400).optional().default(""),
+    tiktokUrl: z.string().trim().max(400).optional().default(""),
+    facebookUrl: z.string().trim().max(400).optional().default(""),
+    whatsappUrl: z.string().trim().max(400).optional().default(""),
     budgetXof: z.string().trim().optional().default(""),
     nextAction: z.string().trim().max(300).optional().default(""),
     followUpAt: z.string().trim().optional().default(""),
     notes: z.string().trim().max(4000).optional().default(""),
   })
   .superRefine((data, ctx) => {
-    if (!data.phone && !data.email) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Téléphone ou e-mail obligatoire",
-        path: ["phone"],
-      });
-    }
     if (data.nextAction && !data.followUpAt) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -364,6 +487,11 @@ export async function updateProspectAction(
     city: fdString(formData, "city"),
     country: fdString(formData, "country") || "ML",
     website: fdString(formData, "website"),
+    instagramUrl: fdString(formData, "instagramUrl"),
+    linkedinUrl: fdString(formData, "linkedinUrl"),
+    tiktokUrl: fdString(formData, "tiktokUrl"),
+    facebookUrl: fdString(formData, "facebookUrl"),
+    whatsappUrl: fdString(formData, "whatsappUrl"),
     budgetXof: fdString(formData, "budgetXof"),
     nextAction: fdString(formData, "nextAction"),
     followUpAt: fdString(formData, "followUpAt"),
@@ -377,13 +505,24 @@ export async function updateProspectAction(
     return { ok: false, error: message };
   }
 
+  const channelsOrErr = resolveChannelsFromForm(formData);
+  if ("error" in channelsOrErr) {
+    return { ok: false, error: channelsOrErr.error };
+  }
+  const channels = channelsOrErr;
+  const mirrored = mirrorPhoneEmail(channels);
+
   const data = parsed.data;
   const deal = await prisma.crmOpportunity.findUnique({
     where: { id: data.opportunityId },
     include: {
       organization: {
         include: {
-          contacts: { where: { isPrimary: true }, take: 1 },
+          contacts: {
+            where: { isPrimary: true },
+            take: 1,
+            include: { channels: true },
+          },
         },
       },
     },
@@ -419,11 +558,12 @@ export async function updateProspectAction(
     if (primary.firstName !== data.contactFirst) changed.push("contactFirst");
     if ((primary.lastName ?? "") !== data.contactLast) changed.push("contactLast");
     if ((primary.jobTitle ?? "") !== data.jobTitle) changed.push("jobTitle");
-    if ((primary.phone ?? "") !== data.phone) changed.push("phone");
-    if ((primary.email ?? "") !== data.email) changed.push("email");
+    if ((primary.phone ?? "") !== (mirrored.phone ?? "")) changed.push("phone");
+    if ((primary.email ?? "") !== (mirrored.email ?? "")) changed.push("email");
   } else {
     changed.push("contact");
   }
+  changed.push("channels");
 
   await prisma.$transaction(async (tx) => {
     await tx.crmOrganization.update({
@@ -435,11 +575,17 @@ export async function updateProspectAction(
         city: data.city || null,
         country: data.country || "ML",
         website: data.website || null,
+        instagramUrl: sanitizeUrl(data.instagramUrl),
+        linkedinUrl: sanitizeUrl(data.linkedinUrl),
+        tiktokUrl: sanitizeUrl(data.tiktokUrl),
+        facebookUrl: sanitizeUrl(data.facebookUrl),
+        whatsappUrl: sanitizeUrl(data.whatsappUrl),
         source: data.source,
         notes: data.notes || null,
       },
     });
 
+    let contactId = primary?.id;
     if (primary) {
       await tx.crmContact.update({
         where: { id: primary.id },
@@ -447,21 +593,37 @@ export async function updateProspectAction(
           firstName: data.contactFirst,
           lastName: data.contactLast || "—",
           jobTitle: data.jobTitle || null,
-          phone: data.phone || null,
-          email: data.email || null,
+          phone: mirrored.phone,
+          email: mirrored.email,
         },
       });
+      await tx.crmContactChannel.deleteMany({
+        where: { contactId: primary.id },
+      });
     } else {
-      await tx.crmContact.create({
+      const created = await tx.crmContact.create({
         data: {
           organizationId: deal.organizationId,
           firstName: data.contactFirst,
           lastName: data.contactLast || "—",
           jobTitle: data.jobTitle || null,
-          phone: data.phone || null,
-          email: data.email || null,
+          phone: mirrored.phone,
+          email: mirrored.email,
           isPrimary: true,
         },
+      });
+      contactId = created.id;
+    }
+
+    if (contactId) {
+      await tx.crmContactChannel.createMany({
+        data: channels.map((c) => ({
+          contactId,
+          type: c.type as CrmContactChannelType,
+          value: c.value.trim(),
+          normalizedValue: normalizeChannelValue(c.type, c.value),
+          isPrimary: c.isPrimary,
+        })),
       });
     }
 

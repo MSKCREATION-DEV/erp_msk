@@ -4,7 +4,11 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import type { CrmSource } from "@prisma/client";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
-import { createProspectAction } from "@/actions/crm";
+import {
+  createProspectAction,
+  findContactDuplicateCandidatesAction,
+  findOrgDuplicateCandidatesAction,
+} from "@/actions/crm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +20,15 @@ import {
 import { FormShell } from "@/components/ui/form-shell";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import { ProspectOffersStep } from "@/components/crm/prospect-offers-step";
+import { ContactChannelsEditor } from "@/components/crm/contact-channels-editor";
+import {
+  ContactDuplicateMatchCard,
+  OrgDuplicateMatchCard,
+} from "@/components/crm/duplicate-match-card";
+import {
+  SocialNetworksEditor,
+  type SocialSelection,
+} from "@/components/crm/social-networks-editor";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { SOURCE_LABELS } from "@/lib/crm/labels";
 import {
@@ -23,6 +36,15 @@ import {
   CRM_SECTOR_OTHER,
   SECTOR_PICKER_OPTIONS,
 } from "@/lib/crm/sectors";
+import {
+  type ChannelInput,
+  validateChannels,
+} from "@/lib/crm/channels";
+import type {
+  ContactDuplicateCandidate,
+  OrgDuplicateCandidate,
+} from "@/lib/crm/duplicates";
+import { SOCIAL_NETWORKS } from "@/lib/crm/social";
 import { cn } from "@/lib/utils";
 
 const STEPS = [
@@ -39,7 +61,7 @@ const STEPS = [
   {
     id: "suivi",
     label: "Origine & suivi",
-    hint: "Comment trouvé, prochaine relance",
+    hint: "Canal, réseaux, relance",
   },
   {
     id: "offres",
@@ -71,17 +93,7 @@ type OfferRow = {
 };
 
 type FieldErrors = Partial<
-  Record<
-    | "orgName"
-    | "contactFirst"
-    | "contactLast"
-    | "email"
-    | "phone"
-    | "source"
-    | "followUpAt"
-    | "nextAction",
-    string
-  >
+  Record<"orgName" | "contactFirst" | "source" | "followUpAt", string>
 >;
 
 function readTrim(fd: FormData, key: string) {
@@ -106,30 +118,35 @@ export function ProspectCreateForm({
   const [configs, setConfigs] = useState<
     Record<string, Record<string, unknown>>
   >({});
+  const [channels, setChannels] = useState<ChannelInput[]>([
+    { type: "PHONE", value: "", isPrimary: true },
+  ]);
+  const [channelsError, setChannelsError] = useState<string | null>(null);
+  const [orgDupes, setOrgDupes] = useState<OrgDuplicateCandidate[]>([]);
+  const [orgExactBlock, setOrgExactBlock] = useState(false);
+  const [orgCheckDone, setOrgCheckDone] = useState(false);
+  const [contactDupes, setContactDupes] = useState<ContactDuplicateCandidate[]>(
+    [],
+  );
+  const [contactCheckDone, setContactCheckDone] = useState(false);
+  const [checkingDupes, setCheckingDupes] = useState(false);
+  const [social, setSocial] = useState<SocialSelection>({
+    selected: [],
+    urls: {},
+  });
 
   function validateStep(targetStep: number, fd: FormData): FieldErrors {
     const errs: FieldErrors = {};
-
     if (targetStep >= 0) {
       if (!readTrim(fd, "orgName")) {
         errs.orgName = "Indiquez le nom de l’entreprise.";
       }
     }
-
     if (targetStep >= 1) {
       if (!readTrim(fd, "contactFirst")) {
         errs.contactFirst = "Le prénom du contact est obligatoire.";
       }
-      const email = readTrim(fd, "email");
-      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errs.email = "Adresse e-mail invalide.";
-      }
-      const phone = readTrim(fd, "phone");
-      if (!phone && !email) {
-        errs.phone = "Renseignez au moins un téléphone ou un e-mail.";
-      }
     }
-
     if (targetStep >= 2) {
       if (!source) {
         errs.source = "Choisissez l’origine du prospect.";
@@ -147,7 +164,6 @@ export function ProspectCreateForm({
         }
       }
     }
-
     return errs;
   }
 
@@ -155,22 +171,112 @@ export function ProspectCreateForm({
     return formRef.current ? new FormData(formRef.current) : new FormData();
   }
 
-  function goToStep(next: number) {
+  async function advanceFromOrg() {
     const fd = currentFormData();
-    const errs = validateStep(step, fd);
+    const errs = validateStep(0, fd);
     if (Object.keys(errs).length > 0) {
       setFieldErrors(errs);
       setError("Complétez les champs obligatoires avant de continuer.");
       return;
     }
     if (
-      step === 0 &&
       sectorPreset === CRM_SECTOR_OTHER &&
       sectorOther.trim().length < 2
     ) {
       setError(
         "Précisez le secteur (min. 2 caractères) ou choisissez une liste.",
       );
+      return;
+    }
+    setCheckingDupes(true);
+    setError(null);
+    setFieldErrors({});
+    try {
+      const checkFd = new FormData();
+      checkFd.set("orgName", readTrim(fd, "orgName"));
+      const res = await findOrgDuplicateCandidatesAction(checkFd);
+      if (!res.ok) {
+        setError(res.error ?? "Vérification doublons impossible");
+        return;
+      }
+      setOrgDupes(res.candidates);
+      setOrgCheckDone(true);
+      const hasExact = res.candidates.some((c) => c.kind === "exact");
+      setOrgExactBlock(hasExact);
+      if (hasExact) {
+        setError(
+          "Entreprise déjà connue (nom identique). Ouvrez la fiche existante ou modifiez le nom.",
+        );
+        return;
+      }
+      setStep(1);
+    } finally {
+      setCheckingDupes(false);
+    }
+  }
+
+  async function advanceFromContact() {
+    const fd = currentFormData();
+    const errs = validateStep(1, fd);
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      setError("Complétez les champs obligatoires avant de continuer.");
+      return;
+    }
+    const filledRaw = channels.filter((c) => c.value.trim());
+    const filled = filledRaw.some((c) => c.isPrimary)
+      ? filledRaw
+      : filledRaw.map((c, i) => ({ ...c, isPrimary: i === 0 }));
+    const chErr = validateChannels(filled);
+    if (chErr) {
+      setChannelsError(chErr);
+      setError(chErr);
+      return;
+    }
+    setChannelsError(null);
+    setCheckingDupes(true);
+    setError(null);
+    setFieldErrors({});
+    try {
+      const checkFd = new FormData();
+      checkFd.set("channelsJson", JSON.stringify(filled));
+      const res = await findContactDuplicateCandidatesAction(checkFd);
+      if (!res.ok) {
+        setError(res.error ?? "Vérification contact impossible");
+        return;
+      }
+      setContactDupes(res.candidates);
+      setContactCheckDone(true);
+      if (res.candidates.length > 0 && !contactCheckDone) {
+        setError(
+          "Ce contact semble déjà lié à une entreprise. Vérifiez les fiches ou continuez quand même.",
+        );
+        return;
+      }
+      setStep(2);
+    } finally {
+      setCheckingDupes(false);
+    }
+  }
+
+  function goToStep(next: number) {
+    if (next <= step) {
+      setStep(next);
+      return;
+    }
+    if (step === 0 && next === 1) {
+      void advanceFromOrg();
+      return;
+    }
+    if (step === 1 && next === 2) {
+      void advanceFromContact();
+      return;
+    }
+    const fd = currentFormData();
+    const errs = validateStep(step, fd);
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      setError("Complétez les champs obligatoires avant de continuer.");
       return;
     }
     setFieldErrors({});
@@ -183,7 +289,23 @@ export function ProspectCreateForm({
     const fd = new FormData(e.currentTarget);
 
     if (step < STEPS.length - 1) {
+      if (step === 0) {
+        void advanceFromOrg();
+        return;
+      }
+      if (step === 1) {
+        void advanceFromContact();
+        return;
+      }
       goToStep(step + 1);
+      return;
+    }
+
+    if (orgExactBlock) {
+      setError(
+        "Entreprise déjà connue (nom identique). Ouvrez la fiche existante ou modifiez le nom.",
+      );
+      setStep(0);
       return;
     }
 
@@ -191,17 +313,19 @@ export function ProspectCreateForm({
     if (Object.keys(errs).length > 0) {
       setFieldErrors(errs);
       setError("Corrigez les champs en erreur avant de créer le prospect.");
-      const firstKey = Object.keys(errs)[0];
-      const jump =
-        firstKey === "orgName"
-          ? 0
-          : firstKey === "contactFirst" ||
-              firstKey === "contactLast" ||
-              firstKey === "email" ||
-              firstKey === "phone"
-            ? 1
-            : 2;
-      setStep(jump);
+      setStep(2);
+      return;
+    }
+
+    const filledRaw = channels.filter((c) => c.value.trim());
+    const filled = filledRaw.some((c) => c.isPrimary)
+      ? filledRaw
+      : filledRaw.map((c, i) => ({ ...c, isPrimary: i === 0 }));
+    const chErr = validateChannels(filled);
+    if (chErr) {
+      setChannelsError(chErr);
+      setError(chErr);
+      setStep(1);
       return;
     }
 
@@ -217,6 +341,22 @@ export function ProspectCreateForm({
       return;
     }
     fd.set("sector", composeSectorValue(sectorPreset, sectorOther));
+    fd.set("channelsJson", JSON.stringify(filled));
+    for (const n of SOCIAL_NETWORKS) {
+      if (social.selected.includes(n.field)) {
+        fd.set(n.field, social.urls[n.field] ?? "");
+      } else {
+        fd.set(n.field, "");
+      }
+    }
+    const fuzzy = orgDupes.filter((c) => c.kind === "fuzzy");
+    if (fuzzy.length > 0) {
+      fd.set("acknowledgeFuzzy", "1");
+      fd.set(
+        "fuzzyCandidateIds",
+        fuzzy.map((c) => c.id).join(","),
+      );
+    }
     const links: OfferRow[] = offerIds.map((id) => ({
       catalogOfferId: id,
       config: configs[id] ?? {},
@@ -224,13 +364,17 @@ export function ProspectCreateForm({
     fd.set("offersJson", JSON.stringify(links));
 
     void run(async () => {
-      // Succès : `redirect()` dans l’action (App Router). Erreur : return { ok: false }.
       const res = await createProspectAction(fd);
       if (res && !res.ok) {
         setError(res.error ?? "Échec de la création");
       }
     });
   }
+
+  const busy = pending || checkingDupes;
+  const continueBlocked =
+    (step === 0 && orgExactBlock) ||
+    (step === 1 && contactDupes.length > 0 && !contactCheckDone);
 
   const footer = (
     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -239,7 +383,7 @@ export function ProspectCreateForm({
           <Button
             type="button"
             variant="secondary"
-            disabled={pending}
+            disabled={busy}
             onClick={() => {
               setError(null);
               setFieldErrors({});
@@ -255,7 +399,7 @@ export function ProspectCreateForm({
             href="/crm/prospects"
             className={cn(
               "inline-flex h-11 items-center justify-center rounded-lg px-4 text-sm font-medium text-msk-ink transition hover:bg-msk-ink/5",
-              pending && "pointer-events-none opacity-50",
+              busy && "pointer-events-none opacity-50",
             )}
           >
             Annuler
@@ -266,8 +410,31 @@ export function ProspectCreateForm({
         <p className="hidden text-xs text-msk-ink/40 sm:block">
           Étape {step + 1} / {STEPS.length}
         </p>
-        <Button type="submit" disabled={pending} form="prospect-create-form">
-          {pending ? (
+        {step === 1 && contactDupes.length > 0 && contactCheckDone ? (
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={busy}
+            onClick={() => {
+              setError(null);
+              setStep(2);
+            }}
+          >
+            Continuer quand même
+          </Button>
+        ) : null}
+        <Button
+          type="submit"
+          disabled={
+            busy ||
+            (step === 0 && orgExactBlock) ||
+            (step === 1 && contactDupes.length > 0 && !contactCheckDone)
+          }
+          form="prospect-create-form"
+        >
+          {checkingDupes ? (
+            "Vérification…"
+          ) : pending ? (
             "Création…"
           ) : step < STEPS.length - 1 ? (
             <>
@@ -282,6 +449,8 @@ export function ProspectCreateForm({
     </div>
   );
 
+  void continueBlocked;
+
   return (
     <FormShell footer={footer}>
       <form
@@ -290,9 +459,8 @@ export function ProspectCreateForm({
         onSubmit={onSubmit}
         className="space-y-8"
         noValidate
-        aria-busy={pending || undefined}
+        aria-busy={busy || undefined}
       >
-        {/* Stepper pleine largeur */}
         <nav aria-label="Étapes du formulaire">
           <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s, i) => {
@@ -302,7 +470,7 @@ export function ProspectCreateForm({
                 <li key={s.id}>
                   <button
                     type="button"
-                    disabled={pending || i > step}
+                    disabled={busy || i > step}
                     onClick={() => {
                       if (i < step) {
                         setError(null);
@@ -379,7 +547,8 @@ export function ProspectCreateForm({
               Entreprise
             </h2>
             <p className="mt-1 text-sm text-msk-ink/50">
-              Identité de la structure prospectée.
+              Identité de la structure prospectée. À la suite, contrôle
+              anti-doublon automatique.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -392,7 +561,12 @@ export function ProspectCreateForm({
                 name="orgName"
                 autoComplete="organization"
                 placeholder="Ex. Boulangerie Diallo SARL"
-                disabled={pending}
+                disabled={busy}
+                onChange={() => {
+                  setOrgDupes([]);
+                  setOrgExactBlock(false);
+                  setOrgCheckDone(false);
+                }}
                 aria-invalid={Boolean(fieldErrors.orgName) || undefined}
                 className={
                   fieldErrors.orgName ? "border-msk-coral/50" : undefined
@@ -409,7 +583,7 @@ export function ProspectCreateForm({
                   setSectorPreset(v);
                   if (v !== CRM_SECTOR_OTHER) setSectorOther("");
                 }}
-                disabled={pending}
+                disabled={busy}
                 placeholder="Choisir un secteur"
                 modalTitle="Secteur d’activité"
               />
@@ -423,7 +597,7 @@ export function ProspectCreateForm({
                     value={sectorOther}
                     onChange={(e) => setSectorOther(e.target.value)}
                     placeholder="Ex. Énergie solaire, artisanat…"
-                    disabled={pending}
+                    disabled={busy}
                   />
                 </div>
               ) : null}
@@ -433,8 +607,8 @@ export function ProspectCreateForm({
               <Input
                 id="city"
                 name="city"
-                placeholder="Ex. Dakar, Thiès…"
-                disabled={pending}
+                placeholder="Ex. Bamako, Dakar…"
+                disabled={busy}
               />
             </div>
             <div>
@@ -444,7 +618,7 @@ export function ProspectCreateForm({
                 name="website"
                 inputMode="url"
                 placeholder="https://…"
-                disabled={pending}
+                disabled={busy}
               />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
@@ -454,7 +628,7 @@ export function ProspectCreateForm({
                 name="notes"
                 rows={3}
                 placeholder="Type d’activité, contexte, besoin exprimé — utile pour toute l’équipe…"
-                disabled={pending}
+                disabled={busy}
               />
               <FieldHint>
                 Visible dans l’ERP uniquement — pas sur les devis. Distinct du
@@ -462,6 +636,20 @@ export function ProspectCreateForm({
               </FieldHint>
             </div>
           </div>
+
+          {orgCheckDone && orgDupes.length > 0 ? (
+            <div className="mt-6 space-y-3">
+              <h3 className="text-sm font-semibold text-msk-ink">
+                Correspondances détectées
+              </h3>
+              {orgDupes.map((c) => (
+                <OrgDuplicateMatchCard
+                  key={`${c.entity}-${c.id}`}
+                  candidate={c}
+                />
+              ))}
+            </div>
+          ) : null}
         </section>
 
         {/* Étape 1 — Contact */}
@@ -477,7 +665,7 @@ export function ProspectCreateForm({
               Contact principal
             </h2>
             <p className="mt-1 text-sm text-msk-ink/50">
-              Au moins un moyen de joindre la personne (téléphone ou e-mail).
+              Une personne · plusieurs moyens de joindre · un principal.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -490,7 +678,7 @@ export function ProspectCreateForm({
                 name="contactFirst"
                 autoComplete="given-name"
                 placeholder="Ex. Aïssatou"
-                disabled={pending}
+                disabled={busy}
                 aria-invalid={Boolean(fieldErrors.contactFirst) || undefined}
                 className={
                   fieldErrors.contactFirst ? "border-msk-coral/50" : undefined
@@ -505,7 +693,7 @@ export function ProspectCreateForm({
                 name="contactLast"
                 autoComplete="family-name"
                 placeholder="Ex. Ndiaye"
-                disabled={pending}
+                disabled={busy}
               />
             </div>
             <div>
@@ -515,57 +703,37 @@ export function ProspectCreateForm({
                 name="jobTitle"
                 autoComplete="organization-title"
                 placeholder="Ex. Directrice commerciale"
-                disabled={pending}
+                disabled={busy}
               />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
-              <p className="mb-3 text-sm font-medium text-msk-ink/80">
-                Moyen de contact
-                <span className="ml-0.5 font-semibold text-msk-coral" aria-hidden>
-                  *
-                </span>
-                <span className="sr-only"> (obligatoire)</span>
-                <span className="ml-2 text-xs font-normal text-msk-ink/45">
-                  Téléphone ou e-mail — au moins un
-                </span>
-              </p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <FieldLabel htmlFor="phone">Téléphone</FieldLabel>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    autoComplete="tel"
-                    inputMode="tel"
-                    placeholder="Ex. +221 77 000 00 00"
-                    disabled={pending}
-                    aria-invalid={Boolean(fieldErrors.phone) || undefined}
-                    className={
-                      fieldErrors.phone ? "border-msk-coral/50" : undefined
-                    }
-                  />
-                  <FieldError>{fieldErrors.phone}</FieldError>
-                </div>
-                <div>
-                  <FieldLabel htmlFor="email">E-mail</FieldLabel>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="Ex. contact@entreprise.sn"
-                    disabled={pending}
-                    aria-invalid={Boolean(fieldErrors.email) || undefined}
-                    className={
-                      fieldErrors.email ? "border-msk-coral/50" : undefined
-                    }
-                  />
-                  <FieldError>{fieldErrors.email}</FieldError>
-                </div>
-              </div>
+              <ContactChannelsEditor
+                value={channels}
+                onChange={(next) => {
+                  setChannels(next);
+                  setContactDupes([]);
+                  setContactCheckDone(false);
+                  setChannelsError(null);
+                }}
+                disabled={busy}
+                error={channelsError}
+              />
             </div>
           </div>
+
+          {contactCheckDone && contactDupes.length > 0 ? (
+            <div className="mt-6 space-y-3">
+              <h3 className="text-sm font-semibold text-msk-ink">
+                Contact déjà présent
+              </h3>
+              {contactDupes.map((c) => (
+                <ContactDuplicateMatchCard
+                  key={`${c.entity}-${c.id}-${c.matchedVia}`}
+                  candidate={c}
+                />
+              ))}
+            </div>
+          ) : null}
         </section>
 
         {/* Étape 2 — Origine & suivi */}
@@ -578,7 +746,7 @@ export function ProspectCreateForm({
               Origine & suivi
             </h2>
             <p className="mt-1 text-sm text-msk-ink/50">
-              Canal d’acquisition et prochaine action commerciale.
+              Canal d’acquisition, présence digitale et prochaine action.
             </p>
           </div>
           <div className="grid gap-5 lg:grid-cols-2">
@@ -596,7 +764,7 @@ export function ProspectCreateForm({
                     return next;
                   });
                 }}
-                disabled={pending}
+                disabled={busy}
                 placeholder="Choisir l’origine"
                 modalTitle="Origine du prospect"
               />
@@ -614,7 +782,7 @@ export function ProspectCreateForm({
                   value={nextActionDraft}
                   onChange={(e) => setNextActionDraft(e.target.value)}
                   placeholder="Ex. Appeler pour présenter l’offre site vitrine"
-                  disabled={pending}
+                  disabled={busy}
                 />
               </div>
               <div>
@@ -628,7 +796,7 @@ export function ProspectCreateForm({
                   id="followUpAt"
                   name="followUpAt"
                   type="date"
-                  disabled={pending}
+                  disabled={busy}
                   aria-invalid={Boolean(fieldErrors.followUpAt) || undefined}
                   className={
                     fieldErrors.followUpAt ? "border-msk-coral/50" : undefined
@@ -647,9 +815,16 @@ export function ProspectCreateForm({
                   name="budgetXof"
                   inputMode="numeric"
                   placeholder="Ex. 500000"
-                  disabled={pending}
+                  disabled={busy}
                 />
               </div>
+            </div>
+            <div className="lg:col-span-2 rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/30 p-4 sm:p-5">
+              <SocialNetworksEditor
+                value={social}
+                onChange={setSocial}
+                disabled={busy}
+              />
             </div>
           </div>
         </section>
@@ -665,7 +840,7 @@ export function ProspectCreateForm({
             onSelectedIdsChange={setOfferIds}
             configs={configs}
             onConfigsChange={setConfigs}
-            disabled={pending}
+            disabled={busy}
           />
         </section>
       </form>

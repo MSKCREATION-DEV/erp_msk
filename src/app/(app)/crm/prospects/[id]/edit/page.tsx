@@ -28,7 +28,11 @@ export default async function CrmProspectEditPage({
     include: {
       organization: {
         include: {
-          contacts: { where: { isPrimary: true }, take: 1 },
+          contacts: {
+            where: { isPrimary: true },
+            take: 1,
+            include: { channels: { orderBy: { createdAt: "asc" } } },
+          },
         },
       },
     },
@@ -50,6 +54,34 @@ export default async function CrmProspectEditPage({
   const followUpAt = deal.followUpAt
     ? deal.followUpAt.toISOString().slice(0, 10)
     : "";
+
+  const channels =
+    primary?.channels.map((c) => ({
+      type: c.type,
+      value: c.value,
+      isPrimary: c.isPrimary,
+    })) ?? [];
+
+  const org = deal.organization;
+  const socialSelected = (
+    [
+      ["instagramUrl", "instagramUrl"],
+      ["linkedinUrl", "linkedinUrl"],
+      ["tiktokUrl", "tiktokUrl"],
+      ["facebookUrl", "facebookUrl"],
+      ["whatsappUrl", "whatsappUrl"],
+    ] as const
+  )
+    .filter(([field]) => Boolean(org[field]))
+    .map(([, field]) => field);
+
+  const socialUrls = {
+    instagramUrl: org.instagramUrl ?? "",
+    linkedinUrl: org.linkedinUrl ?? "",
+    tiktokUrl: org.tiktokUrl ?? "",
+    facebookUrl: org.facebookUrl ?? "",
+    whatsappUrl: org.whatsappUrl ?? "",
+  };
 
   return (
     <PageShell>
@@ -88,6 +120,8 @@ export default async function CrmProspectEditPage({
           jobTitle: primary?.jobTitle ?? "",
           phone: primary?.phone ?? "",
           email: primary?.email ?? "",
+          channels,
+          social: { selected: [...socialSelected], urls: socialUrls },
           budgetXof:
             deal.budgetXof != null ? String(deal.budgetXof) : "",
           nextAction: deal.nextAction ?? "",

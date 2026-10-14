@@ -25,7 +25,7 @@ Pôles **URGENTS** pour MSK :
 | Phase 6 Compta | **OK** + COM-6 bridge facture→VE |
 | Phase 7A Stocks + 7B Ops | **Livrées** |
 | **Phase COM E2E** (plan 2 phases) | **Livrée** — CRM + COM-4…7 · docs [`PLAN-2-PHASES-COM-RH.md`](./PLAN-2-PHASES-COM-RH.md) |
-| **POST-DEMO CRM** (Direction 13/10) | **LOT-A…E + I OK** · prochain = LOT-F (doublons) · [`LOT-I-UX-LABELS.md`](./LOT-I-UX-LABELS.md) |
+| **POST-DEMO CRM** (Direction 13/10) | **LOT-A…F + I OK** · prochain = LOT-G (compteur relances) · [`LOT-F-DOUBLONS.md`](./LOT-F-DOUBLONS.md) |
 | Phase RH (Direction 11/10) | Après vague POST-DEMO CRM — SPEC puis GO |
 | Phase 8 Automatisations | Doc — attendre « Phase 8 GO » |
 | Deploy | `main` ≈ `dev` · [VERCEL.md](../deploy/VERCEL.md) |
@@ -51,4 +51,4 @@ Voir `.cursor/rules/phase-quality.mdc` · `ui-never-freeze.mdc` · `list-create-
 
 ---
 
-*Maj 2026-10-14 — LOT-A…E + I OK ; prochain LOT-F (doublons) ; RH ensuite.*
+*Maj 2026-10-14 — LOT-A…F + I OK ; prochain LOT-G ; RH ensuite.*

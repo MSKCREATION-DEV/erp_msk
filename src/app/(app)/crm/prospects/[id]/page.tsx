@@ -27,6 +27,8 @@ import {
   STAGE_HINTS,
   STAGE_LABELS,
 } from "@/lib/crm/labels";
+import { CHANNEL_TYPE_LABELS } from "@/lib/crm/channels";
+import { SOCIAL_NETWORKS } from "@/lib/crm/social";
 import { isTestOrgName } from "@/lib/crm/test-data";
 import { isDevisSlaBreached } from "@/lib/crm/devis-sla";
 import {
@@ -152,6 +154,11 @@ export default async function CrmProspectDetailPage({
           city: true,
           country: true,
           website: true,
+          instagramUrl: true,
+          linkedinUrl: true,
+          tiktokUrl: true,
+          facebookUrl: true,
+          whatsappUrl: true,
           notes: true,
           contacts: {
             orderBy: [{ isPrimary: "desc" }, { lastName: "asc" }],
@@ -163,6 +170,15 @@ export default async function CrmProspectDetailPage({
               phone: true,
               email: true,
               isPrimary: true,
+              channels: {
+                orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+                select: {
+                  id: true,
+                  type: true,
+                  value: true,
+                  isPrimary: true,
+                },
+              },
             },
           },
         },
@@ -652,6 +668,28 @@ export default async function CrmProspectDetailPage({
                 )}
               </li>
             </ul>
+            {(() => {
+              const links = SOCIAL_NETWORKS.map((n) => ({
+                ...n,
+                url: deal.organization[n.field],
+              })).filter((n) => n.url);
+              if (links.length === 0) return null;
+              return (
+                <div className="mt-4 flex flex-wrap gap-2 border-t border-msk-ink/[0.06] pt-4">
+                  {links.map((n) => (
+                    <a
+                      key={n.field}
+                      href={n.url!}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex h-8 items-center rounded-lg border border-msk-blue/20 bg-msk-blue/[0.06] px-2.5 text-xs font-medium text-msk-blue transition hover:bg-msk-blue/10"
+                    >
+                      {n.label}
+                    </a>
+                  ))}
+                </div>
+              );
+            })()}
             <div className="mt-4 border-t border-msk-ink/[0.06] pt-4">
               <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
                 Résumé entreprise
@@ -694,9 +732,28 @@ export default async function CrmProspectDetailPage({
                         {c.jobTitle}
                       </p>
                     ) : null}
-                    <p className="mt-1.5 text-xs text-msk-ink/55">
-                      {[c.phone, c.email].filter(Boolean).join(" · ") || "—"}
-                    </p>
+                    {c.channels.length > 0 ? (
+                      <ul className="mt-2 space-y-1">
+                        {c.channels.map((ch) => (
+                          <li
+                            key={ch.id}
+                            className="flex flex-wrap items-center gap-1.5 text-xs text-msk-ink/60"
+                          >
+                            <span className="font-medium text-msk-ink/45">
+                              {CHANNEL_TYPE_LABELS[ch.type]}
+                            </span>
+                            <span>{ch.value}</span>
+                            {ch.isPrimary ? (
+                              <Badge tone="muted">Principal</Badge>
+                            ) : null}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="mt-1.5 text-xs text-msk-ink/55">
+                        {[c.phone, c.email].filter(Boolean).join(" · ") || "—"}
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>

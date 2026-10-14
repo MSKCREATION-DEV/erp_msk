@@ -22,6 +22,16 @@ import {
   resolveSectorSelection,
   SECTOR_PICKER_OPTIONS,
 } from "@/lib/crm/sectors";
+import {
+  type ChannelInput,
+  validateChannels,
+} from "@/lib/crm/channels";
+import { SOCIAL_NETWORKS, type SocialField } from "@/lib/crm/social";
+import { ContactChannelsEditor } from "@/components/crm/contact-channels-editor";
+import {
+  SocialNetworksEditor,
+  type SocialSelection,
+} from "@/components/crm/social-networks-editor";
 
 const SOURCE_OPTIONS = (
   [
@@ -54,6 +64,8 @@ export type ProspectEditInitial = {
   jobTitle: string;
   phone: string;
   email: string;
+  channels: ChannelInput[];
+  social: SocialSelection;
   budgetXof: string;
   nextAction: string;
   followUpAt: string;
@@ -73,6 +85,28 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
   );
   const [sectorOther, setSectorOther] = useState(initialSector.otherDetail);
   const [nextActionDraft, setNextActionDraft] = useState(initial.nextAction);
+  const [channels, setChannels] = useState<ChannelInput[]>(() => {
+    if (initial.channels.length > 0) return initial.channels;
+    const fallback: ChannelInput[] = [];
+    if (initial.phone.trim()) {
+      fallback.push({
+        type: "PHONE",
+        value: initial.phone,
+        isPrimary: true,
+      });
+    }
+    if (initial.email.trim()) {
+      fallback.push({
+        type: "EMAIL",
+        value: initial.email,
+        isPrimary: fallback.length === 0,
+      });
+    }
+    return fallback.length
+      ? fallback
+      : [{ type: "PHONE", value: "", isPrimary: true }];
+  });
+  const [social, setSocial] = useState<SocialSelection>(initial.social);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -91,11 +125,19 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
       return;
     }
     fd.set("sector", composeSectorValue(sectorPreset, sectorOther));
-    const phone = String(fd.get("phone") ?? "").trim();
-    const email = String(fd.get("email") ?? "").trim();
-    if (!phone && !email) {
-      setError("Téléphone ou e-mail obligatoire");
+    const filled = channels.filter((c) => c.value.trim());
+    const chErr = validateChannels(filled);
+    if (chErr) {
+      setError(chErr);
       return;
+    }
+    fd.set("channelsJson", JSON.stringify(filled));
+    for (const n of SOCIAL_NETWORKS) {
+      if (social.selected.includes(n.field as SocialField)) {
+        fd.set(n.field, social.urls[n.field] ?? "");
+      } else {
+        fd.set(n.field, "");
+      }
     }
     const nextAction = String(fd.get("nextAction") ?? "").trim();
     const followUpAt = String(fd.get("followUpAt") ?? "").trim();
@@ -264,7 +306,7 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
               Contact principal
             </h2>
             <p className="mt-1 text-sm text-msk-ink/50">
-              Au moins un téléphone ou un e-mail.
+              Une personne · plusieurs moyens · un principal.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -303,26 +345,14 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
                 disabled={pending}
               />
             </div>
-            <div>
-              <FieldLabel htmlFor="phone">Téléphone</FieldLabel>
-              <Input
-                id="phone"
-                name="phone"
-                defaultValue={initial.phone}
-                inputMode="tel"
-                placeholder="+223 …"
-                disabled={pending}
-              />
-            </div>
-            <div className="sm:col-span-2">
-              <FieldLabel htmlFor="email">E-mail</FieldLabel>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                defaultValue={initial.email}
-                autoComplete="email"
-                placeholder="contact@exemple.ml"
+            <div className="sm:col-span-2 lg:col-span-3">
+              <ContactChannelsEditor
+                value={
+                  channels.length
+                    ? channels
+                    : [{ type: "PHONE", value: "", isPrimary: true }]
+                }
+                onChange={setChannels}
                 disabled={pending}
               />
             </div>
@@ -335,7 +365,7 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
               Origine &amp; suivi
             </h2>
             <p className="mt-1 text-sm text-msk-ink/50">
-              Origine du lead, budget estimé, prochaine action.
+              Origine, réseaux sociaux, budget et prochaine action.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -349,6 +379,13 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
                 disabled={pending}
                 placeholder="Choisir l’origine"
                 modalTitle="Origine du prospect"
+              />
+            </div>
+            <div className="sm:col-span-2 lg:col-span-3">
+              <SocialNetworksEditor
+                value={social}
+                onChange={setSocial}
+                disabled={pending}
               />
             </div>
             <div>

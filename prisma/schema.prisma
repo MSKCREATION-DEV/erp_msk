@@ -139,6 +139,16 @@ enum CrmLossReason {
   AUTRE
 }
 
+/// LOT-F — moyens de joindre une personne-contact.
+enum CrmContactChannelType {
+  PHONE
+  EMAIL
+  WHATSAPP
+  INSTAGRAM
+  LINKEDIN
+  AUTRE
+}
+
 enum ComDocRegime {
   ML
   FR
@@ -582,6 +592,12 @@ model CrmOrganization {
   city          String?
   country       String     @default("ML")
   website       String?
+  /// LOT-F / P2-1 — réseaux sociaux entreprise (URLs).
+  instagramUrl  String?
+  linkedinUrl   String?
+  tiktokUrl     String?
+  facebookUrl   String?
+  whatsappUrl   String?
   source        CrmSource?
   notes         String?
   ownerId       String     @db.Uuid
@@ -608,17 +624,40 @@ model CrmContact {
   firstName      String
   lastName       String
   jobTitle       String?
+  /// Miroir du canal principal EMAIL (compat listes / convert).
   email          String?
+  /// Miroir du canal principal PHONE / WHATSAPP.
   phone          String?
   isPrimary      Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   organization CrmOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  channels     CrmContactChannel[]
 
   @@index([organizationId])
   @@index([email])
+  @@index([phone])
   @@map("crm_contacts")
+}
+
+model CrmContactChannel {
+  id        String                @id @default(cuid())
+  contactId String
+  type      CrmContactChannelType
+  value     String
+  /// Valeur normalisée pour recherche doublons (digits tél / email lower).
+  normalizedValue String
+  isPrimary Boolean               @default(false)
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+
+  contact CrmContact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([contactId])
+  @@index([normalizedValue])
+  @@index([type, normalizedValue])
+  @@map("crm_contact_channels")
 }
 
 model CrmOpportunity {
