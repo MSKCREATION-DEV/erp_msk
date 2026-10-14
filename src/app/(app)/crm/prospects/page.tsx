@@ -35,6 +35,7 @@ import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ActionLink } from "@/components/ui/action-link";
 import { ClickableRowLink } from "@/components/ui/clickable-row-link";
+import { StopPropagationTd } from "@/components/ui/stop-propagation-td";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { ProspectsFilterButton } from "@/components/crm/prospects-filter-modal";
@@ -584,10 +585,7 @@ export default async function CrmProspectsPage({
                         {d.createdBy.firstName} {d.createdBy.lastName}
                       </td>
                       {canReassign ? (
-                        <td
-                          className="px-4 py-3"
-                          onClick={(e) => e.stopPropagation()}
-                        >
+                        <StopPropagationTd className="px-4 py-3">
                           <span className="inline-flex justify-center">
                             <AssignProspectForm
                               commercials={commercials}
@@ -605,7 +603,7 @@ export default async function CrmProspectsPage({
                               iconOnly
                             />
                           </span>
-                        </td>
+                        </StopPropagationTd>
                       ) : null}
                     </ClickableRowLink>
                   );
