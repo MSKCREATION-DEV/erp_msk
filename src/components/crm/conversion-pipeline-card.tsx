@@ -15,19 +15,20 @@ export function ConversionPipelineCard({
   ratePercent,
   signedAmount,
   signedCount,
-  pipelineAmount,
-  pipelineCount,
+  openAmount,
+  openCount,
   totalDeals,
 }: {
   ratePercent: number;
   signedAmount: number;
   signedCount: number;
-  pipelineAmount: number;
-  pipelineCount: number;
+  /** Budget estimé des dossiers encore ouverts. */
+  openAmount: number;
+  openCount: number;
   totalDeals: number;
 }) {
   const pct = Math.max(0, Math.min(100, ratePercent));
-  const amountCeiling = Math.max(signedAmount + pipelineAmount, 1);
+  const amountCeiling = Math.max(signedAmount + openAmount, 1);
 
   return (
     <Surface className="p-5">
@@ -71,17 +72,17 @@ export function ConversionPipelineCard({
           <div className="mt-3 flex w-full flex-col items-center">
             <HubMiniRadial
               size="lg"
-              value={pipelineAmount}
+              value={openAmount}
               max={amountCeiling}
               color={METRIC_NAV_TONE_CHART.ink}
-              centerLabel={pipelineCount}
+              centerLabel={openCount}
               caption="dossiers ouverts"
             />
             <p className="mt-4 text-center text-xl font-semibold tabular-nums tracking-tight text-msk-ink sm:text-2xl">
-              {formatXof(pipelineAmount)}
+              {formatXof(openAmount)}
             </p>
             <p className="mt-1.5 text-center text-xs text-msk-ink/45">
-              montant encore en pipeline
+              montant encore en cours
             </p>
           </div>
         </div>

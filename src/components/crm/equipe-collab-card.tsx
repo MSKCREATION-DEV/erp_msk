@@ -43,7 +43,7 @@ export function EquipeCollabCard({
           ownerId={ownerId}
           name={name}
           focused={focused}
-          subtitle={`${total} prospect${total > 1 ? "s" : ""} · montant pipeline ${formatXof(caOpen)}`}
+          subtitle={`${total} prospect${total > 1 ? "s" : ""} · montant en cours ${formatXof(caOpen)}`}
         />
         <div className="flex flex-wrap gap-2">
           <ActionLink

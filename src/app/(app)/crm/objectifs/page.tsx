@@ -17,8 +17,9 @@ import {
   resolveGoals,
   resolveGoalsSnapshots,
 } from "@/lib/crm/goals";
-import { weekStartMonday } from "@/lib/crm/week";
+import { listWeekOptions, parseWeekParam } from "@/lib/crm/week";
 import { computeWeekStats } from "@/lib/crm/week-stats";
+import { parseCrmPeriod } from "@/lib/crm/scope-period";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -29,6 +30,7 @@ import { GoalsForm } from "@/components/crm/goals-form";
 import { GoalsCollabNav } from "@/components/crm/goals-collab-assign";
 import { GoalsProgressStrip } from "@/components/crm/goals-progress-strip";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
+import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Objectifs hebdo" };
@@ -38,7 +40,7 @@ type ObjectifsMode = "synthese" | "equipe" | "collab";
 export default async function CrmObjectifsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ collab?: string; vue?: string }>;
+  searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const user = await requireUser();
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
@@ -47,7 +49,13 @@ export default async function CrmObjectifsPage({
   const canManage =
     user.isSuperAdmin || hasPermission(user, "crm.reports.global");
 
-  const weekStart = weekStartMonday();
+  const period = parseCrmPeriod({
+    ...sp,
+    periode: sp.periode ?? "semaine",
+  });
+  const weekStart = parseWeekParam(period.semaine);
+  const weeks = listWeekOptions({ fromYear: new Date().getFullYear() - 1 });
+
   // Séquentiel — pool Prisma connection_limit=1 (pas de Promise.all prisma)
   const myGoals = await resolveGoals(user.id);
   const myStats = await computeWeekStats(user.id, weekStart);
@@ -66,9 +74,16 @@ export default async function CrmObjectifsPage({
       })
     : [];
 
+  const owners = members.map((m) => ({
+    value: m.id,
+    label: `${m.firstName} ${m.lastName}`,
+  }));
+
+  /** `collab` (historique) ou `owner` (barre unifiée). */
+  const collabId = sp.collab ?? sp.owner;
   const focusCollab =
-    canManage && sp.collab && members.some((m) => m.id === sp.collab)
-      ? members.find((m) => m.id === sp.collab)!
+    canManage && collabId && members.some((m) => m.id === collabId)
+      ? members.find((m) => m.id === collabId)!
       : null;
 
   let mode: ObjectifsMode = "synthese";
@@ -120,12 +135,16 @@ export default async function CrmObjectifsPage({
 
   const description =
     mode === "collab" && focusCollab
-      ? `Par collaborateur · ${focusCollab.firstName} ${focusCollab.lastName}`
+      ? `Par collaborateur · ${focusCollab.firstName} ${focusCollab.lastName} · ${period.label}`
       : mode === "equipe"
-        ? "Objectifs communs à toute l’équipe commerciale."
+        ? `Objectifs communs à toute l’équipe · ${period.label}.`
         : canManage
-          ? "Vue d’ensemble de l’équipe, puis assignation globale ou par collaborateur."
-          : "Vos objectifs de la semaine (fixés par la Direction).";
+          ? `Vue d’ensemble de l’équipe · ${period.label}.`
+          : `Vos objectifs · ${period.label}.`;
+
+  const keepParams: Record<string, string | undefined> = {
+    ...(mode === "equipe" ? { vue: "equipe" } : {}),
+  };
 
   return (
     <PageShell>
@@ -148,6 +167,23 @@ export default async function CrmObjectifsPage({
               : []),
         ]}
         actions={headerActions}
+      />
+
+      <CrmScopeBar
+        mode="semaine"
+        semaine={period.semaine}
+        mois={period.mois}
+        on={period.on}
+        from={period.fromIso}
+        to={period.toIso}
+        weeks={weeks}
+        ownerId={focusCollab?.id ?? null}
+        owners={owners}
+        canFilterOwners={canManage}
+        periodLabel={period.label}
+        keepParams={keepParams}
+        ownerParamKey="collab"
+        periodModes={["semaine"]}
       />
 
       {mode === "synthese" ? (

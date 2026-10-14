@@ -9,13 +9,20 @@ import { commercialTeamUserIds } from "@/lib/crm/team";
 import { STAGE_ORDER } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { resolveGoalsSnapshots } from "@/lib/crm/goals";
-import { weekStartMonday } from "@/lib/crm/week";
+import { listWeekOptions, parseWeekParam } from "@/lib/crm/week";
+import { outreachCountByOwnerInPeriod } from "@/lib/crm/follow-up-count";
+import {
+  dateRangeFilter,
+  parseCrmOwner,
+  parseCrmPeriod,
+} from "@/lib/crm/scope-period";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { ActionLink } from "@/components/ui/action-link";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { EquipeCollabCard } from "@/components/crm/equipe-collab-card";
+import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
 
 export const metadata: Metadata = { title: "Vue Équipe" };
 
@@ -45,7 +52,7 @@ function emptyRow(name: string): OwnerRow {
 export default async function CrmEquipePage({
   searchParams,
 }: {
-  searchParams: Promise<{ owner?: string }>;
+  searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const user = await requireUser();
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
@@ -54,9 +61,11 @@ export default async function CrmEquipePage({
   if (vis === "own") redirect("/crm/prospects");
 
   const sp = await searchParams;
-
   const teamIds = await commercialTeamUserIds();
-  const weekStart = weekStartMonday();
+  const period = parseCrmPeriod(sp);
+  const weekStart = parseWeekParam(period.semaine);
+  const weeks = listWeekOptions({ fromYear: new Date().getFullYear() - 1 });
+  const occurredBetween = dateRangeFilter(period.from, period.to);
 
   const deals = await prisma.crmOpportunity.findMany({
     where: dealOwnerScopeWhere(user, teamIds),
@@ -115,8 +124,16 @@ export default async function CrmEquipePage({
     }
   }
 
-  const filterOwner =
-    sp.owner && byOwner.has(sp.owner) ? sp.owner : null;
+  const owners = members.map((m) => ({
+    value: m.id,
+    label: `${m.firstName} ${m.lastName}`,
+  }));
+  const ownerScope = parseCrmOwner(
+    sp,
+    user,
+    owners.map((o) => o.value),
+  );
+  const filterOwner = ownerScope.ownerId;
 
   const goalByOwner = new Map(
     (await resolveGoalsSnapshots(members, weekStart)).map((s) => [
@@ -124,6 +141,11 @@ export default async function CrmEquipePage({
       s.progress,
     ]),
   );
+
+  const relancesByOwner = await outreachCountByOwnerInPeriod({
+    ownerIds: members.map((m) => m.id),
+    occurredBetween,
+  });
 
   let rows = Array.from(byOwner.entries()).sort(
     (a, b) => b[1].total - a[1].total,
@@ -136,28 +158,59 @@ export default async function CrmEquipePage({
     ? byOwner.get(filterOwner)?.name
     : null;
 
+  const clearScopeHref = (() => {
+    const p = new URLSearchParams();
+    if (period.mode !== "semaine") p.set("periode", period.mode);
+    if (period.mode === "mois") p.set("mois", period.mois);
+    if (period.mode === "jour") p.set("on", period.on);
+    if (period.mode === "plage") {
+      p.set("from", period.fromIso);
+      p.set("to", period.toIso);
+    }
+    if (period.mode === "semaine") {
+      const current = weeks.find((w) => w.isCurrent)?.value;
+      if (period.semaine !== current) p.set("semaine", period.semaine);
+    }
+    const s = p.toString();
+    return s ? `/crm/equipe?${s}` : "/crm/equipe";
+  })();
+
   return (
     <PageShell>
       <PageHeader
         title="Vue Équipe"
         description={
           filteredName
-            ? `${filteredName} — prospects, rapport et accès rapides.`
-            : "Cliquez le nom d’une carte pour voir un collaborateur. Rapport et prospects suivent le même filtre."
+            ? `${filteredName} — prospects, rapport et accès rapides · ${period.label}.`
+            : `Cliquez le nom d’une carte pour voir un collaborateur · ${period.label}.`
         }
         backHref="/commercial"
         backLabel="Retour Menu"
         breadcrumbs={[{ label: "Commercial", href: "/commercial" }]}
       />
 
+      <CrmScopeBar
+        mode={period.mode}
+        semaine={period.semaine}
+        mois={period.mois}
+        on={period.on}
+        from={period.fromIso}
+        to={period.toIso}
+        weeks={weeks}
+        ownerId={filterOwner}
+        owners={owners}
+        canFilterOwners={ownerScope.canFilterOwners}
+        periodLabel={period.label}
+      />
+
       {filterOwner && filteredName ? (
         <ScopeFocusBanner
           label={filteredName}
-          clearHref="/crm/equipe"
+          clearHref={clearScopeHref}
           clearAriaLabel="Voir toute l’équipe"
         >
           <ActionLink
-            href={`/crm/rapport-semaine?owner=${filterOwner}`}
+            href={`/crm/rapport-semaine?owner=${filterOwner}&semaine=${period.semaine}`}
             icon={FileText}
             variant="secondary"
             size="sm"
@@ -190,11 +243,7 @@ export default async function CrmEquipePage({
               caOpen={row.caOpen}
               interesses={row.interesses}
               overdue={row.overdue}
-              relancesFaites={
-                goalByOwner
-                  .get(ownerId)
-                  ?.find((g) => g.metric === "FOLLOW_UPS")?.current ?? 0
-              }
+              relancesFaites={relancesByOwner.get(ownerId) ?? 0}
               byStage={row.byStage}
               goals={goalByOwner.get(ownerId) ?? []}
               focused={filterOwner === ownerId}
@@ -206,7 +255,7 @@ export default async function CrmEquipePage({
       {!filterOwner && rows.length > 0 ? (
         <p className="flex items-center gap-1.5 text-xs text-msk-ink/40">
           <Users className="h-3.5 w-3.5" aria-hidden />
-          Astuce : clic sur le nom d’une carte pour voir ce collaborateur —
+          Astuce : filtrez par collaborateur ou cliquez le nom d’une carte —
           Rapport et Prospects suivent le même filtre.
         </p>
       ) : null}

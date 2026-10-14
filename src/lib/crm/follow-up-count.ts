@@ -39,9 +39,11 @@ export async function countOutreachActivities(
 
 /**
  * Map opportunityId → N relances (1 requête groupBy).
+ * `occurredBetween` borne les activités (filtre période CRM).
  */
 export async function outreachCountByOpportunityIds(
   opportunityIds: string[],
+  opts?: { occurredBetween?: { gte: Date; lte: Date } },
 ): Promise<Map<string, number>> {
   const ids = [...new Set(opportunityIds.filter(Boolean))];
   const map = new Map<string, number>();
@@ -53,6 +55,9 @@ export async function outreachCountByOpportunityIds(
     where: {
       opportunityId: { in: ids },
       type: { in: OUTREACH_ACTIVITY_TYPES },
+      ...(opts?.occurredBetween
+        ? { occurredAt: opts.occurredBetween }
+        : {}),
     },
     _count: { _all: true },
   });
@@ -61,6 +66,47 @@ export async function outreachCountByOpportunityIds(
     if (row.opportunityId) {
       map.set(row.opportunityId, row._count._all);
     }
+  }
+  return map;
+}
+
+/** Total relances (outreach) pour un ou plusieurs owners, borné en date. */
+export async function countOutreachInPeriod(opts: {
+  ownerIds?: string[] | null;
+  occurredBetween: { gte: Date; lte: Date };
+}): Promise<number> {
+  return prisma.crmActivity.count({
+    where: {
+      type: { in: OUTREACH_ACTIVITY_TYPES },
+      occurredAt: opts.occurredBetween,
+      ...(opts.ownerIds && opts.ownerIds.length > 0
+        ? { opportunity: { ownerId: { in: opts.ownerIds } } }
+        : {}),
+    },
+  });
+}
+
+/** Map ownerId → N relances sur la période (1 requête). */
+export async function outreachCountByOwnerInPeriod(opts: {
+  ownerIds: string[];
+  occurredBetween: { gte: Date; lte: Date };
+}): Promise<Map<string, number>> {
+  const map = new Map<string, number>();
+  for (const id of opts.ownerIds) map.set(id, 0);
+  if (opts.ownerIds.length === 0) return map;
+
+  const rows = await prisma.crmActivity.findMany({
+    where: {
+      type: { in: OUTREACH_ACTIVITY_TYPES },
+      occurredAt: opts.occurredBetween,
+      opportunity: { ownerId: { in: opts.ownerIds } },
+    },
+    select: { opportunity: { select: { ownerId: true } } },
+  });
+  for (const r of rows) {
+    const oid = r.opportunity?.ownerId;
+    if (!oid) continue;
+    map.set(oid, (map.get(oid) ?? 0) + 1);
   }
   return map;
 }

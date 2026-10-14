@@ -29,20 +29,21 @@ import { Surface } from "@/components/ui/surface";
 import { StageDonutChart } from "@/components/crm/stage-donut-chart";
 import { StageBarChart } from "@/components/crm/stage-bar-chart";
 import { KpiRadial } from "@/components/crm/kpi-radial";
-import { RapportFilters } from "@/components/crm/rapport-filters";
 import { GoalsProgressStrip } from "@/components/crm/goals-progress-strip";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
+import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
 import { ActionLink } from "@/components/ui/action-link";
+import {
+  parseCrmOwner,
+  parseCrmPeriod,
+} from "@/lib/crm/scope-period";
 
 export const metadata: Metadata = { title: "Rapport commercial" };
-
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export default async function CrmRapportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ semaine?: string; owner?: string; periode?: string }>;
+  searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const user = await requireUser();
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
@@ -66,28 +67,29 @@ export default async function CrmRapportPage({
       }))
     : [];
 
-  const ownerIdsSet = new Set(owners.map((o) => o.value));
+  const period = parseCrmPeriod({
+    ...sp,
+    periode: sp.periode ?? "semaine",
+  });
+  const ownerScope = parseCrmOwner(
+    sp,
+    user,
+    owners.map((o) => o.value),
+  );
 
   /** `all` = équipe · uuid = collab · self si pas Direction. */
-  let scopeMode: "all" | "user" = canGlobal ? "all" : "user";
-  let focusOwnerId: string | null = canGlobal ? null : user.id;
-
-  if (canGlobal && sp.owner && sp.owner !== "all") {
-    if (UUID_RE.test(sp.owner) && ownerIdsSet.has(sp.owner)) {
-      scopeMode = "user";
-      focusOwnerId = sp.owner;
-    }
-    // sinon garde-fou : reste « Toute l’équipe »
-  } else if (!canGlobal) {
-    focusOwnerId = user.id;
-  }
+  const scopeMode: "all" | "user" =
+    canGlobal && !ownerScope.ownerId ? "all" : "user";
+  const focusOwnerId: string | null = canGlobal
+    ? ownerScope.ownerId
+    : user.id;
 
   const weeks = listWeekOptions({
     fromYear: new Date().getFullYear() - 1,
   });
   const weekValues = new Set(weeks.map((w) => w.value));
   const weekStart = (() => {
-    const parsed = parseWeekParam(sp.semaine);
+    const parsed = parseWeekParam(period.semaine);
     const iso = weekStartIso(parsed);
     if (weekValues.has(iso)) return parsed;
     return weekStartMonday();
@@ -187,15 +189,21 @@ export default async function CrmRapportPage({
         backHref="/commercial"
         backLabel="Retour Commercial"
         breadcrumbs={[{ label: "Commercial", href: "/commercial" }]}
-        actions={
-          <RapportFilters
-            semaine={weekIso}
-            weeks={weeks}
-            ownerId={scopeMode === "all" ? "all" : focusOwnerId}
-            owners={owners}
-            canFilterOwners={canGlobal}
-          />
-        }
+      />
+
+      <CrmScopeBar
+        mode="semaine"
+        semaine={weekIso}
+        mois={period.mois}
+        on={period.on}
+        from={period.fromIso}
+        to={period.toIso}
+        weeks={weeks}
+        ownerId={scopeMode === "all" ? null : focusOwnerId}
+        owners={owners}
+        canFilterOwners={canGlobal}
+        periodLabel={rangeLabel}
+        periodModes={["semaine"]}
       />
 
       {canGlobal && scopeMode === "user" && focusOwnerId ? (

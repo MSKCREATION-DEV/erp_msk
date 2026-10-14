@@ -7,6 +7,8 @@
 
 **Lecture partagée / écriture affectée :** tous les commerciaux voient tous les prospects (anti-doublon). Journaliser, changer le statut ou éditer = réservé au **suivi**. Direction / Admin CRM / habilités (`crm.reassign`) : **Affecter** un prospect à un commercial (fiche, liste, ou page **Affectations**). Commercial en lecture seule : **Demander le suivi**. Les **Clients** n’apparaissent jamais dans le listing Prospects.
 
+**Filtres communs** (Tableau de bord, Vue Équipe, Objectifs, Rapport) : barre **période** (semaine / mois / jour / plage selon l’écran) + **collaborateur** (si Direction / lead). Relances *faites* et clients gagnés = événements de la période ; dossiers ouverts / retards = **à date**. Vocabulaire : « montant en cours » (jamais « pipeline »).
+
 **En discussion** (ex-« En qualification ») : échange en cours — besoin / budget / timing à clarifier ; pas encore prêt pour un devis.
 
 **Création :** contrôle doublons (nom exact → ouvrir fiche existante ; nom proche → alerte + continuer) · multi-moyens de contact · réseaux sociaux entreprise optionnels.
