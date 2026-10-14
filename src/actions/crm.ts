@@ -25,7 +25,7 @@ import {
   MIN_ACTIVITIES_BEFORE_LOST,
   normalizeUiStage,
 } from "@/lib/crm/guide-rules";
-import { ACTIVITY_LABELS } from "@/lib/crm/labels";
+import { ACTIVITY_LABELS, STAGE_LABELS } from "@/lib/crm/labels";
 import { GOAL_METRICS } from "@/lib/crm/goals";
 import {
   canMutateCrmDeal,
@@ -367,6 +367,25 @@ export async function createProspectAction(
     });
   }
 
+  const createdAt = deal.createdAt ?? new Date();
+  await prisma.crmActivity.create({
+    data: {
+      opportunityId: deal.id,
+      organizationId: org.id,
+      type: CrmActivityType.NOTE,
+      summary: "Prospect créé",
+      body: [
+        orgName,
+        src ? `Origine : ${src}` : null,
+        nextAction ? `Prochaine action : ${nextAction}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+      actorId: actor.id,
+      occurredAt: createdAt,
+    },
+  });
+
   const ackFuzzy = fdString(formData, "acknowledgeFuzzy") === "1";
   const fuzzyIds = fdString(formData, "fuzzyCandidateIds").trim();
   if (ackFuzzy && fuzzyIds) {
@@ -548,6 +567,21 @@ export async function updateProspectAction(
   if ((deal.organization.website ?? "") !== data.website) changed.push("website");
   if ((deal.organization.notes ?? "") !== data.notes) changed.push("notes");
   if (deal.organization.source !== data.source) changed.push("source");
+  const socialFields = [
+    "instagramUrl",
+    "linkedinUrl",
+    "tiktokUrl",
+    "facebookUrl",
+    "whatsappUrl",
+  ] as const;
+  for (const f of socialFields) {
+    const prev = deal.organization[f] ?? "";
+    const next = sanitizeUrl(data[f]) ?? "";
+    if (prev !== next) {
+      changed.push("social");
+      break;
+    }
+  }
   if ((deal.budgetXof ?? null) !== (Number.isFinite(budgetXof) ? budgetXof : null)) {
     changed.push("budgetXof");
   }
@@ -637,6 +671,43 @@ export async function updateProspectAction(
         budgetXof: Number.isFinite(budgetXof) ? budgetXof : null,
         nextAction: data.nextAction || null,
         followUpAt: followUpOk,
+        lastActivityAt: new Date(),
+      },
+    });
+
+    const fieldLabels: Record<string, string> = {
+      orgName: "entreprise",
+      sector: "secteur",
+      city: "ville",
+      country: "pays",
+      website: "site web",
+      notes: "résumé",
+      source: "origine",
+      budgetXof: "budget",
+      nextAction: "prochaine action",
+      followUpAt: "date de relance",
+      contactFirst: "prénom contact",
+      contactLast: "nom contact",
+      jobTitle: "poste",
+      phone: "téléphone",
+      email: "e-mail",
+      contact: "contact",
+      channels: "moyens de contact",
+      social: "réseaux sociaux",
+    };
+    const labels = [...new Set(changed.map((f) => fieldLabels[f] ?? f))];
+    await tx.crmActivity.create({
+      data: {
+        opportunityId: deal.id,
+        organizationId: deal.organizationId,
+        type: CrmActivityType.NOTE,
+        summary: "Fiche mise à jour",
+        body:
+          labels.length > 0
+            ? `Champs : ${labels.join(", ")}`
+            : "Modification enregistrée",
+        actorId: actor.id,
+        occurredAt: new Date(),
       },
     });
   });
@@ -1072,6 +1143,8 @@ export async function updateOpportunityStageAction(
     stage === "INTERESSE" && deal.stage !== "INTERESSE";
   const now = new Date();
 
+  const stageChanged = normalizeUiStage(deal.stage) !== stage;
+
   await prisma.$transaction(async (tx) => {
     await tx.crmOpportunity.update({
       where: { id },
@@ -1082,7 +1155,7 @@ export async function updateOpportunityStageAction(
         wonAt: stage === "GAGNE" ? now : deal.wonAt,
         lostAt: stage === "PERDU" ? now : null,
         interestedAt: enteringInteresse ? now : deal.interestedAt,
-        lastActivityAt: enteringContacte ? now : deal.lastActivityAt,
+        lastActivityAt: stageChanged || enteringContacte ? now : deal.lastActivityAt,
       },
     });
 
@@ -1099,6 +1172,26 @@ export async function updateOpportunityStageAction(
           occurredAt: now,
         },
       });
+    } else if (stageChanged) {
+      const fromLabel =
+        STAGE_LABELS[normalizeUiStage(deal.stage)] ?? deal.stage;
+      const toLabel = STAGE_LABELS[stage] ?? stage;
+      await tx.crmActivity.create({
+        data: {
+          opportunityId: id,
+          organizationId: deal.organizationId,
+          type: CrmActivityType.NOTE,
+          summary: `Statut : ${fromLabel} → ${toLabel}`,
+          body:
+            stage === "PERDU" && lossNote
+              ? lossNote
+              : stage === "PERDU" && lossReasonRaw
+                ? `Motif : ${lossReasonRaw}`
+                : null,
+          actorId: actor.id,
+          occurredAt: now,
+        },
+      });
     }
   });
 
@@ -1109,6 +1202,14 @@ export async function updateOpportunityStageAction(
       entityType: "crm_opportunity",
       entityId: id,
       metadata: { channel: contactChannel },
+    });
+  } else if (stageChanged) {
+    await writeAudit({
+      actorId: actor.id,
+      action: "crm.stage.update",
+      entityType: "crm_opportunity",
+      entityId: id,
+      metadata: { from: deal.stage, to: stage },
     });
   }
 

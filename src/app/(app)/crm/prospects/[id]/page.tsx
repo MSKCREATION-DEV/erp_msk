@@ -28,7 +28,6 @@ import {
   STAGE_LABELS,
 } from "@/lib/crm/labels";
 import { CHANNEL_TYPE_LABELS } from "@/lib/crm/channels";
-import { SOCIAL_NETWORKS } from "@/lib/crm/social";
 import { isTestOrgName } from "@/lib/crm/test-data";
 import { isDevisSlaBreached } from "@/lib/crm/devis-sla";
 import {
@@ -46,6 +45,7 @@ import { AssignmentRequestForm } from "@/components/crm/assignment-request-form"
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { OfferConfigBadges } from "@/components/crm/offer-config-badges";
+import { SocialNetworkBadges } from "@/components/crm/social-network-badges";
 import { countOutreachActivities } from "@/lib/crm/follow-up-count";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
@@ -214,7 +214,7 @@ export default async function CrmProspectDetailPage({
       createdBy: { select: { firstName: true, lastName: true } },
       activities: {
         orderBy: { occurredAt: "desc" },
-        take: 30,
+        take: 100,
         include: {
           actor: { select: { firstName: true, lastName: true } },
         },
@@ -343,6 +343,33 @@ export default async function CrmProspectDetailPage({
     deal.organization.contacts[0] ??
     null;
   const sameOwnerAsCreator = deal.ownerId === deal.createdById;
+
+  /** Journal : toujours ancré à la création (synthétique si ancien dossier). */
+  const hasCreationActivity = deal.activities.some((a) =>
+    a.summary.toLowerCase().startsWith("prospect créé"),
+  );
+  const journalEntries = [
+    ...deal.activities.map((a) => ({
+      id: a.id,
+      summary: a.summary,
+      body: a.body,
+      typeLabel: ACTIVITY_LABELS[a.type],
+      occurredAt: a.occurredAt,
+      actorName: `${a.actor.firstName} ${a.actor.lastName}`,
+    })),
+    ...(hasCreationActivity
+      ? []
+      : [
+          {
+            id: `created-${deal.id}`,
+            summary: "Prospect créé",
+            body: null as string | null,
+            typeLabel: "Création",
+            occurredAt: deal.createdAt,
+            actorName: `${deal.createdBy.firstName} ${deal.createdBy.lastName}`,
+          },
+        ]),
+  ].sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime());
 
   const canLog =
     canMutate && hasPermission(user, "crm.activity.log");
@@ -592,48 +619,96 @@ export default async function CrmProspectDetailPage({
 
           <div className="bg-msk-chalk/40 p-5 sm:p-6">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
-              Contact principal
+              Contacts
             </p>
-            {primaryContact ? (
-              <div className="mt-3 space-y-2">
-                <p className="flex items-center gap-2 text-base font-semibold text-msk-ink">
-                  <UserRound
-                    className="h-4 w-4 shrink-0 text-msk-blue"
-                    aria-hidden
-                  />
-                  {primaryContact.firstName} {primaryContact.lastName}
-                </p>
-                {primaryContact.jobTitle ? (
-                  <p className="text-sm text-msk-ink/55">
-                    {primaryContact.jobTitle}
-                  </p>
-                ) : null}
-                <div className="flex flex-col gap-1.5 pt-1 text-sm">
-                  {primaryContact.phone ? (
-                    <a
-                      href={`tel:${primaryContact.phone}`}
-                      className="inline-flex items-center gap-2 text-msk-blue hover:underline"
-                    >
-                      <Phone className="h-3.5 w-3.5" aria-hidden />
-                      {primaryContact.phone}
-                    </a>
-                  ) : null}
-                  {primaryContact.email ? (
-                    <a
-                      href={`mailto:${primaryContact.email}`}
-                      className="inline-flex items-center gap-2 text-msk-blue hover:underline"
-                    >
-                      <Mail className="h-3.5 w-3.5" aria-hidden />
-                      {primaryContact.email}
-                    </a>
-                  ) : null}
-                  {!primaryContact.phone && !primaryContact.email ? (
-                    <p className="text-msk-ink/40">Aucun moyen de contact</p>
-                  ) : null}
-                </div>
-              </div>
-            ) : (
+            {deal.organization.contacts.length === 0 ? (
               <p className="mt-3 text-sm text-msk-ink/40">Aucun contact</p>
+            ) : (
+              <ul className="mt-3 max-h-72 space-y-3 overflow-y-auto pr-1">
+                {deal.organization.contacts.map((c) => (
+                  <li
+                    key={c.id}
+                    className="rounded-xl border border-msk-ink/[0.06] bg-white/80 px-3 py-2.5"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="flex items-center gap-1.5 text-sm font-semibold text-msk-ink">
+                        <UserRound
+                          className="h-3.5 w-3.5 shrink-0 text-msk-blue"
+                          aria-hidden
+                        />
+                        {c.firstName} {c.lastName}
+                      </p>
+                      {c.isPrimary ? (
+                        <Badge tone="blue">Principal</Badge>
+                      ) : null}
+                    </div>
+                    {c.jobTitle ? (
+                      <p className="mt-0.5 text-xs font-medium text-msk-ink/55">
+                        {c.jobTitle}
+                      </p>
+                    ) : null}
+                    {c.channels.length > 0 ? (
+                      <ul className="mt-2 space-y-1">
+                        {c.channels.map((ch) => (
+                          <li
+                            key={ch.id}
+                            className="flex flex-wrap items-center gap-1.5 text-xs text-msk-ink/65"
+                          >
+                            <span className="font-medium text-msk-ink/45">
+                              {CHANNEL_TYPE_LABELS[ch.type]}
+                            </span>
+                            {ch.type === "EMAIL" ? (
+                              <a
+                                href={`mailto:${ch.value}`}
+                                className="text-msk-blue hover:underline"
+                              >
+                                {ch.value}
+                              </a>
+                            ) : ch.type === "PHONE" ||
+                              ch.type === "WHATSAPP" ? (
+                              <a
+                                href={`tel:${ch.value}`}
+                                className="text-msk-blue hover:underline"
+                              >
+                                {ch.value}
+                              </a>
+                            ) : (
+                              <span>{ch.value}</span>
+                            )}
+                            {ch.isPrimary ? (
+                              <Badge tone="muted">Principal</Badge>
+                            ) : null}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="mt-1.5 flex flex-col gap-1 text-xs">
+                        {c.phone ? (
+                          <a
+                            href={`tel:${c.phone}`}
+                            className="inline-flex items-center gap-1.5 text-msk-blue hover:underline"
+                          >
+                            <Phone className="h-3 w-3" aria-hidden />
+                            {c.phone}
+                          </a>
+                        ) : null}
+                        {c.email ? (
+                          <a
+                            href={`mailto:${c.email}`}
+                            className="inline-flex items-center gap-1.5 text-msk-blue hover:underline"
+                          >
+                            <Mail className="h-3 w-3" aria-hidden />
+                            {c.email}
+                          </a>
+                        ) : null}
+                        {!c.phone && !c.email ? (
+                          <span className="text-msk-ink/40">—</span>
+                        ) : null}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         </div>
@@ -700,95 +775,43 @@ export default async function CrmProspectDetailPage({
                 )}
               </li>
             </ul>
-            {(() => {
-              const links = SOCIAL_NETWORKS.map((n) => ({
-                ...n,
-                url: deal.organization[n.field],
-              })).filter((n) => n.url);
-              if (links.length === 0) return null;
-              return (
-                <div className="mt-4 flex flex-wrap gap-2 border-t border-msk-ink/[0.06] pt-4">
-                  {links.map((n) => (
-                    <a
-                      key={n.field}
-                      href={n.url!}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex h-8 items-center rounded-lg border border-msk-blue/20 bg-msk-blue/[0.06] px-2.5 text-xs font-medium text-msk-blue transition hover:bg-msk-blue/10"
-                    >
-                      {n.label}
-                    </a>
-                  ))}
-                </div>
-              );
-            })()}
             <div className="mt-4 border-t border-msk-ink/[0.06] pt-4">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
-                Résumé entreprise
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                Réseaux sociaux
               </p>
-              {deal.organization.notes ? (
-                <p className="mt-1.5 whitespace-pre-wrap text-sm text-msk-ink/70">
-                  {deal.organization.notes}
-                </p>
-              ) : (
-                <p className="mt-1.5 text-sm text-msk-ink/40">
-                  Aucun résumé — utile pour situer l’activité sans confondre avec
-                  le contact.
-                </p>
-              )}
+              <SocialNetworkBadges
+                urls={{
+                  instagramUrl: deal.organization.instagramUrl,
+                  linkedinUrl: deal.organization.linkedinUrl,
+                  tiktokUrl: deal.organization.tiktokUrl,
+                  facebookUrl: deal.organization.facebookUrl,
+                  whatsappUrl: deal.organization.whatsappUrl,
+                }}
+                emptyLabel="Aucun réseau renseigné à la création — ajoutez-les via Modifier."
+              />
             </div>
           </Section>
         </div>
 
         <div className="xl:col-span-4">
-          <Section title="Contacts">
-            {deal.organization.contacts.length === 0 ? (
-              <p className="text-sm text-msk-ink/40">Aucun contact</p>
+          <Section
+            title="Notes"
+            action={
+              <MessageSquareText
+                className="h-4 w-4 text-msk-ink/30"
+                aria-hidden
+              />
+            }
+          >
+            {deal.organization.notes ? (
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-msk-ink/80">
+                {deal.organization.notes}
+              </p>
             ) : (
-              <ul className="space-y-2.5">
-                {deal.organization.contacts.map((c) => (
-                  <li
-                    key={c.id}
-                    className="rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/30 px-3.5 py-3"
-                  >
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-sm font-semibold text-msk-ink">
-                        {c.firstName} {c.lastName}
-                      </p>
-                      {c.isPrimary ? (
-                        <Badge tone="blue">Principal</Badge>
-                      ) : null}
-                    </div>
-                    {c.jobTitle ? (
-                      <p className="mt-0.5 text-xs font-medium text-msk-ink/55">
-                        {c.jobTitle}
-                      </p>
-                    ) : null}
-                    {c.channels.length > 0 ? (
-                      <ul className="mt-2 space-y-1">
-                        {c.channels.map((ch) => (
-                          <li
-                            key={ch.id}
-                            className="flex flex-wrap items-center gap-1.5 text-xs text-msk-ink/60"
-                          >
-                            <span className="font-medium text-msk-ink/45">
-                              {CHANNEL_TYPE_LABELS[ch.type]}
-                            </span>
-                            <span>{ch.value}</span>
-                            {ch.isPrimary ? (
-                              <Badge tone="muted">Principal</Badge>
-                            ) : null}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="mt-1.5 text-xs text-msk-ink/55">
-                        {[c.phone, c.email].filter(Boolean).join(" · ") || "—"}
-                      </p>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              <p className="text-sm text-msk-ink/40">
+                Aucune note — utile pour situer l’activité, le contexte ou les
+                échanges longs. Saisissez-la via Modifier.
+              </p>
             )}
           </Section>
         </div>
@@ -987,13 +1010,13 @@ export default async function CrmProspectDetailPage({
 
         <div className="xl:col-span-12">
           <Section title="Journal d’activités">
-            {deal.activities.length === 0 ? (
+            {journalEntries.length === 0 ? (
               <p className="text-sm text-msk-ink/40">
                 Aucune activité — utilisez « Enregistrer une action ».
               </p>
             ) : (
               <ol className="relative space-y-0 border-l border-msk-blue/25 pl-5">
-                {deal.activities.map((a) => (
+                {journalEntries.map((a) => (
                   <li key={a.id} className="relative pb-5 last:pb-0">
                     <span className="absolute -left-[1.41rem] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-msk-blue shadow-sm" />
                     <p className="text-sm font-semibold text-msk-ink">
@@ -1005,9 +1028,8 @@ export default async function CrmProspectDetailPage({
                       </p>
                     ) : null}
                     <p className="mt-1 text-xs text-msk-ink/40">
-                      {ACTIVITY_LABELS[a.type]} ·{" "}
-                      {a.occurredAt.toLocaleString("fr-FR")} ·{" "}
-                      {a.actor.firstName} {a.actor.lastName}
+                      {a.typeLabel} · {a.occurredAt.toLocaleString("fr-FR")} ·{" "}
+                      {a.actorName}
                     </p>
                   </li>
                 ))}
