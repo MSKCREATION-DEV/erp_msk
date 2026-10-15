@@ -162,6 +162,8 @@ export function EquipeCollabCard({
         <GoalsProgressStrip
           progress={goals}
           title={`Objectifs · ${periodLabel}`}
+          detailHref={`/crm/objectifs/assigner/${ownerId}`}
+          detailLabel="Assigner"
           compact
           embedded
         />

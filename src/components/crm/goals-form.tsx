@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { savePeriodGoalsAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FieldLabel } from "@/components/ui/field-label";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import {
   GOAL_LABELS,
@@ -19,10 +19,14 @@ import {
 } from "@/lib/crm/goal-scale";
 import { cn } from "@/lib/utils";
 
-const GRAINS: GoalPeriodGrain[] = ["DAY", "WEEK", "MONTH"];
+const GRAINS: { value: GoalPeriodGrain; label: string }[] = [
+  { value: "DAY", label: "Jour" },
+  { value: "WEEK", label: "Semaine" },
+  { value: "MONTH", label: "Mois" },
+];
 
 function otherGrains(g: GoalPeriodGrain): GoalPeriodGrain[] {
-  return GRAINS.filter((x) => x !== g);
+  return GRAINS.map((x) => x.value).filter((x) => x !== g);
 }
 
 export function GoalsForm({
@@ -33,17 +37,17 @@ export function GoalsForm({
   periodType: initialPeriodType = "WEEK",
   periodStart: initialPeriodStart,
   semaineOptions,
+  cancelHref,
 }: {
   scope: "USER" | "TEAM";
   initial: Record<GoalMetric, number>;
   targetUserId?: string;
   submitLabel?: string;
-  /** Grain d’assignation initial (aligné barre CRM). */
   periodType?: GoalPeriodGrain;
   /** Ancre ISO : YYYY-MM-DD (jour/semaine) ou YYYY-MM (mois). */
   periodStart: string;
-  /** Options semaine pour le sélecteur. */
   semaineOptions?: { value: string; label: string }[];
+  cancelHref?: string;
 }) {
   const router = useRouter();
   const { pending, run } = usePendingAction();
@@ -52,12 +56,10 @@ export function GoalsForm({
   const [ok, setOk] = useState<string | null>(null);
   const [grain, setGrain] = useState<GoalPeriodGrain>(initialPeriodType);
   const [anchor, setAnchor] = useState(initialPeriodStart);
-  const [values, setValues] = useState<Record<GoalMetric, number>>(() => {
-    // initial est déjà au grain de la page ; si l’utilisateur change de grain, on rescale
-    return { ...initial };
-  });
+  const [values, setValues] = useState<Record<GoalMetric, number>>(() => ({
+    ...initial,
+  }));
   const busy = pending || refreshing;
-
   const formId = `${scope}-${targetUserId ?? "self"}`;
 
   const periodStartValue = useMemo(() => {
@@ -112,38 +114,65 @@ export function GoalsForm({
 
   return (
     <form
-      className={cn("relative w-full space-y-4", busy && "pointer-events-none")}
+      className={cn("relative w-full space-y-6", busy && "pointer-events-none")}
       onSubmit={onSubmit}
       aria-busy={busy || undefined}
     >
       <fieldset
         disabled={busy}
-        className={cn("space-y-4 border-0 p-0", busy && "opacity-60")}
+        className={cn("space-y-6 border-0 p-0", busy && "opacity-60")}
       >
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="space-y-3">
           <div>
-            <Label htmlFor={`${formId}-grain`}>Assigner par</Label>
-            <select
-              id={`${formId}-grain`}
-              className="mt-1 flex h-10 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm text-msk-ink"
-              value={grain}
-              onChange={(e) =>
-                onGrainChange(e.target.value as GoalPeriodGrain)
-              }
-            >
-              <option value="DAY">Jour</option>
-              <option value="WEEK">Semaine</option>
-              <option value="MONTH">Mois</option>
-            </select>
+            <h3 className="text-sm font-semibold text-msk-ink">
+              Période d’ancrage
+            </h3>
+            <p className="mt-0.5 text-xs text-msk-ink/45">
+              Saisissez les cibles dans l’unité choisie — les équivalents se
+              calculent automatiquement (jours ouvrés : 5 j / sem., 22 j /
+              mois).
+            </p>
           </div>
-          <div className="sm:col-span-1 lg:col-span-2">
-            <Label htmlFor={`${formId}-anchor`}>
-              Période ({GOAL_GRAIN_LABELS[grain]})
-            </Label>
+
+          <div>
+            <FieldLabel htmlFor={`${formId}-grain`}>Assigner par</FieldLabel>
+            <div
+              id={`${formId}-grain`}
+              className="mt-1.5 inline-flex rounded-xl border border-msk-ink/12 bg-msk-chalk/50 p-1"
+              role="group"
+              aria-label="Granularité"
+            >
+              {GRAINS.map((g) => (
+                <button
+                  key={g.value}
+                  type="button"
+                  onClick={() => onGrainChange(g.value)}
+                  className={cn(
+                    "rounded-lg px-3.5 py-1.5 text-sm font-medium transition",
+                    grain === g.value
+                      ? "bg-white text-msk-blue shadow-sm"
+                      : "text-msk-ink/55 hover:text-msk-ink",
+                  )}
+                  aria-pressed={grain === g.value}
+                >
+                  {g.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="max-w-md">
+            <FieldLabel htmlFor={`${formId}-anchor`} required>
+              {grain === "DAY"
+                ? "Jour"
+                : grain === "WEEK"
+                  ? "Semaine"
+                  : "Mois"}
+            </FieldLabel>
             {grain === "WEEK" && semaineOptions && semaineOptions.length > 0 ? (
               <select
                 id={`${formId}-anchor`}
-                className="mt-1 flex h-10 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm text-msk-ink"
+                className="mt-1.5 flex h-10 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm text-msk-ink focus:border-msk-blue focus:outline-none focus:ring-2 focus:ring-msk-blue/20"
                 value={periodStartValue}
                 onChange={(e) => setAnchor(e.target.value)}
               >
@@ -157,58 +186,84 @@ export function GoalsForm({
               <Input
                 id={`${formId}-anchor`}
                 type={grain === "MONTH" ? "month" : "date"}
-                className="mt-1"
+                className="mt-1.5"
                 value={periodStartValue}
                 onChange={(e) => setAnchor(e.target.value)}
+                required
               />
             )}
           </div>
-        </div>
+        </section>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          {GOAL_METRICS.map((m) => {
-            const others = otherGrains(grain);
-            return (
-              <div key={m}>
-                <Label htmlFor={`${formId}-${m}`}>
-                  {GOAL_LABELS[m]}
-                  <span className="ml-1 font-normal text-msk-ink/40">
-                    / {GOAL_GRAIN_LABELS[grain]}
-                  </span>
-                </Label>
-                <Input
-                  id={`${formId}-${m}`}
-                  name={m}
-                  type="number"
-                  min={0}
-                  max={9999}
-                  value={values[m]}
-                  onChange={(e) => {
-                    const n = Number.parseInt(e.target.value, 10);
-                    setValues((prev) => ({
-                      ...prev,
-                      [m]: Number.isFinite(n) ? n : 0,
-                    }));
-                  }}
-                  className="mt-1"
-                />
-                <p className="mt-1 text-[11px] text-msk-ink/45">
-                  {others
-                    .map(
-                      (g) =>
-                        `≈ ${scaleGoalTarget(values[m], grain, g)} / ${GOAL_GRAIN_LABELS[g]}`,
-                    )
-                    .join(" · ")}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+        <section className="space-y-3">
+          <div>
+            <h3 className="text-sm font-semibold text-msk-ink">
+              Cibles
+              <span className="ml-1.5 font-normal text-msk-ink/40">
+                / {GOAL_GRAIN_LABELS[grain]}
+              </span>
+            </h3>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {GOAL_METRICS.map((m) => {
+              const others = otherGrains(grain);
+              return (
+                <div
+                  key={m}
+                  className="rounded-xl border border-msk-ink/[0.08] bg-white p-4"
+                >
+                  <FieldLabel htmlFor={`${formId}-${m}`}>
+                    {GOAL_LABELS[m]}
+                  </FieldLabel>
+                  <Input
+                    id={`${formId}-${m}`}
+                    name={m}
+                    type="number"
+                    min={0}
+                    max={9999}
+                    value={values[m]}
+                    onChange={(e) => {
+                      const n = Number.parseInt(e.target.value, 10);
+                      setValues((prev) => ({
+                        ...prev,
+                        [m]: Number.isFinite(n) ? n : 0,
+                      }));
+                    }}
+                    className="mt-1.5"
+                  />
+                  <p className="mt-2 text-[11px] leading-relaxed text-msk-ink/45">
+                    {others
+                      .map(
+                        (g) =>
+                          `≈ ${scaleGoalTarget(values[m], grain, g)} / ${GOAL_GRAIN_LABELS[g]}`,
+                      )
+                      .join(" · ")}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
         {ok ? <p className="text-sm text-msk-blue">{ok}</p> : null}
-        <Button type="submit" size="sm" disabled={busy}>
-          {busy ? "Enregistrement…" : submitLabel}
-        </Button>
+
+        <div className="flex flex-wrap items-center justify-end gap-2 border-t border-msk-ink/[0.08] pt-4">
+          {cancelHref ? (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={busy}
+              onClick={() => router.push(cancelHref)}
+            >
+              Annuler
+            </Button>
+          ) : null}
+          <Button type="submit" size="sm" disabled={busy}>
+            {busy ? "Enregistrement…" : submitLabel}
+          </Button>
+        </div>
       </fieldset>
     </form>
   );

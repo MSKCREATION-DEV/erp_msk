@@ -1779,6 +1779,10 @@ export async function savePeriodGoalsAction(
 
   revalidatePath("/crm");
   revalidatePath("/crm/objectifs");
+  revalidatePath("/crm/objectifs/assigner");
+  if (scope === "USER") {
+    revalidatePath(`/crm/objectifs/assigner/${targetUserId}`);
+  }
   revalidatePath("/crm/rapport-semaine");
   revalidatePath("/crm/equipe");
   return { ok: true, message: "Objectifs enregistrés" };

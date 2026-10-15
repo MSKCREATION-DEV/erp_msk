@@ -190,13 +190,11 @@ export default async function CrmRapportPage({
     return s ? `/crm/rapport-semaine?${s}` : "/crm/rapport-semaine";
   })();
 
-  const objectifsHref = buildCrmScopeHref("/crm/objectifs", {
-    period,
-    ownerId:
-      scopeMode === "user" && focusOwnerId && canGlobal ? focusOwnerId : null,
-    canFilterOwners: canGlobal,
-    ownerParamKey: "collab",
-  });
+  const objectifsHref = canGlobal
+    ? scopeMode === "user" && focusOwnerId
+      ? `/crm/objectifs/assigner/${focusOwnerId}`
+      : "/crm/objectifs/assigner"
+    : "/crm/objectifs";
 
   const resetLiveHref = buildCrmScopeHref("/crm/rapport-semaine", {
     period: parseCrmPeriod({ periode: "semaine" }),

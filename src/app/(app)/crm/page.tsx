@@ -233,16 +233,20 @@ export default async function CrmDashboardPage({
     ownerId: focusOwner,
     canFilterOwners: ownerScope.canFilterOwners,
   });
-  const goalsHref = buildCrmScopeHref("/crm/objectifs", {
-    period:
-      period.mode === "plage"
-        ? parseCrmPeriod({ periode: "semaine", semaine: period.semaine })
-        : period,
-    ownerId: focusOwner,
-    canFilterOwners: ownerScope.canFilterOwners,
-    ownerParamKey: "collab",
-    forcePeriod: true,
-  });
+  /** Lead : écran d’assignation dédié · Collab : vue d’ensemble lecture. */
+  const goalsHref = canManageGoals
+    ? focusOwner
+      ? `/crm/objectifs/assigner/${focusOwner}`
+      : "/crm/objectifs/assigner"
+    : buildCrmScopeHref("/crm/objectifs", {
+        period:
+          period.mode === "plage"
+            ? parseCrmPeriod({ periode: "semaine", semaine: period.semaine })
+            : period,
+        ownerId: null,
+        canFilterOwners: false,
+        forcePeriod: true,
+      });
 
   /** Liens événements : période forcée + owner. */
   const eventHref = (

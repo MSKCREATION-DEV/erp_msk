@@ -86,20 +86,19 @@ const month = new Date(Date.UTC(2026, 9, 1));
   );
 }
 
-/** Filtres : href Objectifs conserve période mois + owner. */
+/** Vue d’ensemble : conserve période mois (sans collab — lecture). */
 {
   const period = parseCrmPeriod({ periode: "mois", mois: "2026-10" });
   const href = buildCrmScopeHref("/crm/objectifs", {
     period,
-    ownerId: "628357b3-ca62-418a-809d-a541eccc29b4",
-    canFilterOwners: true,
-    ownerParamKey: "collab",
+    ownerId: null,
+    canFilterOwners: false,
     forcePeriod: true,
   });
   assert.match(href, /\/crm\/objectifs/);
   assert.match(href, /periode=mois/);
   assert.match(href, /mois=2026-10/);
-  assert.match(href, /collab=628357b3-ca62-418a-809d-a541eccc29b4/);
+  assert.equal(href.includes("collab="), false);
 }
 
 console.log("goals-resolve.test.ts OK");

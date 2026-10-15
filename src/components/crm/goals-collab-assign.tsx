@@ -16,18 +16,14 @@ function ChipPendingLabel({ label }: { label: string }) {
 }
 
 /**
- * Navigation collab pour l’assignation d’objectifs (URL `?collab=`).
- * Conserve les params période CRM (ne casse pas jour/mois/semaine).
+ * Navigation collab — pages `/crm/objectifs/assigner/[userId]`.
  */
 export function GoalsCollabNav({
   members,
   selectedId,
-  periodParams,
 }: {
   members: CollabOption[];
   selectedId: string;
-  /** Params période à conserver (periode, semaine, mois, on…). */
-  periodParams?: Record<string, string | undefined>;
 }) {
   if (members.length === 0) {
     return (
@@ -36,22 +32,16 @@ export function GoalsCollabNav({
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2" role="list" aria-label="Collaborateurs">
       {members.map((m) => {
         const active = m.id === selectedId;
         const label = `${m.firstName} ${m.lastName}`;
-        const p = new URLSearchParams();
-        p.set("collab", m.id);
-        if (periodParams) {
-          for (const [k, v] of Object.entries(periodParams)) {
-            if (v) p.set(k, v);
-          }
-        }
         return (
           <Link
             key={m.id}
             prefetch={false}
-            href={`/crm/objectifs?${p.toString()}`}
+            href={`/crm/objectifs/assigner/${m.id}`}
+            role="listitem"
             className={cn(
               "inline-flex h-9 items-center rounded-lg px-3 text-sm font-medium transition",
               active

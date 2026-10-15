@@ -35,7 +35,8 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 | Scripts | `/crm/scripts` | Copier messages |
 | Vue Équipe | `/crm/equipe` | Prospects + objectifs période (si `view_team` / lead — pas « own only ») |
 | Rapport | `/crm/rapport-semaine` | Par **semaine** (lundi–vendredi) · Direction : toute l’équipe ou un collaborateur |
-| Objectifs | `/crm/objectifs` | Collab : lecture · Lead : **Assignation globale** ou **Par collaborateur** (saisie jour / semaine / mois) |
+| Objectifs | `/crm/objectifs` | Vue d’ensemble + barre période (lecture) |
+| Assignation | `/crm/objectifs/assigner` · `/assigner/[id]` | Globale (équipe) ou par collab — période dans le formulaire, sans barre CRM |
 
 ## Vocabulaire
 
