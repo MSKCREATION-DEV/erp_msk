@@ -161,7 +161,16 @@ const currentIso = weekStartIso(currentWeek);
   });
   assert.equal(resolveCrmScopeLens(past), "period");
   assert.equal(showStockWidgets("period"), false);
-  assert.equal(goalsCompatibleWithPeriod(past), false);
+  assert.equal(goalsCompatibleWithPeriod(past), true);
+}
+
+{
+  const plage = parseCrmPeriod({
+    periode: "plage",
+    from: "2026-09-01",
+    to: "2026-09-15",
+  });
+  assert.equal(goalsCompatibleWithPeriod(plage), false);
 }
 
 {

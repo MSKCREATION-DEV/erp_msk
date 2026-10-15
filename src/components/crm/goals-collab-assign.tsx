@@ -17,17 +17,17 @@ function ChipPendingLabel({ label }: { label: string }) {
 
 /**
  * Navigation collab pour l’assignation d’objectifs (URL `?collab=`).
- * Chips de navigation avec feedback pending — pas de select brut.
+ * Conserve les params période CRM (ne casse pas jour/mois/semaine).
  */
 export function GoalsCollabNav({
   members,
   selectedId,
-  /** Conserve la semaine sélectionnée (ex. `semaine=2026-10-06`). */
-  semaine,
+  periodParams,
 }: {
   members: CollabOption[];
   selectedId: string;
-  semaine?: string;
+  /** Params période à conserver (periode, semaine, mois, on…). */
+  periodParams?: Record<string, string | undefined>;
 }) {
   if (members.length === 0) {
     return (
@@ -42,7 +42,11 @@ export function GoalsCollabNav({
         const label = `${m.firstName} ${m.lastName}`;
         const p = new URLSearchParams();
         p.set("collab", m.id);
-        if (semaine) p.set("semaine", semaine);
+        if (periodParams) {
+          for (const [k, v] of Object.entries(periodParams)) {
+            if (v) p.set(k, v);
+          }
+        }
         return (
           <Link
             key={m.id}

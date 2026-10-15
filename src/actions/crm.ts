@@ -27,6 +27,7 @@ import {
 } from "@/lib/crm/guide-rules";
 import { ACTIVITY_LABELS, STAGE_LABELS } from "@/lib/crm/labels";
 import { GOAL_METRICS } from "@/lib/crm/goals";
+import { toPeriodStartDate } from "@/lib/crm/goal-scale";
 import {
   canMutateCrmDeal,
   canReassignCrmDeal,
@@ -1665,8 +1666,10 @@ export async function toggleCrmScriptAction(
   return { ok: true, message: active ? "Script activé" : "Script désactivé" };
 }
 
-/** Objectifs hebdo — TEAM (global) ou USER (soi / collab si lead). */
-export async function saveWeeklyGoalsAction(
+const goalPeriodTypeSchema = z.enum(["DAY", "WEEK", "MONTH"]);
+
+/** Objectifs période — TEAM (global) ou USER (collab si lead). */
+export async function savePeriodGoalsAction(
   formData: FormData,
 ): Promise<ActionResult> {
   const actor = await requireUser({ permission: "crm.access" });
@@ -1675,12 +1678,34 @@ export async function saveWeeklyGoalsAction(
   const canManage =
     actor.isSuperAdmin || hasPermission(actor, "crm.reports.global");
 
-  // Objectifs = Direction / crm.reports.global uniquement (pas d’auto-édition collab).
   if (!canManage) {
     return {
       ok: false,
       error: "Seule la Direction (ou un droit dédié) peut fixer les objectifs",
     };
+  }
+
+  const periodTypeParsed = goalPeriodTypeSchema.safeParse(
+    String(formData.get("periodType") ?? "WEEK"),
+  );
+  if (!periodTypeParsed.success) {
+    return { ok: false, error: "Type de période invalide" };
+  }
+  const periodType = periodTypeParsed.data;
+
+  const periodStartRaw = String(formData.get("periodStart") ?? "").trim();
+  if (!periodStartRaw) {
+    return { ok: false, error: "Période manquante" };
+  }
+
+  let periodStart: Date;
+  try {
+    periodStart = toPeriodStartDate(periodType, periodStartRaw);
+    if (Number.isNaN(periodStart.getTime())) {
+      return { ok: false, error: "Date de période invalide" };
+    }
+  } catch {
+    return { ok: false, error: "Date de période invalide" };
   }
 
   let targetUserId = actor.id;
@@ -1702,32 +1727,49 @@ export async function saveWeeklyGoalsAction(
     if (!Number.isFinite(target) || target < 0 || target > 9999) continue;
 
     if (scope === "TEAM") {
-      const existing = await prisma.crmWeeklyGoal.findFirst({
-        where: { scope: "TEAM", metric, userId: null },
+      const existing = await prisma.crmPeriodGoal.findFirst({
+        where: {
+          scope: "TEAM",
+          metric,
+          userId: null,
+          periodType,
+          periodStart,
+        },
       });
       if (existing) {
-        await prisma.crmWeeklyGoal.update({
+        await prisma.crmPeriodGoal.update({
           where: { id: existing.id },
           data: { target },
         });
       } else {
-        await prisma.crmWeeklyGoal.create({
-          data: { scope: "TEAM", userId: null, metric, target },
+        await prisma.crmPeriodGoal.create({
+          data: {
+            scope: "TEAM",
+            userId: null,
+            metric,
+            periodType,
+            periodStart,
+            target,
+          },
         });
       }
     } else {
-      await prisma.crmWeeklyGoal.upsert({
+      await prisma.crmPeriodGoal.upsert({
         where: {
-          scope_userId_metric: {
+          scope_userId_metric_periodType_periodStart: {
             scope: "USER",
             userId: targetUserId,
             metric,
+            periodType,
+            periodStart,
           },
         },
         create: {
           scope: "USER",
           userId: targetUserId,
           metric,
+          periodType,
+          periodStart,
           target,
         },
         update: { target },
@@ -1740,4 +1782,12 @@ export async function saveWeeklyGoalsAction(
   revalidatePath("/crm/rapport-semaine");
   revalidatePath("/crm/equipe");
   return { ok: true, message: "Objectifs enregistrés" };
+}
+
+/** @deprecated Alias — préférer savePeriodGoalsAction. */
+export async function saveWeeklyGoalsAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  if (!formData.get("periodType")) formData.set("periodType", "WEEK");
+  return savePeriodGoalsAction(formData);
 }

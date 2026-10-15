@@ -10,8 +10,8 @@ import { commercialTeamUserIds } from "@/lib/crm/team";
 import { STAGE_LABELS, STAGE_ORDER } from "@/lib/crm/labels";
 import {
   buildGoalProgress,
-  loadTeamGoals,
-  resolveGoals,
+  loadTeamGoalsForPeriod,
+  resolveGoalsForPeriod,
 } from "@/lib/crm/goals";
 import {
   formatWeekRangeLabel,
@@ -125,8 +125,8 @@ export default async function CrmRapportPage({
   // Séquentiel — pool Prisma connection_limit=1
   const goals =
     scopeMode === "all"
-      ? await loadTeamGoals()
-      : await resolveGoals(focusOwnerId!);
+      ? await loadTeamGoalsForPeriod(period)
+      : await resolveGoalsForPeriod(focusOwnerId!, period);
   const weekStats = await computeWeekStats(statsOwnerIds, weekStart);
   const deals = showStocks
     ? await prisma.crmOpportunity.findMany({

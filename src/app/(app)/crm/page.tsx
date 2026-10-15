@@ -23,11 +23,11 @@ import {
 } from "@/lib/crm/labels";
 import {
   buildGoalProgress,
-  loadTeamGoals,
-  resolveGoals,
+  loadTeamGoalsForPeriod,
+  resolveGoalsForPeriod,
 } from "@/lib/crm/goals";
-import { listWeekOptions, parseWeekParam } from "@/lib/crm/week";
-import { computePeriodStats, computeWeekStats } from "@/lib/crm/week-stats";
+import { listWeekOptions } from "@/lib/crm/week";
+import { computePeriodStats } from "@/lib/crm/week-stats";
 import { isTestOrgName } from "@/lib/crm/test-data";
 import { isDevisSlaBreached } from "@/lib/crm/devis-sla";
 import {
@@ -109,7 +109,6 @@ export default async function CrmDashboardPage({
   const assigneeWhere = { assigneeId: { in: ownerIds } };
 
   const weeks = listWeekOptions({ fromYear: new Date().getFullYear() - 1 });
-  const weekStart = parseWeekParam(period.semaine);
   const occurredBetween = dateRangeFilter(period.from, period.to);
 
   // Événements période (toujours)
@@ -128,17 +127,19 @@ export default async function CrmDashboardPage({
     },
     select: { budgetXof: true },
   });
-  const periodStats = showGoals
-    ? await computeWeekStats(ownerIds, weekStart)
-    : await computePeriodStats(ownerIds, period.from, period.to);
+  const periodStats = await computePeriodStats(
+    ownerIds,
+    period.from,
+    period.to,
+  );
 
   const goals =
     showGoals
       ? ownerScope.ownerId != null
-        ? await resolveGoals(ownerScope.ownerId)
+        ? await resolveGoalsForPeriod(ownerScope.ownerId, period)
         : ownerScope.canFilterOwners
-          ? await loadTeamGoals()
-          : await resolveGoals(user.id)
+          ? await loadTeamGoalsForPeriod(period)
+          : await resolveGoalsForPeriod(user.id, period)
       : null;
 
   // Stocks à date — uniquement lentille live (évite requêtes inutiles + chiffres trompeurs)
@@ -233,10 +234,14 @@ export default async function CrmDashboardPage({
     canFilterOwners: ownerScope.canFilterOwners,
   });
   const goalsHref = buildCrmScopeHref("/crm/objectifs", {
-    period: { ...period, mode: "semaine" },
+    period:
+      period.mode === "plage"
+        ? parseCrmPeriod({ periode: "semaine", semaine: period.semaine })
+        : period,
     ownerId: focusOwner,
     canFilterOwners: ownerScope.canFilterOwners,
     ownerParamKey: "collab",
+    forcePeriod: true,
   });
 
   /** Liens événements : période forcée + owner. */

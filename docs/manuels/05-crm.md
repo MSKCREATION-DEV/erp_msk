@@ -11,7 +11,7 @@
 - Section **Activité** (relances faites, nouveaux, clients gagnés) : suit **toujours** la période (+ collab). Liens : `forcePeriod` + `event=nouveaux` | `focus=faites` | `event=gagnes`. Les listes filtrent `createdAt` / `wonAt` / activités.
 - CTA **Prospects** (Équipe / Objectifs / Rapport) : mêmes règles — créés sur la période sélectionnée (+ owner).
 - Section **Portefeuille à date** (ouverts, retards, priorités, répartition, badges stages) : `view=stock` ou `stages=` — suit le **collab**, ignore la période pour les données (période gardée pour le retour).
-- **Historique** (période passée) : portefeuille masqué. Objectifs hebdo seulement en mode **semaine**.
+- **Historique** (période passée) : portefeuille masqué. Objectifs visibles en **jour / semaine / mois** (pas en plage) ; cibles ancrées à la période + conversion jours ouvrés (5 j / 22 j).
 Vocabulaire : « montant en cours » (jamais « pipeline »).
 
 **En discussion** (ex-« En qualification ») : échange en cours — besoin / budget / timing à clarifier ; pas encore prêt pour un devis.
@@ -33,9 +33,9 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 | Prospects | `/crm/prospects` | Liste · badge Relancé N× · filtres `?stages=` · `?relancesMin=3` |
 | Relances | `/crm/relances` | Aujourd’hui / retard / semaine · badge N× |
 | Scripts | `/crm/scripts` | Copier messages |
-| Vue Équipe | `/crm/equipe` | Prospects + objectifs semaine (si `view_team` / lead — pas « own only ») |
+| Vue Équipe | `/crm/equipe` | Prospects + objectifs période (si `view_team` / lead — pas « own only ») |
 | Rapport | `/crm/rapport-semaine` | Par **semaine** (lundi–vendredi) · Direction : toute l’équipe ou un collaborateur |
-| Objectifs | `/crm/objectifs` | Collab : lecture · Lead : **Assignation globale** ou **Par collaborateur** |
+| Objectifs | `/crm/objectifs` | Collab : lecture · Lead : **Assignation globale** ou **Par collaborateur** (saisie jour / semaine / mois) |
 
 ## Vocabulaire
 

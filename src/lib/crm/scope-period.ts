@@ -450,9 +450,13 @@ export function resolveCrmScopeLens(
   return lens;
 }
 
-/** Objectifs hebdo : pertinents seulement en mode semaine. */
+/** Objectifs : jour / semaine / mois (pas plage — pas d’ancrage unique). */
 export function goalsCompatibleWithPeriod(period: CrmPeriodScope): boolean {
-  return period.mode === "semaine";
+  return (
+    period.mode === "semaine" ||
+    period.mode === "mois" ||
+    period.mode === "jour"
+  );
 }
 
 /** Stocks « à date » (ouverts, retards, priorités…) — uniquement en lentille live. */

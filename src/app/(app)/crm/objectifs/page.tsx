@@ -8,14 +8,19 @@ import { prisma } from "@/lib/prisma";
 import { commercialTeamUserIds } from "@/lib/crm/team";
 import {
   buildGoalProgress,
-  loadTeamGoals,
-  resolveGoals,
+  loadTeamGoalsForPeriod,
+  resolveGoalsForPeriod,
   resolveGoalsSnapshots,
 } from "@/lib/crm/goals";
-import { listWeekOptions, parseWeekParam } from "@/lib/crm/week";
-import { computeWeekStats } from "@/lib/crm/week-stats";
+import { listWeekOptions } from "@/lib/crm/week";
+import { computePeriodStats } from "@/lib/crm/week-stats";
+import {
+  periodModeToGrain,
+  periodStartForGrain,
+} from "@/lib/crm/goal-scale";
 import {
   buildCrmScopeHref,
+  crmScopeToSearchParams,
   normalizeSearchParams,
   parseCrmPeriod,
   resolveCrmScopeLens,
@@ -33,7 +38,7 @@ import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Objectifs hebdo" };
+export const metadata: Metadata = { title: "Objectifs" };
 
 type ObjectifsMode = "synthese" | "equipe" | "collab";
 
@@ -51,20 +56,30 @@ export default async function CrmObjectifsPage({
   const canManage =
     user.isSuperAdmin || hasPermission(user, "crm.reports.global");
 
-  /** Objectifs = semaine uniquement (ignore periode=mois|jour héritée d’un autre écran). */
-  const period = parseCrmPeriod({
-    semaine: sp.semaine,
-    periode: "semaine",
-  });
+  /** Jour / semaine / mois — ignore plage (pas d’ancrage objectifs). */
+  const rawPeriod = parseCrmPeriod(sp);
+  const period =
+    rawPeriod.mode === "plage"
+      ? parseCrmPeriod({
+          semaine: sp.semaine,
+          periode: "semaine",
+        })
+      : rawPeriod;
   const lens = resolveCrmScopeLens(period);
-  const weekStart = parseWeekParam(period.semaine);
   const weeks = listWeekOptions({ fromYear: new Date().getFullYear() - 1 });
+  const grain = periodModeToGrain(period.mode) ?? "WEEK";
+  const periodStartDate = periodStartForGrain(grain, period);
+  const periodStartIso =
+    grain === "MONTH"
+      ? period.mois
+      : periodStartDate.toISOString().slice(0, 10);
 
-  const weekHref = (extra?: Record<string, string | undefined>) =>
+  const listHref = (extra?: Record<string, string | undefined>) =>
     buildCrmScopeHref("/crm/objectifs", {
       period,
       ownerId: null,
       canFilterOwners: false,
+      forcePeriod: true,
       keep: extra,
     });
 
@@ -74,11 +89,11 @@ export default async function CrmObjectifsPage({
       ownerId: collabId,
       canFilterOwners: true,
       ownerParamKey: "collab",
+      forcePeriod: true,
     });
 
-  // Séquentiel — pool Prisma connection_limit=1 (pas de Promise.all prisma)
-  const myGoals = await resolveGoals(user.id);
-  const myStats = await computeWeekStats(user.id, weekStart);
+  const myGoals = await resolveGoalsForPeriod(user.id, period);
+  const myStats = await computePeriodStats(user.id, period.from, period.to);
   const myProgress = buildGoalProgress(myGoals, myStats);
 
   const teamIds = canManage ? await commercialTeamUserIds() : [];
@@ -99,7 +114,6 @@ export default async function CrmObjectifsPage({
     label: `${m.firstName} ${m.lastName}`,
   }));
 
-  /** `collab` (historique) ou `owner` (barre unifiée). */
   const collabId = sp.collab ?? sp.owner;
   const focusCollab =
     canManage && collabId && members.some((m) => m.id === collabId)
@@ -112,16 +126,16 @@ export default async function CrmObjectifsPage({
 
   const teamGoals =
     canManage && (mode === "equipe" || mode === "synthese")
-      ? await loadTeamGoals()
+      ? await loadTeamGoalsForPeriod(period)
       : myGoals;
 
   const collabGoals = focusCollab
-    ? await resolveGoals(focusCollab.id)
+    ? await resolveGoalsForPeriod(focusCollab.id, period)
     : myGoals;
 
   const teamSnapshots =
     canManage && mode === "synthese"
-      ? (await resolveGoalsSnapshots(members, weekStart)).map((s) => ({
+      ? (await resolveGoalsSnapshots(members, period)).map((s) => ({
           id: s.userId,
           firstName: s.firstName,
           lastName: s.lastName,
@@ -132,7 +146,7 @@ export default async function CrmObjectifsPage({
   const collabProgress = focusCollab
     ? buildGoalProgress(
         collabGoals,
-        await computeWeekStats(focusCollab.id, weekStart),
+        await computePeriodStats(focusCollab.id, period.from, period.to),
       )
     : [];
 
@@ -149,12 +163,25 @@ export default async function CrmObjectifsPage({
     ...(mode === "equipe" ? { vue: "equipe" } : {}),
   };
 
-  const scopeKey = `${period.semaine}:${focusCollab?.id ?? "all"}:${mode}`;
+  const periodNavParams = Object.fromEntries(
+    crmScopeToSearchParams({
+      period,
+      ownerId: null,
+      canFilterOwners: false,
+      forcePeriod: true,
+    }).entries(),
+  );
+
+  const scopeKey = `${period.mode}:${period.fromIso}:${focusCollab?.id ?? "all"}:${mode}`;
+  const semaineSelectOptions = weeks.map((w) => ({
+    value: w.value,
+    label: w.label,
+  }));
 
   return (
     <PageShell key={scopeKey}>
       <PageHeader
-        title="Objectifs hebdomadaires"
+        title="Objectifs"
         description={description}
         backHref={
           mode === "synthese"
@@ -162,8 +189,9 @@ export default async function CrmObjectifsPage({
                 period,
                 ownerId: null,
                 canFilterOwners: canManage,
+                forcePeriod: true,
               })
-            : weekHref()
+            : listHref()
         }
         backLabel={
           mode === "synthese"
@@ -174,7 +202,7 @@ export default async function CrmObjectifsPage({
           { label: "Commercial", href: "/commercial" },
           {
             label: "Objectifs",
-            href: mode === "synthese" ? undefined : weekHref(),
+            href: mode === "synthese" ? undefined : listHref(),
           },
           ...(mode === "equipe"
             ? [{ label: "Assignation globale" }]
@@ -185,7 +213,7 @@ export default async function CrmObjectifsPage({
       />
 
       <CrmScopeBar
-        mode="semaine"
+        mode={period.mode}
         semaine={period.semaine}
         mois={period.mois}
         on={period.on}
@@ -198,7 +226,7 @@ export default async function CrmObjectifsPage({
         periodLabel={period.label}
         keepParams={keepParams}
         ownerParamKey="collab"
-        periodModes={["semaine"]}
+        periodModes={["jour", "semaine", "mois"]}
         lens={lens}
       />
 
@@ -207,9 +235,10 @@ export default async function CrmObjectifsPage({
           progress={myProgress}
           title={`Mes objectifs · ${period.label}`}
           detailHref={buildCrmScopeHref("/crm/rapport-semaine", {
-            period,
+            period: { ...period, mode: "semaine" },
             ownerId: user.id,
             canFilterOwners: false,
+            forcePeriod: true,
           })}
           detailLabel="Voir mon rapport"
         />
@@ -294,12 +323,13 @@ export default async function CrmObjectifsPage({
               </h2>
               <p className="mt-1 max-w-xl text-xs text-msk-ink/45">
                 D’abord les objectifs communs à toute l’équipe, puis
-                éventuellement des objectifs spécifiques par personne.
+                éventuellement des objectifs spécifiques par personne. Saisie
+                possible par jour, semaine ou mois (équivalents automatiques).
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
               <ActionLink
-                href={weekHref({ vue: "equipe" })}
+                href={listHref({ vue: "equipe" })}
                 icon={Settings2}
                 variant="secondary"
               >
@@ -326,13 +356,16 @@ export default async function CrmObjectifsPage({
               Assignation globale
             </h2>
             <p className="mt-1 text-xs text-msk-ink/45">
-              Objectifs communs à toute l’équipe. Un objectif par collaborateur
-              reste prioritaire s’il existe.
+              Objectifs communs à toute l’équipe pour {period.label}. Un
+              objectif par collaborateur reste prioritaire s’il existe.
             </p>
           </div>
           <GoalsForm
             scope="TEAM"
             initial={teamGoals}
+            periodType={grain}
+            periodStart={periodStartIso}
+            semaineOptions={semaineSelectOptions}
             submitLabel="Enregistrer l’assignation globale"
           />
         </Surface>
@@ -344,15 +377,16 @@ export default async function CrmObjectifsPage({
             label={`${focusCollab.firstName} ${focusCollab.lastName}`}
             periodLabel={period.label}
             lens={lens}
-            clearHref={weekHref()}
+            clearHref={listHref()}
             clearAriaLabel="Retour à la vue d’ensemble"
             actions={
               <>
                 <ActionLink
                   href={buildCrmScopeHref("/crm/rapport-semaine", {
-                    period,
+                    period: { ...period, mode: "semaine" },
                     ownerId: focusCollab.id,
                     canFilterOwners: true,
+                    forcePeriod: true,
                   })}
                   icon={FileText}
                   variant="secondary"
@@ -381,9 +415,10 @@ export default async function CrmObjectifsPage({
               progress={collabProgress}
               title={`Avancement · ${focusCollab.firstName}`}
               detailHref={buildCrmScopeHref("/crm/rapport-semaine", {
-                period,
+                period: { ...period, mode: "semaine" },
                 ownerId: focusCollab.id,
                 canFilterOwners: true,
+                forcePeriod: true,
               })}
               detailLabel="Rapport détaillé"
               embedded
@@ -401,11 +436,7 @@ export default async function CrmObjectifsPage({
               <GoalsCollabNav
                 members={members}
                 selectedId={focusCollab.id}
-                semaine={
-                  period.semaine !== weeks.find((w) => w.isCurrent)?.value
-                    ? period.semaine
-                    : undefined
-                }
+                periodParams={periodNavParams}
               />
             </div>
             <div className="border-t border-msk-ink/[0.06] pt-5">
@@ -414,13 +445,16 @@ export default async function CrmObjectifsPage({
               </h2>
               <p className="mb-4 text-xs text-msk-ink/45">
                 Ces objectifs remplacent l’assignation globale pour cette
-                personne.
+                personne · {period.label}.
               </p>
               <GoalsForm
-                key={focusCollab.id}
+                key={`${focusCollab.id}:${periodStartIso}:${grain}`}
                 scope="USER"
                 targetUserId={focusCollab.id}
                 initial={collabGoals}
+                periodType={grain}
+                periodStart={periodStartIso}
+                semaineOptions={semaineSelectOptions}
                 submitLabel={`Enregistrer pour ${focusCollab.firstName}`}
               />
             </div>

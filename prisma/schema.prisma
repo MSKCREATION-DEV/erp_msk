@@ -243,7 +243,7 @@ model User {
   crmTasksAssigned CrmTask[]      @relation("CrmTaskAssignee")
   crmTasksCreated  CrmTask[]      @relation("CrmTaskCreator")
   crmWeeklyReports CrmWeeklyReport[] @relation("CrmWeeklyReportAuthor")
-  crmWeeklyGoals    CrmWeeklyGoal[]   @relation("CrmWeeklyGoalUser")
+  crmPeriodGoals    CrmPeriodGoal[]   @relation("CrmPeriodGoalUser")
   crmAssignmentRequests CrmAssignmentRequest[] @relation("CrmAssignmentRequester")
   crmAssignmentResolved CrmAssignmentRequest[] @relation("CrmAssignmentResolver")
   comClientsOwned  ComClient[]     @relation("ComClientOwner")
@@ -810,23 +810,28 @@ model CrmScript {
   @@map("crm_scripts")
 }
 
-/// Objectifs hebdo paramétrables (collab ou équipe).
-model CrmWeeklyGoal {
-  id        String   @id @default(cuid())
+/// Objectifs CRM ancrés à une période (jour / semaine / mois).
+model CrmPeriodGoal {
+  id          String   @id @default(cuid())
   /// USER = un collab ; TEAM = objectif pôle (userId null).
-  scope     String
-  userId    String?  @db.Uuid
+  scope       String
+  userId      String?  @db.Uuid
   /// NEW_PROSPECTS | FIRST_CONTACTS | MEETINGS | FOLLOW_UPS
-  metric    String
-  target    Int
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  metric      String
+  /// DAY | WEEK | MONTH
+  periodType  String
+  /// Début de période (UTC date) : jour ; lundi ISO ; 1er du mois.
+  periodStart DateTime @db.Date
+  target      Int
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
 
-  user User? @relation("CrmWeeklyGoalUser", fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation("CrmPeriodGoalUser", fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([scope, userId, metric])
+  @@unique([scope, userId, metric, periodType, periodStart])
   @@index([scope, metric])
-  @@map("crm_weekly_goals")
+  @@index([periodType, periodStart])
+  @@map("crm_period_goals")
 }
 
 /// Rapport de semaine (vendredi) — chiffres préremplis + qualitatif.

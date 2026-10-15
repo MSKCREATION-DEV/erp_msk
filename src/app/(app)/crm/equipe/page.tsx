@@ -10,7 +10,7 @@ import { commercialTeamUserIds } from "@/lib/crm/team";
 import { STAGE_ORDER } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { resolveGoalsSnapshots } from "@/lib/crm/goals";
-import { listWeekOptions, parseWeekParam } from "@/lib/crm/week";
+import { listWeekOptions } from "@/lib/crm/week";
 import { outreachCountByOwnerInPeriod } from "@/lib/crm/follow-up-count";
 import {
   buildCrmScopeHref,
@@ -76,7 +76,6 @@ export default async function CrmEquipePage({
   const lens = resolveCrmScopeLens(period);
   const showStocks = showStockWidgets(lens);
   const showGoals = goalsCompatibleWithPeriod(period);
-  const weekStart = parseWeekParam(period.semaine);
   const weeks = listWeekOptions({ fromYear: new Date().getFullYear() - 1 });
   const occurredBetween = dateRangeFilter(period.from, period.to);
 
@@ -150,7 +149,7 @@ export default async function CrmEquipePage({
 
   const goalByOwner = showGoals
     ? new Map(
-        (await resolveGoalsSnapshots(members, weekStart)).map((s) => [
+        (await resolveGoalsSnapshots(members, period)).map((s) => [
           s.userId,
           s.progress,
         ]),
