@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   Building2,
+  ExternalLink,
   FolderOpen,
   Globe2,
   Mail,
@@ -21,14 +22,19 @@ import {
   quoteStatusTone,
   QUOTE_STATUS_LABELS,
 } from "@/lib/commercial/labels";
-import { SOURCE_LABELS } from "@/lib/crm/labels";
+import { CHANNEL_TYPE_LABELS } from "@/lib/crm/channels";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 import { ClientDetailActions } from "@/components/commercial/client-detail-actions";
+import { OriginChip } from "@/components/crm/origin-chip";
 import { SocialNetworkBadges } from "@/components/crm/social-network-badges";
+import {
+  canViewFolderPath,
+  hasGedAccess,
+} from "@/lib/ged/scope";
 import {
   COM_DOCS_GATED,
   COM_DOCS_GATED_HINT,
@@ -120,6 +126,9 @@ export default async function CommercialClientDetailPage({
       },
       owner: { select: { id: true, firstName: true, lastName: true } },
       createdBy: { select: { id: true, firstName: true, lastName: true } },
+      sourceOpportunity: {
+        select: { id: true, source: true },
+      },
       crmOrganization: {
         select: {
           id: true,
@@ -133,14 +142,24 @@ export default async function CommercialClientDetailPage({
           facebookUrl: true,
           whatsappUrl: true,
           contacts: {
-            where: { isPrimary: true },
-            take: 1,
+            orderBy: [{ isPrimary: "desc" }, { lastName: "asc" }],
             select: {
+              id: true,
               firstName: true,
               lastName: true,
               jobTitle: true,
               email: true,
               phone: true,
+              isPrimary: true,
+              channels: {
+                orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+                select: {
+                  id: true,
+                  type: true,
+                  value: true,
+                  isPrimary: true,
+                },
+              },
             },
           },
         },
@@ -155,7 +174,8 @@ export default async function CommercialClientDetailPage({
 
   const location = [client.city, client.country].filter(Boolean).join(" · ");
   const org = client.crmOrganization;
-  const orgContact = org?.contacts[0];
+  const originSource =
+    org?.source ?? client.sourceOpportunity?.source ?? null;
   const socialUrls = {
     instagramUrl: org?.instagramUrl ?? null,
     linkedinUrl: org?.linkedinUrl ?? null,
@@ -163,7 +183,22 @@ export default async function CommercialClientDetailPage({
     facebookUrl: org?.facebookUrl ?? null,
     whatsappUrl: org?.whatsappUrl ?? null,
   };
-  const hasSocial = Object.values(socialUrls).some((u) => Boolean(u?.trim()));
+
+  /** Lien GED uniquement si l’utilisateur a le droit de voir ce dossier. */
+  let gedFolderHref: string | null = null;
+  if (hasGedAccess(user) && client.gedFolderCode) {
+    const folder = await prisma.documentFolder.findFirst({
+      where: {
+        code: client.gedFolderCode,
+        path: { contains: `/03_CLIENTS/${client.gedFolderCode}` },
+      },
+      orderBy: { year: "desc" },
+      select: { id: true, path: true },
+    });
+    if (folder && (await canViewFolderPath(user, folder.path))) {
+      gedFolderHref = `/ged?folder=${folder.id}`;
+    }
+  }
 
   return (
     <PageShell>
@@ -202,17 +237,21 @@ export default async function CommercialClientDetailPage({
         }
       />
 
+      {/* Bandeau identité — même structure que fiche prospect */}
       <Surface className="overflow-hidden p-0">
-        <div className="grid gap-0 lg:grid-cols-12">
-          <div className="space-y-3 border-b border-msk-ink/[0.06] p-4 sm:p-5 lg:col-span-5 lg:border-b-0 lg:border-r">
-            <dl className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-0 lg:grid-cols-[1.4fr_1fr]">
+          <div className="space-y-4 border-b border-msk-ink/[0.06] p-5 sm:p-6 lg:border-b-0 lg:border-r">
+            <div className="flex flex-wrap items-center gap-3">
+              <OriginChip source={originSource} />
+            </div>
+            <dl className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               <MetaItem label="Suivi par">
                 {client.owner.firstName} {client.owner.lastName}
               </MetaItem>
-              <MetaItem label="Créé le">
+              <MetaItem label="Créé">
                 {client.createdAt.toLocaleDateString("fr-FR")}
                 {client.createdBy.id !== client.ownerId ? (
-                  <span className="text-msk-ink/45">
+                  <span className="text-msk-ink/50">
                     {" "}
                     · {client.createdBy.firstName} {client.createdBy.lastName}
                   </span>
@@ -220,6 +259,35 @@ export default async function CommercialClientDetailPage({
               </MetaItem>
               <MetaItem label="Mis à jour">
                 {client.updatedAt.toLocaleDateString("fr-FR")}
+              </MetaItem>
+              {org?.sector ? (
+                <MetaItem label="Secteur">{org.sector}</MetaItem>
+              ) : null}
+              <MetaItem label="Dossier GED">
+                {gedFolderHref ? (
+                  <Link
+                    prefetch={false}
+                    href={gedFolderHref}
+                    className="inline-flex items-center gap-1.5 font-medium text-msk-blue hover:underline"
+                  >
+                    <FolderOpen className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                    <span className="font-mono text-xs">
+                      {client.gedFolderCode}
+                    </span>
+                    <ExternalLink className="h-3 w-3 shrink-0 opacity-70" aria-hidden />
+                  </Link>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 font-mono text-xs text-msk-ink/70">
+                    <FolderOpen
+                      className="h-3.5 w-3.5 text-msk-ink/40"
+                      aria-hidden
+                    />
+                    {client.gedFolderCode}
+                  </span>
+                )}
+              </MetaItem>
+              <MetaItem label="Déplacement défaut">
+                {client.includeTravelDefault ? "Oui" : "Non"}
               </MetaItem>
               {client.sourceOpportunityId ? (
                 <MetaItem label="Prospect">
@@ -232,117 +300,177 @@ export default async function CommercialClientDetailPage({
                   </Link>
                 </MetaItem>
               ) : null}
-              {org?.source ? (
-                <MetaItem label="Origine">
-                  {SOURCE_LABELS[org.source]}
-                </MetaItem>
-              ) : null}
-              {org?.sector ? (
-                <MetaItem label="Secteur">{org.sector}</MetaItem>
-              ) : null}
-              <MetaItem label="Dossier GED">
-                <span className="inline-flex items-center gap-1.5 font-mono text-xs">
-                  <FolderOpen className="h-3.5 w-3.5 text-msk-ink/40" aria-hidden />
-                  {client.gedFolderCode}
-                </span>
-              </MetaItem>
-              <MetaItem label="Déplacement défaut">
-                {client.includeTravelDefault ? "Oui" : "Non"}
-              </MetaItem>
             </dl>
           </div>
 
-          <div className="bg-msk-chalk/40 p-4 sm:p-5 lg:col-span-7">
+          <div className="bg-msk-chalk/40 p-5 sm:p-6">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
-              Contact principal
+              Contacts
             </p>
-            <div className="mt-2 grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                {client.contactName || orgContact ? (
-                  <p className="flex items-center gap-2 text-base font-semibold text-msk-ink">
-                    <UserRound
-                      className="h-4 w-4 shrink-0 text-msk-blue"
-                      aria-hidden
-                    />
-                    {client.contactName ||
-                      `${orgContact?.firstName ?? ""} ${orgContact?.lastName ?? ""}`.trim()}
-                  </p>
-                ) : (
-                  <p className="text-sm text-msk-ink/40">Aucun contact nommé</p>
-                )}
-                {orgContact?.jobTitle ? (
-                  <p className="pl-6 text-xs text-msk-ink/50">
-                    {orgContact.jobTitle}
-                  </p>
-                ) : null}
-              </div>
-              <div className="flex flex-col gap-1.5 text-sm">
-                {(client.phone || orgContact?.phone) ? (
-                  <a
-                    href={`tel:${client.phone || orgContact?.phone}`}
-                    className="inline-flex items-center gap-2 text-msk-blue hover:underline"
+            {org && org.contacts.length > 0 ? (
+              <ul className="mt-3 max-h-72 space-y-3 overflow-y-auto pr-1">
+                {org.contacts.map((c) => (
+                  <li
+                    key={c.id}
+                    className="rounded-xl border border-msk-ink/[0.06] bg-white/80 px-3 py-2.5"
                   >
-                    <Phone className="h-3.5 w-3.5" aria-hidden />
-                    {client.phone || orgContact?.phone}
-                  </a>
-                ) : null}
-                {(client.email || orgContact?.email) ? (
-                  <a
-                    href={`mailto:${client.email || orgContact?.email}`}
-                    className="inline-flex items-center gap-2 text-msk-blue hover:underline"
-                  >
-                    <Mail className="h-3.5 w-3.5" aria-hidden />
-                    {client.email || orgContact?.email}
-                  </a>
-                ) : null}
-                {!client.phone &&
-                !client.email &&
-                !orgContact?.phone &&
-                !orgContact?.email ? (
-                  <p className="text-msk-ink/40">Aucun moyen de contact</p>
-                ) : null}
-              </div>
-            </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="flex items-center gap-1.5 text-sm font-semibold text-msk-ink">
+                        <UserRound
+                          className="h-3.5 w-3.5 shrink-0 text-msk-blue"
+                          aria-hidden
+                        />
+                        {c.firstName} {c.lastName}
+                      </p>
+                      {c.isPrimary ? (
+                        <Badge tone="blue">Principal</Badge>
+                      ) : null}
+                    </div>
+                    {c.jobTitle ? (
+                      <p className="mt-0.5 text-xs font-medium text-msk-ink/55">
+                        {c.jobTitle}
+                      </p>
+                    ) : null}
+                    {c.channels.length > 0 ? (
+                      <ul className="mt-2 space-y-1">
+                        {c.channels.map((ch) => (
+                          <li
+                            key={ch.id}
+                            className="flex flex-wrap items-center gap-1.5 text-xs text-msk-ink/65"
+                          >
+                            <span className="font-medium text-msk-ink/45">
+                              {CHANNEL_TYPE_LABELS[ch.type]}
+                            </span>
+                            {ch.type === "EMAIL" ? (
+                              <a
+                                href={`mailto:${ch.value}`}
+                                className="text-msk-blue hover:underline"
+                              >
+                                {ch.value}
+                              </a>
+                            ) : ch.type === "PHONE" ||
+                              ch.type === "WHATSAPP" ? (
+                              <a
+                                href={`tel:${ch.value}`}
+                                className="text-msk-blue hover:underline"
+                              >
+                                {ch.value}
+                              </a>
+                            ) : (
+                              <span>{ch.value}</span>
+                            )}
+                            {ch.isPrimary ? (
+                              <Badge tone="muted">Principal</Badge>
+                            ) : null}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="mt-1.5 flex flex-col gap-1 text-xs">
+                        {c.phone ? (
+                          <a
+                            href={`tel:${c.phone}`}
+                            className="inline-flex items-center gap-1.5 text-msk-blue hover:underline"
+                          >
+                            <Phone className="h-3 w-3" aria-hidden />
+                            {c.phone}
+                          </a>
+                        ) : null}
+                        {c.email ? (
+                          <a
+                            href={`mailto:${c.email}`}
+                            className="inline-flex items-center gap-1.5 text-msk-blue hover:underline"
+                          >
+                            <Mail className="h-3 w-3" aria-hidden />
+                            {c.email}
+                          </a>
+                        ) : null}
+                        {!c.phone && !c.email ? (
+                          <span className="text-msk-ink/40">—</span>
+                        ) : null}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : client.contactName || client.phone || client.email ? (
+              <ul className="mt-3 space-y-3">
+                <li className="rounded-xl border border-msk-ink/[0.06] bg-white/80 px-3 py-2.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {client.contactName ? (
+                      <p className="flex items-center gap-1.5 text-sm font-semibold text-msk-ink">
+                        <UserRound
+                          className="h-3.5 w-3.5 shrink-0 text-msk-blue"
+                          aria-hidden
+                        />
+                        {client.contactName}
+                      </p>
+                    ) : null}
+                    <Badge tone="blue">Principal</Badge>
+                  </div>
+                  <div className="mt-1.5 flex flex-col gap-1 text-xs">
+                    {client.phone ? (
+                      <a
+                        href={`tel:${client.phone}`}
+                        className="inline-flex items-center gap-1.5 text-msk-blue hover:underline"
+                      >
+                        <Phone className="h-3 w-3" aria-hidden />
+                        {client.phone}
+                      </a>
+                    ) : null}
+                    {client.email ? (
+                      <a
+                        href={`mailto:${client.email}`}
+                        className="inline-flex items-center gap-1.5 text-msk-blue hover:underline"
+                      >
+                        <Mail className="h-3 w-3" aria-hidden />
+                        {client.email}
+                      </a>
+                    ) : null}
+                    {!client.phone && !client.email ? (
+                      <span className="text-msk-ink/40">—</span>
+                    ) : null}
+                  </div>
+                </li>
+              </ul>
+            ) : (
+              <p className="mt-3 text-sm text-msk-ink/40">Aucun contact</p>
+            )}
           </div>
         </div>
       </Surface>
 
       <div className="grid gap-4 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <Section title="Coordonnées & présence">
-            <div className="grid gap-4 sm:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-              <div className="rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/40 p-3">
-                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+          <Section title="Entreprise">
+            <div className="grid gap-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+              <div className="rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/40 p-3 sm:p-4">
+                <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
                   Réseaux sociaux
                 </p>
-                {hasSocial ? (
-                  <SocialNetworkBadges urls={socialUrls} />
-                ) : (
-                  <p className="text-sm text-msk-ink/40">
-                    {org
-                      ? "Aucun réseau renseigné sur l’organisation CRM."
-                      : "Pas d’organisation CRM liée."}
-                  </p>
-                )}
-                {org?.website ? (
-                  <a
-                    href={org.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-3 inline-flex items-center gap-1.5 break-all text-xs font-medium text-msk-blue hover:underline"
-                  >
-                    <Globe2 className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                    {org.website}
-                  </a>
-                ) : null}
+                <SocialNetworkBadges
+                  urls={socialUrls}
+                  emptyLabel={
+                    org
+                      ? "Aucun réseau — renseignez-les sur l’organisation CRM."
+                      : "Pas d’organisation CRM liée."
+                  }
+                />
               </div>
-              <ul className="space-y-2.5 text-sm text-msk-ink">
+              <ul className="space-y-3 text-sm text-msk-ink">
                 <li className="flex gap-2.5">
                   <Building2
                     className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
                     aria-hidden
                   />
-                  <span className="font-medium">{client.name}</span>
+                  <span>
+                    <span className="font-medium">{client.name}</span>
+                    {org?.sector ? (
+                      <span className="block text-msk-ink/50">
+                        {org.sector}
+                      </span>
+                    ) : null}
+                  </span>
                 </li>
                 <li className="flex gap-2.5">
                   <MapPin
@@ -354,6 +482,24 @@ export default async function CommercialClientDetailPage({
                       .filter(Boolean)
                       .join(" · ") || "Adresse non renseignée"}
                   </span>
+                </li>
+                <li className="flex gap-2.5">
+                  <Globe2
+                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                    aria-hidden
+                  />
+                  {org?.website ? (
+                    <a
+                      href={org.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="break-all text-msk-blue hover:underline"
+                    >
+                      {org.website}
+                    </a>
+                  ) : (
+                    <span className="text-msk-ink/40">Pas de site web</span>
+                  )}
                 </li>
               </ul>
             </div>
