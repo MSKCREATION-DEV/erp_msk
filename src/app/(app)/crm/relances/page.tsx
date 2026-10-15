@@ -8,8 +8,20 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { crmVisibility } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
-import { STAGE_LABELS } from "@/lib/crm/labels";
+import { ACTIVITY_LABELS, STAGE_LABELS } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
+import {
+  OUTREACH_ACTIVITY_TYPES,
+  outreachCountByOpportunityIds,
+} from "@/lib/crm/follow-up-count";
+import {
+  buildCrmScopeHref,
+  dateRangeFilter,
+  normalizeSearchParams,
+  parseCrmOwner,
+  parseCrmPeriod,
+  resolveCrmOwnerIds,
+} from "@/lib/crm/scope-period";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -17,10 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { RelanceActions } from "@/components/crm/relance-actions";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
-import {
-  outreachCountByOpportunityIds,
-  sumOutreachCounts,
-} from "@/lib/crm/follow-up-count";
+import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Relances" };
@@ -63,6 +72,35 @@ async function loadTasks(assigneeFilter: string[] | null) {
       assignee: { select: { firstName: true, lastName: true } },
     },
     orderBy: { dueAt: "asc" },
+    take: 200,
+  });
+}
+
+async function loadOutreachDone(opts: {
+  ownerIds: string[] | null;
+  occurredBetween: { gte: Date; lte: Date };
+}) {
+  return prisma.crmActivity.findMany({
+    where: {
+      type: { in: OUTREACH_ACTIVITY_TYPES },
+      occurredAt: opts.occurredBetween,
+      ...(opts.ownerIds && opts.ownerIds.length > 0
+        ? { opportunity: { ownerId: { in: opts.ownerIds } } }
+        : {}),
+    },
+    include: {
+      opportunity: {
+        select: {
+          id: true,
+          title: true,
+          stage: true,
+          organization: { select: { name: true } },
+          owner: { select: { firstName: true, lastName: true } },
+        },
+      },
+      actor: { select: { firstName: true, lastName: true } },
+    },
+    orderBy: { occurredAt: "desc" },
     take: 200,
   });
 }
@@ -124,7 +162,7 @@ function RelanceTable({
 
   return (
     <div className="overflow-x-auto">
-          <table className="w-full min-w-200 text-center text-sm">
+      <table className="w-full min-w-200 text-center text-sm">
         <thead className="border-b border-msk-ink/[0.08] bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
           <tr>
             <th className="px-4 py-3 font-semibold">Entreprise</th>
@@ -147,9 +185,7 @@ function RelanceTable({
               : null;
             const due = formatDue(t.dueAt, bucket);
             const actionLabel =
-              t.opportunity?.nextAction?.trim() ||
-              t.title ||
-              "Relance";
+              t.opportunity?.nextAction?.trim() || t.title || "Relance";
             return (
               <tr
                 key={t.id}
@@ -204,17 +240,12 @@ function RelanceTable({
                   {t.opportunity ? (
                     <RelanceCountBadge
                       count={outreachMap.get(t.opportunity.id) ?? 0}
-                      compact
                     />
                   ) : (
                     "—"
                   )}
                 </td>
-                <td className="max-w-48 px-4 py-3">
-                  <p className="truncate font-medium text-msk-ink">
-                    {actionLabel}
-                  </p>
-                </td>
+                <td className="px-4 py-3 text-msk-ink/80">{actionLabel}</td>
                 <td className="px-4 py-3">
                   <p
                     className={cn(
@@ -264,12 +295,14 @@ function RelanceTable({
 export default async function CrmRelancesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ vue?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await requireUser();
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
 
-  const { vue: vueRaw } = await searchParams;
+  const raw = await searchParams;
+  const sp = normalizeSearchParams(raw);
+  const vueRaw = sp.vue;
   const vue: VueFilter =
     vueRaw === "retard" ||
     vueRaw === "aujourdhui" ||
@@ -278,14 +311,179 @@ export default async function CrmRelancesPage({
       ? vueRaw
       : "tous";
 
+  const focusFaites = sp.focus === "faites";
+  const period = parseCrmPeriod(sp);
+  const occurredBetween = dateRangeFilter(period.from, period.to);
+
   const vis = crmVisibility(user);
-  const teamIds = vis === "team" ? await commercialTeamUserIds() : [];
+  const teamIds = await commercialTeamUserIds();
+  const memberIds = Array.from(new Set([user.id, ...teamIds]));
+  const ownerScope = parseCrmOwner(sp, user, memberIds);
+  const ownerIds = resolveCrmOwnerIds({
+    ownerId: ownerScope.ownerId,
+    canFilterOwners: ownerScope.canFilterOwners,
+    memberIds,
+    userId: user.id,
+  });
+
+  /** File ouverte : filtre assignee ; vue « faites » : filtre owner opportunity. */
   const assigneeFilter =
-    vis === "global"
+    vis === "global" && !ownerScope.ownerId
       ? null
-      : vis === "team"
-        ? Array.from(new Set([user.id, ...teamIds]))
-        : [user.id];
+      : ownerIds;
+
+  const focusOwnerUser = ownerScope.ownerId
+    ? await prisma.user.findUnique({
+        where: { id: ownerScope.ownerId },
+        select: { firstName: true, lastName: true },
+      })
+    : null;
+  const focusOwnerLabel = focusOwnerUser
+    ? `${focusOwnerUser.firstName} ${focusOwnerUser.lastName}`
+    : null;
+
+  const clearOwnerHref = buildCrmScopeHref("/crm/relances", {
+    period,
+    ownerId: null,
+    canFilterOwners: ownerScope.canFilterOwners,
+    forcePeriod: focusFaites,
+    keep: {
+      vue: vue !== "tous" ? vue : undefined,
+      focus: focusFaites ? "faites" : undefined,
+    },
+  });
+
+  const scopeHref = (keep?: Record<string, string | undefined>) =>
+    buildCrmScopeHref("/crm/relances", {
+      period,
+      ownerId: ownerScope.ownerId,
+      canFilterOwners: ownerScope.canFilterOwners,
+      forcePeriod: focusFaites,
+      keep,
+    });
+
+  if (focusFaites) {
+    const activities = await loadOutreachDone({
+      ownerIds: ownerScope.canFilterOwners ? ownerIds : [user.id],
+      occurredBetween,
+    });
+
+    return (
+      <PageShell>
+        <PageHeader
+          title="Relances faites"
+          description={`Journalisées · ${period.label}${
+            focusOwnerLabel ? ` · ${focusOwnerLabel}` : ""
+          }.`}
+          backHref="/crm"
+          backLabel="Tableau de bord"
+          breadcrumbs={[
+            { label: "Commercial", href: "/commercial" },
+            { label: "Relances" },
+          ]}
+        />
+
+        {focusOwnerLabel ? (
+          <ScopeFocusBanner
+            label={focusOwnerLabel}
+            clearHref={clearOwnerHref}
+            clearAriaLabel="Voir toute l’équipe"
+          />
+        ) : null}
+
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <KpiRadial
+            label="Relances faites"
+            value={activities.length}
+            tone={activities.length > 0 ? "coral" : "blue"}
+            hint={period.label.toLowerCase()}
+          />
+          <div className="flex items-end sm:col-span-1 xl:col-span-2">
+            <Link
+              prefetch={false}
+              href={scopeHref({})}
+              className="text-sm font-medium text-msk-blue hover:underline"
+            >
+              Voir la file à faire →
+            </Link>
+          </div>
+        </div>
+
+        <Surface className="overflow-hidden p-0">
+          {activities.length === 0 ? (
+            <p className="px-4 py-10 text-center text-sm text-msk-ink/40">
+              Aucune relance journalisée sur {period.label.toLowerCase()}.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-180 text-left text-sm">
+                <thead className="border-b border-msk-ink/[0.08] bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold">Date</th>
+                    <th className="px-4 py-3 font-semibold">Canal</th>
+                    <th className="px-4 py-3 font-semibold">Entreprise</th>
+                    <th className="px-4 py-3 font-semibold">Résumé</th>
+                    <th className="px-4 py-3 font-semibold">Suivi par</th>
+                    <th className="px-4 py-3 font-semibold">Auteur</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-msk-ink/[0.06]">
+                  {activities.map((a) => {
+                    const org = a.opportunity?.organization;
+                    const owner = a.opportunity?.owner;
+                    return (
+                      <tr
+                        key={a.id}
+                        className="align-middle transition hover:bg-msk-chalk/40"
+                      >
+                        <td className="px-4 py-3 tabular-nums text-msk-ink/70">
+                          {a.occurredAt.toLocaleDateString("fr-FR", {
+                            day: "2-digit",
+                            month: "short",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge tone="muted">
+                            {ACTIVITY_LABELS[a.type] ?? a.type}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3">
+                          {a.opportunity ? (
+                            <Link
+                              prefetch={false}
+                              href={`/crm/prospects/${a.opportunity.id}`}
+                              className="font-medium text-msk-ink hover:text-msk-blue"
+                            >
+                              {org?.name ?? a.opportunity.title}
+                            </Link>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                        <td className="max-w-xs truncate px-4 py-3 text-msk-ink/65">
+                          {a.summary?.trim() || "—"}
+                        </td>
+                        <td className="px-4 py-3 text-msk-ink/60">
+                          {owner
+                            ? `${owner.firstName} ${owner.lastName}`
+                            : "—"}
+                        </td>
+                        <td className="px-4 py-3 text-msk-ink/60">
+                          {a.actor.firstName} {a.actor.lastName}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Surface>
+      </PageShell>
+    );
+  }
 
   const tasks = await loadTasks(assigneeFilter);
   const outreachMap = await outreachCountByOpportunityIds(
@@ -293,7 +491,15 @@ export default async function CrmRelancesPage({
       .map((t) => t.opportunity?.id)
       .filter((id): id is string => Boolean(id)),
   );
-  const relancesFaites = sumOutreachCounts(outreachMap);
+  const relancesFaitesPeriod = await prisma.crmActivity.count({
+    where: {
+      type: { in: OUTREACH_ACTIVITY_TYPES },
+      occurredAt: occurredBetween,
+      ...(assigneeFilter
+        ? { opportunity: { ownerId: { in: assigneeFilter } } }
+        : {}),
+    },
+  });
 
   const now = new Date();
   const sod = startOfDay(now);
@@ -348,7 +554,9 @@ export default async function CrmRelancesPage({
 
   const visibleSections =
     vue === "tous"
-      ? sections.filter((s) => s.count > 0 || s.key === "overdue" || s.key === "today")
+      ? sections.filter(
+          (s) => s.count > 0 || s.key === "overdue" || s.key === "today",
+        )
       : sections.filter((s) => s.vue === vue);
 
   const filters: { id: VueFilter; label: string; count: number }[] = [
@@ -359,14 +567,22 @@ export default async function CrmRelancesPage({
     { id: "plus-tard", label: "Plus tard", count: later.length },
   ];
 
+  const prospectsHref = buildCrmScopeHref("/crm/prospects", {
+    period,
+    ownerId: ownerScope.ownerId,
+    canFilterOwners: ownerScope.canFilterOwners,
+  });
+
   return (
     <PageShell>
       <PageHeader
         title="Relances"
-            description={
-          vis === "own"
-            ? "File du jour — traitez, reportez ou ouvrez la fiche."
-            : "File d’équipe — traitez, reportez ou ouvrez la fiche."
+        description={
+          focusOwnerLabel
+            ? `File · ${focusOwnerLabel}`
+            : vis === "own"
+              ? "File du jour — traitez, reportez ou ouvrez la fiche."
+              : "File d’équipe — traitez, reportez ou ouvrez la fiche."
         }
         backHref="/commercial"
         backLabel="Retour Commercial"
@@ -375,6 +591,14 @@ export default async function CrmRelancesPage({
           { label: "Relances" },
         ]}
       />
+
+      {focusOwnerLabel ? (
+        <ScopeFocusBanner
+          label={focusOwnerLabel}
+          clearHref={clearOwnerHref}
+          clearAriaLabel="Voir toute l’équipe"
+        />
+      ) : null}
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <KpiRadial
@@ -398,18 +622,25 @@ export default async function CrmRelancesPage({
           value={tasks.length}
           hint={tasks.length === 0 ? "à jour" : "ouvertes"}
         />
-        <KpiRadial
-          label="Relances faites"
-          value={relancesFaites}
-          hint="historique sur ces dossiers"
-        />
+        <Link
+          prefetch={false}
+          href={scopeHref({ focus: "faites" })}
+          className="block rounded-xl transition hover:ring-2 hover:ring-msk-blue/20"
+        >
+          <KpiRadial
+            label="Relances faites"
+            value={relancesFaitesPeriod}
+            hint={period.label.toLowerCase()}
+          />
+        </Link>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
         {filters.map((f) => {
           const active = vue === f.id;
-          const href =
-            f.id === "tous" ? "/crm/relances" : `/crm/relances?vue=${f.id}`;
+          const href = scopeHref({
+            vue: f.id === "tous" ? undefined : f.id,
+          });
           return (
             <Link
               key={f.id}
@@ -449,7 +680,7 @@ export default async function CrmRelancesPage({
           </p>
           <Link
             prefetch={false}
-            href="/crm/prospects"
+            href={prospectsHref}
             className="mt-4 inline-flex text-sm font-medium text-msk-blue hover:underline"
           >
             Voir les prospects

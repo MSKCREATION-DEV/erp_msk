@@ -16,6 +16,10 @@ import {
   prospectsStagesHref,
   stagesForFilter,
 } from "@/lib/crm/labels";
+import {
+  buildCrmScopeHref,
+  type CrmPeriodScope,
+} from "@/lib/crm/scope-period";
 
 export type StageDonutRow = {
   stage: CrmPipelineStage;
@@ -24,20 +28,18 @@ export type StageDonutRow = {
   key: string;
 };
 
-function withOwner(href: string, ownerId: string | null | undefined): string {
-  if (!ownerId) return href;
-  const sep = href.includes("?") ? "&" : "?";
-  return `${href}${sep}owner=${ownerId}`;
-}
-
 export function StageDonutChart({
   data,
   ownerId,
+  period,
+  canFilterOwners = true,
   subtitle = "par statut — clic = filtre liste",
 }: {
   data: StageDonutRow[];
-  /** Conserve le filtre collaborateur vers la liste Prospects. */
   ownerId?: string | null;
+  /** Si fourni, conserve la période CRM dans les liens Prospects. */
+  period?: CrmPeriodScope;
+  canFilterOwners?: boolean;
   subtitle?: string;
 }) {
   const router = useRouter();
@@ -52,7 +54,17 @@ export function StageDonutChart({
   ) satisfies ChartConfig;
 
   function stageHref(stage: CrmPipelineStage) {
-    return withOwner(prospectsStagesHref(stagesForFilter(stage)), ownerId);
+    const base = prospectsStagesHref(stagesForFilter(stage));
+    if (!period) {
+      if (!ownerId) return base;
+      const sep = base.includes("?") ? "&" : "?";
+      return `${base}${sep}owner=${ownerId}`;
+    }
+    return buildCrmScopeHref(base, {
+      period,
+      ownerId: ownerId ?? null,
+      canFilterOwners,
+    });
   }
 
   function goToStage(stage: CrmPipelineStage) {

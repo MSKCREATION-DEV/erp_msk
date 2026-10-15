@@ -11,6 +11,10 @@ import {
   OptionPickerSingle,
 } from "@/components/ui/option-picker-modal";
 import { STAGE_LABELS, STAGE_ORDER, SOURCE_LABELS } from "@/lib/crm/labels";
+import {
+  copyCrmScopeParams,
+  hasCrmScopePeriodParams,
+} from "@/lib/crm/scope-period";
 import { cn } from "@/lib/utils";
 
 type OwnerOpt = { value: string; label: string };
@@ -19,7 +23,15 @@ type DateMode = "none" | "exact" | "range";
 /** Statuts filtrables — Client exclu (dossier côté Clients). */
 const FILTER_STAGES = STAGE_ORDER.filter((s) => s !== "GAGNE");
 
+function spRecord(sp: URLSearchParams): Record<string, string | undefined> {
+  const out: Record<string, string | undefined> = {};
+  for (const [k, v] of sp.entries()) out[k] = v;
+  return out;
+}
+
+/** Dates du modal Filtrer — ignore la lentille CRM (`periode` / `semaine` / `mois`). */
 function dateModeFromParams(sp: URLSearchParams): DateMode {
+  if (hasCrmScopePeriodParams(spRecord(sp))) return "none";
   if (sp.get("on")) return "exact";
   if (sp.get("from") || sp.get("to")) return "range";
   return "none";
@@ -28,6 +40,7 @@ function dateModeFromParams(sp: URLSearchParams): DateMode {
 /**
  * Compteur Filtrer — source de vérité = URL.
  * `owner` est exclu : géré par le bandeau Focus (sinon Filtrer (1) sticky après croix).
+ * Période CRM (barre dashboard) exclue — ce n’est pas un filtre modal.
  */
 function countActiveFilters(sp: URLSearchParams): number {
   const stages =
@@ -36,15 +49,22 @@ function countActiveFilters(sp: URLSearchParams): number {
       ?.split(",")
       .filter((s) => s && s !== "GAGNE") ?? [];
   const mode = dateModeFromParams(sp);
+  const crmPeriod = hasCrmScopePeriodParams(spRecord(sp));
   return [
     stages.length > 0,
     Boolean(sp.get("source")),
-    mode === "exact" ? Boolean(sp.get("on")) : mode === "range" && (Boolean(sp.get("from")) || Boolean(sp.get("to"))),
+    !crmPeriod &&
+      (mode === "exact"
+        ? Boolean(sp.get("on"))
+        : mode === "range" &&
+          (Boolean(sp.get("from")) || Boolean(sp.get("to")))),
     sp.get("late") === "1",
+    sp.get("event") === "nouveaux",
   ].filter(Boolean).length;
 }
 
 function stateFromSearchParams(sp: URLSearchParams) {
+  const crmPeriod = hasCrmScopePeriodParams(spRecord(sp));
   return {
     stages:
       sp
@@ -54,9 +74,9 @@ function stateFromSearchParams(sp: URLSearchParams) {
     source: sp.get("source") || null,
     ownerId: sp.get("owner") || null,
     dateMode: dateModeFromParams(sp),
-    on: sp.get("on") ?? "",
-    from: sp.get("from") ?? "",
-    to: sp.get("to") ?? "",
+    on: crmPeriod ? "" : (sp.get("on") ?? ""),
+    from: crmPeriod ? "" : (sp.get("from") ?? ""),
+    to: crmPeriod ? "" : (sp.get("to") ?? ""),
     late: sp.get("late") === "1",
   };
 }
@@ -112,8 +132,12 @@ export function ProspectsFilterButton({
     } else if (dateMode === "range") {
       if (from) params.set("from", from);
       if (to) params.set("to", to);
+    } else {
+      /** Pas de date modal → conserver la période CRM (retour dashboard). */
+      copyCrmScopeParams(sp, params, { includeOwner: false });
     }
     if (late) params.set("late", "1");
+    /** Les filtres stock / date modal remplacent `event=nouveaux`. */
     const qs = params.toString();
     start(() => {
       router.push(qs ? `/crm/prospects?${qs}` : "/crm/prospects");

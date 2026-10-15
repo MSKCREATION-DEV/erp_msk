@@ -62,12 +62,6 @@ import { normalizeUiStage } from "@/lib/crm/guide-rules";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
 
-function withOwnerQuery(href: string, ownerId: string | null): string {
-  if (!ownerId) return href;
-  const sep = href.includes("?") ? "&" : "?";
-  return `${href}${sep}owner=${ownerId}`;
-}
-
 export default async function CrmDashboardPage({
   searchParams,
 }: {
@@ -245,6 +239,31 @@ export default async function CrmDashboardPage({
     ownerParamKey: "collab",
   });
 
+  /** Liens événements : période forcée + owner. */
+  const eventHref = (
+    path: string,
+    keep?: Record<string, string | undefined>,
+  ) =>
+    buildCrmScopeHref(path, {
+      period,
+      ownerId: focusOwner,
+      canFilterOwners: ownerScope.canFilterOwners,
+      forcePeriod: true,
+      keep,
+    });
+
+  /** Liens stocks à date : owner + période (retour dashboard) + keep métier. */
+  const stockHref = (
+    path: string,
+    keep?: Record<string, string | undefined>,
+  ) =>
+    buildCrmScopeHref(path, {
+      period,
+      ownerId: focusOwner,
+      canFilterOwners: ownerScope.canFilterOwners,
+      keep,
+    });
+
   const description =
     lens === "live"
       ? `Indicateurs · ${period.label} · portefeuille à date.`
@@ -302,7 +321,7 @@ export default async function CrmDashboardPage({
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           <MetricNavCard
-            href={withOwnerQuery("/crm/relances", focusOwner)}
+            href={eventHref("/crm/relances", { focus: "faites" })}
             icon={Bell}
             tone="coral"
             title="Relances faites"
@@ -318,7 +337,7 @@ export default async function CrmDashboardPage({
             }
           />
           <MetricNavCard
-            href={withOwnerQuery("/crm/prospects", focusOwner)}
+            href={eventHref("/crm/prospects", { event: "nouveaux" })}
             icon={UserRoundPlus}
             tone="blue"
             title="Nouveaux"
@@ -334,7 +353,7 @@ export default async function CrmDashboardPage({
             }
           />
           <MetricNavCard
-            href="/commercial/clients"
+            href={eventHref("/commercial/clients", { event: "gagnes" })}
             icon={Sparkles}
             tone="cyan"
             title="Clients gagnés"
@@ -359,6 +378,12 @@ export default async function CrmDashboardPage({
           totalDeals={conversionDenom}
           periodLabel={period.label}
           signedOnly={!showStocks}
+          signedHref={eventHref("/commercial/clients", { event: "gagnes" })}
+          openHref={
+            showStocks
+              ? stockHref(prospectsStagesHref(OPEN_PIPELINE_STAGES))
+              : undefined
+          }
         />
       </section>
 
@@ -381,10 +406,7 @@ export default async function CrmDashboardPage({
           >
             {showDevis ? (
               <MetricNavCard
-                href={withOwnerQuery(
-                  "/crm/prospects?devisRetard=1",
-                  focusOwner,
-                )}
+                href={stockHref("/crm/prospects", { devisRetard: "1" })}
                 icon={FileWarning}
                 tone="coral"
                 title="Sans devis"
@@ -405,10 +427,7 @@ export default async function CrmDashboardPage({
               />
             ) : null}
             <MetricNavCard
-              href={withOwnerQuery(
-                prospectsStagesHref(OPEN_PIPELINE_STAGES),
-                focusOwner,
-              )}
+              href={stockHref(prospectsStagesHref(OPEN_PIPELINE_STAGES))}
               icon={FolderOpen}
               tone="blue"
               title="Ouverts"
@@ -428,10 +447,7 @@ export default async function CrmDashboardPage({
               }
             />
             <MetricNavCard
-              href={withOwnerQuery(
-                prospectsStagesHref(["INTERESSE"]),
-                focusOwner,
-              )}
+              href={stockHref(prospectsStagesHref(["INTERESSE"]))}
               icon={Sparkles}
               tone="cyan"
               title="Intéressés"
@@ -447,7 +463,7 @@ export default async function CrmDashboardPage({
               }
             />
             <MetricNavCard
-              href={withOwnerQuery("/crm/relances", focusOwner)}
+              href={stockHref("/crm/relances")}
               icon={Bell}
               tone="coral"
               title="Relances à faire"
@@ -479,6 +495,8 @@ export default async function CrmDashboardPage({
             <StageDonutChart
               data={byStage}
               ownerId={focusOwner}
+              period={period}
+              canFilterOwners={ownerScope.canFilterOwners}
               subtitle="à date — clic = filtre liste"
             />
             <Surface className="divide-y divide-msk-ink/[0.06] overflow-hidden p-0">
@@ -488,7 +506,7 @@ export default async function CrmDashboardPage({
                 </h3>
                 <Link
                   prefetch={false}
-                  href={withOwnerQuery("/crm/prospects", focusOwner)}
+                  href={stockHref("/crm/prospects")}
                   className="text-sm font-medium text-msk-blue hover:underline"
                 >
                   Tous les prospects

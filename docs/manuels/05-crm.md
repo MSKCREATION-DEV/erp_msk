@@ -8,8 +8,8 @@
 **Lecture partagée / écriture affectée :** tous les commerciaux voient tous les prospects (anti-doublon). Journaliser, changer le statut ou éditer = réservé au **suivi**. Direction / Admin CRM / habilités (`crm.reassign`) : **Affecter** un prospect à un commercial (fiche, liste, ou page **Affectations**). Commercial en lecture seule : **Demander le suivi**. Les **Clients** n’apparaissent jamais dans le listing Prospects.
 
 **Filtres communs** (Tableau de bord, Vue Équipe, Objectifs, Rapport) : barre **période** + **collaborateur** (si Direction / lead).
-- Section **Activité** (relances faites, nouveaux, clients gagnés) : suit **toujours** la période (+ collab).
-- Section **Portefeuille à date** (ouverts, retards, priorités, répartition) : visible seulement si la période contient aujourd’hui ; suit le **collab**, pas la période.
+- Section **Activité** (relances faites, nouveaux, clients gagnés) : suit **toujours** la période (+ collab). Les liens emportent les params (`periode` / `semaine` / `owner` + `event=nouveaux` | `focus=faites` | `event=gagnes`) ; les listes destinations les appliquent.
+- Section **Portefeuille à date** (ouverts, retards, priorités, répartition) : visible seulement si la période contient aujourd’hui ; suit le **collab**, pas la période. Les liens stocks conservent la période pour le retour, sans filtrer les stocks.
 - **Historique** (période passée) : portefeuille masqué. Objectifs hebdo seulement en mode **semaine**.
 Vocabulaire : « montant en cours » (jamais « pipeline »).
 
@@ -77,6 +77,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
+| 2026-10-15 | Filtres période/owner propagés aux listes (nouveaux, relances faites, clients gagnés, stocks) |
 | 2026-10-14 | LOT-G Relancé N× partout + GUIDE Perdu ; LOT-F doublons ; LOT-I En discussion ; LOT-E…B |
 | 2026-10-13 | Objectifs : dashboard tous collabs, page admin assignation, Vue Équipe enrichie, rapport reflète cibles |
 | 2026-10-13 | Tableau de bord : MetricNavCard, Conversion Signé/En cours, Répartition filtres URL |

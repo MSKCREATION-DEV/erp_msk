@@ -250,7 +250,11 @@ export default async function CrmEquipePage({
             Rapport
           </ActionLink>
           <ActionLink
-            href={`/crm/prospects?owner=${filterOwner}`}
+            href={buildCrmScopeHref("/crm/prospects", {
+              period,
+              ownerId: filterOwner,
+              canFilterOwners: true,
+            })}
             icon={FolderOpen}
             variant="secondary"
             size="sm"
@@ -283,6 +287,11 @@ export default async function CrmEquipePage({
               baseQuery={baseQuery}
               rapportHref={buildCrmScopeHref("/crm/rapport-semaine", {
                 period: { ...period, mode: "semaine" },
+                ownerId,
+                canFilterOwners: true,
+              })}
+              prospectsHref={buildCrmScopeHref("/crm/prospects", {
+                period,
                 ownerId,
                 canFilterOwners: true,
               })}

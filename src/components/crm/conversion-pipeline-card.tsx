@@ -1,9 +1,12 @@
 "use client";
 
+import type { ReactNode } from "react";
+import Link from "next/link";
 import { HubMiniRadial } from "@/components/commercial/hub-mini-radial";
 import { Surface } from "@/components/ui/surface";
 import { formatXof } from "@/lib/crm/labels";
 import { METRIC_NAV_TONE_CHART } from "@/components/ui/metric-nav-card";
+import { cn } from "@/lib/utils";
 
 /**
  * Conversion = part des dossiers devenus Client dans le périmètre visible.
@@ -21,6 +24,8 @@ export function ConversionPipelineCard({
   periodLabel,
   /** Vue historique : uniquement le signé (pas de stock « en cours »). */
   signedOnly = false,
+  signedHref,
+  openHref,
 }: {
   ratePercent: number;
   signedAmount: number;
@@ -32,6 +37,10 @@ export function ConversionPipelineCard({
   /** Libellé période pour le montant signé (événements). */
   periodLabel?: string;
   signedOnly?: boolean;
+  /** Clients gagnés (période + owner). */
+  signedHref?: string;
+  /** Prospects ouverts à date (owner). */
+  openHref?: string;
 }) {
   const pct = Math.max(0, Math.min(100, ratePercent));
   const amountCeiling = Math.max(signedAmount + openAmount, 1);
@@ -70,11 +79,10 @@ export function ConversionPipelineCard({
             : "mt-5 grid gap-6 sm:grid-cols-2 sm:gap-0 sm:divide-x sm:divide-msk-ink/[0.08]"
         }
       >
-        <div className="flex flex-col items-center sm:px-4">
-          <p className="self-start text-xs font-semibold uppercase tracking-wide text-msk-ink/45">
-            Signé
-          </p>
-          <div className="mt-3 flex w-full flex-col items-center">
+        <ConversionColumn
+          href={signedHref}
+          label="Signé"
+          radial={
             <HubMiniRadial
               size="lg"
               value={signedOnly ? signedCount : pct}
@@ -85,23 +93,22 @@ export function ConversionPipelineCard({
               }
               caption={signedOnly ? "clients" : "devenus clients"}
             />
-            <p className="mt-4 text-center text-xl font-semibold tabular-nums tracking-tight text-msk-ink sm:text-2xl">
-              {formatXof(signedAmount)}
-            </p>
-            <p className="mt-1.5 text-center text-xs text-msk-ink/45">
+          }
+          amount={signedAmount}
+          hint={
+            <>
               montant signé
               {periodLabel ? ` · ${periodLabel.toLowerCase()}` : ""} ·{" "}
               {signedCount} client{signedCount > 1 ? "s" : ""}
-            </p>
-          </div>
-        </div>
+            </>
+          }
+        />
 
         {!signedOnly ? (
-          <div className="flex flex-col items-center sm:px-4">
-            <p className="self-start text-xs font-semibold uppercase tracking-wide text-msk-ink/45">
-              En cours
-            </p>
-            <div className="mt-3 flex w-full flex-col items-center">
+          <ConversionColumn
+            href={openHref}
+            label="En cours"
+            radial={
               <HubMiniRadial
                 size="lg"
                 value={openAmount}
@@ -110,16 +117,60 @@ export function ConversionPipelineCard({
                 centerLabel={openCount}
                 caption="dossiers ouverts"
               />
-              <p className="mt-4 text-center text-xl font-semibold tabular-nums tracking-tight text-msk-ink sm:text-2xl">
-                {formatXof(openAmount)}
-              </p>
-              <p className="mt-1.5 text-center text-xs text-msk-ink/45">
-                montant encore en cours
-              </p>
-            </div>
-          </div>
+            }
+            amount={openAmount}
+            hint="montant encore en cours"
+          />
         ) : null}
       </div>
     </Surface>
+  );
+}
+
+function ConversionColumn({
+  href,
+  label,
+  radial,
+  amount,
+  hint,
+}: {
+  href?: string;
+  label: string;
+  radial: ReactNode;
+  amount: number;
+  hint: ReactNode;
+}) {
+  const body = (
+    <>
+      <p className="self-start text-xs font-semibold uppercase tracking-wide text-msk-ink/45">
+        {label}
+      </p>
+      <div className="mt-3 flex w-full flex-col items-center">
+        {radial}
+        <p className="mt-4 text-center text-xl font-semibold tabular-nums tracking-tight text-msk-ink sm:text-2xl">
+          {formatXof(amount)}
+        </p>
+        <p className="mt-1.5 text-center text-xs text-msk-ink/45">{hint}</p>
+      </div>
+    </>
+  );
+
+  if (!href) {
+    return (
+      <div className="flex flex-col items-center sm:px-4">{body}</div>
+    );
+  }
+
+  return (
+    <Link
+      prefetch={false}
+      href={href}
+      className={cn(
+        "flex flex-col items-center rounded-xl sm:px-4",
+        "transition hover:bg-msk-chalk/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40",
+      )}
+    >
+      {body}
+    </Link>
   );
 }

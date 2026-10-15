@@ -4,6 +4,7 @@ import {
   crmScopeToSearchParams,
   dateRangeFilter,
   goalsCompatibleWithPeriod,
+  hasCrmScopePeriodParams,
   parseCrmPeriod,
   resolveCrmOwnerIds,
   resolveCrmScopeLens,
@@ -168,6 +169,27 @@ const currentIso = weekStartIso(currentWeek);
   });
   assert.equal(resolveCrmScopeLens(pastWeek), "period");
   assert.equal(goalsCompatibleWithPeriod(pastWeek), true);
+}
+
+{
+  assert.equal(hasCrmScopePeriodParams({ semaine: "2026-09-01" }), true);
+  assert.equal(hasCrmScopePeriodParams({ periode: "mois", mois: "2026-09" }), true);
+  assert.equal(hasCrmScopePeriodParams({ on: "2026-09-01" }), false);
+  assert.equal(hasCrmScopePeriodParams({ from: "2026-09-01", to: "2026-09-15" }), false);
+}
+
+{
+  const period = parseCrmPeriod({ periode: "mois", mois: "2026-08" });
+  const href = buildCrmScopeHref("/crm/prospects", {
+    period,
+    ownerId: "628357b3-ca62-418a-809d-a541eccc29b4",
+    canFilterOwners: true,
+    forcePeriod: true,
+    keep: { event: "nouveaux" },
+  });
+  assert.match(href, /event=nouveaux/);
+  assert.match(href, /periode=mois/);
+  assert.match(href, /mois=2026-08/);
 }
 
 console.log("scope-period.test.ts OK");

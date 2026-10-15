@@ -317,6 +317,35 @@ export function resolveCrmOwnerIds(opts: {
   return [opts.userId];
 }
 
+/** Clés URL de période CRM (à préserver lors d’Effacer / Filtrer). */
+export const CRM_PERIOD_PARAM_KEYS = [
+  "periode",
+  "semaine",
+  "mois",
+  "on",
+  "from",
+  "to",
+] as const;
+
+/** True si l’URL porte une période explicite (pas seulement le défaut implicite). */
+export function hasExplicitPeriodParams(
+  sp: Record<string, string | undefined>,
+): boolean {
+  return CRM_PERIOD_PARAM_KEYS.some((k) => Boolean(sp[k]?.trim()));
+}
+
+/**
+ * True si l’URL porte une lentille période CRM (barre de filtres),
+ * distincte des dates « Filtrer » prospects (`on` / `from` / `to` seuls).
+ */
+export function hasCrmScopePeriodParams(
+  sp: Record<string, string | undefined>,
+): boolean {
+  return Boolean(
+    sp.periode?.trim() || sp.semaine?.trim() || sp.mois?.trim(),
+  );
+}
+
 /** Construit une URL avec période + owner (et params à conserver). */
 export function buildCrmScopeHref(
   path: string,
@@ -326,6 +355,11 @@ export function buildCrmScopeHref(
     canFilterOwners?: boolean;
     ownerParamKey?: "owner" | "collab";
     keep?: Record<string, string | undefined>;
+    /**
+     * Toujours écrire la période (même semaine courante) —
+     * pour les liens « événements » (nouveaux, clients gagnés, relances faites).
+     */
+    forcePeriod?: boolean;
   },
 ): string {
   const p = crmScopeToSearchParams({
@@ -333,14 +367,42 @@ export function buildCrmScopeHref(
     ownerId: opts.ownerId ?? null,
     canFilterOwners: opts.canFilterOwners ?? true,
     keep: opts.keep,
+    forcePeriod: opts.forcePeriod,
   });
   if (opts.ownerParamKey === "collab" && p.has("owner")) {
     const v = p.get("owner")!;
     p.delete("owner");
     p.set("collab", v);
   }
+  const base = path.split("?")[0] ?? path;
+  const existing = path.includes("?")
+    ? new URLSearchParams(path.slice(path.indexOf("?") + 1))
+    : null;
+  if (existing) {
+    for (const [k, v] of existing.entries()) {
+      if (!p.has(k) && v) p.set(k, v);
+    }
+  }
   const qs = p.toString();
-  return qs ? `${path}?${qs}` : path;
+  return qs ? `${base}?${qs}` : base;
+}
+
+/** Copie les params période (+ owner si présent) depuis `sp` vers un URLSearchParams. */
+export function copyCrmScopeParams(
+  from: Record<string, string | undefined> | URLSearchParams,
+  into: URLSearchParams,
+  opts?: { includeOwner?: boolean },
+): void {
+  const get = (k: string) =>
+    from instanceof URLSearchParams ? from.get(k) ?? undefined : from[k];
+  for (const k of CRM_PERIOD_PARAM_KEYS) {
+    const v = get(k)?.trim();
+    if (v) into.set(k, v);
+  }
+  if (opts?.includeOwner !== false) {
+    const owner = get("owner")?.trim();
+    if (owner) into.set("owner", owner);
+  }
 }
 
 /** Clause Prisma `{ field: { gte, lte } }`. */
@@ -377,19 +439,20 @@ export function crmScopeToSearchParams(opts: {
   period: CrmPeriodScope;
   ownerId: string | null;
   canFilterOwners: boolean;
-  /** Params additionnels à conserver (ex. vue, collab). */
+  /** Params additionnels à conserver (ex. vue, collab, stages). */
   keep?: Record<string, string | undefined>;
+  /** Écrire la semaine même si c’est la semaine courante. */
+  forcePeriod?: boolean;
 }): URLSearchParams {
   const p = new URLSearchParams();
-  const { period, ownerId, canFilterOwners, keep } = opts;
+  const { period, ownerId, canFilterOwners, keep, forcePeriod } = opts;
 
   if (period.mode !== "semaine") p.set("periode", period.mode);
-  // Semaine courante : pas besoin de `semaine` si défaut
   const currentIso = weekStartIso(weekStartMonday());
-  if (period.mode === "semaine" && period.semaine !== currentIso) {
-    p.set("semaine", period.semaine);
-  } else if (period.mode === "semaine" && period.semaine === currentIso) {
-    /* défaut */
+  if (period.mode === "semaine") {
+    if (forcePeriod || period.semaine !== currentIso) {
+      p.set("semaine", period.semaine);
+    }
   } else if (period.mode === "mois") {
     p.set("mois", period.mois);
   } else if (period.mode === "jour") {

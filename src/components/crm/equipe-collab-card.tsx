@@ -24,6 +24,7 @@ export function EquipeCollabCard({
   periodLabel,
   baseQuery = "",
   rapportHref,
+  prospectsHref,
   showStocks = true,
   showGoals = true,
 }: {
@@ -40,6 +41,8 @@ export function EquipeCollabCard({
   periodLabel: string;
   baseQuery?: string;
   rapportHref: string;
+  /** Lien Prospects avec période + owner. */
+  prospectsHref: string;
   showStocks?: boolean;
   showGoals?: boolean;
 }) {
@@ -69,7 +72,7 @@ export function EquipeCollabCard({
             Rapport
           </ActionLink>
           <ActionLink
-            href={`/crm/prospects?owner=${ownerId}`}
+            href={prospectsHref}
             icon={FolderOpen}
             variant="secondary"
             size="sm"
@@ -118,10 +121,23 @@ export function EquipeCollabCard({
               if (n === 0) return null;
               const href =
                 s === "GAGNE"
-                  ? `/commercial/clients`
-                  : `/crm/prospects?owner=${ownerId}&stages=${
-                      s === "DEVIS_ENVOYE" ? "DEVIS_ENVOYE,NEGOCIATION" : s
-                    }`;
+                  ? (() => {
+                      const p = new URLSearchParams(baseQuery);
+                      p.set("owner", ownerId);
+                      const qs = p.toString();
+                      return qs
+                        ? `/commercial/clients?${qs}`
+                        : `/commercial/clients?owner=${ownerId}`;
+                    })()
+                  : (() => {
+                      const p = new URLSearchParams(baseQuery);
+                      p.set("owner", ownerId);
+                      p.set(
+                        "stages",
+                        s === "DEVIS_ENVOYE" ? "DEVIS_ENVOYE,NEGOCIATION" : s,
+                      );
+                      return `/crm/prospects?${p.toString()}`;
+                    })();
               return (
                 <Link key={s} prefetch={false} href={href}>
                   <Badge

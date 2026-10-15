@@ -190,10 +190,13 @@ export default async function CrmRapportPage({
     return s ? `/crm/rapport-semaine?${s}` : "/crm/rapport-semaine";
   })();
 
-  const objectifsHref =
-    scopeMode === "user" && focusOwnerId && canGlobal
-      ? `/crm/objectifs?collab=${focusOwnerId}`
-      : "/crm/objectifs";
+  const objectifsHref = buildCrmScopeHref("/crm/objectifs", {
+    period,
+    ownerId:
+      scopeMode === "user" && focusOwnerId && canGlobal ? focusOwnerId : null,
+    canFilterOwners: canGlobal,
+    ownerParamKey: "collab",
+  });
 
   const scopeKey = `${weekIso}:${scopeMode}:${focusOwnerId ?? "all"}`;
 
@@ -241,7 +244,11 @@ export default async function CrmRapportPage({
           clearAriaLabel="Voir toute l’équipe"
         >
           <ActionLink
-            href={`/crm/prospects?owner=${focusOwnerId}`}
+            href={buildCrmScopeHref("/crm/prospects", {
+              period,
+              ownerId: focusOwnerId,
+              canFilterOwners: canGlobal,
+            })}
             icon={FolderOpen}
             variant="secondary"
             size="sm"
@@ -313,6 +320,8 @@ export default async function CrmRapportPage({
           <StageDonutChart
             data={byStage}
             ownerId={focusOwnerId}
+            period={period}
+            canFilterOwners={canGlobal}
             subtitle="à date — clic = filtre liste"
           />
         ) : null}
@@ -338,7 +347,7 @@ export default async function CrmRapportPage({
           </div>
           <div className="flex flex-wrap gap-2">
             <ActionLink
-              href="/crm/objectifs"
+              href={objectifsHref}
               icon={Target}
               variant="secondary"
               size="sm"

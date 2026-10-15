@@ -2,11 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import type { Prisma } from "@prisma/client";
 import { UserPlus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { comOwnerScopeWhere } from "@/lib/commercial/scope";
+import { comOwnerScopeWhere, comVisibility } from "@/lib/commercial/scope";
+import { commercialTeamUserIds } from "@/lib/crm/team";
+import {
+  buildCrmScopeHref,
+  dateRangeFilter,
+  normalizeSearchParams,
+  parseCrmOwner,
+  parseCrmPeriod,
+} from "@/lib/crm/scope-period";
 import {
   clampPage,
   DEFAULT_PAGE_SIZE,
@@ -14,7 +23,6 @@ import {
   parsePage,
   totalPages,
 } from "@/lib/list/pagination";
-import { firstParam } from "@/lib/list/search-params";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -22,6 +30,8 @@ import { ActionLink } from "@/components/ui/action-link";
 import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
+import { Badge } from "@/components/ui/badge";
+import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 
 export const metadata: Metadata = { title: "Clients" };
 
@@ -40,19 +50,68 @@ export default async function CommercialClientsPage({
 
   const canCreate = hasPermission(user, "com.clients.manage");
   const raw = await searchParams;
-  const q = (firstParam(raw.q) ?? "").trim();
-  const requestedPage = parsePage(firstParam(raw.page));
+  const sp = normalizeSearchParams(raw);
+  const q = (sp.q ?? "").trim();
+  const requestedPage = parsePage(sp.page);
   const pageSize = DEFAULT_PAGE_SIZE;
 
-  const where = {
+  const isGagnesEvent = sp.event === "gagnes";
+  const period =
+    isGagnesEvent || sp.periode || sp.semaine || sp.mois
+      ? parseCrmPeriod(sp)
+      : null;
+  const occurredBetween = period
+    ? dateRangeFilter(period.from, period.to)
+    : null;
+
+  const teamIds =
+    comVisibility(user) === "global" ? await commercialTeamUserIds() : [];
+  const memberIds = Array.from(new Set([user.id, ...teamIds]));
+  const ownerScope = parseCrmOwner(sp, user, memberIds);
+
+  const focusOwnerUser = ownerScope.ownerId
+    ? await prisma.user.findUnique({
+        where: { id: ownerScope.ownerId },
+        select: { firstName: true, lastName: true },
+      })
+    : null;
+  const focusOwnerLabel = focusOwnerUser
+    ? `${focusOwnerUser.firstName} ${focusOwnerUser.lastName}`
+    : null;
+
+  const baseScope: Prisma.ComClientWhereInput = {
     AND: [
       comOwnerScopeWhere(user),
+      ...(ownerScope.ownerId ? [{ ownerId: ownerScope.ownerId }] : []),
+    ],
+  };
+
+  /** Aligné dashboard : opportunités GAGNE sur la période → clients liés. */
+  const gagnesFilter: Prisma.ComClientWhereInput | null =
+    isGagnesEvent && occurredBetween
+      ? {
+          sourceOpportunity: {
+            stage: "GAGNE",
+            OR: [
+              { wonAt: occurredBetween },
+              { wonAt: null, updatedAt: occurredBetween },
+            ],
+          },
+        }
+      : null;
+
+  const where: Prisma.ComClientWhereInput = {
+    AND: [
+      baseScope,
+      ...(gagnesFilter ? [gagnesFilter] : []),
       ...(q
         ? [
             {
               OR: [
                 { name: { contains: q, mode: "insensitive" as const } },
-                { contactName: { contains: q, mode: "insensitive" as const } },
+                {
+                  contactName: { contains: q, mode: "insensitive" as const },
+                },
                 { city: { contains: q, mode: "insensitive" as const } },
                 { phone: { contains: q, mode: "insensitive" as const } },
                 { email: { contains: q, mode: "insensitive" as const } },
@@ -73,21 +132,63 @@ export default async function CommercialClientsPage({
     include: {
       _count: { select: { quotes: true, invoices: true } },
       owner: { select: { firstName: true, lastName: true } },
+      sourceOpportunity: { select: { wonAt: true } },
     },
   });
 
   const pages = totalPages(total, pageSize);
-  const listParams: Record<string, string | undefined> = {
-    q: q || undefined,
-  };
+  const listParams: Record<string, string | undefined> = { ...sp };
+  delete listParams.page;
+
+  const clearOwnerHref =
+    period != null
+      ? buildCrmScopeHref("/commercial/clients", {
+          period,
+          ownerId: null,
+          canFilterOwners: ownerScope.canFilterOwners,
+          forcePeriod: isGagnesEvent,
+          keep: {
+            event: isGagnesEvent ? "gagnes" : undefined,
+            q: q || undefined,
+          },
+        })
+      : (() => {
+          const p = new URLSearchParams();
+          if (q) p.set("q", q);
+          if (isGagnesEvent) p.set("event", "gagnes");
+          const s = p.toString();
+          return s ? `/commercial/clients?${s}` : "/commercial/clients";
+        })();
+
+  const clearEventHref =
+    period != null
+      ? buildCrmScopeHref("/commercial/clients", {
+          period,
+          ownerId: ownerScope.ownerId,
+          canFilterOwners: ownerScope.canFilterOwners,
+          keep: { q: q || undefined },
+        })
+      : ownerScope.ownerId
+        ? `/commercial/clients?owner=${ownerScope.ownerId}${q ? `&q=${encodeURIComponent(q)}` : ""}`
+        : q
+          ? `/commercial/clients?q=${encodeURIComponent(q)}`
+          : "/commercial/clients";
 
   return (
     <PageShell>
       <PageHeader
         title="Clients"
-        description="Clients signés — Commercial."
-        backHref="/commercial"
-        backLabel="Retour Commercial"
+        description={
+          isGagnesEvent && period
+            ? focusOwnerLabel
+              ? `Gagnés · ${period.label} · ${focusOwnerLabel}`
+              : `Passés Client · ${period.label}`
+            : focusOwnerLabel
+              ? `Clients de ${focusOwnerLabel}`
+              : "Clients signés — Commercial."
+        }
+        backHref={isGagnesEvent ? "/crm" : "/commercial"}
+        backLabel={isGagnesEvent ? "Tableau de bord" : "Retour Commercial"}
         breadcrumbs={[
           { label: "Commercial", href: "/commercial" },
           { label: "Clients" },
@@ -100,6 +201,27 @@ export default async function CommercialClientsPage({
           ) : null
         }
       />
+
+      {focusOwnerLabel ? (
+        <ScopeFocusBanner
+          label={focusOwnerLabel}
+          clearHref={clearOwnerHref}
+          clearAriaLabel="Voir toute l’équipe"
+        />
+      ) : null}
+
+      {isGagnesEvent && period ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge tone="blue">Gagnés · {period.label}</Badge>
+          <Link
+            prefetch={false}
+            href={clearEventHref}
+            className="text-xs font-medium text-msk-blue hover:underline"
+          >
+            Voir tous les clients
+          </Link>
+        </div>
+      ) : null}
 
       <Surface className="overflow-hidden p-0">
         <div className="flex flex-wrap items-center gap-3 border-b border-msk-ink/[0.06] px-4 py-3">
@@ -138,6 +260,8 @@ export default async function CommercialClientsPage({
                   >
                     {q ? (
                       <>Aucun client pour « {q} ».</>
+                    ) : isGagnesEvent && period ? (
+                      <>Aucun client gagné sur {period.label.toLowerCase()}.</>
                     ) : (
                       <>
                         Aucun client pour l’instant.
@@ -183,7 +307,9 @@ export default async function CommercialClientsPage({
                       {c._count.invoices}
                     </td>
                     <td className="px-4 py-3 text-xs text-msk-ink/55">
-                      {c.updatedAt.toLocaleDateString("fr-FR")}
+                      {(
+                        c.sourceOpportunity?.wonAt ?? c.updatedAt
+                      ).toLocaleDateString("fr-FR")}
                     </td>
                   </ClickableRowLink>
                 ))

@@ -153,7 +153,15 @@ export default async function CrmObjectifsPage({
         >
           Assignation globale
         </ActionLink>
-        <ActionLink href="/crm/equipe" icon={Users} variant="secondary">
+        <ActionLink
+          href={buildCrmScopeHref("/crm/equipe", {
+            period,
+            ownerId: focusCollab?.id ?? null,
+            canFilterOwners: canManage,
+          })}
+          icon={Users}
+          variant="secondary"
+        >
           Vue Équipe
         </ActionLink>
       </div>
@@ -179,7 +187,15 @@ export default async function CrmObjectifsPage({
       <PageHeader
         title="Objectifs hebdomadaires"
         description={description}
-        backHref={mode === "synthese" ? "/crm" : "/crm/objectifs"}
+        backHref={
+          mode === "synthese"
+            ? buildCrmScopeHref("/crm", {
+                period,
+                ownerId: null,
+                canFilterOwners: canManage,
+              })
+            : weekHref()
+        }
         backLabel={
           mode === "synthese"
             ? "Retour tableau de bord"
@@ -187,7 +203,10 @@ export default async function CrmObjectifsPage({
         }
         breadcrumbs={[
           { label: "Commercial", href: "/commercial" },
-          { label: "Objectifs", href: mode === "synthese" ? undefined : "/crm/objectifs" },
+          {
+            label: "Objectifs",
+            href: mode === "synthese" ? undefined : weekHref(),
+          },
           ...(mode === "equipe"
             ? [{ label: "Assignation globale" }]
             : mode === "collab" && focusCollab
@@ -381,7 +400,11 @@ export default async function CrmObjectifsPage({
               Rapport
             </ActionLink>
             <ActionLink
-              href={`/crm/prospects?owner=${focusCollab.id}`}
+              href={buildCrmScopeHref("/crm/prospects", {
+                period,
+                ownerId: focusCollab.id,
+                canFilterOwners: true,
+              })}
               icon={FolderOpen}
               variant="secondary"
               size="sm"
