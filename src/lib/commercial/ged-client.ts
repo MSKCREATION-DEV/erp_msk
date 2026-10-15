@@ -16,15 +16,14 @@ type FolderRef = {
 };
 
 /**
- * Assure `/{year}/03_CLIENTS/{gedFolderCode}/Devis|Factures`.
+ * Assure `/{year}/03_CLIENTS/{gedFolderCode}` (+ sous-dossiers Devis|Factures).
  * Le code vient de `ComClient.gedFolderCode` (unique) — pas du nom seul.
  */
-export async function ensureClientDocFolder(opts: {
+export async function ensureClientRootFolder(opts: {
   clientId: string;
-  type: "Devis" | "Factures";
   year?: number;
   createdById?: string;
-}) {
+}): Promise<FolderRef> {
   const year = opts.year ?? new Date().getFullYear();
   await ensureYearTree(year, opts.createdById);
 
@@ -65,6 +64,24 @@ export async function ensureClientDocFolder(opts: {
       opts.createdById,
     );
   }
+
+  return clientFolder;
+}
+
+/**
+ * Assure `/{year}/03_CLIENTS/{gedFolderCode}/Devis|Factures`.
+ */
+export async function ensureClientDocFolder(opts: {
+  clientId: string;
+  type: "Devis" | "Factures";
+  year?: number;
+  createdById?: string;
+}) {
+  const clientFolder = await ensureClientRootFolder({
+    clientId: opts.clientId,
+    year: opts.year,
+    createdById: opts.createdById,
+  });
 
   return prisma.documentFolder.findUniqueOrThrow({
     where: { path: `${clientFolder.path}/${opts.type}` },

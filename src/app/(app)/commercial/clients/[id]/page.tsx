@@ -35,6 +35,7 @@ import {
   canViewFolderPath,
   hasGedAccess,
 } from "@/lib/ged/scope";
+import { ensureClientRootFolder } from "@/lib/commercial/ged-client";
 import {
   COM_DOCS_GATED,
   COM_DOCS_GATED_HINT,
@@ -184,19 +185,22 @@ export default async function CommercialClientDetailPage({
     whatsappUrl: org?.whatsappUrl ?? null,
   };
 
-  /** Lien GED uniquement si l’utilisateur a le droit de voir ce dossier. */
+  /**
+   * Lien GED : crée le dossier client s’il manque (lazy, comme devis/factures),
+   * puis n’expose le lien que si l’utilisateur peut le voir.
+   */
   let gedFolderHref: string | null = null;
   if (hasGedAccess(user) && client.gedFolderCode) {
-    const folder = await prisma.documentFolder.findFirst({
-      where: {
-        code: client.gedFolderCode,
-        path: { contains: `/03_CLIENTS/${client.gedFolderCode}` },
-      },
-      orderBy: { year: "desc" },
-      select: { id: true, path: true },
-    });
-    if (folder && (await canViewFolderPath(user, folder.path))) {
-      gedFolderHref = `/ged?folder=${folder.id}`;
+    try {
+      const folder = await ensureClientRootFolder({
+        clientId: client.id,
+        createdById: user.id,
+      });
+      if (await canViewFolderPath(user, folder.path)) {
+        gedFolderHref = `/ged?folder=${folder.id}`;
+      }
+    } catch {
+      // Année GED absente / erreur tree — on garde le code sans lien.
     }
   }
 
