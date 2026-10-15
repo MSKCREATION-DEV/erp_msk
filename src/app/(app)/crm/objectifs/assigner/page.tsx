@@ -34,7 +34,7 @@ export default async function ObjectifsAssignerEquipePage({
 
   const sp = normalizeSearchParams(await searchParams);
   const period = defaultAssignPeriod(sp);
-  const { grain, periodStartIso, semaineOptions } = assignFormDefaults(period);
+  const { grain, periodStartIso, weeks } = assignFormDefaults(period);
   const teamGoals = await loadTeamGoalsForPeriod(period);
 
   const teamIds = await commercialTeamUserIds();
@@ -72,7 +72,7 @@ export default async function ObjectifsAssignerEquipePage({
           initial={teamGoals}
           periodType={grain}
           periodStart={periodStartIso}
-          semaineOptions={semaineOptions}
+          weeks={weeks}
           cancelHref="/crm/objectifs"
           submitLabel="Enregistrer l’assignation globale"
         />

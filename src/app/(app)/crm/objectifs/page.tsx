@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { Settings2, UserRound } from "lucide-react";
+import { ClipboardList } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -32,9 +32,8 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = { title: "Objectifs" };
 
 /**
- * Vue d’ensemble — progression uniquement.
- * Assignation → `/crm/objectifs/assigner` (+ `/[userId]`).
- * Compat : `?vue=equipe` / `?collab=` → redirect.
+ * Vue d’ensemble — progression.
+ * Clic ligne → fiche détail · CTA Assignation → /assigner.
  */
 export default async function CrmObjectifsPage({
   searchParams,
@@ -50,13 +49,12 @@ export default async function CrmObjectifsPage({
   const canManage =
     user.isSuperAdmin || hasPermission(user, "crm.reports.global");
 
-  // Compat anciennes URLs d’assignation
   if (canManage && sp.vue === "equipe") {
     redirect("/crm/objectifs/assigner");
   }
   const legacyCollab = sp.collab ?? sp.owner;
-  if (canManage && legacyCollab) {
-    redirect(`/crm/objectifs/assigner/${legacyCollab}`);
+  if (legacyCollab) {
+    redirect(`/crm/objectifs/${legacyCollab}`);
   }
 
   const rawPeriod = parseCrmPeriod(sp);
@@ -87,17 +85,23 @@ export default async function CrmObjectifsPage({
       })
     : [];
 
-  const teamSnapshots =
-    canManage
-      ? (await resolveGoalsSnapshots(members, period)).map((s) => ({
-          id: s.userId,
-          firstName: s.firstName,
-          lastName: s.lastName,
-          progress: s.progress,
-        }))
-      : [];
+  const teamSnapshots = canManage
+    ? (await resolveGoalsSnapshots(members, period)).map((s) => ({
+        id: s.userId,
+        firstName: s.firstName,
+        lastName: s.lastName,
+        progress: s.progress,
+      }))
+    : [];
 
-  const firstCollabId = members[0]?.id ?? null;
+  const detailHref = (userId: string) =>
+    buildCrmScopeHref(`/crm/objectifs/${userId}`, {
+      period,
+      ownerId: null,
+      canFilterOwners: false,
+      forcePeriod: true,
+    });
+
   const scopeKey = `${period.mode}:${period.fromIso}`;
 
   return (
@@ -118,24 +122,13 @@ export default async function CrmObjectifsPage({
         ]}
         actions={
           canManage ? (
-            <div className="flex flex-wrap gap-2">
-              <ActionLink
-                href="/crm/objectifs/assigner"
-                icon={Settings2}
-                variant="secondary"
-              >
-                Assignation globale
-              </ActionLink>
-              {firstCollabId ? (
-                <ActionLink
-                  href={`/crm/objectifs/assigner/${firstCollabId}`}
-                  icon={UserRound}
-                  variant="primary"
-                >
-                  Par collaborateur
-                </ActionLink>
-              ) : null}
-            </div>
+            <ActionLink
+              href="/crm/objectifs/assigner"
+              icon={ClipboardList}
+              variant="primary"
+            >
+              Assignation
+            </ActionLink>
           ) : null
         }
       />
@@ -180,16 +173,14 @@ export default async function CrmObjectifsPage({
 
       {canManage ? (
         <Surface className="p-5">
-          <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="text-sm font-semibold text-msk-ink">
-                Progression de l’équipe
-              </h2>
-              <p className="mt-1 text-xs text-msk-ink/45">
-                Lecture seule — pour modifier une cible, utilisez Assignation
-                globale ou Par collaborateur.
-              </p>
-            </div>
+          <div className="mb-4">
+            <h2 className="text-sm font-semibold text-msk-ink">
+              Progression de l’équipe
+            </h2>
+            <p className="mt-1 text-xs text-msk-ink/45">
+              Cliquez une ligne pour voir le détail. Pour fixer des cibles :
+              Assignation.
+            </p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-180 text-left text-sm">
@@ -207,7 +198,7 @@ export default async function CrmObjectifsPage({
                 {teamSnapshots.map((row) => (
                   <ClickableRowLink
                     key={row.id}
-                    href={`/crm/objectifs/assigner/${row.id}`}
+                    href={detailHref(row.id)}
                   >
                     <td className="px-3 py-2.5 font-medium text-msk-ink">
                       {row.firstName} {row.lastName}

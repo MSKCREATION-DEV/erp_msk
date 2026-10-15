@@ -1,4 +1,4 @@
-import { listWeekOptions } from "@/lib/crm/week";
+import { listWeekOptions, type WeekOption } from "@/lib/crm/week";
 import {
   periodModeToGrain,
   periodStartForGrain,
@@ -20,7 +20,7 @@ export function defaultAssignPeriod(
 export function assignFormDefaults(period: CrmPeriodScope): {
   grain: GoalPeriodGrain;
   periodStartIso: string;
-  semaineOptions: { value: string; label: string }[];
+  weeks: WeekOption[];
 } {
   const grain = periodModeToGrain(period.mode) ?? "WEEK";
   const periodStartDate = periodStartForGrain(grain, period);
@@ -32,6 +32,6 @@ export function assignFormDefaults(period: CrmPeriodScope): {
   return {
     grain,
     periodStartIso,
-    semaineOptions: weeks.map((w) => ({ value: w.value, label: w.label })),
+    weeks,
   };
 }

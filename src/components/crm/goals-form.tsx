@@ -17,6 +17,8 @@ import {
   GOAL_GRAIN_LABELS,
   scaleGoalTarget,
 } from "@/lib/crm/goal-scale";
+import type { WeekOption } from "@/lib/crm/week";
+import { GoalsWeekPicker } from "@/components/crm/goals-week-picker";
 import { cn } from "@/lib/utils";
 
 const GRAINS: { value: GoalPeriodGrain; label: string }[] = [
@@ -36,7 +38,7 @@ export function GoalsForm({
   submitLabel = "Enregistrer",
   periodType: initialPeriodType = "WEEK",
   periodStart: initialPeriodStart,
-  semaineOptions,
+  weeks,
   cancelHref,
 }: {
   scope: "USER" | "TEAM";
@@ -46,7 +48,7 @@ export function GoalsForm({
   periodType?: GoalPeriodGrain;
   /** Ancre ISO : YYYY-MM-DD (jour/semaine) ou YYYY-MM (mois). */
   periodStart: string;
-  semaineOptions?: { value: string; label: string }[];
+  weeks?: WeekOption[];
   cancelHref?: string;
 }) {
   const router = useRouter();
@@ -161,7 +163,7 @@ export function GoalsForm({
             </div>
           </div>
 
-          <div className="max-w-md">
+          <div className="max-w-lg">
             <FieldLabel htmlFor={`${formId}-anchor`} required>
               {grain === "DAY"
                 ? "Jour"
@@ -169,19 +171,16 @@ export function GoalsForm({
                   ? "Semaine"
                   : "Mois"}
             </FieldLabel>
-            {grain === "WEEK" && semaineOptions && semaineOptions.length > 0 ? (
-              <select
-                id={`${formId}-anchor`}
-                className="mt-1.5 flex h-10 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm text-msk-ink focus:border-msk-blue focus:outline-none focus:ring-2 focus:ring-msk-blue/20"
-                value={periodStartValue}
-                onChange={(e) => setAnchor(e.target.value)}
-              >
-                {semaineOptions.map((w) => (
-                  <option key={w.value} value={w.value}>
-                    {w.label}
-                  </option>
-                ))}
-              </select>
+            {grain === "WEEK" && weeks && weeks.length > 0 ? (
+              <div className="mt-1.5">
+                <GoalsWeekPicker
+                  id={`${formId}-anchor`}
+                  value={periodStartValue}
+                  weeks={weeks}
+                  onChange={setAnchor}
+                  disabled={busy}
+                />
+              </div>
             ) : (
               <Input
                 id={`${formId}-anchor`}

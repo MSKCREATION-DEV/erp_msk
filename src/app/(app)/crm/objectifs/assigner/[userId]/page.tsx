@@ -40,7 +40,7 @@ export default async function ObjectifsAssignerCollabPage({
   const { userId } = await params;
   const sp = normalizeSearchParams(await searchParams);
   const period = defaultAssignPeriod(sp);
-  const { grain, periodStartIso, semaineOptions } = assignFormDefaults(period);
+  const { grain, periodStartIso, weeks } = assignFormDefaults(period);
 
   const teamIds = await commercialTeamUserIds();
   const memberIds = [...new Set([user.id, ...teamIds])];
@@ -94,8 +94,8 @@ export default async function ObjectifsAssignerCollabPage({
             initial={collabGoals}
             periodType={grain}
             periodStart={periodStartIso}
-            semaineOptions={semaineOptions}
-            cancelHref="/crm/objectifs"
+            weeks={weeks}
+            cancelHref={`/crm/objectifs/${focus.id}`}
             submitLabel={`Enregistrer pour ${focus.firstName}`}
           />
         </div>
