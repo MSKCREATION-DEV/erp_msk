@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import {
-  FileText,
-  FolderOpen,
-  Settings2,
-  Users,
-  UserRound,
-} from "lucide-react";
+import { FileText, FolderOpen, Settings2, UserRound } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -142,31 +136,6 @@ export default async function CrmObjectifsPage({
       )
     : [];
 
-  /** Assignation globale / collab : retour via fil d’Ariane ou « Retour aux objectifs ». */
-  const headerActions =
-    canManage && mode === "synthese" ? (
-      <div className="flex flex-wrap gap-2">
-        <ActionLink
-          href={weekHref({ vue: "equipe" })}
-          icon={Settings2}
-          variant="secondary"
-        >
-          Assignation globale
-        </ActionLink>
-        <ActionLink
-          href={buildCrmScopeHref("/crm/equipe", {
-            period,
-            ownerId: focusCollab?.id ?? null,
-            canFilterOwners: canManage,
-          })}
-          icon={Users}
-          variant="secondary"
-        >
-          Vue Équipe
-        </ActionLink>
-      </div>
-    ) : null;
-
   const description =
     mode === "collab" && focusCollab
       ? `Par collaborateur · ${focusCollab.firstName} ${focusCollab.lastName} · ${period.label}`
@@ -213,7 +182,6 @@ export default async function CrmObjectifsPage({
               ? [{ label: focusCollab.firstName }]
               : []),
         ]}
-        actions={headerActions}
       />
 
       <CrmScopeBar
@@ -259,23 +227,13 @@ export default async function CrmObjectifsPage({
       {canManage && mode === "synthese" ? (
         <>
           <Surface className="p-5">
-            <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 className="text-sm font-semibold text-msk-ink">
-                  Progression de l’équipe
-                </h2>
-                <p className="mt-1 text-xs text-msk-ink/45">
-                  Cliquez une ligne pour fixer les objectifs d’un collaborateur.
-                </p>
-              </div>
-              <ActionLink
-                href={weekHref({ vue: "equipe" })}
-                icon={Settings2}
-                variant="ghost"
-                size="sm"
-              >
-                Assignation globale
-              </ActionLink>
+            <div className="mb-4">
+              <h2 className="text-sm font-semibold text-msk-ink">
+                Progression de l’équipe
+              </h2>
+              <p className="mt-1 text-xs text-msk-ink/45">
+                Cliquez une ligne pour fixer les objectifs d’un collaborateur.
+              </p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-180 text-left text-sm">
@@ -384,45 +342,53 @@ export default async function CrmObjectifsPage({
         <>
           <ScopeFocusBanner
             label={`${focusCollab.firstName} ${focusCollab.lastName}`}
+            periodLabel={period.label}
+            lens={lens}
             clearHref={weekHref()}
             clearAriaLabel="Retour à la vue d’ensemble"
+            actions={
+              <>
+                <ActionLink
+                  href={buildCrmScopeHref("/crm/rapport-semaine", {
+                    period,
+                    ownerId: focusCollab.id,
+                    canFilterOwners: true,
+                  })}
+                  icon={FileText}
+                  variant="secondary"
+                  size="sm"
+                >
+                  Rapport
+                </ActionLink>
+                <ActionLink
+                  href={buildCrmScopeHref("/crm/prospects", {
+                    period,
+                    ownerId: focusCollab.id,
+                    canFilterOwners: true,
+                    forcePeriod: true,
+                    keep: { event: "nouveaux" },
+                  })}
+                  icon={FolderOpen}
+                  variant="secondary"
+                  size="sm"
+                >
+                  Prospects
+                </ActionLink>
+              </>
+            }
           >
-            <ActionLink
-              href={buildCrmScopeHref("/crm/rapport-semaine", {
+            <GoalsProgressStrip
+              progress={collabProgress}
+              title={`Avancement · ${focusCollab.firstName}`}
+              detailHref={buildCrmScopeHref("/crm/rapport-semaine", {
                 period,
                 ownerId: focusCollab.id,
                 canFilterOwners: true,
               })}
-              icon={FileText}
-              variant="secondary"
-              size="sm"
-            >
-              Rapport
-            </ActionLink>
-            <ActionLink
-              href={buildCrmScopeHref("/crm/prospects", {
-                period,
-                ownerId: focusCollab.id,
-                canFilterOwners: true,
-              })}
-              icon={FolderOpen}
-              variant="secondary"
-              size="sm"
-            >
-              Prospects
-            </ActionLink>
+              detailLabel="Rapport détaillé"
+              embedded
+            />
           </ScopeFocusBanner>
-
-          <GoalsProgressStrip
-            progress={collabProgress}
-            title={`Avancement · ${focusCollab.firstName} · ${period.label}`}
-            detailHref={buildCrmScopeHref("/crm/rapport-semaine", {
-              period,
-              ownerId: focusCollab.id,
-              canFilterOwners: true,
-            })}
-            detailLabel="Rapport détaillé"
-          />
 
           <Surface className="space-y-5 p-5">
             <div>

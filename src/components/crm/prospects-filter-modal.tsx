@@ -133,11 +133,17 @@ export function ProspectsFilterButton({
       if (from) params.set("from", from);
       if (to) params.set("to", to);
     } else {
-      /** Pas de date modal → conserver la période CRM (retour dashboard). */
+      /** Pas de date modal → conserver la période CRM. */
       copyCrmScopeParams(sp, params, { includeOwner: false });
+      /** Portefeuille à date : ne pas basculer en filtre createdAt. */
+      if (sp.get("view") === "stock" && !stages.length && !late) {
+        params.set("view", "stock");
+      }
+      if (sp.get("event") === "nouveaux") {
+        params.set("event", "nouveaux");
+      }
     }
     if (late) params.set("late", "1");
-    /** Les filtres stock / date modal remplacent `event=nouveaux`. */
     const qs = params.toString();
     start(() => {
       router.push(qs ? `/crm/prospects?${qs}` : "/crm/prospects");

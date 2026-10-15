@@ -177,6 +177,7 @@ export default async function CrmEquipePage({
     period,
     ownerId: null,
     canFilterOwners: true,
+    forcePeriod: true,
   });
   const baseQuery = periodOnlyParams.toString();
   const clearScopeHref = buildCrmScopeHref("/crm/equipe", {
@@ -220,49 +221,61 @@ export default async function CrmEquipePage({
         lens={lens}
       />
 
-      <CrmScopeContext
-        lens={lens}
-        periodLabel={period.label}
-        ownerLabel={filteredName}
-        resetHref={buildCrmScopeHref("/crm/equipe", {
-          period: parseCrmPeriod({ periode: "semaine" }),
-          ownerId: filterOwner,
-          canFilterOwners: true,
-        })}
-      />
-
       {filterOwner && filteredName ? (
         <ScopeFocusBanner
           label={filteredName}
+          periodLabel={period.label}
+          lens={lens}
           clearHref={clearScopeHref}
           clearAriaLabel="Voir toute l’équipe"
-        >
-          <ActionLink
-            href={buildCrmScopeHref("/crm/rapport-semaine", {
-              period: { ...period, mode: "semaine" },
-              ownerId: filterOwner,
-              canFilterOwners: true,
-            })}
-            icon={FileText}
-            variant="secondary"
-            size="sm"
-          >
-            Rapport
-          </ActionLink>
-          <ActionLink
-            href={buildCrmScopeHref("/crm/prospects", {
-              period,
-              ownerId: filterOwner,
-              canFilterOwners: true,
-            })}
-            icon={FolderOpen}
-            variant="secondary"
-            size="sm"
-          >
-            Prospects
-          </ActionLink>
-        </ScopeFocusBanner>
-      ) : null}
+          resetHref={buildCrmScopeHref("/crm/equipe", {
+            period: parseCrmPeriod({ periode: "semaine" }),
+            ownerId: filterOwner,
+            canFilterOwners: true,
+          })}
+          actions={
+            <>
+              <ActionLink
+                href={buildCrmScopeHref("/crm/rapport-semaine", {
+                  period: { ...period, mode: "semaine" },
+                  ownerId: filterOwner,
+                  canFilterOwners: true,
+                })}
+                icon={FileText}
+                variant="secondary"
+                size="sm"
+              >
+                Rapport
+              </ActionLink>
+              <ActionLink
+                href={buildCrmScopeHref("/crm/prospects", {
+                  period,
+                  ownerId: filterOwner,
+                  canFilterOwners: true,
+                  forcePeriod: true,
+                  keep: { event: "nouveaux" },
+                })}
+                icon={FolderOpen}
+                variant="secondary"
+                size="sm"
+              >
+                Prospects
+              </ActionLink>
+            </>
+          }
+        />
+      ) : (
+        <CrmScopeContext
+          lens={lens}
+          periodLabel={period.label}
+          ownerLabel={null}
+          resetHref={buildCrmScopeHref("/crm/equipe", {
+            period: parseCrmPeriod({ periode: "semaine" }),
+            ownerId: null,
+            canFilterOwners: true,
+          })}
+        />
+      )}
 
       {rows.length === 0 ? (
         <Surface className="p-8 text-center text-sm text-msk-ink/40">
@@ -294,6 +307,8 @@ export default async function CrmEquipePage({
                 period,
                 ownerId,
                 canFilterOwners: true,
+                forcePeriod: true,
+                keep: { event: "nouveaux" },
               })}
               showStocks={showStocks}
               showGoals={showGoals}

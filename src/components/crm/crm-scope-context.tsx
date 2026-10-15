@@ -3,8 +3,9 @@ import type { CrmScopeLens } from "@/lib/crm/scope-period";
 import { cn } from "@/lib/utils";
 
 /**
- * Contexte de filtre visible (anti-screenshot trompeur) + retour à la vue live.
- * Pattern : selection binding + clear évident (CRM Analytics / Metabase).
+ * Bandeau léger pour vue historique (sans focus collab) ou dashboard sans panneau.
+ * Si un `ScopeFocusBanner` est affiché, ne pas passer `ownerLabel` ici
+ * (évite le double « Focus »).
  */
 export function CrmScopeContext({
   lens,
@@ -47,7 +48,7 @@ export function CrmScopeContext({
           </>
         ) : (
           <>
-            <span className="font-semibold text-msk-ink">Focus</span>
+            <span className="font-semibold text-msk-ink">Focus collaborateur</span>
             {ownerLabel ? ` · ${ownerLabel}` : ""}
             {" · "}
             {periodLabel}

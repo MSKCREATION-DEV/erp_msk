@@ -56,14 +56,17 @@ export function StageDonutChart({
   function stageHref(stage: CrmPipelineStage) {
     const base = prospectsStagesHref(stagesForFilter(stage));
     if (!period) {
-      if (!ownerId) return base;
       const sep = base.includes("?") ? "&" : "?";
-      return `${base}${sep}owner=${ownerId}`;
+      const extras = new URLSearchParams();
+      extras.set("view", "stock");
+      if (ownerId) extras.set("owner", ownerId);
+      return `${base}${sep}${extras.toString()}`;
     }
     return buildCrmScopeHref(base, {
       period,
       ownerId: ownerId ?? null,
       canFilterOwners,
+      keep: { view: "stock" },
     });
   }
 

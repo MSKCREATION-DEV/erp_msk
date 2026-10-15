@@ -51,10 +51,11 @@ import {
 } from "@/lib/crm/follow-up-count";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import {
-  copyCrmScopeParams,
   dateRangeFilter,
   hasCrmScopePeriodParams,
+  isCrmStockListParams,
   parseCrmPeriod,
+  shouldFilterProspectsByCrmPeriod,
 } from "@/lib/crm/scope-period";
 import { cn } from "@/lib/utils";
 
@@ -95,13 +96,12 @@ function buildProspectWhere(
   if (sp.source) where.source = sp.source as CrmSource;
   if (sp.owner) where.ownerId = sp.owner;
 
-  const isStockView =
-    Boolean(sp.stages) || sp.late === "1" || sp.devisRetard === "1";
+  const isStockView = isCrmStockListParams(sp);
 
   /**
    * Filtre date création :
-   * - stocks (stages / retard / devis) → ignore la période CRM (portefeuille à date)
-   * - `event=nouveaux` → bornes période CRM (`periode` / `semaine` / …)
+   * - stocks (`stages` / retard / devis / `view=stock`) → ignore période CRM
+   * - période CRM (`event=nouveaux` ou params barre) → bornes période
    * - sinon `on` / `from`/`to` du modal Filtrer (sans clés période CRM)
    */
   if (!isStockView && periodCreatedAt) {
@@ -204,15 +204,14 @@ export default async function CrmProspectsPage({
   /** LOT-E : liste partagée (tous les commerciaux voient tous les dossiers). */
   const listScope = crmProspectListScopeWhere(user);
 
-  const isStockView =
-    Boolean(sp.stages) || sp.late === "1" || sp.devisRetard === "1";
+  const isStockView = isCrmStockListParams(sp);
   const isNouveauxEvent = sp.event === "nouveaux";
-  const period =
-    isNouveauxEvent || hasCrmScopePeriodParams(sp)
-      ? parseCrmPeriod(sp)
-      : null;
+  const applyPeriodFilter = shouldFilterProspectsByCrmPeriod(sp);
+  const period = applyPeriodFilter || hasCrmScopePeriodParams(sp)
+    ? parseCrmPeriod(sp)
+    : null;
   const periodCreatedAt =
-    isNouveauxEvent && period && !isStockView
+    applyPeriodFilter && period
       ? dateRangeFilter(period.from, period.to)
       : null;
 
@@ -347,12 +346,10 @@ export default async function CrmProspectsPage({
     return s ? `/crm/prospects?${s}` : "/crm/prospects";
   })();
 
-  const clearFiltersHref = (() => {
-    const p = new URLSearchParams();
-    copyCrmScopeParams(sp, p);
-    const s = p.toString();
-    return s ? `/crm/prospects?${s}` : "/crm/prospects";
-  })();
+  /** Effacer → garde le focus collab, retire période / event / stages. */
+  const clearFiltersHref = focusOwnerLabel
+    ? `/crm/prospects?owner=${encodeURIComponent(sp.owner!)}`
+    : "/crm/prospects";
 
   const pages = totalPages(total, pageSize);
   const listParams: Record<string, string | undefined> = { ...sp };
@@ -363,17 +360,13 @@ export default async function CrmProspectsPage({
     !hasCrmScopePeriodParams(sp) &&
     (Boolean(sp.on) || Boolean(sp.from) || Boolean(sp.to));
 
-  /**
-   * Filtres « techniques » (hors focus collaborateur `owner` + hors période CRM
-   * portée pour le retour dashboard — sauf `event=nouveaux` qui filtre vraiment).
-   */
   const hasActiveFilters =
     stageFilterRaw.length > 0 ||
     sp.late === "1" ||
     sp.devisRetard === "1" ||
     Boolean(qTrim) ||
     Boolean(sp.source) ||
-    isNouveauxEvent ||
+    applyPeriodFilter ||
     legacyDateFilter ||
     (Number.isFinite(relancesMin) && relancesMin > 0);
 
@@ -382,13 +375,15 @@ export default async function CrmProspectsPage({
       <PageHeader
         title="Prospects"
         description={
-          isNouveauxEvent && period
+          applyPeriodFilter && period
             ? focusOwnerLabel
-              ? `Nouveaux · ${period.label} · ${focusOwnerLabel}`
-              : `Nouveaux créés · ${period.label}`
-            : focusOwnerLabel
-              ? `Prospects de ${focusOwnerLabel}`
-              : undefined
+              ? `${isNouveauxEvent ? "Nouveaux" : "Créés"} · ${period.label} · ${focusOwnerLabel}`
+              : `${isNouveauxEvent ? "Nouveaux créés" : "Créés"} · ${period.label}`
+            : isStockView && focusOwnerLabel
+              ? `Portefeuille · ${focusOwnerLabel}`
+              : focusOwnerLabel
+                ? `Prospects de ${focusOwnerLabel}`
+                : undefined
         }
         backHref="/commercial"
         backLabel="Retour Commercial"
@@ -417,6 +412,7 @@ export default async function CrmProspectsPage({
       {focusOwnerLabel ? (
         <ScopeFocusBanner
           label={focusOwnerLabel}
+          periodLabel={applyPeriodFilter ? period?.label : undefined}
           clearHref={clearOwnerHref}
           clearAriaLabel="Voir toute l’équipe"
         />
@@ -494,8 +490,10 @@ export default async function CrmProspectsPage({
                   Relancés ≥ {relancesMin}×
                 </Badge>
               ) : null}
-              {isNouveauxEvent && period ? (
-                <Badge tone="blue">Nouveaux · {period.label}</Badge>
+              {applyPeriodFilter && period ? (
+                <Badge tone="blue">
+                  {isNouveauxEvent ? "Nouveaux" : "Créés"} · {period.label}
+                </Badge>
               ) : null}
               {legacyDateFilter && sp.on ? (
                 <Badge tone="blue">Créé le {sp.on}</Badge>

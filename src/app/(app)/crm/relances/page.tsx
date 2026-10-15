@@ -571,6 +571,8 @@ export default async function CrmRelancesPage({
     period,
     ownerId: ownerScope.ownerId,
     canFilterOwners: ownerScope.canFilterOwners,
+    forcePeriod: true,
+    keep: { view: "stock" },
   });
 
   return (

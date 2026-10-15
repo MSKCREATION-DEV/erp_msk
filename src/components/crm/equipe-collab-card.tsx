@@ -124,14 +124,13 @@ export function EquipeCollabCard({
                   ? (() => {
                       const p = new URLSearchParams(baseQuery);
                       p.set("owner", ownerId);
-                      const qs = p.toString();
-                      return qs
-                        ? `/commercial/clients?${qs}`
-                        : `/commercial/clients?owner=${ownerId}`;
+                      p.set("event", "gagnes");
+                      return `/commercial/clients?${p.toString()}`;
                     })()
                   : (() => {
                       const p = new URLSearchParams(baseQuery);
                       p.set("owner", ownerId);
+                      p.set("view", "stock");
                       p.set(
                         "stages",
                         s === "DEVIS_ENVOYE" ? "DEVIS_ENVOYE,NEGOCIATION" : s,

@@ -5,9 +5,11 @@ import {
   dateRangeFilter,
   goalsCompatibleWithPeriod,
   hasCrmScopePeriodParams,
+  isCrmStockListParams,
   parseCrmPeriod,
   resolveCrmOwnerIds,
   resolveCrmScopeLens,
+  shouldFilterProspectsByCrmPeriod,
   showStockWidgets,
 } from "./scope-period";
 import { weekStartIso, weekStartMonday } from "./week";
@@ -176,6 +178,36 @@ const currentIso = weekStartIso(currentWeek);
   assert.equal(hasCrmScopePeriodParams({ periode: "mois", mois: "2026-09" }), true);
   assert.equal(hasCrmScopePeriodParams({ on: "2026-09-01" }), false);
   assert.equal(hasCrmScopePeriodParams({ from: "2026-09-01", to: "2026-09-15" }), false);
+}
+
+{
+  assert.equal(isCrmStockListParams({ stages: "INTERESSE" }), true);
+  assert.equal(isCrmStockListParams({ view: "stock" }), true);
+  assert.equal(isCrmStockListParams({ late: "1" }), true);
+  assert.equal(isCrmStockListParams({ event: "nouveaux", semaine: "2026-09-01" }), false);
+
+  assert.equal(
+    shouldFilterProspectsByCrmPeriod({ event: "nouveaux", semaine: "2026-09-01" }),
+    true,
+  );
+  assert.equal(
+    shouldFilterProspectsByCrmPeriod({ semaine: "2026-09-01" }),
+    true,
+  );
+  assert.equal(
+    shouldFilterProspectsByCrmPeriod({
+      semaine: "2026-09-01",
+      view: "stock",
+    }),
+    false,
+  );
+  assert.equal(
+    shouldFilterProspectsByCrmPeriod({
+      semaine: "2026-09-01",
+      stages: "CONTACTE",
+    }),
+    false,
+  );
 }
 
 {

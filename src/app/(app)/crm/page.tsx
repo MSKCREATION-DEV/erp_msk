@@ -252,7 +252,7 @@ export default async function CrmDashboardPage({
       keep,
     });
 
-  /** Liens stocks à date : owner + période (retour dashboard) + keep métier. */
+  /** Liens stocks à date : `view=stock` pour ne pas filtrer createdAt sur Prospects. */
   const stockHref = (
     path: string,
     keep?: Record<string, string | undefined>,
@@ -261,7 +261,9 @@ export default async function CrmDashboardPage({
       period,
       ownerId: focusOwner,
       canFilterOwners: ownerScope.canFilterOwners,
-      keep,
+      keep: path.startsWith("/crm/prospects")
+        ? { view: "stock", ...keep }
+        : keep,
     });
 
   const description =

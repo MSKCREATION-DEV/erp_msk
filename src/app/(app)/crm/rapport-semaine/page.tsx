@@ -198,6 +198,54 @@ export default async function CrmRapportPage({
     ownerParamKey: "collab",
   });
 
+  const resetLiveHref = buildCrmScopeHref("/crm/rapport-semaine", {
+    period: parseCrmPeriod({ periode: "semaine" }),
+    ownerId: focusOwnerId,
+    canFilterOwners: canGlobal,
+  });
+  const focusCollab = Boolean(
+    canGlobal && scopeMode === "user" && focusOwnerId,
+  );
+  const kpiGrid = (
+    <div
+      className={
+        showStocks
+          ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-5"
+          : "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+      }
+    >
+      <KpiRadial
+        label="Nouveaux (semaine)"
+        value={weekStats.newProspects}
+        target={goals.NEW_PROSPECTS}
+      />
+      <KpiRadial
+        label="Premiers contacts"
+        value={weekStats.firstContacts}
+        target={goals.FIRST_CONTACTS}
+      />
+      <KpiRadial
+        label="Relances faites"
+        value={weekStats.relancesJournalisees}
+        hint="actions de suivi (hors notes)"
+      />
+      {showStocks ? (
+        <>
+          <KpiRadial
+            label="En échange"
+            value={inExchange}
+            hint="Contacté + En discussion · à date"
+          />
+          <KpiRadial
+            label="Prêts à convertir"
+            value={qualifiedOpen}
+            hint="Intéressé + Devis envoyé · à date"
+          />
+        </>
+      ) : null}
+    </div>
+  );
+
   const scopeKey = `${weekIso}:${scopeMode}:${focusOwnerId ?? "all"}`;
 
   return (
@@ -226,37 +274,44 @@ export default async function CrmRapportPage({
         lens={lens}
       />
 
-      <CrmScopeContext
-        lens={lens}
-        periodLabel={rangeLabel}
-        ownerLabel={scopeMode === "user" ? scopeLabel : null}
-        resetHref={buildCrmScopeHref("/crm/rapport-semaine", {
-          period: parseCrmPeriod({ periode: "semaine" }),
-          ownerId: focusOwnerId,
-          canFilterOwners: canGlobal,
-        })}
-      />
-
-      {canGlobal && scopeMode === "user" && focusOwnerId ? (
+      {focusCollab ? (
         <ScopeFocusBanner
           label={scopeLabel}
+          periodLabel={rangeLabel}
+          lens={lens}
           clearHref={clearHref}
           clearAriaLabel="Voir toute l’équipe"
+          resetHref={resetLiveHref}
+          actions={
+            <ActionLink
+              href={buildCrmScopeHref("/crm/prospects", {
+                period,
+                ownerId: focusOwnerId,
+                canFilterOwners: canGlobal,
+                forcePeriod: true,
+                keep: { event: "nouveaux" },
+              })}
+              icon={FolderOpen}
+              variant="secondary"
+              size="sm"
+            >
+              Prospects
+            </ActionLink>
+          }
         >
-          <ActionLink
-            href={buildCrmScopeHref("/crm/prospects", {
-              period,
-              ownerId: focusOwnerId,
-              canFilterOwners: canGlobal,
-            })}
-            icon={FolderOpen}
-            variant="secondary"
-            size="sm"
-          >
-            Prospects
-          </ActionLink>
+          {kpiGrid}
         </ScopeFocusBanner>
-      ) : null}
+      ) : (
+        <>
+          <CrmScopeContext
+            lens={lens}
+            periodLabel={rangeLabel}
+            ownerLabel={null}
+            resetHref={resetLiveHref}
+          />
+          {kpiGrid}
+        </>
+      )}
 
       {totalDossiers === 0 &&
       weekStats.newProspects === 0 &&
@@ -267,44 +322,6 @@ export default async function CrmRapportPage({
           {canGlobal ? " ou un autre collaborateur" : ""}.
         </Surface>
       ) : null}
-
-      <div
-        className={
-          showStocks
-            ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-5"
-            : "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-        }
-      >
-        <KpiRadial
-          label="Nouveaux (semaine)"
-          value={weekStats.newProspects}
-          target={goals.NEW_PROSPECTS}
-        />
-        <KpiRadial
-          label="Premiers contacts"
-          value={weekStats.firstContacts}
-          target={goals.FIRST_CONTACTS}
-        />
-        <KpiRadial
-          label="Relances faites"
-          value={weekStats.relancesJournalisees}
-          hint="actions de suivi (hors notes)"
-        />
-        {showStocks ? (
-          <>
-            <KpiRadial
-              label="En échange"
-              value={inExchange}
-              hint="Contacté + En discussion · à date"
-            />
-            <KpiRadial
-              label="Prêts à convertir"
-              value={qualifiedOpen}
-              hint="Intéressé + Devis envoyé · à date"
-            />
-          </>
-        ) : null}
-      </div>
 
       <div
         className={

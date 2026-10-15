@@ -346,6 +346,32 @@ export function hasCrmScopePeriodParams(
   );
 }
 
+/**
+ * Drill-down portefeuille à date — la période URL est contextuelle (retour),
+ * pas un filtre `createdAt`.
+ */
+export function isCrmStockListParams(
+  sp: Record<string, string | undefined>,
+): boolean {
+  return (
+    Boolean(sp.stages?.trim()) ||
+    sp.late === "1" ||
+    sp.devisRetard === "1" ||
+    sp.view === "stock"
+  );
+}
+
+/**
+ * Appliquer la période CRM sur `createdAt` (nouveaux / navigation Équipe·Rapport).
+ * Stocks (`stages` / `late` / `view=stock`) → non.
+ */
+export function shouldFilterProspectsByCrmPeriod(
+  sp: Record<string, string | undefined>,
+): boolean {
+  if (isCrmStockListParams(sp)) return false;
+  return sp.event === "nouveaux" || hasCrmScopePeriodParams(sp);
+}
+
 /** Construit une URL avec période + owner (et params à conserver). */
 export function buildCrmScopeHref(
   path: string,
