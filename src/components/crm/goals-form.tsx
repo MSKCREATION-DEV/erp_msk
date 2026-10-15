@@ -18,7 +18,7 @@ import {
   scaleGoalTarget,
 } from "@/lib/crm/goal-scale";
 import type { WeekOption } from "@/lib/crm/week";
-import { GoalsWeekPicker } from "@/components/crm/goals-week-picker";
+import { CrmWeekPicker } from "@/components/crm/crm-week-picker";
 import { cn } from "@/lib/utils";
 
 const GRAINS: { value: GoalPeriodGrain; label: string }[] = [
@@ -173,7 +173,7 @@ export function GoalsForm({
             </FieldLabel>
             {grain === "WEEK" && weeks && weeks.length > 0 ? (
               <div className="mt-1.5">
-                <GoalsWeekPicker
+                <CrmWeekPicker
                   id={`${formId}-anchor`}
                   value={periodStartValue}
                   weeks={weeks}

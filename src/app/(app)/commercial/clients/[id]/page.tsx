@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   Building2,
+  FolderOpen,
+  Globe2,
   Mail,
   MapPin,
   Phone,
@@ -19,12 +21,14 @@ import {
   quoteStatusTone,
   QUOTE_STATUS_LABELS,
 } from "@/lib/commercial/labels";
+import { SOURCE_LABELS } from "@/lib/crm/labels";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 import { ClientDetailActions } from "@/components/commercial/client-detail-actions";
+import { SocialNetworkBadges } from "@/components/crm/social-network-badges";
 import {
   COM_DOCS_GATED,
   COM_DOCS_GATED_HINT,
@@ -60,13 +64,13 @@ function Section({
 }) {
   return (
     <Surface className="overflow-hidden p-0">
-      <div className="flex items-center justify-between gap-3 border-b border-msk-ink/[0.06] px-5 py-4 sm:px-6">
+      <div className="flex items-center justify-between gap-3 border-b border-msk-ink/[0.06] px-5 py-3.5 sm:px-6">
         <h2 className="text-sm font-semibold tracking-tight text-msk-ink">
           {title}
         </h2>
         {action}
       </div>
-      <div className="p-5 sm:p-6">{children}</div>
+      <div className="p-4 sm:p-5">{children}</div>
     </Surface>
   );
 }
@@ -114,7 +118,33 @@ export default async function CommercialClientDetailPage({
           createdAt: true,
         },
       },
-      owner: { select: { firstName: true, lastName: true } },
+      owner: { select: { id: true, firstName: true, lastName: true } },
+      createdBy: { select: { id: true, firstName: true, lastName: true } },
+      crmOrganization: {
+        select: {
+          id: true,
+          sector: true,
+          website: true,
+          source: true,
+          notes: true,
+          instagramUrl: true,
+          linkedinUrl: true,
+          tiktokUrl: true,
+          facebookUrl: true,
+          whatsappUrl: true,
+          contacts: {
+            where: { isPrimary: true },
+            take: 1,
+            select: {
+              firstName: true,
+              lastName: true,
+              jobTitle: true,
+              email: true,
+              phone: true,
+            },
+          },
+        },
+      },
     },
   });
   if (!client) notFound();
@@ -124,6 +154,16 @@ export default async function CommercialClientDetailPage({
   const canCreateQuote = hasPermission(user, "com.devis.create");
 
   const location = [client.city, client.country].filter(Boolean).join(" · ");
+  const org = client.crmOrganization;
+  const orgContact = org?.contacts[0];
+  const socialUrls = {
+    instagramUrl: org?.instagramUrl ?? null,
+    linkedinUrl: org?.linkedinUrl ?? null,
+    tiktokUrl: org?.tiktokUrl ?? null,
+    facebookUrl: org?.facebookUrl ?? null,
+    whatsappUrl: org?.whatsappUrl ?? null,
+  };
+  const hasSocial = Object.values(socialUrls).some((u) => Boolean(u?.trim()));
 
   return (
     <PageShell>
@@ -163,14 +203,23 @@ export default async function CommercialClientDetailPage({
       />
 
       <Surface className="overflow-hidden p-0">
-        <div className="grid gap-0 lg:grid-cols-2">
-          <div className="space-y-4 p-5 sm:p-6">
-            <dl className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-0 lg:grid-cols-12">
+          <div className="space-y-3 border-b border-msk-ink/[0.06] p-4 sm:p-5 lg:col-span-5 lg:border-b-0 lg:border-r">
+            <dl className="grid gap-3 sm:grid-cols-2">
               <MetaItem label="Suivi par">
                 {client.owner.firstName} {client.owner.lastName}
               </MetaItem>
               <MetaItem label="Créé le">
                 {client.createdAt.toLocaleDateString("fr-FR")}
+                {client.createdBy.id !== client.ownerId ? (
+                  <span className="text-msk-ink/45">
+                    {" "}
+                    · {client.createdBy.firstName} {client.createdBy.lastName}
+                  </span>
+                ) : null}
+              </MetaItem>
+              <MetaItem label="Mis à jour">
+                {client.updatedAt.toLocaleDateString("fr-FR")}
               </MetaItem>
               {client.sourceOpportunityId ? (
                 <MetaItem label="Prospect">
@@ -183,48 +232,73 @@ export default async function CommercialClientDetailPage({
                   </Link>
                 </MetaItem>
               ) : null}
-              <MetaItem label="Mis à jour">
-                {client.updatedAt.toLocaleDateString("fr-FR")}
+              {org?.source ? (
+                <MetaItem label="Origine">
+                  {SOURCE_LABELS[org.source]}
+                </MetaItem>
+              ) : null}
+              {org?.sector ? (
+                <MetaItem label="Secteur">{org.sector}</MetaItem>
+              ) : null}
+              <MetaItem label="Dossier GED">
+                <span className="inline-flex items-center gap-1.5 font-mono text-xs">
+                  <FolderOpen className="h-3.5 w-3.5 text-msk-ink/40" aria-hidden />
+                  {client.gedFolderCode}
+                </span>
+              </MetaItem>
+              <MetaItem label="Déplacement défaut">
+                {client.includeTravelDefault ? "Oui" : "Non"}
               </MetaItem>
             </dl>
           </div>
 
-          <div className="bg-msk-chalk/40 p-5 sm:p-6">
+          <div className="bg-msk-chalk/40 p-4 sm:p-5 lg:col-span-7">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
-              Contact
+              Contact principal
             </p>
-            <div className="mt-3 space-y-2">
-              {client.contactName ? (
-                <p className="flex items-center gap-2 text-base font-semibold text-msk-ink">
-                  <UserRound
-                    className="h-4 w-4 shrink-0 text-msk-blue"
-                    aria-hidden
-                  />
-                  {client.contactName}
-                </p>
-              ) : (
-                <p className="text-sm text-msk-ink/40">Aucun contact nommé</p>
-              )}
-              <div className="flex flex-col gap-1.5 pt-1 text-sm">
-                {client.phone ? (
+            <div className="mt-2 grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                {client.contactName || orgContact ? (
+                  <p className="flex items-center gap-2 text-base font-semibold text-msk-ink">
+                    <UserRound
+                      className="h-4 w-4 shrink-0 text-msk-blue"
+                      aria-hidden
+                    />
+                    {client.contactName ||
+                      `${orgContact?.firstName ?? ""} ${orgContact?.lastName ?? ""}`.trim()}
+                  </p>
+                ) : (
+                  <p className="text-sm text-msk-ink/40">Aucun contact nommé</p>
+                )}
+                {orgContact?.jobTitle ? (
+                  <p className="pl-6 text-xs text-msk-ink/50">
+                    {orgContact.jobTitle}
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex flex-col gap-1.5 text-sm">
+                {(client.phone || orgContact?.phone) ? (
                   <a
-                    href={`tel:${client.phone}`}
+                    href={`tel:${client.phone || orgContact?.phone}`}
                     className="inline-flex items-center gap-2 text-msk-blue hover:underline"
                   >
                     <Phone className="h-3.5 w-3.5" aria-hidden />
-                    {client.phone}
+                    {client.phone || orgContact?.phone}
                   </a>
                 ) : null}
-                {client.email ? (
+                {(client.email || orgContact?.email) ? (
                   <a
-                    href={`mailto:${client.email}`}
+                    href={`mailto:${client.email || orgContact?.email}`}
                     className="inline-flex items-center gap-2 text-msk-blue hover:underline"
                   >
                     <Mail className="h-3.5 w-3.5" aria-hidden />
-                    {client.email}
+                    {client.email || orgContact?.email}
                   </a>
                 ) : null}
-                {!client.phone && !client.email ? (
+                {!client.phone &&
+                !client.email &&
+                !orgContact?.phone &&
+                !orgContact?.email ? (
                   <p className="text-msk-ink/40">Aucun moyen de contact</p>
                 ) : null}
               </div>
@@ -234,42 +308,79 @@ export default async function CommercialClientDetailPage({
       </Surface>
 
       <div className="grid gap-4 lg:grid-cols-12">
-        <div className="lg:col-span-4">
-          <Section title="Coordonnées">
-            <ul className="space-y-3 text-sm text-msk-ink">
-              <li className="flex gap-2.5">
-                <Building2
-                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                  aria-hidden
-                />
-                <span className="font-medium">{client.name}</span>
-              </li>
-              <li className="flex gap-2.5">
-                <MapPin
-                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                  aria-hidden
-                />
-                <span>
-                  {[client.address, client.city, client.country]
-                    .filter(Boolean)
-                    .join(" · ") || "Adresse non renseignée"}
-                </span>
-              </li>
-            </ul>
-            {client.notes ? (
-              <div className="mt-5 border-t border-msk-ink/[0.06] pt-4">
+        <div className="lg:col-span-5">
+          <Section title="Coordonnées & présence">
+            <div className="grid gap-4 sm:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+              <div className="rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/40 p-3">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                  Réseaux sociaux
+                </p>
+                {hasSocial ? (
+                  <SocialNetworkBadges urls={socialUrls} />
+                ) : (
+                  <p className="text-sm text-msk-ink/40">
+                    {org
+                      ? "Aucun réseau renseigné sur l’organisation CRM."
+                      : "Pas d’organisation CRM liée."}
+                  </p>
+                )}
+                {org?.website ? (
+                  <a
+                    href={org.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-3 inline-flex items-center gap-1.5 break-all text-xs font-medium text-msk-blue hover:underline"
+                  >
+                    <Globe2 className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                    {org.website}
+                  </a>
+                ) : null}
+              </div>
+              <ul className="space-y-2.5 text-sm text-msk-ink">
+                <li className="flex gap-2.5">
+                  <Building2
+                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                    aria-hidden
+                  />
+                  <span className="font-medium">{client.name}</span>
+                </li>
+                <li className="flex gap-2.5">
+                  <MapPin
+                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                    aria-hidden
+                  />
+                  <span>
+                    {[client.address, client.city, client.country]
+                      .filter(Boolean)
+                      .join(" · ") || "Adresse non renseignée"}
+                  </span>
+                </li>
+              </ul>
+            </div>
+            {(client.notes || org?.notes) ? (
+              <div className="mt-4 border-t border-msk-ink/[0.06] pt-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
                   Notes
                 </p>
-                <p className="mt-1 whitespace-pre-wrap text-sm text-msk-ink/75">
-                  {client.notes}
-                </p>
+                {client.notes ? (
+                  <p className="mt-1 whitespace-pre-wrap text-sm text-msk-ink/75">
+                    {client.notes}
+                  </p>
+                ) : null}
+                {org?.notes && org.notes !== client.notes ? (
+                  <p className="mt-2 whitespace-pre-wrap text-sm text-msk-ink/60">
+                    <span className="text-[11px] font-medium uppercase text-msk-ink/35">
+                      Note CRM ·{" "}
+                    </span>
+                    {org.notes}
+                  </p>
+                ) : null}
               </div>
             ) : null}
           </Section>
         </div>
 
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-3">
           <Section
             title="Devis récents"
             action={
@@ -285,33 +396,27 @@ export default async function CommercialClientDetailPage({
             }
           >
             {COM_DOCS_GATED ? (
-              <div className="rounded-2xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-8 text-center">
-                <p className="text-sm text-msk-ink/50">Devis temporairement gelés</p>
-                <p className="mt-1 text-xs text-msk-ink/40">{COM_DOCS_GATED_HINT}</p>
-              </div>
+              <p className="text-sm text-msk-ink/50">
+                Devis gelés — {COM_DOCS_GATED_HINT}
+              </p>
             ) : client.quotes.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-8 text-center">
-                <p className="text-sm text-msk-ink/50">Aucun devis</p>
-                <p className="mt-1 text-xs text-msk-ink/40">
-                  Créez une proposition depuis ce client.
-                </p>
-              </div>
+              <p className="text-sm text-msk-ink/45">Aucun devis</p>
             ) : (
-              <ul className="space-y-4">
+              <ul className="space-y-3">
                 {client.quotes.map((q) => (
                   <li
                     key={q.id}
-                    className="flex flex-col gap-3 sm:flex-row sm:items-start"
+                    className="flex flex-col gap-2 sm:flex-row sm:items-start"
                   >
                     {q.gedDocumentId ? (
                       <DocPdfThumb
                         documentId={q.gedDocumentId}
                         title={q.number}
                         subtitle={QUOTE_STATUS_LABELS[q.status]}
-                        className="max-w-[7.5rem] shrink-0"
+                        className="max-w-[6.5rem] shrink-0"
                       />
                     ) : null}
-                    <div className="min-w-0 flex-1 space-y-1.5">
+                    <div className="min-w-0 flex-1 space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <Link
                           prefetch={false}
@@ -341,33 +446,27 @@ export default async function CommercialClientDetailPage({
         <div className="lg:col-span-4">
           <Section title="Factures récentes">
             {COM_DOCS_GATED ? (
-              <div className="rounded-2xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-8 text-center">
-                <p className="text-sm text-msk-ink/50">Factures temporairement gelées</p>
-                <p className="mt-1 text-xs text-msk-ink/40">{COM_DOCS_GATED_HINT}</p>
-              </div>
+              <p className="text-sm text-msk-ink/50">
+                Factures gelées — {COM_DOCS_GATED_HINT}
+              </p>
             ) : client.invoices.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-8 text-center">
-                <p className="text-sm text-msk-ink/50">Aucune facture</p>
-                <p className="mt-1 text-xs text-msk-ink/40">
-                  Émise depuis un devis accepté.
-                </p>
-              </div>
+              <p className="text-sm text-msk-ink/45">Aucune facture</p>
             ) : (
-              <ul className="space-y-4">
+              <ul className="space-y-3">
                 {client.invoices.map((inv) => (
                   <li
                     key={inv.id}
-                    className="flex flex-col gap-3 sm:flex-row sm:items-start"
+                    className="flex flex-col gap-2 sm:flex-row sm:items-start"
                   >
                     {inv.gedDocumentId ? (
                       <DocPdfThumb
                         documentId={inv.gedDocumentId}
                         title={inv.number}
                         subtitle={INVOICE_STATUS_LABELS[inv.status]}
-                        className="max-w-[7.5rem] shrink-0"
+                        className="max-w-[6.5rem] shrink-0"
                       />
                     ) : null}
-                    <div className="min-w-0 flex-1 space-y-1.5">
+                    <div className="min-w-0 flex-1 space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <Link
                           prefetch={false}

@@ -730,65 +730,69 @@ export default async function CrmProspectDetailPage({
       <div className="grid gap-4 xl:grid-cols-12">
         <div className="xl:col-span-5">
           <Section title="Entreprise">
-            <ul className="space-y-3 text-sm text-msk-ink">
-              <li className="flex gap-2.5">
-                <Building2
-                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                  aria-hidden
+            <div className="grid gap-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+              <div className="rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/40 p-3 sm:p-4">
+                <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                  Réseaux sociaux
+                </p>
+                <SocialNetworkBadges
+                  urls={{
+                    instagramUrl: deal.organization.instagramUrl,
+                    linkedinUrl: deal.organization.linkedinUrl,
+                    tiktokUrl: deal.organization.tiktokUrl,
+                    facebookUrl: deal.organization.facebookUrl,
+                    whatsappUrl: deal.organization.whatsappUrl,
+                  }}
+                  emptyLabel="Aucun réseau — ajoutez via Modifier."
                 />
-                <span>
-                  <span className="font-medium">{deal.organization.name}</span>
-                  {deal.organization.sector ? (
-                    <span className="block text-msk-ink/50">
-                      {deal.organization.sector}
+              </div>
+              <ul className="space-y-3 text-sm text-msk-ink">
+                <li className="flex gap-2.5">
+                  <Building2
+                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                    aria-hidden
+                  />
+                  <span>
+                    <span className="font-medium">
+                      {deal.organization.name}
                     </span>
-                  ) : null}
-                </span>
-              </li>
-              <li className="flex gap-2.5">
-                <MapPin
-                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                  aria-hidden
-                />
-                <span>
-                  {[deal.organization.city, deal.organization.country]
-                    .filter(Boolean)
-                    .join(" · ") || "Ville non renseignée"}
-                </span>
-              </li>
-              <li className="flex gap-2.5">
-                <Globe2
-                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                  aria-hidden
-                />
-                {deal.organization.website ? (
-                  <a
-                    href={deal.organization.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="break-all text-msk-blue hover:underline"
-                  >
-                    {deal.organization.website}
-                  </a>
-                ) : (
-                  <span className="text-msk-ink/40">Pas de site web</span>
-                )}
-              </li>
-            </ul>
-            <div className="mt-4 border-t border-msk-ink/[0.06] pt-4">
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
-                Réseaux sociaux
-              </p>
-              <SocialNetworkBadges
-                urls={{
-                  instagramUrl: deal.organization.instagramUrl,
-                  linkedinUrl: deal.organization.linkedinUrl,
-                  tiktokUrl: deal.organization.tiktokUrl,
-                  facebookUrl: deal.organization.facebookUrl,
-                  whatsappUrl: deal.organization.whatsappUrl,
-                }}
-                emptyLabel="Aucun réseau renseigné à la création — ajoutez-les via Modifier."
-              />
+                    {deal.organization.sector ? (
+                      <span className="block text-msk-ink/50">
+                        {deal.organization.sector}
+                      </span>
+                    ) : null}
+                  </span>
+                </li>
+                <li className="flex gap-2.5">
+                  <MapPin
+                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                    aria-hidden
+                  />
+                  <span>
+                    {[deal.organization.city, deal.organization.country]
+                      .filter(Boolean)
+                      .join(" · ") || "Ville non renseignée"}
+                  </span>
+                </li>
+                <li className="flex gap-2.5">
+                  <Globe2
+                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                    aria-hidden
+                  />
+                  {deal.organization.website ? (
+                    <a
+                      href={deal.organization.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="break-all text-msk-blue hover:underline"
+                    >
+                      {deal.organization.website}
+                    </a>
+                  ) : (
+                    <span className="text-msk-ink/40">Pas de site web</span>
+                  )}
+                </li>
+              </ul>
             </div>
           </Section>
         </div>

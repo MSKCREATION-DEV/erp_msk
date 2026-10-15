@@ -749,8 +749,8 @@ export function ProspectCreateForm({
               Canal d’acquisition, présence digitale et prochaine action.
             </p>
           </div>
-          <div className="grid gap-5 lg:grid-cols-2">
-            <div className="space-y-4 rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/30 p-4 sm:p-5">
+          <div className="grid gap-4 lg:grid-cols-12">
+            <div className="space-y-3 rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/30 p-4 lg:col-span-4">
               <OptionPickerSingle
                 label="Origine"
                 required
@@ -773,7 +773,7 @@ export function ProspectCreateForm({
                 Instagram, terrain, recommandation… — d’où vient ce lead.
               </FieldHint>
             </div>
-            <div className="space-y-4 rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/30 p-4 sm:p-5">
+            <div className="space-y-3 rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/30 p-4 lg:col-span-4">
               <div>
                 <FieldLabel htmlFor="nextAction">Prochaine action</FieldLabel>
                 <Input
@@ -804,8 +804,7 @@ export function ProspectCreateForm({
                 />
                 <FieldError>{fieldErrors.followUpAt}</FieldError>
                 <FieldHint>
-                  Obligatoire dès qu’une prochaine action est renseignée
-                  (règle GUIDE).
+                  Obligatoire dès qu’une prochaine action est renseignée.
                 </FieldHint>
               </div>
               <div>
@@ -819,7 +818,7 @@ export function ProspectCreateForm({
                 />
               </div>
             </div>
-            <div className="lg:col-span-2 rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/30 p-4 sm:p-5">
+            <div className="rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/30 p-4 lg:col-span-4">
               <SocialNetworksEditor
                 value={social}
                 onChange={setSocial}

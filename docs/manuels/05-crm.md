@@ -7,7 +7,7 @@
 
 **Lecture partagée / écriture affectée :** tous les commerciaux voient tous les prospects (anti-doublon). Journaliser, changer le statut ou éditer = réservé au **suivi**. Direction / Admin CRM / habilités (`crm.reassign`) : **Affecter** un prospect à un commercial (fiche, liste, ou page **Affectations**). Commercial en lecture seule : **Demander le suivi**. Les **Clients** n’apparaissent jamais dans le listing Prospects.
 
-**Filtres communs** (Tableau de bord, Vue Équipe, Objectifs, Rapport) : barre **période** + **collaborateur** (si Direction / lead).
+**Filtres communs** (Tableau de bord, Vue Équipe, Objectifs, Rapport) : barre **période** + **collaborateur** (si Direction / lead). Sélecteur de **semaine** unifié (`CrmWeekPicker` : ← → + panneau par mois).
 - Section **Activité** (relances faites, nouveaux, clients gagnés) : suit **toujours** la période (+ collab). Liens : `forcePeriod` + `event=nouveaux` | `focus=faites` | `event=gagnes`. Les listes filtrent `createdAt` / `wonAt` / activités.
 - CTA **Prospects** (Équipe / Objectifs / Rapport) : mêmes règles — créés sur la période sélectionnée (+ owner).
 - Section **Portefeuille à date** (ouverts, retards, priorités, répartition, badges stages) : `view=stock` ou `stages=` — suit le **collab**, ignore la période pour les données (période gardée pour le retour).

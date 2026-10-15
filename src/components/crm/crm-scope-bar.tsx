@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import type { WeekOption } from "@/lib/crm/week";
 import type { CrmScopeLens, PeriodMode } from "@/lib/crm/scope-period";
+import { CrmWeekPicker } from "@/components/crm/crm-week-picker";
 import { cn } from "@/lib/utils";
 
 const MODE_OPTIONS: { value: PeriodMode; label: string }[] = [
@@ -106,12 +107,6 @@ export function CrmScopeBar({
     });
   }
 
-  const byMonth = weeks.reduce<Record<string, WeekOption[]>>((acc, w) => {
-    (acc[w.monthKey] ??= []).push(w);
-    return acc;
-  }, {});
-  const monthKeys = Object.keys(byMonth).sort().reverse();
-
   return (
     <div
       className={cn(
@@ -150,28 +145,14 @@ export function CrmScopeBar({
             <label className="sr-only" htmlFor="crm-scope-semaine">
               Semaine
             </label>
-            <select
+            <CrmWeekPicker
               id="crm-scope-semaine"
-              className="h-9 max-w-72 rounded-lg border border-msk-ink/15 bg-white px-2 text-sm"
-              disabled={pending}
               value={semaine}
-              onChange={(e) => push({ semaine: e.target.value })}
-            >
-              {monthKeys.map((mk) => {
-                const group = byMonth[mk]!;
-                const label = group[0]?.monthLabel ?? mk;
-                return (
-                  <optgroup key={mk} label={label}>
-                    {[...group].reverse().map((w) => (
-                      <option key={w.value} value={w.value}>
-                        {w.label}
-                        {w.isCurrent ? " · actuelle" : ""}
-                      </option>
-                    ))}
-                  </optgroup>
-                );
-              })}
-            </select>
+              weeks={weeks}
+              onChange={(v) => push({ semaine: v })}
+              disabled={pending}
+              size="compact"
+            />
           </>
         ) : null}
 
@@ -235,14 +216,15 @@ export function CrmScopeBar({
           </div>
         ) : null}
 
-        {periodLabel ? (
+        {/* Semaine : libellé + « En cours » déjà dans CrmWeekPicker — pas de doublon. */}
+        {periodLabel && mode !== "semaine" ? (
           <p className="text-xs text-msk-ink/45">{periodLabel}</p>
         ) : null}
         {lens === "period" ? (
           <span className="rounded-md bg-msk-coral/10 px-2 py-0.5 text-[11px] font-medium text-msk-coral">
             Historique
           </span>
-        ) : lens === "live" ? (
+        ) : lens === "live" && mode !== "semaine" ? (
           <span className="rounded-md bg-msk-blue/10 px-2 py-0.5 text-[11px] font-medium text-msk-blue">
             En cours
           </span>

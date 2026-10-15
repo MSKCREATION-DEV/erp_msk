@@ -3,8 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import type { WeekOption } from "@/lib/crm/week";
+import { CrmWeekPicker } from "@/components/crm/crm-week-picker";
 import { cn } from "@/lib/utils";
 
+/** @deprecated Préférer `CrmScopeBar` — conservé pour compat éventuelle. */
 export function RapportFilters({
   semaine,
   weeks,
@@ -12,10 +14,8 @@ export function RapportFilters({
   owners,
   canFilterOwners,
 }: {
-  /** Lundi ISO `YYYY-MM-DD` de la semaine active. */
   semaine: string;
   weeks: WeekOption[];
-  /** `all` = toute l’équipe · uuid = collab · null = pas de filtre (collab own). */
   ownerId: string | null;
   owners: { value: string; label: string }[];
   canFilterOwners: boolean;
@@ -32,9 +32,6 @@ export function RapportFilters({
     if (canFilterOwners) {
       const own = next.owner !== undefined ? next.owner : ownerId;
       if (own && own !== "all") p.set("owner", own);
-      else if (own === "all" || own === null) {
-        /* défaut Tous = pas de param owner */
-      }
     }
 
     const qs = p.toString();
@@ -42,14 +39,6 @@ export function RapportFilters({
       router.push(qs ? `/crm/rapport-semaine?${qs}` : "/crm/rapport-semaine");
     });
   }
-
-  const byMonth = weeks.reduce<Record<string, WeekOption[]>>((acc, w) => {
-    (acc[w.monthKey] ??= []).push(w);
-    return acc;
-  }, {});
-
-  // Plus récents en premier dans le select
-  const monthKeys = Object.keys(byMonth).sort().reverse();
 
   return (
     <div
@@ -62,28 +51,14 @@ export function RapportFilters({
       <label className="sr-only" htmlFor="rapport-semaine">
         Semaine
       </label>
-      <select
+      <CrmWeekPicker
         id="rapport-semaine"
-        className="h-9 max-w-70 rounded-lg border border-msk-ink/15 bg-white px-2 text-sm"
-        disabled={pending}
         value={semaine}
-        onChange={(e) => push({ semaine: e.target.value })}
-      >
-        {monthKeys.map((mk) => {
-          const group = byMonth[mk]!;
-          const label = group[0]?.monthLabel ?? mk;
-          return (
-            <optgroup key={mk} label={label}>
-              {[...group].reverse().map((w) => (
-                <option key={w.value} value={w.value}>
-                  {w.label}
-                  {w.isCurrent ? " · actuelle" : ""}
-                </option>
-              ))}
-            </optgroup>
-          );
-        })}
-      </select>
+        weeks={weeks}
+        onChange={(v) => push({ semaine: v })}
+        disabled={pending}
+        size="compact"
+      />
 
       {canFilterOwners && owners.length > 0 ? (
         <>
