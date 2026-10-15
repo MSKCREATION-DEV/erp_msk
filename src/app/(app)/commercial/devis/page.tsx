@@ -28,6 +28,7 @@ import { ActionLink } from "@/components/ui/action-link";
 import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 
 export const metadata: Metadata = { title: "Devis" };
 
@@ -45,6 +46,57 @@ export default async function CommercialDevisPage({
     redirect("/accueil");
   }
 
+  const canCreate = hasPermission(user, "com.devis.create");
+
+  return (
+    <PageShell>
+      <PageHeader
+        title="Devis"
+        description="Propositions commerciales — brouillon à accepté."
+        backHref="/commercial"
+        backLabel="Retour Commercial"
+        breadcrumbs={[
+          { label: "Commercial", href: "/commercial" },
+          { label: "Devis" },
+        ]}
+        actions={
+          canCreate ? (
+            <ActionLink href="/commercial/devis/nouveau" icon={FilePlus2}>
+              Nouveau devis
+            </ActionLink>
+          ) : null
+        }
+      />
+
+      <Surface className="overflow-hidden p-0">
+        <div className="border-b border-msk-ink/[0.06] px-4 py-3">
+          <Suspense
+            fallback={
+              <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+            }
+          >
+            <ListSearchForm
+              placeholder="N°, client, objet…"
+              className="sm:max-w-md"
+            />
+          </Suspense>
+        </div>
+        <Suspense fallback={<ListTableSkeleton rows={8} cols={6} />}>
+          <DevisResults searchParams={searchParams} canCreate={canCreate} />
+        </Suspense>
+      </Surface>
+    </PageShell>
+  );
+}
+
+async function DevisResults({
+  searchParams,
+  canCreate,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  canCreate: boolean;
+}) {
+  const user = await requireUser();
   const raw = await searchParams;
   const q = (firstParam(raw.q) ?? "").trim();
   const requestedPage = parsePage(firstParam(raw.page));
@@ -88,108 +140,81 @@ export default async function CommercialDevisPage({
     q: q || undefined,
   };
 
-  return (
-    <PageShell>
-      <PageHeader
-        title="Devis"
-        description="Propositions commerciales — brouillon à accepté."
-        backHref="/commercial"
-        backLabel="Retour Commercial"
-        breadcrumbs={[
-          { label: "Commercial", href: "/commercial" },
-          { label: "Devis" },
-        ]}
-        actions={
-          hasPermission(user, "com.devis.create") ? (
-            <ActionLink href="/commercial/devis/nouveau" icon={FilePlus2}>
-              Nouveau devis
-            </ActionLink>
-          ) : null
-        }
-      />
-
-      <div className="mb-4">
-        <Suspense fallback={null}>
-          <ListSearchForm
-            placeholder="N°, client, objet…"
-            className="sm:max-w-md"
-          />
-        </Suspense>
+  if (quotes.length === 0) {
+    return (
+      <div className="p-8 text-center text-sm text-msk-ink/50">
+        {q ? (
+          <>Aucun devis pour « {q} ».</>
+        ) : (
+          <>
+            Aucun devis.{" "}
+            {canCreate ? (
+              <Link
+                prefetch={false}
+                href="/commercial/devis/nouveau"
+                className="font-medium text-msk-blue hover:underline"
+              >
+                Créer le premier
+              </Link>
+            ) : null}
+          </>
+        )}
       </div>
+    );
+  }
 
-      {quotes.length === 0 ? (
-        <Surface className="p-8 text-center text-sm text-msk-ink/50">
-          {q ? (
-            <>Aucun devis pour « {q} ».</>
-          ) : (
-            <>
-              Aucun devis.{" "}
-              {hasPermission(user, "com.devis.create") ? (
-                <Link
-                  prefetch={false}
-                  href="/commercial/devis/nouveau"
-                  className="font-medium text-msk-blue hover:underline"
-                >
-                  Créer le premier
-                </Link>
-              ) : null}
-            </>
-          )}
-        </Surface>
-      ) : (
-        <Surface className="overflow-hidden p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-180 text-left text-sm">
-              <thead className="border-b border-msk-ink/10 bg-msk-chalk/40 text-msk-ink/45">
-                <tr>
-                  <th className="px-4 py-3 font-medium">N°</th>
-                  <th className="px-4 py-3 font-medium">Client</th>
-                  <th className="px-4 py-3 font-medium">Objet</th>
-                  <th className="px-4 py-3 font-medium">Statut</th>
-                  <th className="px-4 py-3 font-medium">TTC</th>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {quotes.map((row) => (
-                  <ClickableRowLink
-                    key={row.id}
-                    href={`/commercial/devis/${row.id}`}
-                    className="border-b border-msk-ink/5"
-                  >
-                    <td className="px-4 py-3 font-medium text-msk-ink">
-                      {row.number}
-                    </td>
-                    <td className="px-4 py-3">{row.client.name}</td>
-                    <td className="max-w-[14rem] truncate px-4 py-3 text-msk-ink/70">
-                      {row.object ?? "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge tone={quoteStatusTone(row.status)}>
-                        {QUOTE_STATUS_LABELS[row.status]}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 tabular-nums">
-                      {formatComMoney(row.totalTtc, row.currency)}
-                    </td>
-                    <td className="px-4 py-3 text-msk-ink/55">
-                      {row.createdAt.toLocaleDateString("fr-FR")}
-                    </td>
-                  </ClickableRowLink>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <ListPagination
-            pathname="/commercial/devis"
-            searchParams={listParams}
-            page={page}
-            totalPages={pages}
-            total={total}
-            pageSize={pageSize}
-          />
-        </Surface>
-      )}
-    </PageShell>
+  return (
+    <>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-180 text-left text-sm">
+          <thead className="border-b border-msk-ink/10 bg-msk-chalk/40 text-msk-ink/45">
+            <tr>
+              <th className="px-4 py-3 font-medium">N°</th>
+              <th className="px-4 py-3 font-medium">Client</th>
+              <th className="px-4 py-3 font-medium">Objet</th>
+              <th className="px-4 py-3 font-medium">Statut</th>
+              <th className="px-4 py-3 font-medium">TTC</th>
+              <th className="px-4 py-3 font-medium">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {quotes.map((row) => (
+              <ClickableRowLink
+                key={row.id}
+                href={`/commercial/devis/${row.id}`}
+                className="border-b border-msk-ink/5"
+              >
+                <td className="px-4 py-3 font-medium text-msk-ink">
+                  {row.number}
+                </td>
+                <td className="px-4 py-3">{row.client.name}</td>
+                <td className="max-w-[14rem] truncate px-4 py-3 text-msk-ink/70">
+                  {row.object ?? "—"}
+                </td>
+                <td className="px-4 py-3">
+                  <Badge tone={quoteStatusTone(row.status)}>
+                    {QUOTE_STATUS_LABELS[row.status]}
+                  </Badge>
+                </td>
+                <td className="px-4 py-3 tabular-nums">
+                  {formatComMoney(row.totalTtc, row.currency)}
+                </td>
+                <td className="px-4 py-3 text-msk-ink/55">
+                  {row.createdAt.toLocaleDateString("fr-FR")}
+                </td>
+              </ClickableRowLink>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <ListPagination
+        pathname="/commercial/devis"
+        searchParams={listParams}
+        page={page}
+        totalPages={pages}
+        total={total}
+        pageSize={pageSize}
+      />
+    </>
   );
 }

@@ -9,16 +9,18 @@ import {
 } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Search, X } from "lucide-react";
+import {
+  buildListSearchHref,
+  isSameListHref,
+} from "@/lib/list/search-href";
 import { cn } from "@/lib/utils";
 
-const DEBOUNCE_MS = 280;
+const DEBOUNCE_MS = 400;
 
 /**
- * Barre de recherche listes — instantanée (debounce + `router.replace`).
- * - État local immédiat (frappe fluide)
- * - Sync URL `q` sans polluer l’historique
- * - Reset `page` à chaque recherche
- * - Clear + Escape
+ * Barre de recherche listes — frappe locale + debounce → URL `q`.
+ * L’input reste monté ; les résultats se rechargent via Suspense page
+ * (ne pas await searchParams dans le shell parent).
  */
 export function ListSearchForm({
   placeholder = "Rechercher…",
@@ -42,7 +44,7 @@ export function ListSearchForm({
   const inputRef = useRef<HTMLInputElement>(null);
   const lastPushed = useRef(urlValue);
 
-  // Sync si navigation arrière / filtre externe
+  // Sync si navigation arrière / filtre externe (pas si on vient de pousser)
   useEffect(() => {
     if (urlValue !== lastPushed.current) {
       lastPushed.current = urlValue;
@@ -53,17 +55,16 @@ export function ListSearchForm({
   const commit = useCallback(
     (next: string) => {
       const trimmed = next.trim();
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("page");
-      if (trimmed) params.set(paramKey, trimmed);
-      else params.delete(paramKey);
-
-      const qs = params.toString();
-      const href = qs ? `${pathname}?${qs}` : pathname;
-      const current =
-        pathname +
-        (searchParams.toString() ? `?${searchParams.toString()}` : "");
-      if (href === current) return;
+      const href = buildListSearchHref({
+        pathname,
+        currentSearch: searchParams,
+        q: trimmed,
+        paramKey,
+      });
+      if (isSameListHref(pathname, searchParams, href)) {
+        lastPushed.current = trimmed;
+        return;
+      }
 
       lastPushed.current = trimmed;
       start(() => {
@@ -92,10 +93,7 @@ export function ListSearchForm({
 
   return (
     <div
-      className={cn(
-        "group relative min-w-0 w-full sm:max-w-sm",
-        className,
-      )}
+      className={cn("group relative min-w-0 w-full sm:max-w-sm", className)}
       role="search"
     >
       <label htmlFor={`list-search-${paramKey}`} className="sr-only">
@@ -143,7 +141,6 @@ export function ListSearchForm({
           className={cn(
             "min-w-0 flex-1 bg-transparent py-2 text-sm text-msk-ink outline-none",
             "placeholder:text-msk-ink/35",
-            // Masque le clear natif WebKit (on a le nôtre)
             "[&::-webkit-search-cancel-button]:hidden",
           )}
           aria-busy={busy || undefined}

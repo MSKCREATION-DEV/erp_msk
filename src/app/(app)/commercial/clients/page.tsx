@@ -30,6 +30,7 @@ import { ActionLink } from "@/components/ui/action-link";
 import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 
@@ -49,6 +50,60 @@ export default async function CommercialClientsPage({
   }
 
   const canCreate = hasPermission(user, "com.clients.manage");
+
+  return (
+    <PageShell>
+      <PageHeader
+        title="Clients"
+        description="Clients signés — Commercial."
+        backHref="/commercial"
+        backLabel="Retour Commercial"
+        breadcrumbs={[
+          { label: "Commercial", href: "/commercial" },
+          { label: "Clients" },
+        ]}
+        actions={
+          canCreate ? (
+            <ActionLink href="/commercial/clients/nouveau" icon={UserPlus}>
+              Nouveau client
+            </ActionLink>
+          ) : null
+        }
+      />
+
+      <Surface className="overflow-hidden p-0">
+        <div className="flex flex-wrap items-center gap-3 border-b border-msk-ink/[0.06] px-4 py-3">
+          <Suspense
+            fallback={
+              <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+            }
+          >
+            <ListSearchForm
+              placeholder="Rechercher entreprise, contact, ville, téléphone…"
+              className="sm:max-w-md"
+            />
+          </Suspense>
+        </div>
+
+        <Suspense fallback={<ListTableSkeleton rows={8} cols={8} />}>
+          <ClientsResults
+            searchParams={searchParams}
+            canCreate={canCreate}
+          />
+        </Suspense>
+      </Surface>
+    </PageShell>
+  );
+}
+
+async function ClientsResults({
+  searchParams,
+  canCreate,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  canCreate: boolean;
+}) {
+  const user = await requireUser();
   const raw = await searchParams;
   const sp = normalizeSearchParams(raw);
   const q = (sp.q ?? "").trim();
@@ -86,7 +141,6 @@ export default async function CommercialClientsPage({
     ],
   };
 
-  /** Aligné dashboard : opportunités GAGNE sur la période → clients liés. */
   const gagnesFilter: Prisma.ComClientWhereInput | null =
     isGagnesEvent && occurredBetween
       ? {
@@ -175,158 +229,123 @@ export default async function CommercialClientsPage({
           : "/commercial/clients";
 
   return (
-    <PageShell>
-      <PageHeader
-        title="Clients"
-        description={
-          isGagnesEvent && period
-            ? focusOwnerLabel
-              ? `Gagnés · ${period.label} · ${focusOwnerLabel}`
-              : `Passés Client · ${period.label}`
-            : focusOwnerLabel
-              ? `Clients de ${focusOwnerLabel}`
-              : "Clients signés — Commercial."
-        }
-        backHref={isGagnesEvent ? "/crm" : "/commercial"}
-        backLabel={isGagnesEvent ? "Tableau de bord" : "Retour Commercial"}
-        breadcrumbs={[
-          { label: "Commercial", href: "/commercial" },
-          { label: "Clients" },
-        ]}
-        actions={
-          canCreate ? (
-            <ActionLink href="/commercial/clients/nouveau" icon={UserPlus}>
-              Nouveau client
-            </ActionLink>
-          ) : null
-        }
-      />
-
-      {focusOwnerLabel ? (
-        <ScopeFocusBanner
-          label={focusOwnerLabel}
-          clearHref={clearOwnerHref}
-          clearAriaLabel="Voir toute l’équipe"
-        />
-      ) : null}
-
-      {isGagnesEvent && period ? (
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge tone="blue">Gagnés · {period.label}</Badge>
-          <Link
-            prefetch={false}
-            href={clearEventHref}
-            className="text-xs font-medium text-msk-blue hover:underline"
-          >
-            Voir tous les clients
-          </Link>
-        </div>
-      ) : null}
-
-      <Surface className="overflow-hidden p-0">
-        <div className="flex flex-wrap items-center gap-3 border-b border-msk-ink/[0.06] px-4 py-3">
-          <Suspense
-            fallback={
-              <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
-            }
-          >
-            <ListSearchForm
-              placeholder="Rechercher entreprise, contact, ville, téléphone…"
-              className="sm:max-w-md"
+    <>
+      {focusOwnerLabel || (isGagnesEvent && period) ? (
+        <div className="space-y-2 border-b border-msk-ink/[0.06] px-4 py-3">
+          {focusOwnerLabel ? (
+            <ScopeFocusBanner
+              label={focusOwnerLabel}
+              periodLabel={
+                isGagnesEvent && period ? period.label : undefined
+              }
+              clearHref={clearOwnerHref}
+              clearAriaLabel="Voir toute l’équipe"
             />
-          </Suspense>
+          ) : null}
+          {isGagnesEvent && period ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge tone="blue">Gagnés · {period.label}</Badge>
+              <Link
+                prefetch={false}
+                href={clearEventHref}
+                className="text-xs font-medium text-msk-blue hover:underline"
+              >
+                Voir tous les clients
+              </Link>
+            </div>
+          ) : null}
         </div>
+      ) : null}
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-220 text-left text-sm">
-            <thead className="border-b border-msk-ink/[0.08] bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-220 text-left text-sm">
+          <thead className="border-b border-msk-ink/[0.08] bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
+            <tr>
+              <th className="px-4 py-3 font-semibold">Client</th>
+              <th className="px-4 py-3 font-semibold">Contact</th>
+              <th className="px-4 py-3 font-semibold">Tél.</th>
+              <th className="px-4 py-3 font-semibold">Ville</th>
+              <th className="px-4 py-3 font-semibold">Suivi par</th>
+              <th className="px-4 py-3 font-semibold">Devis</th>
+              <th className="px-4 py-3 font-semibold">Factures</th>
+              <th className="px-4 py-3 font-semibold">Mis à jour</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-msk-ink/[0.06]">
+            {clients.length === 0 ? (
               <tr>
-                <th className="px-4 py-3 font-semibold">Client</th>
-                <th className="px-4 py-3 font-semibold">Contact</th>
-                <th className="px-4 py-3 font-semibold">Tél.</th>
-                <th className="px-4 py-3 font-semibold">Ville</th>
-                <th className="px-4 py-3 font-semibold">Suivi par</th>
-                <th className="px-4 py-3 font-semibold">Devis</th>
-                <th className="px-4 py-3 font-semibold">Factures</th>
-                <th className="px-4 py-3 font-semibold">Mis à jour</th>
+                <td
+                  colSpan={8}
+                  className="px-4 py-10 text-center text-msk-ink/40"
+                >
+                  {q ? (
+                    <>Aucun client pour « {q} ».</>
+                  ) : isGagnesEvent && period ? (
+                    <>Aucun client gagné sur {period.label.toLowerCase()}.</>
+                  ) : (
+                    <>
+                      Aucun client pour l’instant.
+                      {canCreate ? (
+                        <>
+                          {" "}
+                          <Link
+                            prefetch={false}
+                            href="/commercial/clients/nouveau"
+                            className="font-medium text-msk-blue hover:underline"
+                          >
+                            Créer le premier
+                          </Link>
+                        </>
+                      ) : null}
+                    </>
+                  )}
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-msk-ink/[0.06]">
-              {clients.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={8}
-                    className="px-4 py-10 text-center text-msk-ink/40"
-                  >
-                    {q ? (
-                      <>Aucun client pour « {q} ».</>
-                    ) : isGagnesEvent && period ? (
-                      <>Aucun client gagné sur {period.label.toLowerCase()}.</>
-                    ) : (
-                      <>
-                        Aucun client pour l’instant.
-                        {canCreate ? (
-                          <>
-                            {" "}
-                            <Link
-                              prefetch={false}
-                              href="/commercial/clients/nouveau"
-                              className="font-medium text-msk-blue hover:underline"
-                            >
-                              Créer le premier
-                            </Link>
-                          </>
-                        ) : null}
-                      </>
-                    )}
+            ) : (
+              clients.map((c) => (
+                <ClickableRowLink
+                  key={c.id}
+                  href={`/commercial/clients/${c.id}`}
+                >
+                  <td className="px-4 py-3 font-medium text-msk-ink">
+                    {c.name}
                   </td>
-                </tr>
-              ) : (
-                clients.map((c) => (
-                  <ClickableRowLink
-                    key={c.id}
-                    href={`/commercial/clients/${c.id}`}
-                  >
-                    <td className="px-4 py-3 font-medium text-msk-ink">
-                      {c.name}
-                    </td>
-                    <td className="px-4 py-3 text-msk-ink/75">
-                      {c.contactName ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 tabular-nums text-msk-ink/75">
-                      {c.phone?.trim() ? c.phone : "—"}
-                    </td>
-                    <td className="px-4 py-3 text-msk-ink/75">
-                      {c.city ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-msk-ink/60">
-                      {c.owner.firstName} {c.owner.lastName}
-                    </td>
-                    <td className="px-4 py-3 tabular-nums">{c._count.quotes}</td>
-                    <td className="px-4 py-3 tabular-nums">
-                      {c._count.invoices}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-msk-ink/55">
-                      {(
-                        c.sourceOpportunity?.wonAt ?? c.updatedAt
-                      ).toLocaleDateString("fr-FR")}
-                    </td>
-                  </ClickableRowLink>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                  <td className="px-4 py-3 text-msk-ink/75">
+                    {c.contactName ?? "—"}
+                  </td>
+                  <td className="px-4 py-3 tabular-nums text-msk-ink/75">
+                    {c.phone?.trim() ? c.phone : "—"}
+                  </td>
+                  <td className="px-4 py-3 text-msk-ink/75">
+                    {c.city ?? "—"}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-msk-ink/60">
+                    {c.owner.firstName} {c.owner.lastName}
+                  </td>
+                  <td className="px-4 py-3 tabular-nums">{c._count.quotes}</td>
+                  <td className="px-4 py-3 tabular-nums">
+                    {c._count.invoices}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-msk-ink/55">
+                    {(
+                      c.sourceOpportunity?.wonAt ?? c.updatedAt
+                    ).toLocaleDateString("fr-FR")}
+                  </td>
+                </ClickableRowLink>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
-        <ListPagination
-          pathname="/commercial/clients"
-          searchParams={listParams}
-          page={page}
-          totalPages={pages}
-          total={total}
-          pageSize={pageSize}
-        />
-      </Surface>
-    </PageShell>
+      <ListPagination
+        pathname="/commercial/clients"
+        searchParams={listParams}
+        page={page}
+        totalPages={pages}
+        total={total}
+        pageSize={pageSize}
+      />
+    </>
   );
 }

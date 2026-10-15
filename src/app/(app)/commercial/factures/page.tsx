@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 
 export const metadata: Metadata = { title: "Factures" };
 
@@ -36,6 +37,46 @@ export default async function CommercialFacturesPage({
   const user = await requireUser();
   if (!hasPermission(user, "com.access")) redirect("/accueil");
 
+  return (
+    <PageShell>
+      <PageHeader
+        title="Factures"
+        description="Émission, paiements et lien compta."
+        backHref="/commercial"
+        backLabel="Retour Menu"
+        breadcrumbs={[
+          { label: "Commercial", href: "/commercial" },
+          { label: "Factures" },
+        ]}
+      />
+
+      <Surface className="overflow-hidden p-0">
+        <div className="border-b border-msk-ink/[0.06] px-4 py-3">
+          <Suspense
+            fallback={
+              <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+            }
+          >
+            <ListSearchForm
+              placeholder="N°, client, objet…"
+              className="sm:max-w-md"
+            />
+          </Suspense>
+        </div>
+        <Suspense fallback={<ListTableSkeleton rows={8} cols={6} />}>
+          <FacturesResults searchParams={searchParams} />
+        </Suspense>
+      </Surface>
+    </PageShell>
+  );
+}
+
+async function FacturesResults({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const user = await requireUser();
   const raw = await searchParams;
   const q = (firstParam(raw.q) ?? "").trim();
   const requestedPage = parsePage(firstParam(raw.page));
@@ -93,106 +134,86 @@ export default async function CommercialFacturesPage({
     q: q || undefined,
   };
 
-  return (
-    <PageShell>
-      <PageHeader
-        title="Factures"
-        description="Émission, paiements et lien compta."
-        backHref="/commercial"
-        backLabel="Retour Menu"
-        breadcrumbs={[
-          { label: "Commercial", href: "/commercial" },
-          { label: "Factures" },
-        ]}
-      />
-
-      <div className="mb-4">
-        <Suspense fallback={null}>
-          <ListSearchForm
-            placeholder="N°, client, objet…"
-            className="sm:max-w-md"
-          />
-        </Suspense>
+  if (invoices.length === 0) {
+    return (
+      <div className="p-8 text-center text-sm text-msk-ink/50">
+        {q ? (
+          <>Aucune facture pour « {q} ».</>
+        ) : (
+          <>
+            Aucune facture. Créez-en une depuis un devis accepté ou envoyé.
+          </>
+        )}
       </div>
+    );
+  }
 
-      {invoices.length === 0 ? (
-        <Surface className="p-8 text-center text-sm text-msk-ink/50">
-          {q ? (
-            <>Aucune facture pour « {q} ».</>
-          ) : (
-            <>
-              Aucune facture. Créez-en une depuis un devis accepté ou envoyé.
-            </>
-          )}
-        </Surface>
-      ) : (
-        <Surface className="overflow-hidden p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-200 text-left text-sm">
-              <thead className="border-b border-msk-ink/10 bg-msk-chalk/40 text-msk-ink/45">
-                <tr>
-                  <th className="px-4 py-3 font-medium">N°</th>
-                  <th className="px-4 py-3 font-medium">Client</th>
-                  <th className="px-4 py-3 font-medium">Statut</th>
-                  <th className="px-4 py-3 font-medium">TTC</th>
-                  <th className="px-4 py-3 font-medium">Payé</th>
-                  <th className="px-4 py-3 font-medium">Compta</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoices.map((inv) => {
-                  const entryStatus = linkedMap.get(inv.id);
-                  const isIssued = [
-                    "EMISE",
-                    "PARTIELLEMENT_PAYEE",
-                    "PAYEE",
-                  ].includes(inv.status);
-                  return (
-                    <ClickableRowLink
-                      key={inv.id}
-                      href={`/commercial/factures/${inv.id}`}
-                      className="border-b border-msk-ink/5"
-                    >
-                      <td className="px-4 py-3 font-medium text-msk-ink">
-                        {inv.number}
-                      </td>
-                      <td className="px-4 py-3">{inv.client.name}</td>
-                      <td className="px-4 py-3">
-                        <Badge tone={invoiceStatusTone(inv.status)}>
-                          {INVOICE_STATUS_LABELS[inv.status]}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 tabular-nums">
-                        {formatComMoney(inv.totalTtc, inv.currency)}
-                      </td>
-                      <td className="px-4 py-3 tabular-nums text-msk-ink/70">
-                        {formatComMoney(inv.amountPaid, inv.currency)}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-msk-ink/55">
-                        {!isIssued
-                          ? "—"
-                          : entryStatus === "VALIDATED"
-                            ? "Validée"
-                            : entryStatus
-                              ? "Brouillon"
-                              : "À comptabiliser"}
-                      </td>
-                    </ClickableRowLink>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <ListPagination
-            pathname="/commercial/factures"
-            searchParams={listParams}
-            page={page}
-            totalPages={pages}
-            total={total}
-            pageSize={pageSize}
-          />
-        </Surface>
-      )}
-    </PageShell>
+  return (
+    <>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-200 text-left text-sm">
+          <thead className="border-b border-msk-ink/10 bg-msk-chalk/40 text-msk-ink/45">
+            <tr>
+              <th className="px-4 py-3 font-medium">N°</th>
+              <th className="px-4 py-3 font-medium">Client</th>
+              <th className="px-4 py-3 font-medium">Statut</th>
+              <th className="px-4 py-3 font-medium">TTC</th>
+              <th className="px-4 py-3 font-medium">Payé</th>
+              <th className="px-4 py-3 font-medium">Compta</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoices.map((inv) => {
+              const entryStatus = linkedMap.get(inv.id);
+              const isIssued = [
+                "EMISE",
+                "PARTIELLEMENT_PAYEE",
+                "PAYEE",
+              ].includes(inv.status);
+              return (
+                <ClickableRowLink
+                  key={inv.id}
+                  href={`/commercial/factures/${inv.id}`}
+                  className="border-b border-msk-ink/5"
+                >
+                  <td className="px-4 py-3 font-medium text-msk-ink">
+                    {inv.number}
+                  </td>
+                  <td className="px-4 py-3">{inv.client.name}</td>
+                  <td className="px-4 py-3">
+                    <Badge tone={invoiceStatusTone(inv.status)}>
+                      {INVOICE_STATUS_LABELS[inv.status]}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3 tabular-nums">
+                    {formatComMoney(inv.totalTtc, inv.currency)}
+                  </td>
+                  <td className="px-4 py-3 tabular-nums text-msk-ink/70">
+                    {formatComMoney(inv.amountPaid, inv.currency)}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-msk-ink/55">
+                    {!isIssued
+                      ? "—"
+                      : entryStatus === "VALIDATED"
+                        ? "Validée"
+                        : entryStatus
+                          ? "Brouillon"
+                          : "À comptabiliser"}
+                  </td>
+                </ClickableRowLink>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <ListPagination
+        pathname="/commercial/factures"
+        searchParams={listParams}
+        page={page}
+        totalPages={pages}
+        total={total}
+        pageSize={pageSize}
+      />
+    </>
   );
 }
