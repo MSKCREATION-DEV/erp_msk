@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import {
   FileText,
@@ -21,7 +22,9 @@ import { listWeekOptions, parseWeekParam } from "@/lib/crm/week";
 import { computeWeekStats } from "@/lib/crm/week-stats";
 import {
   buildCrmScopeHref,
+  normalizeSearchParams,
   parseCrmPeriod,
+  resolveCrmScopeLens,
 } from "@/lib/crm/scope-period";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -43,12 +46,14 @@ type ObjectifsMode = "synthese" | "equipe" | "collab";
 export default async function CrmObjectifsPage({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string | undefined>>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await connection();
   const user = await requireUser();
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
 
-  const sp = await searchParams;
+  const rawSp = await searchParams;
+  const sp = normalizeSearchParams(rawSp);
   const canManage =
     user.isSuperAdmin || hasPermission(user, "crm.reports.global");
 
@@ -57,6 +62,7 @@ export default async function CrmObjectifsPage({
     semaine: sp.semaine,
     periode: "semaine",
   });
+  const lens = resolveCrmScopeLens(period);
   const weekStart = parseWeekParam(period.semaine);
   const weeks = listWeekOptions({ fromYear: new Date().getFullYear() - 1 });
 
@@ -166,8 +172,10 @@ export default async function CrmObjectifsPage({
     ...(mode === "equipe" ? { vue: "equipe" } : {}),
   };
 
+  const scopeKey = `${period.semaine}:${focusCollab?.id ?? "all"}:${mode}`;
+
   return (
-    <PageShell>
+    <PageShell key={scopeKey}>
       <PageHeader
         title="Objectifs hebdomadaires"
         description={description}
@@ -204,16 +212,17 @@ export default async function CrmObjectifsPage({
         keepParams={keepParams}
         ownerParamKey="collab"
         periodModes={["semaine"]}
+        lens={lens}
       />
 
-      {mode === "synthese" ? (
+      {mode === "synthese" && !canManage ? (
         <GoalsProgressStrip
           progress={myProgress}
-          title={`Ma semaine · ${period.label}`}
+          title={`Mes objectifs · ${period.label}`}
           detailHref={buildCrmScopeHref("/crm/rapport-semaine", {
             period,
             ownerId: user.id,
-            canFilterOwners: canManage,
+            canFilterOwners: false,
           })}
           detailLabel="Voir mon rapport"
         />

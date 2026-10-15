@@ -3,8 +3,11 @@ import {
   buildCrmScopeHref,
   crmScopeToSearchParams,
   dateRangeFilter,
+  goalsCompatibleWithPeriod,
   parseCrmPeriod,
   resolveCrmOwnerIds,
+  resolveCrmScopeLens,
+  showStockWidgets,
 } from "./scope-period";
 import { weekStartIso, weekStartMonday } from "./week";
 
@@ -139,6 +142,32 @@ const currentIso = weekStartIso(currentWeek);
   assert.match(href, /periode=mois/);
   assert.match(href, /mois=2026-08/);
   assert.match(href, /owner=628357b3-ca62-418a-809d-a541eccc29b4/);
+}
+
+{
+  const current = parseCrmPeriod({ periode: "semaine" });
+  assert.equal(resolveCrmScopeLens(current), "live");
+  assert.equal(showStockWidgets("live"), true);
+  assert.equal(goalsCompatibleWithPeriod(current), true);
+}
+
+{
+  const past = parseCrmPeriod({
+    periode: "mois",
+    mois: "2024-01",
+  });
+  assert.equal(resolveCrmScopeLens(past), "period");
+  assert.equal(showStockWidgets("period"), false);
+  assert.equal(goalsCompatibleWithPeriod(past), false);
+}
+
+{
+  const pastWeek = parseCrmPeriod({
+    periode: "semaine",
+    semaine: "2024-01-01",
+  });
+  assert.equal(resolveCrmScopeLens(pastWeek), "period");
+  assert.equal(goalsCompatibleWithPeriod(pastWeek), true);
 }
 
 console.log("scope-period.test.ts OK");

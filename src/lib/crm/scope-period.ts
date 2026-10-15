@@ -47,6 +47,13 @@ export type CrmOwnerScope = {
   canFilterOwners: boolean;
 };
 
+/**
+ * Lentille d’affichage (best practice dashboards filtrés) :
+ * - `live` : la période contient « maintenant » → stocks à date + événements OK
+ * - `period` : période historique → uniquement événements (masquer stocks non comparables)
+ */
+export type CrmScopeLens = "live" | "period";
+
 /** Direction / lead / Super Admin : filtre collaborateur. */
 export function canFilterCrmOwners(user: SessionUser): boolean {
   return crmVisibility(user) !== "own";
@@ -80,14 +87,33 @@ function formatDayLabel(d: Date): string {
   });
 }
 
+/** aplati `string | string[]` (Next searchParams) → 1ʳᵉ valeur. */
+export function firstSearchParam(
+  raw: string | string[] | undefined,
+): string | undefined {
+  if (Array.isArray(raw)) return raw[0];
+  return raw;
+}
+
+export function normalizeSearchParams(
+  sp: Record<string, string | string[] | undefined>,
+): Record<string, string | undefined> {
+  const out: Record<string, string | undefined> = {};
+  for (const [k, v] of Object.entries(sp)) {
+    out[k] = firstSearchParam(v);
+  }
+  return out;
+}
+
 /**
  * Parse les params URL période.
  * Défaut = semaine courante (aligné objectifs / rapport).
  */
 export function parseCrmPeriod(
-  sp: Record<string, string | undefined>,
+  sp: Record<string, string | string[] | undefined>,
 ): CrmPeriodScope {
-  const rawMode = (sp.periode ?? "semaine").toLowerCase();
+  const periode = firstSearchParam(sp.periode);
+  const rawMode = (periode ?? "semaine").toLowerCase();
   const mode: PeriodMode =
     rawMode === "mois" || rawMode === "jour" || rawMode === "plage"
       ? rawMode
@@ -98,12 +124,12 @@ export function parseCrmPeriod(
   const currentWeekIso = weekStartIso(currentWeek);
 
   if (mode === "semaine") {
-    const weekStart = parseWeekParam(sp.semaine);
+    const weekStart = parseWeekParam(firstSearchParam(sp.semaine));
     const from = weekStart;
     const to = weekEndSunday(weekStart);
     const semaine = weekStartIso(weekStart);
     const mois = `${weekStart.getUTCFullYear()}-${String(weekStart.getUTCMonth() + 1).padStart(2, "0")}`;
-    return {
+    const out = {
       mode,
       from,
       to,
@@ -117,10 +143,12 @@ export function parseCrmPeriod(
       fromIso: formatIsoUtc(from),
       toIso: formatIsoUtc(to),
     };
+    return out;
   }
 
   if (mode === "mois") {
-    const moisRaw = sp.mois && ISO_MONTH.test(sp.mois) ? sp.mois : null;
+    const moisParam = firstSearchParam(sp.mois);
+    const moisRaw = moisParam && ISO_MONTH.test(moisParam) ? moisParam : null;
     let y: number;
     let m0: number;
     if (moisRaw) {
@@ -135,7 +163,7 @@ export function parseCrmPeriod(
     const lastDay = new Date(Date.UTC(y, m0 + 1, 0)).getUTCDate();
     const to = utcDayEnd(y, m0, lastDay);
     const mois = `${y}-${String(m0 + 1).padStart(2, "0")}`;
-    return {
+    const out = {
       mode,
       from,
       to,
@@ -146,10 +174,11 @@ export function parseCrmPeriod(
       fromIso: formatIsoUtc(from),
       toIso: formatIsoUtc(to),
     };
+    return out;
   }
 
   if (mode === "jour") {
-    const day = parseIsoDate(sp.on) ?? utcDayStart(
+    const day = parseIsoDate(firstSearchParam(sp.on)) ?? utcDayStart(
       now.getUTCFullYear(),
       now.getUTCMonth(),
       now.getUTCDate(),
@@ -159,7 +188,7 @@ export function parseCrmPeriod(
     const d = day.getUTCDate();
     const from = utcDayStart(y, m0, d);
     const to = utcDayEnd(y, m0, d);
-    return {
+    const out = {
       mode,
       from,
       to,
@@ -170,11 +199,12 @@ export function parseCrmPeriod(
       fromIso: formatIsoUtc(from),
       toIso: formatIsoUtc(to),
     };
+    return out;
   }
 
   // plage
-  let from = parseIsoDate(sp.from);
-  let to = parseIsoDate(sp.to);
+  let from = parseIsoDate(firstSearchParam(sp.from));
+  let to = parseIsoDate(firstSearchParam(sp.to));
   if (!from && !to) {
     const ws = currentWeek;
     from = ws;
@@ -225,8 +255,8 @@ export function parseCrmPeriod(
 
   const fromSafe = from!;
   const toSafe = to!;
-  return {
-    mode: "plage",
+  const out = {
+    mode: "plage" as const,
     from: fromSafe,
     to: toSafe,
     label: `Du ${formatDayLabel(fromSafe)} au ${formatDayLabel(toSafe)}`,
@@ -236,11 +266,12 @@ export function parseCrmPeriod(
     fromIso: formatIsoUtc(fromSafe),
     toIso: formatIsoUtc(toSafe),
   };
+  return out;
 }
 
 /** Résout `?owner=` (ou clé custom) — null = toute l’équipe (si autorisé). */
 export function parseCrmOwner(
-  sp: Record<string, string | undefined>,
+  sp: Record<string, string | string[] | undefined>,
   user: SessionUser,
   allowedOwnerIds: string[],
   opts?: { paramKey?: "owner" | "collab" },
@@ -250,14 +281,20 @@ export function parseCrmOwner(
     return { ownerId: user.id, canFilterOwners: false };
   }
   const key = opts?.paramKey ?? "owner";
-  const raw = (sp[key] ?? (key === "collab" ? sp.owner : undefined))?.trim();
+  const raw = (
+    firstSearchParam(sp[key]) ??
+    (key === "collab" ? firstSearchParam(sp.owner) : undefined)
+  )?.trim();
   if (!raw || raw === "all") {
-    return { ownerId: null, canFilterOwners: true };
+    const out = { ownerId: null as string | null, canFilterOwners: true };
+    return out;
   }
   if (UUID_RE.test(raw) && allowedOwnerIds.includes(raw)) {
-    return { ownerId: raw, canFilterOwners: true };
+    const out = { ownerId: raw, canFilterOwners: true };
+    return out;
   }
-  return { ownerId: null, canFilterOwners: true };
+  const out = { ownerId: null as string | null, canFilterOwners: true };
+  return out;
 }
 
 /**
@@ -312,6 +349,27 @@ export function dateRangeFilter(
   to: Date,
 ): { gte: Date; lte: Date } {
   return { gte: from, lte: to };
+}
+
+/** `live` si « maintenant » est dans [from, to], sinon vue historique. */
+export function resolveCrmScopeLens(
+  period: CrmPeriodScope,
+  now: Date = new Date(),
+): CrmScopeLens {
+  const t = now.getTime();
+  const lens: CrmScopeLens =
+    t >= period.from.getTime() && t <= period.to.getTime() ? "live" : "period";
+  return lens;
+}
+
+/** Objectifs hebdo : pertinents seulement en mode semaine. */
+export function goalsCompatibleWithPeriod(period: CrmPeriodScope): boolean {
+  return period.mode === "semaine";
+}
+
+/** Stocks « à date » (ouverts, retards, priorités…) — uniquement en lentille live. */
+export function showStockWidgets(lens: CrmScopeLens): boolean {
+  return lens === "live";
 }
 
 /** Construit les searchParams à conserver pour la barre de filtres. */

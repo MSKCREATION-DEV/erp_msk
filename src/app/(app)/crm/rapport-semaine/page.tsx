@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { FolderOpen, Target } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
@@ -34,22 +35,29 @@ import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
 import { ActionLink } from "@/components/ui/action-link";
 import {
+  buildCrmScopeHref,
+  normalizeSearchParams,
   parseCrmOwner,
   parseCrmPeriod,
   resolveCrmOwnerIds,
+  resolveCrmScopeLens,
+  showStockWidgets,
 } from "@/lib/crm/scope-period";
+import { CrmScopeContext } from "@/components/crm/crm-scope-context";
 
 export const metadata: Metadata = { title: "Rapport commercial" };
 
 export default async function CrmRapportPage({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string | undefined>>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await connection();
   const user = await requireUser();
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
 
-  const sp = await searchParams;
+  const rawSp = await searchParams;
+  const sp = normalizeSearchParams(rawSp);
   const teamIds = await commercialTeamUserIds();
   const canGlobal =
     user.isSuperAdmin || hasPermission(user, "crm.reports.global");
@@ -73,6 +81,8 @@ export default async function CrmRapportPage({
     semaine: sp.semaine,
     periode: "semaine",
   });
+  const lens = resolveCrmScopeLens(period);
+  const showStocks = showStockWidgets(lens);
   const ownerScope = parseCrmOwner(
     sp,
     user,
@@ -118,10 +128,12 @@ export default async function CrmRapportPage({
       ? await loadTeamGoals()
       : await resolveGoals(focusOwnerId!);
   const weekStats = await computeWeekStats(statsOwnerIds, weekStart);
-  const deals = await prisma.crmOpportunity.findMany({
-    where: baseDealWhere,
-    select: { stage: true, createdAt: true },
-  });
+  const deals = showStocks
+    ? await prisma.crmOpportunity.findMany({
+        where: baseDealWhere,
+        select: { stage: true, createdAt: true },
+      })
+    : [];
 
   const byStage = STAGE_ORDER.map((stage) => ({
     stage,
@@ -183,8 +195,10 @@ export default async function CrmRapportPage({
       ? `/crm/objectifs?collab=${focusOwnerId}`
       : "/crm/objectifs";
 
+  const scopeKey = `${weekIso}:${scopeMode}:${focusOwnerId ?? "all"}`;
+
   return (
-    <PageShell>
+    <PageShell key={scopeKey}>
       <PageHeader
         title="Rapport"
         description={`Activité CRM · ${scopeLabel} · ${rangeLabel}${isCurrentWeek ? " (semaine actuelle)" : ""}.`}
@@ -206,6 +220,18 @@ export default async function CrmRapportPage({
         canFilterOwners={canGlobal}
         periodLabel={rangeLabel}
         periodModes={["semaine"]}
+        lens={lens}
+      />
+
+      <CrmScopeContext
+        lens={lens}
+        periodLabel={rangeLabel}
+        ownerLabel={scopeMode === "user" ? scopeLabel : null}
+        resetHref={buildCrmScopeHref("/crm/rapport-semaine", {
+          period: parseCrmPeriod({ periode: "semaine" }),
+          ownerId: focusOwnerId,
+          canFilterOwners: canGlobal,
+        })}
       />
 
       {canGlobal && scopeMode === "user" && focusOwnerId ? (
@@ -235,7 +261,13 @@ export default async function CrmRapportPage({
         </Surface>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div
+        className={
+          showStocks
+            ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-5"
+            : "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+        }
+      >
         <KpiRadial
           label="Nouveaux (semaine)"
           value={weekStats.newProspects}
@@ -251,25 +283,39 @@ export default async function CrmRapportPage({
           value={weekStats.relancesJournalisees}
           hint="actions de suivi (hors notes)"
         />
-        <KpiRadial
-          label="En échange"
-          value={inExchange}
-          hint="Contacté + En discussion"
-        />
-        <KpiRadial
-          label="Prêts à convertir"
-          value={qualifiedOpen}
-          hint="Intéressé + Devis envoyé"
-        />
+        {showStocks ? (
+          <>
+            <KpiRadial
+              label="En échange"
+              value={inExchange}
+              hint="Contacté + En discussion · à date"
+            />
+            <KpiRadial
+              label="Prêts à convertir"
+              value={qualifiedOpen}
+              hint="Intéressé + Devis envoyé · à date"
+            />
+          </>
+        ) : null}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div
+        className={
+          showStocks ? "grid gap-4 lg:grid-cols-2" : "grid gap-4"
+        }
+      >
         <StageBarChart
           data={weekBars}
           title="Nouveaux prospects — 4 semaines"
           subtitle={`Jusqu’à la semaine du ${weekStart.toLocaleDateString("fr-FR", { timeZone: "UTC" })}`}
         />
-        <StageDonutChart data={byStage} />
+        {showStocks ? (
+          <StageDonutChart
+            data={byStage}
+            ownerId={focusOwnerId}
+            subtitle="à date — clic = filtre liste"
+          />
+        ) : null}
       </div>
 
       {scopeMode === "user" ? (

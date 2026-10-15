@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { FileText, FolderOpen, Users } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
@@ -15,8 +16,12 @@ import {
   buildCrmScopeHref,
   crmScopeToSearchParams,
   dateRangeFilter,
+  goalsCompatibleWithPeriod,
+  normalizeSearchParams,
   parseCrmOwner,
   parseCrmPeriod,
+  resolveCrmScopeLens,
+  showStockWidgets,
 } from "@/lib/crm/scope-period";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -25,6 +30,7 @@ import { ActionLink } from "@/components/ui/action-link";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { EquipeCollabCard } from "@/components/crm/equipe-collab-card";
 import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
+import { CrmScopeContext } from "@/components/crm/crm-scope-context";
 
 export const metadata: Metadata = { title: "Vue Équipe" };
 
@@ -54,17 +60,22 @@ function emptyRow(name: string): OwnerRow {
 export default async function CrmEquipePage({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string | undefined>>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await connection();
   const user = await requireUser();
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
 
   const vis = crmVisibility(user);
   if (vis === "own") redirect("/crm/prospects");
 
-  const sp = await searchParams;
+  const rawSp = await searchParams;
+  const sp = normalizeSearchParams(rawSp);
   const teamIds = await commercialTeamUserIds();
   const period = parseCrmPeriod(sp);
+  const lens = resolveCrmScopeLens(period);
+  const showStocks = showStockWidgets(lens);
+  const showGoals = goalsCompatibleWithPeriod(period);
   const weekStart = parseWeekParam(period.semaine);
   const weeks = listWeekOptions({ fromYear: new Date().getFullYear() - 1 });
   const occurredBetween = dateRangeFilter(period.from, period.to);
@@ -137,12 +148,14 @@ export default async function CrmEquipePage({
   );
   const filterOwner = ownerScope.ownerId;
 
-  const goalByOwner = new Map(
-    (await resolveGoalsSnapshots(members, weekStart)).map((s) => [
-      s.userId,
-      s.progress,
-    ]),
-  );
+  const goalByOwner = showGoals
+    ? new Map(
+        (await resolveGoalsSnapshots(members, weekStart)).map((s) => [
+          s.userId,
+          s.progress,
+        ]),
+      )
+    : new Map();
 
   const relancesByOwner = await outreachCountByOwnerInPeriod({
     ownerIds: members.map((m) => m.id),
@@ -172,14 +185,20 @@ export default async function CrmEquipePage({
     canFilterOwners: true,
   });
 
+  const scopeKey = `${period.mode}:${period.fromIso}:${period.toIso}:${filterOwner ?? "all"}`;
+
   return (
-    <PageShell>
+    <PageShell key={scopeKey}>
       <PageHeader
         title="Vue Équipe"
         description={
-          filteredName
-            ? `${filteredName} — stocks à date · relances ${period.label.toLowerCase()}.`
-            : `Cliquez le nom d’une carte pour voir un collaborateur · ${period.label}.`
+          showStocks
+            ? filteredName
+              ? `${filteredName} — portefeuille à date · relances ${period.label.toLowerCase()}.`
+              : `Cliquez le nom d’une carte · ${period.label}.`
+            : filteredName
+              ? `${filteredName} — activité ${period.label.toLowerCase()} (sans stocks à date).`
+              : `Activité historique · ${period.label}.`
         }
         backHref="/commercial"
         backLabel="Retour Menu"
@@ -198,6 +217,18 @@ export default async function CrmEquipePage({
         owners={owners}
         canFilterOwners={ownerScope.canFilterOwners}
         periodLabel={period.label}
+        lens={lens}
+      />
+
+      <CrmScopeContext
+        lens={lens}
+        periodLabel={period.label}
+        ownerLabel={filteredName}
+        resetHref={buildCrmScopeHref("/crm/equipe", {
+          period: parseCrmPeriod({ periode: "semaine" }),
+          ownerId: filterOwner,
+          canFilterOwners: true,
+        })}
       />
 
       {filterOwner && filteredName ? (
@@ -255,6 +286,8 @@ export default async function CrmEquipePage({
                 ownerId,
                 canFilterOwners: true,
               })}
+              showStocks={showStocks}
+              showGoals={showGoals}
             />
           ))}
         </div>

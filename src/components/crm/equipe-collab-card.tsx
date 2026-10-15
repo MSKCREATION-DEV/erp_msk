@@ -24,6 +24,8 @@ export function EquipeCollabCard({
   periodLabel,
   baseQuery = "",
   rapportHref,
+  showStocks = true,
+  showGoals = true,
 }: {
   ownerId: string;
   name: string;
@@ -31,16 +33,20 @@ export function EquipeCollabCard({
   caOpen: number;
   interesses: number;
   overdue: number;
-  /** Relances journalisées sur la période filtrée. */
   relancesFaites: number;
   byStage: Record<string, number>;
   goals: GoalProgressItem[];
   focused: boolean;
   periodLabel: string;
-  /** Query période sans owner (focus nom). */
   baseQuery?: string;
   rapportHref: string;
+  showStocks?: boolean;
+  showGoals?: boolean;
 }) {
+  const subtitle = showStocks
+    ? `${total} prospect${total > 1 ? "s" : ""} · montant en cours ${formatXof(caOpen)}`
+    : `Activité · ${periodLabel.toLowerCase()}`;
+
   return (
     <Surface
       className={cn("space-y-4 p-5", focused && "ring-2 ring-msk-blue/25")}
@@ -51,7 +57,7 @@ export function EquipeCollabCard({
           name={name}
           focused={focused}
           baseQuery={baseQuery}
-          subtitle={`${total} prospect${total > 1 ? "s" : ""} · montant en cours ${formatXof(caOpen)}`}
+          subtitle={subtitle}
         />
         <div className="flex flex-wrap gap-2">
           <ActionLink
@@ -73,64 +79,78 @@ export function EquipeCollabCard({
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiRadial label="Prospects" value={total} hint="à date · hors clients" />
-        <KpiRadial
-          label="Intéressés"
-          value={interesses}
-          hint="à date"
-        />
-        <KpiRadial
-          label="Retards"
-          value={overdue}
-          tone={overdue > 0 ? "coral" : "blue"}
-          hint="à date"
-        />
-        <KpiRadial
-          label="Relances faites"
-          value={relancesFaites}
-          tone={relancesFaites > 0 ? "coral" : "blue"}
-          hint={periodLabel.toLowerCase()}
-        />
+      <div className="space-y-2">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
+          Activité · {periodLabel}
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <KpiRadial
+            label="Relances faites"
+            value={relancesFaites}
+            tone={relancesFaites > 0 ? "coral" : "blue"}
+            hint={periodLabel.toLowerCase()}
+          />
+        </div>
       </div>
 
-      {goals.length > 0 ? (
+      {showStocks ? (
+        <div className="space-y-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
+            Portefeuille à date
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <KpiRadial
+              label="Prospects"
+              value={total}
+              hint="hors clients"
+            />
+            <KpiRadial label="Intéressés" value={interesses} hint="à date" />
+            <KpiRadial
+              label="Retards"
+              value={overdue}
+              tone={overdue > 0 ? "coral" : "blue"}
+              hint="à date"
+            />
+          </div>
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {STAGE_ORDER.map((s) => {
+              const n = byStage[s] ?? 0;
+              if (n === 0) return null;
+              const href =
+                s === "GAGNE"
+                  ? `/commercial/clients`
+                  : `/crm/prospects?owner=${ownerId}&stages=${
+                      s === "DEVIS_ENVOYE" ? "DEVIS_ENVOYE,NEGOCIATION" : s
+                    }`;
+              return (
+                <Link key={s} prefetch={false} href={href}>
+                  <Badge
+                    tone={
+                      s === "PERDU"
+                        ? "coral"
+                        : s === "GAGNE"
+                          ? "success"
+                          : "muted"
+                    }
+                    className="transition hover:ring-2 hover:ring-msk-blue/20"
+                  >
+                    {STAGE_LABELS[s]} · {n}
+                  </Badge>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      {showGoals && goals.length > 0 ? (
         <GoalsProgressStrip
           progress={goals}
-          title="Objectifs semaine"
+          title={`Objectifs · ${periodLabel}`}
           compact
           embedded
         />
       ) : null}
-
-      <div className="flex flex-wrap gap-1.5">
-        {STAGE_ORDER.map((s) => {
-          const n = byStage[s] ?? 0;
-          if (n === 0) return null;
-          const href =
-            s === "GAGNE"
-              ? `/commercial/clients`
-              : `/crm/prospects?owner=${ownerId}&stages=${
-                  s === "DEVIS_ENVOYE" ? "DEVIS_ENVOYE,NEGOCIATION" : s
-                }`;
-          return (
-            <Link key={s} prefetch={false} href={href}>
-              <Badge
-                tone={
-                  s === "PERDU"
-                    ? "coral"
-                    : s === "GAGNE"
-                      ? "success"
-                      : "muted"
-                }
-                className="transition hover:ring-2 hover:ring-msk-blue/20"
-              >
-                {STAGE_LABELS[s]} · {n}
-              </Badge>
-            </Link>
-          );
-        })}
-      </div>
     </Surface>
   );
 }

@@ -19,6 +19,8 @@ export function ConversionPipelineCard({
   openCount,
   totalDeals,
   periodLabel,
+  /** Vue historique : uniquement le signé (pas de stock « en cours »). */
+  signedOnly = false,
 }: {
   ratePercent: number;
   signedAmount: number;
@@ -29,6 +31,7 @@ export function ConversionPipelineCard({
   totalDeals: number;
   /** Libellé période pour le montant signé (événements). */
   periodLabel?: string;
+  signedOnly?: boolean;
 }) {
   const pct = Math.max(0, Math.min(100, ratePercent));
   const amountCeiling = Math.max(signedAmount + openAmount, 1);
@@ -36,18 +39,37 @@ export function ConversionPipelineCard({
   return (
     <Surface className="p-5">
       <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
-        Conversion prospects vers clients
+        {signedOnly
+          ? "Clients gagnés"
+          : "Conversion prospects vers clients"}
       </p>
       <p className="mt-1 text-sm text-msk-ink/50">
-        Signé = clients gagnés
-        {periodLabel ? ` sur ${periodLabel.toLowerCase()}` : ""}
-        {signedCount > 0 || totalDeals > 0
-          ? ` (${signedCount} client${signedCount > 1 ? "s" : ""})`
-          : ""}
-        . En cours = dossiers ouverts à date. Montants = budgets renseignés.
+        {signedOnly ? (
+          <>
+            Clients gagnés
+            {periodLabel ? ` sur ${periodLabel.toLowerCase()}` : ""}
+            {` (${signedCount} client${signedCount > 1 ? "s" : ""})`}. Montants =
+            budgets renseignés.
+          </>
+        ) : (
+          <>
+            Signé = clients gagnés
+            {periodLabel ? ` sur ${periodLabel.toLowerCase()}` : ""}
+            {signedCount > 0 || totalDeals > 0
+              ? ` (${signedCount} client${signedCount > 1 ? "s" : ""})`
+              : ""}
+            . En cours = dossiers ouverts à date. Montants = budgets renseignés.
+          </>
+        )}
       </p>
 
-      <div className="mt-5 grid gap-6 sm:grid-cols-2 sm:gap-0 sm:divide-x sm:divide-msk-ink/[0.08]">
+      <div
+        className={
+          signedOnly
+            ? "mt-5 flex flex-col items-center"
+            : "mt-5 grid gap-6 sm:grid-cols-2 sm:gap-0 sm:divide-x sm:divide-msk-ink/[0.08]"
+        }
+      >
         <div className="flex flex-col items-center sm:px-4">
           <p className="self-start text-xs font-semibold uppercase tracking-wide text-msk-ink/45">
             Signé
@@ -55,11 +77,13 @@ export function ConversionPipelineCard({
           <div className="mt-3 flex w-full flex-col items-center">
             <HubMiniRadial
               size="lg"
-              value={pct}
-              max={100}
+              value={signedOnly ? signedCount : pct}
+              max={signedOnly ? Math.max(5, signedCount) : 100}
               color={METRIC_NAV_TONE_CHART.blue}
-              centerLabel={`${pct.toFixed(0)}%`}
-              caption="devenus clients"
+              centerLabel={
+                signedOnly ? signedCount : `${pct.toFixed(0)}%`
+              }
+              caption={signedOnly ? "clients" : "devenus clients"}
             />
             <p className="mt-4 text-center text-xl font-semibold tabular-nums tracking-tight text-msk-ink sm:text-2xl">
               {formatXof(signedAmount)}
@@ -72,27 +96,29 @@ export function ConversionPipelineCard({
           </div>
         </div>
 
-        <div className="flex flex-col items-center sm:px-4">
-          <p className="self-start text-xs font-semibold uppercase tracking-wide text-msk-ink/45">
-            En cours
-          </p>
-          <div className="mt-3 flex w-full flex-col items-center">
-            <HubMiniRadial
-              size="lg"
-              value={openAmount}
-              max={amountCeiling}
-              color={METRIC_NAV_TONE_CHART.ink}
-              centerLabel={openCount}
-              caption="dossiers ouverts"
-            />
-            <p className="mt-4 text-center text-xl font-semibold tabular-nums tracking-tight text-msk-ink sm:text-2xl">
-              {formatXof(openAmount)}
+        {!signedOnly ? (
+          <div className="flex flex-col items-center sm:px-4">
+            <p className="self-start text-xs font-semibold uppercase tracking-wide text-msk-ink/45">
+              En cours
             </p>
-            <p className="mt-1.5 text-center text-xs text-msk-ink/45">
-              montant encore en cours
-            </p>
+            <div className="mt-3 flex w-full flex-col items-center">
+              <HubMiniRadial
+                size="lg"
+                value={openAmount}
+                max={amountCeiling}
+                color={METRIC_NAV_TONE_CHART.ink}
+                centerLabel={openCount}
+                caption="dossiers ouverts"
+              />
+              <p className="mt-4 text-center text-xl font-semibold tabular-nums tracking-tight text-msk-ink sm:text-2xl">
+                {formatXof(openAmount)}
+              </p>
+              <p className="mt-1.5 text-center text-xs text-msk-ink/45">
+                montant encore en cours
+              </p>
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
     </Surface>
   );

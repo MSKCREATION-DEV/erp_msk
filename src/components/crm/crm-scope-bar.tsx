@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import type { WeekOption } from "@/lib/crm/week";
-import type { PeriodMode } from "@/lib/crm/scope-period";
+import type { CrmScopeLens, PeriodMode } from "@/lib/crm/scope-period";
 import { cn } from "@/lib/utils";
 
 const MODE_OPTIONS: { value: PeriodMode; label: string }[] = [
@@ -14,8 +14,11 @@ const MODE_OPTIONS: { value: PeriodMode; label: string }[] = [
 ];
 
 /**
- * Barre de filtres CRM partagée — période + collaborateur (URL).
- * Utilisée sur Tableau de bord, Vue Équipe, Objectifs, Rapport.
+ * Barre de filtres CRM — navigation via `router.push` (même pattern que
+ * Prospects / ancien RapportFilters).
+ *
+ * Interdit : `replace` + `refresh` dans le même tick — refresh relit l’URL
+ * encore ancienne et réinjecte un payload RSC périmé.
  */
 export function CrmScopeBar({
   mode,
@@ -29,12 +32,10 @@ export function CrmScopeBar({
   owners,
   canFilterOwners,
   periodLabel,
-  /** Params à conserver (ex. `vue=equipe`). */
   keepParams,
-  /** Clé URL collab — `owner` (défaut) ou `collab` (Objectifs). */
   ownerParamKey = "owner",
-  /** Modes période affichés (défaut : les 4). */
   periodModes = MODE_OPTIONS.map((m) => m.value),
+  lens,
   className,
 }: {
   mode: PeriodMode;
@@ -51,6 +52,7 @@ export function CrmScopeBar({
   keepParams?: Record<string, string | undefined>;
   ownerParamKey?: "owner" | "collab";
   periodModes?: PeriodMode[];
+  lens?: CrmScopeLens;
   className?: string;
 }) {
   const router = useRouter();
@@ -100,8 +102,7 @@ export function CrmScopeBar({
     const qs = p.toString();
     const href = qs ? `${pathname}?${qs}` : pathname;
     start(() => {
-      router.replace(href, { scroll: false });
-      router.refresh();
+      router.push(href, { scroll: false });
     });
   }
 
@@ -236,6 +237,18 @@ export function CrmScopeBar({
 
         {periodLabel ? (
           <p className="text-xs text-msk-ink/45">{periodLabel}</p>
+        ) : null}
+        {lens === "period" ? (
+          <span className="rounded-md bg-msk-coral/10 px-2 py-0.5 text-[11px] font-medium text-msk-coral">
+            Historique
+          </span>
+        ) : lens === "live" ? (
+          <span className="rounded-md bg-msk-blue/10 px-2 py-0.5 text-[11px] font-medium text-msk-blue">
+            En cours
+          </span>
+        ) : null}
+        {pending ? (
+          <span className="text-xs font-medium text-msk-blue">Chargement…</span>
         ) : null}
       </div>
 

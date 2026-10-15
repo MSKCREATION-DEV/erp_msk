@@ -24,7 +24,22 @@ export type StageDonutRow = {
   key: string;
 };
 
-export function StageDonutChart({ data }: { data: StageDonutRow[] }) {
+function withOwner(href: string, ownerId: string | null | undefined): string {
+  if (!ownerId) return href;
+  const sep = href.includes("?") ? "&" : "?";
+  return `${href}${sep}owner=${ownerId}`;
+}
+
+export function StageDonutChart({
+  data,
+  ownerId,
+  subtitle = "par statut — clic = filtre liste",
+}: {
+  data: StageDonutRow[];
+  /** Conserve le filtre collaborateur vers la liste Prospects. */
+  ownerId?: string | null;
+  subtitle?: string;
+}) {
   const router = useRouter();
   const rows = data.filter((d) => d.count > 0);
   const total = rows.reduce((s, d) => s + d.count, 0);
@@ -36,8 +51,12 @@ export function StageDonutChart({ data }: { data: StageDonutRow[] }) {
     ]),
   ) satisfies ChartConfig;
 
+  function stageHref(stage: CrmPipelineStage) {
+    return withOwner(prospectsStagesHref(stagesForFilter(stage)), ownerId);
+  }
+
   function goToStage(stage: CrmPipelineStage) {
-    router.push(prospectsStagesHref(stagesForFilter(stage)));
+    router.push(stageHref(stage));
   }
 
   return (
@@ -46,7 +65,7 @@ export function StageDonutChart({ data }: { data: StageDonutRow[] }) {
         Répartition des prospects
       </p>
       <p className="mt-1 text-sm text-msk-ink/50">
-        {total} dossier{total > 1 ? "s" : ""} par statut — clic = filtre liste
+        {total} dossier{total > 1 ? "s" : ""} {subtitle}
       </p>
       {rows.length === 0 ? (
         <p className="mt-8 text-center text-sm text-msk-ink/40">Aucune donnée</p>
@@ -87,7 +106,7 @@ export function StageDonutChart({ data }: { data: StageDonutRow[] }) {
               <li key={d.key}>
                 <Link
                   prefetch={false}
-                  href={prospectsStagesHref(stagesForFilter(d.stage))}
+                  href={stageHref(d.stage)}
                   className="flex items-center justify-between gap-2 rounded-md px-1.5 py-1.5 transition hover:bg-msk-chalk focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40"
                 >
                   <span className="flex min-w-0 items-center gap-2 text-msk-ink/75">
