@@ -91,7 +91,7 @@ async function ensureOne(
   tempPassword: string | null;
 }> {
   const email = def.email.toLowerCase();
-  let existing = await prisma.user.findUnique({ where: { email } });
+  const existing = await prisma.user.findUnique({ where: { email } });
   let authId = existing?.id;
   let tempPassword: string | null = null;
   let created = false;

@@ -338,10 +338,6 @@ export default async function CrmProspectDetailPage({
     updatedAt: deal.updatedAt,
     quoteCount: deal.comQuotes.length,
   });
-  const primaryContact =
-    deal.organization.contacts.find((c) => c.isPrimary) ??
-    deal.organization.contacts[0] ??
-    null;
   const sameOwnerAsCreator = deal.ownerId === deal.createdById;
 
   /** Journal : toujours ancré à la création (synthétique si ancien dossier). */
