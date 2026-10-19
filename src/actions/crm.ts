@@ -1445,7 +1445,7 @@ export async function saveWeeklyReportAction(
   return { ok: true, message: "Rapport de semaine enregistré" };
 }
 
-/** Import CSV type Excel CRM (séparateur `;`, max 400, dédupliqué). */
+/** Import CSV / XLSX type Excel CRM (max 500, dédupliqué, owners résolus). */
 export async function importCrmCsvAction(
   formData: FormData,
 ): Promise<
@@ -1454,131 +1454,51 @@ export async function importCrmCsvAction(
   const actor = await requireUser({ permission: "crm.import" });
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {
-    return { ok: false, error: "Fichier CSV manquant" };
+    return { ok: false, error: "Fichier CSV ou Excel manquant" };
   }
 
-  const { parseImportCsv, normalizeOrgName: norm } = await import(
-    "@/lib/crm/import-csv"
-  );
-  const text = await file.text();
-  const { rows, skipped: parseSkipped } = parseImportCsv(text);
+  const { parseImportFile } = await import("@/lib/crm/import/parse-tabular");
+  const { applyCrmImport } = await import("@/lib/crm/import/apply-import");
 
-  const existing = await prisma.crmOrganization.findMany({
-    select: { normalizedName: true },
+  const buf = Buffer.from(await file.arrayBuffer());
+  const parsed = await parseImportFile({
+    fileName: file.name || "import.csv",
+    bytes: buf,
   });
-  const known = new Set(existing.map((o) => o.normalizedName));
 
-  let imported = 0;
-  let skipped = parseSkipped;
-  let duplicates = 0;
-  const MAX = 400;
+  const result = await applyCrmImport({
+    prisma,
+    rows: parsed.rows,
+    fallbackUserId: actor.id,
+    max: 500,
+  });
 
-  for (const row of rows) {
-    if (imported >= MAX) {
-      skipped += rows.length - imported - duplicates;
-      break;
-    }
-    const normalizedName = norm(row.orgName);
-    if (known.has(normalizedName)) {
-      duplicates += 1;
-      continue;
-    }
-
-    let notes = row.notes;
-    const srcRaw = row.source;
-    // Marquer ChatGPT dans les notes si origine AUTRE + hint
-    if (row.ownerHint) {
-      notes = [notes, `Suivi (import) : ${row.ownerHint}`]
-        .filter(Boolean)
-        .join("\n");
-    }
-
-    const org = await prisma.crmOrganization.create({
-      data: {
-        name: row.orgName,
-        normalizedName,
-        sector: row.sector,
-        source: srcRaw,
-        notes,
-        ownerId: actor.id,
-        createdById: actor.id,
-        contacts: {
-          create: {
-            firstName: row.contactFirst,
-            lastName: row.contactLast,
-            jobTitle: row.jobTitle,
-            phone: row.phone,
-            email: row.email,
-            isPrimary: true,
-          },
-        },
-      },
-    });
-
-    known.add(normalizedName);
-
-    const deal = await prisma.crmOpportunity.create({
-      data: {
-        organizationId: org.id,
-        title: row.orgName,
-        stage: row.stage,
-        source: srcRaw,
-        offerLabel: row.offerLabel,
-        nextAction: row.nextAction,
-        followUpAt: row.followUpAt,
-        lastActivityAt: row.lastAction ? new Date() : null,
-        ownerId: actor.id,
-        createdById: actor.id,
-        wonAt: row.stage === "GAGNE" ? new Date() : null,
-        lostAt: row.stage === "PERDU" ? new Date() : null,
-        lossReason: row.stage === "PERDU" ? CrmLossReason.AUTRE : null,
-      },
-    });
-
-    if (row.lastAction) {
-      await prisma.crmActivity.create({
-        data: {
-          organizationId: org.id,
-          opportunityId: deal.id,
-          type: CrmActivityType.NOTE,
-          summary: row.lastAction,
-          actorId: actor.id,
-        },
-      });
-    }
-
-    if (row.followUpAt) {
-      await prisma.crmTask.create({
-        data: {
-          organizationId: org.id,
-          opportunityId: deal.id,
-          title: row.nextAction || `Relance ${row.orgName}`,
-          dueAt: row.followUpAt,
-          assigneeId: actor.id,
-          createdById: actor.id,
-        },
-      });
-    }
-
-    imported += 1;
-  }
+  const skipped = parsed.skipped + result.skipped;
+  const warn =
+    result.warnings.length > 0 ? ` · ${result.warnings.join(" · ")}` : "";
 
   await writeAudit({
     actorId: actor.id,
     action: "crm.import",
     entityType: "crm",
-    entityId: "csv",
-    metadata: { imported, skipped, duplicates },
+    entityId: "tabular",
+    metadata: {
+      imported: result.imported,
+      skipped,
+      duplicates: result.duplicates,
+      fileName: file.name,
+      unresolved: result.unresolvedPeople,
+    },
   });
 
   revalidatePath("/crm");
   revalidatePath("/crm/prospects");
   return {
     ok: true,
-    message: `${imported} importés · ${duplicates} doublons · ${skipped} ignorés`,
-    imported,
+    message: `${result.imported} importés · ${result.duplicates} doublons · ${skipped} ignorés${warn}`,
+    imported: result.imported,
     skipped,
-    duplicates,
+    duplicates: result.duplicates,
   };
 }
 

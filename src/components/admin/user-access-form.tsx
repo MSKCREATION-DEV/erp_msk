@@ -427,6 +427,10 @@ export function UserAccessForm({
               <h3 className="mb-3 text-sm font-semibold text-msk-ink">
                 Reset mot de passe
               </h3>
+              <p className="mb-3 text-xs text-msk-ink/50">
+                Préférez le panneau « Identifiants de connexion » sur la fiche
+                pour afficher et copier le MDP. Ici : reset rapide.
+              </p>
               <form action={resetAction} className="space-y-3">
                 <input type="hidden" name="userId" value={userId} />
                 <div>
@@ -446,7 +450,12 @@ export function UserAccessForm({
                 >
                   Réinitialiser
                 </Button>
-                {resetState?.message ? (
+                {resetState?.tempPassword ? (
+                  <div className="rounded-lg border border-msk-blue/20 bg-msk-blue/5 px-3 py-2 font-mono text-xs text-msk-ink">
+                    <p>Login · {resetState.login}</p>
+                    <p className="mt-1">MDP · {resetState.tempPassword}</p>
+                  </div>
+                ) : resetState?.message ? (
                   <p className="rounded-lg bg-msk-blue/5 px-3 py-2 text-sm text-msk-ink">
                     {resetState.message}
                   </p>

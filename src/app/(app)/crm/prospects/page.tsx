@@ -25,7 +25,6 @@ import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { ProspectsFilterButton } from "@/components/crm/prospects-filter-modal";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { ProspectsResults } from "./prospects-results";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Prospects" };
 
@@ -110,16 +109,11 @@ export default async function CrmProspectsPage({
         breadcrumbs={[{ label: "Commercial", href: "/commercial" }]}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <span
-              className={cn(
-                "inline-flex h-9 cursor-not-allowed items-center justify-center gap-2 rounded-lg border border-msk-ink/10 bg-msk-chalk/80 px-3 text-sm font-medium text-msk-ink/35",
-              )}
-              title="Import Excel — bientôt disponible"
-              aria-disabled
-            >
-              <FileUp className="h-4 w-4 shrink-0" aria-hidden />
-              Importer
-            </span>
+            {hasPermission(user, "crm.import") ? (
+              <ActionLink href="/crm/prospects/import" icon={FileUp}>
+                Importer
+              </ActionLink>
+            ) : null}
             {canCreate ? (
               <ActionLink href="/crm/prospects/nouveau" icon={UserPlus}>
                 Nouveau prospect

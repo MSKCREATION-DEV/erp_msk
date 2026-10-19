@@ -1,0 +1,59 @@
+{
+  "aliases": {
+    "mathieu": {
+      "email": "m.diarra@mskcreation.net",
+      "firstName": "Mathieu",
+      "lastName": "Diarra",
+      "jobTitle": "Fondateur",
+      "status": "ACTIVE",
+      "packs": ["direction", "admin_plateforme"],
+      "groups": ["collaborateur", "direction"],
+      "isFounder": true,
+      "employeeType": "DIRIGEANT"
+    },
+    "madina": {
+      "email": "m.tall@mskcreation.net",
+      "firstName": "Madina",
+      "lastName": "Tall",
+      "jobTitle": "Ex-collaboratrice commerciale",
+      "status": "ARCHIVED",
+      "packs": [],
+      "groups": [],
+      "isFounder": false,
+      "employeeType": "SALARIE"
+    },
+    "fatoumata": {
+      "email": "fatoumata.ex@mskcreation.net",
+      "firstName": "Fatoumata",
+      "lastName": "Ex",
+      "jobTitle": "Ex-collaboratrice commerciale",
+      "status": "ARCHIVED",
+      "packs": [],
+      "groups": [],
+      "isFounder": false,
+      "employeeType": "SALARIE"
+    },
+    "abdoulaye": {
+      "email": "abdoulaye.ex@mskcreation.net",
+      "firstName": "Abdoulaye",
+      "lastName": "Ex",
+      "jobTitle": "Ex-collaborateur commercial",
+      "status": "ARCHIVED",
+      "packs": [],
+      "groups": [],
+      "isFounder": false,
+      "employeeType": "SALARIE"
+    },
+    "yaye": {
+      "email": "y.bah@mskcreation.net",
+      "firstName": "Yaye",
+      "lastName": "Bah",
+      "jobTitle": "Stagiaire commerciale",
+      "status": "MUST_CHANGE_PASSWORD",
+      "packs": ["commercial"],
+      "groups": ["commerciaux"],
+      "isFounder": false,
+      "employeeType": "STAGIAIRE"
+    }
+  }
+}

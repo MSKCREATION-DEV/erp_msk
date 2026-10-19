@@ -18,6 +18,7 @@ import {
 import { AccessCompositionCard } from "@/components/admin/access-composition-card";
 import { EffectiveAccessCard } from "@/components/admin/effective-access-card";
 import { UserAccessForm } from "@/components/admin/user-access-form";
+import { UserCredentialsCard } from "@/components/admin/user-credentials-card";
 import { UserProfileCard } from "@/components/admin/user-profile-card";
 
 export const metadata: Metadata = {
@@ -142,6 +143,15 @@ export default async function UserDetailPage({
         packCodes={resolved?.packCodes ?? []}
         canEdit={hasPermission(actor, "users.edit_profile_any")}
       />
+
+      {hasPermission(actor, "users.reset_password") &&
+      target.status !== "ARCHIVED" ? (
+        <UserCredentialsCard
+          userId={target.id}
+          email={target.email}
+          firstName={target.firstName}
+        />
+      ) : null}
 
       <AccessCompositionCard
         groups={target.groupMembers.map((m) => ({

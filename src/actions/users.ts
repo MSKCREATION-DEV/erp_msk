@@ -159,7 +159,9 @@ export async function inviteUserAction(
     ok: true,
     message: emailSent
       ? `Invitation envoyée à ${email}.`
-      : `Compte créé. E-mail non délivré (Resend / domaine). MDP temporaire : ${tempPassword}`,
+      : `Compte créé. E-mail non délivré (Resend / domaine) — utilisez les identifiants ci-dessous.`,
+    login: email,
+    tempPassword,
   };
 }
 

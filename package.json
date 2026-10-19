@@ -27,7 +27,7 @@
     "gate:phase7b": "node scripts/gate-phase7b.mjs",
     "test:paie-calc": "tsx src/lib/paie/calc.test.ts",
     "test:list": "tsx src/lib/list/search-href.test.ts",
-    "test:crm": "tsx src/lib/crm/follow-up-count.test.ts && tsx src/lib/crm/guide-rules.test.ts && tsx src/lib/crm/labels.test.ts && tsx src/lib/crm/sectors.test.ts && tsx src/lib/crm/scope.test.ts && tsx src/lib/crm/scope-period.test.ts && tsx src/lib/crm/duplicates.test.ts && tsx src/lib/crm/channels.test.ts && tsx src/lib/crm/social.test.ts && tsx src/lib/crm/devis-sla.test.ts && tsx src/lib/crm/week.test.ts && tsx src/lib/crm/goal-scale.test.ts && tsx src/lib/crm/goals-resolve.test.ts && npm run test:list",
+    "test:crm": "tsx src/lib/crm/follow-up-count.test.ts && tsx src/lib/crm/guide-rules.test.ts && tsx src/lib/crm/labels.test.ts && tsx src/lib/crm/sectors.test.ts && tsx src/lib/crm/scope.test.ts && tsx src/lib/crm/scope-period.test.ts && tsx src/lib/crm/duplicates.test.ts && tsx src/lib/crm/channels.test.ts && tsx src/lib/crm/social.test.ts && tsx src/lib/crm/devis-sla.test.ts && tsx src/lib/crm/week.test.ts && tsx src/lib/crm/goal-scale.test.ts && tsx src/lib/crm/goals-resolve.test.ts && npm run test:crm-import && npm run test:list",
     "test:com-docs": "tsx src/lib/commercial/gates.test.ts && tsx src/lib/commercial/totals.test.ts && tsx src/lib/commercial/quote-transitions.test.ts && tsx src/lib/commercial/floor-price.test.ts",
     "test:commercial": "npm run test:crm && npm run test:com-docs",
     "review:ux-rh": "node scripts/review-ux-rh-espace.mjs",
@@ -41,6 +41,10 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:setup": "prisma migrate deploy && tsx prisma/seed.ts",
+    "crm:import:dry": "tsx --env-file=.env.local scripts/crm-excel-migrate.ts --dry-run --file=docs/CRM_Prospection_MSK.xlsx",
+    "crm:import:run": "CONFIRM_PURGE=YES tsx --env-file=.env.local scripts/crm-excel-migrate.ts --purge --ensure-users --import --file=docs/CRM_Prospection_MSK.xlsx",
+    "test:crm-import": "tsx src/lib/crm/import/parse-tabular.test.ts",
+    "test:crm-import:idempotence": "tsx --env-file=.env.local src/lib/crm/import/idempotence.test.ts",
     "postinstall": "prisma generate || exit 0"
   },
   "dependencies": {
@@ -67,6 +71,7 @@
     "sharp": "^0.35.5",
     "tailwind-merge": "^3.7.0",
     "vaul": "^1.1.2",
+    "xlsx": "^0.18.5",
     "zod": "^4.6.5"
   },
   "devDependencies": {
@@ -78,6 +83,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/sharp": "^0.31.1",
+    "@types/xlsx": "^0.0.35",
     "dotenv": "^18.0.6",
     "eslint": "^9",
     "eslint-config-next": "^15.5.27",

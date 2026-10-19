@@ -194,18 +194,38 @@ export function InviteUserForm({
         </p>
       ) : null}
       {state?.ok && state.message ? (
-        <p
-          className="rounded-xl border border-msk-blue/20 bg-msk-blue/5 px-4 py-3 text-sm text-msk-ink"
+        <div
+          className="space-y-3 rounded-xl border border-msk-blue/20 bg-msk-blue/5 px-4 py-3 text-sm text-msk-ink"
           role="status"
         >
-          {state.message}{" "}
-          <Link prefetch={false}
-            href="/administration/utilisateurs"
-            className="cursor-pointer font-medium text-msk-blue hover:underline"
-          >
-            Voir la liste
-          </Link>
-        </p>
+          <p>
+            {state.message}{" "}
+            <Link
+              prefetch={false}
+              href="/administration/utilisateurs"
+              className="cursor-pointer font-medium text-msk-blue hover:underline"
+            >
+              Voir la liste
+            </Link>
+          </p>
+          {state.login && state.tempPassword ? (
+            <div className="rounded-lg border border-msk-ink/10 bg-white p-3 font-mono text-xs leading-relaxed">
+              <p>
+                <span className="text-msk-ink/45">Login · </span>
+                {state.login}
+              </p>
+              <p className="mt-1">
+                <span className="text-msk-ink/45">MDP temporaire · </span>
+                {state.tempPassword}
+              </p>
+              <p className="mt-2 font-sans text-[11px] text-msk-ink/45">
+                Copiez ces identifiants maintenant — le MDP n’est pas stocké en
+                clair. Retrouvez « Identifiants de connexion » sur la fiche
+                utilisateur pour en régénérer un.
+              </p>
+            </div>
+          ) : null}
+        </div>
       ) : null}
 
       <div className="flex flex-wrap items-center gap-3">

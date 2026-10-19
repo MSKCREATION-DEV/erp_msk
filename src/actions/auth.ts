@@ -22,6 +22,9 @@ export type ActionResult = {
   ok: boolean;
   error?: string;
   message?: string;
+  /** Affichage admin quand Resend ne délivre pas encore. */
+  login?: string;
+  tempPassword?: string;
 };
 
 export async function loginAction(
@@ -254,6 +257,15 @@ export async function adminResetPasswordAction(
     where: { id: parsed.data.userId },
   });
   if (!target) return { ok: false, error: "Utilisateur introuvable" };
+  if (target.isSuperAdmin && !actor.isSuperAdmin) {
+    return {
+      ok: false,
+      error: "Seul le Super Admin peut réinitialiser ce compte",
+    };
+  }
+  if (target.status === UserStatus.ARCHIVED) {
+    return { ok: false, error: "Compte archivé — réactivez-le avant un reset MDP" };
+  }
 
   const temp =
     parsed.data.tempPassword ??
@@ -272,7 +284,9 @@ export async function adminResetPasswordAction(
       status:
         target.status === UserStatus.SUSPENDED
           ? UserStatus.SUSPENDED
-          : UserStatus.MUST_CHANGE_PASSWORD,
+          : target.isSuperAdmin
+            ? UserStatus.ACTIVE // Super Admin : MDP changé mais reste ACTIVE + mustChange
+            : UserStatus.MUST_CHANGE_PASSWORD,
     },
   });
 
@@ -293,8 +307,11 @@ export async function adminResetPasswordAction(
   });
 
   revalidatePath("/administration/utilisateurs");
+  revalidatePath(`/administration/utilisateurs/${target.id}`);
   return {
     ok: true,
-    message: `Mot de passe temporaire : ${temp} — communiquez-le de façon sécurisée.`,
+    message: `Mot de passe temporaire généré — communiquez-le de façon sécurisée.`,
+    login: target.email,
+    tempPassword: temp,
   };
 }

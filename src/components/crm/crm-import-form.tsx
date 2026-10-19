@@ -39,16 +39,20 @@ export function CrmImportForm({
       aria-busy={pending || undefined}
     >
       <div>
-        <Label htmlFor="file">CSV prospects (Excel MSK, `;`)</Label>
+        <Label htmlFor="file">Fichier prospects (Excel .xlsx ou CSV `;`)</Label>
         <input
           id="file"
           name="file"
           type="file"
-          accept=".csv,text/csv"
+          accept=".xlsx,.xls,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           required
           disabled={pending}
           className="mt-1 block w-full cursor-pointer text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-msk-blue file:px-3 file:py-2 file:text-sm file:font-medium file:text-white disabled:opacity-60"
         />
+        <p className="mt-1.5 text-xs text-msk-ink/45">
+          Onglet PROSPECTS détecté automatiquement. Responsable / Créé par
+          résolus via le mapping équipe ; doublons (nom normalisé) ignorés.
+        </p>
       </div>
       {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
       {msg ? <p className="text-sm text-msk-blue">{msg}</p> : null}
