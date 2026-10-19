@@ -163,7 +163,7 @@ function RelanceTable({
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-200 text-center text-sm">
-        <thead className="border-b border-msk-ink/[0.08] bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
+        <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
           <tr>
             <th className="px-4 py-3 font-semibold">Entreprise</th>
             <th className="px-4 py-3 font-semibold">Contact</th>
@@ -175,7 +175,7 @@ function RelanceTable({
             <th className="px-4 py-3 font-semibold">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-msk-ink/[0.06]">
+        <tbody className="divide-y divide-msk-ink/6">
           {tasks.map((t) => {
             const org = t.opportunity?.organization;
             const contact = org?.contacts[0];
@@ -417,7 +417,7 @@ export default async function CrmRelancesPage({
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-180 text-left text-sm">
-                <thead className="border-b border-msk-ink/[0.08] bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
+                <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Date</th>
                     <th className="px-4 py-3 font-semibold">Canal</th>
@@ -427,7 +427,7 @@ export default async function CrmRelancesPage({
                     <th className="px-4 py-3 font-semibold">Auteur</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-msk-ink/[0.06]">
+                <tbody className="divide-y divide-msk-ink/6">
                   {activities.map((a) => {
                     const org = a.opportunity?.organization;
                     const owner = a.opportunity?.owner;
@@ -692,7 +692,7 @@ export default async function CrmRelancesPage({
         <div className="space-y-4">
           {visibleSections.map((s) => (
             <Surface key={s.key} className="overflow-hidden p-0">
-              <div className="flex items-center justify-between border-b border-msk-ink/[0.06] bg-msk-chalk/40 px-4 py-2.5">
+              <div className="flex items-center justify-between border-b border-msk-ink/6 bg-msk-chalk/40 px-4 py-2.5">
                 <h2 className="text-sm font-semibold text-msk-ink">{s.title}</h2>
                 <Badge tone={s.tone}>{s.count}</Badge>
               </div>

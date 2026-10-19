@@ -413,11 +413,11 @@ export function GedBrowser({
               ) : null}
             </div>
           ) : (
-            <div className="divide-y divide-msk-ink/[0.06]">
+            <div className="divide-y divide-msk-ink/6">
               {groups.map((g) => (
                 <div key={g.label || "all"}>
                   {prefs.groupBy !== "none" ? (
-                    <div className="sticky top-0 z-[1] border-b border-msk-ink/[0.04] bg-msk-chalk/80 px-4 py-2 backdrop-blur-sm">
+                    <div className="sticky top-0 z-[1] border-b border-msk-ink/4 bg-msk-chalk/80 px-4 py-2 backdrop-blur-sm">
                       <p className="text-xs font-semibold uppercase tracking-caps text-msk-ink/45">
                         {g.label}
                         <span className="ml-2 font-normal normal-case tracking-normal text-msk-ink/30">
@@ -462,8 +462,8 @@ export function GedBrowser({
                     <ul
                       className={cn(
                         prefs.view === "compact"
-                          ? "divide-y divide-msk-ink/[0.04]"
-                          : "divide-y divide-msk-ink/[0.06]",
+                          ? "divide-y divide-msk-ink/4"
+                          : "divide-y divide-msk-ink/6",
                       )}
                     >
                       {g.items.map((entry) =>
@@ -731,7 +731,7 @@ function FolderRow({
       className={cn(
         "flex items-center gap-1 hover:bg-msk-chalk/80",
         compact ? "pr-2" : "pr-3",
-        pending && "bg-msk-blue/[0.04]",
+        pending && "bg-msk-blue/4",
       )}
     >
       <Link
@@ -920,7 +920,7 @@ function FolderTile({
 }) {
   const meta = childCountLabel(folder.childFolderCount, folder.childFileCount);
   return (
-    <li className="relative flex flex-col rounded-xl border border-msk-ink/[0.06] bg-white">
+    <li className="relative flex flex-col rounded-xl border border-msk-ink/6 bg-white">
       <Link
         href={href}
         prefetch={false}
@@ -928,7 +928,7 @@ function FolderTile({
         onClick={onNavigate}
         className={cn(
           "flex flex-1 cursor-pointer flex-col items-center gap-2 p-4 text-center transition hover:border-msk-blue/25",
-          pending && "bg-msk-blue/[0.03]",
+          pending && "bg-msk-blue/3",
         )}
       >
         <span
@@ -945,7 +945,7 @@ function FolderTile({
         <span className="text-[11px] text-msk-ink/40">{meta}</span>
       </Link>
       {canManage ? (
-        <div className="flex justify-center gap-1 border-t border-msk-ink/[0.05] px-2 py-1.5">
+        <div className="flex justify-center gap-1 border-t border-msk-ink/5 px-2 py-1.5">
           <Button
             type="button"
             variant="ghost"
@@ -991,7 +991,7 @@ function DocTile({
 }) {
   const Icon = docIcon(doc.mime);
   return (
-    <li className="flex flex-col rounded-xl border border-msk-ink/[0.06] bg-white p-4">
+    <li className="flex flex-col rounded-xl border border-msk-ink/6 bg-white p-4">
       <button
         type="button"
         onClick={onPreview}

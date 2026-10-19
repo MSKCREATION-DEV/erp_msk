@@ -110,7 +110,7 @@ export function CrmScopeBar({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 rounded-xl border border-msk-ink/[0.08] bg-white px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between",
+        "flex flex-col gap-3 rounded-xl border border-msk-ink/8 bg-white px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between",
         pending && "opacity-70",
         className,
       )}

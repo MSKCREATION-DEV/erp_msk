@@ -45,7 +45,7 @@ export function ListPagination({
     <nav
       role="navigation"
       aria-label="Pagination"
-      className="flex flex-col gap-3 border-t border-msk-ink/[0.06] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+      className="flex flex-col gap-3 border-t border-msk-ink/6 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
     >
       <p className="text-xs text-msk-ink/45">
         <span className="font-medium tabular-nums text-msk-ink/65">

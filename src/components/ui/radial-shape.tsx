@@ -49,7 +49,7 @@ export function RadialShape({
             gridType="circle"
             radialLines={false}
             stroke="none"
-            className="first:fill-msk-ink/[0.06] last:fill-white"
+            className="first:fill-msk-ink/6 last:fill-white"
             polarRadius={[46, 38]}
           />
           <RadialBar dataKey="progress" background cornerRadius={10} />

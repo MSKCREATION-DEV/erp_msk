@@ -54,8 +54,8 @@ export function ScopeFocusBanner({
         className={cn(
           "flex flex-wrap items-start justify-between gap-3 border-b px-4 py-3.5 sm:px-5",
           isHistory
-            ? "border-msk-coral/15 bg-msk-coral/[0.05]"
-            : "border-msk-blue/12 bg-msk-blue/[0.04]",
+            ? "border-msk-coral/15 bg-msk-coral/5"
+            : "border-msk-blue/12 bg-msk-blue/4",
         )}
       >
         <div className="min-w-0 space-y-1">

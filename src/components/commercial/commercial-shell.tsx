@@ -12,7 +12,7 @@ export function CommercialShell({ children }: { children: React.ReactNode }) {
       <CommercialNavGate>
         <Suspense
           fallback={
-            <div className="h-10 animate-pulse rounded bg-msk-ink/[0.04]" />
+            <div className="h-10 animate-pulse rounded bg-msk-ink/4" />
           }
         >
           <CommercialNav />

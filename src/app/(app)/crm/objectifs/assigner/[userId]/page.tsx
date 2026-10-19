@@ -70,7 +70,7 @@ export default async function ObjectifsAssignerCollabPage({
       />
 
       <Surface className="space-y-6 p-5 sm:p-6">
-        <div className="border-b border-msk-ink/[0.08] pb-4">
+        <div className="border-b border-msk-ink/8 pb-4">
           <GoalsAssignTabs
             mode="collab"
             firstCollabId={members[0]?.id ?? null}
@@ -86,7 +86,7 @@ export default async function ObjectifsAssignerCollabPage({
           <GoalsCollabNav members={members} selectedId={focus.id} />
         </div>
 
-        <div className="border-t border-msk-ink/[0.06] pt-6">
+        <div className="border-t border-msk-ink/6 pt-6">
           <GoalsForm
             key={focus.id}
             scope="USER"

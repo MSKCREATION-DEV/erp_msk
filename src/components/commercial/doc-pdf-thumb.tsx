@@ -36,7 +36,7 @@ export function DocPdfThumb({
         type="button"
         onClick={() => setOpen(true)}
         className={cn(
-          "group flex w-full max-w-xs flex-col overflow-hidden rounded-2xl border border-msk-ink/[0.08] bg-white text-left shadow-sm transition hover:border-msk-blue/35 hover:shadow-md",
+          "group flex w-full max-w-xs flex-col overflow-hidden rounded-2xl border border-msk-ink/8 bg-white text-left shadow-sm transition hover:border-msk-blue/35 hover:shadow-md",
           className,
         )}
       >
@@ -48,7 +48,7 @@ export function DocPdfThumb({
             </span>
           </div>
         </div>
-        <div className="border-t border-msk-ink/[0.06] px-3 py-2.5">
+        <div className="border-t border-msk-ink/6 px-3 py-2.5">
           <p className="truncate text-sm font-semibold text-msk-ink">{title}</p>
           {subtitle ? (
             <p className="mt-0.5 truncate text-xs text-msk-ink/45">{subtitle}</p>

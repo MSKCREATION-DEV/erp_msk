@@ -73,7 +73,7 @@ function badgesFromConfig(
       out.push(
         <ConfigBadge
           key={field.key}
-          className="border-msk-blue/20 bg-msk-blue/[0.06] text-msk-blue"
+          className="border-msk-blue/20 bg-msk-blue/6 text-msk-blue"
         >
           <Icon className="h-3.5 w-3.5" aria-hidden />
           {field.label}

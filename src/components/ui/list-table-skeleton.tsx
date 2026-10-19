@@ -19,7 +19,7 @@ export function ListTableSkeleton({
     >
       <div className="min-w-full space-y-0 px-4 py-3">
         <div
-          className="mb-3 grid gap-3 border-b border-msk-ink/[0.06] pb-3"
+          className="mb-3 grid gap-3 border-b border-msk-ink/6 pb-3"
           style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
         >
           {Array.from({ length: cols }).map((_, i) => (
@@ -29,7 +29,7 @@ export function ListTableSkeleton({
         {Array.from({ length: rows }).map((_, r) => (
           <div
             key={r}
-            className="grid gap-3 border-b border-msk-ink/[0.04] py-3"
+            className="grid gap-3 border-b border-msk-ink/4 py-3"
             style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
           >
             {Array.from({ length: cols }).map((_, c) => (

@@ -142,7 +142,7 @@ export default async function ObjectifsCollabDetailPage({
             return (
               <div
                 key={m}
-                className="rounded-xl border border-msk-ink/[0.08] bg-msk-chalk/40 px-4 py-3"
+                className="rounded-xl border border-msk-ink/8 bg-msk-chalk/40 px-4 py-3"
               >
                 <p className="text-xs font-medium text-msk-ink/45">
                   {GOAL_LABELS[m]}
@@ -171,7 +171,7 @@ export default async function ObjectifsCollabDetailPage({
           })}
         </div>
         {canManage ? (
-          <div className="mt-5 flex justify-end border-t border-msk-ink/[0.06] pt-4">
+          <div className="mt-5 flex justify-end border-t border-msk-ink/6 pt-4">
             <ActionLink href={editHref} icon={Pencil} variant="primary">
               Modifier ses objectifs
             </ActionLink>

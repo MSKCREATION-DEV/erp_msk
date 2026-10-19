@@ -102,7 +102,7 @@ export function GenerateDemoButton({ templateId }: { templateId: string }) {
             <iframe
               title="PDF démo"
               src={previewUrl}
-              className="h-[75vh] w-full rounded-lg border border-msk-ink/[0.08] bg-white"
+              className="h-[75vh] w-full rounded-lg border border-msk-ink/8 bg-white"
             />
           ) : null}
         </div>

@@ -184,7 +184,7 @@ export default async function CrmObjectifsPage({
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-180 text-left text-sm">
-              <thead className="border-b border-msk-ink/[0.08] text-[11px] uppercase tracking-wide text-msk-ink/40">
+              <thead className="border-b border-msk-ink/8 text-[11px] uppercase tracking-wide text-msk-ink/40">
                 <tr>
                   <th className="px-3 py-2 font-semibold">Collaborateur</th>
                   {myProgress.map((g) => (
@@ -194,7 +194,7 @@ export default async function CrmObjectifsPage({
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-msk-ink/[0.06]">
+              <tbody className="divide-y divide-msk-ink/6">
                 {teamSnapshots.map((row) => (
                   <ClickableRowLink
                     key={row.id}

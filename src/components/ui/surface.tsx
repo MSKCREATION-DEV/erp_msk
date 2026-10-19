@@ -8,7 +8,7 @@ export function Surface({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-msk-ink/[0.06] bg-white shadow-[0_1px_2px_rgba(13,19,48,0.04)]",
+        "rounded-2xl border border-msk-ink/6 bg-white shadow-[0_1px_2px_rgba(13,19,48,0.04)]",
         className,
       )}
       {...props}

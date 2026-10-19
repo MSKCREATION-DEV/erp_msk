@@ -326,7 +326,7 @@ export function QuoteCreateForm({
             TVA, promotion et frais de déplacement.
           </p>
         </div>
-        <div className="flex flex-wrap gap-4 rounded-xl border border-msk-ink/[0.08] bg-msk-chalk/30 px-4 py-3.5 text-sm">
+        <div className="flex flex-wrap gap-4 rounded-xl border border-msk-ink/8 bg-msk-chalk/30 px-4 py-3.5 text-sm">
           <label className="flex items-center gap-2 font-medium text-msk-ink">
             <input
               type="checkbox"
@@ -447,7 +447,7 @@ export function QuoteCreateForm({
             return (
               <div
                 key={line.key}
-                className="grid gap-2 rounded-xl border border-msk-ink/[0.08] bg-white p-3 sm:grid-cols-[1fr_80px_140px_auto]"
+                className="grid gap-2 rounded-xl border border-msk-ink/8 bg-white p-3 sm:grid-cols-[1fr_80px_140px_auto]"
               >
                 <Input
                   placeholder="Libellé de la ligne"
@@ -528,7 +528,7 @@ export function QuoteCreateForm({
         </div>
       </section>
 
-      <div className="rounded-2xl border border-msk-ink/[0.08] bg-msk-chalk/40 px-4 py-4 text-sm">
+      <div className="rounded-2xl border border-msk-ink/8 bg-msk-chalk/40 px-4 py-4 text-sm">
         <div className="flex justify-between text-msk-ink/60">
           <span>HT</span>
           <span className="tabular-nums">

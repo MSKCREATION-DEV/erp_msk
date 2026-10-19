@@ -482,7 +482,7 @@ export default async function CrmDashboardPage({
               footer={
                 <div className="flex w-full items-end justify-end gap-1.5 sm:gap-2">
                   <HubMiniRadial
-                    className="w-[4.5rem] sm:w-20"
+                    className="w-18 sm:w-20"
                     value={relancesAvenir}
                     max={Math.max(5, relancesAvenir, overdue)}
                     color={METRIC_NAV_TONE_CHART.blue}
@@ -490,7 +490,7 @@ export default async function CrmDashboardPage({
                     caption="à venir"
                   />
                   <HubMiniRadial
-                    className="w-[4.5rem] sm:w-20"
+                    className="w-18 sm:w-20"
                     value={overdue}
                     max={Math.max(5, relancesAvenir, overdue)}
                     color={METRIC_NAV_TONE_CHART.coral}
@@ -510,7 +510,7 @@ export default async function CrmDashboardPage({
               canFilterOwners={ownerScope.canFilterOwners}
               subtitle="à date — clic = filtre liste"
             />
-            <Surface className="divide-y divide-msk-ink/[0.06] overflow-hidden p-0">
+            <Surface className="divide-y divide-msk-ink/6 overflow-hidden p-0">
               <div className="flex items-center justify-between px-4 py-3">
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
                   Priorités

@@ -519,7 +519,7 @@ export default async function CrmProspectDetailPage({
       />
 
       {uiStage === "QUALIFICATION" && STAGE_HINTS.QUALIFICATION ? (
-        <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/[0.04] px-4 py-2.5 text-sm text-msk-ink/65">
+        <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/4 px-4 py-2.5 text-sm text-msk-ink/65">
           {STAGE_HINTS.QUALIFICATION}
         </p>
       ) : null}
@@ -546,7 +546,7 @@ export default async function CrmProspectDetailPage({
       ) : null}
 
       {linkedClient ? (
-        <Surface className="flex flex-wrap items-center justify-between gap-3 border border-msk-blue/20 bg-msk-blue/[0.04] px-5 py-3.5">
+        <Surface className="flex flex-wrap items-center justify-between gap-3 border border-msk-blue/20 bg-msk-blue/4 px-5 py-3.5">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-msk-ink">
               Ce prospect est un client commercial
@@ -568,11 +568,11 @@ export default async function CrmProspectDetailPage({
       {/* Bandeau identité — origine explicite + méta sans doublons */}
       <Surface className="overflow-hidden p-0">
         <div className="grid gap-0 lg:grid-cols-[1.4fr_1fr]">
-          <div className="space-y-4 border-b border-msk-ink/[0.06] p-5 sm:p-6 lg:border-b-0 lg:border-r">
+          <div className="space-y-4 border-b border-msk-ink/6 p-5 sm:p-6 lg:border-b-0 lg:border-r">
             <div className="flex flex-wrap items-center gap-3">
               <OriginChip source={deal.source} />
               {deal.budgetXof != null ? (
-                <div className="inline-flex flex-col rounded-xl border border-msk-ink/[0.08] bg-msk-chalk/40 px-3 py-2">
+                <div className="inline-flex flex-col rounded-xl border border-msk-ink/8 bg-msk-chalk/40 px-3 py-2">
                   <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-msk-ink/40">
                     Budget estimé
                   </span>
@@ -624,7 +624,7 @@ export default async function CrmProspectDetailPage({
                 {deal.organization.contacts.map((c) => (
                   <li
                     key={c.id}
-                    className="rounded-xl border border-msk-ink/[0.06] bg-white/80 px-3 py-2.5"
+                    className="rounded-xl border border-msk-ink/6 bg-white/80 px-3 py-2.5"
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="flex items-center gap-1.5 text-sm font-semibold text-msk-ink">
@@ -711,7 +711,7 @@ export default async function CrmProspectDetailPage({
       </Surface>
 
       {devisDue ? (
-        <Surface className="border-msk-coral/30 bg-msk-coral/[0.04] p-4 sm:p-5">
+        <Surface className="border-msk-coral/30 bg-msk-coral/4 p-4 sm:p-5">
           <p className="text-sm font-semibold text-msk-coral">
             GUIDE — devis sous 24h
           </p>
@@ -727,7 +727,7 @@ export default async function CrmProspectDetailPage({
         <div className="xl:col-span-5">
           <Section title="Entreprise">
             <div className="grid gap-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-              <div className="rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/40 p-3 sm:p-4">
+              <div className="rounded-xl border border-msk-ink/6 bg-msk-chalk/40 p-3 sm:p-4">
                 <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
                   Réseaux sociaux
                 </p>
@@ -846,7 +846,7 @@ export default async function CrmProspectDetailPage({
               ) : null}
             </dl>
             {deal.tasks.length > 0 ? (
-              <div className="mt-4 border-t border-msk-ink/[0.06] pt-4">
+              <div className="mt-4 border-t border-msk-ink/6 pt-4">
                 <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
                   Relances ouvertes
                 </p>
@@ -886,7 +886,7 @@ export default async function CrmProspectDetailPage({
                   ? deal.opportunityOffers.map((link) => (
                       <li
                         key={link.id}
-                        className="rounded-2xl border border-msk-ink/[0.08] bg-white p-4 shadow-sm"
+                        className="rounded-2xl border border-msk-ink/8 bg-white p-4 shadow-sm"
                       >
                         <p className="text-sm font-semibold text-msk-ink">
                           {link.catalogOffer.name}
@@ -903,7 +903,7 @@ export default async function CrmProspectDetailPage({
                       </li>
                     ))
                   : deal.catalogOffer ? (
-                      <li className="rounded-2xl border border-msk-ink/[0.08] bg-white p-4 text-sm font-medium text-msk-ink shadow-sm">
+                      <li className="rounded-2xl border border-msk-ink/8 bg-white p-4 text-sm font-medium text-msk-ink shadow-sm">
                         {deal.catalogOffer.name}
                       </li>
                     ) : null}
@@ -944,14 +944,14 @@ export default async function CrmProspectDetailPage({
                   return (
                     <li
                       key={q.id}
-                      className="flex flex-col gap-3 rounded-2xl border border-msk-ink/[0.08] bg-white p-4 sm:flex-row sm:items-start"
+                      className="flex flex-col gap-3 rounded-2xl border border-msk-ink/8 bg-white p-4 sm:flex-row sm:items-start"
                     >
                       {doc ? (
                         <DocPdfThumb
                           documentId={doc.id}
                           title={doc.originalName || q.number}
                           subtitle={`${QUOTE_STATUS_LABELS[q.status]} · ${formatComMoney(q.totalTtc, q.currency)}`}
-                          className="max-w-[9rem] shrink-0"
+                          className="max-w-36 shrink-0"
                         />
                       ) : (
                         <div className="flex h-28 w-24 shrink-0 flex-col items-center justify-center rounded-xl border border-dashed border-msk-ink/15 bg-msk-chalk/40 text-center text-[10px] text-msk-ink/40">
@@ -978,7 +978,7 @@ export default async function CrmProspectDetailPage({
                           </p>
                         ) : null}
                         {q.invoices.length > 0 ? (
-                          <ul className="mt-2 space-y-1 border-t border-msk-ink/[0.05] pt-2">
+                          <ul className="mt-2 space-y-1 border-t border-msk-ink/5 pt-2">
                             {q.invoices.map((inv) => (
                               <li
                                 key={inv.id}

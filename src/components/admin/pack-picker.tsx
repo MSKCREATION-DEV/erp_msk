@@ -78,7 +78,7 @@ export function PackPicker({
             className={cn(
               "rounded-xl border border-msk-ink/10 bg-white transition",
               isOn &&
-                "border-msk-blue bg-msk-blue/[0.04] shadow-sm",
+                "border-msk-blue bg-msk-blue/4 shadow-sm",
               isInherited && "border-msk-ink/15 bg-msk-chalk/40",
             )}
           >
@@ -127,7 +127,7 @@ export function PackPicker({
               <div className="mt-3 flex flex-wrap items-center gap-1.5">
                 <p className="text-sm font-semibold text-msk-ink">{pack.name}</p>
                 {isInherited ? (
-                  <span className="rounded-md bg-msk-ink/[0.06] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-msk-ink/50">
+                  <span className="rounded-md bg-msk-ink/6 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-msk-ink/50">
                     Hérité groupe
                   </span>
                 ) : null}
@@ -149,7 +149,7 @@ export function PackPicker({
                     <span>{pack.permissionCount} perm.</span>
                   ) : null}
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-msk-ink/[0.06]">
+                <div className="h-1.5 overflow-hidden rounded-full bg-msk-ink/6">
                   <div
                     className="h-full rounded-full bg-msk-blue"
                     style={{ width: `${level}%` }}
@@ -159,7 +159,7 @@ export function PackPicker({
             </label>
 
             {codes.length > 0 ? (
-              <div className="border-t border-msk-ink/[0.06] px-4 py-2.5">
+              <div className="border-t border-msk-ink/6 px-4 py-2.5">
                 <button
                   type="button"
                   onClick={() =>

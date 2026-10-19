@@ -209,7 +209,7 @@ export function GoalsForm({
               return (
                 <div
                   key={m}
-                  className="rounded-xl border border-msk-ink/[0.08] bg-white p-4"
+                  className="rounded-xl border border-msk-ink/8 bg-white p-4"
                 >
                   <FieldLabel htmlFor={`${formId}-${m}`}>
                     {GOAL_LABELS[m]}
@@ -247,7 +247,7 @@ export function GoalsForm({
         {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
         {ok ? <p className="text-sm text-msk-blue">{ok}</p> : null}
 
-        <div className="flex flex-wrap items-center justify-end gap-2 border-t border-msk-ink/[0.08] pt-4">
+        <div className="flex flex-wrap items-center justify-end gap-2 border-t border-msk-ink/8 pt-4">
           {cancelHref ? (
             <Button
               type="button"

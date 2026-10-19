@@ -36,7 +36,7 @@ export function SocialNetworkBadges({
           target="_blank"
           rel="noreferrer"
           title={`${n.label} — ${n.url}`}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-msk-ink/10 bg-white px-2.5 py-1 text-xs font-medium text-msk-ink shadow-sm transition hover:border-msk-blue/30 hover:bg-msk-blue/[0.04] hover:text-msk-blue"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-msk-ink/10 bg-white px-2.5 py-1 text-xs font-medium text-msk-ink shadow-sm transition hover:border-msk-blue/30 hover:bg-msk-blue/4 hover:text-msk-blue"
         >
           <NetworkChannelIcon network={n.key} className="h-3.5 w-3.5" />
           {n.label}

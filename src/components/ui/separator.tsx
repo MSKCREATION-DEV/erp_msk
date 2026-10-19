@@ -15,7 +15,7 @@ function Separator({
       decorative={decorative}
       orientation={orientation}
       className={cn(
-        "shrink-0 bg-msk-ink/[0.08]",
+        "shrink-0 bg-msk-ink/8",
         orientation === "horizontal" ? "h-px w-full" : "h-full w-px",
         className,
       )}

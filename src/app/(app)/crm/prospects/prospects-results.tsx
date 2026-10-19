@@ -293,7 +293,7 @@ export async function ProspectsResults({
   return (
     <>
       {focusOwnerLabel ? (
-        <div className="border-b border-msk-ink/[0.06] px-4 py-3">
+        <div className="border-b border-msk-ink/6 px-4 py-3">
           <ScopeFocusBanner
             label={focusOwnerLabel}
             periodLabel={applyPeriodFilter ? period?.label : undefined}
@@ -310,7 +310,7 @@ export async function ProspectsResults({
       ) : null}
 
       {hasActiveFilters ? (
-        <div className="flex flex-wrap items-center gap-1.5 border-b border-msk-ink/[0.06] px-4 py-2.5">
+        <div className="flex flex-wrap items-center gap-1.5 border-b border-msk-ink/6 px-4 py-2.5">
           {qTrim ? <Badge tone="blue">« {qTrim} »</Badge> : null}
           {[
             ...new Map(
@@ -364,7 +364,7 @@ export async function ProspectsResults({
 
       <div className="overflow-x-auto">
         <table className="w-full min-w-280 text-center text-sm">
-          <thead className="border-b border-msk-ink/[0.08] bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
+          <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
             <tr>
               <th className="px-4 py-3 font-semibold">Entreprise</th>
               <th className="px-4 py-3 font-semibold">Contact / poste</th>
@@ -382,7 +382,7 @@ export async function ProspectsResults({
               ) : null}
             </tr>
           </thead>
-          <tbody className="divide-y divide-msk-ink/[0.06]">
+          <tbody className="divide-y divide-msk-ink/6">
             {deals.length === 0 ? (
               <tr>
                 <td

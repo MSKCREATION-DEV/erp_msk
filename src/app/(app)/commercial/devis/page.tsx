@@ -69,7 +69,7 @@ export default async function CommercialDevisPage({
       />
 
       <Surface className="overflow-hidden p-0">
-        <div className="border-b border-msk-ink/[0.06] px-4 py-3">
+        <div className="border-b border-msk-ink/6 px-4 py-3">
           <Suspense
             fallback={
               <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
@@ -188,7 +188,7 @@ async function DevisResults({
                   {row.number}
                 </td>
                 <td className="px-4 py-3">{row.client.name}</td>
-                <td className="max-w-[14rem] truncate px-4 py-3 text-msk-ink/70">
+                <td className="max-w-56 truncate px-4 py-3 text-msk-ink/70">
                   {row.object ?? "—"}
                 </td>
                 <td className="px-4 py-3">

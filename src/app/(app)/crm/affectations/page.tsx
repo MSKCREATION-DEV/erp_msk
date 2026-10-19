@@ -111,7 +111,7 @@ export default async function CrmAffectationsPage() {
       />
 
       <Surface className="overflow-hidden p-0">
-        <div className="border-b border-msk-ink/[0.06] bg-msk-chalk/40 px-4 py-2.5">
+        <div className="border-b border-msk-ink/6 bg-msk-chalk/40 px-4 py-2.5">
           <h2 className="text-sm font-semibold text-msk-ink">
             Demandes en attente
             <Badge tone={pending.length > 0 ? "coral" : "muted"} className="ml-2">
@@ -124,7 +124,7 @@ export default async function CrmAffectationsPage() {
             Aucune demande en attente.
           </p>
         ) : (
-          <ul className="divide-y divide-msk-ink/[0.06]">
+          <ul className="divide-y divide-msk-ink/6">
             {pending.map((r) => {
               const uiStage = normalizeUiStage(r.opportunity.stage);
               return (
@@ -181,10 +181,10 @@ export default async function CrmAffectationsPage() {
 
       {recent.length > 0 ? (
         <Surface className="overflow-hidden p-0">
-          <div className="border-b border-msk-ink/[0.06] bg-msk-chalk/40 px-4 py-2.5">
+          <div className="border-b border-msk-ink/6 bg-msk-chalk/40 px-4 py-2.5">
             <h2 className="text-sm font-semibold text-msk-ink">Récentes</h2>
           </div>
-          <ul className="divide-y divide-msk-ink/[0.06]">
+          <ul className="divide-y divide-msk-ink/6">
             {recent.map((r) => (
               <li
                 key={r.id}

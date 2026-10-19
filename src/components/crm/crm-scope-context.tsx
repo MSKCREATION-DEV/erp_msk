@@ -30,8 +30,8 @@ export function CrmScopeContext({
       className={cn(
         "flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm",
         isHistory
-          ? "border-msk-coral/25 bg-msk-coral/[0.06] text-msk-ink/80"
-          : "border-msk-blue/20 bg-msk-blue/[0.04] text-msk-ink/75",
+          ? "border-msk-coral/25 bg-msk-coral/6 text-msk-ink/80"
+          : "border-msk-blue/20 bg-msk-blue/4 text-msk-ink/75",
         className,
       )}
       role="status"

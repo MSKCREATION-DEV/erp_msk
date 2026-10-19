@@ -8,7 +8,7 @@ export default function Loading() {
         {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={i}
-            className="h-28 animate-pulse rounded-xl bg-msk-ink/[0.06]"
+            className="h-28 animate-pulse rounded-xl bg-msk-ink/6"
           />
         ))}
       </div>

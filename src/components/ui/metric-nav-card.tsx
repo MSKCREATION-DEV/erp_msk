@@ -11,7 +11,7 @@ export const METRIC_NAV_TONE_ICON: Record<MetricNavTone, string> = {
   blue: "bg-msk-blue/10 text-msk-blue",
   coral: "bg-msk-coral/10 text-msk-coral",
   cyan: "bg-[#00ACEE]/12 text-[#1384CB]",
-  ink: "bg-msk-ink/[0.06] text-msk-ink/70",
+  ink: "bg-msk-ink/6 text-msk-ink/70",
 };
 
 export const METRIC_NAV_TONE_CHART: Record<
@@ -24,7 +24,7 @@ export const METRIC_NAV_TONE_CHART: Record<
 };
 
 const shellClass =
-  "group flex h-full flex-col rounded-xl border border-msk-ink/[0.08] bg-white p-4 shadow-sm transition hover:border-msk-blue/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40";
+  "group flex h-full flex-col rounded-xl border border-msk-ink/8 bg-white p-4 shadow-sm transition hover:border-msk-blue/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40";
 
 export type MetricNavCardProps = {
   href: string;
@@ -62,7 +62,7 @@ export function MetricNavCard({
           className={cn(
             "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
             gated
-              ? "bg-msk-ink/[0.04] text-msk-ink/35"
+              ? "bg-msk-ink/4 text-msk-ink/35"
               : METRIC_NAV_TONE_ICON[tone],
           )}
         >
@@ -111,7 +111,7 @@ export function MetricNavCard({
         aria-disabled="true"
         className={cn(
           shellClass,
-          "cursor-not-allowed opacity-70 shadow-none hover:border-msk-ink/[0.08] hover:shadow-none",
+          "cursor-not-allowed opacity-70 shadow-none hover:border-msk-ink/8 hover:shadow-none",
           className,
         )}
       >

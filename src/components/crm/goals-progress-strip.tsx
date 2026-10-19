@@ -67,7 +67,7 @@ export function GoalsProgressStrip({
 
   if (embedded) {
     return (
-      <div className="rounded-lg border border-msk-ink/[0.06] bg-msk-chalk/30 p-4">
+      <div className="rounded-lg border border-msk-ink/6 bg-msk-chalk/30 p-4">
         {body}
       </div>
     );

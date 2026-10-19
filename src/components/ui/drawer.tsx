@@ -65,8 +65,8 @@ function DrawerContent({
       <DrawerPrimitive.Content
         className={cn(
           "fixed z-50 flex h-full flex-col bg-white outline-none",
-          "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:border-msk-ink/[0.08]",
-          "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:border-msk-ink/[0.08]",
+          "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:border-msk-ink/8",
+          "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:border-msk-ink/8",
           "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[96vh] data-[vaul-drawer-direction=bottom]:rounded-t-2xl data-[vaul-drawer-direction=bottom]:border-t",
           "shadow-2xl shadow-msk-ink/20",
           wide
@@ -97,7 +97,7 @@ function DrawerHeader({
   return (
     <div
       className={cn(
-        "shrink-0 border-b border-msk-ink/[0.07] px-5 py-4 pr-14",
+        "shrink-0 border-b border-msk-ink/7 px-5 py-4 pr-14",
         className,
       )}
       {...props}
@@ -112,7 +112,7 @@ function DrawerFooter({
   return (
     <div
       className={cn(
-        "mt-auto flex shrink-0 flex-col gap-2 border-t border-msk-ink/[0.07] bg-white px-5 py-4",
+        "mt-auto flex shrink-0 flex-col gap-2 border-t border-msk-ink/7 bg-white px-5 py-4",
         className,
       )}
       {...props}

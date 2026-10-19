@@ -71,7 +71,7 @@ function Section({
 }) {
   return (
     <Surface className="overflow-hidden p-0">
-      <div className="flex items-center justify-between gap-3 border-b border-msk-ink/[0.06] px-5 py-3.5 sm:px-6">
+      <div className="flex items-center justify-between gap-3 border-b border-msk-ink/6 px-5 py-3.5 sm:px-6">
         <h2 className="text-sm font-semibold tracking-tight text-msk-ink">
           {title}
         </h2>
@@ -244,7 +244,7 @@ export default async function CommercialClientDetailPage({
       {/* Bandeau identité — même structure que fiche prospect */}
       <Surface className="overflow-hidden p-0">
         <div className="grid gap-0 lg:grid-cols-[1.4fr_1fr]">
-          <div className="space-y-4 border-b border-msk-ink/[0.06] p-5 sm:p-6 lg:border-b-0 lg:border-r">
+          <div className="space-y-4 border-b border-msk-ink/6 p-5 sm:p-6 lg:border-b-0 lg:border-r">
             <div className="flex flex-wrap items-center gap-3">
               <OriginChip source={originSource} />
             </div>
@@ -316,7 +316,7 @@ export default async function CommercialClientDetailPage({
                 {org.contacts.map((c) => (
                   <li
                     key={c.id}
-                    className="rounded-xl border border-msk-ink/[0.06] bg-white/80 px-3 py-2.5"
+                    className="rounded-xl border border-msk-ink/6 bg-white/80 px-3 py-2.5"
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="flex items-center gap-1.5 text-sm font-semibold text-msk-ink">
@@ -399,7 +399,7 @@ export default async function CommercialClientDetailPage({
               </ul>
             ) : client.contactName || client.phone || client.email ? (
               <ul className="mt-3 space-y-3">
-                <li className="rounded-xl border border-msk-ink/[0.06] bg-white/80 px-3 py-2.5">
+                <li className="rounded-xl border border-msk-ink/6 bg-white/80 px-3 py-2.5">
                   <div className="flex flex-wrap items-center gap-2">
                     {client.contactName ? (
                       <p className="flex items-center gap-1.5 text-sm font-semibold text-msk-ink">
@@ -448,7 +448,7 @@ export default async function CommercialClientDetailPage({
         <div className="lg:col-span-5">
           <Section title="Entreprise">
             <div className="grid gap-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-              <div className="rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/40 p-3 sm:p-4">
+              <div className="rounded-xl border border-msk-ink/6 bg-msk-chalk/40 p-3 sm:p-4">
                 <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
                   Réseaux sociaux
                 </p>
@@ -508,7 +508,7 @@ export default async function CommercialClientDetailPage({
               </ul>
             </div>
             {(client.notes || org?.notes) ? (
-              <div className="mt-4 border-t border-msk-ink/[0.06] pt-3">
+              <div className="mt-4 border-t border-msk-ink/6 pt-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
                   Notes
                 </p>
@@ -563,7 +563,7 @@ export default async function CommercialClientDetailPage({
                         documentId={q.gedDocumentId}
                         title={q.number}
                         subtitle={QUOTE_STATUS_LABELS[q.status]}
-                        className="max-w-[6.5rem] shrink-0"
+                        className="max-w-26 shrink-0"
                       />
                     ) : null}
                     <div className="min-w-0 flex-1 space-y-1">
@@ -613,7 +613,7 @@ export default async function CommercialClientDetailPage({
                         documentId={inv.gedDocumentId}
                         title={inv.number}
                         subtitle={INVOICE_STATUS_LABELS[inv.status]}
-                        className="max-w-[6.5rem] shrink-0"
+                        className="max-w-26 shrink-0"
                       />
                     ) : null}
                     <div className="min-w-0 flex-1 space-y-1">

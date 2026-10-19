@@ -135,7 +135,7 @@ function FieldConfig({
       className={cn(
         "flex w-full items-center justify-between gap-3 rounded-xl border px-3.5 py-3 text-left transition",
         on
-          ? "border-msk-blue/35 bg-msk-blue/[0.06]"
+          ? "border-msk-blue/35 bg-msk-blue/6"
           : "border-msk-ink/10 bg-white hover:border-msk-ink/18",
         disabled && "pointer-events-none opacity-50",
       )}
@@ -175,7 +175,7 @@ function OfferConfigPanel({
   onConfigChange: (key: string, value: unknown) => void;
 }) {
   return (
-    <article className="flex flex-col rounded-2xl border border-msk-ink/[0.08] bg-white p-4 shadow-sm sm:p-5">
+    <article className="flex flex-col rounded-2xl border border-msk-ink/8 bg-white p-4 shadow-sm sm:p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -202,7 +202,7 @@ function OfferConfigPanel({
       </div>
 
       {schema && schema.fields.length > 0 ? (
-        <div className="space-y-4 border-t border-msk-ink/[0.06] pt-4">
+        <div className="space-y-4 border-t border-msk-ink/6 pt-4">
           {schema.fields.map((field) => (
             <FieldConfig
               key={field.key}
@@ -318,8 +318,8 @@ export function ProspectOffersStep({
                     className={cn(
                       "flex h-full w-full items-start gap-3 rounded-2xl border px-3.5 py-3.5 text-left transition",
                       active
-                        ? "border-msk-blue bg-msk-blue/[0.06] shadow-sm shadow-msk-blue/10"
-                        : "border-msk-ink/[0.08] bg-white hover:border-msk-blue/30 hover:shadow-sm",
+                        ? "border-msk-blue bg-msk-blue/6 shadow-sm shadow-msk-blue/10"
+                        : "border-msk-ink/8 bg-white hover:border-msk-blue/30 hover:shadow-sm",
                       disabled && "pointer-events-none opacity-50",
                     )}
                   >

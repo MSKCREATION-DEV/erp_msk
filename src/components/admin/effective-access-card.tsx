@@ -49,7 +49,7 @@ export function EffectiveAccessCard({
       </CardHeader>
       <CardContent>
         {isSuperAdmin ? (
-          <div className="rounded-xl border border-msk-blue/20 bg-msk-blue/[0.04] px-4 py-3">
+          <div className="rounded-xl border border-msk-blue/20 bg-msk-blue/4 px-4 py-3">
             <Badge tone="blue">Bypass total</Badge>
             <p className="mt-2 text-sm text-msk-ink/60">
               Super Admin — toutes les permissions catalogue, hors résolution
@@ -77,7 +77,7 @@ export function EffectiveAccessCard({
                 {effective.map((e) => (
                   <li
                     key={e.code}
-                    className="rounded-lg border border-msk-ink/[0.07] bg-[#F8F9FB] px-3 py-2"
+                    className="rounded-lg border border-msk-ink/7 bg-[#F8F9FB] px-3 py-2"
                   >
                     <p className="font-mono text-xs font-medium text-msk-ink">
                       {e.code}
@@ -94,7 +94,7 @@ export function EffectiveAccessCard({
                 {denied.map((e) => (
                   <li
                     key={`deny-${e.code}`}
-                    className="rounded-lg border border-msk-coral/20 bg-msk-coral/[0.04] px-3 py-2"
+                    className="rounded-lg border border-msk-coral/20 bg-msk-coral/4 px-3 py-2"
                   >
                     <p className="font-mono text-xs font-medium text-msk-coral">
                       {e.code}

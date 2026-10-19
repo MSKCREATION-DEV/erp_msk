@@ -114,7 +114,7 @@ export function StageForm({
         modalTitle="Statut du prospect"
       />
       {STAGE_HINTS[current] ? (
-        <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/[0.04] px-3 py-2 text-xs text-msk-ink/65">
+        <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/4 px-3 py-2 text-xs text-msk-ink/65">
           {STAGE_HINTS[current]}
         </p>
       ) : null}
@@ -129,7 +129,7 @@ export function StageForm({
       ) : null}
 
       {enteringContacte ? (
-        <div className="space-y-3 rounded-xl border border-msk-coral/25 bg-msk-coral/[0.04] p-3.5">
+        <div className="space-y-3 rounded-xl border border-msk-coral/25 bg-msk-coral/4 p-3.5">
           <p className="text-xs font-medium text-msk-ink/70">
             Direction : expliquer le contact (canal + échange). Obligatoire.
           </p>
@@ -171,7 +171,7 @@ export function StageForm({
       ) : null}
 
       {current === "PERDU" ? (
-        <div className="space-y-3 rounded-xl border border-msk-ink/[0.08] bg-msk-chalk/40 p-3.5">
+        <div className="space-y-3 rounded-xl border border-msk-ink/8 bg-msk-chalk/40 p-3.5">
           {activityCount < RELANCE_GUIDE_THRESHOLD ? (
             <p className="text-xs text-msk-coral">
               GUIDE : {activityCount}/{RELANCE_GUIDE_THRESHOLD} relances

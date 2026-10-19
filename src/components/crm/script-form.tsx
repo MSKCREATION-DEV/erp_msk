@@ -207,7 +207,7 @@ export function ScriptForm({ initial }: { initial?: Initial }) {
           </p>
         ) : null}
 
-        <div className="flex flex-wrap items-center justify-end gap-2 border-t border-msk-ink/[0.06] pt-4">
+        <div className="flex flex-wrap items-center justify-end gap-2 border-t border-msk-ink/6 pt-4">
           <Link
             prefetch={false}
             href="/crm/scripts"

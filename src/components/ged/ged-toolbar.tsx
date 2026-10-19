@@ -41,7 +41,7 @@ export function GedToolbar({
   onGroup,
 }: Props) {
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-msk-ink/[0.08] bg-white px-3 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-4">
+    <div className="flex flex-col gap-3 rounded-xl border border-msk-ink/8 bg-white px-3 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-4">
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs font-semibold uppercase tracking-caps text-msk-ink/40">
           Affichage
@@ -49,7 +49,7 @@ export function GedToolbar({
         <div
           role="group"
           aria-label="Mode d’affichage"
-          className="inline-flex rounded-lg border border-msk-ink/[0.1] bg-msk-chalk/50 p-0.5"
+          className="inline-flex rounded-lg border border-msk-ink/10 bg-msk-chalk/50 p-0.5"
         >
           {(
             [
@@ -113,7 +113,7 @@ export function GedToolbar({
                   {GED_SORT_LABELS[key]}
                 </MenuRow>
               ))}
-              <div className="my-1 h-px bg-msk-ink/[0.06]" />
+              <div className="my-1 h-px bg-msk-ink/6" />
               <MenuHeading>Ordre</MenuHeading>
               <MenuRow
                 active={sortDir === "asc"}
@@ -188,8 +188,8 @@ function ToolbarMenu({
         aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "inline-flex h-8 max-w-56 items-center gap-1.5 rounded-lg border border-msk-ink/[0.12] bg-white px-2.5 text-xs font-medium text-msk-ink transition hover:border-msk-blue/30 hover:bg-msk-chalk/60 sm:text-sm",
-          open && "border-msk-blue/40 bg-msk-blue/[0.04] text-msk-blue",
+          "inline-flex h-8 max-w-56 items-center gap-1.5 rounded-lg border border-msk-ink/12 bg-white px-2.5 text-xs font-medium text-msk-ink transition hover:border-msk-blue/30 hover:bg-msk-chalk/60 sm:text-sm",
+          open && "border-msk-blue/40 bg-msk-blue/4 text-msk-blue",
         )}
       >
         {icon}
@@ -201,7 +201,7 @@ function ToolbarMenu({
       {open ? (
         <div
           role="menu"
-          className="absolute right-0 z-40 mt-1.5 w-52 overflow-hidden rounded-xl border border-msk-ink/[0.08] bg-white py-1 shadow-lg"
+          className="absolute right-0 z-40 mt-1.5 w-52 overflow-hidden rounded-xl border border-msk-ink/8 bg-white py-1 shadow-lg"
         >
           {children(() => setOpen(false))}
         </div>
@@ -235,7 +235,7 @@ function MenuRow({
       className={cn(
         "flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm transition",
         active
-          ? "bg-msk-blue/[0.06] font-medium text-msk-blue"
+          ? "bg-msk-blue/6 font-medium text-msk-blue"
           : "text-msk-ink/80 hover:bg-msk-chalk",
       )}
     >

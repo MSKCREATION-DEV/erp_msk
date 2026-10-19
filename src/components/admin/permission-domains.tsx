@@ -120,7 +120,7 @@ export function PermissionDomainPicker({
           className="pl-9"
         />
       </div>
-      <div className="divide-y divide-msk-ink/[0.06] overflow-hidden rounded-xl border border-msk-ink/10 bg-white">
+      <div className="divide-y divide-msk-ink/6 overflow-hidden rounded-xl border border-msk-ink/10 bg-white">
         {byDomain.map(([domain, perms]) => {
           const isOpen = open[domain] ?? true;
           const selectedInDomain = perms.filter((p) =>
@@ -162,7 +162,7 @@ export function PermissionDomainPicker({
                         className={cn(
                           "flex cursor-pointer items-start gap-2.5 rounded-lg px-2 py-2 text-sm transition",
                           isOn
-                            ? "bg-msk-blue/[0.06] ring-1 ring-msk-blue/20"
+                            ? "bg-msk-blue/6 ring-1 ring-msk-blue/20"
                             : "hover:bg-msk-chalk/60",
                         )}
                       >

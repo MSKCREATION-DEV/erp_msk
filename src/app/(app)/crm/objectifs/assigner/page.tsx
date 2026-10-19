@@ -60,7 +60,7 @@ export default async function ObjectifsAssignerEquipePage({
       />
 
       <Surface className="p-5 sm:p-6">
-        <div className="mb-6 border-b border-msk-ink/[0.08] pb-4">
+        <div className="mb-6 border-b border-msk-ink/8 pb-4">
           <GoalsAssignTabs
             mode="equipe"
             firstCollabId={first?.id ?? null}

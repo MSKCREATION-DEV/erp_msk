@@ -8,7 +8,7 @@ export default function Loading() {
         {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
-            className="h-72 w-65 shrink-0 animate-pulse rounded-xl bg-msk-ink/[0.06]"
+            className="h-72 w-65 shrink-0 animate-pulse rounded-xl bg-msk-ink/6"
           />
         ))}
       </div>

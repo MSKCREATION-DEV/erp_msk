@@ -76,7 +76,7 @@ export function ConversionPipelineCard({
         className={
           signedOnly
             ? "mt-5 flex flex-col items-center"
-            : "mt-5 grid gap-6 sm:grid-cols-2 sm:gap-0 sm:divide-x sm:divide-msk-ink/[0.08]"
+            : "mt-5 grid gap-6 sm:grid-cols-2 sm:gap-0 sm:divide-x sm:divide-msk-ink/8"
         }
       >
         <ConversionColumn

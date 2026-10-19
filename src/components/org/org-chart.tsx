@@ -361,7 +361,7 @@ export function OrgChart({ nodes }: { nodes: OrgChartNode[] }) {
       </div>
 
       {/* Mobile : liste */}
-      <ul className="divide-y divide-msk-ink/[0.06] overflow-hidden rounded-xl border border-msk-ink/[0.08] bg-white md:hidden">
+      <ul className="divide-y divide-msk-ink/6 overflow-hidden rounded-xl border border-msk-ink/8 bg-white md:hidden">
         {[l0, l1, l2, l3, l4].flatMap((row, levelIdx) =>
           row.map((node) => {
             const { firstName, lastName } = splitName(node.fullName);

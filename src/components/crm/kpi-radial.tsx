@@ -33,7 +33,7 @@ export function KpiRadial({
             cy="50"
             r={r}
             fill="none"
-            className="text-msk-ink/[0.08]"
+            className="text-msk-ink/8"
             stroke="currentColor"
             strokeWidth="8"
           />

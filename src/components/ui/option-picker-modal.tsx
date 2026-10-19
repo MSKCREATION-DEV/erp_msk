@@ -115,7 +115,7 @@ export function OptionPickerSingle({
                   className={cn(
                     "flex w-full flex-col rounded-xl border px-3 py-2.5 text-left transition",
                     value === o.value
-                      ? "border-msk-blue bg-msk-blue/[0.06]"
+                      ? "border-msk-blue bg-msk-blue/6"
                       : "border-transparent bg-white hover:border-msk-ink/10",
                   )}
                 >
@@ -248,7 +248,7 @@ export function OptionPickerMulti({
                     className={cn(
                       "flex w-full flex-col rounded-xl border px-3 py-2.5 text-left transition",
                       active
-                        ? "border-msk-blue bg-msk-blue/[0.06]"
+                        ? "border-msk-blue bg-msk-blue/6"
                         : "border-transparent bg-white hover:border-msk-ink/10",
                     )}
                   >

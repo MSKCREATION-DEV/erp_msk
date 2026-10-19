@@ -50,7 +50,7 @@ export function OriginChip({
   return (
     <div
       className={cn(
-        "inline-flex max-w-full items-center gap-2.5 rounded-xl border border-msk-ink/[0.08] bg-white px-3 py-2 shadow-sm",
+        "inline-flex max-w-full items-center gap-2.5 rounded-xl border border-msk-ink/8 bg-white px-3 py-2 shadow-sm",
         className,
       )}
     >

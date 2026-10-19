@@ -72,7 +72,7 @@ export default async function CommercialClientsPage({
       />
 
       <Surface className="overflow-hidden p-0">
-        <div className="flex flex-wrap items-center gap-3 border-b border-msk-ink/[0.06] px-4 py-3">
+        <div className="flex flex-wrap items-center gap-3 border-b border-msk-ink/6 px-4 py-3">
           <Suspense
             fallback={
               <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
@@ -231,7 +231,7 @@ async function ClientsResults({
   return (
     <>
       {focusOwnerLabel || (isGagnesEvent && period) ? (
-        <div className="space-y-2 border-b border-msk-ink/[0.06] px-4 py-3">
+        <div className="space-y-2 border-b border-msk-ink/6 px-4 py-3">
           {focusOwnerLabel ? (
             <ScopeFocusBanner
               label={focusOwnerLabel}
@@ -259,7 +259,7 @@ async function ClientsResults({
 
       <div className="overflow-x-auto">
         <table className="w-full min-w-220 text-left text-sm">
-          <thead className="border-b border-msk-ink/[0.08] bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
+          <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
             <tr>
               <th className="px-4 py-3 font-semibold">Client</th>
               <th className="px-4 py-3 font-semibold">Contact</th>
@@ -271,7 +271,7 @@ async function ClientsResults({
               <th className="px-4 py-3 font-semibold">Mis à jour</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-msk-ink/[0.06]">
+          <tbody className="divide-y divide-msk-ink/6">
             {clients.length === 0 ? (
               <tr>
                 <td

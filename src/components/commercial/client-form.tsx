@@ -249,7 +249,7 @@ export function ClientForm({
     return (
       <div className="space-y-6">
         {fields}
-        <div className="border-t border-msk-ink/[0.06] pt-4">{footer}</div>
+        <div className="border-t border-msk-ink/6 pt-4">{footer}</div>
       </div>
     );
   }

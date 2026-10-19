@@ -46,7 +46,7 @@ export function GroupPicker({
             title={g.description ?? undefined}
             className={cn(
               "group flex cursor-pointer items-start gap-3 rounded-xl border border-msk-ink/10 bg-white px-3.5 py-3 transition",
-              isOn && "border-msk-blue bg-msk-blue/[0.04]",
+              isOn && "border-msk-blue bg-msk-blue/4",
             )}
           >
             <input

@@ -285,7 +285,7 @@ export function UserAccessForm({
               compact
             />
           </section>
-          <div className="rounded-lg border border-msk-blue/20 bg-msk-blue/[0.04] px-3 py-2 text-xs text-msk-ink/60">
+          <div className="rounded-lg border border-msk-blue/20 bg-msk-blue/4 px-3 py-2 text-xs text-msk-ink/60">
             <strong>Commercial</strong> : groupe Commerciaux suffit pour le
             terrain. Vue Équipe / import / scripts / objectifs → ajoutez le pack{" "}
             <strong>Admin CRM</strong> en direct.
@@ -296,7 +296,7 @@ export function UserAccessForm({
           {accessState?.message ? (
             <p className="text-sm text-msk-blue">{accessState.message}</p>
           ) : null}
-          <div className="sticky bottom-0 flex gap-2 border-t border-msk-ink/[0.06] bg-white pt-4">
+          <div className="sticky bottom-0 flex gap-2 border-t border-msk-ink/6 bg-white pt-4">
             <Button type="submit" disabled={accessPending} className="flex-1">
               {accessPending ? "Enregistrement…" : "Enregistrer"}
             </Button>
@@ -321,7 +321,7 @@ export function UserAccessForm({
         <form action={ovAction} className="space-y-5" key={overridesKey}>
           <input type="hidden" name="userId" value={userId} />
 
-          <div className="rounded-lg border border-msk-blue/20 bg-msk-blue/[0.04] px-3 py-2 text-xs text-msk-ink/60">
+          <div className="rounded-lg border border-msk-blue/20 bg-msk-blue/4 px-3 py-2 text-xs text-msk-ink/60">
             <strong>{draftDesiredCodes.length}</strong> droit(s) coché(s) pour
             ce compte (groupes, packs, exceptions). CRM / Commercial en tête.
             Enregistrer calcule automatiquement GRANT / DENY par rapport aux
@@ -354,7 +354,7 @@ export function UserAccessForm({
             <p className="text-sm text-msk-blue">{ovState.message}</p>
           ) : null}
 
-          <div className="sticky bottom-0 flex gap-2 border-t border-msk-ink/[0.06] bg-white pt-4">
+          <div className="sticky bottom-0 flex gap-2 border-t border-msk-ink/6 bg-white pt-4">
             <Button type="submit" disabled={ovPending} className="flex-1">
               {ovPending ? "Enregistrement…" : "Enregistrer les droits"}
             </Button>
@@ -423,7 +423,7 @@ export function UserAccessForm({
           ) : null}
 
           {canReset ? (
-            <section className="border-t border-msk-ink/[0.06] pt-4">
+            <section className="border-t border-msk-ink/6 pt-4">
               <h3 className="mb-3 text-sm font-semibold text-msk-ink">
                 Reset mot de passe
               </h3>

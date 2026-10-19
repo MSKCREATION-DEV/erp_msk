@@ -92,7 +92,7 @@ export function ActivityForm({
         <input type="hidden" name="completeTaskId" value={completeTaskId} />
       ) : null}
 
-      <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/[0.04] px-3.5 py-2.5 text-xs leading-relaxed text-msk-ink/70">
+      <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/4 px-3.5 py-2.5 text-xs leading-relaxed text-msk-ink/70">
         {isClosingRelance
           ? "Journalisez le canal utilisé et ce qui a été dit — cela incrémente le compteur Relances et clôture la tâche."
           : "Chaque action de suivi (hors note) compte dans l’historique Relancé N× du dossier."}

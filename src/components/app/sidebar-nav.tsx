@@ -115,11 +115,11 @@ function NavItemRow({
   const className = cn(
     "relative flex w-full items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[13px] font-medium transition-colors",
     (active || pending) &&
-      "bg-msk-blue/[0.1] text-msk-blue before:absolute before:inset-y-1.5 before:left-0 before:w-0.75 before:rounded-r-full before:bg-msk-blue",
+      "bg-msk-blue/10 text-msk-blue before:absolute before:inset-y-1.5 before:left-0 before:w-0.75 before:rounded-r-full before:bg-msk-blue",
     !active &&
       !pending &&
       !item.soon &&
-      "cursor-pointer text-msk-ink/65 hover:bg-msk-ink/[0.04] hover:text-msk-ink",
+      "cursor-pointer text-msk-ink/65 hover:bg-msk-ink/4 hover:text-msk-ink",
     item.soon && "cursor-not-allowed text-msk-ink/35",
     pending && "opacity-80",
   );
@@ -140,7 +140,7 @@ function NavItemRow({
           aria-hidden
         />
       ) : item.soon ? (
-        <span className="rounded-md bg-msk-ink/[0.04] px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-msk-ink/35">
+        <span className="rounded-md bg-msk-ink/4 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-msk-ink/35">
           bientôt
         </span>
       ) : null}

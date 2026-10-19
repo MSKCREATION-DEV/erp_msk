@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function SidebarSkeleton() {
   return (
     <aside
-      className="flex h-full w-62 shrink-0 flex-col overflow-hidden border-r border-msk-ink/[0.07] bg-white"
+      className="flex h-full w-62 shrink-0 flex-col overflow-hidden border-r border-msk-ink/7 bg-white"
       aria-busy
       aria-label="Chargement navigation"
     >
@@ -21,7 +21,7 @@ export function SidebarSkeleton() {
           <Skeleton key={`a-${i}`} className="h-10 w-full rounded-lg" />
         ))}
       </div>
-      <div className="border-t border-msk-ink/[0.07] p-3">
+      <div className="border-t border-msk-ink/7 p-3">
         <Skeleton className="h-12 w-full rounded-xl" />
       </div>
     </aside>

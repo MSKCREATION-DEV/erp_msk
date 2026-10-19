@@ -19,14 +19,14 @@ export function Sidebar({ user }: { user: SessionUser }) {
       : `${user.firstName} ${user.lastName}`;
 
   return (
-    <aside className="flex h-full w-62 shrink-0 flex-col overflow-hidden border-r border-msk-ink/[0.07] bg-white">
+    <aside className="flex h-full w-62 shrink-0 flex-col overflow-hidden border-r border-msk-ink/7 bg-white">
       <div className="flex h-16 items-center px-4">
         <Logo variant="bloc" size="sm" href="/accueil" priority />
       </div>
 
       <SidebarNav allowedIds={allowedIds} />
 
-      <div className="mt-auto border-t border-msk-ink/[0.07] p-3">
+      <div className="mt-auto border-t border-msk-ink/7 p-3">
         <div className="flex items-center gap-2.5 rounded-xl px-2 py-2">
           <UserAvatar
             firstName={user.firstName}

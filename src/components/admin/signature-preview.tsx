@@ -38,7 +38,7 @@ export function SignaturePreviewCard({
     <>
       <li
         className={cn(
-          "flex gap-3 rounded-xl border border-msk-ink/[0.08] bg-white p-3",
+          "flex gap-3 rounded-xl border border-msk-ink/8 bg-white p-3",
           compact && "items-center",
         )}
       >
@@ -47,7 +47,7 @@ export function SignaturePreviewCard({
           onClick={() => item.previewUrl && setOpen(true)}
           disabled={!item.previewUrl}
           className={cn(
-            "relative flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-msk-ink/[0.08] bg-msk-chalk/60",
+            "relative flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-msk-ink/8 bg-msk-chalk/60",
             compact ? "h-14 w-24" : "h-20 w-36",
             item.previewUrl
               ? "cursor-pointer transition hover:ring-2 hover:ring-msk-blue/30"

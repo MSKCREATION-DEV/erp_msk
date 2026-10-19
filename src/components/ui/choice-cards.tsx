@@ -56,7 +56,7 @@ export function ChoiceCards<T extends string>({
               "rounded-lg border px-3 py-2.5 text-left transition",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40",
               selected
-                ? "border-msk-blue bg-msk-blue/[0.06] shadow-sm"
+                ? "border-msk-blue bg-msk-blue/6 shadow-sm"
                 : "border-msk-ink/12 bg-white hover:border-msk-ink/25 hover:bg-msk-chalk/40",
               disabled && "pointer-events-none opacity-50",
             )}

@@ -51,7 +51,7 @@ export default async function CommercialFacturesPage({
       />
 
       <Surface className="overflow-hidden p-0">
-        <div className="border-b border-msk-ink/[0.06] px-4 py-3">
+        <div className="border-b border-msk-ink/6 px-4 py-3">
           <Suspense
             fallback={
               <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />

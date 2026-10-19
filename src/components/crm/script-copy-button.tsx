@@ -165,7 +165,7 @@ export function ScriptCopyButton({
             <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-msk-ink/40">
               Aperçu
             </p>
-            <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded-xl border border-msk-ink/[0.08] bg-white p-4 text-sm leading-relaxed text-msk-ink/85">
+            <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded-xl border border-msk-ink/8 bg-white p-4 text-sm leading-relaxed text-msk-ink/85">
               {preview}
             </pre>
             <p className="mt-2 text-[11px] text-msk-ink/40">

@@ -99,7 +99,7 @@ export function ContactChannelsEditor({
             className={cn(
               "grid items-center gap-2 rounded-xl border p-3 transition sm:grid-cols-[132px_1fr_auto_auto]",
               row.isPrimary
-                ? "border-msk-blue/35 bg-msk-blue/[0.04] shadow-sm shadow-msk-blue/5"
+                ? "border-msk-blue/35 bg-msk-blue/4 shadow-sm shadow-msk-blue/5"
                 : "border-msk-ink/10 bg-msk-chalk/40",
             )}
           >
@@ -151,7 +151,7 @@ export function ContactChannelsEditor({
                 "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition",
                 row.isPrimary
                   ? "cursor-default border-msk-blue/25 bg-msk-blue/10 text-msk-blue"
-                  : "border-msk-ink/12 bg-white text-msk-ink/35 hover:border-msk-blue/35 hover:bg-msk-blue/[0.04] hover:text-msk-blue",
+                  : "border-msk-ink/12 bg-white text-msk-ink/35 hover:border-msk-blue/35 hover:bg-msk-blue/4 hover:text-msk-blue",
                 disabled && "opacity-50",
               )}
             >

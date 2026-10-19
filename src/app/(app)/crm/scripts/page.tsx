@@ -209,7 +209,7 @@ export default async function CrmScriptsPage({
                   </p>
                 ) : null}
                 {canManage ? (
-                  <div className="mt-4 flex gap-2 border-t border-msk-ink/[0.06] pt-3">
+                  <div className="mt-4 flex gap-2 border-t border-msk-ink/6 pt-3">
                     <Link
                       prefetch={false}
                       href={`/crm/scripts/${s.id}/edit`}

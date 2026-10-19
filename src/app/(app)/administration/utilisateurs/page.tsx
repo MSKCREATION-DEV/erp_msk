@@ -114,7 +114,7 @@ export default async function UsersAdminPage() {
       <KpiGrid items={kpis} />
 
       {pendingResets.length > 0 ? (
-        <Surface className="border-msk-coral/20 bg-msk-coral/[0.04] px-5 py-4">
+        <Surface className="border-msk-coral/20 bg-msk-coral/4 px-5 py-4">
           <h2 className="text-sm font-semibold text-msk-ink">
             Demandes reset MDP ({pendingResets.length})
           </h2>
@@ -136,13 +136,13 @@ export default async function UsersAdminPage() {
       ) : null}
 
       <Surface className="overflow-hidden">
-        <div className="flex items-center justify-between border-b border-msk-ink/[0.06] px-5 py-4">
+        <div className="flex items-center justify-between border-b border-msk-ink/6 px-5 py-4">
           <h2 className="font-semibold text-msk-ink">Collaborateurs</h2>
           <p className="text-sm text-msk-ink/45">{users.length} compte(s)</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-msk-ink/[0.06] bg-[#F8F9FB] text-[11px] font-semibold uppercase tracking-[0.1em] text-msk-ink/40">
+            <thead className="border-b border-msk-ink/6 bg-[#F8F9FB] text-[11px] font-semibold uppercase tracking-[0.1em] text-msk-ink/40">
               <tr>
                 <th className="px-5 py-3.5">Collaborateur</th>
                 <th className="px-5 py-3.5">Statut</th>
@@ -154,7 +154,7 @@ export default async function UsersAdminPage() {
               {users.map((u) => (
                 <tr
                   key={u.id}
-                  className="relative border-b border-msk-ink/[0.04] last:border-0 hover:bg-msk-chalk/40"
+                  className="relative border-b border-msk-ink/4 last:border-0 hover:bg-msk-chalk/40"
                 >
                   <td className="px-5 py-3.5">
                     <Link

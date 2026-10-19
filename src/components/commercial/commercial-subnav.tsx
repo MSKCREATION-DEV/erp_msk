@@ -37,7 +37,7 @@ export function CommercialSubnav({
   return (
     <nav
       aria-label="Navigation Commercial"
-      className={cn("-mx-1 border-b border-msk-ink/[0.08]", className)}
+      className={cn("-mx-1 border-b border-msk-ink/8", className)}
     >
       <div className="flex gap-0 overflow-x-auto px-1 scrollbar-thin">
         {items.map((item) => {

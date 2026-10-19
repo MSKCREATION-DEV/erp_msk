@@ -1,0 +1,41 @@
+---
+description: Classes Tailwind canoniques — jamais d’opacité/largeur arbitraires inutiles
+alwaysApply: true
+---
+
+# Tailwind — classes canoniques (absolu ERP MSK)
+
+L’extension Tailwind signale `suggestCanonicalClasses`. **Ne jamais** introduire (ni laisser) les formes arbitraires quand un utilitaire existe.
+
+## Opacité couleur
+
+| Interdit | Obligatoire |
+|---|---|
+| `msk-ink/[0.06]` | `msk-ink/6` |
+| `msk-ink/[0.08]` | `msk-ink/8` |
+| `msk-blue/[0.04]` | `msk-blue/4` |
+| `divide-msk-ink/[0.06]` | `divide-msk-ink/6` |
+| `border-msk-ink/[0.06]` | `border-msk-ink/6` |
+| `bg-msk-ink/[0.06]` | `bg-msk-ink/6` |
+
+Règle : `/[0.N]` ou `/[0.NN]` → `/` + pourcentage entier (`0.06` → `/6`, `0.1` → `/10`).
+
+## Largeurs / tailles
+
+| Interdit | Obligatoire |
+|---|---|
+| `w-[4.5rem]` | `w-18` |
+| `w-[6.5rem]` | `w-26` |
+| `w-[9rem]` | `w-36` |
+| `max-w-[6.5rem]` | `max-w-26` |
+
+Formule : `N rem` → `w-(N*4)` (échelle spacing Tailwind).
+
+## Quand l’arbitraire reste OK
+
+- Valeur **sans** équivalent scale (`w-[13.3rem]`, `top-[73px]`, etc.)
+- Arbitrary values métier documentées (une fois, pas de doublon avec un token existant)
+
+## Avant de commit / gate
+
+Sur tout fichier TSX touché : pas de `msk-*/[0.` ni `w-[Nrem]` si `w-N*4` existe. Corriger ailleurs dans le même PR si on touche un fichier voisin.

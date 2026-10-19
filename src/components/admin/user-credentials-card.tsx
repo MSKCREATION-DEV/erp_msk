@@ -52,7 +52,7 @@ export function UserCredentialsCard({
   }
 
   return (
-    <Card className="border-msk-blue/20 bg-msk-blue/[0.03]">
+    <Card className="border-msk-blue/20 bg-msk-blue/3">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <KeyRound className="h-4 w-4 text-msk-blue" aria-hidden />

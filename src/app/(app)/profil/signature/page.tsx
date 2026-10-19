@@ -73,7 +73,7 @@ export default async function MySignaturePage() {
             <CardDescription>{active.label}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex max-w-md items-center justify-center rounded-xl border border-msk-ink/[0.08] bg-[linear-gradient(45deg,#f3f3f3_25%,transparent_25%,transparent_75%,#f3f3f3_75%,#f3f3f3),linear-gradient(45deg,#f3f3f3_25%,transparent_25%,transparent_75%,#f3f3f3_75%,#f3f3f3)] bg-[length:16px_16px] bg-[position:0_0,8px_8px] p-6">
+            <div className="flex max-w-md items-center justify-center rounded-xl border border-msk-ink/8 bg-[linear-gradient(45deg,#f3f3f3_25%,transparent_25%,transparent_75%,#f3f3f3_75%,#f3f3f3),linear-gradient(45deg,#f3f3f3_25%,transparent_25%,transparent_75%,#f3f3f3_75%,#f3f3f3)] bg-[length:16px_16px] bg-[position:0_0,8px_8px] p-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={active.previewUrl}

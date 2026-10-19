@@ -135,7 +135,7 @@ export default async function CommercialDevisDetailPage({
             ) : null}
           </div>
 
-          <div className="rounded-2xl border border-msk-ink/[0.08] bg-msk-chalk/40 px-4 py-3.5 text-sm">
+          <div className="rounded-2xl border border-msk-ink/8 bg-msk-chalk/40 px-4 py-3.5 text-sm">
             <div className="flex justify-between text-msk-ink/60">
               <span>HT</span>
               <span className="tabular-nums">
@@ -185,7 +185,7 @@ export default async function CommercialDevisDetailPage({
         </Surface>
 
         <Surface className="overflow-hidden p-0 lg:col-span-5">
-          <div className="border-b border-msk-ink/[0.06] px-5 py-4 sm:px-6">
+          <div className="border-b border-msk-ink/6 px-5 py-4 sm:px-6">
             <h2 className="text-sm font-semibold tracking-tight text-msk-ink">
               Lignes
             </h2>
@@ -234,7 +234,7 @@ export default async function CommercialDevisDetailPage({
               documentId={pdfDoc.id}
               title={pdfDoc.originalName || quote.number}
               subtitle={`${QUOTE_STATUS_LABELS[quote.status]} · ${formatComMoney(quote.totalTtc, quote.currency)}`}
-              className="max-w-[11rem]"
+              className="max-w-44"
             />
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-8 text-center">
@@ -247,7 +247,7 @@ export default async function CommercialDevisDetailPage({
             </div>
           )}
           {quote.missionNote ? (
-            <div className="mt-4 border-t border-msk-ink/[0.06] pt-4">
+            <div className="mt-4 border-t border-msk-ink/6 pt-4">
               <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
                 Note mission
               </p>

@@ -132,7 +132,7 @@ export function GedPreviewModal({
           <iframe
             title={doc?.originalName ?? "PDF"}
             src={url}
-            className="h-[75vh] w-full rounded-lg border border-msk-ink/[0.08] bg-white"
+            className="h-[75vh] w-full rounded-lg border border-msk-ink/8 bg-white"
           />
         ) : null}
 
@@ -181,7 +181,7 @@ function TextPreview({ url }: { url: string }) {
     return <Loader2 className="h-6 w-6 animate-spin text-msk-blue" />;
   }
   return (
-    <pre className="max-h-[75vh] w-full overflow-auto rounded-lg border border-msk-ink/[0.08] bg-white p-4 text-left text-xs leading-relaxed text-msk-ink whitespace-pre-wrap">
+    <pre className="max-h-[75vh] w-full overflow-auto rounded-lg border border-msk-ink/8 bg-white p-4 text-left text-xs leading-relaxed text-msk-ink whitespace-pre-wrap">
       {text}
     </pre>
   );

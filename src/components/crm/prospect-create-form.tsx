@@ -483,10 +483,10 @@ export function ProspectCreateForm({
                     className={cn(
                       "flex w-full items-start gap-3 rounded-xl border px-3 py-3 text-left transition",
                       active
-                        ? "border-msk-blue/40 bg-msk-blue/[0.06] shadow-sm"
+                        ? "border-msk-blue/40 bg-msk-blue/6 shadow-sm"
                         : done
                           ? "border-msk-ink/10 bg-msk-chalk/60 hover:border-msk-ink/20"
-                          : "border-msk-ink/[0.06] bg-white text-msk-ink/35",
+                          : "border-msk-ink/6 bg-white text-msk-ink/35",
                     )}
                   >
                     <span
@@ -750,7 +750,7 @@ export function ProspectCreateForm({
             </p>
           </div>
           <div className="grid gap-4 lg:grid-cols-12">
-            <div className="space-y-3 rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/30 p-4 lg:col-span-4">
+            <div className="space-y-3 rounded-xl border border-msk-ink/6 bg-msk-chalk/30 p-4 lg:col-span-4">
               <OptionPickerSingle
                 label="Origine"
                 required
@@ -773,7 +773,7 @@ export function ProspectCreateForm({
                 Instagram, terrain, recommandation… — d’où vient ce lead.
               </FieldHint>
             </div>
-            <div className="space-y-3 rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/30 p-4 lg:col-span-4">
+            <div className="space-y-3 rounded-xl border border-msk-ink/6 bg-msk-chalk/30 p-4 lg:col-span-4">
               <div>
                 <FieldLabel htmlFor="nextAction">Prochaine action</FieldLabel>
                 <Input
@@ -818,7 +818,7 @@ export function ProspectCreateForm({
                 />
               </div>
             </div>
-            <div className="rounded-xl border border-msk-ink/[0.06] bg-msk-chalk/30 p-4 lg:col-span-4">
+            <div className="rounded-xl border border-msk-ink/6 bg-msk-chalk/30 p-4 lg:col-span-4">
               <SocialNetworksEditor
                 value={social}
                 onChange={setSocial}
