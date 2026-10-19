@@ -22,15 +22,25 @@ import {
   parseCrmPeriod,
   resolveCrmOwnerIds,
 } from "@/lib/crm/scope-period";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
+import { formatContactLabel } from "@/lib/crm/contact-label";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { ListPagination } from "@/components/ui/list-pagination";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { RelanceActions } from "@/components/crm/relance-actions";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { cn } from "@/lib/utils";
+
+type DueBucket = "overdue" | "today" | "week" | "later";
 
 export const metadata: Metadata = { title: "Relances" };
 
@@ -72,7 +82,7 @@ async function loadTasks(assigneeFilter: string[] | null) {
       assignee: { select: { firstName: true, lastName: true } },
     },
     orderBy: { dueAt: "asc" },
-    take: 200,
+    take: 2000,
   });
 }
 
@@ -101,7 +111,7 @@ async function loadOutreachDone(opts: {
       actor: { select: { firstName: true, lastName: true } },
     },
     orderBy: { occurredAt: "desc" },
-    take: 200,
+    take: 2000,
   });
 }
 
@@ -120,7 +130,19 @@ function stageTone(stage: string): "muted" | "success" | "coral" | "blue" {
   return "muted";
 }
 
-function formatDue(dueAt: Date, bucket: "overdue" | "today" | "week" | "later") {
+function dueBucket(
+  dueAt: Date,
+  sod: Date,
+  eod: Date,
+  weekEnd: Date,
+): DueBucket {
+  if (dueAt < sod) return "overdue";
+  if (dueAt <= eod) return "today";
+  if (dueAt <= weekEnd) return "week";
+  return "later";
+}
+
+function formatDue(dueAt: Date, bucket: DueBucket) {
   const label = dueAt.toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "short",
@@ -145,14 +167,18 @@ function formatDue(dueAt: Date, bucket: "overdue" | "today" | "week" | "later") 
 
 function RelanceTable({
   tasks,
-  bucket,
   empty,
   outreachMap,
+  sod,
+  eod,
+  weekEnd,
 }: {
   tasks: TaskRow[];
-  bucket: "overdue" | "today" | "week" | "later";
   empty: string;
   outreachMap: Map<string, number>;
+  sod: Date;
+  eod: Date;
+  weekEnd: Date;
 }) {
   if (tasks.length === 0) {
     return (
@@ -183,9 +209,14 @@ function RelanceTable({
             const uiStage: CrmPipelineStage | null = rawStage
               ? normalizeUiStage(rawStage)
               : null;
+            const bucket = dueBucket(t.dueAt, sod, eod, weekEnd);
             const due = formatDue(t.dueAt, bucket);
             const actionLabel =
               t.opportunity?.nextAction?.trim() || t.title || "Relance";
+            const contactLabel = contact
+              ? formatContactLabel(contact.firstName, contact.lastName)
+              : null;
+            const jobLabel = formatContactLabel(contact?.jobTitle ?? null, null);
             return (
               <tr
                 key={t.id}
@@ -207,17 +238,17 @@ function RelanceTable({
                   )}
                 </td>
                 <td className="px-4 py-3 text-msk-ink/75">
-                  {contact ? (
+                  {contactLabel || jobLabel ? (
                     <>
-                      <span className="font-medium text-msk-ink">
-                        {contact.firstName} {contact.lastName}
-                      </span>
-                      {contact.jobTitle ? (
-                        <p className="text-xs text-msk-ink/50">
-                          {contact.jobTitle}
-                        </p>
+                      {contactLabel ? (
+                        <span className="font-medium text-msk-ink">
+                          {contactLabel}
+                        </span>
                       ) : null}
-                      {contact.phone?.trim() ? (
+                      {jobLabel ? (
+                        <p className="text-xs text-msk-ink/50">{jobLabel}</p>
+                      ) : null}
+                      {contact?.phone?.trim() ? (
                         <p className="text-xs tabular-nums text-msk-ink/45">
                           {contact.phone}
                         </p>
@@ -362,11 +393,25 @@ export default async function CrmRelancesPage({
       keep,
     });
 
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const requestedPage = parsePage(sp.page);
+
   if (focusFaites) {
     const activities = await loadOutreachDone({
       ownerIds: ownerScope.canFilterOwners ? ownerIds : [user.id],
       occurredBetween,
     });
+    const totalFaites = activities.length;
+    const pageFaites = clampPage(requestedPage, totalFaites, pageSize);
+    const pageActivities = activities.slice(
+      (pageFaites - 1) * pageSize,
+      pageFaites * pageSize,
+    );
+    const listParamsFaites: Record<string, string | undefined> = {
+      ...sp,
+      focus: "faites",
+    };
+    delete listParamsFaites.page;
 
     return (
       <PageShell>
@@ -394,8 +439,8 @@ export default async function CrmRelancesPage({
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           <KpiRadial
             label="Relances faites"
-            value={activities.length}
-            tone={activities.length > 0 ? "coral" : "blue"}
+            value={totalFaites}
+            tone={totalFaites > 0 ? "coral" : "blue"}
             hint={period.label.toLowerCase()}
           />
           <div className="flex items-end sm:col-span-1 xl:col-span-2">
@@ -410,75 +455,85 @@ export default async function CrmRelancesPage({
         </div>
 
         <Surface className="overflow-hidden p-0">
-          {activities.length === 0 ? (
+          {totalFaites === 0 ? (
             <p className="px-4 py-10 text-center text-sm text-msk-ink/40">
               Aucune relance journalisée sur {period.label.toLowerCase()}.
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-180 text-left text-sm">
-                <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold">Date</th>
-                    <th className="px-4 py-3 font-semibold">Canal</th>
-                    <th className="px-4 py-3 font-semibold">Entreprise</th>
-                    <th className="px-4 py-3 font-semibold">Résumé</th>
-                    <th className="px-4 py-3 font-semibold">Suivi par</th>
-                    <th className="px-4 py-3 font-semibold">Auteur</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-msk-ink/6">
-                  {activities.map((a) => {
-                    const org = a.opportunity?.organization;
-                    const owner = a.opportunity?.owner;
-                    return (
-                      <tr
-                        key={a.id}
-                        className="align-middle transition hover:bg-msk-chalk/40"
-                      >
-                        <td className="px-4 py-3 tabular-nums text-msk-ink/70">
-                          {a.occurredAt.toLocaleDateString("fr-FR", {
-                            day: "2-digit",
-                            month: "short",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </td>
-                        <td className="px-4 py-3">
-                          <Badge tone="muted">
-                            {ACTIVITY_LABELS[a.type] ?? a.type}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3">
-                          {a.opportunity ? (
-                            <Link
-                              prefetch={false}
-                              href={`/crm/prospects/${a.opportunity.id}`}
-                              className="font-medium text-msk-ink hover:text-msk-blue"
-                            >
-                              {org?.name ?? a.opportunity.title}
-                            </Link>
-                          ) : (
-                            "—"
-                          )}
-                        </td>
-                        <td className="max-w-xs truncate px-4 py-3 text-msk-ink/65">
-                          {a.summary?.trim() || "—"}
-                        </td>
-                        <td className="px-4 py-3 text-msk-ink/60">
-                          {owner
-                            ? `${owner.firstName} ${owner.lastName}`
-                            : "—"}
-                        </td>
-                        <td className="px-4 py-3 text-msk-ink/60">
-                          {a.actor.firstName} {a.actor.lastName}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-180 text-left text-sm">
+                  <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
+                    <tr>
+                      <th className="px-4 py-3 font-semibold">Date</th>
+                      <th className="px-4 py-3 font-semibold">Canal</th>
+                      <th className="px-4 py-3 font-semibold">Entreprise</th>
+                      <th className="px-4 py-3 font-semibold">Résumé</th>
+                      <th className="px-4 py-3 font-semibold">Suivi par</th>
+                      <th className="px-4 py-3 font-semibold">Auteur</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-msk-ink/6">
+                    {pageActivities.map((a) => {
+                      const org = a.opportunity?.organization;
+                      const owner = a.opportunity?.owner;
+                      return (
+                        <tr
+                          key={a.id}
+                          className="align-middle transition hover:bg-msk-chalk/40"
+                        >
+                          <td className="px-4 py-3 tabular-nums text-msk-ink/70">
+                            {a.occurredAt.toLocaleDateString("fr-FR", {
+                              day: "2-digit",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </td>
+                          <td className="px-4 py-3">
+                            <Badge tone="muted">
+                              {ACTIVITY_LABELS[a.type] ?? a.type}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-3">
+                            {a.opportunity ? (
+                              <Link
+                                prefetch={false}
+                                href={`/crm/prospects/${a.opportunity.id}`}
+                                className="font-medium text-msk-ink hover:text-msk-blue"
+                              >
+                                {org?.name ?? a.opportunity.title}
+                              </Link>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                          <td className="max-w-xs truncate px-4 py-3 text-msk-ink/65">
+                            {a.summary?.trim() || "—"}
+                          </td>
+                          <td className="px-4 py-3 text-msk-ink/60">
+                            {owner
+                              ? `${owner.firstName} ${owner.lastName}`
+                              : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-msk-ink/60">
+                            {a.actor.firstName} {a.actor.lastName}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <ListPagination
+                pathname="/crm/relances"
+                searchParams={listParamsFaites}
+                page={pageFaites}
+                totalPages={totalPages(totalFaites, pageSize)}
+                total={totalFaites}
+                pageSize={pageSize}
+              />
+            </>
           )}
         </Surface>
       </PageShell>
@@ -513,51 +568,51 @@ export default async function CrmRelancesPage({
   const thisWeek = tasks.filter((t) => t.dueAt > eod && t.dueAt <= weekEnd);
   const later = tasks.filter((t) => t.dueAt > weekEnd);
 
-  const sections = [
-    {
-      key: "overdue" as const,
-      vue: "retard" as const,
-      title: "En retard",
-      tone: "coral" as const,
-      count: overdue.length,
-      tasks: overdue,
-      empty: "Aucune relance en retard — bravo.",
-    },
-    {
-      key: "today" as const,
-      vue: "aujourdhui" as const,
-      title: "Aujourd’hui",
-      tone: "blue" as const,
-      count: today.length,
-      tasks: today,
-      empty: "Rien à faire aujourd’hui.",
-    },
-    {
-      key: "week" as const,
-      vue: "semaine" as const,
-      title: "Cette semaine",
-      tone: "muted" as const,
-      count: thisWeek.length,
-      tasks: thisWeek,
-      empty: "Pas de relance prévue sous 7 jours.",
-    },
-    {
-      key: "later" as const,
-      vue: "plus-tard" as const,
-      title: "Plus tard",
-      tone: "muted" as const,
-      count: later.length,
-      tasks: later,
-      empty: "Aucune relance plus lointaine.",
-    },
-  ];
+  const listByVue: Record<VueFilter, TaskRow[]> = {
+    tous: tasks,
+    retard: overdue,
+    aujourdhui: today,
+    semaine: thisWeek,
+    "plus-tard": later,
+  };
+  const listTitleByVue: Record<VueFilter, string> = {
+    tous: "File à faire",
+    retard: "En retard",
+    aujourdhui: "Aujourd’hui",
+    semaine: "Cette semaine",
+    "plus-tard": "Plus tard",
+  };
+  const listToneByVue: Record<
+    VueFilter,
+    "muted" | "success" | "coral" | "blue"
+  > = {
+    tous: "muted",
+    retard: "coral",
+    aujourdhui: "blue",
+    semaine: "muted",
+    "plus-tard": "muted",
+  };
+  const emptyByVue: Record<VueFilter, string> = {
+    tous: "Aucune relance ouverte.",
+    retard: "Aucune relance en retard — bravo.",
+    aujourdhui: "Rien à faire aujourd’hui.",
+    semaine: "Pas de relance prévue sous 7 jours.",
+    "plus-tard": "Aucune relance plus lointaine.",
+  };
 
-  const visibleSections =
-    vue === "tous"
-      ? sections.filter(
-          (s) => s.count > 0 || s.key === "overdue" || s.key === "today",
-        )
-      : sections.filter((s) => s.vue === vue);
+  const activeList = listByVue[vue];
+  const listTotal = activeList.length;
+  const page = clampPage(requestedPage, listTotal, pageSize);
+  const pageTasks = activeList.slice(
+    (page - 1) * pageSize,
+    page * pageSize,
+  );
+  const pages = totalPages(listTotal, pageSize);
+
+  const listParams: Record<string, string | undefined> = { ...sp };
+  delete listParams.page;
+  if (vue === "tous") delete listParams.vue;
+  else listParams.vue = vue;
 
   const filters: { id: VueFilter; label: string; count: number }[] = [
     { id: "tous", label: "Toutes", count: tasks.length },
@@ -689,22 +744,30 @@ export default async function CrmRelancesPage({
           </Link>
         </Surface>
       ) : (
-        <div className="space-y-4">
-          {visibleSections.map((s) => (
-            <Surface key={s.key} className="overflow-hidden p-0">
-              <div className="flex items-center justify-between border-b border-msk-ink/6 bg-msk-chalk/40 px-4 py-2.5">
-                <h2 className="text-sm font-semibold text-msk-ink">{s.title}</h2>
-                <Badge tone={s.tone}>{s.count}</Badge>
-              </div>
-              <RelanceTable
-                tasks={s.tasks}
-                bucket={s.key}
-                empty={s.empty}
-                outreachMap={outreachMap}
-              />
-            </Surface>
-          ))}
-        </div>
+        <Surface className="overflow-hidden p-0">
+          <div className="flex items-center justify-between border-b border-msk-ink/6 bg-msk-chalk/40 px-4 py-2.5">
+            <h2 className="text-sm font-semibold text-msk-ink">
+              {listTitleByVue[vue]}
+            </h2>
+            <Badge tone={listToneByVue[vue]}>{listTotal}</Badge>
+          </div>
+          <RelanceTable
+            tasks={pageTasks}
+            empty={emptyByVue[vue]}
+            outreachMap={outreachMap}
+            sod={sod}
+            eod={eod}
+            weekEnd={weekEnd}
+          />
+          <ListPagination
+            pathname="/crm/relances"
+            searchParams={listParams}
+            page={page}
+            totalPages={pages}
+            total={listTotal}
+            pageSize={pageSize}
+          />
+        </Surface>
       )}
     </PageShell>
   );
