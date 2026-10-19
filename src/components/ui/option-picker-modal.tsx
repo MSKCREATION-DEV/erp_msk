@@ -85,9 +85,7 @@ export function OptionPickerSingle({
             </button>
           ) : null}
         </span>
-      ) : (
-        <p className="text-xs text-msk-ink/40">{placeholder}</p>
-      )}
+      ) : null}
       <Modal
         open={open}
         onOpenChange={setOpen}
@@ -213,9 +211,7 @@ export function OptionPickerMulti({
             );
           })}
         </div>
-      ) : (
-        <p className="text-xs text-msk-ink/40">{placeholder}</p>
-      )}
+      ) : null}
       <Modal
         open={open}
         onOpenChange={setOpen}

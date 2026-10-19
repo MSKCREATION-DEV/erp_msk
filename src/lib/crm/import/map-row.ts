@@ -20,6 +20,10 @@ export type MappedImportRow = {
   nextAction: string | null;
   followUpAt: Date | null;
   firstContactAt: Date | null;
+  /** Colonne Excel « Date de création » (souvent vide). */
+  excelCreatedAt: Date | null;
+  /** Colonne Excel « Date dernière action ». */
+  lastActionAt: Date | null;
   offerLabel: string | null;
   budgetXof: number | null;
   notes: string | null;
@@ -27,6 +31,18 @@ export type MappedImportRow = {
   createdByHint: string | null;
   probability: number | null;
 };
+
+/**
+ * Date de création métier pour un deal importé.
+ * Priorité : 1er contact → date de création Excel → date dernière action.
+ */
+export function resolveImportCreatedAt(row: {
+  firstContactAt: Date | null;
+  excelCreatedAt?: Date | null;
+  lastActionAt?: Date | null;
+}): Date | null {
+  return row.firstContactAt ?? row.excelCreatedAt ?? row.lastActionAt ?? null;
+}
 
 function cleanCell(v: unknown): string {
   if (v == null) return "";
@@ -41,10 +57,27 @@ function cleanCell(v: unknown): string {
 }
 
 function nullish(v: string): string | null {
-  if (!v || v === "//" || v === "-" || v === "—" || v.toLowerCase() === "null") {
+  if (!v) return null;
+  const t = v.trim();
+  if (!t) return null;
+  const low = t.toLowerCase();
+  if (
+    t === "//" ||
+    t === "-" ||
+    t === "—" ||
+    t === "–" ||
+    t === "." ||
+    t === "/" ||
+    low === "null" ||
+    low === "n/a" ||
+    low === "na" ||
+    low === "none" ||
+    /^[\s\-_/|.—–\\]+$/.test(t) ||
+    t.startsWith("//")
+  ) {
     return null;
   }
-  return v;
+  return t;
 }
 
 /** Excel serial (days since 1899-12-30) ou formats FR / ISO. */
@@ -110,10 +143,13 @@ export function mapDataRow(
     return null;
   }
 
-  const contactName = cleanCell(cell(row, colMap, "contactName"));
-  const parts = contactName.split(/\s+/).filter(Boolean);
-  const contactFirst = parts[0] || "—";
-  const contactLast = parts.slice(1).join(" ") || "—";
+  const contactName = nullish(cleanCell(cell(row, colMap, "contactName")));
+  const nameParts = contactName
+    ? contactName.split(/\s+/).map((p) => nullish(p)).filter((p): p is string => Boolean(p))
+    : [];
+  /** Placeholder stable (DB non-null) — l’UI masque via formatContactLabel. */
+  const contactFirst = nameParts[0] ?? "—";
+  const contactLast = nameParts.slice(1).join(" ") || "—";
 
   const sourceRaw = cleanCell(cell(row, colMap, "source"));
   const stageRaw = cleanCell(cell(row, colMap, "stage"));
@@ -149,6 +185,8 @@ export function mapDataRow(
     nextAction: nullish(cleanCell(cell(row, colMap, "nextAction"))),
     followUpAt: parseImportDate(cell(row, colMap, "followUpAt")),
     firstContactAt: parseImportDate(cell(row, colMap, "firstContact")),
+    excelCreatedAt: parseImportDate(cell(row, colMap, "createdAt")),
+    lastActionAt: parseImportDate(cell(row, colMap, "lastActionAt")),
     offerLabel: nullish(cleanCell(cell(row, colMap, "offerLabel"))),
     budgetXof: parseBudgetXof(cell(row, colMap, "budget")),
     notes,

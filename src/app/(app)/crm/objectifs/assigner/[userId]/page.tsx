@@ -3,8 +3,7 @@ import { connection } from "next/server";
 import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { prisma } from "@/lib/prisma";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import { listCommercialRoster } from "@/lib/crm/team";
 import { resolveGoalsForPeriod } from "@/lib/crm/goals";
 import {
   assignFormDefaults,
@@ -42,13 +41,13 @@ export default async function ObjectifsAssignerCollabPage({
   const period = defaultAssignPeriod(sp);
   const { grain, periodStartIso, weeks } = assignFormDefaults(period);
 
-  const teamIds = await commercialTeamUserIds();
-  const memberIds = [...new Set([user.id, ...teamIds])];
-  const members = await prisma.user.findMany({
-    where: { id: { in: memberIds }, status: "ACTIVE" },
-    select: { id: true, firstName: true, lastName: true },
-    orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
-  });
+  const members = (
+    await listCommercialRoster({ mode: "assign", extraIds: [user.id] })
+  ).map((u) => ({
+    id: u.id,
+    firstName: u.firstName,
+    lastName: u.lastName,
+  }));
 
   const focus = members.find((m) => m.id === userId);
   if (!focus) notFound();

@@ -6,7 +6,11 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { dealOwnerScopeWhere } from "@/lib/crm/scope";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import {
+  commercialTeamUserIds,
+  listCommercialRoster,
+  rosterToOwnerOptions,
+} from "@/lib/crm/team";
 import { STAGE_LABELS, STAGE_ORDER } from "@/lib/crm/labels";
 import {
   buildGoalProgress,
@@ -64,16 +68,9 @@ export default async function CrmRapportPage({
 
   const memberIds = [...new Set([user.id, ...teamIds])];
   const owners = canGlobal
-    ? (
-        await prisma.user.findMany({
-          where: { id: { in: memberIds }, status: "ACTIVE" },
-          select: { id: true, firstName: true, lastName: true },
-          orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
-        })
-      ).map((u) => ({
-        value: u.id,
-        label: `${u.firstName} ${u.lastName}`,
-      }))
+    ? rosterToOwnerOptions(
+        await listCommercialRoster({ mode: "filter", extraIds: [user.id] }),
+      )
     : [];
 
   /** Rapport = semaine uniquement (ignore periode héritée d’un autre écran). */

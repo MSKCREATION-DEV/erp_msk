@@ -3,8 +3,7 @@ import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { prisma } from "@/lib/prisma";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import { listCommercialRoster } from "@/lib/crm/team";
 import { loadTeamGoalsForPeriod } from "@/lib/crm/goals";
 import {
   assignFormDefaults,
@@ -37,13 +36,11 @@ export default async function ObjectifsAssignerEquipePage({
   const { grain, periodStartIso, weeks } = assignFormDefaults(period);
   const teamGoals = await loadTeamGoalsForPeriod(period);
 
-  const teamIds = await commercialTeamUserIds();
-  const memberIds = [...new Set([user.id, ...teamIds])];
-  const first = await prisma.user.findFirst({
-    where: { id: { in: memberIds }, status: "ACTIVE" },
-    select: { id: true },
-    orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
+  const roster = await listCommercialRoster({
+    mode: "assign",
+    extraIds: [user.id],
   });
+  const first = roster[0] ?? null;
 
   return (
     <PageShell>

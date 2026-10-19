@@ -4,7 +4,10 @@ import {
   type PrismaClient,
 } from "@prisma/client";
 import { normalizeChannelValue } from "@/lib/crm/channels";
-import type { MappedImportRow } from "@/lib/crm/import/map-row";
+import {
+  resolveImportCreatedAt,
+  type MappedImportRow,
+} from "@/lib/crm/import/map-row";
 import {
   buildUserIdResolver,
   resolveCreatedById,
@@ -66,7 +69,9 @@ async function createOneRowNested(
   createdById: string,
 ) {
   const channels = channelCreates(row.phone, row.email);
-  const occurredAt = row.firstContactAt ?? new Date();
+  const createdAt = resolveImportCreatedAt(row);
+  const occurredAt =
+    row.lastActionAt ?? row.firstContactAt ?? createdAt ?? new Date();
 
   const org = await prisma.crmOrganization.create({
     data: {
@@ -76,6 +81,7 @@ async function createOneRowNested(
       notes: row.notes,
       ownerId,
       createdById,
+      ...(createdAt ? { createdAt } : {}),
       contacts: {
         create: {
           firstName: row.contactFirst,
@@ -97,14 +103,16 @@ async function createOneRowNested(
           probability: row.probability,
           nextAction: row.nextAction,
           followUpAt: row.followUpAt,
-          lastActivityAt: row.lastAction ? occurredAt : row.firstContactAt,
+          lastActivityAt: row.lastAction
+            ? occurredAt
+            : (createdAt ?? row.firstContactAt),
           interestedAt: row.stage === "INTERESSE" ? new Date() : null,
           wonAt: row.stage === "GAGNE" ? new Date() : null,
           lostAt: row.stage === "PERDU" ? new Date() : null,
           lossReason: row.stage === "PERDU" ? CrmLossReason.AUTRE : null,
           ownerId,
           createdById,
-          createdAt: row.firstContactAt ?? undefined,
+          ...(createdAt ? { createdAt } : {}),
         },
       },
     },

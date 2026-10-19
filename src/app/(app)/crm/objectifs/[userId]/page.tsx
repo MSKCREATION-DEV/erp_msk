@@ -73,7 +73,10 @@ export default async function ObjectifsCollabDetailPage({
   }
 
   const focus = await prisma.user.findFirst({
-    where: { id: userId, status: "ACTIVE" },
+    where: {
+      id: userId,
+      status: { in: ["ACTIVE", "MUST_CHANGE_PASSWORD"] },
+    },
     select: { id: true, firstName: true, lastName: true },
   });
   if (!focus) notFound();

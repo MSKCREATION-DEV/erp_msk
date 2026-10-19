@@ -11,7 +11,11 @@ import {
   crmVisibility,
   dealOwnerScopeWhere,
 } from "@/lib/crm/scope";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import {
+  commercialTeamUserIds,
+  listCommercialRoster,
+  rosterToOwnerOptions,
+} from "@/lib/crm/team";
 import {
   outreachCountByOpportunityIds,
   sumOutreachCounts,
@@ -85,18 +89,9 @@ export default async function CrmProspectsPage({
     };
   }
 
-  const teamUsers = await prisma.user.findMany({
-    where: {
-      id: { in: Array.from(new Set([user.id, ...teamIds])) },
-      status: "ACTIVE",
-    },
-    select: { id: true, firstName: true, lastName: true },
-    orderBy: { firstName: "asc" },
-  });
-  const owners = teamUsers.map((u) => ({
-    value: u.id,
-    label: `${u.firstName} ${u.lastName}`,
-  }));
+  const owners = rosterToOwnerOptions(
+    await listCommercialRoster({ mode: "filter", extraIds: [user.id] }),
+  );
 
   const canCreate = hasPermission(user, "crm.prospect.create");
 

@@ -6,7 +6,11 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { crmVisibility, dealOwnerScopeWhere } from "@/lib/crm/scope";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import {
+  commercialTeamUserIds,
+  listCommercialRoster,
+  rosterToOwnerOptions,
+} from "@/lib/crm/team";
 import { STAGE_ORDER } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { resolveGoalsSnapshots } from "@/lib/crm/goals";
@@ -123,12 +127,7 @@ export default async function CrmEquipePage({
     }
   }
 
-  const memberIds = [...new Set([...teamIds, ...byOwner.keys()])];
-  const members = await prisma.user.findMany({
-    where: { id: { in: memberIds }, status: "ACTIVE" },
-    select: { id: true, firstName: true, lastName: true },
-    orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
-  });
+  const members = await listCommercialRoster({ mode: "team" });
 
   for (const m of members) {
     if (!byOwner.has(m.id)) {
@@ -136,10 +135,7 @@ export default async function CrmEquipePage({
     }
   }
 
-  const owners = members.map((m) => ({
-    value: m.id,
-    label: `${m.firstName} ${m.lastName}`,
-  }));
+  const owners = rosterToOwnerOptions(members);
   const ownerScope = parseCrmOwner(
     sp,
     user,

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { canReassignCrmDeal } from "@/lib/crm/scope";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import { listCommercialRoster } from "@/lib/crm/team";
 import { prisma } from "@/lib/prisma";
 import { STAGE_LABELS, STAGE_ORDER } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
@@ -24,15 +24,14 @@ export default async function CrmAffectationsPage() {
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
   if (!canReassignCrmDeal(user)) redirect("/crm/prospects");
 
-  const teamIds = await commercialTeamUserIds();
-  const memberIds = [...new Set([user.id, ...teamIds])];
-
   const [commercials, assignableDeals, pending, recent] = await Promise.all([
-    prisma.user.findMany({
-      where: { id: { in: memberIds }, status: "ACTIVE" },
-      select: { id: true, firstName: true, lastName: true },
-      orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
-    }),
+    listCommercialRoster({ mode: "assign", extraIds: [user.id] }).then((rows) =>
+      rows.map((u) => ({
+        id: u.id,
+        firstName: u.firstName,
+        lastName: u.lastName,
+      })),
+    ),
     prisma.crmOpportunity.findMany({
       where: {
         stage: { in: [...OPEN_STAGES, "NEGOCIATION"] },

@@ -770,12 +770,15 @@ export async function reassignProspectAction(
   if (!teamIds.includes(newOwnerId)) {
     return {
       ok: false,
-      error: "Le nouveau suivi doit être un membre du groupe Commerciaux",
+      error: "Le nouveau suivi doit être un membre de l’équipe commerciale",
     };
   }
 
   const newOwner = await prisma.user.findFirst({
-    where: { id: newOwnerId, status: "ACTIVE" },
+    where: {
+      id: newOwnerId,
+      status: { in: ["ACTIVE", "MUST_CHANGE_PASSWORD"] },
+    },
     select: { id: true, firstName: true, lastName: true },
   });
   if (!newOwner) {

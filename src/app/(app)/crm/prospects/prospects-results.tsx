@@ -8,7 +8,8 @@ import {
   canReassignCrmDeal,
   crmProspectListScopeWhere,
 } from "@/lib/crm/scope";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import { listCommercialRoster, rosterToOwnerOptions } from "@/lib/crm/team";
+import { formatContactLabel } from "@/lib/crm/contact-label";
 import {
   SOURCE_LABELS,
   STAGE_LABELS,
@@ -167,7 +168,6 @@ export async function ProspectsResults({
     redirect(qs ? `/crm/prospects?${qs}` : "/crm/prospects");
   }
 
-  const teamIds = await commercialTeamUserIds();
   const now = new Date();
   const pageSize = DEFAULT_PAGE_SIZE;
   const requestedPage = parsePage(sp.page);
@@ -232,21 +232,21 @@ export async function ProspectsResults({
     deals.map((d) => d.id),
   );
 
-  const teamUsers = await prisma.user.findMany({
-    where: {
-      id: { in: Array.from(new Set([user.id, ...teamIds])) },
-      status: "ACTIVE",
-    },
-    select: { id: true, firstName: true, lastName: true },
-    orderBy: { firstName: "asc" },
-  });
-  const owners = teamUsers.map((u) => ({
-    value: u.id,
-    label: `${u.firstName} ${u.lastName}`,
-  }));
-
   const canReassign = canReassignCrmDeal(user);
-  const commercials = canReassign ? teamUsers : [];
+  const filterRoster = await listCommercialRoster({
+    mode: "filter",
+    extraIds: [user.id],
+  });
+  const owners = rosterToOwnerOptions(filterRoster);
+  const commercials = canReassign
+    ? (
+        await listCommercialRoster({ mode: "assign", extraIds: [user.id] })
+      ).map((u) => ({
+        id: u.id,
+        firstName: u.firstName,
+        lastName: u.lastName,
+      }))
+    : [];
   const stageFilterRaw = sp.stages
     ? (sp.stages.split(",").filter(Boolean) as CrmPipelineStage[])
     : [];
@@ -417,20 +417,30 @@ export async function ProspectsResults({
                       </span>
                     </td>
                     <td className="px-4 py-3 text-msk-ink/75">
-                      {c ? (
-                        <span className="inline-flex flex-col items-center">
-                          <span className="font-medium text-msk-ink">
-                            {c.firstName} {c.lastName}
+                      {(() => {
+                        const label = c
+                          ? formatContactLabel(c.firstName, c.lastName)
+                          : null;
+                        const jobOk = formatContactLabel(
+                          c?.jobTitle ?? null,
+                          null,
+                        );
+                        if (!label && !jobOk) return "—";
+                        return (
+                          <span className="inline-flex flex-col items-center">
+                            {label ? (
+                              <span className="font-medium text-msk-ink">
+                                {label}
+                              </span>
+                            ) : null}
+                            {jobOk ? (
+                              <span className="text-xs font-medium text-msk-ink/55">
+                                {jobOk}
+                              </span>
+                            ) : null}
                           </span>
-                          {c.jobTitle ? (
-                            <span className="text-xs font-medium text-msk-ink/55">
-                              {c.jobTitle}
-                            </span>
-                          ) : null}
-                        </span>
-                      ) : (
-                        "—"
-                      )}
+                        );
+                      })()}
                     </td>
                     <td className="px-4 py-3 tabular-nums text-msk-ink/75">
                       {c?.phone?.trim() ? c.phone : "—"}

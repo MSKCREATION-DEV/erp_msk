@@ -4,8 +4,7 @@ import { redirect } from "next/navigation";
 import { ClipboardList } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { prisma } from "@/lib/prisma";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import { listCommercialRoster } from "@/lib/crm/team";
 import {
   buildGoalProgress,
   resolveGoalsForPeriod,
@@ -72,17 +71,8 @@ export default async function CrmObjectifsPage({
   const myStats = await computePeriodStats(user.id, period.from, period.to);
   const myProgress = buildGoalProgress(myGoals, myStats);
 
-  const teamIds = canManage ? await commercialTeamUserIds() : [];
-  const memberIds = canManage
-    ? [...new Set([user.id, ...teamIds])]
-    : [];
-
   const members = canManage
-    ? await prisma.user.findMany({
-        where: { id: { in: memberIds }, status: "ACTIVE" },
-        select: { id: true, firstName: true, lastName: true },
-        orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
-      })
+    ? await listCommercialRoster({ mode: "assign", extraIds: [user.id] })
     : [];
 
   const teamSnapshots = canManage

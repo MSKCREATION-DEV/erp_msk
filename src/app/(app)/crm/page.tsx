@@ -14,7 +14,11 @@ import {
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import {
+  commercialTeamUserIds,
+  listCommercialRoster,
+  rosterToOwnerOptions,
+} from "@/lib/crm/team";
 import {
   OPEN_PIPELINE_STAGES,
   STAGE_LABELS,
@@ -78,16 +82,9 @@ export default async function CrmDashboardPage({
 
   const teamIds = await commercialTeamUserIds();
   const memberIds = [...new Set([user.id, ...teamIds])];
-  const owners = (
-    await prisma.user.findMany({
-      where: { id: { in: memberIds }, status: "ACTIVE" },
-      select: { id: true, firstName: true, lastName: true },
-      orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
-    })
-  ).map((u) => ({
-    value: u.id,
-    label: `${u.firstName} ${u.lastName}`,
-  }));
+  const owners = rosterToOwnerOptions(
+    await listCommercialRoster({ mode: "filter", extraIds: [user.id] }),
+  );
 
   const period = parseCrmPeriod(sp);
   const lens = resolveCrmScopeLens(period);

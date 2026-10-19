@@ -19,7 +19,8 @@ import {
   canMutateCrmDeal,
   canReassignCrmDeal,
 } from "@/lib/crm/scope";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import { listCommercialRoster } from "@/lib/crm/team";
+import { formatContactLabel } from "@/lib/crm/contact-label";
 import {
   ACTIVITY_LABELS,
   formatXof,
@@ -376,16 +377,14 @@ export default async function CrmProspectDetailPage({
     uiStage !== "PERDU";
   const readOnlyShared = !canMutate;
 
-  const teamIds = canReassign ? await commercialTeamUserIds() : [];
   const reassignCandidates = canReassign
-    ? await prisma.user.findMany({
-        where: {
-          id: { in: Array.from(new Set([user.id, ...teamIds])) },
-          status: "ACTIVE",
-        },
-        select: { id: true, firstName: true, lastName: true },
-        orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
-      })
+    ? (
+        await listCommercialRoster({ mode: "assign", extraIds: [user.id] })
+      ).map((u) => ({
+        id: u.id,
+        firstName: u.firstName,
+        lastName: u.lastName,
+      }))
     : [];
 
   const quotePrefill = (() => {
@@ -479,8 +478,10 @@ export default async function CrmProspectDetailPage({
                 prefetch={false}
                 href={buildScriptsHref({
                   source: deal.source,
-                  prenom:
+                  prenom: formatContactLabel(
                     deal.organization.contacts[0]?.firstName ?? null,
+                    deal.organization.contacts[0]?.lastName ?? null,
+                  )?.split(/\s+/)[0] ?? null,
                   entreprise: deal.organization.name,
                   offre:
                     deal.opportunityOffers[0]?.catalogOffer.name ??
@@ -632,15 +633,15 @@ export default async function CrmProspectDetailPage({
                           className="h-3.5 w-3.5 shrink-0 text-msk-blue"
                           aria-hidden
                         />
-                        {c.firstName} {c.lastName}
+                        {formatContactLabel(c.firstName, c.lastName) ?? "—"}
                       </p>
                       {c.isPrimary ? (
                         <Badge tone="blue">Principal</Badge>
                       ) : null}
                     </div>
-                    {c.jobTitle ? (
+                    {formatContactLabel(c.jobTitle, null) ? (
                       <p className="mt-0.5 text-xs font-medium text-msk-ink/55">
-                        {c.jobTitle}
+                        {formatContactLabel(c.jobTitle, null)}
                       </p>
                     ) : null}
                     {c.channels.length > 0 ? (
