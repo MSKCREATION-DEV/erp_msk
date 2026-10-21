@@ -1,0 +1,48 @@
+---
+description: Règle absolue — RLS Supabase on + métier uniquement via Prisma (jamais PostgREST anon)
+alwaysApply: true
+---
+
+# Sécurité Supabase / RLS (absolu ERP MSK)
+
+## Architecture figée
+
+| Couche | Rôle |
+|---|---|
+| **Prisma** (`DATABASE_URL` / `DIRECT_URL`) | Seul accès lecture/écriture aux tables métier |
+| **Supabase Auth** | Login / session / admin Auth uniquement |
+| **PostgREST (clé anon)** | **Jamais** pour le métier — RLS sans policy = porte fermée |
+
+Les tables `public.*` ont **RLS activé** (migration `20261021140000_enable_rls_public_tables`).  
+Pas de policy `anon` / `authenticated` ouvertes sur les tables métier = **voulu**.
+
+## Interdit (sans exception)
+
+- `supabase.from('…')` / `.rpc(…)` côté **client ou serveur** pour lire/écrire tables ERP (users, CRM, RH, GED, compta…).
+- Désactiver le RLS (`DISABLE ROW LEVEL SECURITY`) sur une table `public`.
+- Créer une policy du type `USING (true)` / `WITH CHECK (true)` pour `anon` ou `authenticated` sur une table métier.
+- `FORCE ROW LEVEL SECURITY` sur les tables Prisma (casserait le rôle owner / Prisma).
+- Exposer `SUPABASE_SERVICE_ROLE_KEY` au client / bundler.
+
+## Autorisé
+
+| Cas | Action |
+|---|---|
+| Données métier | `prisma.*` dans Server Components / Server Actions |
+| Auth session | Client Supabase Auth (`createServerClient` / cookies) — **pas** les tables |
+| Admin Auth | `createClient` + `SUPABASE_SERVICE_ROLE_KEY` **serveur uniquement** (`auth.admin.*`) |
+| Nouvelle table Prisma | RLS auto via trigger `ensure_rls_public` ; sinon `ENABLE ROW LEVEL SECURITY` dans la migration |
+| Alerte linter « RLS enabled, no policy » | **Ignorer** — c’est le mode ERP (API REST bloquée) |
+
+## Nouvelle migration / table
+
+```sql
+-- Obligatoire si le trigger event n’a pas tourné
+ALTER TABLE "public"."ma_table" ENABLE ROW LEVEL SECURITY;
+-- Pas de CREATE POLICY ouverte pour anon/authenticated
+```
+
+## Test mental
+
+> Avec seulement l’URL projet + la clé anon, peut-on lire `users` / `crm_opportunities` via `/rest/v1/…` ?  
+> Si oui → **bug bloquant sécurité**, corriger avant gate.
