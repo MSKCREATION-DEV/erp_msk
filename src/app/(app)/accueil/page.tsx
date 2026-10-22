@@ -132,9 +132,9 @@ export default async function AccueilPage({
       show: true,
     },
     {
-      href: "/accueil#guide",
-      title: "Guide collaborateur",
-      desc: "Parcours d’onboarding MSK",
+      href: "/guides",
+      title: "Centre de guides",
+      desc: "Procédures par module, rôle et tâche",
       icon: BookOpen,
       show: hasPermission(user, "home.view"),
     },

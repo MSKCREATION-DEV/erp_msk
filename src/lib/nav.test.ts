@@ -60,6 +60,13 @@ assert.ok(monEspace, "Mon espace live");
 
 assert.equal(isNavActive("/profil/signature", maSig, live), true);
 
+const guides = live.find((i) => i.id === "guides")!;
+assert.ok(guides, "Guides live dans la sidebar");
+assert.equal(guides.href, "/guides");
+assert.equal(isNavActive("/guides", guides, live), true);
+assert.equal(isNavActive("/guides/crm-creer-prospect", guides, live), true);
+assert.equal(isNavActive("/guides", accueil, live), false);
+
 assert.equal(
   all.some((i) => i.id === "administration"),
   false,

@@ -3,6 +3,9 @@
 Documentation **vivante** pour l’équipe (commerciaux, finance, admin, direction).  
 À **mettre à jour à chaque évolution** de module — même règle que le code : pas de dette volontaire.
 
+**Centre de guides in-app** : `/guides` · suivi obligatoire [`docs/guides/SUIVI-GUIDES.md`](../guides/SUIVI-GUIDES.md) · règle Cursor `guides-suivi.mdc`.  
+Les manuels MD restent la référence technique détaillée ; le centre app expose les procédures UX structurées.
+
 ## Comment maintenir
 
 | Quand | Action |

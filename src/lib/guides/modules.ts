@@ -1,0 +1,160 @@
+import { guideModuleSchema, type GuideModule } from "./types";
+
+const raw: GuideModule[] = [
+  {
+    id: "accueil",
+    label: "Accueil",
+    objective:
+      "Point d’entrée collaborateur : identité, packs/groupes, raccourcis selon droits.",
+    href: "/accueil",
+    accessPermission: "home.view",
+    roleIds: ["collaborateur", "direction", "admin_plateforme"],
+    relatedModuleIds: ["espace", "administration"],
+    stub: false,
+  },
+  {
+    id: "administration",
+    label: "Administration",
+    objective:
+      "Comptes, groupes, packs, overrides, gabarits et signatures plateforme.",
+    href: "/administration/utilisateurs",
+    accessPermission: "users.view",
+    roleIds: ["admin_plateforme", "direction"],
+    relatedModuleIds: ["ged", "accueil"],
+    stub: false,
+    manualPath: "docs/manuels/01-iam-droits.md",
+  },
+  {
+    id: "ged",
+    label: "GED",
+    objective:
+      "Dossiers et documents MSK — accès scoped ou parcours complet selon packs.",
+    href: "/ged",
+    accessPermission: "ged.view_scoped",
+    roleIds: ["collaborateur", "commercial", "comptable", "direction"],
+    relatedModuleIds: ["commercial", "espace"],
+    stub: false,
+    manualPath: "docs/manuels/02-ged.md",
+  },
+  {
+    id: "organisation",
+    label: "Organisation",
+    objective: "Structure et rattachements (organigramme).",
+    href: "/organisation",
+    accessPermission: "orgchart.view",
+    roleIds: ["direction", "admin_plateforme", "collaborateur"],
+    relatedModuleIds: ["administration"],
+    stub: true,
+    manualPath: "docs/manuels/03-organisation.md",
+  },
+  {
+    id: "commercial",
+    label: "Commercial",
+    objective:
+      "Prospection (CRM), clients, offres, devis et factures — une entrée nav unifiée.",
+    href: "/commercial",
+    accessPermission: "com.access",
+    roleIds: ["commercial", "admin_crm", "direction"],
+    relatedModuleIds: ["ged", "comptabilite", "catalogue"],
+    stub: false,
+    manualPath: "docs/manuels/05-crm.md",
+  },
+  {
+    id: "catalogue",
+    label: "Catalogue / Offres",
+    objective: "Offres et tarifs (accès via hub Commercial).",
+    href: "/catalogue",
+    accessPermission: "com.catalogue.view",
+    roleIds: ["commercial", "admin_crm"],
+    relatedModuleIds: ["commercial"],
+    stub: true,
+    manualPath: "docs/manuels/04-catalogue.md",
+  },
+  {
+    id: "comptabilite",
+    label: "Comptabilité",
+    objective:
+      "Plan SYSCOHADA, écritures, banques, états, budget et fiscalité assistée.",
+    href: "/comptabilite",
+    accessPermission: "cpt.access",
+    roleIds: ["comptable", "admin_compta", "direction"],
+    relatedModuleIds: ["commercial"],
+    stub: true,
+    manualPath: "docs/manuels/08-comptabilite.md",
+  },
+  {
+    id: "rh",
+    label: "RH",
+    objective:
+      "Collaborateurs, contrats, congés, absences, heures, paie et INPS.",
+    href: "/rh",
+    accessPermission: "rh.access",
+    roleIds: ["admin_rh", "direction"],
+    relatedModuleIds: ["espace", "administration"],
+    stub: true,
+    manualPath: "docs/manuels/09-rh.md",
+  },
+  {
+    id: "espace",
+    label: "Mon espace",
+    objective:
+      "Self-service collaborateur : congés, absences, heures, documents, bulletins.",
+    href: "/espace",
+    accessPermission: "self.leave.request",
+    roleIds: ["collaborateur"],
+    relatedModuleIds: ["rh", "ged"],
+    stub: false,
+  },
+  {
+    id: "stocks",
+    label: "Stocks",
+    objective: "Articles, mouvements, achats et alertes stock.",
+    href: "/stocks",
+    accessPermission: "stk.access",
+    roleIds: ["stock", "direction"],
+    relatedModuleIds: ["patrimoine", "projets"],
+    stub: true,
+    manualPath: "docs/manuels/11-stocks.md",
+  },
+  {
+    id: "patrimoine",
+    label: "Patrimoine",
+    objective: "Biens et suivi patrimoine.",
+    href: "/patrimoine",
+    accessPermission: "pat.access",
+    roleIds: ["direction", "stock"],
+    relatedModuleIds: ["stocks"],
+    stub: true,
+    manualPath: "docs/manuels/12-ops-7b.md",
+  },
+  {
+    id: "projets",
+    label: "Projets",
+    objective: "Suivi des projets opérationnels.",
+    href: "/projets",
+    accessPermission: "prj.access",
+    roleIds: ["projets", "direction"],
+    relatedModuleIds: ["stocks", "anomalies"],
+    stub: true,
+    manualPath: "docs/manuels/12-ops-7b.md",
+  },
+  {
+    id: "anomalies",
+    label: "Anomalies",
+    objective: "Tickets / anomalies opérationnelles.",
+    href: "/ops/anomalies",
+    accessPermission: "ops.access",
+    roleIds: ["direction", "stock", "projets"],
+    relatedModuleIds: ["projets", "stocks"],
+    stub: true,
+    manualPath: "docs/manuels/12-ops-7b.md",
+  },
+];
+
+export const GUIDE_MODULES: GuideModule[] = raw.map((m) =>
+  guideModuleSchema.parse(m),
+);
+
+export function getGuideModule(id: string): GuideModule | undefined {
+  return GUIDE_MODULES.find((m) => m.id === id);
+}

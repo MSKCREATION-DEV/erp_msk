@@ -14,6 +14,7 @@ import {
   UsersRound,
   Package,
   AlertTriangle,
+  BookOpen,
   type LucideIcon,
 } from "lucide-react";
 
@@ -53,6 +54,13 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/accueil",
         label: "Accueil",
         icon: Home,
+        permission: "home.view",
+      },
+      {
+        id: "guides",
+        href: "/guides",
+        label: "Guides",
+        icon: BookOpen,
         permission: "home.view",
       },
       {

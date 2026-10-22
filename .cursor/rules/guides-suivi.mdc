@@ -1,0 +1,47 @@
+---
+description: Suivi obligatoire du centre de guides ERP MSK — alimenter SUIVI-GUIDES à chaque modification
+alwaysApply: true
+---
+
+# Centre de guides — suivi absolu (ERP MSK)
+
+## Obligatoire à chaque modification
+
+Dès qu’une intervention touche :
+
+- le **centre de guides** (`src/app/(app)/guides/**`, `src/lib/guides/**`, `src/components/guides/**`) ;
+- une **fonctionnalité documentée** (parcours UI, droits, libellés, routes, workflows) ;
+- les **manuels** `docs/manuels/**` ou le contenu guide ;
+
+→ **mettre à jour** [`docs/guides/SUIVI-GUIDES.md`](../../docs/guides/SUIVI-GUIDES.md) **dans le même lot de travail**.
+
+## Contenu du suivi (minimum)
+
+| Zone du fichier | Quand |
+|---|---|
+| **Changelog** | 1 entrée datée : quoi / pourquoi / fichiers / statut doc |
+| **Inventaire guides** | Ajout / retrait / changement de statut (`draft` · `to_validate` · `validated` · `outdated`) |
+| **Modules / rôles / tâches** | Si couverture ou liens changent |
+| **À valider / dette** | Points non confirmés par le code — jamais présentés comme validés |
+| **Critères d’acceptation** | Cocher / décocher selon l’état réel |
+
+## Interdit
+
+- Inventer boutons, routes, permissions, statuts ou résultats non confirmés par le code / manuels vérifiés.
+- Publier un guide en `validated` sans vérification des étapes essentielles.
+- Modifier un parcours métier documenté **sans** mettre le guide associé en `outdated` ou le mettre à jour.
+- Laisser `SUIVI-GUIDES.md` en retard sur le code livré dans la même session.
+
+## Autorisé
+
+- Guides `draft` / `to_validate` avec sections marquées « À valider ».
+- Incréments partiels : fondations + quelques procédures vérifiées plutôt que volume fictif.
+- Lien croisé vers `docs/manuels/*.md` comme source éditoriale (le centre app reste la source UX).
+
+## Test mental
+
+> Si un commercial suit le guide demain, les chemins et boutons existent-ils encore dans l’UI ?
+> Si non → `outdated` ou correction avant de clore la tâche.
+>
+> Le changelog de `SUIVI-GUIDES.md` mentionne-t-il ce lot ?
+> Si non → **dette bloquante**, compléter avant de déclarer terminé.

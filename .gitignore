@@ -48,3 +48,13 @@ next-env.d.ts
 .claude/
 .devin/
 tmp/
+
+# Docs RH / contrats personnels (ne jamais versionner)
+docs/ATTESTATION*
+docs/CONTRAT DE*
+docs/Contrat*
+docs/Document*
+docs/Fiche de Paie*
+docs/Solde de tout compte*
+Réunion*.vtt
+*.vtt
