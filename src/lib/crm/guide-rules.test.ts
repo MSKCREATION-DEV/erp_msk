@@ -16,7 +16,7 @@ assert.equal(isEnteringContacte("NEGOCIATION", "CONTACTE"), true);
 assert.ok(CONTACT_COMMENT_MIN_LEN >= 10);
 assert.ok(CONTACT_STAGE_CHANNELS.includes("APPEL"));
 assert.ok(CONTACT_STAGE_CHANNELS.includes("WHATSAPP"));
-assert.ok(!CONTACT_STAGE_CHANNELS.includes("RDV"));
+assert.ok(!(CONTACT_STAGE_CHANNELS as readonly string[]).includes("RDV"));
 
 assert.equal(MIN_ACTIVITIES_BEFORE_LOST, 3);
 assert.equal(normalizeUiStage("NEGOCIATION"), "DEVIS_ENVOYE");
