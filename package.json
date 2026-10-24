@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "echo '[build] prisma migrate deploy…' && prisma migrate deploy && echo '[build] prisma generate…' && prisma generate && echo '[build] next build…' && next build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "start": "next start",
     "lint": "next lint",
     "test:email": "node scripts/test-email.mjs",

@@ -2,6 +2,30 @@
 
 Checklist pour ouvrir l’ERP aux collaborateurs (Mathieu, Andile, équipe) en test.
 
+## Piège build récurrent (absolu)
+
+Next.js exécute **Lint + typecheck** sur les fichiers du `tsconfig.json` pendant `next build`.
+
+| Interdit dans le typecheck app | Pourquoi |
+|---|---|
+| `*.canvas.tsx` (Cursor Canvas) | import `cursor/canvas` **absent** sur Vercel → `module_not_found` |
+| `docs/**` hors app | artefacts éditoriaux / canvas, pas du runtime Next |
+| tests `*.test.ts` | exécutés via `npm run test:*`, pas via le build |
+
+**Fix permanent** : `tsconfig.json` n’inclut que `src/**` (+ `.next/types`). Avant push :
+
+```bash
+npm run typecheck   # même périmètre que Vercel
+npm run build       # gate locale si possible
+```
+
+Erreur typique (commit `f28d87e`) :
+
+```
+./docs/architecture/erp-msk-db-review.canvas.tsx
+Type error: Cannot find module 'cursor/canvas'
+```
+
 ## État Git
 
 | Branche | Usage |

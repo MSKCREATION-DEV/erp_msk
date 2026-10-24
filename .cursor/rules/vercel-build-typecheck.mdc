@@ -1,0 +1,22 @@
+# Build Vercel — typecheck Next (absolu)
+
+## Cause d’échec récurrente
+
+`next build` sur Vercel fait **Lint + checking validity of types** avec `tsconfig.json`.
+Tout fichier inclus qui importe un module **absent en prod** (ex. `cursor/canvas`) casse le déploiement.
+
+Erreur connue :
+`Cannot find module 'cursor/canvas'` sur `*.canvas.tsx` sous `docs/`.
+
+## Règles
+
+1. **`tsconfig.json` `include`** = uniquement `src/**` (+ `next-env.d.ts`, `.next/types`).
+2. **Jamais** placer un Canvas Cursor / artefact IDE sous `src/` s’il importe `cursor/*`.
+3. Docs / architecture / scripts hors `src` : OK, **hors** typecheck Next.
+4. Avant push `dev`/`main` : `npm run typecheck` (même périmètre que Vercel).
+5. Ne pas « corriger » en `typescript.ignoreBuildErrors: true` — ça masque les vrais bugs app.
+
+## Test mental
+
+> Si j’ajoute un fichier `.tsx` hors `src`, le build Vercel le typecheck-t-il ?
+> Si oui → **bug bloquant déploiement**, restreindre `include` ou déplacer le fichier.
