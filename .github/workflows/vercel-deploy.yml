@@ -1,0 +1,47 @@
+# Filet permanent : si l’intégration Git Vercel rate (webhook / sourceless),
+# un push sur main|dev déclenche quand même un déploiement via Deploy Hook.
+#
+# Secrets GitHub (Settings → Secrets and variables → Actions) :
+#   VERCEL_DEPLOY_HOOK_MAIN  = hook « auto-main-production »
+#   VERCEL_DEPLOY_HOOK_DEV   = hook « auto-dev-preview »
+#
+# Sources des URLs : Vercel → Project erp-msk → Settings → Git → Deploy Hooks
+
+name: Vercel deploy (hooks)
+
+on:
+  push:
+    branches: [main, dev]
+
+concurrency:
+  group: vercel-deploy-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger Production (main)
+        if: github.ref_name == 'main'
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_MAIN }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::error::Secret VERCEL_DEPLOY_HOOK_MAIN manquant"
+            exit 1
+          fi
+          curl -fsS -X POST "$HOOK"
+          echo "Deploy hook main → Production OK"
+
+      - name: Trigger Preview (dev)
+        if: github.ref_name == 'dev'
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_DEV }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::error::Secret VERCEL_DEPLOY_HOOK_DEV manquant"
+            exit 1
+          fi
+          curl -fsS -X POST "$HOOK"
+          echo "Deploy hook dev → Preview OK"

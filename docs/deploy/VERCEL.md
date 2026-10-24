@@ -2,6 +2,57 @@
 
 Checklist pour ouvrir l’ERP aux collaborateurs (Mathieu, Andile, équipe) en test.
 
+## Diagnostic permanent (oct. 2026) — Preview + Production
+
+Trois causes distinctes se cumulaient. Les corriger **toutes** sinon « toujours pas OK ».
+
+| Symptôme | Cause racine | Correctif permanent |
+|---|---|---|
+| Preview `*-git-dev-*.vercel.app` → écran SSO Vercel / 302 | `ssoProtection: all_except_custom_domains` (Hobby) | **Désactivé** (`ssoProtection: null`). Ne **pas** réactiver tant que l’équipe métier n’a pas de compte Vercel |
+| Production sur vieux SHA alors que `main` est à jour | Intégration Git Vercel ne crée pas toujours de déploiement au push (`link.sourceless`, webhooks flous) | Deploy Hooks + Actions GitHub (voir § Auto-deploy) |
+| Build rouge `cursor/canvas` | `tsconfig` incluait `docs/**/*.canvas.tsx` | `include: ["src/**"]` + `npm run typecheck` |
+
+### URLs canoniques
+
+| Env | Branche | URL |
+|---|---|---|
+| **Production** | `main` | https://erp-msk.vercel.app |
+| **Preview** | `dev` | https://erp-msk-git-dev-mskcreations-projects.vercel.app |
+
+Smoke : `curl -sI https://…/login` → **HTTP 200** (pas 302 vers `vercel.com/sso`).
+
+### Auto-deploy (filet obligatoire)
+
+Deploy Hooks projet (déjà créés) :
+
+| Nom | Ref | Effet |
+|---|---|---|
+| `auto-main-production` | `main` | Production |
+| `auto-dev-preview` | `dev` | Preview |
+
+Workflow : [`.github/workflows/vercel-deploy.yml`](../../.github/workflows/vercel-deploy.yml)
+
+**Une fois** (GitHub → repo → Settings → Secrets and variables → Actions) :
+
+1. Secret `VERCEL_DEPLOY_HOOK_MAIN` = URL du hook `auto-main-production`
+2. Secret `VERCEL_DEPLOY_HOOK_DEV` = URL du hook `auto-dev-preview`
+
+URLs : Vercel → `erp-msk` → Settings → Git → Deploy Hooks.
+
+Sans ces secrets, le workflow échoue clairement (mieux qu’un silence). Avec secrets : **chaque push** `main`/`dev` redéploie même si l’app Git Vercel est muette.
+
+Trigger manuel de secours :
+
+```bash
+curl -X POST "$VERCEL_DEPLOY_HOOK_MAIN"   # prod
+curl -X POST "$VERCEL_DEPLOY_HOOK_DEV"    # preview
+```
+
+### Ne pas confondre
+
+- **SSO Vercel** (protection déploiement) ≠ login ERP Supabase.
+- Redeploy manuel MCP/API OK en secours ; le flux nominal = push → Action → hook → Vercel.
+
 ## Piège build récurrent (absolu)
 
 Next.js exécute **Lint + typecheck** sur les fichiers du `tsconfig.json` pendant `next build`.
