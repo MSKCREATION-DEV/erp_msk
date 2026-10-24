@@ -40,6 +40,7 @@ import {
 } from "@/lib/crm/follow-up-count";
 import {
   buildCrmScopeHref,
+  buildNouveauxProspectsHref,
   dateRangeFilter,
   goalsCompatibleWithPeriod,
   normalizeSearchParams,
@@ -274,8 +275,14 @@ export default async function CrmDashboardPage({
 
   const description =
     lens === "live"
-      ? `Indicateurs · ${period.label} · portefeuille à date.`
-      : `Activité · ${period.label} · sans portefeuille à date.`;
+      ? ownerLabel
+        ? `${ownerLabel} · activité ${period.label.toLowerCase()} + portefeuille à date.`
+        : ownerScope.canFilterOwners
+          ? `Équipe · activité ${period.label.toLowerCase()} + portefeuille à date.`
+          : `Mon activité · ${period.label.toLowerCase()} + mon portefeuille à date.`
+      : ownerLabel
+        ? `${ownerLabel} · activité historique · ${period.label}.`
+        : `Activité historique · ${period.label} (portefeuille masqué).`;
 
   const scopeKey = `${period.mode}:${period.fromIso}:${period.toIso}:${ownerScope.ownerId ?? "all"}`;
 
@@ -333,23 +340,27 @@ export default async function CrmDashboardPage({
             icon={Bell}
             tone="coral"
             title="Relances faites"
-            description={`Journalisées sur ${period.label.toLowerCase()}.`}
+            description={`Actions de suivi journalisées pendant ${period.label.toLowerCase()} (pas le stock ouvert).`}
             footer={
               <HubMiniRadial
                 value={relancesFaites}
                 max={Math.max(5, relancesFaites)}
                 color={METRIC_NAV_TONE_CHART.coral}
                 centerLabel={relancesFaites}
-                caption="faites"
+                caption="journalisées"
               />
             }
           />
           <MetricNavCard
-            href={eventHref("/crm/prospects", { event: "nouveaux" })}
+            href={buildNouveauxProspectsHref({
+              period,
+              ownerId: focusOwner,
+              canFilterOwners: ownerScope.canFilterOwners,
+            })}
             icon={UserRoundPlus}
             tone="blue"
-            title="Nouveaux"
-            description={`Créés sur ${period.label.toLowerCase()}.`}
+            title="Nouveaux dossiers"
+            description={`Prospects créés pendant ${period.label.toLowerCase()} (flux, pas le portefeuille).`}
             footer={
               <HubMiniRadial
                 value={newProspects}
@@ -365,14 +376,14 @@ export default async function CrmDashboardPage({
             icon={Sparkles}
             tone="cyan"
             title="Clients gagnés"
-            description={`Passés Client sur ${period.label.toLowerCase()}.`}
+            description={`Passés au statut Client pendant ${period.label.toLowerCase()}.`}
             footer={
               <HubMiniRadial
                 value={wonCount}
                 max={Math.max(5, wonCount)}
                 color="#1384CB"
                 centerLabel={wonCount}
-                caption={wonCount > 1 ? "clients" : "client"}
+                caption={wonCount > 1 ? "gagnés" : "gagné"}
               />
             }
           />
@@ -417,8 +428,8 @@ export default async function CrmDashboardPage({
                 href={stockHref("/crm/prospects", { devisRetard: "1" })}
                 icon={FileWarning}
                 tone="coral"
-                title="Sans devis"
-                description="Intéressés > 24 h sans proposition (à date)."
+                title="Sans devis (SLA)"
+                description="Statut Intéressé depuis plus de 24 h, sans devis — stock à date."
                 footer={
                   <HubMiniRadial
                     value={devisUrgent.length}
@@ -438,8 +449,8 @@ export default async function CrmDashboardPage({
               href={stockHref(prospectsStagesHref(OPEN_PIPELINE_STAGES))}
               icon={FolderOpen}
               tone="blue"
-              title="Ouverts"
-              description="Dossiers encore actifs (à date)."
+              title="Dossiers actifs"
+              description="Prospects non clos (hors Client / Perdu) — stock à date."
               footer={
                 <HubMiniRadial
                   value={openDeals.length}
@@ -448,8 +459,8 @@ export default async function CrmDashboardPage({
                   centerLabel={openDeals.length}
                   caption={
                     openDeals.length > 1
-                      ? "dossiers ouverts"
-                      : "dossier ouvert"
+                      ? "dossiers actifs"
+                      : "dossier actif"
                   }
                 />
               }
@@ -458,15 +469,19 @@ export default async function CrmDashboardPage({
               href={stockHref(prospectsStagesHref(["INTERESSE"]))}
               icon={Sparkles}
               tone="cyan"
-              title="Intéressés"
-              description="Prêts à recevoir une proposition (à date)."
+              title="Statut Intéressé"
+              description="Dossiers au statut Intéressé — prêts pour une proposition (à date)."
               footer={
                 <HubMiniRadial
                   value={interesses}
                   max={interesseScale}
                   color="#1384CB"
                   centerLabel={interesses}
-                  caption={interesses > 1 ? "intéressés" : "intéressé"}
+                  caption={
+                    interesses > 1
+                      ? "au statut Intéressé"
+                      : "au statut Intéressé"
+                  }
                 />
               }
             />
@@ -474,8 +489,8 @@ export default async function CrmDashboardPage({
               href={stockHref("/crm/relances")}
               icon={Bell}
               tone="coral"
-              title="Relances à faire"
-              description="À venir et en retard (à date)."
+              title="Relances ouvertes"
+              description="Tâches de relance encore ouvertes — échéance à venir ou dépassée."
               footer={
                 <div className="flex w-full items-end justify-end gap-1.5 sm:gap-2">
                   <HubMiniRadial

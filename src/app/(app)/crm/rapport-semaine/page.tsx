@@ -40,6 +40,7 @@ import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
 import { ActionLink } from "@/components/ui/action-link";
 import {
   buildCrmScopeHref,
+  buildPortfolioProspectsHref,
   normalizeSearchParams,
   parseCrmOwner,
   parseCrmPeriod,
@@ -279,12 +280,10 @@ export default async function CrmRapportPage({
           resetHref={resetLiveHref}
           actions={
             <ActionLink
-              href={buildCrmScopeHref("/crm/prospects", {
+              href={buildPortfolioProspectsHref({
                 period,
                 ownerId: focusOwnerId,
                 canFilterOwners: canGlobal,
-                forcePeriod: true,
-                keep: { event: "nouveaux" },
               })}
               icon={FolderOpen}
               variant="secondary"

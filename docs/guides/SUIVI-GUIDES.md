@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-22 (visuels + captures) |
+| Dernière mise à jour | 2026-10-24 (audit CRM hub / Équipe / relances) |
 
 ### Légende statuts documentaires
 
@@ -104,7 +104,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `crm-creer-prospect` | Créer un prospect | commercial | `validated` | manuel 05 + `/crm/prospects/nouveau` |
 | `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `validated` | manuel 05 |
 | `crm-transformer-client` | Transformer un prospect en client | commercial | `validated` | manuel 05 (Intéressé → Client) |
-| `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `validated` | `/commercial` + fusion CRM |
+| `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `to_validate` | compteurs hub = périmètre rôle (own ≠ liste partagée) — à revalider UI |
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
 | `faq-acces-refuse` | Accès refusé / module absent | accueil | `validated` | redirect `acces_refuse` |
 | `faq-mot-de-passe` | Mot de passe / reset | accueil | `validated` | parcours auth connus |
@@ -187,6 +187,20 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-10-24 — Import Excel Yaye (merge) + purge fixtures `[TEST]`
+
+- **Pourquoi** : intégrer le fichier manuel `CRM_Prospection_MSK Copier.xlsx` sans wipe CRM ni doublons.
+- **Quoi** : purge seule `[TEST]` + archive `*@test.msk.local` ; import +117 Yaye ; 15 skip doublons ; 9 réaffectations Madina→Yaye ; vérifs KPI 8/8 ; script `scripts/crm-import-yaye-merge.ts`.
+- **Résultat** : Yaye 126 dossiers (125 ouverts) · Mathieu 11 (8 ouverts) · 0 org `[TEST]` · idempotence 2ᵉ passe = 0 nouvel import.
+- **Statut** : données terrain intégrées ; login UI Yaye à confirmer (hub doit afficher ~125 suivis).
+
+### 2026-10-24 — Audit Commercial : causes racines Mathieu / Yaye / relances
+
+- **Pourquoi** : CTA Vue Équipe « Prospects » filtrait `event=nouveaux` + semaine alors que le KPI affichait le portefeuille ; hub Yaye « 0 » vs liste partagée confuse ; KPI relances semblaient contradictoires.
+- **Quoi** : `buildPortfolioProspectsHref` / `buildNouveauxProspectsHref` ; buckets relances centralisés + tests ; hub own « suivis / visibles » ; manuel 05 aligné ; script comptes test `scripts/seed-crm-test-accounts.mjs`.
+- **Fichiers** : `src/lib/crm/scope-period.ts`, `relance-buckets.ts` (+ tests), pages `crm/equipe`, `relances`, `rapport-semaine`, `commercial`, `crm/page`, `docs/manuels/05-crm.md`.
+- **Statut doc** : `com-hub-naviguer` → `to_validate` ; parcours Équipe→Prospects à revalider après déploiement.
 
 ### 2026-10-22 — Review + push (asg-msk)
 

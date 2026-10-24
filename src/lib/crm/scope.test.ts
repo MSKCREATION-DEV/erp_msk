@@ -4,6 +4,7 @@ import {
   canReassignCrmDeal,
   crmProspectListScopeWhere,
   crmVisibility,
+  dealOwnerScopeWhere,
 } from "./scope";
 import type { SessionUser } from "@/lib/rbac/resolve";
 
@@ -49,6 +50,20 @@ const direction = fakeUser({
 
 assert.deepEqual(crmProspectListScopeWhere(commercial), {});
 assert.equal(crmVisibility(commercial), "own");
+/**
+ * Yaye / commercial terrain :
+ * - liste Prospects = lecture partagée (`{}`)
+ * - hub / KPI perso / dashboard = portefeuille `ownerId` seul
+ * Un compteur hub à 0 avec une liste non vide n’est PAS une erreur de requête
+ * si aucun dossier n’est affecté à l’utilisateur.
+ */
+assert.deepEqual(dealOwnerScopeWhere(commercial, ["madina", "mathieu"]), {
+  ownerId: "yaye",
+});
+assert.deepEqual(dealOwnerScopeWhere(direction, ["madina"]), {});
+assert.deepEqual(dealOwnerScopeWhere(lead, ["madina"]), {
+  ownerId: { in: ["lead", "madina"] },
+});
 assert.equal(canMutateCrmDeal(commercial, "yaye"), true);
 assert.equal(canMutateCrmDeal(commercial, other), false);
 assert.equal(canMutateCrmDeal(lead, other), true);

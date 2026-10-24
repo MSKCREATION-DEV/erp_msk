@@ -9,8 +9,9 @@
 
 **Filtres communs** (Tableau de bord, Vue Équipe, Objectifs, Rapport) : barre **période** + **collaborateur** (si Direction / lead). Sélecteur de **semaine** unifié (`CrmWeekPicker` : ← → + panneau par mois).
 - Section **Activité** (relances faites, nouveaux, clients gagnés) : suit **toujours** la période (+ collab). Liens : `forcePeriod` + `event=nouveaux` | `focus=faites` | `event=gagnes`. Les listes filtrent `createdAt` / `wonAt` / activités.
-- CTA **Prospects** (Équipe / Objectifs / Rapport) : mêmes règles — créés sur la période sélectionnée (+ owner).
-- Section **Portefeuille à date** (ouverts, retards, priorités, répartition, badges stages) : `view=stock` ou `stages=` — suit le **collab**, ignore la période pour les données (période gardée pour le retour).
+- CTA **Prospects** (Équipe / Rapport, bouton portefeuille) : `view=stock` + `owner` — **portefeuille à date** du collab (aligné sur le compteur « dossiers actifs »), **sans** filtre `createdAt` période. Helper : `buildPortfolioProspectsHref`.
+- CTA **Nouveaux** (Tableau de bord, activité) : `event=nouveaux` + période forcée — flux créés sur la période. Helper : `buildNouveauxProspectsHref`. Ne pas confondre avec le CTA portefeuille.
+- Section **Portefeuille à date** (dossiers actifs, Intéressés, retards, priorités, répartition, badges stages) : `view=stock` ou `stages=` — suit le **collab**, ignore la période pour les données (période gardée pour le retour).
 - **Historique** (période passée) : portefeuille masqué. Objectifs visibles en **jour / semaine / mois** (pas en plage) ; cibles ancrées à la période + conversion jours ouvrés (5 j / 22 j).
 Vocabulaire : « montant en cours » (jamais « pipeline »).
 
@@ -80,6 +81,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
+| 2026-10-24 | Fix Vue Équipe→Prospects : portefeuille (`view=stock`) au lieu de `event=nouveaux` ; hub own clarifie « suivis / visibles » ; buckets relances documentés/testés |
 | 2026-10-15 | Prospects : période CRM appliquée (Équipe→Prospects) ; stocks via `view=stock` |
 | 2026-10-15 | Filtres période/owner propagés aux listes (nouveaux, relances faites, clients gagnés, stocks) |
 | 2026-10-14 | LOT-G Relancé N× partout + GUIDE Perdu ; LOT-F doublons ; LOT-I En discussion ; LOT-E…B |

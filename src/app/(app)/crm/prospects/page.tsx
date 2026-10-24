@@ -119,28 +119,34 @@ export default async function CrmProspectsPage({
       />
 
       {ownKpis ? (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <KpiRadial
-            label="Prospects"
-            value={ownKpis.prospects}
-            hint="dossiers suivis"
-          />
-          <KpiRadial
-            label="Intéressés"
-            value={ownKpis.interesses}
-            hint="à convertir"
-          />
-          <KpiRadial
-            label="Retards"
-            value={ownKpis.retards}
-            tone={ownKpis.retards > 0 ? "coral" : "blue"}
-            hint="relances dues"
-          />
-          <KpiRadial
-            label="Relances faites"
-            value={ownKpis.relancesFaites}
-            hint="actions de suivi journalisées"
-          />
+        <div className="space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/40">
+            Mon portefeuille (suivi par moi) — la liste ci-dessous reste
+            partagée à toute l’équipe
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <KpiRadial
+              label="Mes dossiers actifs"
+              value={ownKpis.prospects}
+              hint="hors Client / Perdu"
+            />
+            <KpiRadial
+              label="Mes Intéressés"
+              value={ownKpis.interesses}
+              hint="statut Intéressé"
+            />
+            <KpiRadial
+              label="Mes retards"
+              value={ownKpis.retards}
+              tone={ownKpis.retards > 0 ? "coral" : "blue"}
+              hint="follow-up dépassé"
+            />
+            <KpiRadial
+              label="Relances journalisées"
+              value={ownKpis.relancesFaites}
+              hint="historique sur mes dossiers"
+            />
+          </div>
         </div>
       ) : null}
 

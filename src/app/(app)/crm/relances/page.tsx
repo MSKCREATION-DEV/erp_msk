@@ -15,7 +15,15 @@ import {
   outreachCountByOpportunityIds,
 } from "@/lib/crm/follow-up-count";
 import {
+  classifyRelanceDue,
+  partitionRelanceDue,
+  startOfLocalDay,
+  summarizeRelanceDueBuckets,
+  type RelanceDueBucket,
+} from "@/lib/crm/relance-buckets";
+import {
   buildCrmScopeHref,
+  buildPortfolioProspectsHref,
   dateRangeFilter,
   normalizeSearchParams,
   parseCrmOwner,
@@ -39,8 +47,6 @@ import { RelanceActions } from "@/components/crm/relance-actions";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { cn } from "@/lib/utils";
-
-type DueBucket = "overdue" | "today" | "week" | "later";
 
 export const metadata: Metadata = { title: "Relances" };
 
@@ -115,14 +121,6 @@ async function loadOutreachDone(opts: {
   });
 }
 
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
-function endOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
-}
-
 function stageTone(stage: string): "muted" | "success" | "coral" | "blue" {
   if (stage === "GAGNE") return "success";
   if (stage === "PERDU") return "coral";
@@ -130,28 +128,18 @@ function stageTone(stage: string): "muted" | "success" | "coral" | "blue" {
   return "muted";
 }
 
-function dueBucket(
-  dueAt: Date,
-  sod: Date,
-  eod: Date,
-  weekEnd: Date,
-): DueBucket {
-  if (dueAt < sod) return "overdue";
-  if (dueAt <= eod) return "today";
-  if (dueAt <= weekEnd) return "week";
-  return "later";
-}
-
-function formatDue(dueAt: Date, bucket: DueBucket) {
+function formatDue(dueAt: Date, bucket: RelanceDueBucket) {
   const label = dueAt.toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "short",
   });
   if (bucket === "overdue") {
-    const sod = startOfDay(new Date());
+    const sod = startOfLocalDay(new Date());
     const days = Math.max(
       1,
-      Math.round((sod.getTime() - startOfDay(dueAt).getTime()) / 86_400_000),
+      Math.round(
+        (sod.getTime() - startOfLocalDay(dueAt).getTime()) / 86_400_000,
+      ),
     );
     return {
       label,
@@ -169,16 +157,12 @@ function RelanceTable({
   tasks,
   empty,
   outreachMap,
-  sod,
-  eod,
-  weekEnd,
+  now,
 }: {
   tasks: TaskRow[];
   empty: string;
   outreachMap: Map<string, number>;
-  sod: Date;
-  eod: Date;
-  weekEnd: Date;
+  now: Date;
 }) {
   if (tasks.length === 0) {
     return (
@@ -209,7 +193,7 @@ function RelanceTable({
             const uiStage: CrmPipelineStage | null = rawStage
               ? normalizeUiStage(rawStage)
               : null;
-            const bucket = dueBucket(t.dueAt, sod, eod, weekEnd);
+            const bucket = classifyRelanceDue(t.dueAt, now);
             const due = formatDue(t.dueAt, bucket);
             const actionLabel =
               t.opportunity?.nextAction?.trim() || t.title || "Relance";
@@ -557,16 +541,12 @@ export default async function CrmRelancesPage({
   });
 
   const now = new Date();
-  const sod = startOfDay(now);
-  const eod = endOfDay(now);
-  const weekEnd = endOfDay(
-    new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7),
-  );
-
-  const overdue = tasks.filter((t) => t.dueAt < sod);
-  const today = tasks.filter((t) => t.dueAt >= sod && t.dueAt <= eod);
-  const thisWeek = tasks.filter((t) => t.dueAt > eod && t.dueAt <= weekEnd);
-  const later = tasks.filter((t) => t.dueAt > weekEnd);
+  const buckets = partitionRelanceDue(tasks, now);
+  const dueSummary = summarizeRelanceDueBuckets(buckets);
+  const overdue = buckets.overdue;
+  const today = buckets.today;
+  const thisWeek = buckets.week;
+  const later = buckets.later;
 
   const listByVue: Record<VueFilter, TaskRow[]> = {
     tous: tasks,
@@ -576,11 +556,11 @@ export default async function CrmRelancesPage({
     "plus-tard": later,
   };
   const listTitleByVue: Record<VueFilter, string> = {
-    tous: "File à faire",
+    tous: "File ouverte (toutes échéances)",
     retard: "En retard",
-    aujourdhui: "Aujourd’hui",
-    semaine: "Cette semaine",
-    "plus-tard": "Plus tard",
+    aujourdhui: "Échéance aujourd’hui",
+    semaine: "Échéance sous 7 jours",
+    "plus-tard": "Échéance plus lointaine",
   };
   const listToneByVue: Record<
     VueFilter,
@@ -593,11 +573,11 @@ export default async function CrmRelancesPage({
     "plus-tard": "muted",
   };
   const emptyByVue: Record<VueFilter, string> = {
-    tous: "Aucune relance ouverte.",
-    retard: "Aucune relance en retard — bravo.",
-    aujourdhui: "Rien à faire aujourd’hui.",
-    semaine: "Pas de relance prévue sous 7 jours.",
-    "plus-tard": "Aucune relance plus lointaine.",
+    tous: "Aucune tâche de relance ouverte.",
+    retard: "Aucune échéance en retard — bravo.",
+    aujourdhui: "Aucune échéance aujourd’hui.",
+    semaine: "Aucune échéance dans les 7 prochains jours (hors aujourd’hui).",
+    "plus-tard": "Aucune échéance plus lointaine.",
   };
 
   const activeList = listByVue[vue];
@@ -615,19 +595,17 @@ export default async function CrmRelancesPage({
   else listParams.vue = vue;
 
   const filters: { id: VueFilter; label: string; count: number }[] = [
-    { id: "tous", label: "Toutes", count: tasks.length },
+    { id: "tous", label: "File ouverte", count: tasks.length },
     { id: "retard", label: "En retard", count: overdue.length },
     { id: "aujourdhui", label: "Aujourd’hui", count: today.length },
-    { id: "semaine", label: "Cette semaine", count: thisWeek.length },
+    { id: "semaine", label: "Sous 7 jours", count: thisWeek.length },
     { id: "plus-tard", label: "Plus tard", count: later.length },
   ];
 
-  const prospectsHref = buildCrmScopeHref("/crm/prospects", {
+  const prospectsHref = buildPortfolioProspectsHref({
     period,
     ownerId: ownerScope.ownerId,
     canFilterOwners: ownerScope.canFilterOwners,
-    forcePeriod: true,
-    keep: { view: "stock" },
   });
 
   return (
@@ -660,24 +638,28 @@ export default async function CrmRelancesPage({
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <KpiRadial
           label="En retard"
-          value={overdue.length}
-          tone={overdue.length > 0 ? "coral" : "blue"}
-          hint="à rattraper"
+          value={dueSummary.overdue}
+          tone={dueSummary.overdue > 0 ? "coral" : "blue"}
+          hint="échéance avant aujourd’hui"
         />
         <KpiRadial
           label="Aujourd’hui"
-          value={today.length}
-          hint="priorité du jour"
+          value={dueSummary.today}
+          hint="échéance ce jour"
         />
         <KpiRadial
-          label="Cette semaine"
-          value={thisWeek.length}
-          hint="sous 7 jours"
+          label="Sous 7 jours"
+          value={dueSummary.week}
+          hint="après aujourd’hui, ≤ 7 j"
         />
         <KpiRadial
-          label="À faire"
-          value={tasks.length}
-          hint={tasks.length === 0 ? "à jour" : "ouvertes"}
+          label="File ouverte"
+          value={dueSummary.open}
+          hint={
+            dueSummary.open === 0
+              ? "aucune tâche ouverte"
+              : `dont ${dueSummary.later} plus tard`
+          }
         />
         <Link
           prefetch={false}
@@ -687,7 +669,7 @@ export default async function CrmRelancesPage({
           <KpiRadial
             label="Relances faites"
             value={relancesFaitesPeriod}
-            hint={period.label.toLowerCase()}
+            hint={`journal · ${period.label.toLowerCase()}`}
           />
         </Link>
       </div>
@@ -755,9 +737,7 @@ export default async function CrmRelancesPage({
             tasks={pageTasks}
             empty={emptyByVue[vue]}
             outreachMap={outreachMap}
-            sod={sod}
-            eod={eod}
-            weekEnd={weekEnd}
+            now={now}
           />
           <ListPagination
             pathname="/crm/relances"

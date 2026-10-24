@@ -372,6 +372,44 @@ export function shouldFilterProspectsByCrmPeriod(
   return sp.event === "nouveaux" || hasCrmScopePeriodParams(sp);
 }
 
+/**
+ * Lien portefeuille (stock à date) vers `/crm/prospects`.
+ *
+ * **Contrat** : le chiffre affiché sur Vue Équipe / hub / badges stages
+ * (dossiers actifs hors Client) doit mener ici — **pas** à `event=nouveaux`
+ * (flux période). `view=stock` désactive le filtre `createdAt`.
+ */
+export function buildPortfolioProspectsHref(opts: {
+  period: CrmPeriodScope;
+  ownerId?: string | null;
+  canFilterOwners?: boolean;
+  keep?: Record<string, string | undefined>;
+}): string {
+  return buildCrmScopeHref("/crm/prospects", {
+    period: opts.period,
+    ownerId: opts.ownerId ?? null,
+    canFilterOwners: opts.canFilterOwners ?? true,
+    keep: { view: "stock", ...opts.keep },
+  });
+}
+
+/**
+ * Lien flux « nouveaux » (créés sur la période) — distinct du portefeuille.
+ */
+export function buildNouveauxProspectsHref(opts: {
+  period: CrmPeriodScope;
+  ownerId?: string | null;
+  canFilterOwners?: boolean;
+}): string {
+  return buildCrmScopeHref("/crm/prospects", {
+    period: opts.period,
+    ownerId: opts.ownerId ?? null,
+    canFilterOwners: opts.canFilterOwners ?? true,
+    forcePeriod: true,
+    keep: { event: "nouveaux" },
+  });
+}
+
 /** Construit une URL avec période + owner (et params à conserver). */
 export function buildCrmScopeHref(
   path: string,

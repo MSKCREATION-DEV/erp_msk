@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import {
   buildCrmScopeHref,
+  buildNouveauxProspectsHref,
+  buildPortfolioProspectsHref,
   crmScopeToSearchParams,
   dateRangeFilter,
   goalsCompatibleWithPeriod,
@@ -221,16 +223,51 @@ const currentIso = weekStartIso(currentWeek);
 
 {
   const period = parseCrmPeriod({ periode: "mois", mois: "2026-08" });
-  const href = buildCrmScopeHref("/crm/prospects", {
+  const href = buildNouveauxProspectsHref({
     period,
     ownerId: "628357b3-ca62-418a-809d-a541eccc29b4",
     canFilterOwners: true,
-    forcePeriod: true,
-    keep: { event: "nouveaux" },
   });
   assert.match(href, /event=nouveaux/);
   assert.match(href, /periode=mois/);
   assert.match(href, /mois=2026-08/);
+  assert.equal(shouldFilterProspectsByCrmPeriod(Object.fromEntries(new URL(href, "http://x").searchParams)), true);
+}
+
+{
+  /**
+   * Régression Mathieu / Vue Équipe :
+   * CTA « Prospects » = portefeuille (stock), pas nouveaux de la semaine.
+   */
+  const period = parseCrmPeriod({});
+  const ownerId = "c004a91c-989c-4a3d-8f1b-c4f76ff0f7ba";
+  const portfolio = buildPortfolioProspectsHref({
+    period,
+    ownerId,
+    canFilterOwners: true,
+  });
+  const sp = Object.fromEntries(new URL(portfolio, "http://x").searchParams);
+  assert.equal(sp.owner, ownerId);
+  assert.equal(sp.view, "stock");
+  assert.equal(sp.event, undefined);
+  assert.equal(isCrmStockListParams(sp), true);
+  assert.equal(shouldFilterProspectsByCrmPeriod(sp), false);
+
+  const buggyLegacy = buildCrmScopeHref("/crm/prospects", {
+    period,
+    ownerId,
+    canFilterOwners: true,
+    forcePeriod: true,
+    keep: { event: "nouveaux" },
+  });
+  const buggySp = Object.fromEntries(
+    new URL(buggyLegacy, "http://x").searchParams,
+  );
+  assert.equal(shouldFilterProspectsByCrmPeriod(buggySp), true);
+  assert.notEqual(
+    shouldFilterProspectsByCrmPeriod(sp),
+    shouldFilterProspectsByCrmPeriod(buggySp),
+  );
 }
 
 console.log("scope-period.test.ts OK");

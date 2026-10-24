@@ -36,35 +36,47 @@ const ICONS: Record<string, LucideIcon> = {
   objectifs: Target,
 };
 
+export type HubCount =
+  | number
+  | {
+      value: number;
+      hint: string;
+    };
+
 function moduleKpi(
   module: CommercialModule,
-  count?: number | null,
+  count?: HubCount | null,
 ): { value: string; hint?: string } | null {
   if (count == null) return null;
 
+  const value = typeof count === "number" ? count : count.value;
+  if (typeof count === "object") {
+    return { value: String(value), hint: count.hint };
+  }
+
   switch (module.id) {
     case "relances":
-      return count > 0
-        ? { value: String(count), hint: "à faire" }
-        : { value: "0", hint: "à jour" };
+      return value > 0
+        ? { value: String(value), hint: "en retard" }
+        : { value: "0", hint: "aucun retard" };
     case "scripts":
       return {
-        value: String(count),
-        hint: count > 1 ? "modèles" : "modèle",
+        value: String(value),
+        hint: value > 1 ? "modèles" : "modèle",
       };
     case "prospects":
       return {
-        value: String(count),
-        hint: count > 1 ? "prospects" : "prospect",
+        value: String(value),
+        hint: value > 1 ? "dossiers actifs" : "dossier actif",
       };
     case "devis":
-      return { value: String(count), hint: "ouverts" };
+      return { value: String(value), hint: "ouverts" };
     case "factures":
-      return { value: String(count), hint: "à encaisser" };
+      return { value: String(value), hint: "à encaisser" };
     case "clients":
       return {
-        value: String(count),
-        hint: count > 1 ? "clients" : "client",
+        value: String(value),
+        hint: value > 1 ? "clients" : "client",
       };
     default:
       return null;
@@ -76,7 +88,7 @@ function ModuleCard({
   count,
 }: {
   module: CommercialModule;
-  count?: number | null;
+  count?: HubCount | null;
 }) {
   const kpi = moduleKpi(module, count);
 
@@ -104,7 +116,7 @@ export function CommercialHubGrid({
   counts,
 }: {
   modules: CommercialModule[];
-  counts?: Partial<Record<string, number>>;
+  counts?: Partial<Record<string, HubCount>>;
 }) {
   const bySection = (id: CommercialModule["section"]) =>
     modules.filter((m) => m.section === id);

@@ -18,6 +18,7 @@ import { listWeekOptions } from "@/lib/crm/week";
 import { outreachCountByOwnerInPeriod } from "@/lib/crm/follow-up-count";
 import {
   buildCrmScopeHref,
+  buildPortfolioProspectsHref,
   crmScopeToSearchParams,
   dateRangeFilter,
   goalsCompatibleWithPeriod,
@@ -243,12 +244,10 @@ export default async function CrmEquipePage({
                 Rapport
               </ActionLink>
               <ActionLink
-                href={buildCrmScopeHref("/crm/prospects", {
+                href={buildPortfolioProspectsHref({
                   period,
                   ownerId: filterOwner,
                   canFilterOwners: true,
-                  forcePeriod: true,
-                  keep: { event: "nouveaux" },
                 })}
                 icon={FolderOpen}
                 variant="secondary"
@@ -298,12 +297,10 @@ export default async function CrmEquipePage({
                 ownerId,
                 canFilterOwners: true,
               })}
-              prospectsHref={buildCrmScopeHref("/crm/prospects", {
+              prospectsHref={buildPortfolioProspectsHref({
                 period,
                 ownerId,
                 canFilterOwners: true,
-                forcePeriod: true,
-                keep: { event: "nouveaux" },
               })}
               showStocks={showStocks}
               showGoals={showGoals}
