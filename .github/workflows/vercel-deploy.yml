@@ -28,8 +28,8 @@ jobs:
           HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_MAIN }}
         run: |
           if [ -z "$HOOK" ]; then
-            echo "::error::Secret VERCEL_DEPLOY_HOOK_MAIN manquant"
-            exit 1
+            echo "::warning::Secret VERCEL_DEPLOY_HOOK_MAIN absent — filet inactif. Lancer scripts/vercel-set-deploy-hook-secrets.sh"
+            exit 0
           fi
           curl -fsS -X POST "$HOOK"
           echo "Deploy hook main → Production OK"
@@ -40,8 +40,8 @@ jobs:
           HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_DEV }}
         run: |
           if [ -z "$HOOK" ]; then
-            echo "::error::Secret VERCEL_DEPLOY_HOOK_DEV manquant"
-            exit 1
+            echo "::warning::Secret VERCEL_DEPLOY_HOOK_DEV absent — filet inactif. Lancer scripts/vercel-set-deploy-hook-secrets.sh"
+            exit 0
           fi
           curl -fsS -X POST "$HOOK"
           echo "Deploy hook dev → Preview OK"
