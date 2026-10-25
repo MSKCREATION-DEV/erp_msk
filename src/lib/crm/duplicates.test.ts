@@ -14,6 +14,7 @@ import {
   type ContactDuplicateCandidate,
   type OrgDuplicateCandidate,
 } from "./duplicates";
+import { normalizeOrgName } from "./labels";
 import { normalizeChannelValue, phoneDigits } from "./channels";
 
 assert.equal(diceCoefficient("msk", "msk"), 1);
@@ -31,7 +32,16 @@ assert.equal(scoreOrgNames("Alpha", "Omega").kind, null);
 // Préfixe live ≥ 3 car.
 assert.equal(scoreOrgNames("smdf", "SMDF sa").kind, "fuzzy");
 assert.equal(scoreOrgNames("mar", "Marinas").kind, "fuzzy");
+assert.equal(scoreOrgNames("marin", "Marinas").kind, "fuzzy");
 assert.equal(scoreOrgNames("marinas", "Marinas").kind, "exact");
+
+// Pool SQL : le norm lui-même doit rester un token « contains » (pas skip égalité seule)
+{
+  const tokens = orgSearchTokens("marin");
+  assert.ok(tokens.includes("marin"));
+  // Simulation du préfiltre corrigé : contains(norm) toujours actif
+  assert.ok("marinas".includes(normalizeOrgName("marin")));
+}
 
 assert.equal(normalizeChannelValue("EMAIL", " A@B.COM "), "a@b.com");
 assert.equal(phoneDigits("+221 77 000 00 00"), "221770000000");

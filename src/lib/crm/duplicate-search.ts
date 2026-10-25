@@ -126,17 +126,27 @@ export async function searchOrgDuplicates(
   if (!norm) return [];
 
   const tokens = orgSearchTokens(needle);
+  // Toujours `contains` / `startsWith` sur le norm : un mot unique (« marin »)
+  // ne doit pas se limiter à l’égalité exacte (sinon « Marinas » hors pool).
   const orFilters: Prisma.CrmOrganizationWhereInput[] = [
     { normalizedName: norm },
+    { normalizedName: { startsWith: norm } },
+    { normalizedName: { contains: norm } },
   ];
   for (const t of tokens) {
     if (t === norm) continue;
+    orFilters.push({ normalizedName: { startsWith: t } });
     orFilters.push({ normalizedName: { contains: t } });
   }
 
-  const clientOr: Prisma.ComClientWhereInput[] = [{ normalizedName: norm }];
+  const clientOr: Prisma.ComClientWhereInput[] = [
+    { normalizedName: norm },
+    { normalizedName: { startsWith: norm } },
+    { normalizedName: { contains: norm } },
+  ];
   for (const t of tokens) {
     if (t === norm) continue;
+    clientOr.push({ normalizedName: { startsWith: t } });
     clientOr.push({ normalizedName: { contains: t } });
   }
 
