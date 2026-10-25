@@ -104,6 +104,23 @@ export function scoreOrgNames(
   const b = normalizeOrgName(candidateName);
   if (!a || !b) return { kind: null, score: 0 };
   if (a === b) return { kind: "exact", score: 1 };
+
+  // Préfixe dès 3 car. : « smdf » → « smdf sa », « mar » → « marinas »
+  const aCompact = a.replace(/\s+/g, "");
+  const bCompact = b.replace(/\s+/g, "");
+  if (
+    aCompact.length >= MIN_LIVE_SEARCH_CHARS &&
+    (bCompact.startsWith(aCompact) || aCompact.startsWith(bCompact))
+  ) {
+    const ratio =
+      Math.min(aCompact.length, bCompact.length) /
+      Math.max(aCompact.length, bCompact.length);
+    return {
+      kind: "fuzzy",
+      score: Math.max(ratio, FUZZY_THRESHOLD),
+    };
+  }
+
   const score = diceCoefficient(a, b);
   if (score >= FUZZY_THRESHOLD) return { kind: "fuzzy", score };
   return { kind: null, score };

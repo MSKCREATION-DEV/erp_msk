@@ -7,12 +7,12 @@ export type LiveSearchStatus = "idle" | "pending" | "ok" | "error";
 /**
  * Recherche live debounce + anti-course (séquence).
  * Les Server Actions ne s’annulent pas côté serveur : on ignore les réponses périmées.
- * Au changement de saisie : résultats précédents effacés immédiatement (pas de stale UI).
+ * Feedback immédiat « pending » dès le déclenchement (dès 3 car.), puis debounce avant l’appel.
  */
 export function useDuplicateLiveSearch<T>({
   queryKey,
   enabled,
-  debounceMs = 320,
+  debounceMs = 280,
   search,
 }: {
   /** Clé sérialisée de la saisie (change → relance). */
@@ -32,6 +32,8 @@ export function useDuplicateLiveSearch<T>({
   const [error, setError] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   const seq = useRef(0);
+  const searchRef = useRef(search);
+  searchRef.current = search;
 
   useEffect(() => {
     if (!enabled) {
@@ -43,17 +45,16 @@ export function useDuplicateLiveSearch<T>({
     }
 
     const mySeq = ++seq.current;
-    // Nouvelle saisie : ne pas laisser d’anciennes cards actives
+    // Feedback immédiat dès la 3ᵉ lettre (pas d’attente silencieuse)
     setData(null);
     setError(null);
-    setStatus("idle");
+    setStatus("pending");
 
     const timer = window.setTimeout(() => {
       if (mySeq !== seq.current) return;
-      setStatus("pending");
       void (async () => {
         try {
-          const res = await search();
+          const res = await searchRef.current();
           if (mySeq !== seq.current) return;
           if (!res.ok) {
             setData(null);
@@ -76,8 +77,6 @@ export function useDuplicateLiveSearch<T>({
     return () => {
       window.clearTimeout(timer);
     };
-    // search volontairement exclu : queryKey porte les entrées
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- queryKey + tick pilotent
   }, [queryKey, enabled, debounceMs, tick]);
 
   return {

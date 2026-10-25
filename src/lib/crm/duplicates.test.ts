@@ -28,6 +28,10 @@ assert.equal(
   "fuzzy",
 );
 assert.equal(scoreOrgNames("Alpha", "Omega").kind, null);
+// Préfixe live ≥ 3 car.
+assert.equal(scoreOrgNames("smdf", "SMDF sa").kind, "fuzzy");
+assert.equal(scoreOrgNames("mar", "Marinas").kind, "fuzzy");
+assert.equal(scoreOrgNames("marinas", "Marinas").kind, "exact");
 
 assert.equal(normalizeChannelValue("EMAIL", " A@B.COM "), "a@b.com");
 assert.equal(phoneDigits("+221 77 000 00 00"), "221770000000");
