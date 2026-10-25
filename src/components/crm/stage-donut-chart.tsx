@@ -18,6 +18,7 @@ import {
 } from "@/lib/crm/labels";
 import {
   buildCrmScopeHref,
+  parseCrmPeriod,
   type CrmPeriodScope,
 } from "@/lib/crm/scope-period";
 
@@ -44,7 +45,8 @@ export function StageDonutChart({
 }) {
   const router = useRouter();
   const rows = data.filter((d) => d.count > 0);
-  const total = rows.reduce((s, d) => s + d.count, 0);
+  const total = rows.reduce((s, d) => d.count + s, 0);
+  const scopePeriod = period ?? parseCrmPeriod({});
 
   const config = Object.fromEntries(
     data.map((d) => [
@@ -53,17 +55,23 @@ export function StageDonutChart({
     ]),
   ) satisfies ChartConfig;
 
+  /**
+   * Client (GAGNE) → `/commercial/clients?event=gagnes` (Prospects strippe GAGNE).
+   * Autres stages → portefeuille Prospects `view=stock`.
+   */
   function stageHref(stage: CrmPipelineStage) {
-    const base = prospectsStagesHref(stagesForFilter(stage));
-    if (!period) {
-      const sep = base.includes("?") ? "&" : "?";
-      const extras = new URLSearchParams();
-      extras.set("view", "stock");
-      if (ownerId) extras.set("owner", ownerId);
-      return `${base}${sep}${extras.toString()}`;
+    if (stage === "GAGNE") {
+      return buildCrmScopeHref("/commercial/clients", {
+        period: scopePeriod,
+        ownerId: ownerId ?? null,
+        canFilterOwners,
+        forcePeriod: true,
+        keep: { event: "gagnes" },
+      });
     }
+    const base = prospectsStagesHref(stagesForFilter(stage));
     return buildCrmScopeHref(base, {
-      period,
+      period: scopePeriod,
       ownerId: ownerId ?? null,
       canFilterOwners,
       keep: { view: "stock" },
@@ -80,7 +88,7 @@ export function StageDonutChart({
         Répartition des prospects
       </p>
       <p className="mt-1 text-sm text-msk-ink/50">
-        {total} dossier{total > 1 ? "s" : ""} {subtitle}
+        {total} prospect{total > 1 ? "s" : ""} {subtitle}
       </p>
       {rows.length === 0 ? (
         <p className="mt-8 text-center text-sm text-msk-ink/40">Aucune donnée</p>

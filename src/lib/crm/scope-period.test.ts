@@ -138,6 +138,32 @@ const currentIso = weekStartIso(currentWeek);
 }
 
 {
+  /** Régression TB→Prospects : compteur own doit garder `owner=` dans l’URL. */
+  const period = parseCrmPeriod({ periode: "semaine" });
+  const me = "c004a91c-989c-4a3d-8f1b-c4f76ff0f7ba";
+  const qs = crmScopeToSearchParams({
+    period,
+    ownerId: me,
+    canFilterOwners: false,
+    keep: { view: "stock", stages: "INTERESSE" },
+  });
+  assert.equal(qs.get("owner"), me);
+  assert.equal(qs.get("view"), "stock");
+  assert.equal(qs.get("stages"), "INTERESSE");
+
+  const href = buildPortfolioProspectsHref({
+    period,
+    ownerId: me,
+    canFilterOwners: false,
+    keep: { stages: "INTERESSE" },
+  });
+  const sp = Object.fromEntries(new URL(href, "http://x").searchParams);
+  assert.equal(sp.owner, me);
+  assert.equal(sp.view, "stock");
+  assert.equal(sp.stages, "INTERESSE");
+}
+
+{
   const period = parseCrmPeriod({ periode: "mois", mois: "2026-08" });
   const href = buildCrmScopeHref("/crm", {
     period,
@@ -250,6 +276,9 @@ const currentIso = weekStartIso(currentWeek);
   assert.equal(sp.owner, ownerId);
   assert.equal(sp.view, "stock");
   assert.equal(sp.event, undefined);
+  assert.ok(sp.stages?.includes("INTERESSE"));
+  assert.ok(!sp.stages?.includes("GAGNE"));
+  assert.ok(!sp.stages?.includes("PERDU"));
   assert.equal(isCrmStockListParams(sp), true);
   assert.equal(shouldFilterProspectsByCrmPeriod(sp), false);
 

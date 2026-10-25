@@ -87,7 +87,12 @@ export function CrmScopeBar({
       p.set("to", next.to ?? to);
     }
 
-    if (canFilterOwners) {
+    /**
+     * Toujours conserver `owner` si défini (y compris visibilité own) —
+     * aligné sur `crmScopeToSearchParams`. Sinon changer de semaine drop
+     * le filtre et une navigation vers Prospects réouvre la liste partagée.
+     */
+    {
       const own = next.owner !== undefined ? next.owner : ownerId;
       if (own && own !== "all") p.set(ownerParamKey, own);
     }

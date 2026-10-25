@@ -9,10 +9,10 @@ import { METRIC_NAV_TONE_CHART } from "@/components/ui/metric-nav-card";
 import { cn } from "@/lib/utils";
 
 /**
- * Conversion = part des dossiers devenus Client dans le périmètre visible.
+ * Conversion = part des prospects devenus Client dans le périmètre visible.
  * Montants = somme des budgets (`budgetXof`) renseignés :
  * - Signé → statut Client
- * - En cours → dossiers encore ouverts (hors Client / Perdu)
+ * - En cours → prospects encore ouverts (hors Client / Perdu)
  */
 export function ConversionPipelineCard({
   ratePercent,
@@ -30,7 +30,7 @@ export function ConversionPipelineCard({
   ratePercent: number;
   signedAmount: number;
   signedCount: number;
-  /** Budget estimé des dossiers encore ouverts. */
+  /** Budget estimé des prospects encore ouverts. */
   openAmount: number;
   openCount: number;
   totalDeals: number;
@@ -67,7 +67,7 @@ export function ConversionPipelineCard({
             {signedCount > 0 || totalDeals > 0
               ? ` (${signedCount} client${signedCount > 1 ? "s" : ""})`
               : ""}
-            . En cours = dossiers ouverts à date. Montants = budgets renseignés.
+            . En cours = prospects ouverts à date. Montants = budgets renseignés.
           </>
         )}
       </p>
@@ -115,7 +115,7 @@ export function ConversionPipelineCard({
                 max={amountCeiling}
                 color={METRIC_NAV_TONE_CHART.ink}
                 centerLabel={openCount}
-                caption="dossiers ouverts"
+                caption="prospects ouverts"
               />
             }
             amount={openAmount}

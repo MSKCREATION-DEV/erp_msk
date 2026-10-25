@@ -253,7 +253,7 @@ export async function ProspectsResults({
   const qTrim = sp.q?.trim() ?? "";
 
   const focusOwnerLabel = sp.owner
-    ? (owners.find((o) => o.value === sp.owner)?.label ?? null)
+    ? (owners.find((o) => o.value === sp.owner)?.label ?? "Collaborateur")
     : null;
 
   const clearOwnerHref = (() => {
@@ -267,9 +267,14 @@ export async function ProspectsResults({
     return s ? `/crm/prospects?${s}` : "/crm/prospects";
   })();
 
-  const clearFiltersHref = focusOwnerLabel
-    ? `/crm/prospects?owner=${encodeURIComponent(sp.owner!)}`
-    : "/crm/prospects";
+  /** Effacer chips : garde owner + portefeuille ; retire stages/late/q/source/dates. */
+  const clearFiltersHref = (() => {
+    const p = new URLSearchParams();
+    if (sp.owner) p.set("owner", sp.owner);
+    if (isStockView || sp.view === "stock") p.set("view", "stock");
+    const s = p.toString();
+    return s ? `/crm/prospects?${s}` : "/crm/prospects";
+  })();
 
   const pages = totalPages(total, pageSize);
   const listParams: Record<string, string | undefined> = { ...sp };
@@ -333,7 +338,7 @@ export async function ProspectsResults({
             <Badge tone="coral">Relances en retard</Badge>
           ) : null}
           {sp.devisRetard === "1" ? (
-            <Badge tone="coral">Intéressé sans devis</Badge>
+            <Badge tone="coral">Sans devis depuis 24 h</Badge>
           ) : null}
           {Number.isFinite(relancesMin) && relancesMin > 0 ? (
             <Badge tone="coral">Relancés ≥ {relancesMin}×</Badge>

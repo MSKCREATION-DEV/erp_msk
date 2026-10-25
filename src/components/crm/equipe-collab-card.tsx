@@ -47,7 +47,7 @@ export function EquipeCollabCard({
   showGoals?: boolean;
 }) {
   const subtitle = showStocks
-    ? `${total} dossier${total > 1 ? "s" : ""} actif${total > 1 ? "s" : ""} · montant en cours ${formatXof(caOpen)}`
+    ? `${total} prospect${total > 1 ? "s" : ""} actif${total > 1 ? "s" : ""} · montant en cours ${formatXof(caOpen)}`
     : `Activité · ${periodLabel.toLowerCase()}`;
 
   return (
@@ -103,7 +103,7 @@ export function EquipeCollabCard({
           </p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <KpiRadial
-              label="Dossiers actifs"
+              label="Prospects actifs"
               value={total}
               hint="hors Client / Perdu"
             />

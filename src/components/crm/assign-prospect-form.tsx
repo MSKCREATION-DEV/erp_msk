@@ -78,11 +78,11 @@ export function AssignProspectForm({
       return;
     }
     if (!ownerId) {
-      setError("Choisissez le commercial qui suivra le dossier");
+      setError("Choisissez le commercial qui suivra ce prospect");
       return;
     }
     if (ownerId === effectiveCurrentOwner) {
-      setError("Ce commercial suit déjà ce dossier");
+      setError("Ce commercial suit déjà ce prospect");
       return;
     }
     const fd = new FormData();
@@ -135,7 +135,7 @@ export function AssignProspectForm({
               value={oppId}
               onChange={setOppId}
               disabled={pending}
-              placeholder="Choisir un dossier"
+              placeholder="Choisir un prospect"
               modalTitle="Prospect à affecter"
             />
           ) : (

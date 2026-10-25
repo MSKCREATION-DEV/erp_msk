@@ -19,7 +19,9 @@ import {
 import {
   MetricNavCard,
   MetricNavKpi,
+  METRIC_NAV_TONE_CHART,
 } from "@/components/ui/metric-nav-card";
+import { HubMiniRadial } from "@/components/commercial/hub-mini-radial";
 import { cn } from "@/lib/utils";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -36,11 +38,21 @@ const ICONS: Record<string, LucideIcon> = {
   objectifs: Target,
 };
 
+export type HubDualSlice = {
+  value: number;
+  caption: string;
+  color?: string;
+};
+
 export type HubCount =
   | number
   | {
       value: number;
       hint: string;
+    }
+  | {
+      /** Deux mini-jauges (ex. Prospects : total / suivis). */
+      dual: [HubDualSlice, HubDualSlice];
     };
 
 function moduleKpi(
@@ -48,6 +60,7 @@ function moduleKpi(
   count?: HubCount | null,
 ): { value: string; hint?: string } | null {
   if (count == null) return null;
+  if (typeof count === "object" && "dual" in count) return null;
 
   const value = typeof count === "number" ? count : count.value;
   if (typeof count === "object") {
@@ -67,7 +80,7 @@ function moduleKpi(
     case "prospects":
       return {
         value: String(value),
-        hint: value > 1 ? "dossiers actifs" : "dossier actif",
+        hint: value > 1 ? "prospects actifs" : "prospect actif",
       };
     case "devis":
       return { value: String(value), hint: "ouverts" };
@@ -90,7 +103,12 @@ function ModuleCard({
   module: CommercialModule;
   count?: HubCount | null;
 }) {
+  const dual =
+    count && typeof count === "object" && "dual" in count ? count.dual : null;
   const kpi = moduleKpi(module, count);
+  const dualMax = dual
+    ? Math.max(5, dual[0].value, dual[1].value)
+    : 5;
 
   return (
     <MetricNavCard
@@ -102,7 +120,26 @@ function ModuleCard({
       gated={module.gated}
       gatedHint={module.gatedHint}
       footer={
-        kpi && !module.gated ? (
+        dual && !module.gated ? (
+          <div className="flex w-full items-end justify-end gap-1.5 sm:gap-2">
+            <HubMiniRadial
+              className="w-18 sm:w-20"
+              value={dual[0].value}
+              max={dualMax}
+              color={dual[0].color ?? METRIC_NAV_TONE_CHART.blue}
+              centerLabel={dual[0].value}
+              caption={dual[0].caption}
+            />
+            <HubMiniRadial
+              className="w-18 sm:w-20"
+              value={dual[1].value}
+              max={dualMax}
+              color={dual[1].color ?? METRIC_NAV_TONE_CHART.coral}
+              centerLabel={dual[1].value}
+              caption={dual[1].caption}
+            />
+          </div>
+        ) : kpi && !module.gated ? (
           <MetricNavKpi value={kpi.value} hint={kpi.hint} />
         ) : undefined
       }

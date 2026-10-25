@@ -9,12 +9,14 @@ import {
   comQuoteOwnerScopeWhere,
   comInvoiceOwnerScopeWhere,
 } from "@/lib/commercial/scope";
-import { crmVisibility, dealOwnerScopeWhere } from "@/lib/crm/scope";
+import { crmVisibility } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
 import { COMMERCIAL_MODULES } from "@/lib/commercial/modules";
 import { canSeeCrmTeamView } from "@/lib/commercial/nav";
 import { COM_DOCS_GATED } from "@/lib/commercial/gates";
+import { buildPortfolioProspectsHref, parseCrmPeriod } from "@/lib/crm/scope-period";
 import { CommercialHubGrid } from "@/components/commercial/commercial-hub-cards";
+import { METRIC_NAV_TONE_CHART } from "@/components/ui/metric-nav-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 
@@ -35,14 +37,13 @@ export default async function CommercialHubPage() {
   }
 
   const teamIds = await commercialTeamUserIds();
-  const dealScope = dealOwnerScopeWhere(user, teamIds);
   const clientWhere = comOwnerScopeWhere(user);
   const quoteWhere = comQuoteOwnerScopeWhere(user);
   const invoiceWhere = comInvoiceOwnerScopeWhere(user);
   const vis = crmVisibility(user);
   const hubScopeHint =
     vis === "own"
-      ? "Compteurs = mon portefeuille / mes relances. La liste Prospects reste partagée."
+      ? "Jauges Prospects = total partagé / suivis par moi. Clic = mon portefeuille."
       : vis === "team"
         ? "Compteurs = périmètre équipe (à date)."
         : "Compteurs = périmètre entreprise (à date).";
@@ -59,22 +60,23 @@ export default async function CommercialHubPage() {
         ? { assigneeId: { in: [user.id, ...teamIds] } }
         : { assigneeId: user.id };
 
-  const [prospects, sharedProspects, overdue, openRelances, scripts, clients, openQuotes, unpaid] =
+  const [prospectsSuivis, prospectsTotal, overdue, openRelances, scripts, clients, openQuotes, unpaid] =
     await Promise.all([
+      /** Toujours « suivis par moi » (pas le périmètre team/global). */
       canCrm
         ? prisma.crmOpportunity.count({
             where: {
-              ...dealScope,
+              ownerId: user.id,
               stage: { notIn: ["GAGNE", "PERDU"] },
             },
           })
         : Promise.resolve(0),
-      /** Total lecture partagée — uniquement pour clarifier le hub « own ». */
-      canCrm && vis === "own"
+      /** Total liste partagée (anti-doublon). */
+      canCrm
         ? prisma.crmOpportunity.count({
             where: { stage: { notIn: ["GAGNE", "PERDU"] } },
           })
-        : Promise.resolve(null as number | null),
+        : Promise.resolve(0),
       canCrm
         ? prisma.crmTask.count({
             where: {
@@ -116,6 +118,18 @@ export default async function CommercialHubPage() {
         : Promise.resolve(0),
     ]);
 
+  /**
+   * Lien Prospects = mon portefeuille (`owner=moi` + stages ouverts) —
+   * aligne la jauge « suivis par moi ». Croix Focus → liste partagée.
+   */
+  const prospectsHref = canCrm
+    ? buildPortfolioProspectsHref({
+        period: parseCrmPeriod({}),
+        ownerId: user.id,
+        canFilterOwners: vis !== "own",
+      })
+    : "/crm/prospects";
+
   const modules = COMMERCIAL_MODULES.filter((m) => {
     if (m.id === "equipe" && !canSeeCrmTeamView(user)) return false;
     if (!m.permission) return true;
@@ -124,10 +138,9 @@ export default async function CommercialHubPage() {
     if (m.id === "prospects") {
       return {
         ...m,
+        href: prospectsHref,
         description:
-          vis === "own"
-            ? "Liste partagée · le compteur = dossiers suivis par moi."
-            : "Dossiers actifs du périmètre (hors Client / Perdu).",
+          "Total visibles (liste partagée) vs prospects que je suis — clic = mon portefeuille.",
       };
     }
     if (m.id === "relances") {
@@ -142,23 +155,33 @@ export default async function CommercialHubPage() {
     return m;
   });
 
-  const prospectsHint =
-    vis === "own" && sharedProspects != null
-      ? prospects === 0
-        ? `0 suivis · ${sharedProspects} visibles`
-        : `${prospects} suivis · ${sharedProspects} visibles`
-      : vis === "own"
-        ? prospects === 1
-          ? "suivi par moi"
-          : "suivis par moi"
-        : prospects === 1
-          ? "dossier actif"
-          : "dossiers actifs";
-
   const counts: Partial<
-    Record<string, number | { value: number; hint: string }>
+    Record<
+      string,
+      | number
+      | { value: number; hint: string }
+      | {
+          dual: [
+            { value: number; caption: string; color?: string },
+            { value: number; caption: string; color?: string },
+          ];
+        }
+    >
   > = {
-    prospects: { value: prospects, hint: prospectsHint },
+    prospects: {
+      dual: [
+        {
+          value: prospectsTotal,
+          caption: "total",
+          color: METRIC_NAV_TONE_CHART.blue,
+        },
+        {
+          value: prospectsSuivis,
+          caption: "suivis par moi",
+          color: METRIC_NAV_TONE_CHART.coral,
+        },
+      ],
+    },
     relances: {
       value: overdue,
       hint:

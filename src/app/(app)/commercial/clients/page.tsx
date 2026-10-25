@@ -7,10 +7,11 @@ import { UserPlus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { comOwnerScopeWhere, comVisibility } from "@/lib/commercial/scope";
+import { comVisibility } from "@/lib/commercial/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
 import {
   buildCrmScopeHref,
+  canFilterCrmOwners,
   dateRangeFilter,
   normalizeSearchParams,
   parseCrmOwner,
@@ -119,8 +120,14 @@ async function ClientsResults({
     ? dateRangeFilter(period.from, period.to)
     : null;
 
-  const teamIds =
-    comVisibility(user) === "global" ? await commercialTeamUserIds() : [];
+  /**
+   * Allow-list collab : COM global **ou** lead CRM (drill-down « Clients gagnés »
+   * depuis le TB avec `?owner=`). Sinon parseCrmOwner rejette l’UUID / COM own
+   * + owner collab = liste vide vs KPI TB.
+   */
+  const readTeam =
+    comVisibility(user) === "global" || canFilterCrmOwners(user);
+  const teamIds = readTeam ? await commercialTeamUserIds() : [];
   const memberIds = Array.from(new Set([user.id, ...teamIds]));
   const ownerScope = parseCrmOwner(sp, user, memberIds);
 
@@ -134,12 +141,11 @@ async function ClientsResults({
     ? `${focusOwnerUser.firstName} ${focusOwnerUser.lastName}`
     : null;
 
-  const baseScope: Prisma.ComClientWhereInput = {
-    AND: [
-      comOwnerScopeWhere(user),
-      ...(ownerScope.ownerId ? [{ ownerId: ownerScope.ownerId }] : []),
-    ],
-  };
+  const baseScope: Prisma.ComClientWhereInput = ownerScope.ownerId
+    ? { ownerId: ownerScope.ownerId }
+    : readTeam
+      ? { ownerId: { in: memberIds } }
+      : { ownerId: user.id };
 
   const gagnesFilter: Prisma.ComClientWhereInput | null =
     isGagnesEvent && occurredBetween

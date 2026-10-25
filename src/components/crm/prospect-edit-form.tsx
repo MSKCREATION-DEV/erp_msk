@@ -204,7 +204,7 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
               Entreprise
             </h2>
             <p className="mt-1 text-sm text-msk-ink/50">
-              Corrigez l’identité du dossier (fautes de saisie, infos manquantes).
+              Corrigez l’identité du prospect (fautes de saisie, infos manquantes).
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

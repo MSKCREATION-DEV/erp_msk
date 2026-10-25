@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { FolderOpen, Target } from "lucide-react";
@@ -40,6 +41,7 @@ import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
 import { ActionLink } from "@/components/ui/action-link";
 import {
   buildCrmScopeHref,
+  buildNouveauxProspectsHref,
   buildPortfolioProspectsHref,
   normalizeSearchParams,
   parseCrmOwner,
@@ -210,11 +212,22 @@ export default async function CrmRapportPage({
           : "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
       }
     >
-      <KpiRadial
-        label="Nouveaux (semaine)"
-        value={weekStats.newProspects}
-        target={goals.NEW_PROSPECTS}
-      />
+      <Link
+        prefetch={false}
+        href={buildNouveauxProspectsHref({
+          period,
+          ownerId: focusOwnerId,
+          canFilterOwners: canGlobal,
+        })}
+        className="block rounded-xl transition hover:ring-2 hover:ring-msk-blue/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40"
+      >
+        <KpiRadial
+          label="Nouveaux (semaine)"
+          value={weekStats.newProspects}
+          target={goals.NEW_PROSPECTS}
+          hint="clic = liste créés sur la période"
+        />
+      </Link>
       <KpiRadial
         label="Premiers contacts"
         value={weekStats.firstContacts}

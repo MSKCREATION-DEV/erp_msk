@@ -532,7 +532,7 @@ export default async function CrmProspectDetailPage({
             {deal.owner.lastName}
           </p>
           <p className="mt-0.5 text-xs text-msk-ink/55">
-            Vous voyez ce dossier pour éviter les doublons. Pour journaliser ou
+            Vous voyez ce prospect pour éviter les doublons. Pour journaliser ou
             modifier, demandez le suivi — la Direction / Admin CRM traitera
             dans{" "}
             <span className="font-medium text-msk-ink/70">Affectations</span>.

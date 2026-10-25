@@ -40,7 +40,7 @@ export const STAGE_HINTS: Partial<Record<CrmPipelineStage, string>> = {
   INTERESSE: "Intérêt confirmé — prêt pour proposition / client commercial.",
   DEVIS_ENVOYE: "Proposition déjà envoyée — suivi de réponse.",
   GAGNE: "Devenu client MSK.",
-  PERDU: "Dossier clos sans signature.",
+  PERDU: "Prospect clos sans signature.",
 };
 
 /** Ordre UI métier (7 statuts LISTES — sans Négociation). */
@@ -69,7 +69,7 @@ export const STAGE_COLORS: Record<CrmPipelineStage, string> = {
   PERDU: "#FF5A3C",
 };
 
-/** Dossiers encore ouverts (hors Client / Perdu). */
+/** Prospects encore ouverts (hors Client / Perdu). */
 export const OPEN_PIPELINE_STAGES: CrmPipelineStage[] = [
   "NOUVEAU",
   "CONTACTE",

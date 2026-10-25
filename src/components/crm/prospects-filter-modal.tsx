@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 type OwnerOpt = { value: string; label: string };
 type DateMode = "none" | "exact" | "range";
 
-/** Statuts filtrables — Client exclu (dossier côté Clients). */
+/** Statuts filtrables — Client exclu (fiche côté Clients). */
 const FILTER_STAGES = STAGE_ORDER.filter((s) => s !== "GAGNE");
 
 function spRecord(sp: URLSearchParams): Record<string, string | undefined> {
@@ -60,6 +60,7 @@ function countActiveFilters(sp: URLSearchParams): number {
           (Boolean(sp.get("from")) || Boolean(sp.get("to")))),
     sp.get("late") === "1",
     sp.get("event") === "nouveaux",
+    sp.get("devisRetard") === "1",
   ].filter(Boolean).length;
 }
 
@@ -78,6 +79,8 @@ function stateFromSearchParams(sp: URLSearchParams) {
     from: crmPeriod ? "" : (sp.get("from") ?? ""),
     to: crmPeriod ? "" : (sp.get("to") ?? ""),
     late: sp.get("late") === "1",
+    eventNouveaux: sp.get("event") === "nouveaux",
+    devisRetard: sp.get("devisRetard") === "1",
   };
 }
 
@@ -101,6 +104,8 @@ export function ProspectsFilterButton({
   const [from, setFrom] = useState(initial.from);
   const [to, setTo] = useState(initial.to);
   const [late, setLate] = useState(initial.late);
+  const [eventNouveaux, setEventNouveaux] = useState(initial.eventNouveaux);
+  const [devisRetard, setDevisRetard] = useState(initial.devisRetard);
 
   const qsKey = sp.toString();
 
@@ -115,6 +120,8 @@ export function ProspectsFilterButton({
     setFrom(next.from);
     setTo(next.to);
     setLate(next.late);
+    setEventNouveaux(next.eventNouveaux);
+    setDevisRetard(next.devisRetard);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- qsKey = snapshot URL
   }, [qsKey]);
 
@@ -133,17 +140,25 @@ export function ProspectsFilterButton({
       if (from) params.set("from", from);
       if (to) params.set("to", to);
     } else {
-      /** Pas de date modal → conserver la période CRM. */
+      /** Pas de date modal → conserver la période CRM (pas l’event — géré plus bas). */
       copyCrmScopeParams(sp, params, { includeOwner: false });
-      /** Portefeuille à date : ne pas basculer en filtre createdAt. */
-      if (sp.get("view") === "stock" && !stages.length && !late) {
-        params.set("view", "stock");
-      }
-      if (sp.get("event") === "nouveaux") {
-        params.set("event", "nouveaux");
-      }
     }
     if (late) params.set("late", "1");
+    if (devisRetard) params.set("devisRetard", "1");
+    if (eventNouveaux) params.set("event", "nouveaux");
+    /**
+     * Portefeuille à date : garder `view=stock` si on n’a pas basculé en flux
+     * (nouveaux) ni en dates de création modal.
+     */
+    const keepStock =
+      !eventNouveaux &&
+      dateMode === "none" &&
+      (devisRetard ||
+        late ||
+        stages.length > 0 ||
+        sp.get("view") === "stock");
+    if (keepStock) params.set("view", "stock");
+
     const qs = params.toString();
     start(() => {
       router.push(qs ? `/crm/prospects?${qs}` : "/crm/prospects");
@@ -160,6 +175,8 @@ export function ProspectsFilterButton({
     setFrom("");
     setTo("");
     setLate(false);
+    setEventNouveaux(false);
+    setDevisRetard(false);
   }
 
   return (
@@ -294,14 +311,32 @@ export function ProspectsFilterButton({
             ) : null}
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-msk-ink">
-            <input
-              type="checkbox"
-              checked={late}
-              onChange={(e) => setLate(e.target.checked)}
-            />
-            Relance en retard uniquement
-          </label>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm text-msk-ink">
+              <input
+                type="checkbox"
+                checked={late}
+                onChange={(e) => setLate(e.target.checked)}
+              />
+              Relance en retard uniquement
+            </label>
+            <label className="flex items-center gap-2 text-sm text-msk-ink">
+              <input
+                type="checkbox"
+                checked={devisRetard}
+                onChange={(e) => setDevisRetard(e.target.checked)}
+              />
+              Sans devis depuis 24 h — statut Intéressé
+            </label>
+            <label className="flex items-center gap-2 text-sm text-msk-ink">
+              <input
+                type="checkbox"
+                checked={eventNouveaux}
+                onChange={(e) => setEventNouveaux(e.target.checked)}
+              />
+              Nouveaux de la période CRM uniquement
+            </label>
+          </div>
         </div>
       </Modal>
     </>

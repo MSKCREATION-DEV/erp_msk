@@ -104,7 +104,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `crm-creer-prospect` | Créer un prospect | commercial | `validated` | manuel 05 + `/crm/prospects/nouveau` |
 | `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `validated` | manuel 05 |
 | `crm-transformer-client` | Transformer un prospect en client | commercial | `validated` | manuel 05 (Intéressé → Client) |
-| `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `to_validate` | compteurs hub = périmètre rôle (own ≠ liste partagée) — à revalider UI |
+| `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `to_validate` | dual total/suivis + owner URL own — à revalider UI |
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
 | `faq-acces-refuse` | Accès refusé / module absent | accueil | `validated` | redirect `acces_refuse` |
 | `faq-mot-de-passe` | Mot de passe / reset | accueil | `validated` | parcours auth connus |
@@ -187,6 +187,26 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-10-25 — Libellés « SLA » retirés (UI)
+
+- **Pourquoi** : terme jargon peu clair pour l’équipe terrain.
+- **Quoi** : « Sans devis (SLA) » → « Sans devis depuis 24 h » (TB, modal Filtrer, badge liste).
+- **Statut doc** : manuel 05 aligné.
+
+### 2026-10-25 — Audit filtres Commercial (P0/P1)
+
+- **Pourquoi** : revue globale compteur ↔ liste (pas seulement TB Prospects).
+- **Quoi** : `buildPortfolioProspectsHref` → `stages=OPEN_PIPELINE` ; donut GAGNE → Clients `event=gagnes` ; modal Filtrer préserve/reset `devisRetard` + `event` ; `CrmScopeBar` conserve `owner` ; Équipe exclut PERDU des actifs ; Clients allow-list CRM ; Rapport « Nouveaux » cliquable.
+- **Fichiers** : `scope-period.ts` (+test), `stage-donut-chart.tsx`, `prospects-filter-modal.tsx`, `crm-scope-bar.tsx`, `equipe/*`, `clients/page.tsx`, `rapport-semaine`, `prospects-results`, `05-crm.md`.
+- **Statut doc** : `com-hub-naviguer` → `to_validate`.
+
+### 2026-10-25 — Prospects : dual jauges + libellés + filtre owner TB
+
+- **Pourquoi** : compteurs « 0 » puis liste pleine (owner non passé en URL pour visibilité own) ; libellés « dossiers » ambigus ; hub Prospects sans dual total/suivis.
+- **Quoi** : `crmScopeToSearchParams` écrit toujours `owner` si défini ; hub + TB dual « total / suivis par moi » ; libellés UI « prospects » ; lien hub → mon portefeuille.
+- **Fichiers** : `scope-period.ts` (+ test), `commercial/page.tsx`, `commercial-hub-cards.tsx`, `crm/page.tsx`, `crm/prospects/page.tsx`, composants KPI/conversion/équipe, `docs/manuels/05-crm.md`.
+- **Statut doc** : `com-hub-naviguer` → `to_validate` (revalider dual + clic TB→liste filtrée).
 
 ### 2026-10-24 — Import Excel Yaye (merge) + purge fixtures `[TEST]`
 

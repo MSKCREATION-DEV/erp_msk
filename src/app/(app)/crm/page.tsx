@@ -226,6 +226,19 @@ export default async function CrmDashboardPage({
     ? (owners.find((o) => o.value === focusOwner)?.label ?? "Collaborateur")
     : null;
 
+  /**
+   * Total liste partagée (hors filtre collab) — pour dual « total / suivis »
+   * quand on regarde mon portefeuille (own ou focus = moi).
+   */
+  const showProspectsDual =
+    showStocks &&
+    (!ownerScope.canFilterOwners || focusOwner === user.id);
+  const sharedOpenTotal = showProspectsDual
+    ? await prisma.crmOpportunity.count({
+        where: { stage: { notIn: ["GAGNE", "PERDU"] } },
+      })
+    : null;
+
   const resetHref = buildCrmScopeHref("/crm", {
     period: parseCrmPeriod({ periode: "semaine" }),
     ownerId: focusOwner,
@@ -359,7 +372,7 @@ export default async function CrmDashboardPage({
             })}
             icon={UserRoundPlus}
             tone="blue"
-            title="Nouveaux dossiers"
+            title="Nouveaux prospects"
             description={`Prospects créés pendant ${period.label.toLowerCase()} (flux, pas le portefeuille).`}
             footer={
               <HubMiniRadial
@@ -428,8 +441,8 @@ export default async function CrmDashboardPage({
                 href={stockHref("/crm/prospects", { devisRetard: "1" })}
                 icon={FileWarning}
                 tone="coral"
-                title="Sans devis (SLA)"
-                description="Statut Intéressé depuis plus de 24 h, sans devis — stock à date."
+                title="Sans devis depuis 24 h"
+                description="Prospects Intéressés depuis plus d’un jour, encore sans devis — à traiter."
                 footer={
                   <HubMiniRadial
                     value={devisUrgent.length}
@@ -438,8 +451,8 @@ export default async function CrmDashboardPage({
                     centerLabel={devisUrgent.length}
                     caption={
                       devisUrgent.length > 1
-                        ? "dossiers à proposer"
-                        : "dossier à proposer"
+                        ? "prospects à proposer"
+                        : "prospect à proposer"
                     }
                   />
                 }
@@ -449,20 +462,47 @@ export default async function CrmDashboardPage({
               href={stockHref(prospectsStagesHref(OPEN_PIPELINE_STAGES))}
               icon={FolderOpen}
               tone="blue"
-              title="Dossiers actifs"
-              description="Prospects non clos (hors Client / Perdu) — stock à date."
+              title={
+                showProspectsDual ? "Mes prospects actifs" : "Prospects actifs"
+              }
+              description={
+                showProspectsDual
+                  ? "Total partagé vs prospects que je suis (hors Client / Perdu) — clic = mon portefeuille."
+                  : "Prospects non clos (hors Client / Perdu) — stock à date."
+              }
               footer={
-                <HubMiniRadial
-                  value={openDeals.length}
-                  max={openScale}
-                  color={METRIC_NAV_TONE_CHART.blue}
-                  centerLabel={openDeals.length}
-                  caption={
-                    openDeals.length > 1
-                      ? "dossiers actifs"
-                      : "dossier actif"
-                  }
-                />
+                showProspectsDual && sharedOpenTotal != null ? (
+                  <div className="flex w-full items-end justify-end gap-1.5 sm:gap-2">
+                    <HubMiniRadial
+                      className="w-18 sm:w-20"
+                      value={sharedOpenTotal}
+                      max={Math.max(5, sharedOpenTotal, openDeals.length)}
+                      color={METRIC_NAV_TONE_CHART.blue}
+                      centerLabel={sharedOpenTotal}
+                      caption="total"
+                    />
+                    <HubMiniRadial
+                      className="w-18 sm:w-20"
+                      value={openDeals.length}
+                      max={Math.max(5, sharedOpenTotal, openDeals.length)}
+                      color={METRIC_NAV_TONE_CHART.coral}
+                      centerLabel={openDeals.length}
+                      caption="suivis par moi"
+                    />
+                  </div>
+                ) : (
+                  <HubMiniRadial
+                    value={openDeals.length}
+                    max={openScale}
+                    color={METRIC_NAV_TONE_CHART.blue}
+                    centerLabel={openDeals.length}
+                    caption={
+                      openDeals.length > 1
+                        ? "prospects actifs"
+                        : "prospect actif"
+                    }
+                  />
+                )
               }
             />
             <MetricNavCard
@@ -470,18 +510,14 @@ export default async function CrmDashboardPage({
               icon={Sparkles}
               tone="cyan"
               title="Statut Intéressé"
-              description="Dossiers au statut Intéressé — prêts pour une proposition (à date)."
+              description="Prospects au statut Intéressé — prêts pour une proposition (à date)."
               footer={
                 <HubMiniRadial
                   value={interesses}
                   max={interesseScale}
                   color="#1384CB"
                   centerLabel={interesses}
-                  caption={
-                    interesses > 1
-                      ? "au statut Intéressé"
-                      : "au statut Intéressé"
-                  }
+                  caption="au statut Intéressé"
                 />
               }
             />

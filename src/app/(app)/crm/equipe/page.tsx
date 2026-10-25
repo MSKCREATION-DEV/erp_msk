@@ -111,7 +111,8 @@ export default async function CrmEquipePage({
     row.byStage[stage] = (row.byStage[stage] ?? 0) + 1;
     if (stage === "GAGNE") {
       row.clients += 1;
-    } else {
+    } else if (stage !== "PERDU") {
+      /** Aligné hub/TB : « actifs » = hors Client / Perdu. */
       row.total += 1;
     }
     if (stage === "INTERESSE") row.interesses += 1;

@@ -44,11 +44,15 @@ export default async function CrmProspectsPage({
   const user = await requireUser();
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
 
+  const sp = await searchParams;
   const teamIds = await commercialTeamUserIds();
   const now = new Date();
   const vis = crmVisibility(user);
   const ownScope = dealOwnerScopeWhere(user, teamIds);
-  const showOwnKpis = vis === "own";
+  /** KPI « mon portefeuille » seulement si la liste n’est pas focusée sur un autre collab. */
+  const filterOwner = sp.owner?.trim() || null;
+  const showOwnKpis =
+    vis === "own" && (!filterOwner || filterOwner === user.id);
   const openOwn: Prisma.CrmOpportunityWhereInput = {
     ...ownScope,
     stage: { notIn: ["GAGNE", "PERDU"] },
@@ -121,12 +125,12 @@ export default async function CrmProspectsPage({
       {ownKpis ? (
         <div className="space-y-2">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/40">
-            Mon portefeuille (suivi par moi) — la liste ci-dessous reste
-            partagée à toute l’équipe
+            Mon portefeuille (suivis par moi) — un filtre « Suivi par »
+            aligne la liste ; sans filtre, la liste reste partagée
           </p>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <KpiRadial
-              label="Mes dossiers actifs"
+              label="Mes prospects actifs"
               value={ownKpis.prospects}
               hint="hors Client / Perdu"
             />
@@ -144,7 +148,7 @@ export default async function CrmProspectsPage({
             <KpiRadial
               label="Relances journalisées"
               value={ownKpis.relancesFaites}
-              hint="historique sur mes dossiers"
+              hint="historique sur mes prospects"
             />
           </div>
         </div>

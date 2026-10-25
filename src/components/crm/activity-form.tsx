@@ -95,7 +95,7 @@ export function ActivityForm({
       <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/4 px-3.5 py-2.5 text-xs leading-relaxed text-msk-ink/70">
         {isClosingRelance
           ? "Journalisez le canal utilisé et ce qui a été dit — cela incrémente le compteur Relances et clôture la tâche."
-          : "Chaque action de suivi (hors note) compte dans l’historique Relancé N× du dossier."}
+          : "Chaque action de suivi (hors note) compte dans l’historique Relancé N× du prospect."}
       </p>
 
       <OptionPickerSingle
@@ -154,7 +154,7 @@ export function ActivityForm({
           />
           {requireFollowUp ? (
             <FieldHint>
-              Obligatoire — aucune date de relance sur ce dossier.
+              Obligatoire — aucune date de relance sur ce prospect.
             </FieldHint>
           ) : (
             <FieldHint>Planifie la prochaine date dans la file Relances.</FieldHint>

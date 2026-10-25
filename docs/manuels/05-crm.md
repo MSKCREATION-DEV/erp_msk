@@ -9,9 +9,13 @@
 
 **Filtres communs** (Tableau de bord, Vue Équipe, Objectifs, Rapport) : barre **période** + **collaborateur** (si Direction / lead). Sélecteur de **semaine** unifié (`CrmWeekPicker` : ← → + panneau par mois).
 - Section **Activité** (relances faites, nouveaux, clients gagnés) : suit **toujours** la période (+ collab). Liens : `forcePeriod` + `event=nouveaux` | `focus=faites` | `event=gagnes`. Les listes filtrent `createdAt` / `wonAt` / activités.
-- CTA **Prospects** (Équipe / Rapport, bouton portefeuille) : `view=stock` + `owner` — **portefeuille à date** du collab (aligné sur le compteur « dossiers actifs »), **sans** filtre `createdAt` période. Helper : `buildPortfolioProspectsHref`.
+- CTA **Prospects** (Équipe / Rapport, bouton portefeuille) : `view=stock` + `owner` — **portefeuille à date** du collab (aligné sur le compteur « prospects actifs »), **sans** filtre `createdAt` période. Helper : `buildPortfolioProspectsHref`.
 - CTA **Nouveaux** (Tableau de bord, activité) : `event=nouveaux` + période forcée — flux créés sur la période. Helper : `buildNouveauxProspectsHref`. Ne pas confondre avec le CTA portefeuille.
-- Section **Portefeuille à date** (dossiers actifs, Intéressés, retards, priorités, répartition, badges stages) : `view=stock` ou `stages=` — suit le **collab**, ignore la période pour les données (période gardée pour le retour).
+- Section **Portefeuille à date** (prospects actifs, Intéressés, retards, priorités, répartition, badges stages) : `view=stock` ou `stages=` — suit le **collab**, ignore la période pour les données (période gardée pour le retour).
+- **Visibilité own** : raccourcis hub/TB écrivent toujours `owner=<moi>` (compteur « suivis par moi » = liste filtrée). Dual jauges : **total** (partagé) / **suivis par moi**.
+- **Portefeuille** (`buildPortfolioProspectsHref`) : `view=stock` + `stages=OPEN_PIPELINE` (hors Client/Perdu) par défaut.
+- **Donut Client (GAGNE)** : lien `/commercial/clients?event=gagnes` — jamais `stages=GAGNE` sur Prospects.
+- **Modal Filtrer** : peut reset `event=nouveaux` / `devisRetard` ; Appliquer les préserve si cochés.
 - **Historique** (période passée) : portefeuille masqué. Objectifs visibles en **jour / semaine / mois** (pas en plage) ; cibles ancrées à la période + conversion jours ouvrés (5 j / 22 j).
 Vocabulaire : « montant en cours » (jamais « pipeline »).
 
@@ -87,5 +91,5 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 | 2026-10-14 | LOT-G Relancé N× partout + GUIDE Perdu ; LOT-F doublons ; LOT-I En discussion ; LOT-E…B |
 | 2026-10-13 | Objectifs : dashboard tous collabs, page admin assignation, Vue Équipe enrichie, rapport reflète cibles |
 | 2026-10-13 | Tableau de bord : MetricNavCard, Conversion Signé/En cours, Répartition filtres URL |
-| 2026-10-12 | Menu / Tableau de bord / Vue Équipe / Rapport ; client dès Intéressé ; SLA 24h |
+| 2026-10-12 | Menu / Tableau de bord / Vue Équipe / Rapport ; client dès Intéressé ; alerte sans devis 24 h |
 | 2026-10-10 | Conversion CRM → Commercial (v1) |

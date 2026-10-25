@@ -1,5 +1,6 @@
 import type { SessionUser } from "@/lib/rbac/resolve";
 import { crmVisibility } from "@/lib/crm/scope";
+import { OPEN_PIPELINE_STAGES } from "@/lib/crm/labels";
 import {
   parseWeekParam,
   weekEndSunday,
@@ -376,8 +377,10 @@ export function shouldFilterProspectsByCrmPeriod(
  * Lien portefeuille (stock à date) vers `/crm/prospects`.
  *
  * **Contrat** : le chiffre affiché sur Vue Équipe / hub / badges stages
- * (dossiers actifs hors Client) doit mener ici — **pas** à `event=nouveaux`
- * (flux période). `view=stock` désactive le filtre `createdAt`.
+ * (prospects actifs hors Client / Perdu) doit mener ici — **pas** à
+ * `event=nouveaux` (flux période). `view=stock` désactive le filtre
+ * `createdAt`. Par défaut `stages=OPEN_PIPELINE` pour coller aux compteurs
+ * « actifs » (override via `keep.stages`).
  */
 export function buildPortfolioProspectsHref(opts: {
   period: CrmPeriodScope;
@@ -389,7 +392,11 @@ export function buildPortfolioProspectsHref(opts: {
     period: opts.period,
     ownerId: opts.ownerId ?? null,
     canFilterOwners: opts.canFilterOwners ?? true,
-    keep: { view: "stock", ...opts.keep },
+    keep: {
+      view: "stock",
+      stages: OPEN_PIPELINE_STAGES.join(","),
+      ...opts.keep,
+    },
   });
 }
 
@@ -513,7 +520,7 @@ export function crmScopeToSearchParams(opts: {
   forcePeriod?: boolean;
 }): URLSearchParams {
   const p = new URLSearchParams();
-  const { period, ownerId, canFilterOwners, keep, forcePeriod } = opts;
+  const { period, ownerId, keep, forcePeriod } = opts;
 
   if (period.mode !== "semaine") p.set("periode", period.mode);
   const currentIso = weekStartIso(weekStartMonday());
@@ -530,7 +537,12 @@ export function crmScopeToSearchParams(opts: {
     p.set("to", period.toIso);
   }
 
-  if (canFilterOwners && ownerId) {
+  /**
+   * Toujours écrire `owner` si défini — y compris visibilité `own`
+   * (`canFilterOwners: false`). Sinon les raccourcis TB (KPI = 0 suivis)
+   * ouvraient la liste partagée sans filtre → plein de lignes vs compteur 0.
+   */
+  if (ownerId) {
     p.set("owner", ownerId);
   }
 
