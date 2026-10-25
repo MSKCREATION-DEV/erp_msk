@@ -126,15 +126,21 @@ export async function searchOrgDuplicates(
   if (!norm) return [];
 
   const tokens = orgSearchTokens(needle);
-  // Toujours `contains` / `startsWith` sur le norm : un mot unique (« marin »)
-  // ne doit pas se limiter à l’égalité exacte (sinon « Marinas » hors pool).
+  const compact = norm.replace(/\s+/g, "");
+  // Toujours contains/startsWith + name brut (insensible à la casse).
+  // Un mot unique (« smdf », « marin ») ne doit jamais se limiter à l’égalité exacte.
   const orFilters: Prisma.CrmOrganizationWhereInput[] = [
     { normalizedName: norm },
     { normalizedName: { startsWith: norm } },
     { normalizedName: { contains: norm } },
+    { name: { contains: needle, mode: "insensitive" } },
   ];
+  if (compact && compact !== norm) {
+    orFilters.push({ normalizedName: { contains: compact } });
+    orFilters.push({ normalizedName: { startsWith: compact } });
+  }
   for (const t of tokens) {
-    if (t === norm) continue;
+    if (t === norm || t === compact) continue;
     orFilters.push({ normalizedName: { startsWith: t } });
     orFilters.push({ normalizedName: { contains: t } });
   }
@@ -143,9 +149,14 @@ export async function searchOrgDuplicates(
     { normalizedName: norm },
     { normalizedName: { startsWith: norm } },
     { normalizedName: { contains: norm } },
+    { name: { contains: needle, mode: "insensitive" } },
   ];
+  if (compact && compact !== norm) {
+    clientOr.push({ normalizedName: { contains: compact } });
+    clientOr.push({ normalizedName: { startsWith: compact } });
+  }
   for (const t of tokens) {
-    if (t === norm) continue;
+    if (t === norm || t === compact) continue;
     clientOr.push({ normalizedName: { startsWith: t } });
     clientOr.push({ normalizedName: { contains: t } });
   }
