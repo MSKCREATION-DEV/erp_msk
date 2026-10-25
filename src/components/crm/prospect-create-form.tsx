@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CrmSource } from "@prisma/client";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import {
@@ -25,11 +25,13 @@ import {
   ContactDuplicateMatchCard,
   OrgDuplicateMatchCard,
 } from "@/components/crm/duplicate-match-card";
+import { DuplicateSearchStatus } from "@/components/crm/duplicate-search-status";
 import {
   SocialNetworksEditor,
   type SocialSelection,
 } from "@/components/crm/social-networks-editor";
 import { usePendingAction } from "@/hooks/use-pending-action";
+import { useDuplicateLiveSearch } from "@/hooks/use-duplicate-live-search";
 import { SOURCE_LABELS } from "@/lib/crm/labels";
 import {
   composeSectorValue,
@@ -38,11 +40,17 @@ import {
 } from "@/lib/crm/sectors";
 import {
   type ChannelInput,
+  phoneDigits,
   validateChannels,
 } from "@/lib/crm/channels";
-import type {
-  ContactDuplicateCandidate,
-  OrgDuplicateCandidate,
+import {
+  hasBlockingOrgMatch,
+  hasIdentityContactMatch,
+  MIN_LIVE_SEARCH_CHARS,
+  MIN_PHONE_SEARCH_DIGITS,
+  orgLiveSearchReady,
+  type ContactDuplicateCandidate,
+  type OrgDuplicateCandidate,
 } from "@/lib/crm/duplicates";
 import { SOCIAL_NETWORKS } from "@/lib/crm/social";
 import { cn } from "@/lib/utils";
@@ -100,6 +108,19 @@ function readTrim(fd: FormData, key: string) {
   return String(fd.get(key) ?? "").trim();
 }
 
+function channelsLiveReady(channels: ChannelInput[]): boolean {
+  for (const c of channels) {
+    const v = c.value.trim();
+    if (!v) continue;
+    if (c.type === "PHONE" || c.type === "WHATSAPP") {
+      if (phoneDigits(v).length >= MIN_PHONE_SEARCH_DIGITS) return true;
+    } else if (v.length >= MIN_LIVE_SEARCH_CHARS) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function ProspectCreateForm({
   offers,
 }: {
@@ -122,18 +143,91 @@ export function ProspectCreateForm({
     { type: "PHONE", value: "", isPrimary: true },
   ]);
   const [channelsError, setChannelsError] = useState<string | null>(null);
+  const [orgNameDraft, setOrgNameDraft] = useState("");
   const [orgDupes, setOrgDupes] = useState<OrgDuplicateCandidate[]>([]);
-  const [orgExactBlock, setOrgExactBlock] = useState(false);
-  const [orgCheckDone, setOrgCheckDone] = useState(false);
+  /** Toute correspondance org (exacte ou proche) bloque dès 3 caractères. */
+  const [orgMatchBlock, setOrgMatchBlock] = useState(false);
   const [contactDupes, setContactDupes] = useState<ContactDuplicateCandidate[]>(
     [],
   );
-  const [contactCheckDone, setContactCheckDone] = useState(false);
+  const [contactAcked, setContactAcked] = useState(false);
   const [checkingDupes, setCheckingDupes] = useState(false);
   const [social, setSocial] = useState<SocialSelection>({
     selected: [],
     urls: {},
   });
+
+  const orgLiveEnabled = orgLiveSearchReady(orgNameDraft);
+  const orgQueryKey = orgLiveEnabled ? orgNameDraft.trim() : "";
+
+  const orgSearchFn = useCallback(async () => {
+    const checkFd = new FormData();
+    checkFd.set("orgName", orgNameDraft.trim());
+    const res = await findOrgDuplicateCandidatesAction(checkFd);
+    if (!res.ok) return { ok: false as const, error: res.error };
+    return { ok: true as const, data: res.candidates };
+  }, [orgNameDraft]);
+
+  const orgLive = useDuplicateLiveSearch<OrgDuplicateCandidate[]>({
+    queryKey: orgQueryKey,
+    enabled: orgLiveEnabled,
+    search: orgSearchFn,
+  });
+
+  useEffect(() => {
+    if (!orgLiveEnabled) {
+      setOrgDupes([]);
+      setOrgMatchBlock(false);
+      return;
+    }
+    if (orgLive.status === "ok" && orgLive.data) {
+      setOrgDupes(orgLive.data);
+      setOrgMatchBlock(hasBlockingOrgMatch(orgLive.data));
+      return;
+    }
+    // idle (debounce) / pending / erreur : pas de cards périmées
+    setOrgDupes([]);
+    setOrgMatchBlock(false);
+  }, [orgLive.status, orgLive.data, orgLiveEnabled]);
+
+  const contactLiveEnabled = channelsLiveReady(channels);
+  const contactQueryKey = contactLiveEnabled
+    ? JSON.stringify(
+        channels
+          .filter((c) => c.value.trim())
+          .map((c) => ({ t: c.type, v: c.value.trim() })),
+      )
+    : "";
+
+  const contactSearchFn = useCallback(async () => {
+    const filled = channels.filter((c) => c.value.trim());
+    const checkFd = new FormData();
+    checkFd.set("channelsJson", JSON.stringify(filled));
+    checkFd.set("live", "1");
+    const res = await findContactDuplicateCandidatesAction(checkFd);
+    if (!res.ok) return { ok: false as const, error: res.error };
+    return { ok: true as const, data: res.candidates };
+  }, [channels]);
+
+  const contactLive = useDuplicateLiveSearch<ContactDuplicateCandidate[]>({
+    queryKey: contactQueryKey,
+    enabled: contactLiveEnabled,
+    search: contactSearchFn,
+  });
+
+  useEffect(() => {
+    if (!contactLiveEnabled) {
+      setContactDupes([]);
+      setContactAcked(false);
+      return;
+    }
+    if (contactLive.status === "ok" && contactLive.data) {
+      setContactDupes(contactLive.data);
+      if (contactLive.data.length === 0) setContactAcked(false);
+      return;
+    }
+    setContactDupes([]);
+  }, [contactLive.status, contactLive.data, contactLiveEnabled]);
 
   function validateStep(targetStep: number, fd: FormData): FieldErrors {
     const errs: FieldErrors = {};
@@ -200,12 +294,11 @@ export function ProspectCreateForm({
         return;
       }
       setOrgDupes(res.candidates);
-      setOrgCheckDone(true);
-      const hasExact = res.candidates.some((c) => c.kind === "exact");
-      setOrgExactBlock(hasExact);
-      if (hasExact) {
+      const blocked = hasBlockingOrgMatch(res.candidates);
+      setOrgMatchBlock(blocked);
+      if (blocked) {
         setError(
-          "Entreprise déjà connue (nom identique). Ouvrez la fiche existante ou modifiez le nom.",
+          "Entreprise correspondante déjà connue (identique ou très proche). Ouvrez la fiche existante ou modifiez le nom.",
         );
         return;
       }
@@ -246,10 +339,11 @@ export function ProspectCreateForm({
         return;
       }
       setContactDupes(res.candidates);
-      setContactCheckDone(true);
-      if (res.candidates.length > 0 && !contactCheckDone) {
+      if (res.candidates.length > 0 && !contactAcked) {
         setError(
-          "Ce contact semble déjà lié à une entreprise. Vérifiez les fiches ou continuez quand même.",
+          hasIdentityContactMatch(res.candidates)
+            ? "Ce téléphone ou e-mail est déjà lié à une entreprise. Ouvrez la fiche ou continuez quand même."
+            : "Ce canal semble déjà utilisé. Vérifiez les fiches ou continuez quand même.",
         );
         return;
       }
@@ -301,9 +395,9 @@ export function ProspectCreateForm({
       return;
     }
 
-    if (orgExactBlock) {
+    if (orgMatchBlock || orgDupes.length > 0) {
       setError(
-        "Entreprise déjà connue (nom identique). Ouvrez la fiche existante ou modifiez le nom.",
+        "Entreprise correspondante déjà connue (identique ou très proche). Ouvrez la fiche existante ou modifiez le nom.",
       );
       setStep(0);
       return;
@@ -329,6 +423,14 @@ export function ProspectCreateForm({
       return;
     }
 
+    if (contactDupes.length > 0 && !contactAcked) {
+      setError(
+        "Confirmez « Continuer quand même » à l’étape Contact avant de créer.",
+      );
+      setStep(1);
+      return;
+    }
+
     setError(null);
     setFieldErrors({});
     if (source) fd.set("source", source);
@@ -349,13 +451,8 @@ export function ProspectCreateForm({
         fd.set(n.field, "");
       }
     }
-    const fuzzy = orgDupes.filter((c) => c.kind === "fuzzy");
-    if (fuzzy.length > 0) {
-      fd.set("acknowledgeFuzzy", "1");
-      fd.set(
-        "fuzzyCandidateIds",
-        fuzzy.map((c) => c.id).join(","),
-      );
+    if (contactAcked && contactDupes.length > 0) {
+      fd.set("acknowledgeContactDupes", "1");
     }
     const links: OfferRow[] = offerIds.map((id) => ({
       catalogOfferId: id,
@@ -371,10 +468,37 @@ export function ProspectCreateForm({
     });
   }
 
+  /** Tant que la vérif live n’est pas « ok », pas de progression (debounce / pending / erreur). */
+  const orgSearchBlocking = orgLiveEnabled && orgLive.status !== "ok";
+  const contactNeedsAck = contactDupes.length > 0 && !contactAcked;
+  const contactSearchBlocking =
+    step === 1 && contactLiveEnabled && contactLive.status !== "ok";
+
   const busy = pending || checkingDupes;
-  const continueBlocked =
-    (step === 0 && orgExactBlock) ||
-    (step === 1 && contactDupes.length > 0 && !contactCheckDone);
+  const continueDisabled =
+    busy ||
+    (step === 0 && (orgMatchBlock || orgSearchBlocking)) ||
+    (step === 1 && (contactNeedsAck || contactSearchBlocking));
+
+  const orgStatusHint = useMemo(() => {
+    if (!orgLiveEnabled) {
+      return `Saisissez au moins ${MIN_LIVE_SEARCH_CHARS} caractères pour vérifier les doublons automatiquement.`;
+    }
+    if (orgLive.status === "ok" && orgDupes.length === 0) {
+      return "Aucune correspondance détectée pour ce nom.";
+    }
+    return null;
+  }, [orgLiveEnabled, orgLive.status, orgDupes.length]);
+
+  const contactStatusHint = useMemo(() => {
+    if (!contactLiveEnabled) {
+      return "La vérification démarre dès qu’un téléphone (6 chiffres) ou un e-mail (3 caractères) est saisi.";
+    }
+    if (contactLive.status === "ok" && contactDupes.length === 0) {
+      return "Aucune correspondance contact détectée.";
+    }
+    return null;
+  }, [contactLiveEnabled, contactLive.status, contactDupes.length]);
 
   const footer = (
     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -410,12 +534,13 @@ export function ProspectCreateForm({
         <p className="hidden text-xs text-msk-ink/40 sm:block">
           Étape {step + 1} / {STEPS.length}
         </p>
-        {step === 1 && contactDupes.length > 0 && contactCheckDone ? (
+        {step === 1 && contactNeedsAck ? (
           <Button
             type="button"
             variant="secondary"
-            disabled={busy}
+            disabled={busy || contactLive.status === "pending"}
             onClick={() => {
+              setContactAcked(true);
               setError(null);
               setStep(2);
             }}
@@ -425,14 +550,12 @@ export function ProspectCreateForm({
         ) : null}
         <Button
           type="submit"
-          disabled={
-            busy ||
-            (step === 0 && orgExactBlock) ||
-            (step === 1 && contactDupes.length > 0 && !contactCheckDone)
-          }
+          disabled={continueDisabled}
           form="prospect-create-form"
         >
-          {checkingDupes ? (
+          {checkingDupes ||
+          (step === 0 && orgLive.status === "pending") ||
+          (step === 1 && contactLive.status === "pending") ? (
             "Vérification…"
           ) : pending ? (
             "Création…"
@@ -448,8 +571,6 @@ export function ProspectCreateForm({
       </div>
     </div>
   );
-
-  void continueBlocked;
 
   return (
     <FormShell footer={footer}>
@@ -547,8 +668,8 @@ export function ProspectCreateForm({
               Entreprise
             </h2>
             <p className="mt-1 text-sm text-msk-ink/50">
-              Identité de la structure prospectée. À la suite, contrôle
-              anti-doublon automatique.
+              Identité de la structure prospectée. Contrôle anti-doublon
+              automatique dès {MIN_LIVE_SEARCH_CHARS} caractères.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -559,20 +680,38 @@ export function ProspectCreateForm({
               <Input
                 id="orgName"
                 name="orgName"
+                value={orgNameDraft}
                 autoComplete="organization"
                 placeholder="Ex. Boulangerie Diallo SARL"
                 disabled={busy}
-                onChange={() => {
-                  setOrgDupes([]);
-                  setOrgExactBlock(false);
-                  setOrgCheckDone(false);
+                onChange={(e) => {
+                  setOrgNameDraft(e.target.value);
+                  setOrgMatchBlock(false);
+                  setFieldErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.orgName;
+                    return next;
+                  });
                 }}
-                aria-invalid={Boolean(fieldErrors.orgName) || undefined}
+                aria-invalid={
+                  Boolean(fieldErrors.orgName) || orgMatchBlock || undefined
+                }
                 className={
-                  fieldErrors.orgName ? "border-msk-coral/50" : undefined
+                  fieldErrors.orgName || orgMatchBlock
+                    ? "border-msk-coral/50"
+                    : undefined
                 }
               />
               <FieldError>{fieldErrors.orgName}</FieldError>
+              <DuplicateSearchStatus
+                status={orgLiveEnabled ? orgLive.status : "idle"}
+                error={orgLive.error}
+                onRetry={orgLive.refresh}
+                idleHint={orgStatusHint}
+                okEmptyHint={
+                  orgDupes.length === 0 ? orgStatusHint : null
+                }
+              />
             </div>
             <div>
               <OptionPickerSingle
@@ -637,10 +776,10 @@ export function ProspectCreateForm({
             </div>
           </div>
 
-          {orgCheckDone && orgDupes.length > 0 ? (
-            <div className="mt-6 space-y-3">
+          {orgDupes.length > 0 ? (
+            <div className="mt-6 space-y-3" aria-live="polite">
               <h3 className="text-sm font-semibold text-msk-ink">
-                Correspondances détectées
+                Correspondance détectée — création bloquée
               </h3>
               {orgDupes.map((c) => (
                 <OrgDuplicateMatchCard
@@ -666,6 +805,7 @@ export function ProspectCreateForm({
             </h2>
             <p className="mt-1 text-sm text-msk-ink/50">
               Une personne · plusieurs moyens de joindre · un principal.
+              Vérification automatique des contacts existants.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -711,20 +851,30 @@ export function ProspectCreateForm({
                 value={channels}
                 onChange={(next) => {
                   setChannels(next);
-                  setContactDupes([]);
-                  setContactCheckDone(false);
+                  setContactAcked(false);
                   setChannelsError(null);
                 }}
                 disabled={busy}
                 error={channelsError}
               />
+              <DuplicateSearchStatus
+                status={contactLiveEnabled ? contactLive.status : "idle"}
+                error={contactLive.error}
+                onRetry={contactLive.refresh}
+                idleHint={contactStatusHint}
+                okEmptyHint={
+                  contactDupes.length === 0 ? contactStatusHint : null
+                }
+              />
             </div>
           </div>
 
-          {contactCheckDone && contactDupes.length > 0 ? (
-            <div className="mt-6 space-y-3">
+          {contactDupes.length > 0 ? (
+            <div className="mt-6 space-y-3" aria-live="polite">
               <h3 className="text-sm font-semibold text-msk-ink">
-                Contact déjà présent
+                {hasIdentityContactMatch(contactDupes)
+                  ? "Contact déjà présent"
+                  : "Canal déjà utilisé"}
               </h3>
               {contactDupes.map((c) => (
                 <ContactDuplicateMatchCard

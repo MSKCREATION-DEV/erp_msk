@@ -18,19 +18,12 @@ export function OrgDuplicateMatchCard({
 }) {
   const exact = candidate.kind === "exact";
   return (
-    <article
-      className={cn(
-        "rounded-2xl border bg-white p-4 shadow-sm",
-        exact
-          ? "border-msk-coral/35 ring-1 ring-msk-coral/10"
-          : "border-msk-blue/25 ring-1 ring-msk-blue/10",
-      )}
-    >
+    <article className="rounded-2xl border border-msk-coral/35 bg-white p-4 shadow-sm ring-1 ring-msk-coral/10">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone={exact ? "coral" : "blue"}>
-              {exact ? "Identique" : `~${pct(candidate.score)} %`}
+            <Badge tone="coral">
+              {exact ? "Identique — bloquant" : `~${pct(candidate.score)} % — bloquant`}
             </Badge>
             <Badge tone="muted">
               {candidate.entity === "client" ? "Client" : "Prospect"}
@@ -45,18 +38,13 @@ export function OrgDuplicateMatchCard({
           <p className="text-xs text-msk-ink/50">
             {exact
               ? "Même nom déjà enregistré — ouvrez la fiche plutôt que de recréer."
-              : "Nom proche — vérifiez avant de continuer."}
+              : "Nom très proche — création bloquée. Ouvrez la fiche ou modifiez le nom."}
           </p>
         </div>
         <Link
           prefetch={false}
           href={candidate.href}
-          className={cn(
-            "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition",
-            exact
-              ? "bg-msk-coral text-white hover:bg-msk-coral/90"
-              : "bg-msk-blue text-white hover:bg-msk-blue/90",
-          )}
+          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-msk-coral px-3 text-sm font-medium text-white transition hover:bg-msk-coral/90"
         >
           Ouvrir la fiche
           <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
@@ -124,12 +112,22 @@ export function ContactDuplicateMatchCard({
 }: {
   candidate: ContactDuplicateCandidate;
 }) {
+  const identity = candidate.severity === "identity";
   return (
-    <article className="rounded-2xl border border-msk-coral/30 bg-white p-4 shadow-sm ring-1 ring-msk-coral/10">
+    <article
+      className={cn(
+        "rounded-2xl border bg-white p-4 shadow-sm",
+        identity
+          ? "border-msk-coral/30 ring-1 ring-msk-coral/10"
+          : "border-msk-blue/25 ring-1 ring-msk-blue/10",
+      )}
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="coral">Contact déjà connu</Badge>
+            <Badge tone={identity ? "coral" : "blue"}>
+              {identity ? "Contact déjà connu" : "Canal déjà utilisé"}
+            </Badge>
             <Badge tone="muted">
               {candidate.entity === "client" ? "Client" : "Prospect"}
             </Badge>
@@ -145,13 +143,23 @@ export function ContactDuplicateMatchCard({
             Correspondance : {candidate.matchedVia}
           </p>
           <p className="text-xs text-msk-ink/45">
+            {identity
+              ? "Même téléphone ou e-mail — ouvrez la fiche ou confirmez avant de continuer."
+              : "Canal social proche — vérifiez avant de continuer."}
+          </p>
+          <p className="text-xs text-msk-ink/45">
             Créé par {candidate.createdBy} · Suivi {candidate.owner}
           </p>
         </div>
         <Link
           prefetch={false}
           href={candidate.href}
-          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-msk-coral px-3 text-sm font-medium text-white transition hover:bg-msk-coral/90"
+          className={cn(
+            "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-white transition",
+            identity
+              ? "bg-msk-coral hover:bg-msk-coral/90"
+              : "bg-msk-blue hover:bg-msk-blue/90",
+          )}
         >
           Ouvrir la fiche
           <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />

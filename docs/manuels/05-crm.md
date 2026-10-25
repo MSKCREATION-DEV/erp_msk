@@ -21,7 +21,7 @@ Vocabulaire : « montant en cours » (jamais « pipeline »).
 
 **En discussion** (ex-« En qualification ») : échange en cours — besoin / budget / timing à clarifier ; pas encore prêt pour un devis.
 
-**Création :** contrôle doublons (nom exact → ouvrir fiche existante ; nom proche → alerte + continuer) · multi-moyens de contact · réseaux sociaux entreprise optionnels.
+**Création :** contrôle doublons live (dès 3 caractères sur le nom ; tél / e-mail en saisie) — toute correspondance org (identique **ou** très proche) → Continuer bloqué ; tél/e-mail déjà connus → « Continuer quand même » + ack serveur · multi-moyens de contact · réseaux sociaux entreprise optionnels.
 
 **Relancé N× :** historique des actions de suivi (appel, WhatsApp, e-mail, RDV… — pas les notes). Visible sur dashboard, liste, fiche, relances et Vue Équipe. **Perdu** exige au moins **3** de ces relances.
 

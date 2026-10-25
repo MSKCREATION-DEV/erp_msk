@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-24 (audit CRM hub / Équipe / relances) |
+| Dernière mise à jour | 2026-10-25 (création prospect / anti-doublon live) |
 
 ### Légende statuts documentaires
 
@@ -101,7 +101,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `demarrage-accueil` | Premiers pas dans l’ERP | accueil | `validated` | routes accueil, packs chips |
 | `iam-inviter-utilisateur` | Inviter un collaborateur | administration | `validated` | manuel 01 + routes admin |
 | `ged-comprendre-acces` | Comprendre son accès GED | ged | `validated` | manuel 02 + permissions |
-| `crm-creer-prospect` | Créer un prospect | commercial | `validated` | manuel 05 + `/crm/prospects/nouveau` |
+| `crm-creer-prospect` | Créer un prospect | commercial | `to_validate` | live doublons 3 car. + ack contact — revalider UI |
 | `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `validated` | manuel 05 |
 | `crm-transformer-client` | Transformer un prospect en client | commercial | `validated` | manuel 05 (Intéressé → Client) |
 | `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `to_validate` | dual total/suivis + owner URL own — à revalider UI |
@@ -187,6 +187,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-10-25 — Création prospect : anti-doublon live + blocage
+
+- **Pourquoi** : détection uniquement au clic Continuer ; scan 400 lignes ; Continuer réactivé trop tôt après match contact ; pas d’ack serveur identité.
+- **Quoi** : recherche live org (≥3 car.) / contact (tél≥6, e-mail≥3) debounce + anti-course ; requêtes index `normalizedName` ; **toute correspondance org (exacte ou fuzzy) bloquante** dès 3 car. ; contact identité → Continuer désactivé jusqu’à « Continuer quand même » + refus serveur sans ack ; états pending/erreur/vide.
+- **Fichiers** : `duplicates.ts`, `duplicate-search.ts`, `prospect-create-form.tsx`, `use-duplicate-live-search.ts`, `duplicate-search-status.tsx`, `duplicate-match-card.tsx`, `actions/crm.ts`, `duplicates.test.ts`, `LOT-F-DOUBLONS.md`, guide `crm-creer-prospect`.
+- **Statut doc** : `crm-creer-prospect` → `to_validate`.
 
 ### 2026-10-25 — Libellés « SLA » retirés (UI)
 

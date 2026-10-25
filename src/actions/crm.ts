@@ -43,10 +43,11 @@ import {
 } from "@/lib/crm/channels";
 import { sanitizeUrl } from "@/lib/crm/social";
 import {
-  hasExactOrgDuplicate,
+  hasBlockingOrgDuplicate,
   searchContactDuplicates,
   searchOrgDuplicates,
 } from "@/lib/crm/duplicate-search";
+import { hasIdentityContactMatch } from "@/lib/crm/duplicates";
 import type { ActionResult } from "@/actions/auth";
 
 const stageSchema = z.nativeEnum(CrmPipelineStage);
@@ -153,6 +154,7 @@ function resolveChannelsFromForm(formData: FormData): ChannelInput[] | { error: 
 
 /**
  * LOT-F — candidats doublons entreprise (exact / fuzzy).
+ * Live : dès 3 caractères côté UI ; ici tout nom non vide est accepté (contrôle étape / submit).
  */
 export async function findOrgDuplicateCandidatesAction(
   formData: FormData,
@@ -162,7 +164,7 @@ export async function findOrgDuplicateCandidatesAction(
 > {
   await requireUser({ permission: "crm.prospect.create" });
   const orgName = fdString(formData, "orgName").trim();
-  if (orgName.length < 2) {
+  if (!orgName) {
     return { ok: false, error: "Indiquez le nom de l’entreprise." };
   }
   const candidates = await searchOrgDuplicates(orgName);
@@ -171,6 +173,7 @@ export async function findOrgDuplicateCandidatesAction(
 
 /**
  * LOT-F — candidats doublons contact (tél / e-mail / canaux).
+ * Live : canaux partiels OK (pas d’obligation « principal » tant que la saisie est exploratoire).
  */
 export async function findContactDuplicateCandidatesAction(
   formData: FormData,
@@ -182,8 +185,20 @@ export async function findContactDuplicateCandidatesAction(
   | { ok: false; error: string }
 > {
   await requireUser({ permission: "crm.prospect.create" });
+  const raw = fdString(formData, "channelsJson");
+  const parsed = parseChannelsJson(raw);
+  if (parsed && parsed.length > 0) {
+    const candidates = await searchContactDuplicates(parsed);
+    return { ok: true, candidates };
+  }
   const channels = resolveChannelsFromForm(formData);
-  if ("error" in channels) return { ok: false, error: channels.error };
+  if ("error" in channels) {
+    // Live search : saisie encore incomplète → pas d’erreur, liste vide
+    if (fdString(formData, "live") === "1") {
+      return { ok: true, candidates: [] };
+    }
+    return { ok: false, error: channels.error };
+  }
   const candidates = await searchContactDuplicates(channels);
   return { ok: true, candidates };
 }
@@ -254,11 +269,21 @@ export async function createProspectAction(
   const notes = data.notes || null;
   const src = data.source;
 
-  if (await hasExactOrgDuplicate(orgName)) {
+  if (await hasBlockingOrgDuplicate(orgName)) {
     return {
       ok: false,
       error:
-        "Une entreprise avec exactement le même nom existe déjà. Ouvrez la fiche existante.",
+        "Une entreprise correspondante existe déjà (nom identique ou très proche). Ouvrez la fiche existante ou modifiez le nom.",
+    };
+  }
+
+  const contactDupes = await searchContactDuplicates(channels);
+  const ackContact = fdString(formData, "acknowledgeContactDupes") === "1";
+  if (hasIdentityContactMatch(contactDupes) && !ackContact) {
+    return {
+      ok: false,
+      error:
+        "Un contact avec le même téléphone ou e-mail existe déjà. Vérifiez la fiche ou confirmez « Continuer quand même ».",
     };
   }
 
@@ -387,9 +412,7 @@ export async function createProspectAction(
     },
   });
 
-  const ackFuzzy = fdString(formData, "acknowledgeFuzzy") === "1";
-  const fuzzyIds = fdString(formData, "fuzzyCandidateIds").trim();
-  if (ackFuzzy && fuzzyIds) {
+  if (ackContact && contactDupes.length > 0) {
     await writeAudit({
       actorId: actor.id,
       action: "crm.duplicate.ignored",
@@ -397,7 +420,8 @@ export async function createProspectAction(
       entityId: deal.id,
       metadata: {
         orgName,
-        candidateIds: fuzzyIds.split(",").filter(Boolean).slice(0, 10),
+        kind: "contact_identity",
+        candidateIds: contactDupes.map((c) => c.id).slice(0, 10),
       },
     });
   }

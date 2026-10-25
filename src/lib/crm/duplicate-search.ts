@@ -1,9 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { STAGE_LABELS } from "@/lib/crm/labels";
+import { normalizeOrgName } from "@/lib/crm/labels";
 import {
   MAX_DUPLICATE_CANDIDATES,
+  ORG_CANDIDATE_POOL,
+  contactSeverityForType,
+  orgSearchTokens,
   scoreOrgNames,
   type ContactDuplicateCandidate,
+  type ContactMatchSeverity,
   type OrgDuplicateCandidate,
 } from "@/lib/crm/duplicates";
 import {
@@ -11,7 +16,11 @@ import {
   phoneDigits,
   type ChannelInput,
 } from "@/lib/crm/channels";
-import type { CrmContactChannelType } from "@prisma/client";
+import type {
+  CrmContactChannelType,
+  CrmPipelineStage,
+  Prisma,
+} from "@prisma/client";
 
 function personLabel(
   firstName: string | null | undefined,
@@ -21,51 +30,128 @@ function personLabel(
   return n || null;
 }
 
+const orgSelect = {
+  id: true,
+  name: true,
+  city: true,
+  sector: true,
+  createdBy: { select: { firstName: true, lastName: true } },
+  owner: { select: { firstName: true, lastName: true } },
+  contacts: {
+    where: { isPrimary: true },
+    take: 1,
+    select: { firstName: true, lastName: true },
+  },
+  opportunities: {
+    orderBy: { updatedAt: "desc" as const },
+    take: 1,
+    select: { id: true, stage: true },
+  },
+  comClients: {
+    take: 1,
+    select: { id: true },
+  },
+} satisfies Prisma.CrmOrganizationSelect;
+
+const clientSelect = {
+  id: true,
+  name: true,
+  city: true,
+  contactName: true,
+  crmOrganizationId: true,
+  createdBy: { select: { firstName: true, lastName: true } },
+  owner: { select: { firstName: true, lastName: true } },
+} satisfies Prisma.ComClientSelect;
+
+function stageUiLabel(stage: CrmPipelineStage): string {
+  return STAGE_LABELS[stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage];
+}
+
+function toOrgCandidate(
+  org: {
+    id: string;
+    name: string;
+    city: string | null;
+    sector: string | null;
+    createdBy: { firstName: string; lastName: string };
+    owner: { firstName: string; lastName: string };
+    contacts: { firstName: string; lastName: string }[];
+    opportunities: { id: string; stage: CrmPipelineStage }[];
+    comClients: { id: string }[];
+  },
+  kind: OrgDuplicateCandidate["kind"],
+  score: number,
+): OrgDuplicateCandidate {
+  const deal = org.opportunities[0];
+  const linkedClient = org.comClients[0];
+  const entity = linkedClient ? "client" : "prospect";
+  const href = linkedClient
+    ? `/commercial/clients/${linkedClient.id}`
+    : deal
+      ? `/crm/prospects/${deal.id}`
+      : `/crm/prospects`;
+  const contact = org.contacts[0];
+  return {
+    kind,
+    entity,
+    score,
+    href,
+    id: linkedClient?.id ?? org.id,
+    opportunityId: deal?.id ?? null,
+    name: org.name,
+    city: org.city,
+    sector: org.sector,
+    stageLabel: deal
+      ? stageUiLabel(deal.stage)
+      : linkedClient
+        ? "Client commercial"
+        : null,
+    primaryContact: personLabel(contact?.firstName, contact?.lastName),
+    createdBy: `${org.createdBy.firstName} ${org.createdBy.lastName}`,
+    owner: `${org.owner.firstName} ${org.owner.lastName}`,
+  };
+}
+
+/**
+ * Recherche doublons org — exact via `normalizedName`, fuzzy via pool filtré
+ * (index) puis Dice. Pas de scan complet de table.
+ */
 export async function searchOrgDuplicates(
   orgName: string,
 ): Promise<OrgDuplicateCandidate[]> {
   const needle = orgName.trim();
-  if (needle.length < 2) return [];
+  if (!needle) return [];
+
+  const norm = normalizeOrgName(needle);
+  if (!norm) return [];
+
+  const tokens = orgSearchTokens(needle);
+  const orFilters: Prisma.CrmOrganizationWhereInput[] = [
+    { normalizedName: norm },
+  ];
+  for (const t of tokens) {
+    if (t === norm) continue;
+    orFilters.push({ normalizedName: { contains: t } });
+  }
+
+  const clientOr: Prisma.ComClientWhereInput[] = [{ normalizedName: norm }];
+  for (const t of tokens) {
+    if (t === norm) continue;
+    clientOr.push({ normalizedName: { contains: t } });
+  }
 
   const [orgs, clients] = await Promise.all([
     prisma.crmOrganization.findMany({
-      take: 400,
+      where: { OR: orFilters },
+      take: ORG_CANDIDATE_POOL,
       orderBy: { updatedAt: "desc" },
-      select: {
-        id: true,
-        name: true,
-        city: true,
-        sector: true,
-        createdBy: { select: { firstName: true, lastName: true } },
-        owner: { select: { firstName: true, lastName: true } },
-        contacts: {
-          where: { isPrimary: true },
-          take: 1,
-          select: { firstName: true, lastName: true },
-        },
-        opportunities: {
-          orderBy: { updatedAt: "desc" },
-          take: 1,
-          select: { id: true, stage: true },
-        },
-        comClients: {
-          take: 1,
-          select: { id: true },
-        },
-      },
+      select: orgSelect,
     }),
     prisma.comClient.findMany({
-      take: 400,
+      where: { OR: clientOr },
+      take: ORG_CANDIDATE_POOL,
       orderBy: { updatedAt: "desc" },
-      select: {
-        id: true,
-        name: true,
-        city: true,
-        contactName: true,
-        crmOrganizationId: true,
-        createdBy: { select: { firstName: true, lastName: true } },
-        owner: { select: { firstName: true, lastName: true } },
-      },
+      select: clientSelect,
     }),
   ]);
 
@@ -76,36 +162,7 @@ export async function searchOrgDuplicates(
     const { kind, score } = scoreOrgNames(needle, org.name);
     if (!kind) continue;
     seenOrgIds.add(org.id);
-    const deal = org.opportunities[0];
-    const linkedClient = org.comClients[0];
-    const entity = linkedClient ? "client" : "prospect";
-    const href = linkedClient
-      ? `/commercial/clients/${linkedClient.id}`
-      : deal
-        ? `/crm/prospects/${deal.id}`
-        : `/crm/prospects`;
-    const contact = org.contacts[0];
-    scored.push({
-      kind,
-      entity,
-      score,
-      href,
-      id: linkedClient?.id ?? org.id,
-      opportunityId: deal?.id ?? null,
-      name: org.name,
-      city: org.city,
-      sector: org.sector,
-      stageLabel: deal
-        ? STAGE_LABELS[
-            deal.stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : deal.stage
-          ]
-        : linkedClient
-          ? "Client commercial"
-          : null,
-      primaryContact: personLabel(contact?.firstName, contact?.lastName),
-      createdBy: `${org.createdBy.firstName} ${org.createdBy.lastName}`,
-      owner: `${org.owner.firstName} ${org.owner.lastName}`,
-    });
+    scored.push(toOrgCandidate(org, kind, score));
   }
 
   for (const client of clients) {
@@ -139,9 +196,29 @@ export async function searchOrgDuplicates(
   return scored.slice(0, MAX_DUPLICATE_CANDIDATES);
 }
 
+/** Contrôle déterministe exact — index `normalizedName`, pas de fuzzy. */
 export async function hasExactOrgDuplicate(orgName: string): Promise<boolean> {
+  const norm = normalizeOrgName(orgName);
+  if (!norm) return false;
+  const [org, client] = await Promise.all([
+    prisma.crmOrganization.findFirst({
+      where: { normalizedName: norm },
+      select: { id: true },
+    }),
+    prisma.comClient.findFirst({
+      where: { normalizedName: norm },
+      select: { id: true },
+    }),
+  ]);
+  return Boolean(org || client);
+}
+
+/** Toute correspondance org (exacte ou fuzzy) — même logique que le wizard. */
+export async function hasBlockingOrgDuplicate(
+  orgName: string,
+): Promise<boolean> {
   const hits = await searchOrgDuplicates(orgName);
-  return hits.some((h) => h.kind === "exact");
+  return hits.length > 0;
 }
 
 function formatMatchVia(
@@ -159,28 +236,78 @@ function formatMatchVia(
   return `${labels[type]} · ${value}`;
 }
 
-export async function searchContactDuplicates(
-  channels: ChannelInput[],
-): Promise<ContactDuplicateCandidate[]> {
-  const keys: { type: CrmContactChannelType; norm: string; display: string }[] =
-    [];
+function phoneNormalizedVariants(digits: string): string[] {
+  const variants = new Set<string>([digits, `+${digits}`]);
+  // Variantes courantes Afrique de l'Ouest : 0 local vs indicatif
+  if (digits.startsWith("221") && digits.length > 9) {
+    const local = digits.slice(3);
+    variants.add(local);
+    variants.add(`0${local}`);
+    variants.add(`+221${local}`);
+  }
+  if (digits.startsWith("223") && digits.length > 9) {
+    const local = digits.slice(3);
+    variants.add(local);
+    variants.add(`0${local}`);
+    variants.add(`+223${local}`);
+  }
+  if (digits.length >= 8 && !digits.startsWith("221") && !digits.startsWith("223")) {
+    variants.add(`221${digits.replace(/^0+/, "")}`);
+    variants.add(`223${digits.replace(/^0+/, "")}`);
+  }
+  return [...variants];
+}
+
+type SearchKey = {
+  type: CrmContactChannelType;
+  norm: string;
+  display: string;
+  severity: ContactMatchSeverity;
+};
+
+function buildSearchKeys(channels: ChannelInput[]): SearchKey[] {
+  const keys: SearchKey[] = [];
   for (const c of channels) {
     const norm = normalizeChannelValue(c.type, c.value);
     if (!norm) continue;
     if (c.type === "PHONE" || c.type === "WHATSAPP") {
       const d = phoneDigits(norm);
       if (d.length >= 6) {
-        keys.push({ type: c.type, norm: d, display: c.value.trim() });
+        keys.push({
+          type: c.type,
+          norm: d,
+          display: c.value.trim(),
+          severity: contactSeverityForType(c.type),
+        });
       }
-    } else {
-      keys.push({ type: c.type, norm, display: c.value.trim() });
+    } else if (c.type === "EMAIL") {
+      if (norm.length >= 3) {
+        keys.push({
+          type: c.type,
+          norm,
+          display: c.value.trim(),
+          severity: contactSeverityForType(c.type),
+        });
+      }
+    } else if (norm.length >= 3) {
+      keys.push({
+        type: c.type,
+        norm,
+        display: c.value.trim(),
+        severity: contactSeverityForType(c.type),
+      });
     }
   }
+  return keys;
+}
+
+export async function searchContactDuplicates(
+  channels: ChannelInput[],
+): Promise<ContactDuplicateCandidate[]> {
+  const keys = buildSearchKeys(channels);
   if (keys.length === 0) return [];
 
-  const emailNorms = keys
-    .filter((k) => k.type === "EMAIL")
-    .map((k) => k.norm);
+  const emailNorms = keys.filter((k) => k.type === "EMAIL").map((k) => k.norm);
   const phoneNorms = keys
     .filter((k) => k.type === "PHONE" || k.type === "WHATSAPP")
     .map((k) => k.norm);
@@ -191,57 +318,53 @@ export async function searchContactDuplicates(
     )
     .map((k) => k.norm);
 
-  const channelHits = await prisma.crmContactChannel.findMany({
-    where: {
-      OR: [
-        ...(emailNorms.length
-          ? [{ type: "EMAIL" as const, normalizedValue: { in: emailNorms } }]
-          : []),
-        ...(phoneNorms.length
-          ? [
-              {
-                type: { in: ["PHONE" as const, "WHATSAPP" as const] },
-                normalizedValue: { in: phoneNorms },
-              },
-              // digits-only stored may vary with +
-              {
-                type: { in: ["PHONE" as const, "WHATSAPP" as const] },
-                normalizedValue: {
-                  in: phoneNorms.flatMap((d) => [`+${d}`, d]),
+  const phoneVariants = phoneNorms.flatMap(phoneNormalizedVariants);
+
+  const channelOr: Prisma.CrmContactChannelWhereInput[] = [];
+  if (emailNorms.length) {
+    channelOr.push({ type: "EMAIL", normalizedValue: { in: emailNorms } });
+  }
+  if (phoneVariants.length) {
+    channelOr.push({
+      type: { in: ["PHONE", "WHATSAPP"] },
+      normalizedValue: { in: phoneVariants },
+    });
+  }
+  if (otherNorms.length) {
+    channelOr.push({ normalizedValue: { in: otherNorms } });
+  }
+
+  const channelHits =
+    channelOr.length > 0
+      ? await prisma.crmContactChannel.findMany({
+          where: { OR: channelOr },
+          take: 30,
+          include: {
+            contact: {
+              include: {
+                organization: {
+                  select: {
+                    id: true,
+                    name: true,
+                    city: true,
+                    createdBy: {
+                      select: { firstName: true, lastName: true },
+                    },
+                    owner: { select: { firstName: true, lastName: true } },
+                    opportunities: {
+                      orderBy: { updatedAt: "desc" },
+                      take: 1,
+                      select: { id: true },
+                    },
+                    comClients: { take: 1, select: { id: true } },
+                  },
                 },
               },
-            ]
-          : []),
-        ...(otherNorms.length
-          ? [{ normalizedValue: { in: otherNorms } }]
-          : []),
-      ],
-    },
-    take: 30,
-    include: {
-      contact: {
-        include: {
-          organization: {
-            select: {
-              id: true,
-              name: true,
-              city: true,
-              createdBy: { select: { firstName: true, lastName: true } },
-              owner: { select: { firstName: true, lastName: true } },
-              opportunities: {
-                orderBy: { updatedAt: "desc" },
-                take: 1,
-                select: { id: true },
-              },
-              comClients: { take: 1, select: { id: true } },
             },
           },
-        },
-      },
-    },
-  });
+        })
+      : [];
 
-  // Legacy mirror fields
   const legacyContacts =
     emailNorms.length || phoneNorms.length
       ? await prisma.crmContact.findMany({
@@ -319,6 +442,7 @@ export async function searchContactDuplicates(
     const deal = org.opportunities[0];
     out.push({
       kind: "exact",
+      severity: contactSeverityForType(hit.type),
       entity: linked ? "client" : "prospect",
       href: linked
         ? `/commercial/clients/${linked.id}`
@@ -341,18 +465,19 @@ export async function searchContactDuplicates(
     const org = c.organization;
     const key = `org:${org.id}`;
     if (seen.has(key)) continue;
-    const matched =
-      emailNorms.some(
-        (e) => (c.email ?? "").toLowerCase() === e,
-      )
-        ? formatMatchVia("EMAIL", c.email ?? "")
-        : formatMatchVia("PHONE", c.phone ?? "");
+    const emailHit = emailNorms.some(
+      (e) => (c.email ?? "").toLowerCase() === e,
+    );
+    const matched = emailHit
+      ? formatMatchVia("EMAIL", c.email ?? "")
+      : formatMatchVia("PHONE", c.phone ?? "");
     if (!matched.includes("·") || matched.endsWith("· ")) continue;
     seen.add(key);
     const linked = org.comClients[0];
     const deal = org.opportunities[0];
     out.push({
       kind: "exact",
+      severity: "identity",
       entity: linked ? "client" : "prospect",
       href: linked
         ? `/commercial/clients/${linked.id}`
@@ -374,13 +499,15 @@ export async function searchContactDuplicates(
     const key = `client:${client.id}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    const via = emailNorms.some(
+    const emailHit = emailNorms.some(
       (e) => (client.email ?? "").toLowerCase() === e,
-    )
+    );
+    const via = emailHit
       ? formatMatchVia("EMAIL", client.email ?? "")
       : formatMatchVia("PHONE", client.phone ?? "");
     out.push({
       kind: "exact",
+      severity: "identity",
       entity: "client",
       href: `/commercial/clients/${client.id}`,
       id: client.id,
@@ -395,4 +522,12 @@ export async function searchContactDuplicates(
   }
 
   return out.slice(0, MAX_DUPLICATE_CANDIDATES);
+}
+
+/** True s’il existe un match identité (tél / e-mail / WhatsApp). */
+export async function hasIdentityContactDuplicate(
+  channels: ChannelInput[],
+): Promise<boolean> {
+  const hits = await searchContactDuplicates(channels);
+  return hits.some((h) => h.severity === "identity");
 }

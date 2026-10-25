@@ -123,8 +123,8 @@ export const commercialGuides: GuideInput[] = [
       "Accès hub Commercial / CRM.",
     ],
     relatedGuideIds: ["crm-suivre-relancer", "com-hub-naviguer"],
-    status: "validated",
-    updatedAt: "2026-10-22",
+    status: "to_validate",
+    updatedAt: "2026-10-25",
     difficulty: "debutant",
     viewPermission: "crm.prospect.create",
     objective:
@@ -174,8 +174,9 @@ export const commercialGuides: GuideInput[] = [
       {
         title: "Renseigner et contrôler les doublons",
         instruction:
-          "Saisissez le nom et les informations. Nom exact → ouvrir la fiche existante ; nom proche → alerte + possibilité de continuer. Multi-moyens de contact et réseaux sociaux entreprise optionnels.",
-        caution: "Les Clients n’apparaissent jamais dans le listing Prospects.",
+          "Saisissez le nom d’entreprise : dès 3 caractères, une vérification automatique propose les fiches correspondantes. Toute correspondance (nom identique ou très proche) → Continuer bloqué — ouvrez la fiche ou modifiez le nom. À l’étape Contact, téléphone / e-mail déjà connus → cards + « Continuer quand même » obligatoire. Multi-moyens de contact et réseaux sociaux entreprise optionnels.",
+        caution:
+          "Les Clients n’apparaissent jamais dans le listing Prospects. La création est refusée côté serveur si une entreprise correspondante existe (identique ou proche), ou si un tél/e-mail connu est soumis sans confirmation.",
         visualId: "prospect-nouveau",
       },
       {
