@@ -1,0 +1,38 @@
+---
+description: dev et main toujours alignés à chaque push (absolu ERP MSK)
+alwaysApply: true
+---
+
+# Alignement `dev` ↔ `main` (absolu)
+
+## Règle
+
+**`origin/dev` et `origin/main` doivent pointer le même commit après tout push demandé.**
+
+La prod (`erp-msk.vercel.app`) déploie depuis **`main`**. Un push sur `dev` seul laisse la prod en retard — interdit une fois le lot validé / le push demandé.
+
+## Obligatoire quand l’utilisateur demande un push
+
+1. Commit sur la branche de travail (`dev` en principe).
+2. `git push origin dev`
+3. Aligner `main` sur le **même SHA** (fast-forward de préférence) :
+   - `git checkout main && git merge --ff-only dev && git push origin main`
+   - puis revenir sur `dev`
+4. Vérifier : `git rev-parse origin/dev origin/main` → **identique**.
+
+Si `--ff-only` échoue → signaler le décalage ; ne pas force-push `main` sans demande explicite.
+
+## Interdit
+
+- Push **uniquement** sur `dev` puis s’arrêter (sauf demande explicite « preview only / pas de prod »).
+- Laisser `main` en retard après un push « livré / à tester en prod ».
+- Assumer que le preview `dev` = la prod.
+
+## Exception
+
+Uniquement si l’utilisateur dit clairement : push **preview / `dev` seulement**, **pas** de prod / **pas** de `main`.
+
+## Test mental
+
+> Si je rafraîchis `erp-msk.vercel.app` après le push, ai-je le même code que `dev` ?  
+> Si non → **bug process**, aligner `main` avant de clore.

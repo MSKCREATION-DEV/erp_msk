@@ -8,7 +8,7 @@ alwaysApply: true
 ## Conduite de phase
 
 1. Plan de phase dédié → implémentation complète → **tests** → gate OK → phase suivante.
-2. Branche de travail : **`dev`**. Merge `main` seulement après gate.
+2. Branche de travail : **`dev`**. Après gate / push demandé : **`dev` et `main` au même SHA** (voir `dev-main-aligned.mdc`) — pas de prod en retard.
 3. Priorité métier : Commercial / Finance / Compta = **URGENT** (sans sauter les prérequis).
 
 ## Qualité code (non négociable)
