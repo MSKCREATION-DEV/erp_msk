@@ -208,23 +208,6 @@ export function InviteUserForm({
               Voir la liste
             </Link>
           </p>
-          {state.login && state.tempPassword ? (
-            <div className="rounded-lg border border-msk-ink/10 bg-white p-3 font-mono text-xs leading-relaxed">
-              <p>
-                <span className="text-msk-ink/45">Login · </span>
-                {state.login}
-              </p>
-              <p className="mt-1">
-                <span className="text-msk-ink/45">MDP temporaire · </span>
-                {state.tempPassword}
-              </p>
-              <p className="mt-2 font-sans text-[11px] text-msk-ink/45">
-                Copiez ces identifiants maintenant — le MDP n’est pas stocké en
-                clair. Retrouvez « Identifiants de connexion » sur la fiche
-                utilisateur pour en régénérer un.
-              </p>
-            </div>
-          ) : null}
         </div>
       ) : null}
 

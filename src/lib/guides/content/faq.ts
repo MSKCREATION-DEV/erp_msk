@@ -73,11 +73,11 @@ export const faqGuides: GuideInput[] = [
     keywords: ["mot de passe", "reset", "invitation", "MUST_CHANGE"],
     prerequisites: [],
     relatedGuideIds: ["iam-inviter-utilisateur", "demarrage-accueil"],
-    status: "validated",
-    updatedAt: "2026-10-22",
+    status: "to_validate",
+    updatedAt: "2026-10-26",
     difficulty: "debutant",
     objective:
-      "Savoir quel parcours utiliser selon votre statut compte, sans demander un reset Auth hors UI.",
+      "Savoir quel parcours utiliser selon votre statut compte, sans contourner Auth.",
     steps: [
       {
         title: "Premier accès après invitation",
@@ -88,13 +88,13 @@ export const faqGuides: GuideInput[] = [
       {
         title: "Compte déjà actif — oubli",
         instruction:
-          "Utilisez le parcours de demande de reset prévu (hors self-service forcé). Raccourci Accueil « Aide mot de passe » → `/demande-reset` si disponible.",
+          "Login → « Réinitialiser mon mot de passe » (`/demande-reset`) → saisissez votre e-mail. Vous recevez un lien sécurisé pour choisir un nouveau mot de passe.",
         href: "/demande-reset",
       },
       {
-        title: "Admin — reset pour un tiers",
+        title: "Admin — aider un collaborateur",
         instruction:
-          "Sur la fiche utilisateur → Sécurité → Reset MDP (permission `users.reset_password`). Ne pas réécrire le MDP hors ce parcours pour un compte ACTIVE.",
+          "Fiche utilisateur → carte « Accès et mot de passe » : envoyer un lien de réinitialisation ou un mot de passe temporaire par e-mail (permission `users.reset_password`). Aucun MDP n’est affiché dans l’ERP.",
         caution: "Règle sécurité absolue Auth — jamais via seed après activation.",
       },
     ],

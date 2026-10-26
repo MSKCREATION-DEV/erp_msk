@@ -286,6 +286,94 @@ export function inviteEmailText(params: {
   ].join("\n");
 }
 
+export function passwordRecoveryLinkHtml(params: {
+  firstName: string;
+  resetUrl: string;
+}) {
+  return emailShell({
+    preheader: "Réinitialisez votre mot de passe ERP MSK",
+    title: `Bonjour ${params.firstName}`,
+    lead: "Une réinitialisation de mot de passe a été demandée pour votre compte ERP.",
+    bodyHtml: `
+      <p style="margin:0;font-size:15px;line-height:1.6;color:${MUTED};text-align:left;">
+        Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe.
+        Ce lien est à usage unique et expire rapidement. Si vous n’êtes pas à
+        l’origine de cette demande, ignorez cet e-mail.
+      </p>
+    `,
+    ctaLabel: "Choisir un nouveau mot de passe",
+    ctaHref: params.resetUrl,
+    align: "center",
+    footerNote: "Ne transférez pas cet e-mail. Lien personnel et temporaire.",
+  });
+}
+
+export function passwordRecoveryLinkText(params: {
+  firstName: string;
+  resetUrl: string;
+}) {
+  return [
+    `Bonjour ${params.firstName},`,
+    ``,
+    `Réinitialisez votre mot de passe ERP ${brand.name} :`,
+    params.resetUrl,
+    ``,
+    `Lien à usage unique. Si vous n’êtes pas à l’origine de cette demande, ignorez cet e-mail.`,
+    ``,
+    `${company.legalForm} — ${company.email}`,
+  ].join("\n");
+}
+
+export function tempPasswordEmailHtml(params: {
+  firstName: string;
+  email: string;
+  tempPassword: string;
+}) {
+  const loginUrl = `${ctaBaseUrl()}/login`;
+  const bodyHtml = detailCard(`
+    <p style="margin:0 0 14px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:${BLUE};font-weight:700;">Connexion temporaire</p>
+    <p style="margin:0 0 14px;font-size:14px;color:${INK};line-height:1.5;text-align:left;">
+      <span style="display:block;font-size:11px;color:${MUTED};margin-bottom:4px;">E-mail</span>
+      <span style="font-family:ui-monospace,Consolas,monospace;font-size:13px;">${escapeHtml(params.email)}</span>
+    </p>
+    <p style="margin:0;font-size:14px;color:${INK};line-height:1.5;text-align:left;">
+      <span style="display:block;font-size:11px;color:${MUTED};margin-bottom:4px;">Mot de passe temporaire</span>
+      <code style="display:inline-block;background:${WHITE};border:1px solid ${HAIRLINE};padding:8px 12px;border-radius:10px;font-size:14px;letter-spacing:0.04em;font-family:ui-monospace,Consolas,monospace;color:${INK};">${escapeHtml(params.tempPassword)}</code>
+    </p>
+  `);
+
+  return emailShell({
+    preheader: "Mot de passe temporaire ERP MSK",
+    title: `Bonjour ${params.firstName}`,
+    lead: "Un mot de passe temporaire a été généré. Connectez-vous puis choisissez immédiatement votre mot de passe définitif.",
+    bodyHtml,
+    ctaLabel: "Se connecter",
+    ctaHref: loginUrl,
+    align: "center",
+    footerNote:
+      "Ne partagez jamais ce mot de passe. Changez-le dès la première connexion.",
+  });
+}
+
+export function tempPasswordEmailText(params: {
+  firstName: string;
+  email: string;
+  tempPassword: string;
+}) {
+  return [
+    `Bonjour ${params.firstName},`,
+    ``,
+    `Mot de passe temporaire ERP ${brand.name} :`,
+    `E-mail : ${params.email}`,
+    `Mot de passe temporaire : ${params.tempPassword}`,
+    ``,
+    `Connectez-vous puis changez immédiatement votre mot de passe :`,
+    `${ctaBaseUrl()}/login`,
+    ``,
+    `${company.legalForm} — ${company.email}`,
+  ].join("\n");
+}
+
 export function resetRequestNotifyHtml(params: {
   subjectName: string;
   subjectEmail: string;

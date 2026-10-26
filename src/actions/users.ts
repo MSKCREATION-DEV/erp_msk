@@ -9,6 +9,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { writeAudit } from "@/lib/audit";
 import { sendEmail } from "@/lib/email/resend";
 import { inviteEmailHtml, inviteEmailText } from "@/lib/email/templates";
+import { hasPermission } from "@/lib/rbac/resolve";
 import type { ActionResult } from "@/actions/auth";
 
 const inviteSchema = z.object({
@@ -159,9 +160,7 @@ export async function inviteUserAction(
     ok: true,
     message: emailSent
       ? `Invitation envoyée à ${email}.`
-      : `Compte créé. E-mail non délivré (Resend / domaine) — utilisez les identifiants ci-dessous.`,
-    login: email,
-    tempPassword,
+      : `Compte créé, mais l’e-mail n’a pas pu être délivré. Rouvrez la fiche et utilisez « Accès et mot de passe » pour renvoyer un lien ou un temporaire.`,
   };
 }
 
@@ -313,7 +312,6 @@ export async function setUserStatusAction(
   _prev: ActionResult | null,
   formData: FormData,
 ): Promise<ActionResult> {
-  const actor = await requireUser({ permission: "users.suspend" });
   const userId = String(formData.get("userId") ?? "");
   const statusRaw = String(formData.get("status") ?? "");
   const allowed = [
@@ -329,6 +327,18 @@ export async function setUserStatusAction(
     return { ok: false, error: "Statut invalide" };
   }
   const status = statusRaw as (typeof allowed)[number];
+
+  /** Suspendre / réactiver : users.suspend. Archiver : users.archive (fallback suspend). */
+  const actor = await requireUser({ permission: "users.suspend" });
+  if (status === UserStatus.ARCHIVED) {
+    const canArchive =
+      actor.isSuperAdmin ||
+      hasPermission(actor, "users.archive") ||
+      hasPermission(actor, "users.suspend");
+    if (!canArchive) {
+      return { ok: false, error: "Droit insuffisant pour archiver" };
+    }
+  }
 
   const target = await prisma.user.findUnique({ where: { id: userId } });
   if (!target) return { ok: false, error: "Introuvable" };

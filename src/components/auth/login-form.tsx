@@ -50,11 +50,12 @@ export function LoginForm() {
       </Button>
       <p className="text-center text-sm text-msk-ink/55">
         Mot de passe oublié ?{" "}
-        <Link prefetch={false}
+        <Link
+          prefetch={false}
           href="/demande-reset"
           className="cursor-pointer font-medium text-msk-blue hover:underline"
         >
-          Demander une réinitialisation
+          Réinitialiser mon mot de passe
         </Link>
       </p>
     </form>

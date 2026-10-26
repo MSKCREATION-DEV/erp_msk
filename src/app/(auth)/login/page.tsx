@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LoginForm } from "@/components/auth/login-form";
 
 export const metadata: Metadata = {
@@ -12,6 +13,7 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const banned = params.error === "compte_indisponible";
+  const badLink = params.error === "lien_invalide";
 
   return (
     <div className="rounded-2xl border border-msk-ink/8 bg-white/90 p-8 shadow-[0_20px_60px_-30px_rgba(13,19,48,0.35)] backdrop-blur">
@@ -24,6 +26,19 @@ export default async function LoginPage({
       {banned ? (
         <p className="mt-4 rounded-lg border border-msk-coral/30 bg-msk-coral/5 px-3 py-2 text-sm text-msk-coral">
           Compte suspendu ou archivé. Contactez un administrateur.
+        </p>
+      ) : null}
+      {badLink ? (
+        <p className="mt-4 rounded-lg border border-msk-coral/30 bg-msk-coral/5 px-3 py-2 text-sm text-msk-coral">
+          Lien de réinitialisation invalide ou expiré.{" "}
+          <Link
+            prefetch={false}
+            href="/demande-reset"
+            className="font-medium underline"
+          >
+            Demander un nouveau lien
+          </Link>
+          .
         </p>
       ) : null}
       <div className="mt-8">

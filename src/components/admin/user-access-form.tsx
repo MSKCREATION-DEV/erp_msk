@@ -13,7 +13,7 @@ import {
   syncOverridesAction,
   updateUserAccessAction,
 } from "@/actions/users";
-import { adminResetPasswordAction, type ActionResult } from "@/actions/auth";
+import type { ActionResult } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -95,10 +95,6 @@ export function UserAccessForm({
     ActionResult | null,
     FormData
   >(setUserStatusAction, null);
-  const [resetState, resetAction, resetPending] = useActionState<
-    ActionResult | null,
-    FormData
-  >(adminResetPasswordAction, null);
   const [ovState, ovAction, ovPending] = useActionState<
     ActionResult | null,
     FormData
@@ -229,15 +225,15 @@ export function UserAccessForm({
           </ActionCard>
         ) : null}
 
-        {(canSuspend && !isSuperAdminTarget) || canReset ? (
+        {canSuspend && !isSuperAdminTarget ? (
           <ActionCard
             icon={KeyRound}
-            title="Sécurité compte"
-            subtitle="Statut · reset MDP"
+            title="Cycle de vie"
+            subtitle="Actif · suspendu · archivé"
             onClick={() => setDrawer("security")}
           >
             <p className="mt-3 text-xs text-msk-ink/45">
-              Suspendre, archiver ou réinitialiser le mot de passe.
+              Suspendre, réactiver ou archiver le compte (hors mot de passe).
             </p>
           </ActionCard>
         ) : null}
@@ -372,10 +368,10 @@ export function UserAccessForm({
       <SideDrawer
         open={drawer === "security"}
         onOpenChange={(open) => !open && setDrawer(null)}
-        title="Sécurité du compte"
-        description="Statut et réinitialisation du mot de passe."
+        title="Cycle de vie du compte"
+        description="Suspendre, réactiver ou archiver — sans toucher au mot de passe."
       >
-        <div className="space-y-6">
+        <div className="space-y-4">
           {!isSuperAdminTarget && canSuspend ? (
             <section>
               <h3 className="mb-3 text-sm font-semibold text-msk-ink">Statut</h3>
@@ -419,51 +415,13 @@ export function UserAccessForm({
                   {statusState.error}
                 </p>
               ) : null}
-            </section>
-          ) : null}
-
-          {canReset ? (
-            <section className="border-t border-msk-ink/6 pt-4">
-              <h3 className="mb-3 text-sm font-semibold text-msk-ink">
-                Reset mot de passe
-              </h3>
-              <p className="mb-3 text-xs text-msk-ink/50">
-                Préférez le panneau « Identifiants de connexion » sur la fiche
-                pour afficher et copier le MDP. Ici : reset rapide.
-              </p>
-              <form action={resetAction} className="space-y-3">
-                <input type="hidden" name="userId" value={userId} />
-                <div>
-                  <Label htmlFor="tempPassword">
-                    MDP temporaire (optionnel)
-                  </Label>
-                  <Input
-                    id="tempPassword"
-                    name="tempPassword"
-                    autoComplete="off"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  variant="secondary"
-                  disabled={resetPending}
-                >
-                  Réinitialiser
-                </Button>
-                {resetState?.tempPassword ? (
-                  <div className="rounded-lg border border-msk-blue/20 bg-msk-blue/5 px-3 py-2 font-mono text-xs text-msk-ink">
-                    <p>Login · {resetState.login}</p>
-                    <p className="mt-1">MDP · {resetState.tempPassword}</p>
-                  </div>
-                ) : resetState?.message ? (
-                  <p className="rounded-lg bg-msk-blue/5 px-3 py-2 text-sm text-msk-ink">
-                    {resetState.message}
-                  </p>
-                ) : null}
-                {resetState?.error ? (
-                  <p className="text-sm text-msk-coral">{resetState.error}</p>
-                ) : null}
-              </form>
+              {canReset ? (
+                <p className="mt-4 text-xs text-msk-ink/50">
+                  Pour le mot de passe : utilisez la carte « Accès et mot de
+                  passe » sur cette fiche (lien ou temporaire par e-mail
+                  uniquement).
+                </p>
+              ) : null}
             </section>
           ) : null}
         </div>

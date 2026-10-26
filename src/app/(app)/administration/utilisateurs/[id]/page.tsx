@@ -18,7 +18,7 @@ import {
 import { AccessCompositionCard } from "@/components/admin/access-composition-card";
 import { EffectiveAccessCard } from "@/components/admin/effective-access-card";
 import { UserAccessForm } from "@/components/admin/user-access-form";
-import { UserCredentialsCard } from "@/components/admin/user-credentials-card";
+import { UserSecurityCard } from "@/components/admin/user-security-card";
 import { UserProfileCard } from "@/components/admin/user-profile-card";
 
 export const metadata: Metadata = {
@@ -145,8 +145,9 @@ export default async function UserDetailPage({
       />
 
       {hasPermission(actor, "users.reset_password") &&
-      target.status !== "ARCHIVED" ? (
-        <UserCredentialsCard
+      target.status !== "ARCHIVED" &&
+      target.status !== "SUSPENDED" ? (
+        <UserSecurityCard
           userId={target.id}
           email={target.email}
           firstName={target.firstName}

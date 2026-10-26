@@ -5,13 +5,17 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { UserStatus } from "@prisma/client";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { prisma } from "@/lib/prisma";
 import { requireUser, touchLastLogin } from "@/lib/auth/session";
 import { writeAudit } from "@/lib/audit";
 import { sendEmail } from "@/lib/email/resend";
 import { resetRequestNotifyHtml } from "@/lib/email/templates";
 import { hasPermission, resolveUserPermissions } from "@/lib/rbac/resolve";
+import {
+  isPasswordResetEligible,
+  sendRecoveryLinkEmail,
+  setTempPasswordAndEmail,
+} from "@/lib/auth/password-recovery";
 
 const loginSchema = z.object({
   email: z.string().email("E-mail invalide"),
@@ -22,8 +26,9 @@ export type ActionResult = {
   ok: boolean;
   error?: string;
   message?: string;
-  /** Affichage admin quand Resend ne délivre pas encore. */
+  /** @deprecated Ne plus exposer de secret au client. */
   login?: string;
+  /** @deprecated Ne plus exposer de secret au client. */
   tempPassword?: string;
 };
 
@@ -140,6 +145,15 @@ export async function changePasswordAction(
     },
   });
 
+  await prisma.passwordResetRequest.updateMany({
+    where: { userId: session.id, status: "PENDING" },
+    data: {
+      status: "DONE",
+      resolvedAt: new Date(),
+      resolvedById: session.id,
+    },
+  });
+
   await writeAudit({
     actorId: session.id,
     action: "auth.password_changed",
@@ -155,6 +169,13 @@ const resetRequestSchema = z.object({
   note: z.string().max(500).optional(),
 });
 
+const GENERIC_RESET_MESSAGE =
+  "Si un compte correspond à cet e-mail, un message de réinitialisation a été envoyé.";
+
+/**
+ * Mot de passe oublié (public) — envoie un lien recovery au collaborateur
+ * + notifie les admins. Réponse neutre anti-énumération.
+ */
 export async function requestPasswordResetAction(
   _prev: ActionResult | null,
   formData: FormData,
@@ -169,15 +190,18 @@ export async function requestPasswordResetAction(
 
   const email = parsed.data.email.toLowerCase().trim();
   const user = await prisma.user.findUnique({ where: { email } });
+  const generic = { ok: true as const, message: GENERIC_RESET_MESSAGE };
 
-  // Réponse générique anti-énumération
-  const generic = {
-    ok: true,
-    message:
-      "Si ce compte existe, les administrateurs autorisés ont été notifiés.",
-  };
+  if (!user || !isPasswordResetEligible(user.status)) {
+    return generic;
+  }
 
-  if (!user || user.status === UserStatus.ARCHIVED) {
+  // Anti-abus simple : max 3 demandes / heure / compte
+  const since = new Date(Date.now() - 60 * 60 * 1000);
+  const recent = await prisma.passwordResetRequest.count({
+    where: { userId: user.id, createdAt: { gte: since } },
+  });
+  if (recent >= 3) {
     return generic;
   }
 
@@ -197,121 +221,223 @@ export async function requestPasswordResetAction(
     metadata: { email },
   });
 
-  const holders = await prisma.user.findMany({
-    where: {
-      status: UserStatus.ACTIVE,
-      OR: [{ isSuperAdmin: true }, { userPacks: { some: {} } }],
-    },
-    select: { id: true, email: true },
+  const linkSent = await sendRecoveryLinkEmail({
+    email: user.email,
+    firstName: user.firstName,
   });
 
-  const notifyEmails: string[] = [];
-  for (const h of holders) {
-    const resolved = await resolveUserPermissions(h.id);
-    if (resolved && hasPermission(resolved, "users.reset_password")) {
-      notifyEmails.push(h.email);
+  let channel: "recovery_link" | "temp_password_fallback" | "none" =
+    linkSent.ok ? "recovery_link" : "none";
+
+  // Filet : si le lien échoue, MDP temporaire par e-mail + force change
+  if (!linkSent.ok) {
+    const tempSent = await setTempPasswordAndEmail({
+      userId: user.id,
+      email: user.email,
+      firstName: user.firstName,
+    });
+    if (tempSent.ok) {
+      channel = "temp_password_fallback";
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          mustChangePassword: true,
+          status: user.isSuperAdmin
+            ? UserStatus.ACTIVE
+            : UserStatus.MUST_CHANGE_PASSWORD,
+        },
+      });
     }
   }
 
-  if (notifyEmails.length > 0) {
-    try {
+  // Notif admins (file de suivi) — best-effort
+  try {
+    const holders = await prisma.user.findMany({
+      where: {
+        status: UserStatus.ACTIVE,
+        OR: [{ isSuperAdmin: true }, { userPacks: { some: {} } }],
+      },
+      select: { id: true, email: true },
+    });
+    const notifyEmails: string[] = [];
+    for (const h of holders) {
+      const resolved = await resolveUserPermissions(h.id);
+      if (resolved && hasPermission(resolved, "users.reset_password")) {
+        notifyEmails.push(h.email);
+      }
+    }
+    if (notifyEmails.length > 0) {
+      const channelHint =
+        channel === "recovery_link"
+          ? "un lien a été envoyé au collaborateur"
+          : channel === "temp_password_fallback"
+            ? "un mot de passe temporaire a été envoyé (filet)"
+            : "l’envoi automatique a échoué — action admin requise";
       await sendEmail({
         to: notifyEmails,
         subject: `MSK CREATION — Demande reset MDP — ${user.firstName} ${user.lastName}`,
         html: resetRequestNotifyHtml({
           subjectName: `${user.firstName} ${user.lastName}`,
           subjectEmail: user.email,
-          requesterHint: parsed.data.note || "Demande depuis le formulaire public.",
+          requesterHint:
+            parsed.data.note ||
+            `Demande depuis « Mot de passe oublié » — ${channelHint}.`,
         }),
       });
-    } catch {
-      // Ne pas exposer l’échec e-mail à l’utilisateur public
     }
+  } catch {
+    /* ignore */
   }
 
   return generic;
 }
 
-const adminResetSchema = z.object({
+const adminUserIdSchema = z.object({
   userId: z.string().uuid(),
-  tempPassword: z
-    .string()
-    .min(10, "Mot de passe temporaire trop court")
-    .optional(),
 });
 
-export async function adminResetPasswordAction(
-  _prev: ActionResult | null,
-  formData: FormData,
-): Promise<ActionResult> {
+async function loadResetTarget(userId: string) {
   const actor = await requireUser({ permission: "users.reset_password" });
-  const parsed = adminResetSchema.safeParse({
-    userId: formData.get("userId"),
-    tempPassword: formData.get("tempPassword") || undefined,
-  });
-  if (!parsed.success) {
-    return { ok: false, error: parsed.error.issues[0]?.message ?? "Données invalides" };
+  const target = await prisma.user.findUnique({ where: { id: userId } });
+  if (!target) {
+    return { ok: false as const, error: "Utilisateur introuvable" };
   }
-
-  const target = await prisma.user.findUnique({
-    where: { id: parsed.data.userId },
-  });
-  if (!target) return { ok: false, error: "Utilisateur introuvable" };
   if (target.isSuperAdmin && !actor.isSuperAdmin) {
     return {
-      ok: false,
+      ok: false as const,
       error: "Seul le Super Admin peut réinitialiser ce compte",
     };
   }
   if (target.status === UserStatus.ARCHIVED) {
-    return { ok: false, error: "Compte archivé — réactivez-le avant un reset MDP" };
+    return {
+      ok: false as const,
+      error: "Compte archivé — réactivez-le avant une réinitialisation",
+    };
   }
+  if (target.status === UserStatus.SUSPENDED) {
+    return {
+      ok: false as const,
+      error: "Compte suspendu — réactivez-le avant une réinitialisation",
+    };
+  }
+  return { ok: true as const, actor, target };
+}
 
-  const temp =
-    parsed.data.tempPassword ??
-    `Tmp-${Math.random().toString(36).slice(2, 10)}!A1`;
-
-  const admin = createAdminClient();
-  const { error } = await admin.auth.admin.updateUserById(target.id, {
-    password: temp,
-  });
-  if (error) return { ok: false, error: error.message };
-
-  await prisma.user.update({
-    where: { id: target.id },
-    data: {
-      mustChangePassword: true,
-      status:
-        target.status === UserStatus.SUSPENDED
-          ? UserStatus.SUSPENDED
-          : target.isSuperAdmin
-            ? UserStatus.ACTIVE // Super Admin : MDP changé mais reste ACTIVE + mustChange
-            : UserStatus.MUST_CHANGE_PASSWORD,
-    },
-  });
-
+async function markResetRequestsDone(userId: string, actorId: string) {
   await prisma.passwordResetRequest.updateMany({
-    where: { userId: target.id, status: "PENDING" },
+    where: { userId, status: "PENDING" },
     data: {
       status: "DONE",
       resolvedAt: new Date(),
-      resolvedById: actor.id,
+      resolvedById: actorId,
     },
   });
+}
 
+/** Admin : envoie un lien de réinitialisation (jamais de MDP à l’écran). */
+export async function adminSendPasswordResetLinkAction(
+  _prev: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const parsed = adminUserIdSchema.safeParse({
+    userId: formData.get("userId"),
+  });
+  if (!parsed.success) {
+    return { ok: false, error: "Utilisateur invalide" };
+  }
+
+  const loaded = await loadResetTarget(parsed.data.userId);
+  if (!loaded.ok) return { ok: false, error: loaded.error };
+  const { actor, target } = loaded;
+
+  const sent = await sendRecoveryLinkEmail({
+    email: target.email,
+    firstName: target.firstName,
+  });
+  if (!sent.ok) {
+    return { ok: false, error: sent.error };
+  }
+
+  await markResetRequestsDone(target.id, actor.id);
   await writeAudit({
     actorId: actor.id,
     action: "users.reset_password",
     entityType: "user",
     entityId: target.id,
+    metadata: { channel: "recovery_link" },
   });
 
   revalidatePath("/administration/utilisateurs");
   revalidatePath(`/administration/utilisateurs/${target.id}`);
   return {
     ok: true,
-    message: `Mot de passe temporaire généré — communiquez-le de façon sécurisée.`,
-    login: target.email,
-    tempPassword: temp,
+    message: `Lien de réinitialisation envoyé à ${target.email}.`,
   };
+}
+
+/** Admin : génère un MDP temporaire et l’envoie par e-mail uniquement. */
+export async function adminSendTempPasswordEmailAction(
+  _prev: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const parsed = adminUserIdSchema.safeParse({
+    userId: formData.get("userId"),
+  });
+  if (!parsed.success) {
+    return { ok: false, error: "Utilisateur invalide" };
+  }
+
+  const loaded = await loadResetTarget(parsed.data.userId);
+  if (!loaded.ok) return { ok: false, error: loaded.error };
+  const { actor, target } = loaded;
+
+  const sent = await setTempPasswordAndEmail({
+    userId: target.id,
+    email: target.email,
+    firstName: target.firstName,
+  });
+  if (!sent.ok) {
+    return { ok: false, error: sent.error };
+  }
+
+  await prisma.user.update({
+    where: { id: target.id },
+    data: {
+      mustChangePassword: true,
+      status: target.isSuperAdmin
+        ? UserStatus.ACTIVE
+        : UserStatus.MUST_CHANGE_PASSWORD,
+    },
+  });
+
+  await markResetRequestsDone(target.id, actor.id);
+  await writeAudit({
+    actorId: actor.id,
+    action: "users.reset_password",
+    entityType: "user",
+    entityId: target.id,
+    metadata: { channel: "temp_password_email" },
+  });
+
+  revalidatePath("/administration/utilisateurs");
+  revalidatePath(`/administration/utilisateurs/${target.id}`);
+  return {
+    ok: true,
+    message: `Mot de passe temporaire envoyé à ${target.email}. Le collaborateur devra le changer à la connexion.`,
+  };
+}
+
+/**
+ * @deprecated Préférer adminSendPasswordResetLinkAction /
+ * adminSendTempPasswordEmailAction. Ne renvoie plus de secret.
+ */
+export async function adminResetPasswordAction(
+  prev: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const mode = String(formData.get("mode") ?? "link");
+  if (mode === "temp_email") {
+    return adminSendTempPasswordEmailAction(prev, formData);
+  }
+  return adminSendPasswordResetLinkAction(prev, formData);
 }

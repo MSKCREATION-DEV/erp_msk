@@ -17,27 +17,46 @@ export function ResetRequestForm() {
     <form action={action} className="space-y-5">
       <div>
         <Label htmlFor="email">Votre e-mail professionnel</Label>
-        <Input id="email" name="email" type="email" required autoComplete="email" />
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          required
+          autoComplete="email"
+          placeholder="prenom@mskcreation.net"
+        />
       </div>
       <div>
         <Label htmlFor="note">Message (optionnel)</Label>
-        <Input id="note" name="note" type="text" placeholder="Contexte rapide…" />
+        <Input
+          id="note"
+          name="note"
+          type="text"
+          placeholder="Contexte pour l’équipe admin…"
+        />
       </div>
       {state?.message ? (
-        <p className="rounded-lg border border-msk-blue/20 bg-msk-blue/5 px-3 py-2 text-sm text-msk-ink" role="status">
+        <p
+          className="rounded-lg border border-msk-blue/20 bg-msk-blue/5 px-3 py-2 text-sm text-msk-ink"
+          role="status"
+        >
           {state.message}
         </p>
       ) : null}
       {state?.error ? (
-        <p className="rounded-lg border border-msk-coral/30 bg-msk-coral/5 px-3 py-2 text-sm text-msk-coral" role="alert">
+        <p
+          className="rounded-lg border border-msk-coral/30 bg-msk-coral/5 px-3 py-2 text-sm text-msk-coral"
+          role="alert"
+        >
           {state.error}
         </p>
       ) : null}
       <Button type="submit" className="w-full" disabled={pending}>
-        {pending ? "Envoi…" : "Notifier les administrateurs"}
+        {pending ? "Envoi…" : "Envoyer le lien de réinitialisation"}
       </Button>
       <p className="text-center text-sm">
-        <Link prefetch={false}
+        <Link
+          prefetch={false}
           href="/login"
           className="cursor-pointer font-medium text-msk-blue hover:underline"
         >
