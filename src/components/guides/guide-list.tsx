@@ -21,7 +21,7 @@ export function GuideList({
   }
 
   return (
-    <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <ul className="grid min-w-0 gap-4 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3">
       {guides.map((g) => {
         const mod = getGuideModule(g.moduleId);
         const vis = moduleVisual(g.moduleId);

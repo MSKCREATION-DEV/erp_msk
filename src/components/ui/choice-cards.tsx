@@ -34,9 +34,11 @@ export function ChoiceCards<T extends string>({
     <div
       className={cn(
         "grid gap-2",
-        columns === 2 && "sm:grid-cols-2",
-        columns === 3 && "sm:grid-cols-2 lg:grid-cols-3",
-        columns === 4 && "sm:grid-cols-2 lg:grid-cols-4",
+        columns === 2 && "grid-cols-1 @min-[28rem]:grid-cols-2",
+        columns === 3 &&
+          "grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3",
+        columns === 4 &&
+          "grid-cols-1 @min-[28rem]:grid-cols-2 @min-[64rem]:grid-cols-4",
         className,
       )}
       role="radiogroup"

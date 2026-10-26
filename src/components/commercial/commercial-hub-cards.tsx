@@ -22,6 +22,7 @@ import {
   METRIC_NAV_TONE_CHART,
 } from "@/components/ui/metric-nav-card";
 import { HubMiniRadial } from "@/components/commercial/hub-mini-radial";
+import { gridCards3, gridCards4 } from "@/lib/ui/layout-grids";
 import { cn } from "@/lib/utils";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -176,10 +177,7 @@ export function CommercialHubGrid({
             </div>
             <div
               className={cn(
-                "grid gap-3",
-                section.id === "vente"
-                  ? "sm:grid-cols-2 xl:grid-cols-4"
-                  : "sm:grid-cols-2 xl:grid-cols-3",
+                section.id === "vente" ? gridCards4 : gridCards3,
               )}
             >
               {items.map((m) => (

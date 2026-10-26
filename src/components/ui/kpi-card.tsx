@@ -1,5 +1,6 @@
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { Surface } from "@/components/ui/surface";
+import { gridKpi4 } from "@/lib/ui/layout-grids";
 import { cn } from "@/lib/utils";
 
 export type KpiCardProps = {
@@ -15,9 +16,9 @@ export type KpiCardProps = {
 
 export function KpiCard({ label, value, hint, trend, className }: KpiCardProps) {
   return (
-    <Surface className={cn("p-5", className)}>
+    <Surface className={cn("min-w-0 overflow-hidden p-4 sm:p-5", className)}>
       <p className="text-[13px] font-medium text-msk-ink/50">{label}</p>
-      <p className="mt-2 text-[1.65rem] font-semibold leading-none tracking-tight text-msk-ink">
+      <p className="mt-2 break-words text-[1.65rem] font-semibold leading-none tracking-tight text-msk-ink">
         {value}
       </p>
       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -51,7 +52,7 @@ export function KpiGrid({
   className?: string;
 }) {
   return (
-    <div className={cn("grid gap-3 sm:grid-cols-2 xl:grid-cols-4", className)}>
+    <div className={cn(gridKpi4, className)}>
       {items.map((item) => (
         <KpiCard key={item.label} {...item} />
       ))}

@@ -36,6 +36,7 @@ import { StageDonutChart } from "@/components/crm/stage-donut-chart";
 import { StageBarChart } from "@/components/crm/stage-bar-chart";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { GoalsProgressStrip } from "@/components/crm/goals-progress-strip";
+import { gridKpi3, gridKpi5 } from "@/lib/ui/layout-grids";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
 import { ActionLink } from "@/components/ui/action-link";
@@ -205,13 +206,7 @@ export default async function CrmRapportPage({
     canGlobal && scopeMode === "user" && focusOwnerId,
   );
   const kpiGrid = (
-    <div
-      className={
-        showStocks
-          ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-5"
-          : "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
-      }
-    >
+    <div className={showStocks ? gridKpi5 : gridKpi3}>
       <Link
         prefetch={false}
         href={buildNouveauxProspectsHref({

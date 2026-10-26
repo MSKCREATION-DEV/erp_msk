@@ -174,7 +174,7 @@ export default async function GuidesHomePage({
         />
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[64rem]:grid-cols-4">
         {[
           {
             href: "/guides/modules",

@@ -64,6 +64,7 @@ import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
 import { CrmScopeContext } from "@/components/crm/crm-scope-context";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
+import { gridKpi3, gridKpi4 } from "@/lib/ui/layout-grids";
 
 export const metadata: Metadata = { title: "Tableau de bord" };
 
@@ -347,7 +348,7 @@ export default async function CrmDashboardPage({
         >
           Activité · {period.label}
         </h2>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className={gridKpi3}>
           <MetricNavCard
             href={eventHref("/crm/relances", { focus: "faites" })}
             icon={Bell}
@@ -432,8 +433,8 @@ export default async function CrmDashboardPage({
           <div
             className={
               showDevis
-                ? "grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
-                : "grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+                ? gridKpi4
+                : gridKpi3
             }
           >
             {showDevis ? (

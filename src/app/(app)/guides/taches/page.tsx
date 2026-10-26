@@ -26,7 +26,7 @@ export default async function GuidesTasksPage() {
           { label: "Tâches" },
         ]}
       />
-      <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <ul className="grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3">
         {GUIDE_TASKS.map((t) => {
           const count = catalog.filter((g) => g.taskIds.includes(t.id)).length;
           return (

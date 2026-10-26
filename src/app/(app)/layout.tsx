@@ -31,7 +31,11 @@ export default function AppLayout({
         </div>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <Topbar />
-          <main className="w-full min-w-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 lg:px-6 xl:px-8">
+          {/*
+            @container : les grilles KPI / cards (`src/lib/ui/layout-grids`)
+            réagissent à la largeur réelle du contenu (après sidebar), pas au viewport.
+          */}
+          <main className="@container w-full min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-5 sm:px-6 lg:px-6 xl:px-8">
             {children}
           </main>
         </div>

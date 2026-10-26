@@ -25,8 +25,8 @@ export function KpiRadial({
   const offset = c - (pct / 100) * c;
 
   return (
-    <Surface className="flex items-center gap-3 p-4">
-      <div className="relative h-22 w-22 shrink-0">
+    <Surface className="flex min-w-0 items-center gap-3 overflow-hidden p-3.5 sm:p-4">
+      <div className="relative h-18 w-18 shrink-0 sm:h-22 sm:w-22">
         <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
           <circle
             cx="50"
@@ -56,15 +56,17 @@ export function KpiRadial({
           </span>
         </div>
       </div>
-      <div className="min-w-0">
-        <p className="text-sm font-medium text-msk-ink">{label}</p>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium leading-snug text-msk-ink">{label}</p>
         {target != null ? (
-          <p className="text-xs text-msk-ink/45">
+          <p className="mt-0.5 text-xs leading-snug text-msk-ink/45">
             Objectif {target} · {pct}%
           </p>
         ) : null}
         {hint ? (
-          <p className={cn("mt-0.5 text-xs text-msk-ink/45")}>{hint}</p>
+          <p className={cn("mt-0.5 text-xs leading-snug text-msk-ink/45")}>
+            {hint}
+          </p>
         ) : null}
       </div>
     </Surface>

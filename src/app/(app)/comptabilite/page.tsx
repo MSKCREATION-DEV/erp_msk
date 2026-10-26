@@ -191,7 +191,7 @@ export default async function ComptabiliteHubPage() {
         ]}
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[64rem]:grid-cols-4">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (

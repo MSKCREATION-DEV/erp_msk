@@ -37,6 +37,7 @@ import {
 } from "@/actions/ged";
 import { cn } from "@/lib/utils";
 import { childCountLabel, formatSize } from "@/lib/ged/format";
+import { gridGedTiles } from "@/lib/ui/layout-grids";
 import {
   dateBucket,
   folderAccent,
@@ -287,17 +288,19 @@ export function GedBrowser({
     });
   }
 
+  const navBusy = Boolean(pendingHref) || pending;
+
   return (
-    <div className="relative space-y-3">
-      {pending ? (
+    <div className="relative min-w-0 space-y-3">
+      {navBusy ? (
         <div
-          className="absolute inset-0 z-20 flex items-start justify-center rounded-xl bg-white/70 pt-24 backdrop-blur-[2px]"
+          className="absolute inset-0 z-20 flex items-start justify-center rounded-xl bg-[#F4F6F9]/75 pt-24 backdrop-blur-[2px]"
           aria-live="polite"
           aria-busy
         >
           <div className="flex items-center gap-2 rounded-full border border-msk-ink/10 bg-white px-4 py-2 text-sm text-msk-ink shadow-md">
             <Loader2 className="h-4 w-4 animate-spin text-msk-blue" />
-            Mise à jour…
+            {pendingHref ? "Ouverture du dossier…" : "Mise à jour…"}
           </div>
         </div>
       ) : null}
@@ -427,7 +430,7 @@ export function GedBrowser({
                     </div>
                   ) : null}
                   {prefs.view === "tiles" ? (
-                    <ul className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                    <ul className={gridGedTiles}>
                       {g.items.map((entry) =>
                         entry.kind === "folder" ? (
                           <FolderTile

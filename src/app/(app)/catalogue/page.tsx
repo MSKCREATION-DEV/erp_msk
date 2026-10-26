@@ -176,7 +176,7 @@ export default async function CataloguePage() {
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
             {PILLAR_LABELS[pillar]}
           </h2>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3">
             {rows.map((o) => (
               <Surface
                 key={o.id}

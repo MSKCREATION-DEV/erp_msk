@@ -28,6 +28,7 @@ import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { ProspectsFilterButton } from "@/components/crm/prospects-filter-modal";
 import { KpiRadial } from "@/components/crm/kpi-radial";
+import { gridKpi4 } from "@/lib/ui/layout-grids";
 import { ProspectsResults } from "./prospects-results";
 
 export const metadata: Metadata = { title: "Prospects" };
@@ -128,7 +129,7 @@ export default async function CrmProspectsPage({
             Mon portefeuille (suivis par moi) — un filtre « Suivi par »
             aligne la liste ; sans filtre, la liste reste partagée
           </p>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className={gridKpi4}>
             <KpiRadial
               label="Mes prospects actifs"
               value={ownKpis.prospects}
@@ -154,7 +155,7 @@ export default async function CrmProspectsPage({
         </div>
       ) : null}
 
-      <Surface className="overflow-hidden p-0">
+      <Surface className="min-w-0 overflow-hidden p-0">
         <div className="flex flex-wrap items-center gap-3 border-b border-msk-ink/6 px-4 py-3">
           <Suspense
             fallback={

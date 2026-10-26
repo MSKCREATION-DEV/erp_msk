@@ -46,6 +46,7 @@ import { KpiRadial } from "@/components/crm/kpi-radial";
 import { RelanceActions } from "@/components/crm/relance-actions";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
+import { gridKpi3, gridKpi5 } from "@/lib/ui/layout-grids";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Relances" };
@@ -420,7 +421,7 @@ export default async function CrmRelancesPage({
           />
         ) : null}
 
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className={gridKpi3}>
           <KpiRadial
             label="Relances faites"
             value={totalFaites}
@@ -635,7 +636,7 @@ export default async function CrmRelancesPage({
         />
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div className={gridKpi5}>
         <KpiRadial
           label="En retard"
           value={dueSummary.overdue}
