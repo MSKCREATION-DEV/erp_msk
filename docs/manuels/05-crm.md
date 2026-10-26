@@ -36,7 +36,7 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 | Menu | `/commercial` | Cartes modules |
 | Tableau de bord | `/crm` | Indicateurs (Ouverts / Intéressés / Relancés 3×+ / Relances à venir+retard / Sans devis) · Conversion Signé\|En cours · Répartition · Objectifs |
 | Prospects | `/crm/prospects` | Liste · badge Relancé N× · filtres `?stages=` · `?relancesMin=3` |
-| Relances | `/crm/relances` | Aujourd’hui / retard / semaine · badge N× |
+| Relances | `/crm/relances` | Recherche `?q=` (entreprise, contact, tél., e-mail, commercial, action) · vues aujourd’hui / retard / semaine · badge N× · vue faites |
 | Scripts | `/crm/scripts` | Copier messages |
 | Vue Équipe | `/crm/equipe` | Prospects + objectifs période (si `view_team` / lead — pas « own only ») |
 | Rapport | `/crm/rapport-semaine` | Par **semaine** (lundi–vendredi) · Direction : toute l’équipe ou un collaborateur |
@@ -85,6 +85,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
+| 2026-10-26 | Relances : recherche texte serveur (`?q=`) combinée aux vues échéance / owner / période |
 | 2026-10-24 | Fix Vue Équipe→Prospects : portefeuille (`view=stock`) au lieu de `event=nouveaux` ; hub own clarifie « suivis / visibles » ; buckets relances documentés/testés |
 | 2026-10-15 | Prospects : période CRM appliquée (Équipe→Prospects) ; stocks via `view=stock` |
 | 2026-10-15 | Filtres période/owner propagés aux listes (nouveaux, relances faites, clients gagnés, stocks) |

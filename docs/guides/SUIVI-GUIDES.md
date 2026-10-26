@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-25 (création prospect / anti-doublon live) |
+| Dernière mise à jour | 2026-10-26 (recherche Relances CRM) |
 
 ### Légende statuts documentaires
 
@@ -102,7 +102,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `iam-inviter-utilisateur` | Inviter un collaborateur | administration | `validated` | manuel 01 + routes admin |
 | `ged-comprendre-acces` | Comprendre son accès GED | ged | `validated` | manuel 02 + permissions |
 | `crm-creer-prospect` | Créer un prospect | commercial | `to_validate` | live doublons 3 car. + ack contact — revalider UI |
-| `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `validated` | manuel 05 |
+| `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `to_validate` | manuel 05 · recherche `?q=` |
 | `crm-transformer-client` | Transformer un prospect en client | commercial | `validated` | manuel 05 (Intéressé → Client) |
 | `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `to_validate` | dual total/suivis + owner URL own — à revalider UI |
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
@@ -200,6 +200,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - **Pourquoi** : terme jargon peu clair pour l’équipe terrain.
 - **Quoi** : « Sans devis (SLA) » → « Sans devis depuis 24 h » (TB, modal Filtrer, badge liste).
 - **Statut doc** : manuel 05 aligné.
+
+### 2026-10-26 — Recherche module Relances (`/crm/relances`)
+
+- **Pourquoi** : aucune recherche texte ; volume file difficile à scanner (entreprise / contact / tél. / commercial).
+- **Quoi** : `ListSearchForm` (`?q=`) + clauses Prisma (`relance-search.ts`) sur file ouverte et vue « faites » ; combinaison avec vues échéance / owner / période ; KPIs globaux hors `q`, chips & liste filtrés ; états vides + Effacer.
+- **Fichiers** : `src/lib/crm/relance-search.ts` (+ test), `crm/relances/page.tsx`, `relances-results.tsx`, `package.json` (`test:crm`), guide `crm-suivre-relancer`, `docs/manuels/05-crm.md`.
+- **Statut doc** : `crm-suivre-relancer` → `to_validate` (revalider parcours UI recherche).
 
 ### 2026-10-25 — Audit filtres Commercial (P0/P1)
 

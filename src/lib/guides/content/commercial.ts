@@ -209,14 +209,15 @@ export const commercialGuides: GuideInput[] = [
       "journal",
       "retard",
       "Relancé",
+      "recherche",
     ],
     prerequisites: [
       "Être le suivi du prospect (ou droit lead / réassignation).",
       "Permission d’activité CRM (`crm.activity.log` / édition own).",
     ],
     relatedGuideIds: ["crm-creer-prospect", "crm-transformer-client"],
-    status: "validated",
-    updatedAt: "2026-10-22",
+    status: "to_validate",
+    updatedAt: "2026-10-26",
     difficulty: "intermediaire",
     viewPermission: "crm.access",
     objective:
@@ -231,7 +232,7 @@ export const commercialGuides: GuideInput[] = [
         chromeTitle: "Relances",
         highlightNav: "Commercial",
         callouts: [
-          { n: 1, label: "Aujourd’hui / retard / semaine", zone: "toolbar" },
+          { n: 1, label: "Recherche + vues échéance", zone: "toolbar" },
           { n: 2, label: "Liste à traiter", zone: "table" },
         ],
       },
@@ -261,7 +262,7 @@ export const commercialGuides: GuideInput[] = [
       {
         title: "Planifier / traiter les relances",
         instruction:
-          "Consultez Relances (`/crm/relances`) : aujourd’hui, retard, semaine. Le badge Relancé N× compte les actions de suivi (pas les notes libres).",
+          "Consultez Relances (`/crm/relances`) : recherche (entreprise, contact, tél., e-mail, commercial, action) + vues aujourd’hui / retard / semaine. La recherche se combine avec les vues et le filtre collaborateur. Le badge Relancé N× compte les actions de suivi (pas les notes libres).",
         href: "/crm/relances",
         visualId: "relances-hero",
       },
