@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-26 (recherche Relances CRM) |
+| Dernière mise à jour | 2026-10-26 (Lot sécurité MDP + Vue Équipe / objectifs) |
 
 ### Légende statuts documentaires
 
@@ -200,6 +200,20 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - **Pourquoi** : terme jargon peu clair pour l’équipe terrain.
 - **Quoi** : « Sans devis (SLA) » → « Sans devis depuis 24 h » (TB, modal Filtrer, badge liste).
 - **Statut doc** : manuel 05 aligné.
+
+### 2026-10-26 — Vérif lots audit (hardening recovery)
+
+- **Pourquoi** : livrable trop rapide — trous sur callback recovery (`code` seul), pas de force `mustChangePassword` après lien, échec e-mail recovery silencieux, message login `lien_invalide` absent.
+- **Quoi** : e-mail custom via `token_hash` → `/auth/callback` + `verifyOtp` ; filet `/auth/recover` (hash) ; force `mustChangePassword` post-recovery ; fallback MDP temp si lien KO ; clôture `passwordResetRequest` au changement MDP ; libellé vide affectations avec `q`.
+- **Marinas** : toujours **aucune écriture** — gate humain inchangé.
+- **Statut doc** : FAQ MDP / recovery → `to_validate` (rejouer parcours e-mail réel en prod).
+
+### 2026-10-26 — Lots audit : sécurité MDP, Vue Équipe, objectifs, affectations, relances
+
+- **Pourquoi** : MDP affichés en clair ; oubli MDP = notif admin seule ; cartes collab suspendus trompeuses ; objectifs TB ≠ individuels ; affectations pauvres ; KPI « File ouverte » redondant.
+- **Quoi** : recovery e-mail self-service + admin lien/MDP temp sans UI secret ; cartes compactes suspendu/archivé ; somme objectifs collabs actifs sur TB ; tableaux affectations ; retrait KPI File ouverte ; script read-only Marinas (aucune écriture — gate humain).
+- **Marinas (lecture)** : org « Restaurant Marinas » Yaye en `DEVIS_ENVOYE` ; ComClient « Marinas » orphelin (`com.client.create` 2026-10-10, sans `sourceOpportunityId`) — correction données **en attente d’OK**.
+- **Statut doc** : FAQ MDP → `to_validate` ; `crm-suivre-relancer` déjà `to_validate`.
 
 ### 2026-10-26 — Recherche module Relances (`/crm/relances`)
 

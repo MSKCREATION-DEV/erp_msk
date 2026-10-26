@@ -1660,7 +1660,10 @@ export async function savePeriodGoalsAction(
     const requested = String(formData.get("targetUserId") ?? "").trim();
     if (requested) {
       const exists = await prisma.user.findFirst({
-        where: { id: requested, status: "ACTIVE" },
+        where: {
+          id: requested,
+          status: { in: ["ACTIVE", "MUST_CHANGE_PASSWORD"] },
+        },
         select: { id: true },
       });
       if (!exists) return { ok: false, error: "Collaborateur introuvable" };

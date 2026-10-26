@@ -46,7 +46,7 @@ export default async function ObjectifsAssignerEquipePage({
     <PageShell>
       <PageHeader
         title="Assignation globale"
-        description="Objectifs communs à toute l’équipe. Un objectif individuel reste prioritaire s’il existe."
+        description="Modèle commun d’équipe (fallback). Sur le tableau de bord, la synthèse affiche la somme des objectifs individuels des commerciaux actifs."
         backHref="/crm/objectifs"
         backLabel="Retour à la vue d’ensemble"
         breadcrumbs={[

@@ -75,12 +75,21 @@ export default async function ObjectifsCollabDetailPage({
   const focus = await prisma.user.findFirst({
     where: {
       id: userId,
-      status: { in: ["ACTIVE", "MUST_CHANGE_PASSWORD"] },
+      status: {
+        in: ["ACTIVE", "MUST_CHANGE_PASSWORD", "SUSPENDED", "ARCHIVED"],
+      },
     },
-    select: { id: true, firstName: true, lastName: true },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      status: true,
+    },
   });
   if (!focus) notFound();
 
+  const inactive =
+    focus.status === "SUSPENDED" || focus.status === "ARCHIVED";
   const goals = await resolveGoalsForPeriod(focus.id, period);
   const stats = await computePeriodStats(focus.id, period.from, period.to);
   const progress = buildGoalProgress(goals, stats);
@@ -97,7 +106,11 @@ export default async function ObjectifsCollabDetailPage({
     <PageShell>
       <PageHeader
         title={`${focus.firstName} ${focus.lastName}`}
-        description={`Objectifs · ${period.label}`}
+        description={
+          inactive
+            ? `Compte ${focus.status === "SUSPENDED" ? "suspendu" : "archivé"} · consultation historique · ${period.label}`
+            : `Objectifs · ${period.label}`
+        }
         backHref={listHref}
         backLabel="Retour à la vue d’ensemble"
         breadcrumbs={[
@@ -106,13 +119,21 @@ export default async function ObjectifsCollabDetailPage({
           { label: focus.firstName },
         ]}
         actions={
-          canManage ? (
+          canManage && !inactive ? (
             <ActionLink href={editHref} icon={Pencil} variant="primary">
               Modifier
             </ActionLink>
           ) : null
         }
       />
+      {inactive ? (
+        <Surface className="border border-msk-coral/20 bg-msk-coral/5 px-4 py-3 text-sm text-msk-ink/70">
+          Ce collaborateur est{" "}
+          {focus.status === "SUSPENDED" ? "suspendu" : "archivé"}. Les chiffres
+          ci-dessous sont consultables à titre historique ; il n’est plus
+          proposé pour de nouvelles affectations opérationnelles.
+        </Surface>
+      ) : null}
 
       <CrmScopeBar
         mode={period.mode}

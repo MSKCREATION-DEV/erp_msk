@@ -1,7 +1,13 @@
 import Link from "next/link";
+import type { UserStatus } from "@prisma/client";
 import { FileText, FolderOpen } from "lucide-react";
 import { STAGE_LABELS, STAGE_ORDER, formatXof } from "@/lib/crm/labels";
 import type { GoalProgressItem } from "@/lib/crm/goals";
+import { isOperationalCrmStatus } from "@/lib/crm/team";
+import {
+  USER_STATUS_LABEL,
+  USER_STATUS_TONE,
+} from "@/lib/users/status";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ActionLink } from "@/components/ui/action-link";
@@ -13,6 +19,7 @@ import { cn } from "@/lib/utils";
 export function EquipeCollabCard({
   ownerId,
   name,
+  status,
   total,
   caOpen,
   interesses,
@@ -30,6 +37,7 @@ export function EquipeCollabCard({
 }: {
   ownerId: string;
   name: string;
+  status: UserStatus;
   total: number;
   caOpen: number;
   interesses: number;
@@ -41,11 +49,50 @@ export function EquipeCollabCard({
   periodLabel: string;
   baseQuery?: string;
   rapportHref: string;
-  /** Lien Prospects avec période + owner. */
   prospectsHref: string;
   showStocks?: boolean;
   showGoals?: boolean;
 }) {
+  const operational = isOperationalCrmStatus(status);
+  const statusLabel = USER_STATUS_LABEL[status] ?? status;
+  const statusTone = USER_STATUS_TONE[status] ?? "muted";
+
+  if (!operational) {
+    return (
+      <Surface
+        className={cn(
+          "space-y-3 p-5",
+          focused && "ring-2 ring-msk-blue/25",
+        )}
+      >
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-base font-semibold text-msk-ink">{name}</p>
+              <Badge tone={statusTone}>{statusLabel}</Badge>
+            </div>
+            <p className="mt-1 text-sm text-msk-ink/50">
+              Compte {statusLabel.toLowerCase()} — plus d’activité opérationnelle.
+              {total > 0
+                ? ` Portefeuille historique : ${total} prospect${total > 1 ? "s" : ""} encore rattaché${total > 1 ? "s" : ""}.`
+                : " Aucun prospect actif rattaché."}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <ActionLink
+              href={prospectsHref}
+              icon={FolderOpen}
+              variant="secondary"
+              size="sm"
+            >
+              Voir l’historique
+            </ActionLink>
+          </div>
+        </div>
+      </Surface>
+    );
+  }
+
   const subtitle = showStocks
     ? `${total} prospect${total > 1 ? "s" : ""} actif${total > 1 ? "s" : ""} · montant en cours ${formatXof(caOpen)}`
     : `Activité · ${periodLabel.toLowerCase()}`;
@@ -116,7 +163,7 @@ export function EquipeCollabCard({
               label="Relances en retard"
               value={overdue}
               tone={overdue > 0 ? "coral" : "blue"}
-              hint="follow-up dépassé"
+              hint="relance dépassée"
             />
           </div>
           <div className="flex flex-wrap gap-1.5 pt-1">

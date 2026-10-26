@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { FileText, FolderOpen, Users } from "lucide-react";
+import { FileText, FolderOpen } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -10,6 +10,7 @@ import {
   commercialTeamUserIds,
   listCommercialRoster,
   rosterToOwnerOptions,
+  type CommercialRosterUser,
 } from "@/lib/crm/team";
 import { STAGE_ORDER } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
@@ -130,6 +131,9 @@ export default async function CrmEquipePage({
   }
 
   const members = await listCommercialRoster({ mode: "team" });
+  const memberById = new Map<string, CommercialRosterUser>(
+    members.map((m) => [m.id, m]),
+  );
 
   for (const m of members) {
     if (!byOwner.has(m.id)) {
@@ -159,9 +163,10 @@ export default async function CrmEquipePage({
     occurredBetween,
   });
 
-  let rows = Array.from(byOwner.entries()).sort(
-    (a, b) => b[1].total - a[1].total,
-  );
+  /** Ne garder que les membres roster (évite cartes fantômes hors statut). */
+  let rows = Array.from(byOwner.entries())
+    .filter(([id]) => memberById.has(id))
+    .sort((a, b) => b[1].total - a[1].total);
   if (filterOwner) {
     rows = rows.filter(([id]) => id === filterOwner);
   }
@@ -190,17 +195,16 @@ export default async function CrmEquipePage({
       <PageHeader
         title="Vue Équipe"
         description={
-          showStocks
-            ? filteredName
-              ? `${filteredName} — portefeuille à date · relances ${period.label.toLowerCase()}.`
-              : `Cliquez le nom d’une carte · ${period.label}.`
-            : filteredName
-              ? `${filteredName} — activité ${period.label.toLowerCase()} (sans stocks à date).`
-              : `Activité historique · ${period.label}.`
+          filteredName
+            ? `${filteredName} · ${period.label}`
+            : `Portefeuille et activité · ${period.label}`
         }
         backHref="/commercial"
         backLabel="Retour Menu"
-        breadcrumbs={[{ label: "Commercial", href: "/commercial" }]}
+        breadcrumbs={[
+          { label: "Commercial", href: "/commercial" },
+          { label: "Vue Équipe" },
+        ]}
       />
 
       <CrmScopeBar
@@ -278,45 +282,41 @@ export default async function CrmEquipePage({
         </Surface>
       ) : (
         <div className="space-y-4">
-          {rows.map(([ownerId, row]) => (
-            <EquipeCollabCard
-              key={ownerId}
-              ownerId={ownerId}
-              name={row.name}
-              total={row.total}
-              caOpen={row.caOpen}
-              interesses={row.interesses}
-              overdue={row.overdue}
-              relancesFaites={relancesByOwner.get(ownerId) ?? 0}
-              byStage={row.byStage}
-              goals={goalByOwner.get(ownerId) ?? []}
-              focused={filterOwner === ownerId}
-              periodLabel={period.label}
-              baseQuery={baseQuery}
-              rapportHref={buildCrmScopeHref("/crm/rapport-semaine", {
-                period: { ...period, mode: "semaine" },
-                ownerId,
-                canFilterOwners: true,
-              })}
-              prospectsHref={buildPortfolioProspectsHref({
-                period,
-                ownerId,
-                canFilterOwners: true,
-              })}
-              showStocks={showStocks}
-              showGoals={showGoals}
-            />
-          ))}
+          {rows.map(([ownerId, row]) => {
+            const member = memberById.get(ownerId)!;
+            return (
+              <EquipeCollabCard
+                key={ownerId}
+                ownerId={ownerId}
+                name={row.name}
+                status={member.status}
+                total={row.total}
+                caOpen={row.caOpen}
+                interesses={row.interesses}
+                overdue={row.overdue}
+                relancesFaites={relancesByOwner.get(ownerId) ?? 0}
+                byStage={row.byStage}
+                goals={goalByOwner.get(ownerId) ?? []}
+                focused={filterOwner === ownerId}
+                periodLabel={period.label}
+                baseQuery={baseQuery}
+                rapportHref={buildCrmScopeHref("/crm/rapport-semaine", {
+                  period: { ...period, mode: "semaine" },
+                  ownerId,
+                  canFilterOwners: true,
+                })}
+                prospectsHref={buildPortfolioProspectsHref({
+                  period,
+                  ownerId,
+                  canFilterOwners: true,
+                })}
+                showStocks={showStocks}
+                showGoals={showGoals}
+              />
+            );
+          })}
         </div>
       )}
-
-      {!filterOwner && rows.length > 0 ? (
-        <p className="flex items-center gap-1.5 text-xs text-msk-ink/40">
-          <Users className="h-3.5 w-3.5" aria-hidden />
-          Astuce : filtrez par collaborateur ou cliquez le nom d’une carte —
-          Rapport et Prospects suivent le même filtre.
-        </p>
-      ) : null}
     </PageShell>
   );
 }

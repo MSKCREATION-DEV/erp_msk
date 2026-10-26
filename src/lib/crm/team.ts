@@ -1,15 +1,23 @@
 import type { UserStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
-/** Comptes utilisables pour affectation / objectifs. */
+/** Comptes utilisables pour affectation / objectifs opérationnels. */
 const ASSIGNABLE: UserStatus[] = ["ACTIVE", "MUST_CHANGE_PASSWORD"];
 
-/** Filtres « Suivi par » : inclut archivés qui portent encore un portefeuille. */
+/**
+ * Filtres / Vue Équipe : actifs + must_change + suspendus/archivés
+ * (historique / portefeuille résiduel). Pas d’INVITE_PENDING seuls.
+ */
 const FILTERABLE: UserStatus[] = [
   "ACTIVE",
   "MUST_CHANGE_PASSWORD",
+  "SUSPENDED",
   "ARCHIVED",
 ];
+
+export function isOperationalCrmStatus(status: UserStatus): boolean {
+  return status === "ACTIVE" || status === "MUST_CHANGE_PASSWORD";
+}
 
 /**
  * IDs du roster CRM :

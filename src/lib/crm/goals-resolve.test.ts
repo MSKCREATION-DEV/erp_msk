@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
-import { resolveMetricTargetFromRows, type GoalMetric } from "./goals";
+import {
+  resolveMetricTargetFromRows,
+  sumEffectiveGoalTargets,
+  type GoalMetric,
+} from "./goals";
 import { buildCrmScopeHref, parseCrmPeriod } from "./scope-period";
 
 type Row = {
@@ -99,6 +103,27 @@ const month = new Date(Date.UTC(2026, 9, 1));
   assert.match(href, /periode=mois/);
   assert.match(href, /mois=2026-10/);
   assert.equal(href.includes("collab="), false);
+}
+
+{
+  const summed = sumEffectiveGoalTargets([
+    {
+      NEW_PROSPECTS: 10,
+      FIRST_CONTACTS: 5,
+      MEETINGS: 1,
+      FOLLOW_UPS: 8,
+    },
+    {
+      NEW_PROSPECTS: 15,
+      FIRST_CONTACTS: 10,
+      MEETINGS: 2,
+      FOLLOW_UPS: 12,
+    },
+  ]);
+  assert.equal(summed.NEW_PROSPECTS, 25);
+  assert.equal(summed.FIRST_CONTACTS, 15);
+  assert.equal(summed.MEETINGS, 3);
+  assert.equal(summed.FOLLOW_UPS, 20);
 }
 
 console.log("goals-resolve.test.ts OK");

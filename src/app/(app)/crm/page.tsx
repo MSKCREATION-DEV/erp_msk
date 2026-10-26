@@ -27,7 +27,7 @@ import {
 } from "@/lib/crm/labels";
 import {
   buildGoalProgress,
-  loadTeamGoalsForPeriod,
+  loadSummedOperationalGoalsForPeriod,
   resolveGoalsForPeriod,
 } from "@/lib/crm/goals";
 import { listWeekOptions } from "@/lib/crm/week";
@@ -132,14 +132,21 @@ export default async function CrmDashboardPage({
     period.to,
   );
 
-  const goals =
-    showGoals
-      ? ownerScope.ownerId != null
-        ? await resolveGoalsForPeriod(ownerScope.ownerId, period)
-        : ownerScope.canFilterOwners
-          ? await loadTeamGoalsForPeriod(period)
-          : await resolveGoalsForPeriod(user.id, period)
-      : null;
+  const goals = showGoals
+    ? ownerScope.ownerId != null
+      ? await resolveGoalsForPeriod(ownerScope.ownerId, period)
+      : ownerScope.canFilterOwners
+        ? await loadSummedOperationalGoalsForPeriod(
+            (
+              await listCommercialRoster({
+                mode: "assign",
+                extraIds: [user.id],
+              })
+            ).map((m) => m.id),
+            period,
+          )
+        : await resolveGoalsForPeriod(user.id, period)
+    : null;
 
   // Stocks à date — uniquement lentille live (évite requêtes inutiles + chiffres trompeurs)
   const deals = showStocks
@@ -624,7 +631,7 @@ export default async function CrmDashboardPage({
             ownerScope.ownerId
               ? `Objectifs · ${ownerLabel ?? "Collaborateur"} · ${period.label}`
               : ownerScope.canFilterOwners
-                ? `Objectifs équipe · ${period.label}`
+                ? `Synthèse objectifs (somme collabs actifs) · ${period.label}`
                 : `Objectifs · ${period.label}`
           }
           detailHref={goalsHref}

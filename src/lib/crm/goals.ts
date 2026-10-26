@@ -189,7 +189,7 @@ function grainAndStart(period: CrmPeriodScope): {
   return { grain, periodStart: periodStartForGrain(grain, period) };
 }
 
-/** Cibles TEAM pour la période affichée (ou défauts). */
+/** Cibles TEAM (modèle commun) pour la période affichée (ou défauts). */
 export async function loadTeamGoalsForPeriod(
   period: CrmPeriodScope,
 ): Promise<Record<GoalMetric, number>> {
@@ -197,6 +197,36 @@ export async function loadTeamGoalsForPeriod(
   if (!gs) return defaultsForGrain("WEEK");
   const rows = await loadGoalRows();
   return applyRowsForPeriod(rows, gs.grain, gs.periodStart);
+}
+
+/**
+ * Synthèse équipe TB : somme des cibles effectives (USER > TEAM > défaut)
+ * des collaborateurs opérationnels fournis.
+ */
+export function sumEffectiveGoalTargets(
+  perUserGoals: Record<GoalMetric, number>[],
+): Record<GoalMetric, number> {
+  const out = {} as Record<GoalMetric, number>;
+  for (const m of GOAL_METRICS) {
+    out[m] = 0;
+  }
+  for (const g of perUserGoals) {
+    for (const m of GOAL_METRICS) {
+      out[m] += g[m] ?? 0;
+    }
+  }
+  return out;
+}
+
+/** Charge la somme des objectifs effectifs pour une liste d’userIds. */
+export async function loadSummedOperationalGoalsForPeriod(
+  userIds: string[],
+  period: CrmPeriodScope,
+): Promise<Record<GoalMetric, number>> {
+  const ids = [...new Set(userIds.filter(Boolean))];
+  if (ids.length === 0) return defaultsForGrain("WEEK");
+  const map = await resolveGoalsMapForPeriod(ids, period);
+  return sumEffectiveGoalTargets(ids.map((id) => map.get(id)!).filter(Boolean));
 }
 
 /** @deprecated Prefer loadTeamGoalsForPeriod — alias semaine courante absente. */

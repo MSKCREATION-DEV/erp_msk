@@ -50,7 +50,7 @@ import { KpiRadial } from "@/components/crm/kpi-radial";
 import { RelanceActions } from "@/components/crm/relance-actions";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
-import { gridKpi3, gridKpi5 } from "@/lib/ui/layout-grids";
+import { gridKpi3, gridKpi4 } from "@/lib/ui/layout-grids";
 import { cn } from "@/lib/utils";
 
 type VueFilter = "tous" | "retard" | "aujourdhui" | "semaine" | "plus-tard";
@@ -652,7 +652,7 @@ export async function RelancesResults({
     "plus-tard": later,
   };
   const listTitleByVue: Record<VueFilter, string> = {
-    tous: "File ouverte (toutes échéances)",
+    tous: "Toutes les échéances",
     retard: "En retard",
     aujourdhui: "Échéance aujourd’hui",
     semaine: "Échéance sous 7 jours",
@@ -702,9 +702,9 @@ export async function RelancesResults({
   if (q) listParams.q = q;
   else delete listParams.q;
 
-  /** Chips = file filtrée par `q` (prévisible avec la liste). KPI = portefeuille. */
+  /** Chips = liste filtrée par `q`. KPI = portefeuille (hors q). */
   const filters: { id: VueFilter; label: string; count: number }[] = [
-    { id: "tous", label: "File ouverte", count: tasks.length },
+    { id: "tous", label: "Toutes", count: tasks.length },
     { id: "retard", label: "En retard", count: overdue.length },
     { id: "aujourdhui", label: "Aujourd’hui", count: today.length },
     { id: "semaine", label: "Sous 7 jours", count: thisWeek.length },
@@ -727,7 +727,7 @@ export async function RelancesResults({
         />
       ) : null}
 
-      <div className={gridKpi5}>
+      <div className={gridKpi4}>
         <KpiRadial
           label="En retard"
           value={dueSummary.overdue}
@@ -743,15 +743,6 @@ export async function RelancesResults({
           label="Sous 7 jours"
           value={dueSummary.week}
           hint="après aujourd’hui, ≤ 7 j"
-        />
-        <KpiRadial
-          label="File ouverte"
-          value={dueSummary.open}
-          hint={
-            dueSummary.open === 0
-              ? "aucune tâche ouverte"
-              : `dont ${dueSummary.later} plus tard`
-          }
         />
         <Link
           prefetch={false}
