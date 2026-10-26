@@ -1009,8 +1009,14 @@ export async function resolveAssignmentRequestAction(
     return { ok: true, message: "Demande refusée" };
   }
 
-  if (req.requester.status !== "ACTIVE") {
-    return { ok: false, error: "Le demandeur n’est plus actif" };
+  if (
+    req.requester.status !== "ACTIVE" &&
+    req.requester.status !== "MUST_CHANGE_PASSWORD"
+  ) {
+    return {
+      ok: false,
+      error: "Le demandeur n’est plus disponible pour une affectation",
+    };
   }
 
   const teamIds = await commercialTeamUserIds();

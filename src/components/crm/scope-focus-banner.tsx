@@ -79,7 +79,7 @@ export function ScopeFocusBanner({
                   </span>
                   {" · "}
                   {periodLabel}
-                  {" — portefeuille à date masqué"}
+                  {" — stocks à date masqués"}
                 </>
               ) : (
                 <>Période · {periodLabel}</>

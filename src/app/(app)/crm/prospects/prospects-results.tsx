@@ -8,7 +8,11 @@ import {
   canReassignCrmDeal,
   crmProspectListScopeWhere,
 } from "@/lib/crm/scope";
-import { listCommercialRoster, rosterToOwnerOptions } from "@/lib/crm/team";
+import {
+  injectOwnerIfMissing,
+  listCommercialRoster,
+  rosterToOwnerOptions,
+} from "@/lib/crm/team";
 import { formatContactLabel } from "@/lib/crm/contact-label";
 import {
   SOURCE_LABELS,
@@ -237,7 +241,8 @@ export async function ProspectsResults({
     mode: "filter",
     extraIds: [user.id],
   });
-  const owners = rosterToOwnerOptions(filterRoster);
+  let owners = rosterToOwnerOptions(filterRoster);
+  owners = await injectOwnerIfMissing(owners, sp.owner);
   const commercials = canReassign
     ? (
         await listCommercialRoster({ mode: "assign", extraIds: [user.id] })
@@ -308,7 +313,7 @@ export async function ProspectsResults({
           {applyPeriodFilter && period ? (
             <p className="mt-2 text-xs text-msk-ink/45">
               {isNouveauxEvent ? "Nouveaux" : "Créés"} · {period.label}
-              {isStockView ? " · portefeuille" : ""}
+              {isStockView ? " · à date" : ""}
             </p>
           ) : null}
         </div>

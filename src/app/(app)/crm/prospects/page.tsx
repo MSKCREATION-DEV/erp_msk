@@ -126,7 +126,7 @@ export default async function CrmProspectsPage({
       {ownKpis ? (
         <div className="space-y-2">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/40">
-            Mon portefeuille (suivis par moi) — un filtre « Suivi par »
+            Mes prospects (suivis par moi) — un filtre « Suivi par »
             aligne la liste ; sans filtre, la liste reste partagée
           </p>
           <div className={gridKpi4}>

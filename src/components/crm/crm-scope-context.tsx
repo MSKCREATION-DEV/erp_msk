@@ -44,7 +44,7 @@ export function CrmScopeContext({
             {periodLabel}
             {ownerLabel ? ` · ${ownerLabel}` : ""}
             {" — "}
-            portefeuille « à date » masqué (non comparable à cette période).
+            stocks à date masqués (non comparables à cette période).
           </>
         ) : (
           <>

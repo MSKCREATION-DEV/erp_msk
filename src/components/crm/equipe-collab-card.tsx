@@ -1,9 +1,12 @@
 import Link from "next/link";
 import type { UserStatus } from "@prisma/client";
-import { FileText, FolderOpen } from "lucide-react";
+import { FileText, FolderOpen, History } from "lucide-react";
 import { STAGE_LABELS, STAGE_ORDER, formatXof } from "@/lib/crm/labels";
 import type { GoalProgressItem } from "@/lib/crm/goals";
-import { isOperationalCrmStatus } from "@/lib/crm/team";
+import {
+  canHaveOperationalGoals,
+  isOperationalCrmStatus,
+} from "@/lib/crm/team";
 import {
   USER_STATUS_LABEL,
   USER_STATUS_TONE,
@@ -56,8 +59,10 @@ export function EquipeCollabCard({
   const operational = isOperationalCrmStatus(status);
   const statusLabel = USER_STATUS_LABEL[status] ?? status;
   const statusTone = USER_STATUS_TONE[status] ?? "muted";
+  const historiqueObjectifsHref = `/crm/objectifs/${ownerId}`;
 
   if (!operational) {
+    const associatedOpen = total;
     return (
       <Surface
         className={cn(
@@ -66,28 +71,37 @@ export function EquipeCollabCard({
         )}
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-base font-semibold text-msk-ink">{name}</p>
               <Badge tone={statusTone}>{statusLabel}</Badge>
             </div>
-            <p className="mt-1 text-sm text-msk-ink/50">
-              Compte {statusLabel.toLowerCase()} — plus d’activité opérationnelle.
-              {total > 0
-                ? ` Portefeuille historique : ${total} prospect${total > 1 ? "s" : ""} encore rattaché${total > 1 ? "s" : ""}.`
-                : " Aucun prospect actif rattaché."}
+            <p className="mt-1 text-sm text-msk-ink/55">
+              Compte {statusLabel.toLowerCase()} — plus d’activité
+              opérationnelle.
+              {associatedOpen > 0
+                ? ` ${associatedOpen} prospect${associatedOpen > 1 ? "s" : ""} encore associé${associatedOpen > 1 ? "s" : ""} (hors Client / Perdu).`
+                : " Aucun prospect ouvert encore associé."}
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <ActionLink
-              href={prospectsHref}
-              icon={FolderOpen}
-              variant="secondary"
-              size="sm"
-            >
-              Voir l’historique
-            </ActionLink>
-          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <ActionLink
+            href={prospectsHref}
+            icon={FolderOpen}
+            variant="secondary"
+            size="sm"
+          >
+            Voir les prospects associés
+          </ActionLink>
+          <ActionLink
+            href={historiqueObjectifsHref}
+            icon={History}
+            variant="secondary"
+            size="sm"
+          >
+            Consulter l’historique
+          </ActionLink>
         </div>
       </Surface>
     );
@@ -146,7 +160,7 @@ export function EquipeCollabCard({
       {showStocks ? (
         <div className="space-y-2">
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
-            Portefeuille à date
+            Prospects à date
           </p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <KpiRadial
@@ -209,7 +223,9 @@ export function EquipeCollabCard({
         </div>
       ) : null}
 
-      {showGoals && goals.length > 0 ? (
+      {showGoals &&
+      canHaveOperationalGoals(status) &&
+      goals.length > 0 ? (
         <GoalsProgressStrip
           progress={goals}
           title={`Objectifs · ${periodLabel}`}

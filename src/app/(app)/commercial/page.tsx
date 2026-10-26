@@ -43,7 +43,7 @@ export default async function CommercialHubPage() {
   const vis = crmVisibility(user);
   const hubScopeHint =
     vis === "own"
-      ? "Jauges Prospects = total partagé / suivis par moi. Clic = mon portefeuille."
+      ? "Jauges Prospects = total partagé / suivis par moi. Clic = mes prospects."
       : vis === "team"
         ? "Compteurs = périmètre équipe (à date)."
         : "Compteurs = périmètre entreprise (à date).";
@@ -140,7 +140,7 @@ export default async function CommercialHubPage() {
         ...m,
         href: prospectsHref,
         description:
-          "Total visibles (liste partagée) vs prospects que je suis — clic = mon portefeuille.",
+          "Total visibles (liste partagée) vs prospects que je suis — clic = mes prospects.",
       };
     }
     if (m.id === "relances") {

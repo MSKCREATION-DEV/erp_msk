@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { dealOwnerScopeWhere } from "@/lib/crm/scope";
 import {
   commercialTeamUserIds,
+  injectOwnerIfMissing,
   listCommercialRoster,
   rosterToOwnerOptions,
 } from "@/lib/crm/team";
@@ -71,12 +72,6 @@ export default async function CrmRapportPage({
     user.isSuperAdmin || hasPermission(user, "crm.reports.global");
 
   const memberIds = [...new Set([user.id, ...teamIds])];
-  const owners = canGlobal
-    ? rosterToOwnerOptions(
-        await listCommercialRoster({ mode: "filter", extraIds: [user.id] }),
-      )
-    : [];
-
   /** Rapport = semaine uniquement (ignore periode héritée d’un autre écran). */
   const period = parseCrmPeriod({
     semaine: sp.semaine,
@@ -84,11 +79,15 @@ export default async function CrmRapportPage({
   });
   const lens = resolveCrmScopeLens(period);
   const showStocks = showStockWidgets(lens);
-  const ownerScope = parseCrmOwner(
-    sp,
-    user,
-    owners.map((o) => o.value),
-  );
+  const ownerScope = parseCrmOwner(sp, user, memberIds);
+  let owners = canGlobal
+    ? rosterToOwnerOptions(
+        await listCommercialRoster({ mode: "filter", extraIds: [user.id] }),
+      )
+    : [];
+  if (canGlobal) {
+    owners = await injectOwnerIfMissing(owners, ownerScope.ownerId);
+  }
 
   /** `all` = équipe · uuid = collab · self si pas Direction. */
   const scopeMode: "all" | "user" =

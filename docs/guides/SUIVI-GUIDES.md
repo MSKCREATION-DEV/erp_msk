@@ -201,6 +201,12 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - **Quoi** : « Sans devis (SLA) » → « Sans devis depuis 24 h » (TB, modal Filtrer, badge liste).
 - **Statut doc** : manuel 05 aligné.
 
+### 2026-10-26 — Règles collab + nav + affectation (cohérence ERP)
+
+- **Pourquoi** : filtres mélangeaient actifs/inactifs sans libellé ; TB « Assigner » sur archivé ; « Portefeuille » + « Retour Commercial » / fil d’Ariane redondants ; modal affectation trop rudimentaire ; Vue Équipe inactive peu actionnable.
+- **Quoi** : `collaborator-status.ts` (règles communes) ; filtres opérationnels = actifs seulement (+ inject deep-link) ; labels « (Archivé) » ; TB sans objectifs/Assigner si inactif ; carte Équipe + CTAs historique ; `FormSteps` + parcours affectation ; PageHeader dédup back/crumb ; vocabulaire Prospects.
+- **Statut doc** : guides CRM / FAQ → `to_validate` sur parcours affectation et focus collab.
+
 ### 2026-10-26 — Vérif lots audit (hardening recovery)
 
 - **Pourquoi** : livrable trop rapide — trous sur callback recovery (`code` seul), pas de force `mustChangePassword` après lien, échec e-mail recovery silencieux, message login `lien_invalide` absent.

@@ -7,6 +7,7 @@ import {
   Bell,
   FileWarning,
   FolderOpen,
+  History,
   Sparkles,
   UserPlus,
   UserRoundPlus,
@@ -16,7 +17,10 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import {
   commercialTeamUserIds,
+  injectOwnerIfMissing,
+  isOperationalCrmStatus,
   listCommercialRoster,
+  loadCollaboratorStatus,
   rosterToOwnerOptions,
 } from "@/lib/crm/team";
 import {
@@ -84,20 +88,26 @@ export default async function CrmDashboardPage({
 
   const teamIds = await commercialTeamUserIds();
   const memberIds = [...new Set([user.id, ...teamIds])];
-  const owners = rosterToOwnerOptions(
-    await listCommercialRoster({ mode: "filter", extraIds: [user.id] }),
-  );
+  const operationalRoster = await listCommercialRoster({
+    mode: "filter",
+    extraIds: [user.id],
+  });
 
   const period = parseCrmPeriod(sp);
   const lens = resolveCrmScopeLens(period);
   const showStocks = showStockWidgets(lens);
   const showGoals = goalsCompatibleWithPeriod(period);
 
-  const ownerScope = parseCrmOwner(
-    sp,
-    user,
-    owners.map((o) => o.value),
-  );
+  /** URL : tout le roster historique ; select : opérationnels (+ inject si deep-link). */
+  const ownerScope = parseCrmOwner(sp, user, memberIds);
+  let owners = rosterToOwnerOptions(operationalRoster);
+  owners = await injectOwnerIfMissing(owners, ownerScope.ownerId);
+
+  const focusStatus = ownerScope.ownerId
+    ? await loadCollaboratorStatus(ownerScope.ownerId)
+    : null;
+  const focusOperational =
+    focusStatus == null ? true : isOperationalCrmStatus(focusStatus);
   const ownerIds = resolveCrmOwnerIds({
     ownerId: ownerScope.ownerId,
     canFilterOwners: ownerScope.canFilterOwners,
@@ -132,21 +142,22 @@ export default async function CrmDashboardPage({
     period.to,
   );
 
-  const goals = showGoals
-    ? ownerScope.ownerId != null
-      ? await resolveGoalsForPeriod(ownerScope.ownerId, period)
-      : ownerScope.canFilterOwners
-        ? await loadSummedOperationalGoalsForPeriod(
-            (
-              await listCommercialRoster({
-                mode: "assign",
-                extraIds: [user.id],
-              })
-            ).map((m) => m.id),
-            period,
-          )
-        : await resolveGoalsForPeriod(user.id, period)
-    : null;
+  const goals =
+    showGoals && focusOperational
+      ? ownerScope.ownerId != null
+        ? await resolveGoalsForPeriod(ownerScope.ownerId, period)
+        : ownerScope.canFilterOwners
+          ? await loadSummedOperationalGoalsForPeriod(
+              (
+                await listCommercialRoster({
+                  mode: "assign",
+                  extraIds: [user.id],
+                })
+              ).map((m) => m.id),
+              period,
+            )
+          : await resolveGoalsForPeriod(user.id, period)
+      : null;
 
   // Stocks à date — uniquement lentille live (évite requêtes inutiles + chiffres trompeurs)
   const deals = showStocks
@@ -252,20 +263,29 @@ export default async function CrmDashboardPage({
     ownerId: focusOwner,
     canFilterOwners: ownerScope.canFilterOwners,
   });
-  /** Lead : écran d’assignation dédié · Collab : vue d’ensemble lecture. */
-  const goalsHref = canManageGoals
-    ? focusOwner
-      ? `/crm/objectifs/assigner/${focusOwner}`
-      : "/crm/objectifs/assigner"
-    : buildCrmScopeHref("/crm/objectifs", {
-        period:
-          period.mode === "plage"
-            ? parseCrmPeriod({ periode: "semaine", semaine: period.semaine })
-            : period,
-        ownerId: null,
-        canFilterOwners: false,
-        forcePeriod: true,
-      });
+  /** Lead : assignation (actifs seulement) · historique / lecture sinon. */
+  const goalsHref =
+    focusOwner && !focusOperational
+      ? `/crm/objectifs/${focusOwner}`
+      : canManageGoals
+        ? focusOwner
+          ? `/crm/objectifs/assigner/${focusOwner}`
+          : "/crm/objectifs/assigner"
+        : buildCrmScopeHref("/crm/objectifs", {
+            period:
+              period.mode === "plage"
+                ? parseCrmPeriod({ periode: "semaine", semaine: period.semaine })
+                : period,
+            ownerId: null,
+            canFilterOwners: false,
+            forcePeriod: true,
+          });
+  const goalsDetailLabel =
+    focusOwner && !focusOperational
+      ? "Voir l’historique"
+      : canManageGoals
+        ? "Assigner"
+        : "Voir le détail";
 
   /** Liens événements : période forcée + owner. */
   const eventHref = (
@@ -297,13 +317,13 @@ export default async function CrmDashboardPage({
   const description =
     lens === "live"
       ? ownerLabel
-        ? `${ownerLabel} · activité ${period.label.toLowerCase()} + portefeuille à date.`
+        ? `${ownerLabel} · activité ${period.label.toLowerCase()} + prospects à date.`
         : ownerScope.canFilterOwners
-          ? `Équipe · activité ${period.label.toLowerCase()} + portefeuille à date.`
-          : `Mon activité · ${period.label.toLowerCase()} + mon portefeuille à date.`
+          ? `Équipe · activité ${period.label.toLowerCase()} + prospects à date.`
+          : `Mon activité · ${period.label.toLowerCase()} + mes prospects à date.`
       : ownerLabel
         ? `${ownerLabel} · activité historique · ${period.label}.`
-        : `Activité historique · ${period.label} (portefeuille masqué).`;
+        : `Activité historique · ${period.label} (stocks à date masqués).`;
 
   const scopeKey = `${period.mode}:${period.fromIso}:${period.toIso}:${ownerScope.ownerId ?? "all"}`;
 
@@ -381,7 +401,7 @@ export default async function CrmDashboardPage({
             icon={UserRoundPlus}
             tone="blue"
             title="Nouveaux prospects"
-            description={`Prospects créés pendant ${period.label.toLowerCase()} (flux, pas le portefeuille).`}
+            description={`Prospects créés pendant ${period.label.toLowerCase()} (nouveaux, pas le stock à date).`}
             footer={
               <HubMiniRadial
                 value={newProspects}
@@ -429,12 +449,12 @@ export default async function CrmDashboardPage({
 
       {/* Uniquement lentille live : réagit au collab, pas à la période. */}
       {showStocks ? (
-        <section aria-labelledby="crm-portefeuille" className="space-y-3">
+        <section aria-labelledby="crm-prospects-stock" className="space-y-3">
           <h2
-            id="crm-portefeuille"
+            id="crm-prospects-stock"
             className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/40"
           >
-            Portefeuille à date
+            Prospects à date
             {ownerLabel ? ` · ${ownerLabel}` : ""}
           </h2>
           <div
@@ -475,7 +495,7 @@ export default async function CrmDashboardPage({
               }
               description={
                 showProspectsDual
-                  ? "Total partagé vs prospects que je suis (hors Client / Perdu) — clic = mon portefeuille."
+                  ? "Total partagé vs prospects que je suis (hors Client / Perdu) — clic = mes prospects."
                   : "Prospects non clos (hors Client / Perdu) — stock à date."
               }
               footer={
@@ -623,7 +643,7 @@ export default async function CrmDashboardPage({
         </section>
       ) : null}
 
-      {showGoals && goalProgress.length > 0 ? (
+      {showGoals && goalProgress.length > 0 && focusOperational ? (
         <GoalsProgressStrip
           progress={goalProgress}
           compact
@@ -635,8 +655,25 @@ export default async function CrmDashboardPage({
                 : `Objectifs · ${period.label}`
           }
           detailHref={goalsHref}
-          detailLabel={canManageGoals ? "Assigner" : "Voir le détail"}
+          detailLabel={goalsDetailLabel}
         />
+      ) : focusOwner && !focusOperational ? (
+        <Surface className="flex flex-wrap items-center justify-between gap-3 border border-msk-coral/20 bg-msk-coral/5 p-4 text-sm text-msk-ink/70">
+          <p>
+            Compte{" "}
+            {focusStatus === "SUSPENDED" ? "suspendu" : "archivé"} — pas
+            d’objectifs opérationnels ni d’assignation. L’historique reste
+            consultable.
+          </p>
+          <ActionLink
+            href={goalsHref}
+            icon={History}
+            variant="secondary"
+            size="sm"
+          >
+            Voir l’historique
+          </ActionLink>
+        </Surface>
       ) : null}
     </PageShell>
   );

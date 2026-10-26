@@ -5,6 +5,16 @@ import { cn } from "@/lib/utils";
 
 export type Breadcrumb = { label: string; href?: string };
 
+function normalizePath(href: string) {
+  return href.replace(/\/$/, "") || "/";
+}
+
+/**
+ * En-tête de page : retour + fil d’Ariane + titre.
+ * Déduplique automatiquement :
+ * - dernier crumb sans href = titre
+ * - premier crumb dont l’href = backHref (évite « Retour Commercial » + « Commercial »)
+ */
 export function PageHeader({
   title,
   description,
@@ -23,6 +33,24 @@ export function PageHeader({
   backLabel?: string;
   className?: string;
 }) {
+  const crumbs = (breadcrumbs ?? []).filter((c, i, arr) => {
+    if (i === arr.length - 1 && c.label === title && !c.href) return false;
+    if (
+      backHref &&
+      i === 0 &&
+      c.href &&
+      normalizePath(c.href) === normalizePath(backHref)
+    ) {
+      return false;
+    }
+    return true;
+  });
+
+  /** « Retour Commercial » → « Retour » (module déjà dans la nav / le fil). */
+  const resolvedBackLabel = /^Retour\s+\S+$/i.test(backLabel)
+    ? "Retour"
+    : backLabel;
+
   return (
     <header
       className={cn(
@@ -32,47 +60,41 @@ export function PageHeader({
     >
       <div className="min-w-0">
         {backHref ? (
-          <Link prefetch={false}
+          <Link
+            prefetch={false}
             href={backHref}
             className="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-msk-ink/45 transition hover:text-msk-blue"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
-            {backLabel}
+            {resolvedBackLabel}
           </Link>
         ) : null}
-        {(() => {
-          // Évite titre = dernier crumb (redondance fiche / pages métier).
-          const crumbs = (breadcrumbs ?? []).filter(
-            (c, i, arr) =>
-              !(i === arr.length - 1 && c.label === title && !c.href),
-          );
-          return crumbs.length > 0 ? (
-            <nav
-              aria-label="Fil d’Ariane"
-              className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs text-msk-ink/40"
-            >
-              {crumbs.map((crumb, i) => (
-                <span
-                  key={`${crumb.label}-${i}`}
-                  className="inline-flex items-center gap-1.5"
-                >
-                  {i > 0 ? <span aria-hidden>/</span> : null}
-                  {crumb.href ? (
-                    <Link
-                      prefetch={false}
-                      href={crumb.href}
-                      className="cursor-pointer hover:text-msk-blue"
-                    >
-                      {crumb.label}
-                    </Link>
-                  ) : (
-                    <span>{crumb.label}</span>
-                  )}
-                </span>
-              ))}
-            </nav>
-          ) : null;
-        })()}
+        {crumbs.length > 0 ? (
+          <nav
+            aria-label="Fil d’Ariane"
+            className="mb-1.5 flex flex-wrap items-center gap-1.5 text-xs text-msk-ink/40"
+          >
+            {crumbs.map((crumb, i) => (
+              <span
+                key={`${crumb.label}-${i}`}
+                className="inline-flex items-center gap-1.5"
+              >
+                {i > 0 ? <span aria-hidden>/</span> : null}
+                {crumb.href ? (
+                  <Link
+                    prefetch={false}
+                    href={crumb.href}
+                    className="cursor-pointer hover:text-msk-blue"
+                  >
+                    {crumb.label}
+                  </Link>
+                ) : (
+                  <span>{crumb.label}</span>
+                )}
+              </span>
+            ))}
+          </nav>
+        ) : null}
         <h1 className="text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
           {title}
         </h1>

@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { crmVisibility, dealOwnerScopeWhere } from "@/lib/crm/scope";
 import {
   commercialTeamUserIds,
+  isOperationalCrmStatus,
   listCommercialRoster,
   rosterToOwnerOptions,
   type CommercialRosterUser,
@@ -151,10 +152,12 @@ export default async function CrmEquipePage({
 
   const goalByOwner = showGoals
     ? new Map(
-        (await resolveGoalsSnapshots(members, period)).map((s) => [
-          s.userId,
-          s.progress,
-        ]),
+        (
+          await resolveGoalsSnapshots(
+            members.filter((m) => isOperationalCrmStatus(m.status)),
+            period,
+          )
+        ).map((s) => [s.userId, s.progress]),
       )
     : new Map();
 
@@ -197,7 +200,7 @@ export default async function CrmEquipePage({
         description={
           filteredName
             ? `${filteredName} · ${period.label}`
-            : `Portefeuille et activité · ${period.label}`
+            : `Prospects et activité · ${period.label}`
         }
         backHref="/commercial"
         backLabel="Retour Menu"

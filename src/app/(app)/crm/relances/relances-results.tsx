@@ -7,7 +7,10 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { crmVisibility } from "@/lib/crm/scope";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import {
+  commercialTeamUserIds,
+  formatCollaboratorOptionLabel,
+} from "@/lib/crm/team";
 import { ACTIVITY_LABELS, STAGE_LABELS } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import {
@@ -422,11 +425,15 @@ export async function RelancesResults({
   const focusOwnerUser = ownerScope.ownerId
     ? await prisma.user.findUnique({
         where: { id: ownerScope.ownerId },
-        select: { firstName: true, lastName: true },
+        select: { firstName: true, lastName: true, status: true },
       })
     : null;
   const focusOwnerLabel = focusOwnerUser
-    ? `${focusOwnerUser.firstName} ${focusOwnerUser.lastName}`
+    ? formatCollaboratorOptionLabel(
+        focusOwnerUser.firstName,
+        focusOwnerUser.lastName,
+        focusOwnerUser.status,
+      )
     : null;
 
   const keepBase = {
