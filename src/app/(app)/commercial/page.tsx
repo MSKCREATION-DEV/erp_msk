@@ -41,12 +41,6 @@ export default async function CommercialHubPage() {
   const quoteWhere = comQuoteOwnerScopeWhere(user);
   const invoiceWhere = comInvoiceOwnerScopeWhere(user);
   const vis = crmVisibility(user);
-  const hubScopeHint =
-    vis === "own"
-      ? "Jauges Prospects = total partagé / suivis par moi. Clic = mes prospects."
-      : vis === "team"
-        ? "Compteurs = périmètre équipe (à date)."
-        : "Compteurs = périmètre entreprise (à date).";
 
   const canCrm = hasPermission(user, "crm.access");
   const canCom = hasPermission(user, "com.access");
@@ -211,11 +205,8 @@ export default async function CommercialHubPage() {
     <PageShell>
       <PageHeader
         title="Commercial"
-        description={`Prospection, vente et pilotage — ${hubScopeHint}`}
-        breadcrumbs={[
-          { label: "Accueil", href: "/accueil" },
-          { label: "Commercial" },
-        ]}
+        description="Prospection, vente et pilotage."
+        breadcrumbs={[{ label: "Accueil", href: "/accueil" }]}
         actions={
           <div className="flex flex-wrap gap-2">
             {canCreateProspect ? (
