@@ -2,18 +2,14 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { filterPageBreadcrumbs } from "@/lib/ui/page-breadcrumbs";
 
 export type Breadcrumb = { label: string; href?: string };
 
-function normalizePath(href: string) {
-  return href.replace(/\/$/, "") || "/";
-}
-
 /**
- * En-tête de page : retour + fil d’Ariane + titre.
- * Déduplique automatiquement :
- * - dernier crumb sans href = titre
- * - premier crumb dont l’href = backHref (évite « Retour Commercial » + « Commercial »)
+ * En-tête de page : retour + fil d’Ariane utile + titre.
+ * Les hubs de module (ex. « Commercial ») et les doublons titre/retour
+ * sont retirés automatiquement — voir `filterPageBreadcrumbs`.
  */
 export function PageHeader({
   title,
@@ -33,20 +29,12 @@ export function PageHeader({
   backLabel?: string;
   className?: string;
 }) {
-  const crumbs = (breadcrumbs ?? []).filter((c, i, arr) => {
-    if (i === arr.length - 1 && c.label === title && !c.href) return false;
-    if (
-      backHref &&
-      i === 0 &&
-      c.href &&
-      normalizePath(c.href) === normalizePath(backHref)
-    ) {
-      return false;
-    }
-    return true;
+  const crumbs = filterPageBreadcrumbs(breadcrumbs ?? [], {
+    title,
+    backHref,
   });
 
-  /** « Retour Commercial » → « Retour » (module déjà dans la nav / le fil). */
+  /** « Retour Commercial » → « Retour » (module déjà dans la nav). */
   const resolvedBackLabel = /^Retour\s+\S+$/i.test(backLabel)
     ? "Retour"
     : backLabel;

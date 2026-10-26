@@ -201,6 +201,19 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - **Quoi** : « Sans devis (SLA) » → « Sans devis depuis 24 h » (TB, modal Filtrer, badge liste).
 - **Statut doc** : manuel 05 aligné.
 
+### 2026-10-26 — Fil d’Ariane : plus de hub « Commercial » répété
+
+- **Pourquoi** : « Retour … » + crumb « Commercial » + titre = redondance partout (ex. Objectifs).
+- **Quoi** : `filterPageBreadcrumbs` retire hubs module (Commercial, Accueil…) et doublons titre/retour — une seule règle dans `PageHeader`.
+- **Statut doc** : navigation CRM → `to_validate`.
+
+### 2026-10-26 — Rapport : tendance 4 semaines compacte
+
+- **Pourquoi** : en semaine passée, le donut « à date » disparaît et le bar chart `min-h-55` + `aspect-video` occupe toute la largeur — déséquilibre UX.
+- **Quoi** : `StageBarChart` mode `compact` (hauteur fixe ~128 px, total en synthèse) ; en historique largeur `max-w-xl` ; calculs 4 semaines inchangés ; empty sobre.
+- **Fichiers** : `stage-bar-chart.tsx`, `crm/rapport-semaine/page.tsx`.
+- **Statut doc** : guide rapport / com-hub → `to_validate` si parcours UI.
+
 ### 2026-10-26 — Règles collab + nav + affectation (cohérence ERP)
 
 - **Pourquoi** : filtres mélangeaient actifs/inactifs sans libellé ; TB « Assigner » sur archivé ; « Portefeuille » + « Retour Commercial » / fil d’Ariane redondants ; modal affectation trop rudimentaire ; Vue Équipe inactive peu actionnable.

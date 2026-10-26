@@ -106,10 +106,6 @@ export default async function CrmObjectifsPage({
           forcePeriod: true,
         })}
         backLabel="Retour tableau de bord"
-        breadcrumbs={[
-          { label: "Commercial", href: "/commercial" },
-          { label: "Objectifs" },
-        ]}
         actions={
           canManage ? (
             <ActionLink

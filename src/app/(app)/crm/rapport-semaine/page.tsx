@@ -148,8 +148,8 @@ export default async function CrmRapportPage({
 
   const totalDossiers = byStage.reduce((a, b) => a + b.count, 0);
 
-  // 4 semaines glissantes se terminant à la semaine sélectionnée
-  const weekBars = [];
+  // 4 semaines glissantes se terminant à la semaine sélectionnée (règle métier inchangée)
+  const weekBars: { statut: string; count: number }[] = [];
   for (let i = 3; i >= 0; i--) {
     const start = new Date(weekStart);
     start.setUTCDate(start.getUTCDate() - i * 7);
@@ -162,6 +162,9 @@ export default async function CrmRapportPage({
     });
     weekBars.push({ statut: `S${isoWeekNumber(start)}`, count });
   }
+  const weekBarsTotal = weekBars.reduce((a, b) => a + b.count, 0);
+  const weekBarsFirst = weekBars[0]?.statut ?? "";
+  const weekBarsLast = weekBars[weekBars.length - 1]?.statut ?? "";
 
   const qualifiedOpen = byStage
     .filter((s) => s.stage === "INTERESSE" || s.stage === "DEVIS_ENVOYE")
@@ -326,13 +329,21 @@ export default async function CrmRapportPage({
 
       <div
         className={
-          showStocks ? "grid gap-4 lg:grid-cols-2" : "grid gap-4"
+          showStocks
+            ? "grid gap-4 lg:grid-cols-2 lg:items-start"
+            : "max-w-xl"
         }
       >
         <StageBarChart
+          compact
           data={weekBars}
-          title="Nouveaux prospects — 4 semaines"
-          subtitle={`Jusqu’à la semaine du ${weekStart.toLocaleDateString("fr-FR", { timeZone: "UTC" })}`}
+          title="Nouveaux prospects"
+          subtitle={
+            weekBarsFirst && weekBarsLast
+              ? `Tendance ${weekBarsFirst} → ${weekBarsLast} (4 semaines)`
+              : "Tendance sur 4 semaines"
+          }
+          totalLabel={weekBarsTotal}
         />
         {showStocks ? (
           <StageDonutChart
