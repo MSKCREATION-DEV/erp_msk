@@ -26,7 +26,7 @@ export default async function GuidesRolesPage() {
           { label: "Rôles" },
         ]}
       />
-      <ul className="grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3">
+      <ul className="grid min-w-0 gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr))]">
         {GUIDE_ROLES.map((r) => {
           const count = catalog.filter((g) => g.roleIds.includes(r.id)).length;
           return (

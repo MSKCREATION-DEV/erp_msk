@@ -49,12 +49,12 @@ export function HubMiniRadial({
   return (
     <div
       className={cn(
-        "flex flex-col items-center",
-        large ? "w-30" : "w-25",
+        "flex min-w-0 flex-col items-center",
+        large ? "w-28" : "w-18",
         className,
       )}
     >
-      <div className={cn("w-full", large ? "h-14" : "h-12")}>
+      <div className={cn("w-full", large ? "h-14" : "h-11")}>
         <ChartContainer
           config={config}
           className="aspect-auto! h-full w-full"
@@ -95,8 +95,8 @@ export function HubMiniRadial({
       {caption ? (
         <p
           className={cn(
-            "mt-1 max-w-30 text-center leading-tight text-msk-ink/45",
-            large ? "text-xs" : "text-[11px]",
+            "mt-1 w-full truncate text-center leading-tight text-msk-ink/45",
+            large ? "text-xs" : "text-[10px] sm:text-[11px]",
           )}
         >
           {caption}

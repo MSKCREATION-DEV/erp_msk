@@ -248,7 +248,7 @@ export default async function CommercialClientDetailPage({
             <div className="flex flex-wrap items-center gap-3">
               <OriginChip source={originSource} />
             </div>
-            <dl className="grid min-w-0 gap-4 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3">
+            <dl className="grid min-w-0 gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr))]">
               <MetaItem label="Suivi par">
                 {client.owner.firstName} {client.owner.lastName}
               </MetaItem>

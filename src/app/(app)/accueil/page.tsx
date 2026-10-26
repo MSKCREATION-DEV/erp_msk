@@ -177,7 +177,7 @@ export default async function AccueilPage({
         <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
           Raccourcis
         </h2>
-        <div className="grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[48rem]:grid-cols-3 @min-[64rem]:grid-cols-4">
+        <div className="grid min-w-0 gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,16.5rem),1fr))]">
           {shortcuts.map((item) => {
             const Icon = item.icon;
             return (

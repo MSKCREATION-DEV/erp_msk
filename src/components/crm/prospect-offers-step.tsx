@@ -305,7 +305,7 @@ export function ProspectOffersStep({
             Aucune offre ne correspond à « {q.trim()} ».
           </p>
         ) : (
-          <ul className="grid min-w-0 gap-2.5 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3 @min-[72rem]:grid-cols-4">
+          <ul className="grid min-w-0 gap-2.5 [grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))]">
             {filtered.map((o) => {
               const active = selectedSet.has(o.id);
               return (
@@ -376,7 +376,7 @@ export function ProspectOffersStep({
             </p>
           </div>
         ) : (
-          <div className="grid min-w-0 gap-4 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3">
+          <div className="grid min-w-0 gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr))]">
             {selectedOffers.map((offer) => (
               <OfferConfigPanel
                 key={offer.id}

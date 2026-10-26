@@ -583,7 +583,7 @@ export default async function CrmProspectDetailPage({
                 </div>
               ) : null}
             </div>
-            <dl className="grid min-w-0 gap-4 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3">
+            <dl className="grid min-w-0 gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr))]">
               <MetaItem label="Suivi par">
                 {deal.owner.firstName} {deal.owner.lastName}
               </MetaItem>

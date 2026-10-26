@@ -122,9 +122,8 @@ function ModuleCard({
       gatedHint={module.gatedHint}
       footer={
         dual && !module.gated ? (
-          <div className="flex w-full items-end justify-end gap-1.5 sm:gap-2">
+          <div className="flex w-full min-w-0 flex-wrap items-end justify-end gap-1.5">
             <HubMiniRadial
-              className="w-18 sm:w-20"
               value={dual[0].value}
               max={dualMax}
               color={dual[0].color ?? METRIC_NAV_TONE_CHART.blue}
@@ -132,7 +131,6 @@ function ModuleCard({
               caption={dual[0].caption}
             />
             <HubMiniRadial
-              className="w-18 sm:w-20"
               value={dual[1].value}
               max={dualMax}
               color={dual[1].color ?? METRIC_NAV_TONE_CHART.coral}

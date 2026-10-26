@@ -34,11 +34,12 @@ export function ChoiceCards<T extends string>({
     <div
       className={cn(
         "grid gap-2",
-        columns === 2 && "grid-cols-1 @min-[28rem]:grid-cols-2",
+        columns === 2 &&
+          "[grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))]",
         columns === 3 &&
-          "grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3",
+          "[grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr))]",
         columns === 4 &&
-          "grid-cols-1 @min-[28rem]:grid-cols-2 @min-[64rem]:grid-cols-4",
+          "[grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))]",
         className,
       )}
       role="radiogroup"

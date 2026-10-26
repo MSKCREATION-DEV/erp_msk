@@ -1,38 +1,44 @@
 /**
- * Grilles adaptatives — basées sur la **largeur du conteneur** (`@container`
- * sur `<main>`), pas sur le viewport.
+ * Grilles adaptatives — largeur du **contenu** (`@container` sur `<main>`),
+ * via `auto-fit` + `minmax` (pas de `xl:` viewport).
  *
- * Problème observé (machines laptop / DPI Windows) :
- * viewport ≥ 1280px (`xl:`) force 4–5 colonnes alors que la sidebar (~248px)
- * + paddings laissent ~950–1100px de contenu → cartes KPI écrasées / mélangées.
+ * Cible laptop fréquente : **1366×768** + sidebar ≈ **1000–1100 px** utiles.
+ * À 100 % zoom, 3 cartes « hub » (~22 rem min) → **2 colonnes** (pas de coupe).
+ * Zoom navigateur 75 % n’est **pas** une solution produit.
  *
- * Seuils en rem du **conteneur app** (après sidebar).
+ * Formule : `minmax(min(100%, Xrem), 1fr)` — X = largeur mini d’une carte ;
+ * le nombre de colonnes = floor(largeur_contenu / X).
  */
+
+/** KPI / radial — cartes plus compactes (3–4 cols dès ~1100 px). */
 export const gridKpi2 =
-  "grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2";
+  "grid min-w-0 gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))]";
 
 export const gridKpi3 =
-  "grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3";
+  "grid min-w-0 gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr))]";
 
-/** 4 KPI / radial cards — 4 cols seulement si le contenu est assez large. */
+/** 4 KPI max — sur 1366+sidebar ≈ 3 cols ; 4 cols seulement si contenu ≥ ~72 rem. */
 export const gridKpi4 =
-  "grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[64rem]:grid-cols-4";
+  "grid min-w-0 gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,16.5rem),1fr))]";
 
-/** 5 KPI (ex. rapport semaine + stocks) — 5 cols sur grand contenu uniquement. */
+/** 5 KPI max — densifie progressivement. */
 export const gridKpi5 =
-  "grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[48rem]:grid-cols-3 @min-[76rem]:grid-cols-5";
-
-/** Cartes hub / listes de modules (3 cols). */
-export const gridCards3 =
-  "grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[52rem]:grid-cols-3";
-
-/** Cartes hub 4 cols. */
-export const gridCards4 =
-  "grid min-w-0 gap-3 grid-cols-1 @min-[28rem]:grid-cols-2 @min-[64rem]:grid-cols-4";
+  "grid min-w-0 gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))]";
 
 /**
- * Tuiles GED (vue grille) — densifie seulement si le contenu le permet.
- * Ancien : `grid-cols-2 … xl:grid-cols-5` (viewport) trop agressif avec sidebar.
+ * Hub Commercial (cartes MetricNav + jauges) — min 22 rem :
+ * 1366 → 2 cols ; grand écran → 3 cols.
  */
+export const gridCards3 =
+  "grid min-w-0 gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr))]";
+
+/**
+ * Section Vente (jusqu’à 4 modules) — min 20 rem :
+ * 1366 → 2 cols ; large → 3–4.
+ */
+export const gridCards4 =
+  "grid min-w-0 gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr))]";
+
+/** Tuiles GED. */
 export const gridGedTiles =
-  "grid min-w-0 gap-3 grid-cols-2 p-4 @min-[36rem]:grid-cols-3 @min-[52rem]:grid-cols-4 @min-[72rem]:grid-cols-5";
+  "grid min-w-0 gap-3 p-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,9.5rem),1fr))]";

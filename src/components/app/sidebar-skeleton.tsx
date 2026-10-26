@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function SidebarSkeleton() {
   return (
     <aside
-      className="flex h-full w-62 shrink-0 flex-col overflow-hidden border-r border-msk-ink/7 bg-white"
+      className="flex h-full w-56 shrink-0 flex-col overflow-hidden border-r border-msk-ink/7 bg-white xl:w-62"
       aria-busy
       aria-label="Chargement navigation"
     >

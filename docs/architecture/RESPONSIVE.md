@@ -1,50 +1,45 @@
 # Responsive ERP MSK — stratégie
 
-## Cause structurelle (audit 2026-10-26)
+## Machine de référence problématique
 
-Les grilles KPI / hub utilisaient des breakpoints **viewport** (`sm:`, `xl:`).
+| Paramètre | Valeur (Yaye Bah) |
+|---|---|
+| Résolution | **1366 × 768** @ 100 % |
+| Contenu utile | ≈ 1000–1100 px (viewport − sidebar − paddings) |
+| Anti-pattern | Zoom navigateur **75 %** pour « élargir » le CSS |
 
-Sur un laptop (ex. ~1366 CSS px, ou Windows DPI 125 %) :
+Le zoom 75 % n’est **pas** une solution produit : il augmente artificiellement les CSS px. L’UI doit tenir à **100 %** sur 1366×768.
 
-| Élément | Largeur approx. |
-|---|---:|
-| Viewport | 1280–1366 |
-| Sidebar `w-62` | ~248 px |
-| Paddings main | ~48–64 px |
-| **Contenu utile** | **~950–1100 px** |
+## Cause
 
-Or `xl:` (1280 px **viewport**) s’active déjà → 4 ou 5 colonnes dans ~1000 px de contenu → cartes écrasées, textes mélangés, aspect « cassé » alors que le même code est propre sur un grand écran.
+1. Grilles `xl:grid-cols-*` basées sur le **viewport** (sidebar ignorée).
+2. Puis breakpoints `@min-[52rem]` encore trop bas → **3 colonnes** dans ~1050 px → cartes trop larges / coupées (`overflow-x-hidden`).
 
-Ce n’est **pas** un bug de la machine de Yaye Bah : c’est une dépendance incorrecte au viewport.
+## Règle actuelle
 
-## Règle
-
-1. `<main>` du shell `(app)` porte `@container` (+ `min-w-0`, `overflow-x-hidden`).
-2. Les grilles denses (KPI, hub Commercial, cards modules) utilisent les tokens de [`src/lib/ui/layout-grids.ts`](../../src/lib/ui/layout-grids.ts) — variantes `@min-[…rem]:` = **largeur du contenu**.
-3. Composants flex/grid enfants : `min-w-0` pour autoriser le shrink.
-4. Tableaux denses : `overflow-x-auto` **dans** le conteneur (Surface), pas sur toute la page.
-5. Ne pas introduire de `min-width` / largeurs fixes injustifiées sur les cards.
+1. `<main class="@container …">` + `min-w-0`.
+2. Tokens [`src/lib/ui/layout-grids.ts`](../../src/lib/ui/layout-grids.ts) :
+   `repeat(auto-fit, minmax(min(100%, Xrem), 1fr))`
+3. Hub Commercial : **X ≈ 20–22 rem** → **2 colonnes** sur 1366 ; 3+ sur grand écran.
+4. KPI : X ≈ 15–16.5 rem (plus dense).
+5. Sidebar : `w-56` puis `xl:w-62` (plus d’espace utile sous xl).
+6. Enfants flex/grid : `min-w-0` / `max-w-full`.
 
 ## Tokens
 
-| Export | Usage |
-|---|---|
-| `gridKpi3` / `gridKpi4` / `gridKpi5` | KPI / `KpiRadial` |
-| `gridCards3` / `gridCards4` | Hub modules |
-| `gridGedTiles` | Vue tuiles GED |
+| Export | Min carte | Effet typique 1366 |
+|---|---:|---|
+| `gridCards3` / `gridCards4` | 20–22 rem | 2 cols hub |
+| `gridKpi3` / `gridKpi4` / `gridKpi5` | 15–16.5 rem | 3–4 KPI |
+| `gridGedTiles` | 9.5 rem | tuiles GED |
 
 ## GED — chargement
 
-- `loading.tsx` + `GedBrowserSkeleton` : chrome navigateur (pas flash blanc).
-- Page : `PageHeader` stable + `<Suspense key={folder}>` autour des données dossier.
-- Client : overlay « Ouverture du dossier… » dès le clic (`pendingHref`).
+- Skeleton navigateur + Suspense `key={folder}` + overlay « Ouverture du dossier… ».
 
-## Tests manuels recommandés
+## Test manuel obligatoire (machine type Yaye)
 
-Viewport CSS (DevTools) avec sidebar visible :
-
-- 1024, 1280, 1366, 1440, 1920
-- Zoom navigateur 100 % et 125 %
-- Pages : Accueil, Commercial hub, CRM dashboard, Prospects, Relances, Rapport semaine, un formulaire create, une modale
-
-Vérifier : pas de scroll horizontal page, KPI non chevauchés, actions Relances accessibles.
+1. Résolution **1366×768**, scale OS **100 %**, zoom navigateur **100 %** (pas 75 %).
+2. `/commercial` : aucune carte coupée à droite ; Prospection en **2** colonnes.
+3. Prospects / Relances / Rapport : KPI lisibles, pas de scroll horizontal page.
+4. GED : skeleton visible, pas flash blanc.

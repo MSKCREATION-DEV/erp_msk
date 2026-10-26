@@ -24,7 +24,7 @@ export const METRIC_NAV_TONE_CHART: Record<
 };
 
 const shellClass =
-  "group flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-msk-ink/8 bg-white p-4 shadow-sm transition hover:border-msk-blue/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40";
+  "group flex h-full min-w-0 max-w-full flex-col overflow-hidden rounded-xl border border-msk-ink/8 bg-white p-3.5 shadow-sm transition hover:border-msk-blue/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40 sm:p-4";
 
 export type MetricNavCardProps = {
   href: string;
