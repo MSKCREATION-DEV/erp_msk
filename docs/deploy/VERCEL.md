@@ -134,8 +134,8 @@ DIRECT_URL=postgresql://postgres.[REF]:[PWD]@aws-0-….pooler.supabase.com:5432/
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anon |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Serveur uniquement** — ne jamais préfixer `NEXT_PUBLIC_` |
 | `NEXT_PUBLIC_APP_URL` | URL canonique prod, ex. `https://erp.mskcreation.net` ou `https://….vercel.app` |
-| `RESEND_API_KEY` | Clé Resend |
-| `EMAIL_FROM` | Domaine **vérifié** Resend, ex. `MSK CREATION <noreply@mskcreation.net>` |
+| `RESEND_API_KEY` | Clé Resend du **même** compte où `mskcreation.net` est Verified |
+| `EMAIL_FROM` | `MSK CREATION <notifications@mskcreation.net>` (domaine vérifié Resend) |
 
 ### Interdit en Production
 
@@ -151,8 +151,10 @@ DIRECT_URL=postgresql://postgres.[REF]:[PWD]@aws-0-….pooler.supabase.com:5432/
 ## 3. Domaine & e-mail
 
 1. Domaine custom (optionnel) : Vercel → Domains → `erp.mskcreation.net` + DNS Cloudflare
-2. Resend → Domains → vérifier `mskcreation.net` (SPF/DKIM) puis utiliser ce domaine dans `EMAIL_FROM`
-3. Sans domaine vérifié, Resend n’envoie qu’à l’adresse du compte test
+2. Resend → Domains → `mskcreation.net` **Verified** (SPF/DKIM) ; `EMAIL_FROM` = `MSK CREATION <notifications@mskcreation.net>`
+3. Logos e-mail = **CID inline** (`src/lib/email/brand-assets.ts`) — pas besoin d’URL publique (Vercel Protection OK)
+4. Smoke local : `npm run test:email` · aperçu invitation : `npm run test:email:invite`
+5. Sans domaine vérifié / mauvaise clé API → 403 Resend
 
 ## 4. Déployer
 

@@ -54,7 +54,8 @@ Ouvrir [http://localhost:3000/login](http://localhost:3000/login).
 | `npm run build` | `prisma generate` + build production |
 | `npm run lint` | ESLint |
 | `npm run health:env` | Vérifie les variables (sans secrets) |
-| `npm run test:email` | E-mail test Resend |
+| `npm run test:email` | E-mail test Resend (shell brandé) |
+| `npm run test:email:invite` | Aperçu mail invitation (données démo) |
 | `npm run db:migrate` | Migrations Prisma |
 | `npm run db:seed` | Seed IAM + Super Admin |
 | `npm run db:setup` | `migrate deploy` + seed |
