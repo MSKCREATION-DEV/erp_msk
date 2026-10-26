@@ -1367,7 +1367,7 @@ Donc : **oui, Cloudflare peut jouer le rôle de Resend** pour l’outbound (Emai
 1. **DNS & réception** : rester sur **Cloudflare** (Email Routing / boîtes).
 2. **Dev (maintenant)** : **Resend** — configurer le domaine `mskcreation.net` (SPF/DKIM/DMARC via DNS Cloudflare) ; Free pour démarrer.
 3. **Prod (plus tard)** : rester sur Resend (upgrade Pro si volume) **ou** basculer vers Cloudflare Email Sending — le code utilisera un **adapter e-mail** unique.
-4. From système : `notifications@mskcreation.net` (ou alias validé Resend) ; `reply-to` collaborateur quand besoin (ex. `a.guiro@mskcreation.net`).
+4. From système : `erp.notifications@mskcreation.net` (ou alias validé Resend) ; `reply-to` collaborateur quand besoin (ex. `a.guiro@mskcreation.net`).
 
 
 ### 13.5 Nouvel environnement (Supabase + dépôt)

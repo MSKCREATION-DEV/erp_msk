@@ -64,7 +64,7 @@ npm run health:env
 3. **Pour un premier test immédiat** (sans DNS) :
    - `EMAIL_FROM=onboarding@resend.dev`
    - `EMAIL_TEST_TO=a.guiro@mskcreation.net` (ou l’e-mail vérifié Resend)
-4. Ensuite (recommandé) : Domains → ajouter `mskcreation.net` → records DNS dans **Cloudflare** (SPF/DKIM) → puis `EMAIL_FROM=notifications@mskcreation.net`
+4. Ensuite (recommandé) : Domains → ajouter `mskcreation.net` → records DNS dans **Cloudflare** (SPF/DKIM) → puis `EMAIL_FROM=MSK CREATION <erp.notifications@mskcreation.net>`
 
 Test :
 
