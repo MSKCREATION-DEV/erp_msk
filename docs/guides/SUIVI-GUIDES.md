@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-28 (cloche notifs + affectations UX) |
+| Dernière mise à jour | 2026-10-28 (affectations fiche → historique) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-10-28 — Affectation fiche → Historique + traçabilité lisible
+
+- **Pourquoi** : « Affecter » depuis la fiche écrivait une note avec UUID d’ancien suivi et ne créait pas de `CrmAssignmentRequest` → invisible dans `/crm/affectations` Historique ; timeline mal lisible.
+- **Quoi** : corps « Ancien suivi : Nom Prénom » ; création d’une demande APPROVED (affectation directe) + annulation des PENDING ; humanisation des anciens UUID à l’affichage ; notes d’affectation non éditables (⋯ masqué).
+- **Fichiers** : `actions/crm.ts` (`reassignProspectAction`), `prospect-timeline.ts`, fiche prospect, `SUIVI-GUIDES.md`.
+- **Statut doc** : parcours Affectations → `to_validate`.
 
 ### 2026-10-28 — Notifs cloche + affectations (temps réel / UX)
 

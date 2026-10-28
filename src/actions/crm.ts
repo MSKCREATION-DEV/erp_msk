@@ -57,6 +57,7 @@ import {
 } from "@/lib/crm/duplicate-search";
 import { hasIdentityContactMatch } from "@/lib/crm/duplicates";
 import { parseDatetimeLocal } from "@/lib/crm/datetime-local";
+import { fullName } from "@/lib/utils";
 import type { ActionResult } from "@/actions/auth";
 
 const stageSchema = z.nativeEnum(CrmPipelineStage);
@@ -815,16 +816,27 @@ export async function reassignProspectAction(
     };
   }
 
-  const newOwner = await prisma.user.findFirst({
-    where: {
-      id: newOwnerId,
-      status: { in: ["ACTIVE", "MUST_CHANGE_PASSWORD"] },
-    },
-    select: { id: true, firstName: true, lastName: true },
-  });
+  const [newOwner, previousOwner] = await Promise.all([
+    prisma.user.findFirst({
+      where: {
+        id: newOwnerId,
+        status: { in: ["ACTIVE", "MUST_CHANGE_PASSWORD"] },
+      },
+      select: { id: true, firstName: true, lastName: true },
+    }),
+    prisma.user.findUnique({
+      where: { id: deal.ownerId },
+      select: { firstName: true, lastName: true },
+    }),
+  ]);
   if (!newOwner) {
     return { ok: false, error: "Utilisateur introuvable ou inactif" };
   }
+
+  const newOwnerName = fullName(newOwner.firstName, newOwner.lastName);
+  const previousOwnerName = previousOwner
+    ? fullName(previousOwner.firstName, previousOwner.lastName)
+    : "non renseigné";
 
   const now = new Date();
   await prisma.$transaction(async (tx) => {
@@ -848,10 +860,34 @@ export async function reassignProspectAction(
         opportunityId: deal.id,
         organizationId: deal.organizationId,
         type: CrmActivityType.NOTE,
-        summary: `Suivi réassigné à ${newOwner.firstName} ${newOwner.lastName}`,
-        body: `Ancien suivi : ${deal.ownerId}`,
+        summary: `Suivi réassigné à ${newOwnerName}`,
+        body: `Ancien suivi : ${previousOwnerName}`,
         actorId: actor.id,
         occurredAt: now,
+      },
+    });
+    // Trace dans /crm/affectations (Historique) — affectation directe = déjà tranchée.
+    await tx.crmAssignmentRequest.create({
+      data: {
+        opportunityId: deal.id,
+        requesterId: actor.id,
+        message: "Affectation directe",
+        status: "APPROVED",
+        resolvedAt: now,
+        resolvedById: actor.id,
+        resolveNote: `Suivi confié à ${newOwnerName} (ancien : ${previousOwnerName})`,
+      },
+    });
+    await tx.crmAssignmentRequest.updateMany({
+      where: {
+        opportunityId: deal.id,
+        status: "PENDING",
+      },
+      data: {
+        status: "CANCELLED",
+        resolvedAt: now,
+        resolvedById: actor.id,
+        resolveNote: "Annulée — affectation directe",
       },
     });
   });
@@ -884,7 +920,7 @@ export async function reassignProspectAction(
   revalidatePath("/crm/affectations");
   return {
     ok: true,
-    message: `Suivi confié à ${newOwner.firstName} ${newOwner.lastName}`,
+    message: `Suivi confié à ${newOwnerName}`,
   };
 }
 

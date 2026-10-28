@@ -52,6 +52,7 @@ import { countOutreachActivities } from "@/lib/crm/follow-up-count";
 import { loadProspectLinkedEntities } from "@/lib/crm/prospect-linked-entities";
 import {
   buildProspectTimeline,
+  collectOwnerIdsFromActivityBodies,
   timelineKindLabel,
 } from "@/lib/crm/prospect-timeline";
 import {
@@ -63,7 +64,7 @@ import {
   COM_DOCS_GATED,
   COM_DOCS_GATED_HINT,
 } from "@/lib/commercial/gates";
-import { cn } from "@/lib/utils";
+import { cn, fullName } from "@/lib/utils";
 
 const SCRIPT_CHANNELS = new Set([
   "INSTAGRAM",
@@ -351,6 +352,20 @@ export default async function CrmProspectDetailPage({
   });
   const sameOwnerAsCreator = deal.ownerId === deal.createdById;
 
+  const legacyOwnerIds = collectOwnerIdsFromActivityBodies(
+    deal.activities.map((a) => a.body),
+  );
+  const ownerNameById = new Map<string, string>();
+  if (legacyOwnerIds.length > 0) {
+    const legacyOwners = await prisma.user.findMany({
+      where: { id: { in: legacyOwnerIds } },
+      select: { id: true, firstName: true, lastName: true },
+    });
+    for (const u of legacyOwners) {
+      ownerNameById.set(u.id, fullName(u.firstName, u.lastName));
+    }
+  }
+
   const journalEntries = buildProspectTimeline({
     activities: deal.activities,
     deal: {
@@ -358,6 +373,7 @@ export default async function CrmProspectDetailPage({
       createdAt: deal.createdAt,
       createdBy: deal.createdBy,
     },
+    ownerNameById,
   });
 
   const canLog =
@@ -1069,7 +1085,7 @@ export default async function CrmProspectDetailPage({
                           {a.occurredAt.toLocaleString("fr-FR")} · {a.actorName}
                         </p>
                       </div>
-                      {a.activityType ? (
+                      {a.activityType && !a.locked ? (
                         <ActivityJournalActions
                           activityId={a.id}
                           opportunityId={deal.id}
