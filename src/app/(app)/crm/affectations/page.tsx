@@ -342,8 +342,11 @@ export default async function CrmAffectationsPage({
                         <Badge tone="muted">{STAGE_LABELS[uiStage]}</Badge>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex flex-col gap-2">
-                          <AssignmentResolveActions requestId={r.id} />
+                        <div className="flex flex-col items-end gap-2">
+                          <AssignmentResolveActions
+                            requestId={r.id}
+                            prospectLabel={r.opportunity.organization.name}
+                          />
                           <AssignProspectForm
                             commercials={commercials}
                             opportunityId={r.opportunity.id}

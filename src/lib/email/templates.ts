@@ -1,24 +1,16 @@
 import { brand, colors } from "@/lib/brand";
 import { company } from "@/lib/company";
 import { EMAIL_CID } from "@/lib/email/brand-assets";
+import { publicAppBaseUrl } from "@/lib/app-url";
 
 /**
  * Shell e-mail MSK — épuré / pro (inspiration produit moderne).
  * Couleurs = tokens charte v3 (`src/lib/brand.ts`) uniquement.
  */
 
-const appUrl = () =>
-  (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
-
-/** CTA cliquable : jamais localhost dans la boîte du destinataire. */
+/** CTA cliquable : jamais localhost / preview Vercel dans la boîte. */
 function ctaBaseUrl() {
-  const explicit = process.env.EMAIL_CTA_BASE_URL?.trim();
-  if (explicit) return explicit.replace(/\/$/, "");
-  const app = appUrl();
-  if (app.includes("localhost") || app.includes("127.0.0.1")) {
-    return "https://erp-msk.vercel.app";
-  }
-  return app;
+  return publicAppBaseUrl();
 }
 
 /** Charte MSK — primary + dégradé officiels. */

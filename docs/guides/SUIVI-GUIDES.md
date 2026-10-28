@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-28 (pagination sélection prospect RDV) |
+| Dernière mise à jour | 2026-10-28 (cloche notifs + affectations UX) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-10-28 — Notifs cloche + affectations (temps réel / UX)
+
+- **Pourquoi** : cloche vide alors que la page notifs avait des items (poll coupé si Realtime « SUBSCRIBED ») ; Approuver sans confirmation / UI figée / double-clic ; CTA e-mail vers preview Vercel ; Traiter visible en lecture seule.
+- **Quoi** : poll cloche toujours actif ; `revalidatePath` layout après notif ; CTA e-mail → `publicAppBaseUrl` (prod) ; Approuver avec dialog + état local ; Refuser en ⋯ ; masquer RelanceActions si pas `canMutate`.
+- **Fichiers** : `use-notifications-live.ts`, `notify.ts`, `app-url.ts`, `assignment-resolve-actions.tsx`, fiche prospect.
+- **Statut doc** : parcours affectations / notifs à revalider.
 
 ### 2026-10-28 — Fix crash /notifications (Realtime channel)
 

@@ -870,18 +870,20 @@ export default async function CrmProspectDetailPage({
                               {overdue ? " · En retard" : ""}
                             </p>
                           </div>
-                          <RelanceActions
-                            className="shrink-0"
-                            taskId={t.id}
-                            opportunityId={deal.id}
-                            requireFollowUp={followUpRequiredForStage(
-                              normalizeUiStage(deal.stage),
-                            )}
-                            orgName={deal.organization.name}
-                            title={t.title}
-                            dueAt={t.dueAt}
-                            showFicheLink={false}
-                          />
+                          {canMutate ? (
+                            <RelanceActions
+                              className="shrink-0"
+                              taskId={t.id}
+                              opportunityId={deal.id}
+                              requireFollowUp={followUpRequiredForStage(
+                                normalizeUiStage(deal.stage),
+                              )}
+                              orgName={deal.organization.name}
+                              title={t.title}
+                              dueAt={t.dueAt}
+                              showFicheLink={false}
+                            />
+                          ) : null}
                         </div>
                       </li>
                     );

@@ -19,23 +19,20 @@ type Opts = {
   initial: LiveNotification[];
   initialUnread: number;
   onActionable?: (n: LiveNotification) => void;
+  /** Poll de secours — toujours actif (Realtime peut être « SUBSCRIBED » sans events). */
   pollMs?: number;
 };
 
 /**
- * Realtime Supabase sur app_notifications (SELECT own) + fallback poll 5 s.
- *
- * Topic **unique par instance** (`notif:{userId}:{hookId}`) : la cloche topbar
- * et `/notifications` (ou AffectationsLive) peuvent coexister. Réutiliser le
- * même nom de channel après `subscribe()` fait planter :
- * « cannot add postgres_changes callbacks … after subscribe() ».
+ * Realtime Supabase + **poll toujours actif** (secours).
+ * Topic unique par instance pour éviter le crash « callbacks after subscribe ».
  */
 export function useNotificationsLive({
   userId,
   initial,
   initialUnread,
   onActionable,
-  pollMs = 5000,
+  pollMs = 4000,
 }: Opts) {
   const instanceId = useId().replace(/:/g, "");
   const [items, setItems] = useState(initial);
@@ -56,6 +53,24 @@ export function useNotificationsLive({
       onActionableRef.current?.(n);
     }
   }, []);
+
+  const applyPoll = useCallback(
+    (data: { items?: LiveNotification[]; unread?: number }) => {
+      if (!data.items) return;
+      setItems((prev) => {
+        // Détecter nouveaux IDs pour callbacks actionnables
+        const prevIds = new Set(prev.map((x) => x.id));
+        for (const n of data.items!) {
+          if (!prevIds.has(n.id) && isActionableNotificationKind(n.kind)) {
+            onActionableRef.current?.(n);
+          }
+        }
+        return data.items!;
+      });
+      if (typeof data.unread === "number") setUnread(data.unread);
+    },
+    [],
+  );
 
   useEffect(() => {
     setItems(initial);
@@ -109,20 +124,27 @@ export function useNotificationsLive({
     };
   }, [userId, instanceId, prepend]);
 
+  // Poll **toujours** — Realtime seul n’est pas fiable (RLS / faux SUBSCRIBED).
   useEffect(() => {
-    if (realtimeOk || !userId) return;
-    const t = window.setInterval(() => {
+    if (!userId) return;
+
+    function tick() {
       void fetch("/api/notifications/poll", { cache: "no-store" })
         .then((r) => (r.ok ? r.json() : null))
-        .then((data: { items?: LiveNotification[]; unread?: number } | null) => {
-          if (!data?.items) return;
-          setItems(data.items);
-          if (typeof data.unread === "number") setUnread(data.unread);
+        .then((data) => {
+          if (data) applyPoll(data);
         })
         .catch(() => {});
-    }, pollMs);
-    return () => window.clearInterval(t);
-  }, [realtimeOk, userId, pollMs]);
+    }
+
+    // Premier tick rapide pour rattraper une notif créée pendant la session.
+    const first = window.setTimeout(tick, 800);
+    const t = window.setInterval(tick, pollMs);
+    return () => {
+      window.clearTimeout(first);
+      window.clearInterval(t);
+    };
+  }, [userId, pollMs, applyPoll]);
 
   function markLocalRead(id: string) {
     setItems((prev) =>
@@ -143,5 +165,12 @@ export function useNotificationsLive({
     setUnread(0);
   }
 
-  return { items, unread, realtimeOk, markLocalRead, markAllLocalRead, prepend };
+  return {
+    items,
+    unread,
+    realtimeOk,
+    markLocalRead,
+    markAllLocalRead,
+    prepend,
+  };
 }

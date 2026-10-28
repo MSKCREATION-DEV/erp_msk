@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email/resend";
 import {
@@ -5,6 +6,7 @@ import {
   notificationEmailText,
 } from "@/lib/email/templates";
 import { shouldEmailNotificationKind } from "@/lib/notifications/kinds";
+import { publicAppBaseUrl } from "@/lib/app-url";
 
 export type NotifyPayload = {
   userIds: string[];
@@ -14,19 +16,6 @@ export type NotifyPayload = {
   href?: string | null;
   channels?: Array<"in_app" | "email">;
 };
-
-function appBaseUrl() {
-  const explicit = process.env.EMAIL_CTA_BASE_URL?.trim();
-  if (explicit) return explicit.replace(/\/$/, "");
-  const app = (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000").replace(
-    /\/$/,
-    "",
-  );
-  if (app.includes("localhost") || app.includes("127.0.0.1")) {
-    return "https://erp-msk.vercel.app";
-  }
-  return app;
-}
 
 export async function notifyUsers(payload: NotifyPayload): Promise<number> {
   const ids = [...new Set(payload.userIds.filter(Boolean))];
@@ -53,6 +42,9 @@ export async function notifyUsers(payload: NotifyPayload): Promise<number> {
       });
       notifByUser.set(userId, row.id);
     }
+    // Topbar cloche (Suspense layout) — invalider le shell.
+    revalidatePath("/", "layout");
+    revalidatePath("/notifications");
   }
 
   if (wantEmail) {
@@ -60,7 +52,7 @@ export async function notifyUsers(payload: NotifyPayload): Promise<number> {
       where: { id: { in: ids } },
       select: { id: true, email: true, firstName: true },
     });
-    const base = appBaseUrl();
+    const base = publicAppBaseUrl();
     const hrefAbs = payload.href
       ? payload.href.startsWith("http")
         ? payload.href
