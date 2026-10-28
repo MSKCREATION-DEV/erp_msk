@@ -5,10 +5,12 @@ alwaysApply: true
 
 # Formulaires ERP MSK (absolu)
 
+Complète **`forms-stepper.mdc`** : parcours multi-intention → `FormSteps` (sauf formulaires simples).
+
 ## Layout
 
 - Le formulaire **occupe toute la largeur utile** de la page (`w-full`) — **interdit** `max-w-xl` / `max-w-lg` / carte coincée à gauche.
-- Conteneur : `Surface` (ou équivalent) pleine largeur ; grille responsive (`sm:grid-cols-2`, `lg:grid-cols-3` / `12`) pour remplir la zone.
+- Conteneur : `Surface` / `FormShell` pleine largeur ; grille responsive (`sm:grid-cols-2`, `lg:grid-cols-3` / `12`) pour remplir la zone.
 - Actions (Annuler / Continuer / Enregistrer) : barre claire en bas du formulaire, pending visible.
 
 ## Champs

@@ -24,7 +24,7 @@ type SortableThProps = {
 
 /**
  * En-tête de colonne triable — URL `?sort=` + `?dir=` (Server Components).
- * Colonnes non triables : garder un `<th>` plain.
+ * Icône toujours visible (affordance claire sur fond chalk).
  */
 export function SortableTh({
   label,
@@ -60,7 +60,7 @@ export function SortableTh({
         active ? (dir === "asc" ? "ascending" : "descending") : "none"
       }
       className={cn(
-        "px-4 py-3 font-semibold",
+        "px-3 py-3 font-semibold",
         align === "center" && "text-center",
         align === "right" && "text-right",
         className,
@@ -69,25 +69,28 @@ export function SortableTh({
       <Link
         prefetch={false}
         href={href}
+        title={sortAriaLabel(label, active, dir)}
         aria-label={sortAriaLabel(label, active, dir)}
         className={cn(
-          "group inline-flex max-w-full items-center gap-1 rounded-md outline-none transition",
-          "hover:text-msk-ink focus-visible:ring-2 focus-visible:ring-msk-blue/30",
-          active ? "text-msk-ink" : "text-inherit",
+          "group inline-flex max-w-full items-center gap-1.5 rounded-md px-1 py-0.5 outline-none transition",
+          "hover:bg-white/80 hover:text-msk-ink focus-visible:ring-2 focus-visible:ring-msk-blue/30",
+          active ? "bg-white text-msk-ink shadow-sm" : "text-msk-ink/55",
           align === "center" && "justify-center",
           align === "right" && "justify-end",
         )}
       >
-        <span className="truncate">{label}</span>
-        <Icon
+        <span className="truncate tracking-wide uppercase">{label}</span>
+        <span
           className={cn(
-            "h-3.5 w-3.5 shrink-0",
+            "inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border transition",
             active
-              ? "text-msk-blue"
-              : "text-msk-ink/25 group-hover:text-msk-ink/45",
+              ? "border-msk-blue/30 bg-msk-blue/10 text-msk-blue"
+              : "border-msk-ink/15 bg-white text-msk-ink/50 group-hover:border-msk-blue/25 group-hover:text-msk-blue",
           )}
           aria-hidden
-        />
+        >
+          <Icon className="h-3 w-3" strokeWidth={2.5} />
+        </span>
       </Link>
     </th>
   );
@@ -107,7 +110,7 @@ export function PlainTh({
     <th
       scope="col"
       className={cn(
-        "px-4 py-3 font-semibold",
+        "px-3 py-3 font-semibold tracking-wide text-msk-ink/40 uppercase",
         align === "center" && "text-center",
         align === "right" && "text-right",
         className,

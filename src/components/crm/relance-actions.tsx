@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   CalendarClock,
@@ -21,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldHint, FieldLabel } from "@/components/ui/field-label";
 import { Modal } from "@/components/ui/modal";
+import { ActionMenu } from "@/components/ui/action-menu";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +40,8 @@ function toDateInputValue(d: Date | string) {
 }
 
 /**
- * Actions file Relances — Traiter · Modifier · Reporter · Annuler · Fiche.
+ * Actions relance — 1 CTA primaire (Traiter) + menu ⋯ pour le reste.
+ * Évite les grappes de boutons sur fiche / file.
  */
 export function RelanceActions({
   taskId,
@@ -50,6 +51,8 @@ export function RelanceActions({
   title: initialTitle = "",
   dueAt,
   className,
+  /** Masquer « Voir la fiche » (déjà sur la fiche prospect). */
+  showFicheLink = true,
 }: {
   taskId: string;
   opportunityId: string | null;
@@ -58,6 +61,7 @@ export function RelanceActions({
   title?: string;
   dueAt?: Date | string;
   className?: string;
+  showFicheLink?: boolean;
 }) {
   const router = useRouter();
   const { pending, run } = usePendingAction();
@@ -122,9 +126,59 @@ export function RelanceActions({
     });
   }
 
+  const menuItems = [
+    {
+      id: "edit",
+      label: "Modifier",
+      icon: <Pencil className="h-3.5 w-3.5" aria-hidden />,
+      disabled: pending,
+      onSelect: () => {
+        setError(null);
+        setEditTitle(initialTitle);
+        setEditDue(dueAt ? toDateInputValue(dueAt) : "");
+        setEditOpen(true);
+      },
+    },
+    {
+      id: "reschedule",
+      label: "Reporter",
+      icon: <CalendarClock className="h-3.5 w-3.5" aria-hidden />,
+      disabled: pending,
+      onSelect: () => {
+        setError(null);
+        setRescheduleOpen(true);
+      },
+    },
+    {
+      id: "cancel",
+      label: "Annuler la relance",
+      icon: <XCircle className="h-3.5 w-3.5" aria-hidden />,
+      tone: "danger" as const,
+      disabled: pending,
+      onSelect: () => {
+        setError(null);
+        setCancelReason("");
+        setCancelOpen(true);
+      },
+    },
+    ...(opportunityId && showFicheLink
+      ? [
+          {
+            id: "fiche",
+            label: "Ouvrir la fiche",
+            icon: <ExternalLink className="h-3.5 w-3.5" aria-hidden />,
+            disabled: pending,
+            onSelect: () => {
+              router.push(`/crm/prospects/${opportunityId}`);
+            },
+          },
+        ]
+      : []),
+  ];
+
   return (
     <div
-      className={cn("flex flex-wrap items-center justify-end gap-1.5", className)}
+      className={cn("flex flex-nowrap items-center justify-end gap-2", className)}
       onClick={(e) => e.stopPropagation()}
       onKeyDown={(e) => e.stopPropagation()}
     >
@@ -140,62 +194,7 @@ export function RelanceActions({
         </Button>
       ) : null}
 
-      <Button
-        type="button"
-        size="sm"
-        variant="secondary"
-        disabled={pending}
-        onClick={() => {
-          setError(null);
-          setEditTitle(initialTitle);
-          setEditDue(dueAt ? toDateInputValue(dueAt) : "");
-          setEditOpen(true);
-        }}
-      >
-        <Pencil className="h-3.5 w-3.5" aria-hidden />
-        <span className="sr-only sm:not-sr-only">Modifier</span>
-      </Button>
-
-      <Button
-        type="button"
-        size="sm"
-        variant="secondary"
-        disabled={pending}
-        onClick={() => {
-          setError(null);
-          setRescheduleOpen(true);
-        }}
-      >
-        <CalendarClock className="h-3.5 w-3.5" aria-hidden />
-        Reporter
-      </Button>
-
-      <Button
-        type="button"
-        size="sm"
-        variant="secondary"
-        disabled={pending}
-        onClick={() => {
-          setError(null);
-          setCancelReason("");
-          setCancelOpen(true);
-        }}
-      >
-        <XCircle className="h-3.5 w-3.5" aria-hidden />
-        <span className="sr-only sm:not-sr-only">Annuler</span>
-      </Button>
-
-      {opportunityId ? (
-        <Link
-          prefetch={false}
-          href={`/crm/prospects/${opportunityId}`}
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-msk-blue hover:bg-msk-blue/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40"
-          title="Ouvrir la fiche"
-        >
-          <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-          <span className="sr-only sm:not-sr-only">Fiche</span>
-        </Link>
-      ) : null}
+      <ActionMenu items={menuItems} label="Autres actions sur la relance" />
 
       {opportunityId ? (
         <Modal

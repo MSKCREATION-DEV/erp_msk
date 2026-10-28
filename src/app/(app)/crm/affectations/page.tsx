@@ -425,7 +425,14 @@ export default async function CrmAffectationsPage({
                     pathname="/crm/affectations"
                     searchParams={listParams}
                   />
-                  <PlainTh>Décidé par</PlainTh>
+                  <SortableTh
+                    label="Décidé par"
+                    column="resolver"
+                    sort={recentSort.key}
+                    dir={recentSort.dir}
+                    pathname="/crm/affectations"
+                    searchParams={listParams}
+                  />
                   <SortableTh
                     label="Créée"
                     column="createdAt"
@@ -435,8 +442,23 @@ export default async function CrmAffectationsPage({
                     searchParams={listParams}
                     defaultDir="desc"
                   />
-                  <PlainTh>Décidée</PlainTh>
-                  <PlainTh>Statut</PlainTh>
+                  <SortableTh
+                    label="Décidée"
+                    column="resolvedAt"
+                    sort={recentSort.key}
+                    dir={recentSort.dir}
+                    pathname="/crm/affectations"
+                    searchParams={listParams}
+                    defaultDir="desc"
+                  />
+                  <SortableTh
+                    label="Statut"
+                    column="status"
+                    sort={recentSort.key}
+                    dir={recentSort.dir}
+                    pathname="/crm/affectations"
+                    searchParams={listParams}
+                  />
                 </tr>
               </thead>
               <tbody className="divide-y divide-msk-ink/6">

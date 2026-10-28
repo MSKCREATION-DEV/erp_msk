@@ -1,0 +1,47 @@
+---
+description: Formulaires multi-champs → stepper FormSteps (absolu ERP MSK)
+alwaysApply: true
+---
+
+# Formulaires — stepper (absolu ERP MSK)
+
+Complète `forms-full-width-ux.mdc`. Primitive : `FormSteps` (`src/components/ui/form-steps.tsx`).
+
+## Quand stepper (obligatoire)
+
+Tout formulaire de **création / édition métier** qui cumule **plus d’une intention** (ex. qui + quoi + quand, ou plusieurs blocs métier) :
+
+| Exemple | Étapes typiques |
+|---|---|
+| Nouveau RDV | Prospect → Détails → Confirmation |
+| Nouveau prospect | Entreprise → Contact → Suivi → Offres |
+| Affectation | Prospect → Nouveau suivi → Confirmation |
+| Import / devis / facture multi-blocs | Découper par intention |
+
+## Quand mono-écran (autorisé)
+
+Formulaires **simples** = ≤ ~3 champs d’une seule intention, ou modal d’action courte (note, motif, date seule, confirm suppress).
+
+Ex. : reporter une relance, saisir une note optionnelle, filtre liste.
+
+## Règles UX
+
+1. **`FormSteps`** en tête ; `currentIndex` 0-based ; étapes passées cliquables (`onGoTo`) si déjà validées.
+2. **Une intention par étape** — un titre + une phrase d’aide ; pas de scroll « monstre ».
+3. **Validation à chaque étape** avant « Continuer » (messages clairs, pas de submit silencieux).
+4. **Dernière étape = récap** quand il y a engagement (création RDV, affectation, import…) — puis CTA final pending.
+5. Pied : **Retour** / **Continuer** / **Enregistrer…** via `FormShell` footer ; pending visible.
+6. **Pas d’ID technique** à coller pour l’utilisateur (cuid, UUID) — toujours **sélection métier** (tableau + recherche, picker libellé).
+7. Si contexte déjà connu (ex. `?opportunityId=` depuis la fiche) → **sauter / préremplir** l’étape concernée, récap visible.
+
+## Interdit
+
+- Coller un « ID prospect / user / org » en champ libre sur un parcours terrain.
+- Empiler tous les blocs d’un parcours multi-intention sur **une** carte sans stepper.
+- Stepper cosmétique sans validation d’étape.
+- Réinventer une barre d’étapes — réutiliser `FormSteps`.
+
+## Test mental
+
+> Un commercial sans formation technique peut-il aller au bout sans coller d’id ni scroller un mur de champs ?
+> Si non → stepper + sélection métier, avant gate.

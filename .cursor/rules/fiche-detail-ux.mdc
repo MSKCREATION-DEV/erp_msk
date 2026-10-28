@@ -1,0 +1,29 @@
+# Fiches détail — densité UX (absolu ERP MSK)
+
+## Interdit
+
+- **Card-dans-card** : sous-bloc bordé / fond chalk empilé dans une `Surface` / Section déjà cadrée
+- **Grappe de boutons** (≥ 3 actions secondaires côte à côte) sur une ligne d’item (relance, RDV, ticket…)
+- Lien « Fiche » redondant quand on est **déjà** sur la fiche concernée
+
+## Obligatoire
+
+| Intention | Pattern |
+|---|---|
+| Données secondaires dans une section | Liste à plat / `divide-y` / séparateur léger — pas de mini-carte |
+| Action principale | 1 bouton primaire visible (ex. Traiter, Tenu) |
+| Actions secondaires | Menu `ActionMenu` (⋯) — Modifier, Reporter, Annuler… |
+| Retard / alerte | Libellé texte coral ou `Badge`, pas une autre carte |
+
+## Composants
+
+- `ActionMenu` — `src/components/ui/action-menu.tsx`
+- `RelanceActions` / `AppointmentActions` — CTA + ⋯
+
+## Test mental
+
+> Si j’enlève bordure + fond du sous-bloc, l’info reste-t-elle claire ?
+> Si non → le sous-bloc ne servait qu’à « faire carte » → **à aplatir**.
+>
+> Y a-t-il plus d’un bouton secondaire visible sans ouvrir ⋯ ?
+> Si oui → **dette UX**, regrouper.

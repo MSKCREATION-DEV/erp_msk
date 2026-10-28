@@ -56,6 +56,7 @@ import {
   searchOrgDuplicates,
 } from "@/lib/crm/duplicate-search";
 import { hasIdentityContactMatch } from "@/lib/crm/duplicates";
+import { parseDatetimeLocal } from "@/lib/crm/datetime-local";
 import type { ActionResult } from "@/actions/auth";
 
 const stageSchema = z.nativeEnum(CrmPipelineStage);
@@ -1614,6 +1615,97 @@ export async function cancelTaskAction(
   revalidatePath("/crm/relances");
   revalidatePath("/crm");
   return { ok: true, message: "Relance annulée" };
+}
+
+function canEditActivity(
+  actor: SessionUser,
+  activity: { actorId: string; opportunity: { ownerId: string } | null },
+): boolean {
+  if (actor.isSuperAdmin) return true;
+  if (activity.actorId === actor.id) return true;
+  if (activity.opportunity && canMutateCrmDeal(actor, activity.opportunity.ownerId)) {
+    return true;
+  }
+  return (
+    hasPermission(actor, "crm.view_team") ||
+    hasPermission(actor, "crm.reports.global")
+  );
+}
+
+/** Corriger une activité journalisée (canal, résumé, date). */
+export async function updateActivityAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.activity.log" });
+  const id = String(formData.get("activityId") ?? "").trim();
+  const typeRaw = String(formData.get("type") ?? "").trim();
+  const summary = String(formData.get("summary") ?? "").trim();
+  const occurredRaw = String(formData.get("occurredAt") ?? "").trim();
+  if (!id) return { ok: false, error: "Activité manquante" };
+  if (!summary) return { ok: false, error: "Résumé obligatoire" };
+  const typeParsed = activitySchema.safeParse(typeRaw);
+  if (!typeParsed.success) return { ok: false, error: "Canal invalide" };
+  const occurredAt = parseDatetimeLocal(occurredRaw);
+  if (!occurredAt) {
+    return { ok: false, error: "Date invalide" };
+  }
+
+  const activity = await prisma.crmActivity.findUnique({
+    where: { id },
+    include: {
+      opportunity: { select: { id: true, ownerId: true } },
+    },
+  });
+  if (!activity) return { ok: false, error: "Activité introuvable" };
+  if (!canEditActivity(actor, activity)) {
+    return { ok: false, error: "Pas le droit de modifier cette activité" };
+  }
+
+  await prisma.crmActivity.update({
+    where: { id },
+    data: {
+      type: typeParsed.data,
+      summary,
+      occurredAt,
+    },
+  });
+
+  if (activity.opportunityId) {
+    revalidatePath(`/crm/prospects/${activity.opportunityId}`);
+  }
+  revalidatePath("/crm/relances");
+  revalidatePath("/crm");
+  return { ok: true, message: "Activité mise à jour" };
+}
+
+/** Supprimer une activité journalisée (erreur de saisie). */
+export async function deleteActivityAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.activity.log" });
+  const id = String(formData.get("activityId") ?? "").trim();
+  if (!id) return { ok: false, error: "Activité manquante" };
+
+  const activity = await prisma.crmActivity.findUnique({
+    where: { id },
+    include: {
+      opportunity: { select: { id: true, ownerId: true } },
+    },
+  });
+  if (!activity) return { ok: false, error: "Activité introuvable" };
+  if (!canEditActivity(actor, activity)) {
+    return { ok: false, error: "Pas le droit de supprimer cette activité" };
+  }
+
+  const opportunityId = activity.opportunityId;
+  await prisma.crmActivity.delete({ where: { id } });
+
+  if (opportunityId) {
+    revalidatePath(`/crm/prospects/${opportunityId}`);
+  }
+  revalidatePath("/crm/relances");
+  revalidatePath("/crm");
+  return { ok: true, message: "Activité supprimée" };
 }
 
 export async function saveWeeklyReportAction(

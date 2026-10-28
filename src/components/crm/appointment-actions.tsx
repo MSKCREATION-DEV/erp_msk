@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   CheckCircle2,
@@ -14,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldLabel } from "@/components/ui/field-label";
+import { ActionMenu } from "@/components/ui/action-menu";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { cn } from "@/lib/utils";
 
@@ -21,10 +21,12 @@ export function AppointmentActions({
   appointmentId,
   opportunityId,
   className,
+  showFicheLink = true,
 }: {
   appointmentId: string;
   opportunityId: string;
   className?: string;
+  showFicheLink?: boolean;
 }) {
   const router = useRouter();
   const { pending, run } = usePendingAction();
@@ -55,7 +57,7 @@ export function AppointmentActions({
 
   return (
     <div
-      className={cn("flex flex-wrap justify-end gap-1.5", className)}
+      className={cn("flex flex-nowrap items-center justify-end gap-2", className)}
       onClick={(e) => e.stopPropagation()}
     >
       <Button
@@ -70,40 +72,46 @@ export function AppointmentActions({
         <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
         Tenu
       </Button>
-      <Button
-        type="button"
-        size="sm"
-        variant="secondary"
-        disabled={pending}
-        onClick={() => {
-          setMode("NO_SHOW");
-          setError(null);
-        }}
-      >
-        <UserX className="h-3.5 w-3.5" aria-hidden />
-        Absent
-      </Button>
-      <Button
-        type="button"
-        size="sm"
-        variant="secondary"
-        disabled={pending}
-        onClick={() => {
-          setMode("CANCELLED");
-          setError(null);
-        }}
-      >
-        <XCircle className="h-3.5 w-3.5" aria-hidden />
-        Annuler
-      </Button>
-      <Link
-        prefetch={false}
-        href={`/crm/prospects/${opportunityId}`}
-        className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-msk-blue hover:bg-msk-blue/5"
-      >
-        <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-        <span className="sr-only sm:not-sr-only">Fiche</span>
-      </Link>
+
+      <ActionMenu
+        label="Autres actions sur le RDV"
+        items={[
+          {
+            id: "no-show",
+            label: "Marquer absent",
+            icon: <UserX className="h-3.5 w-3.5" aria-hidden />,
+            disabled: pending,
+            onSelect: () => {
+              setMode("NO_SHOW");
+              setError(null);
+            },
+          },
+          {
+            id: "cancel",
+            label: "Annuler le RDV",
+            icon: <XCircle className="h-3.5 w-3.5" aria-hidden />,
+            tone: "danger",
+            disabled: pending,
+            onSelect: () => {
+              setMode("CANCELLED");
+              setError(null);
+            },
+          },
+          ...(showFicheLink
+            ? [
+                {
+                  id: "fiche",
+                  label: "Ouvrir la fiche",
+                  icon: <ExternalLink className="h-3.5 w-3.5" aria-hidden />,
+                  disabled: pending,
+                  onSelect: () => {
+                    router.push(`/crm/prospects/${opportunityId}`);
+                  },
+                },
+              ]
+            : []),
+        ]}
+      />
 
       <Modal
         open={mode != null}

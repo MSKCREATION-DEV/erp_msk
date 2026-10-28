@@ -44,13 +44,20 @@ import {
   parsePage,
   totalPages,
 } from "@/lib/list/pagination";
+import {
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+} from "@/lib/list/sort";
 import { formatContactLabel } from "@/lib/crm/contact-label";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { ListSearchForm } from "@/components/ui/list-search-form";
+import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { RelanceActions } from "@/components/crm/relance-actions";
+import { ActivityJournalActions } from "@/components/crm/activity-journal-actions";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { gridKpi3, gridKpi4 } from "@/lib/ui/layout-grids";
@@ -59,6 +66,123 @@ import { cn } from "@/lib/utils";
 type VueFilter = "tous" | "retard" | "aujourdhui" | "semaine" | "plus-tard";
 
 type TaskRow = Awaited<ReturnType<typeof loadTasks>>[number];
+type ActivityRow = Awaited<ReturnType<typeof loadOutreachDone>>[number];
+
+type TaskSortKey = "org" | "stage" | "action" | "dueAt" | "assignee";
+
+/** Tri en mémoire (file déjà filtrée / bucketée) — orderBy Prisma non utilisé. */
+const TASK_SORT_COLUMNS = {
+  org: () => ({}),
+  stage: () => ({}),
+  action: () => ({}),
+  dueAt: () => ({}),
+  assignee: () => ({}),
+} satisfies SortColumnMap<TaskSortKey>;
+
+type ActivitySortKey =
+  | "occurredAt"
+  | "type"
+  | "org"
+  | "summary"
+  | "owner"
+  | "actor";
+
+const ACTIVITY_SORT_COLUMNS = {
+  occurredAt: () => ({}),
+  type: () => ({}),
+  org: () => ({}),
+  summary: () => ({}),
+  owner: () => ({}),
+  actor: () => ({}),
+} satisfies SortColumnMap<ActivitySortKey>;
+
+function cmpText(a: string, b: string, dir: SortDir) {
+  const mul = dir === "asc" ? 1 : -1;
+  return mul * a.localeCompare(b, "fr", { sensitivity: "base" });
+}
+
+function cmpNum(a: number, b: number, dir: SortDir) {
+  return dir === "asc" ? a - b : b - a;
+}
+
+function sortTasks(tasks: TaskRow[], key: TaskSortKey, dir: SortDir): TaskRow[] {
+  return [...tasks].sort((a, b) => {
+    switch (key) {
+      case "org":
+        return cmpText(
+          a.opportunity?.organization.name ?? a.title ?? "",
+          b.opportunity?.organization.name ?? b.title ?? "",
+          dir,
+        );
+      case "stage":
+        return cmpText(
+          a.opportunity?.stage ?? "",
+          b.opportunity?.stage ?? "",
+          dir,
+        );
+      case "action":
+        return cmpText(
+          a.opportunity?.nextAction?.trim() || a.title || "",
+          b.opportunity?.nextAction?.trim() || b.title || "",
+          dir,
+        );
+      case "dueAt":
+        return cmpNum(a.dueAt.getTime(), b.dueAt.getTime(), dir);
+      case "assignee":
+        return cmpText(
+          `${a.assignee.lastName} ${a.assignee.firstName}`,
+          `${b.assignee.lastName} ${b.assignee.firstName}`,
+          dir,
+        );
+      default:
+        return 0;
+    }
+  });
+}
+
+function sortActivities(
+  rows: ActivityRow[],
+  key: ActivitySortKey,
+  dir: SortDir,
+): ActivityRow[] {
+  return [...rows].sort((a, b) => {
+    switch (key) {
+      case "occurredAt":
+        return cmpNum(a.occurredAt.getTime(), b.occurredAt.getTime(), dir);
+      case "type":
+        return cmpText(
+          ACTIVITY_LABELS[a.type] ?? a.type,
+          ACTIVITY_LABELS[b.type] ?? b.type,
+          dir,
+        );
+      case "org":
+        return cmpText(
+          a.opportunity?.organization.name ?? a.opportunity?.title ?? "",
+          b.opportunity?.organization.name ?? b.opportunity?.title ?? "",
+          dir,
+        );
+      case "summary":
+        return cmpText(a.summary?.trim() ?? "", b.summary?.trim() ?? "", dir);
+      case "owner": {
+        const ao = a.opportunity?.owner;
+        const bo = b.opportunity?.owner;
+        return cmpText(
+          ao ? `${ao.lastName} ${ao.firstName}` : "",
+          bo ? `${bo.lastName} ${bo.firstName}` : "",
+          dir,
+        );
+      }
+      case "actor":
+        return cmpText(
+          `${a.actor.lastName} ${a.actor.firstName}`,
+          `${b.actor.lastName} ${b.actor.firstName}`,
+          dir,
+        );
+      default:
+        return 0;
+    }
+  });
+}
 
 const taskInclude = {
   opportunity: {
@@ -187,11 +311,17 @@ function RelanceTable({
   empty,
   outreachMap,
   now,
+  sortKey,
+  sortDir,
+  listParams,
 }: {
   tasks: TaskRow[];
   empty: string;
   outreachMap: Map<string, number>;
   now: Date;
+  sortKey: TaskSortKey;
+  sortDir: SortDir;
+  listParams: Record<string, string | undefined>;
 }) {
   if (tasks.length === 0) {
     return (
@@ -201,17 +331,58 @@ function RelanceTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-200 text-center text-sm">
+      <table className="w-full min-w-200 text-left text-sm">
         <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
           <tr>
-            <th className="px-4 py-3 font-semibold">Entreprise</th>
-            <th className="px-4 py-3 font-semibold">Contact</th>
-            <th className="px-4 py-3 font-semibold">Statut</th>
-            <th className="px-4 py-3 font-semibold">Relances</th>
-            <th className="px-4 py-3 font-semibold">À faire</th>
-            <th className="px-4 py-3 font-semibold">Échéance</th>
-            <th className="px-4 py-3 font-semibold">Suivi par</th>
-            <th className="px-4 py-3 font-semibold">Actions</th>
+            <SortableTh
+              label="Entreprise"
+              column="org"
+              sort={sortKey}
+              dir={sortDir}
+              pathname="/crm/relances"
+              searchParams={listParams}
+            />
+            <PlainTh>Contact</PlainTh>
+            <SortableTh
+              label="Statut"
+              column="stage"
+              sort={sortKey}
+              dir={sortDir}
+              pathname="/crm/relances"
+              searchParams={listParams}
+            />
+            <PlainTh>Relances</PlainTh>
+            <SortableTh
+              label="À faire"
+              column="action"
+              sort={sortKey}
+              dir={sortDir}
+              pathname="/crm/relances"
+              searchParams={listParams}
+            />
+            <SortableTh
+              label="Échéance"
+              column="dueAt"
+              sort={sortKey}
+              dir={sortDir}
+              pathname="/crm/relances"
+              searchParams={listParams}
+              defaultDir="asc"
+            />
+            <SortableTh
+              label="Suivi par"
+              column="assignee"
+              sort={sortKey}
+              dir={sortDir}
+              pathname="/crm/relances"
+              searchParams={listParams}
+            />
+            <PlainTh
+              align="right"
+              className="sticky right-0 z-10 bg-msk-chalk/95 backdrop-blur-sm"
+            >
+              Actions
+            </PlainTh>
           </tr>
         </thead>
         <tbody className="divide-y divide-msk-ink/6">
@@ -233,7 +404,7 @@ function RelanceTable({
             return (
               <tr
                 key={t.id}
-                className="align-middle transition hover:bg-msk-chalk/40"
+                className="group align-middle transition hover:bg-msk-chalk/40"
               >
                 <td className="px-4 py-3">
                   {t.opportunity ? (
@@ -319,7 +490,7 @@ function RelanceTable({
                 <td className="px-4 py-3 text-msk-ink/65">
                   {t.assignee.firstName} {t.assignee.lastName}
                 </td>
-                <td className="px-4 py-3">
+                <td className="sticky right-0 z-10 whitespace-nowrap bg-white px-3 py-3 text-right shadow-[-6px_0_10px_-8px_rgba(13,19,48,0.2)] group-hover:bg-msk-chalk/40">
                   <RelanceActions
                     taskId={t.id}
                     opportunityId={t.opportunity?.id ?? null}
@@ -479,11 +650,20 @@ export async function RelancesResults({
   const requestedPage = parsePage(sp.page);
 
   if (focusFaites) {
-    const activities = await loadOutreachDone({
+    const activitySort = parseListSort(sp, ACTIVITY_SORT_COLUMNS, {
+      key: "occurredAt",
+      dir: "desc",
+    });
+    const activitiesRaw = await loadOutreachDone({
       ownerIds: ownerScope.canFilterOwners ? ownerIds : [user.id],
       occurredBetween,
       searchWhere: activitySearchWhere,
     });
+    const activities = sortActivities(
+      activitiesRaw,
+      activitySort.key,
+      activitySort.dir,
+    );
     const totalFaites = activities.length;
     const pageFaites = clampPage(requestedPage, totalFaites, pageSize);
     const pageActivities = activities.slice(
@@ -493,6 +673,8 @@ export async function RelancesResults({
     const listParamsFaites: Record<string, string | undefined> = {
       ...sp,
       focus: "faites",
+      sort: activitySort.key,
+      dir: activitySort.dir,
       ...(q ? { q } : {}),
     };
     delete listParamsFaites.page;
@@ -545,15 +727,64 @@ export async function RelancesResults({
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="w-full min-w-180 text-left text-sm">
+                <table className="w-full min-w-200 text-left text-sm">
                   <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
                     <tr>
-                      <th className="px-4 py-3 font-semibold">Date</th>
-                      <th className="px-4 py-3 font-semibold">Canal</th>
-                      <th className="px-4 py-3 font-semibold">Entreprise</th>
-                      <th className="px-4 py-3 font-semibold">Résumé</th>
-                      <th className="px-4 py-3 font-semibold">Suivi par</th>
-                      <th className="px-4 py-3 font-semibold">Auteur</th>
+                      <SortableTh
+                        label="Date"
+                        column="occurredAt"
+                        sort={activitySort.key}
+                        dir={activitySort.dir}
+                        pathname="/crm/relances"
+                        searchParams={listParamsFaites}
+                        defaultDir="desc"
+                      />
+                      <SortableTh
+                        label="Canal"
+                        column="type"
+                        sort={activitySort.key}
+                        dir={activitySort.dir}
+                        pathname="/crm/relances"
+                        searchParams={listParamsFaites}
+                      />
+                      <SortableTh
+                        label="Entreprise"
+                        column="org"
+                        sort={activitySort.key}
+                        dir={activitySort.dir}
+                        pathname="/crm/relances"
+                        searchParams={listParamsFaites}
+                      />
+                      <SortableTh
+                        label="Résumé"
+                        column="summary"
+                        sort={activitySort.key}
+                        dir={activitySort.dir}
+                        pathname="/crm/relances"
+                        searchParams={listParamsFaites}
+                      />
+                      <SortableTh
+                        label="Suivi par"
+                        column="owner"
+                        sort={activitySort.key}
+                        dir={activitySort.dir}
+                        pathname="/crm/relances"
+                        searchParams={listParamsFaites}
+                      />
+                      <SortableTh
+                        label="Auteur"
+                        column="actor"
+                        sort={activitySort.key}
+                        dir={activitySort.dir}
+                        pathname="/crm/relances"
+                        searchParams={listParamsFaites}
+                      />
+                      <PlainTh
+                        align="right"
+                        className="sticky right-0 z-10 bg-msk-chalk/95 backdrop-blur-sm"
+                      >
+                        Actions
+                      </PlainTh>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-msk-ink/6">
@@ -563,7 +794,7 @@ export async function RelancesResults({
                       return (
                         <tr
                           key={a.id}
-                          className="align-middle transition hover:bg-msk-chalk/40"
+                          className="group align-middle transition hover:bg-msk-chalk/40"
                         >
                           <td className="px-4 py-3 tabular-nums text-msk-ink/70">
                             {a.occurredAt.toLocaleDateString("fr-FR", {
@@ -601,6 +832,15 @@ export async function RelancesResults({
                           </td>
                           <td className="px-4 py-3 text-msk-ink/60">
                             {a.actor.firstName} {a.actor.lastName}
+                          </td>
+                          <td className="sticky right-0 z-10 whitespace-nowrap bg-white px-3 py-3 text-right shadow-[-6px_0_10px_-8px_rgba(13,19,48,0.2)] group-hover:bg-msk-chalk/40">
+                            <ActivityJournalActions
+                              activityId={a.id}
+                              opportunityId={a.opportunity?.id ?? null}
+                              type={a.type}
+                              summary={a.summary ?? ""}
+                              occurredAt={a.occurredAt}
+                            />
                           </td>
                         </tr>
                       );
@@ -697,7 +937,11 @@ export async function RelancesResults({
       : "Aucune échéance plus lointaine.",
   };
 
-  const activeList = listByVue[vue];
+  const taskSort = parseListSort(sp, TASK_SORT_COLUMNS, {
+    key: "dueAt",
+    dir: "asc",
+  });
+  const activeList = sortTasks(listByVue[vue], taskSort.key, taskSort.dir);
   const listTotal = activeList.length;
   const page = clampPage(requestedPage, listTotal, pageSize);
   const pageTasks = activeList.slice(
@@ -712,6 +956,8 @@ export async function RelancesResults({
   else listParams.vue = vue;
   if (q) listParams.q = q;
   else delete listParams.q;
+  listParams.sort = taskSort.key;
+  listParams.dir = taskSort.dir;
 
   /** Chips = liste filtrée par `q`. KPI = portefeuille (hors q). */
   const filters: { id: VueFilter; label: string; count: number }[] = [
@@ -839,6 +1085,9 @@ export async function RelancesResults({
             empty={emptyByVue[vue]}
             outreachMap={outreachMap}
             now={now}
+            sortKey={taskSort.key}
+            sortDir={taskSort.dir}
+            listParams={listParams}
           />
           <ListPagination
             pathname="/crm/relances"

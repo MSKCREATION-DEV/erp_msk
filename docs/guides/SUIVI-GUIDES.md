@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-27 (CRM-ops : relances CRUD, RDV, Perdu, notifs) |
+| Dernière mise à jour | 2026-10-28 (stepper formulaires + RDV sélection prospect) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,34 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-10-28 — Menu actions ⋯ (portal, plus de découpe tableau)
+
+- **Pourquoi** : menu Actions découpé / chevauché dans les tableaux (`overflow` + sticky) ; lien « Fiche » collé au ⋯.
+- **Quoi** : `ActionMenu` en portal `fixed` sous `body` ; « Ouvrir la fiche » dans le menu ; parse date `datetime-local` robuste pour Modifier.
+- **Fichiers** : `action-menu.tsx`, `activity-journal-actions.tsx`, `relance-actions.tsx`, `appointment-actions.tsx`, `datetime-local.ts`.
+- **Statut doc** : UX listes ; pas de nouveau guide.
+
+### 2026-10-28 — Formulaires stepper + Nouveau RDV (sélection prospect)
+
+- **Pourquoi** : champ « ID prospect » incompréhensible ; formulaires multi-intention trop denses sans étapes.
+- **Quoi** : règle absolue `forms-stepper.mdc` ; `ProspectSelectTable` (tableau + recherche) ; Nouveau RDV en 3 étapes (Prospect → Détails → Confirmation) via `FormSteps`.
+- **Fichiers** : `.cursor/rules/forms-stepper.mdc`, `prospect-select-table.tsx`, `appointment-form.tsx`, `crm/rdv/nouveau/page.tsx`.
+- **Statut doc** : guides RDV / création à revoir (`outdated` si déjà listés) — parcours UI changé.
+
+### 2026-10-28 — Relances : tri colonnes + actions journal (corriger / supprimer)
+
+- **Pourquoi** : file + « Relances faites » sans en-têtes triables visibles ; journal en lecture seule → erreurs de saisie non corrigeables.
+- **Quoi** : `SortableTh` sur les deux vues ; colonne Actions (⋯ Modifier / Supprimer) sur le journal ; mêmes actions sur la timeline fiche ; historique Affectations aussi triable.
+- **Fichiers** : `relances/relances-results.tsx`, `activity-journal-actions.tsx`, `actions/crm.ts` (`updateActivityAction` / `deleteActivityAction`), fiche prospect, `affectations/page.tsx`.
+- **Statut doc** : `crm-suivre-relancer` reste `outdated` jusqu’à relecture parcours.
+
+### 2026-10-28 — Fiche prospect : Suivi allégé (sans card-dans-card)
+
+- **Pourquoi** : bloc Suivi illisible (sous-carte + 5 boutons) ; même anti-pattern à éviter partout.
+- **Quoi** : liste à plat « À traiter » ; CTA Traiter + menu ⋯ ; réseaux sociaux aplatis ; règle `fiche-detail-ux.mdc` ; RDV actions alignées.
+- **Fichiers** : `prospects/[id]/page.tsx`, `relance-actions.tsx`, `appointment-actions.tsx`, `action-menu.tsx`.
+- **Statut doc** : `crm-suivre-relancer` déjà `outdated`.
 
 ### 2026-10-28 — Tri colonnes sur les tableaux listing
 

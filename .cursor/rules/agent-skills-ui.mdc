@@ -1,0 +1,11 @@
+---
+description: Force le skill frontend-ui-engineering sur les écrans UI
+globs: "**/*.{tsx,jsx,css}"
+alwaysApply: false
+---
+
+# UI → skill auto
+
+Fichiers UI / styles en contexte : **lire et suivre** `.cursor/skills/frontend-ui-engineering/SKILL.md` avant d’implémenter ou de modifier l’UI.
+
+Respecter aussi les rules MSK : `msk-charte`, `ui-never-freeze`, `forms-full-width-ux`, `list-create-separation`.

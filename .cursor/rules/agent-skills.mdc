@@ -1,0 +1,73 @@
+---
+description: Auto-applique les skills agent incontournables ERP MSK
+alwaysApply: true
+---
+
+# Agent skills — auto-application (ERP MSK)
+
+Les skills vivent dans `.cursor/skills/<name>/SKILL.md`.  
+**Ne pas coller le corps des skills ici** — les **lire** (outil Read) puis **suivre les étapes**.
+
+Les règles `.cursor/rules/*.mdc` MSK (charte, auth MDP, RLS, redirects, UI freeze, gates…) **priment** en cas de conflit.
+
+---
+
+## Comportements toujours actifs
+
+(issus de `using-agent-skills` — non négociables)
+
+1. **Assumptions** — avant code non trivial, énoncer les hypothèses ; laisser corriger.
+2. **Confusion** — stopper, nommer le conflit, demander ; ne pas deviner.
+3. **Push-back** — signaler une mauvaise approche + alternative concrète.
+4. **Simplicité** — solution la plus courte / évidente qui marche.
+5. **Scope** — ne toucher que ce qui est demandé (pas de refactor opportuniste).
+6. **Vérifier** — build / parcours / preuve ; « ça a l’air bon » ≠ terminé.
+
+---
+
+## Cœur obligatoire (auto)
+
+Avant le travail concerné, **lire le `SKILL.md`** listé, puis l’appliquer. Pas besoin que l’utilisateur dise « utilise le skill ».
+
+| Situation | Skills à lire (dans l’ordre) |
+|-----------|------------------------------|
+| Demande floue / « build X » sans qui/pourquoi | `interview-me` |
+| Idée brute à raffiner (variants / critères) | `idea-refine` |
+| Session / routage / doute sur le process | `using-agent-skills` |
+| Feature / changement multi-fichiers | `planning-and-task-breakdown` → `incremental-implementation` |
+| Logique, bugfix, changement de comportement | `test-driven-development` |
+| UI / pages / composants (`*.tsx`, layouts) | `frontend-ui-engineering` |
+| Vérif runtime navigateur / parcours UI | `browser-testing-with-devtools` |
+| Auth, FormData, secrets, droits, Prisma write | `security-and-hardening` |
+| Erreur, build cassé, régression | `debugging-and-error-recovery` |
+| Avant de déclarer « fini » / review / gate phase | `code-review-and-quality` |
+| Lib / framework (Next, Prisma, Supabase, Zod…) | `source-driven-development` (+ Context7 MCP si dispo) |
+
+**Minimum par livraison code :**  
+`incremental-implementation` + vérification (`test-driven-development` et/ou `browser-testing-with-devtools` / parcours manuel) + contrôle `code-review-and-quality` (axes utiles).
+
+---
+
+## Skills à la demande (pas auto)
+
+`spec-driven-development`, `constraint-driven-development`, `context-engineering`, `doubt-driven-development`, `api-and-interface-design`, `code-simplification`, `performance-optimization`, `observability-and-instrumentation`, `documentation-and-adrs`, `deprecation-and-migration`, `git-workflow-and-versioning`, `ci-cd-and-automation`, `shipping-and-launch`, skills Prisma MSK.
+
+Les charger quand la phase matche (voir `using-agent-skills`).
+
+---
+
+## Customs MSK (ne pas écraser au resync)
+
+- `prisma-composer-core-concepts`
+- `prisma-platform-core-concepts`
+
+---
+
+## Resync upstream
+
+```bash
+git clone --depth 1 https://github.com/addyosmani/agent-skills.git /tmp/agent-skills
+rsync -a --exclude 'prisma-*' /tmp/agent-skills/skills/ .cursor/skills/
+rm -rf /tmp/agent-skills
+.cursor/scripts/enable-core-skill-auto-invoke.sh
+```

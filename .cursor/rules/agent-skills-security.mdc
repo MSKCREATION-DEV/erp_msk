@@ -1,0 +1,11 @@
+---
+description: Force le skill security-and-hardening sur auth / mutations
+globs: "**/actions/**,**/auth/**,**/*password*,**/middleware.ts,**/rls*"
+alwaysApply: false
+---
+
+# Sécurité → skill auto
+
+Auth, Server Actions, mots de passe, middleware, RLS : **lire et suivre** `.cursor/skills/security-and-hardening/SKILL.md`.
+
+Respecter aussi les rules MSK : `auth-password-safety`, `supabase-rls-prisma` (Prisma only pour le métier — jamais PostgREST).

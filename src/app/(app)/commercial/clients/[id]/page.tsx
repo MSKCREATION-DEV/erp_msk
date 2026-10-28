@@ -447,9 +447,50 @@ export default async function CommercialClientDetailPage({
       <div className="grid gap-4 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <Section title="Entreprise">
-            <div className="grid gap-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-              <div className="rounded-xl border border-msk-ink/6 bg-msk-chalk/40 p-3 sm:p-4">
-                <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+            <ul className="space-y-3.5 text-sm text-msk-ink">
+              <li className="flex gap-2.5">
+                <Building2
+                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                  aria-hidden
+                />
+                <span>
+                  <span className="font-medium">{client.name}</span>
+                  {org?.sector ? (
+                    <span className="block text-msk-ink/50">{org.sector}</span>
+                  ) : null}
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <MapPin
+                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                  aria-hidden
+                />
+                <span>
+                  {[client.address, client.city, client.country]
+                    .filter(Boolean)
+                    .join(" · ") || "Adresse non renseignée"}
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <Globe2
+                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                  aria-hidden
+                />
+                {org?.website ? (
+                  <a
+                    href={org.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="break-all text-msk-blue hover:underline"
+                  >
+                    {org.website}
+                  </a>
+                ) : (
+                  <span className="text-msk-ink/40">Pas de site web</span>
+                )}
+              </li>
+              <li className="border-t border-msk-ink/6 pt-3.5">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
                   Réseaux sociaux
                 </p>
                 <SocialNetworkBadges
@@ -460,53 +501,8 @@ export default async function CommercialClientDetailPage({
                       : "Pas d’organisation CRM liée."
                   }
                 />
-              </div>
-              <ul className="space-y-3 text-sm text-msk-ink">
-                <li className="flex gap-2.5">
-                  <Building2
-                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                    aria-hidden
-                  />
-                  <span>
-                    <span className="font-medium">{client.name}</span>
-                    {org?.sector ? (
-                      <span className="block text-msk-ink/50">
-                        {org.sector}
-                      </span>
-                    ) : null}
-                  </span>
-                </li>
-                <li className="flex gap-2.5">
-                  <MapPin
-                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                    aria-hidden
-                  />
-                  <span>
-                    {[client.address, client.city, client.country]
-                      .filter(Boolean)
-                      .join(" · ") || "Adresse non renseignée"}
-                  </span>
-                </li>
-                <li className="flex gap-2.5">
-                  <Globe2
-                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                    aria-hidden
-                  />
-                  {org?.website ? (
-                    <a
-                      href={org.website}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="break-all text-msk-blue hover:underline"
-                    >
-                      {org.website}
-                    </a>
-                  ) : (
-                    <span className="text-msk-ink/40">Pas de site web</span>
-                  )}
-                </li>
-              </ul>
-            </div>
+              </li>
+            </ul>
             {(client.notes || org?.notes) ? (
               <div className="mt-4 border-t border-msk-ink/6 pt-3">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">

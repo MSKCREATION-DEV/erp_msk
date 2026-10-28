@@ -12,6 +12,8 @@ export type ProspectTimelineEntry = {
   occurredAt: Date;
   actorName: string;
   kind: TimelineEntryKind;
+  /** Présent si entrée = activité Prisma (modifiable / suppression). */
+  activityType?: CrmActivityType;
 };
 
 function classifyActivity(
@@ -60,6 +62,7 @@ export function buildProspectTimeline(opts: {
     occurredAt: a.occurredAt,
     actorName: `${a.actor.firstName} ${a.actor.lastName}`,
     kind: classifyActivity(a.type, a.summary),
+    activityType: a.type,
   }));
 
   if (!hasCreation) {

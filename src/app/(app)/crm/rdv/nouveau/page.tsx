@@ -3,10 +3,17 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { canMutateCrmDeal } from "@/lib/crm/scope";
+import {
+  canMutateCrmDeal,
+  canReassignCrmDeal,
+} from "@/lib/crm/scope";
+import { OPEN_PIPELINE_STAGES, STAGE_LABELS } from "@/lib/crm/labels";
+import { normalizeUiStage } from "@/lib/crm/guide-rules";
+import { formatContactLabel } from "@/lib/crm/contact-label";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { AppointmentForm } from "@/components/crm/appointment-form";
+import type { ProspectSelectRow } from "@/components/crm/prospect-select-table";
 
 export const metadata: Metadata = { title: "Nouveau RDV" };
 
@@ -37,6 +44,57 @@ export default async function CrmRdvNouveauPage({
     opportunityLabel = deal.organization.name;
   }
 
+  let prospects: ProspectSelectRow[] = [];
+  if (!opportunityId) {
+    const canSeeAll =
+      user.isSuperAdmin ||
+      canReassignCrmDeal(user) ||
+      hasPermission(user, "crm.reports.global");
+    const deals = await prisma.crmOpportunity.findMany({
+      where: {
+        stage: { in: [...OPEN_PIPELINE_STAGES] },
+        ...(canSeeAll ? {} : { ownerId: user.id }),
+      },
+      select: {
+        id: true,
+        stage: true,
+        ownerId: true,
+        organization: {
+          select: {
+            name: true,
+            contacts: {
+              orderBy: [
+                { isPrimary: "desc" as const },
+                { createdAt: "asc" as const },
+              ],
+              take: 1,
+              select: { firstName: true, lastName: true },
+            },
+          },
+        },
+        owner: { select: { firstName: true, lastName: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 500,
+    });
+
+    prospects = deals
+      .filter((d) => canMutateCrmDeal(user, d.ownerId))
+      .map((d) => {
+        const contact = d.organization.contacts[0];
+        const uiStage = normalizeUiStage(d.stage);
+        return {
+          id: d.id,
+          orgName: d.organization.name,
+          stageLabel: STAGE_LABELS[uiStage],
+          ownerLabel: `${d.owner.firstName} ${d.owner.lastName}`,
+          contactLabel: contact
+            ? formatContactLabel(contact.firstName, contact.lastName)
+            : null,
+        };
+      });
+  }
+
   return (
     <PageShell>
       <PageHeader
@@ -53,6 +111,7 @@ export default async function CrmRdvNouveauPage({
       <AppointmentForm
         opportunityId={opportunityId || undefined}
         opportunityLabel={opportunityLabel}
+        prospects={prospects}
       />
     </PageShell>
   );

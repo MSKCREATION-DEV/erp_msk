@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   Building2,
-  CalendarClock,
   Globe2,
   Mail,
   MapPin,
@@ -45,6 +44,7 @@ import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
 import { AssignmentRequestForm } from "@/components/crm/assignment-request-form";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { RelanceActions } from "@/components/crm/relance-actions";
+import { ActivityJournalActions } from "@/components/crm/activity-journal-actions";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { OfferConfigBadges } from "@/components/crm/offer-config-badges";
 import { SocialNetworkBadges } from "@/components/crm/social-network-badges";
@@ -728,9 +728,52 @@ export default async function CrmProspectDetailPage({
       <div className="grid gap-4 xl:grid-cols-12">
         <div className="xl:col-span-5">
           <Section title="Entreprise">
-            <div className="grid gap-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-              <div className="rounded-xl border border-msk-ink/6 bg-msk-chalk/40 p-3 sm:p-4">
-                <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+            <ul className="space-y-3.5 text-sm text-msk-ink">
+              <li className="flex gap-2.5">
+                <Building2
+                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                  aria-hidden
+                />
+                <span>
+                  <span className="font-medium">{deal.organization.name}</span>
+                  {deal.organization.sector ? (
+                    <span className="block text-msk-ink/50">
+                      {deal.organization.sector}
+                    </span>
+                  ) : null}
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <MapPin
+                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                  aria-hidden
+                />
+                <span>
+                  {[deal.organization.city, deal.organization.country]
+                    .filter(Boolean)
+                    .join(" · ") || "Ville non renseignée"}
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <Globe2
+                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                  aria-hidden
+                />
+                {deal.organization.website ? (
+                  <a
+                    href={deal.organization.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="break-all text-msk-blue hover:underline"
+                  >
+                    {deal.organization.website}
+                  </a>
+                ) : (
+                  <span className="text-msk-ink/40">Pas de site web</span>
+                )}
+              </li>
+              <li className="border-t border-msk-ink/6 pt-3.5">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
                   Réseaux sociaux
                 </p>
                 <SocialNetworkBadges
@@ -743,55 +786,8 @@ export default async function CrmProspectDetailPage({
                   }}
                   emptyLabel="Aucun réseau — ajoutez via Modifier."
                 />
-              </div>
-              <ul className="space-y-3 text-sm text-msk-ink">
-                <li className="flex gap-2.5">
-                  <Building2
-                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                    aria-hidden
-                  />
-                  <span>
-                    <span className="font-medium">
-                      {deal.organization.name}
-                    </span>
-                    {deal.organization.sector ? (
-                      <span className="block text-msk-ink/50">
-                        {deal.organization.sector}
-                      </span>
-                    ) : null}
-                  </span>
-                </li>
-                <li className="flex gap-2.5">
-                  <MapPin
-                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                    aria-hidden
-                  />
-                  <span>
-                    {[deal.organization.city, deal.organization.country]
-                      .filter(Boolean)
-                      .join(" · ") || "Ville non renseignée"}
-                  </span>
-                </li>
-                <li className="flex gap-2.5">
-                  <Globe2
-                    className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                    aria-hidden
-                  />
-                  {deal.organization.website ? (
-                    <a
-                      href={deal.organization.website}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="break-all text-msk-blue hover:underline"
-                    >
-                      {deal.organization.website}
-                    </a>
-                  ) : (
-                    <span className="text-msk-ink/40">Pas de site web</span>
-                  )}
-                </li>
-              </ul>
-            </div>
+              </li>
+            </ul>
           </Section>
         </div>
 
@@ -847,45 +843,56 @@ export default async function CrmProspectDetailPage({
                 </>
               ) : null}
             </dl>
+
             {deal.tasks.length > 0 ? (
-              <div className="mt-4 border-t border-msk-ink/6 pt-4">
-                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
-                  Relances ouvertes
+              <div className="mt-5 border-t border-msk-ink/6 pt-4">
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                  À traiter
                 </p>
-                <ul className="space-y-3">
-                  {deal.tasks.map((t) => (
-                    <li
-                      key={t.id}
-                      className="rounded-xl border border-msk-ink/6 bg-white p-3"
-                    >
-                      <div className="flex items-start gap-2 text-sm text-msk-ink/75">
-                        <CalendarClock
-                          className="mt-0.5 h-3.5 w-3.5 shrink-0 text-msk-ink/35"
-                          aria-hidden
-                        />
-                        <span className="min-w-0 flex-1">
-                          {t.title}
-                          <span className="block text-xs text-msk-ink/40">
-                            {t.dueAt.toLocaleDateString("fr-FR")}
-                          </span>
-                        </span>
-                      </div>
-                      <RelanceActions
-                        className="mt-2"
-                        taskId={t.id}
-                        opportunityId={deal.id}
-                        requireFollowUp={followUpRequiredForStage(
-                          normalizeUiStage(deal.stage),
-                        )}
-                        orgName={deal.organization.name}
-                        title={t.title}
-                        dueAt={t.dueAt}
-                      />
-                    </li>
-                  ))}
+                <ul className="divide-y divide-msk-ink/6">
+                  {deal.tasks.map((t) => {
+                    const overdue = t.dueAt < new Date();
+                    return (
+                      <li key={t.id} className="py-3 first:pt-0 last:pb-0">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-msk-ink">
+                              {t.title}
+                            </p>
+                            <p
+                              className={
+                                overdue
+                                  ? "mt-0.5 text-xs font-medium text-msk-coral"
+                                  : "mt-0.5 text-xs text-msk-ink/45"
+                              }
+                            >
+                              {t.dueAt.toLocaleDateString("fr-FR")}
+                              {overdue ? " · En retard" : ""}
+                            </p>
+                          </div>
+                          <RelanceActions
+                            className="shrink-0"
+                            taskId={t.id}
+                            opportunityId={deal.id}
+                            requireFollowUp={followUpRequiredForStage(
+                              normalizeUiStage(deal.stage),
+                            )}
+                            orgName={deal.organization.name}
+                            title={t.title}
+                            dueAt={t.dueAt}
+                            showFicheLink={false}
+                          />
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
-            ) : null}
+            ) : (
+              <p className="mt-5 border-t border-msk-ink/6 pt-4 text-sm text-msk-ink/40">
+                Aucune relance ouverte.
+              </p>
+            )}
           </Section>
         </div>
 
@@ -1045,18 +1052,33 @@ export default async function CrmProspectDetailPage({
                               : "bg-msk-ink/25",
                       )}
                     />
-                    <p className="text-sm font-semibold text-msk-ink">
-                      {a.summary}
-                    </p>
-                    {a.body ? (
-                      <p className="mt-1 whitespace-pre-wrap text-sm text-msk-ink/60">
-                        {a.body}
-                      </p>
-                    ) : null}
-                    <p className="mt-1 text-xs text-msk-ink/40">
-                      {timelineKindLabel(a.kind)} · {a.typeLabel} ·{" "}
-                      {a.occurredAt.toLocaleString("fr-FR")} · {a.actorName}
-                    </p>
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-msk-ink">
+                          {a.summary}
+                        </p>
+                        {a.body ? (
+                          <p className="mt-1 whitespace-pre-wrap text-sm text-msk-ink/60">
+                            {a.body}
+                          </p>
+                        ) : null}
+                        <p className="mt-1 text-xs text-msk-ink/40">
+                          {timelineKindLabel(a.kind)} · {a.typeLabel} ·{" "}
+                          {a.occurredAt.toLocaleString("fr-FR")} · {a.actorName}
+                        </p>
+                      </div>
+                      {a.activityType ? (
+                        <ActivityJournalActions
+                          activityId={a.id}
+                          opportunityId={deal.id}
+                          type={a.activityType}
+                          summary={a.summary}
+                          occurredAt={a.occurredAt}
+                          showFicheLink={false}
+                          className="shrink-0"
+                        />
+                      ) : null}
+                    </div>
                   </li>
                 ))}
               </ol>
