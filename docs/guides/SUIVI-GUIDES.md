@@ -188,6 +188,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-10-28 — Fix crash /notifications (Realtime channel)
+
+- **Pourquoi** : cloche + page notifs partageaient le même topic Supabase → `cannot add postgres_changes callbacks after subscribe()`.
+- **Quoi** : topic unique par instance du hook + catch pour ne plus casser la page (fallback poll).
+- **Fichiers** : `hooks/use-notifications-live.ts`.
+- **Statut doc** : bug runtime.
+
 ### 2026-10-28 — Pagination sélection prospect (Nouveau RDV)
 
 - **Pourquoi** : picker prospect sans pages → liste fastidieuse.
