@@ -171,8 +171,8 @@ export default async function CommercialFactureDetailPage({
         />
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-12">
-        <Surface className="space-y-5 p-5 sm:p-6 lg:col-span-4">
+      <div className="grid gap-4 @lg:grid-cols-12">
+        <Surface className="space-y-5 p-5 sm:p-6 @lg:col-span-4">
           <h2 className="text-sm font-semibold tracking-tight text-msk-ink">
             Synthèse
           </h2>
@@ -239,7 +239,7 @@ export default async function CommercialFactureDetailPage({
           </div>
         </Surface>
 
-        <Surface className="overflow-hidden p-0 lg:col-span-5">
+        <Surface className="overflow-hidden p-0 @lg:col-span-5">
           <div className="border-b border-msk-ink/6 px-5 py-4 sm:px-6">
             <h2 className="text-sm font-semibold tracking-tight text-msk-ink">
               Lignes
@@ -269,7 +269,7 @@ export default async function CommercialFactureDetailPage({
           </div>
         </Surface>
 
-        <Surface className="flex flex-col p-5 sm:p-6 lg:col-span-3">
+        <Surface className="flex flex-col p-5 sm:p-6 @lg:col-span-3">
           <h2 className="mb-4 text-sm font-semibold tracking-tight text-msk-ink">
             Document PDF
           </h2>

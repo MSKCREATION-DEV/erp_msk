@@ -37,9 +37,9 @@ export function CommercialSubnav({
   return (
     <nav
       aria-label="Navigation Commercial"
-      className={cn("-mx-1 border-b border-msk-ink/8", className)}
+      className={cn("-mx-1 min-w-0 border-b border-msk-ink/8", className)}
     >
-      <div className="flex gap-0 overflow-x-auto px-1 scrollbar-thin">
+      <div className="flex gap-0 overflow-x-auto overscroll-x-contain px-1 scrollbar-thin">
         {items.map((item) => {
           const active = isActive(pathname, item);
           return (
@@ -48,7 +48,7 @@ export function CommercialSubnav({
               prefetch={false}
               href={item.href}
               className={cn(
-                "relative shrink-0 px-3 py-2.5 text-sm font-medium transition",
+                "relative shrink-0 whitespace-nowrap px-3 py-2.5 text-sm font-medium transition",
                 active
                   ? "text-msk-blue"
                   : "text-msk-ink/45 hover:text-msk-ink",

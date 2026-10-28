@@ -673,7 +673,7 @@ export function ProspectCreateForm({
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="sm:col-span-2 lg:col-span-3">
+            <div className="sm:col-span-2 @lg:col-span-3">
               <FieldLabel htmlFor="orgName" required>
                 Entreprise
               </FieldLabel>
@@ -760,7 +760,7 @@ export function ProspectCreateForm({
                 disabled={busy}
               />
             </div>
-            <div className="sm:col-span-2 lg:col-span-3">
+            <div className="sm:col-span-2 @lg:col-span-3">
               <FieldLabel htmlFor="notes">Note</FieldLabel>
               <Textarea
                 id="notes"
@@ -846,7 +846,7 @@ export function ProspectCreateForm({
                 disabled={busy}
               />
             </div>
-            <div className="sm:col-span-2 lg:col-span-3">
+            <div className="sm:col-span-2 @lg:col-span-3">
               <ContactChannelsEditor
                 value={channels}
                 onChange={(next) => {
@@ -899,8 +899,8 @@ export function ProspectCreateForm({
               Canal d’acquisition, présence digitale et prochaine action.
             </p>
           </div>
-          <div className="grid gap-4 lg:grid-cols-12">
-            <div className="space-y-3 rounded-xl border border-msk-ink/6 bg-msk-chalk/30 p-4 lg:col-span-4">
+          <div className="grid gap-4 @lg:grid-cols-12">
+            <div className="space-y-3 rounded-xl border border-msk-ink/6 bg-msk-chalk/30 p-4 @lg:col-span-4">
               <OptionPickerSingle
                 label="Origine"
                 required
@@ -923,7 +923,7 @@ export function ProspectCreateForm({
                 Instagram, terrain, recommandation… — d’où vient ce lead.
               </FieldHint>
             </div>
-            <div className="space-y-3 rounded-xl border border-msk-ink/6 bg-msk-chalk/30 p-4 lg:col-span-4">
+            <div className="space-y-3 rounded-xl border border-msk-ink/6 bg-msk-chalk/30 p-4 @lg:col-span-4">
               <div>
                 <FieldLabel htmlFor="nextAction">Prochaine action</FieldLabel>
                 <Input
@@ -968,7 +968,7 @@ export function ProspectCreateForm({
                 />
               </div>
             </div>
-            <div className="rounded-xl border border-msk-ink/6 bg-msk-chalk/30 p-4 lg:col-span-4">
+            <div className="rounded-xl border border-msk-ink/6 bg-msk-chalk/30 p-4 @lg:col-span-4">
               <SocialNetworksEditor
                 value={social}
                 onChange={setSocial}

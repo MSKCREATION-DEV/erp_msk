@@ -29,6 +29,7 @@ import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
+import { ListTableScroll } from "@/components/ui/list-table-scroll";
 
 const FACTURE_SORT_COLUMNS = {
   number: (dir: SortDir) => ({ number: dir }),
@@ -175,7 +176,7 @@ async function FacturesResults({
 
   return (
     <>
-      <div className="overflow-x-auto">
+      <ListTableScroll>
         <table className="w-full min-w-200 text-left text-sm">
           <thead className="border-b border-msk-ink/10 bg-msk-chalk/40 text-msk-ink/45">
             <tr>
@@ -267,7 +268,7 @@ async function FacturesResults({
             })}
           </tbody>
         </table>
-      </div>
+      </ListTableScroll>
       <ListPagination
         pathname="/commercial/factures"
         searchParams={listParams}

@@ -9,8 +9,8 @@ export default function RhCollaborateurDetailLoading() {
         <div className="h-6 w-28 rounded-md bg-msk-ink/5" />
       </div>
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="h-48 rounded-2xl bg-msk-ink/5 lg:col-span-1" />
-        <div className="h-48 rounded-2xl bg-msk-ink/5 lg:col-span-2" />
+        <div className="h-48 rounded-2xl bg-msk-ink/5 @lg:col-span-1" />
+        <div className="h-48 rounded-2xl bg-msk-ink/5 @lg:col-span-2" />
       </div>
     </div>
   );

@@ -38,6 +38,7 @@ import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
+import { ListTableScroll } from "@/components/ui/list-table-scroll";
 import { opportunityIdsWithMinOutreach, outreachCountByOpportunityIds } from "@/lib/crm/follow-up-count";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import {
@@ -404,7 +405,7 @@ export async function ProspectsResults({
         </div>
       ) : null}
 
-      <div className="overflow-x-auto">
+      <ListTableScroll>
         <table className="w-full min-w-280 text-center text-sm">
           <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
             <tr>
@@ -620,7 +621,7 @@ export async function ProspectsResults({
             )}
           </tbody>
         </table>
-      </div>
+      </ListTableScroll>
       <ListPagination
         pathname="/crm/prospects"
         searchParams={listParams}

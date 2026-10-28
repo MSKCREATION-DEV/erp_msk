@@ -21,6 +21,7 @@ import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { AssignmentResolveActions } from "@/components/crm/assignment-resolve-actions";
 import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
 import { AffectationsLive } from "@/components/crm/affectations-live";
+import { ListTableScroll } from "@/components/ui/list-table-scroll";
 
 const PENDING_SORT = {
   prospect: (dir: SortDir) => ({
@@ -256,7 +257,7 @@ export default async function CrmAffectationsPage({
               : "Aucune demande en attente."}
           </p>
         ) : (
-          <div className="overflow-x-auto">
+          <ListTableScroll>
             <table className="w-full min-w-200 text-left text-sm">
               <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
                 <tr>
@@ -369,7 +370,7 @@ export default async function CrmAffectationsPage({
                 })}
               </tbody>
             </table>
-          </div>
+          </ListTableScroll>
         )}
       </Surface>
 
@@ -408,7 +409,7 @@ export default async function CrmAffectationsPage({
               : "Aucune affectation dans cet historique."}
           </p>
         ) : (
-          <div className="overflow-x-auto">
+          <ListTableScroll>
             <table className="w-full min-w-200 text-left text-sm">
               <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
                 <tr>
@@ -515,7 +516,7 @@ export default async function CrmAffectationsPage({
                 ))}
               </tbody>
             </table>
-          </div>
+          </ListTableScroll>
         )}
       </Surface>
     </PageShell>

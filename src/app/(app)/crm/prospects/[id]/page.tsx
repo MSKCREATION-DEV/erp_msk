@@ -585,7 +585,7 @@ export default async function CrmProspectDetailPage({
 
       {/* Bandeau identité — origine explicite + méta sans doublons */}
       <Surface className="overflow-hidden p-0">
-        <div className="grid gap-0 lg:grid-cols-[1.4fr_1fr]">
+        <div className="grid gap-0 @lg:grid-cols-[1.4fr_1fr]">
           <div className="space-y-4 border-b border-msk-ink/6 p-5 sm:p-6 lg:border-b-0 lg:border-r">
             <div className="flex flex-wrap items-center gap-3">
               <OriginChip source={deal.source} />
@@ -741,8 +741,8 @@ export default async function CrmProspectDetailPage({
       ) : null}
 
       {/* Grille plein largeur */}
-      <div className="grid gap-4 xl:grid-cols-12">
-        <div className="xl:col-span-5">
+      <div className="grid gap-4 @xl:grid-cols-12">
+        <div className="@xl:col-span-5">
           <Section title="Entreprise">
             <ul className="space-y-3.5 text-sm text-msk-ink">
               <li className="flex gap-2.5">
@@ -807,7 +807,7 @@ export default async function CrmProspectDetailPage({
           </Section>
         </div>
 
-        <div className="xl:col-span-4">
+        <div className="@xl:col-span-4">
           <Section
             title="Notes"
             action={
@@ -830,7 +830,7 @@ export default async function CrmProspectDetailPage({
           </Section>
         </div>
 
-        <div className="xl:col-span-3">
+        <div className="@xl:col-span-3">
           <Section title="Suivi">
             <dl className="space-y-4">
               <MetaItem label="Dernière action">
@@ -914,7 +914,7 @@ export default async function CrmProspectDetailPage({
           </Section>
         </div>
 
-        <div className="xl:col-span-6">
+        <div className="@xl:col-span-6">
           <Section title="Offres proposées">
             {deal.opportunityOffers.length === 0 && !deal.catalogOffer ? (
               <p className="text-sm text-msk-ink/40">
@@ -952,7 +952,7 @@ export default async function CrmProspectDetailPage({
           </Section>
         </div>
 
-        <div className="xl:col-span-6">
+        <div className="@xl:col-span-6">
           <Section title="Devis & factures">
             {COM_DOCS_GATED ? (
               <div className="rounded-xl border border-dashed border-msk-ink/12 bg-msk-chalk/30 px-4 py-6 text-center">
@@ -1048,7 +1048,7 @@ export default async function CrmProspectDetailPage({
           </Section>
         </div>
 
-        <div className="xl:col-span-12">
+        <div className="@xl:col-span-12">
           <Section title="Historique & traçabilité">
             {journalEntries.length === 0 ? (
               <p className="text-sm text-msk-ink/40">

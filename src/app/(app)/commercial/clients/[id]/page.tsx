@@ -444,8 +444,8 @@ export default async function CommercialClientDetailPage({
         </div>
       </Surface>
 
-      <div className="grid gap-4 lg:grid-cols-12">
-        <div className="lg:col-span-5">
+      <div className="grid gap-4 @lg:grid-cols-12">
+        <div className="@lg:col-span-5">
           <Section title="Entreprise">
             <ul className="space-y-3.5 text-sm text-msk-ink">
               <li className="flex gap-2.5">
@@ -526,7 +526,7 @@ export default async function CommercialClientDetailPage({
           </Section>
         </div>
 
-        <div className="lg:col-span-3">
+        <div className="@lg:col-span-3">
           <Section
             title="Devis récents"
             action={
@@ -589,7 +589,7 @@ export default async function CommercialClientDetailPage({
           </Section>
         </div>
 
-        <div className="lg:col-span-4">
+        <div className="@lg:col-span-4">
           <Section title="Factures récentes">
             {COM_DOCS_GATED ? (
               <p className="text-sm text-msk-ink/50">

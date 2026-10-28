@@ -15,6 +15,7 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { PlainTh, SortableTh } from "@/components/ui/sortable-th";
+import { ListTableScroll } from "@/components/ui/list-table-scroll";
 
 export const metadata: Metadata = {
   title: "Utilisateurs",
@@ -168,7 +169,7 @@ export default async function UsersAdminPage({
           <h2 className="font-semibold text-msk-ink">Collaborateurs</h2>
           <p className="text-sm text-msk-ink/45">{users.length} compte(s)</p>
         </div>
-        <div className="overflow-x-auto">
+        <ListTableScroll>
           <table className="w-full text-left text-sm">
             <thead className="border-b border-msk-ink/6 bg-[#F8F9FB] text-[11px] font-semibold uppercase tracking-[0.1em] text-msk-ink/40">
               <tr>
@@ -245,7 +246,7 @@ export default async function UsersAdminPage({
               ))}
             </tbody>
           </table>
-        </div>
+        </ListTableScroll>
       </Surface>
     </PageShell>
   );

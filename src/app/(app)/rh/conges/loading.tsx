@@ -2,7 +2,7 @@ export default function RhCongesLoading() {
   return (
     <div className="animate-pulse space-y-4 p-6">
       <div className="h-8 w-40 rounded-lg bg-msk-ink/10" />
-      <div className="h-4 w-72 rounded bg-msk-ink/5" />
+      <div className="h-4 w-72 max-w-full rounded bg-msk-ink/5" />
       <div className="flex gap-2">
         <div className="h-8 w-24 rounded-lg bg-msk-ink/5" />
         <div className="h-8 w-24 rounded-lg bg-msk-ink/5" />

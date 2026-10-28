@@ -113,7 +113,7 @@ function NavItemRow({
 }) {
   const Icon = item.icon;
   const className = cn(
-    "relative flex w-full items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[13px] font-medium transition-colors",
+    "relative flex w-full min-w-0 items-center gap-3 rounded-lg py-2.5 pl-3 pr-3 text-[13px] font-medium transition-colors",
     (active || pending) &&
       "bg-msk-blue/10 text-msk-blue before:absolute before:inset-y-1.5 before:left-0 before:w-0.75 before:rounded-r-full before:bg-msk-blue",
     !active &&
@@ -133,7 +133,9 @@ function NavItemRow({
         )}
         strokeWidth={1.75}
       />
-      <span className="flex-1 text-left">{item.label}</span>
+      <span className="min-w-0 flex-1 truncate text-left" title={item.label}>
+        {item.label}
+      </span>
       {pending ? (
         <span
           className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-msk-blue/30 border-t-msk-blue"

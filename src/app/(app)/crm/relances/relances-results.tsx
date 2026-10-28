@@ -60,6 +60,7 @@ import { RelanceActions } from "@/components/crm/relance-actions";
 import { ActivityJournalActions } from "@/components/crm/activity-journal-actions";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
+import { ListTableScroll } from "@/components/ui/list-table-scroll";
 import { gridKpi3, gridKpi4 } from "@/lib/ui/layout-grids";
 import { cn } from "@/lib/utils";
 
@@ -330,7 +331,7 @@ function RelanceTable({
   }
 
   return (
-    <div className="overflow-x-auto">
+    <ListTableScroll>
       <table className="w-full min-w-200 text-left text-sm">
         <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
           <tr>
@@ -507,7 +508,7 @@ function RelanceTable({
           })}
         </tbody>
       </table>
-    </div>
+    </ListTableScroll>
   );
 }
 
@@ -726,7 +727,7 @@ export async function RelancesResults({
             </p>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              <ListTableScroll>
                 <table className="w-full min-w-200 text-left text-sm">
                   <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
                     <tr>
@@ -847,7 +848,7 @@ export async function RelancesResults({
                     })}
                   </tbody>
                 </table>
-              </div>
+              </ListTableScroll>
               <ListPagination
                 pathname="/crm/relances"
                 searchParams={listParamsFaites}

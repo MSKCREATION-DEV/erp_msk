@@ -32,6 +32,7 @@ import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { SortableTh } from "@/components/ui/sortable-th";
+import { ListTableScroll } from "@/components/ui/list-table-scroll";
 
 const DEVIS_SORT_COLUMNS = {
   number: (dir: SortDir) => ({ number: dir }),
@@ -190,7 +191,7 @@ async function DevisResults({
 
   return (
     <>
-      <div className="overflow-x-auto">
+      <ListTableScroll>
         <table className="w-full min-w-180 text-left text-sm">
           <thead className="border-b border-msk-ink/10 bg-msk-chalk/40 text-msk-ink/45">
             <tr>
@@ -275,7 +276,7 @@ async function DevisResults({
             ))}
           </tbody>
         </table>
-      </div>
+      </ListTableScroll>
       <ListPagination
         pathname="/commercial/devis"
         searchParams={listParams}

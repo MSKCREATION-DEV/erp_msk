@@ -5,8 +5,18 @@ import { LogoutButton } from "@/components/app/logout-button";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { NAV_GROUPS } from "@/lib/nav";
 import { hasPermission, type SessionUser } from "@/lib/rbac/resolve";
+import { cn } from "@/lib/utils";
 
-export function Sidebar({ user }: { user: SessionUser }) {
+export function Sidebar({
+  user,
+  variant = "desktop",
+  className,
+}: {
+  user: SessionUser;
+  /** `drawer` = pleine largeur dans le panneau mobile. */
+  variant?: "desktop" | "drawer";
+  className?: string;
+}) {
   const allowedIds = NAV_GROUPS.flatMap((g) =>
     g.items
       .filter((item) => !item.permission || hasPermission(user, item.permission))
@@ -19,7 +29,15 @@ export function Sidebar({ user }: { user: SessionUser }) {
       : `${user.firstName} ${user.lastName}`;
 
   return (
-    <aside className="flex h-full w-56 shrink-0 flex-col overflow-hidden border-r border-msk-ink/7 bg-white xl:w-62">
+    <aside
+      className={cn(
+        "flex h-full shrink-0 flex-col overflow-hidden bg-white",
+        variant === "desktop" &&
+          "w-56 border-r border-msk-ink/7 xl:w-62",
+        variant === "drawer" && "w-full border-0",
+        className,
+      )}
+    >
       <div className="flex h-16 items-center px-4">
         <Logo variant="bloc" size="sm" href="/accueil" priority />
       </div>

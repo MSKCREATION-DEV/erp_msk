@@ -83,17 +83,17 @@ export function PageHeader({
             ))}
           </nav>
         ) : null}
-        <h1 className="text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
+        <h1 className="break-words text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
           {title}
         </h1>
         {description && description !== title ? (
-          <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-msk-ink/55">
+          <p className="mt-1.5 max-w-2xl break-words text-sm leading-relaxed text-msk-ink/55">
             {description}
           </p>
         ) : null}
       </div>
       {actions ? (
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
+        <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:max-w-[min(100%,36rem)] sm:justify-end">
           {actions}
         </div>
       ) : null}

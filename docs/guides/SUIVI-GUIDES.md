@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-28 (affectations fiche → historique) |
+| Dernière mise à jour | 2026-10-28 (audit responsive ERP) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-10-28 — Audit responsive ERP (shell + primitives + matrice)
+
+- **Pourquoi** : UI cassée selon résolution / OS (Windows, 1366) ; pas de nav mobile ; grilles viewport vs `@container`.
+- **Quoi** : drawer nav mobile ; truncate sidebar ; `ListTableScroll` ; `PageHeader`/`FormShell`/`FormSteps`/`Subnav` ; fiches en `@xl`/`@lg` ; script `npm run audit:responsive` + inventaire.
+- **Fichiers** : `mobile-nav*`, `topbar`, `sidebar*`, `list-table-scroll`, `globals.css`, fiches CRM/Commercial, listes P0/P1, `RESPONSIVE.md`, `scripts/responsive-audit.mjs`.
+- **Statut doc** : parcours mobile / listes → `to_validate` après lecture du rapport `tmp/responsive-audit/`.
 
 ### 2026-10-28 — Affectation fiche → Historique + traçabilité lisible
 

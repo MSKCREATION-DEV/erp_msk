@@ -76,8 +76,8 @@ export default async function ComptabiliteEcritureDetailPage({
         ) : null}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Surface className="space-y-2 p-5 text-sm lg:col-span-1">
+      <div className="grid gap-4 @lg:grid-cols-3">
+        <Surface className="space-y-2 p-5 text-sm @lg:col-span-1">
           <p>
             <span className="text-msk-ink/45">Date </span>
             {entry.entryDate.toLocaleDateString("fr-FR")}
@@ -107,7 +107,7 @@ export default async function ComptabiliteEcritureDetailPage({
           </p>
         </Surface>
 
-        <Surface className="overflow-x-auto p-0 lg:col-span-2">
+        <Surface className="overflow-x-auto p-0 @lg:col-span-2">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-msk-ink/10 text-msk-ink/45">
               <tr>

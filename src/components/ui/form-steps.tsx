@@ -35,22 +35,23 @@ export function FormSteps({
         const active = i === currentIndex;
         const clickable = Boolean(onGoTo) && i <= currentIndex;
         return (
-          <li key={step.id} className="min-w-0 flex-1 basis-28">
+          <li key={step.id} className="min-w-0 flex-1 basis-24 sm:basis-28">
             <button
               type="button"
               disabled={!clickable}
               onClick={() => onGoTo?.(i)}
+              title={step.hint ? `${step.label} — ${step.hint}` : step.label}
               className={cn(
-                "flex w-full flex-col gap-0.5 rounded-lg px-2 py-1.5 text-left transition",
+                "flex w-full min-w-0 flex-col gap-0.5 rounded-lg px-2 py-1.5 text-left transition",
                 active && "bg-msk-blue/8",
                 clickable && !active && "hover:bg-msk-chalk",
                 !clickable && "cursor-default",
               )}
             >
-              <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide">
+              <span className="flex min-w-0 items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide">
                 <span
                   className={cn(
-                    "inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px]",
+                    "inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px]",
                     done && "bg-msk-blue text-white",
                     active && "bg-msk-blue text-white",
                     !done && !active && "bg-msk-ink/10 text-msk-ink/45",
@@ -61,6 +62,7 @@ export function FormSteps({
                 </span>
                 <span
                   className={cn(
+                    "truncate",
                     active ? "text-msk-blue" : "text-msk-ink/55",
                   )}
                 >
@@ -68,7 +70,7 @@ export function FormSteps({
                 </span>
               </span>
               {step.hint ? (
-                <span className="pl-7 text-[11px] text-msk-ink/40">
+                <span className="truncate pl-7 text-[11px] text-msk-ink/40">
                   {step.hint}
                 </span>
               ) : null}

@@ -26,6 +26,7 @@ import { ActionLink } from "@/components/ui/action-link";
 import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { GoalsProgressStrip } from "@/components/crm/goals-progress-strip";
 import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
+import { ListTableScroll } from "@/components/ui/list-table-scroll";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Objectifs" };
@@ -168,7 +169,7 @@ export default async function CrmObjectifsPage({
               Assignation.
             </p>
           </div>
-          <div className="overflow-x-auto">
+          <ListTableScroll>
             <table className="w-full min-w-180 text-left text-sm">
               <thead className="border-b border-msk-ink/8 text-[11px] uppercase tracking-wide text-msk-ink/40">
                 <tr>
@@ -217,7 +218,7 @@ export default async function CrmObjectifsPage({
                 ))}
               </tbody>
             </table>
-          </div>
+          </ListTableScroll>
         </Surface>
       ) : null}
     </PageShell>

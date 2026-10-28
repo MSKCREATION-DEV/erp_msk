@@ -36,6 +36,7 @@ import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { SortableTh } from "@/components/ui/sortable-th";
 import { Badge } from "@/components/ui/badge";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
+import { ListTableScroll } from "@/components/ui/list-table-scroll";
 
 const CLIENT_SORT_COLUMNS = {
   name: (dir: SortDir) => ({ name: dir }),
@@ -292,7 +293,7 @@ async function ClientsResults({
         </div>
       ) : null}
 
-      <div className="overflow-x-auto">
+      <ListTableScroll>
         <table className="w-full min-w-220 text-left text-sm">
           <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
             <tr>
@@ -430,7 +431,7 @@ async function ClientsResults({
             )}
           </tbody>
         </table>
-      </div>
+      </ListTableScroll>
 
       <ListPagination
         pathname="/commercial/clients"
