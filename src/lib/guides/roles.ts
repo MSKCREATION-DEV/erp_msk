@@ -111,7 +111,7 @@ const raw: GuideRole[] = [
     id: "super_admin",
     label: "Super Admin",
     kind: "special",
-    mission: "Bypass total des permissions (hors résolution packs).",
+    mission: "Accès total aux permissions (hors résolution packs).",
     moduleIds: [],
     limits: ["Usage restreint — pas un profil métier quotidien."],
   },

@@ -143,7 +143,7 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
     const followUpAt = String(fd.get("followUpAt") ?? "").trim();
     if (nextAction && !followUpAt) {
       setError(
-        "GUIDE : date de relance obligatoire si une prochaine action est renseignée.",
+        "Date de relance obligatoire si une prochaine action est renseignée.",
       );
       return;
     }

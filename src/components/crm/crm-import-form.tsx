@@ -57,7 +57,7 @@ export function CrmImportForm({
       {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
       {msg ? <p className="text-sm text-msk-blue">{msg}</p> : null}
       <Button type="submit" disabled={pending} size="sm">
-        {pending ? "Import…" : "Importer"}
+        {pending ? "Importation…" : "Importer"}
       </Button>
     </form>
   );

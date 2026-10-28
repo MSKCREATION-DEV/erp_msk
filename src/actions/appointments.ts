@@ -178,7 +178,7 @@ export async function setAppointmentStatusAction(
     statusParsed.data === "DONE"
       ? "tenu"
       : statusParsed.data === "NO_SHOW"
-        ? "no-show"
+        ? "absent"
         : "annulé";
 
   await prisma.$transaction(async (tx) => {

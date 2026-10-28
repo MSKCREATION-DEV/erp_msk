@@ -50,7 +50,7 @@ export function EffectiveAccessCard({
       <CardContent>
         {isSuperAdmin ? (
           <div className="rounded-xl border border-msk-blue/20 bg-msk-blue/4 px-4 py-3">
-            <Badge tone="blue">Bypass total</Badge>
+            <Badge tone="blue">Accès total</Badge>
             <p className="mt-2 text-sm text-msk-ink/60">
               Super Admin — toutes les permissions catalogue, hors résolution
               packs / groupes / overrides.

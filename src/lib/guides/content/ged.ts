@@ -55,7 +55,7 @@ export const gedGuides: GuideInput[] = [
       {
         title: "Naviguer dans un dossier",
         instruction:
-          "Ouvrez un dossier (URL du type `/ged?folder=<id>`). Upload / suppression dépendent des permissions `ged.upload`, `ged.delete`, etc.",
+          "Ouvrez un dossier (URL du type `/ged?folder=<id>`). Dépôt et suppression dépendent des droits `ged.upload`, `ged.delete`, etc.",
         href: "/ged",
         visualId: "ged-hero",
       },

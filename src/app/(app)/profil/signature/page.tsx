@@ -59,7 +59,7 @@ export default async function MySignaturePage() {
         backHref="/accueil"
         backLabel="Retour à l’accueil"
         title="Ma signature"
-        description="Upload PNG / JPEG / WebP — fond papier retiré automatiquement (PNG transparent)."
+        description="Déposez une image PNG, JPEG ou WebP — le fond papier est retiré automatiquement (PNG transparent)."
         breadcrumbs={[
           { label: "Accueil", href: "/accueil" },
           { label: "Signature" },

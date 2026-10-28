@@ -188,6 +188,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-10-28 — UI français simple (motifs perte, RDV, jargon)
+
+- **Pourquoi** : libellés anglais (« Timing », « No-show ») et préfixe « GUIDE : » peu clairs pour toute l’équipe.
+- **Quoi** : motifs de perte en français simple ; RDV « Absent » ; messages sans jargon GUIDE ; E-mail / Importer / Accès total harmonisés.
+- **Fichiers** : `lib/crm/labels.ts`, `appointment-actions.tsx`, pages RDV / fiche prospect, `actions/crm.ts` / `appointments.ts`, modules commercial, RH e-mail, admin accès.
+- **Statut doc** : inventaire inchangé ; libellés UI alignés.
+
 ### 2026-10-27 — CRM-ops : relances CRUD, RDV, Perdu, notifications
 
 - **Pourquoi** : erreurs de saisie relances non corrigibles ; pas de module RDV ; blocage Perdu à 3 relances incohérent ; pas de notifs instantanées pour demandes à distance.

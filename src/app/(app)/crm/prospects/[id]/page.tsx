@@ -715,7 +715,7 @@ export default async function CrmProspectDetailPage({
       {devisDue ? (
         <Surface className="border-msk-coral/30 bg-msk-coral/4 p-4 sm:p-5">
           <p className="text-sm font-semibold text-msk-coral">
-            GUIDE — devis sous 24h
+            Devis à préparer sous 24 h
           </p>
           <p className="mt-1 text-sm text-msk-ink/70">
             Prospect Intéressé sans devis lié. Créez le client commercial puis le

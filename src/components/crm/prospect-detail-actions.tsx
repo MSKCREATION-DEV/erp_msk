@@ -120,7 +120,7 @@ export function ProspectDetailActions({
           open={stageOpen}
           onOpenChange={setStageOpen}
           title="Changer le statut"
-          description="Mise à jour du parcours commercial (règles GUIDE)."
+          description="Mise à jour du parcours commercial."
           size="md"
         >
           <div className="p-5">

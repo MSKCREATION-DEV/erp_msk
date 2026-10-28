@@ -19,7 +19,7 @@ export function interestedSince(deal: {
 }
 
 /**
- * GUIDE : Intéressé sans devis lié → devis sous 24h.
+ * Règle métier : Intéressé sans devis lié → devis sous 24 h.
  * Compte depuis `interestedAt` (sinon updatedAt).
  */
 export function isDevisSlaBreached(

@@ -138,7 +138,7 @@ export default async function CrmRdvPage() {
                           {a.status === "DONE"
                             ? "Tenu"
                             : a.status === "NO_SHOW"
-                              ? "No-show"
+                              ? "Absent"
                               : "Annulé"}
                         </Badge>
                       </>

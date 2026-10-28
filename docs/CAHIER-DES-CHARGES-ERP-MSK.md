@@ -839,7 +839,7 @@ Pipeline commercial MSK par défaut (configurable) :
 7. Gagné (Client)  
 8. Perdu  
 
-Mapping import depuis statuts Excel existants. Raisons de perte obligatoires (liste paramétrable : budget, concurrent, timing, no-show, autre).
+Mapping import depuis statuts Excel existants. Raisons de perte obligatoires (liste paramétrable : budget insuffisant, concurrent, pas le bon moment, absent au rendez-vous, autre).
 
 ### 5.4 Multi-commerciaux & visibilité
 

@@ -64,7 +64,7 @@ export function EmployeeCreateForm({ users }: { users: LinkableUser[] }) {
           />
         </div>
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">E-mail</Label>
           <Input id="email" name="email" type="email" disabled={pending} />
         </div>
         <div>

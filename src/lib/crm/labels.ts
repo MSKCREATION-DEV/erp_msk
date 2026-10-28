@@ -36,7 +36,7 @@ export const STAGE_HINTS: Partial<Record<CrmPipelineStage, string>> = {
   NOUVEAU: "Pas encore contacté — à appeler ou écrire.",
   CONTACTE: "Premier contact fait — journaliser la suite.",
   QUALIFICATION:
-    "Échange en cours : besoin / budget / timing à clarifier. Pas encore prêt pour un devis.",
+    "Échange en cours : besoin, budget et délais à clarifier. Pas encore prêt pour un devis.",
   INTERESSE: "Intérêt confirmé — prêt pour proposition / client commercial.",
   DEVIS_ENVOYE: "Proposition déjà envoyée — suivi de réponse.",
   GAGNE: "Devenu client MSK.",
@@ -110,7 +110,7 @@ export const SOURCE_LABELS: Record<CrmSource, string> = {
   SNAPCHAT: "Snapchat",
   TERRAIN: "Terrain",
   RECOMMANDATION: "Recommandation",
-  EMAIL: "Email",
+  EMAIL: "E-mail",
   TELEPHONE: "Téléphone",
   AUTRE: "Autre",
 };
@@ -126,12 +126,13 @@ export const ACTIVITY_LABELS: Record<CrmActivityType, string> = {
   AUTRE: "Autre",
 };
 
+/** Motifs de perte — français simple (jamais d’anglais UI). */
 export const LOSS_LABELS: Record<CrmLossReason, string> = {
-  BUDGET: "Budget",
-  CONCURRENT: "Concurrent",
-  TIMING: "Timing",
-  NO_SHOW: "No-show",
-  AUTRE: "Autre",
+  BUDGET: "Budget insuffisant",
+  CONCURRENT: "A choisi un concurrent",
+  TIMING: "Pas le bon moment",
+  NO_SHOW: "Absent au rendez-vous",
+  AUTRE: "Autre raison",
 };
 
 /** Mapping libellés Excel → stage */

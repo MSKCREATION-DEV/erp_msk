@@ -81,7 +81,7 @@ export function AppointmentActions({
         }}
       >
         <UserX className="h-3.5 w-3.5" aria-hidden />
-        No-show
+        Absent
       </Button>
       <Button
         type="button"
@@ -112,9 +112,9 @@ export function AppointmentActions({
         }}
         title={
           mode === "DONE"
-            ? "Marquer RDV tenu"
+            ? "Marquer le RDV comme tenu"
             : mode === "NO_SHOW"
-              ? "Marquer no-show"
+              ? "Marquer comme absent"
               : "Annuler le RDV"
         }
         size="md"

@@ -104,7 +104,7 @@ export const COMMERCIAL_MODULES: CommercialModule[] = [
     id: "rdv",
     href: "/crm/rdv",
     title: "RDV",
-    description: "Rendez-vous planifiés, tenus et no-show.",
+    description: "Rendez-vous planifiés, tenus et absents.",
     section: "prospection",
     tone: "blue",
     permission: "crm.access",

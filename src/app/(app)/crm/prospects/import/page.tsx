@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { CrmImportForm } from "@/components/crm/crm-import-form";
 
-export const metadata: Metadata = { title: "Import prospects" };
+export const metadata: Metadata = { title: "Importer des prospects" };
 
 export default async function CrmProspectImportPage() {
   const user = await requireUser();
@@ -29,7 +29,7 @@ export default async function CrmProspectImportPage() {
         breadcrumbs={[
           { label: "Commercial", href: "/commercial" },
           { label: "Prospects", href: "/crm/prospects" },
-          { label: "Import" },
+          { label: "Importer" },
         ]}
       />
       <Card className="w-full">

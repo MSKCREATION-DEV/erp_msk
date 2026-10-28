@@ -111,7 +111,7 @@ const createProspectSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message:
-          "GUIDE : date de relance obligatoire si une prochaine action est renseignée.",
+          "Date de relance obligatoire si une prochaine action est renseignée.",
         path: ["followUpAt"],
       });
     }
@@ -492,7 +492,7 @@ const updateProspectSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message:
-          "GUIDE : date de relance obligatoire si une prochaine action est renseignée.",
+          "Date de relance obligatoire si une prochaine action est renseignée.",
         path: ["followUpAt"],
       });
     }
@@ -1228,7 +1228,7 @@ export async function updateOpportunityStageAction(
     return {
       ok: false,
       error:
-        "GUIDE : renseignez une date de relance (via une activité) avant de changer d’étape.",
+        "Indiquez une date de relance (via une action) avant de changer d’étape.",
     };
   }
 
@@ -1371,7 +1371,7 @@ export async function logActivityAction(
   if (needsFollowUp && !deal.followUpAt && !hasNewFollowUp) {
     return {
       ok: false,
-      error: "GUIDE : date de relance obligatoire pour ce statut.",
+      error: "Date de relance obligatoire pour ce statut.",
     };
   }
 

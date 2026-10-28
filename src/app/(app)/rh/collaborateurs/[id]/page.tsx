@@ -102,7 +102,7 @@ export default async function RhCollaborateurDetailPage({
         <h2 className="text-sm font-semibold text-msk-ink">Identité</h2>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           <p>
-            <span className="text-msk-ink/45">Email </span>
+            <span className="text-msk-ink/45">E-mail </span>
             {employee.email ?? employee.user?.email ?? "—"}
           </p>
           <p>

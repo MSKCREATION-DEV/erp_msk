@@ -158,7 +158,7 @@ export function StageForm({
       current !== "PERDU" &&
       current !== "NOUVEAU" ? (
         <p className="rounded-xl border border-msk-coral/20 bg-msk-coral/5 px-3 py-2 text-xs text-msk-coral">
-          GUIDE : journalisez une activité avec date de relance avant de changer
+          Indiquez d’abord une date de relance (via une action) avant de changer
           d’étape.
         </p>
       ) : null}
