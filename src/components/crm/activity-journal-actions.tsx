@@ -246,6 +246,7 @@ export function ActivityJournalActions({
             </Button>
             <Button
               type="button"
+              variant="danger"
               disabled={pending}
               aria-busy={pending || undefined}
               onClick={confirmDelete}

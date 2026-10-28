@@ -72,7 +72,7 @@ export function LogoutButton() {
             }}
           >
             <div className="px-6 pb-2 pt-6">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-msk-blue/10 text-msk-blue ring-4 ring-msk-blue/20">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-msk-coral/10 text-msk-coral ring-4 ring-msk-coral/20">
                 {pending ? (
                   <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
                 ) : (
@@ -106,7 +106,7 @@ export function LogoutButton() {
               </Button>
               <Button
                 type="button"
-                variant="primary"
+                variant="danger"
                 size="sm"
                 className="sm:min-w-28"
                 disabled={pending}

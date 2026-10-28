@@ -1,0 +1,39 @@
+---
+description: Confirmations destructives → bouton danger coral (absolu ERP MSK)
+alwaysApply: true
+---
+
+# Actions danger / confirmation (absolu ERP MSK)
+
+`msk-coral` (`Button variant="danger"`) pour **toute confirmation qui retire, annule, refuse, archive ou déconnecte**.
+
+## Obligatoire — CTA de confirmation
+
+| Intention | Exemple libellé | Variant |
+|---|---|---|
+| Annuler une relance / RDV / commande | « Confirmer l’annulation » | `danger` |
+| Supprimer (activité, fichier, ligne) | « Confirmer la suppression » | `danger` |
+| Déconnexion | « Déconnexion » | `danger` |
+| Refuser une demande | « Refuser » | `danger` |
+| Archiver / mettre à la corbeille | « Archiver », « Corbeille » | `danger` |
+| Marquer absent (no-show RDV) | « Confirmer » (absent) | `danger` |
+
+Dialogs `useConfirm` / `ConfirmProvider` : `tone: "danger"` (défaut déjà danger — ne pas forcer `primary` sur ces cas).
+
+Logout custom (`LogoutButton`) : icône + anneau coral + bouton `danger`.
+
+## Rester en primary / secondary
+
+- Approuver, planifier, enregistrer, traiter, convertir (création / succès métier).
+- « Fermer » / « Annuler » (fermer le dialog sans détruire) → `secondary`.
+- « Continuer » dans un stepper → `primary`.
+
+## Interdit
+
+- Confirmer une destruction / annulation / déconnexion en **bleu** (`variant="primary"` ou défaut).
+- Utiliser le noir / rouge hors charte — uniquement `msk-coral` via `variant="danger"`.
+
+## Test mental
+
+> Le bouton final peut-il faire perdre une donnée ou une session ?
+> Si oui → **coral danger**, avant gate.

@@ -399,7 +399,7 @@ export function UserAccessForm({
                   type="submit"
                   name="status"
                   value="ARCHIVED"
-                  variant="ghost"
+                  variant="danger"
                   disabled={statusPending}
                 >
                   Archiver

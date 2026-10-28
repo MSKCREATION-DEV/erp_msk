@@ -55,7 +55,7 @@ export function AssignmentResolveActions({
         <Button
           type="button"
           size="sm"
-          variant="secondary"
+          variant="danger"
           disabled={pending}
           onClick={() => decide("REJECT")}
         >

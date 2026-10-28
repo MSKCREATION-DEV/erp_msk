@@ -345,6 +345,7 @@ export function RelanceActions({
             </Button>
             <Button
               type="button"
+              variant="danger"
               disabled={pending}
               aria-busy={pending || undefined}
               onClick={confirmCancel}

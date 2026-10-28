@@ -282,8 +282,16 @@ export function StageForm({
       ) : null}
       <FieldError>{error}</FieldError>
       <div className="flex justify-end gap-2 pt-1">
-        <Button type="submit" disabled={pending}>
-          {pending ? "Mise à jour…" : "Enregistrer le statut"}
+        <Button
+          type="submit"
+          variant={current === "PERDU" ? "danger" : "primary"}
+          disabled={pending}
+        >
+          {pending
+            ? "Mise à jour…"
+            : current === "PERDU"
+              ? "Confirmer le passage en Perdu"
+              : "Enregistrer le statut"}
         </Button>
       </div>
     </form>

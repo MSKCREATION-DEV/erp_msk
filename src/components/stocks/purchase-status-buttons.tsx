@@ -62,7 +62,7 @@ export function PurchaseStatusButtons({
         {status !== "RECEIVED" && status !== "CANCELLED" ? (
           <Button
             type="button"
-            variant="secondary"
+            variant="danger"
             disabled={pending}
             onClick={() => act("CANCELLED")}
           >

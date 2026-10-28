@@ -157,11 +157,20 @@ export function AppointmentActions({
             </Button>
             <Button
               type="button"
+              variant={
+                mode === "DONE" ? "primary" : "danger"
+              }
               disabled={pending}
               aria-busy={pending || undefined}
               onClick={confirm}
             >
-              {pending ? "…" : "Confirmer"}
+              {pending
+                ? "…"
+                : mode === "DONE"
+                  ? "Confirmer"
+                  : mode === "NO_SHOW"
+                    ? "Confirmer l’absence"
+                    : "Confirmer l’annulation"}
             </Button>
           </div>
         </div>

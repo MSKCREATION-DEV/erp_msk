@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-28 (stepper formulaires + RDV sélection prospect) |
+| Dernière mise à jour | 2026-10-28 (confirmations danger coral) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-10-28 — Confirmations danger (coral)
+
+- **Pourquoi** : annulation / suppression / déconnexion confirmées en bleu — peu lisible comme risque.
+- **Quoi** : `Button variant="danger"` + règle `ui-danger-actions.mdc` (logout, annuler relance/RDV, supprimer activité, refuser affectation, Perdu, archiver, etc.).
+- **Fichiers** : `logout-button.tsx`, `relance-actions.tsx`, `activity-journal-actions.tsx`, `appointment-actions.tsx`, `assignment-resolve-actions.tsx`, `stage-form.tsx`, …
+- **Statut doc** : UX globale.
 
 ### 2026-10-28 — Menu actions ⋯ (portal, plus de découpe tableau)
 

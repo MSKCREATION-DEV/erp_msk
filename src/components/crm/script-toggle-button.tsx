@@ -19,7 +19,7 @@ export function ScriptToggleButton({
     <Button
       type="button"
       size="sm"
-      variant="ghost"
+      variant={active ? "danger" : "secondary"}
       disabled={pending}
       aria-busy={pending || undefined}
       onClick={() => {
