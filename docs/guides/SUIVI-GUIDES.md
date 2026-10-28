@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-28 (confirmations danger coral) |
+| Dernière mise à jour | 2026-10-28 (pagination sélection prospect RDV) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-10-28 — Pagination sélection prospect (Nouveau RDV)
+
+- **Pourquoi** : picker prospect sans pages → liste fastidieuse.
+- **Quoi** : `ClientListPagination` + `ProspectSelectTable` paginé (20 / page, reset page à la recherche) ; règle listes étendue aux tableaux de sélection.
+- **Fichiers** : `client-list-pagination.tsx`, `prospect-select-table.tsx`, `list-pagination-search.mdc`.
+- **Statut doc** : UX formulaire RDV.
 
 ### 2026-10-28 — Confirmations danger (coral)
 

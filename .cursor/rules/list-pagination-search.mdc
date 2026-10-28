@@ -9,11 +9,13 @@ Toute page qui affiche des **données en tableau** (listing métier) doit :
 3. **Tri colonnes** via `searchParams` (`sort`, `dir`) — helpers `src/lib/list/sort.ts` + UI `SortableTh`
 4. UI : `ListPagination` en bas du tableau ; compteur « X–Y sur N » ; en-têtes cliquables avec indicateur de sens
 
+**Aussi obligatoire** : tableaux de **sélection** dans un formulaire (ex. choisir un prospect pour un RDV) — recherche + pagination (`ClientListPagination` si état client, sinon URL). Pas de liste interminable sans pages.
+
 ## Interdit
 
 - `findMany` sans `take` / `skip` sur un listing (plafond « take: 400 » seul = insuffisant)
-- Recherche uniquement côté client sur un gros jeu chargé
-- Tableau sans moyen de paginer dès qu’il peut dépasser ~20 lignes
+- Recherche uniquement côté client sur un gros jeu chargé **sans** pagination UI
+- Tableau sans moyen de paginer dès qu’il peut dépasser ~20 lignes (listing **ou** picker)
 - En-têtes de listing **non triables** (sauf colonnes d’actions / cases à cocher — `PlainTh`)
 - Tri uniquement côté client sur une liste paginée serveur (désync pages)
 - Inventer des clés `sort` hors allow-list (toujours `parseListSort` + map colonnes)
