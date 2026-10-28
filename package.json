@@ -38,6 +38,7 @@
     "review:ux-rh": "node scripts/review-ux-rh-espace.mjs",
     "smoke:ui": "node scripts/smoke-ui.mjs",
     "audit:responsive": "node scripts/responsive-audit.mjs",
+    "audit:responsive:details": "node scripts/responsive-audit-details.mjs",
     "smoke:rbac": "node scripts/smoke-rbac.mjs",
     "smoke:commercial": "node scripts/smoke-commercial.mjs",
     "review:superadmin": "node scripts/review-superadmin-flows.mjs",

@@ -192,79 +192,35 @@ function slug(route) {
   return route.replace(/\//g, "_").replace(/^_/, "") || "root";
 }
 
-async function resolveDynamicIds(page) {
-  const ids = { prospectId: null, clientId: null, devisId: null, factureId: null };
-
-  await page.goto(`${BASE}/crm/prospects`, {
-    waitUntil: "commit",
-    timeout: 60000,
-  });
-  await page.locator("main").first().waitFor({ state: "attached", timeout: 45000 });
-  await page.waitForTimeout(300);
-  const reserved = new Set([
-    "nouveau",
-    "import",
-    "edit",
-    "page",
-  ]);
-  const pickId = (hrefs, prefix) => {
-    const re = new RegExp(`^${prefix}/([^/]+)$`);
-    for (const h of hrefs) {
-      if (!h) continue;
-      const m = h.match(re);
-      if (!m) continue;
-      const id = m[1];
-      if (reserved.has(id)) continue;
-      // cuid / uuid-like
-      if (id.length < 8) continue;
-      return id;
-    }
-    return null;
+/**
+ * Les listes CRM/Commercial utilisent ClickableRowLink (<tr> sans <a href>).
+ * On résout donc les IDs via Prisma (script dédié), pas via le DOM.
+ */
+async function resolveDynamicIds(_page) {
+  const { spawnSync } = await import("child_process");
+  const r = spawnSync(
+    process.execPath,
+    [path.join(process.cwd(), "scripts/responsive-detail-ids.mjs")],
+    {
+      encoding: "utf8",
+      env: process.env,
+      cwd: process.cwd(),
+    },
+  );
+  if (r.status !== 0) {
+    throw new Error(r.stderr || r.stdout || "resolveDynamicIds failed");
+  }
+  const out = r.stdout || "";
+  const start = out.indexOf("{");
+  const end = out.lastIndexOf("}");
+  if (start < 0 || end < start) throw new Error("Pas de JSON IDs");
+  const parsed = JSON.parse(out.slice(start, end + 1));
+  return {
+    prospectId: parsed.prospectId ?? null,
+    clientId: parsed.clientId ?? null,
+    devisId: parsed.devisId ?? null,
+    factureId: parsed.factureId ?? null,
   };
-
-  const pHrefs = await page
-    .locator('a[href^="/crm/prospects/"]')
-    .evaluateAll((as) => as.map((a) => a.getAttribute("href")))
-    .catch(() => []);
-  ids.prospectId = pickId(pHrefs, "/crm/prospects");
-
-  await page.goto(`${BASE}/commercial/clients`, {
-    waitUntil: "commit",
-    timeout: 60000,
-  });
-  await page.locator("main").first().waitFor({ state: "attached", timeout: 45000 });
-  await page.waitForTimeout(300);
-  const cHrefs = await page
-    .locator('a[href^="/commercial/clients/"]')
-    .evaluateAll((as) => as.map((a) => a.getAttribute("href")))
-    .catch(() => []);
-  ids.clientId = pickId(cHrefs, "/commercial/clients");
-
-  await page.goto(`${BASE}/commercial/devis`, {
-    waitUntil: "commit",
-    timeout: 60000,
-  });
-  await page.locator("main").first().waitFor({ state: "attached", timeout: 45000 });
-  await page.waitForTimeout(300);
-  const dHrefs = await page
-    .locator('a[href^="/commercial/devis/"]')
-    .evaluateAll((as) => as.map((a) => a.getAttribute("href")))
-    .catch(() => []);
-  ids.devisId = pickId(dHrefs, "/commercial/devis");
-
-  await page.goto(`${BASE}/commercial/factures`, {
-    waitUntil: "commit",
-    timeout: 60000,
-  });
-  await page.locator("main").first().waitFor({ state: "attached", timeout: 45000 });
-  await page.waitForTimeout(300);
-  const fHrefs = await page
-    .locator('a[href^="/commercial/factures/"]')
-    .evaluateAll((as) => as.map((a) => a.getAttribute("href")))
-    .catch(() => []);
-  ids.factureId = pickId(fHrefs, "/commercial/factures");
-
-  return ids;
 }
 
 async function main() {
