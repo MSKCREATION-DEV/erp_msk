@@ -2,21 +2,34 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import type { Prisma, RhEmployeeStatus } from "@prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import { firstParam } from "@/lib/list/search-params";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
-import type { RhEmployeeStatus } from "@prisma/client";
+import { SortableTh } from "@/components/ui/sortable-th";
 import {
   EMPLOYEE_STATUS_LABEL,
   EMPLOYEE_TYPE_LABEL,
   employeeStatusTone,
 } from "@/lib/rh/labels";
+
+const EMP_SORT_COLUMNS = {
+  name: (dir: SortDir) => [{ lastName: dir }, { firstName: dir }],
+  jobTitle: (dir: SortDir) => ({ jobTitle: dir }),
+  type: (dir: SortDir) => ({ employeeType: dir }),
+  status: (dir: SortDir) => ({ status: dir }),
+  hireDate: (dir: SortDir) => ({ hireDate: dir }),
+} satisfies SortColumnMap<
+  "name" | "jobTitle" | "type" | "status" | "hireDate"
+>;
 
 export const metadata: Metadata = { title: "Collaborateurs" };
 
@@ -30,7 +43,7 @@ const STATUS_FILTERS: RhEmployeeStatus[] = [
 export default async function RhCollaborateursPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await requireUser();
   if (!hasAnyPermission(user, ["rh.employees.view", "rh.employees.manage"])) {
@@ -94,18 +107,23 @@ function StatusFiltersSkeleton() {
 async function StatusFilters({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { q, status } = await searchParams;
-  const query = (q ?? "").trim();
+  const raw = await searchParams;
+  const query = (firstParam(raw.q) ?? "").trim();
+  const status = firstParam(raw.status);
   const statusFilter = STATUS_FILTERS.includes(status as RhEmployeeStatus)
     ? (status as RhEmployeeStatus)
     : undefined;
+  const sort = firstParam(raw.sort);
+  const dir = firstParam(raw.dir);
 
   function hrefFor(nextStatus?: RhEmployeeStatus) {
     const p = new URLSearchParams();
     if (query) p.set("q", query);
     if (nextStatus) p.set("status", nextStatus);
+    if (sort) p.set("sort", sort);
+    if (dir) p.set("dir", dir);
     const qs = p.toString();
     return qs ? `/rh/collaborateurs?${qs}` : "/rh/collaborateurs";
   }
@@ -136,14 +154,30 @@ async function StatusFilters({
 async function CollaborateursResults({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   await requireUser();
-  const { q, status } = await searchParams;
-  const query = (q ?? "").trim();
+  const raw = await searchParams;
+  const query = (firstParam(raw.q) ?? "").trim();
+  const status = firstParam(raw.status);
   const statusFilter = STATUS_FILTERS.includes(status as RhEmployeeStatus)
     ? (status as RhEmployeeStatus)
     : undefined;
+  const sp: Record<string, string | undefined> = {
+    q: query || undefined,
+    status: statusFilter,
+    sort: firstParam(raw.sort),
+    dir: firstParam(raw.dir),
+  };
+  const sort = parseListSort(sp, EMP_SORT_COLUMNS, {
+    key: "name",
+    dir: "asc",
+  });
+  const listParams: Record<string, string | undefined> = {
+    ...sp,
+    sort: sort.key,
+    dir: sort.dir,
+  };
 
   const employees = await prisma.rhEmployee.findMany({
     where: {
@@ -158,7 +192,7 @@ async function CollaborateursResults({
           }
         : {}),
     },
-    orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+    orderBy: sort.orderBy as Prisma.RhEmployeeOrderByWithRelationInput,
     take: 300,
   });
 
@@ -175,11 +209,47 @@ async function CollaborateursResults({
       <table className="w-full min-w-180 text-left text-sm">
         <thead className="border-b border-msk-ink/10 text-msk-ink/45">
           <tr>
-            <th className="px-4 py-3 font-medium">Nom</th>
-            <th className="px-4 py-3 font-medium">Poste</th>
-            <th className="px-4 py-3 font-medium">Type</th>
-            <th className="px-4 py-3 font-medium">Statut</th>
-            <th className="px-4 py-3 font-medium">Embauché le</th>
+            <SortableTh
+              label="Nom"
+              column="name"
+              sort={sort.key}
+              dir={sort.dir}
+              pathname="/rh/collaborateurs"
+              searchParams={listParams}
+            />
+            <SortableTh
+              label="Poste"
+              column="jobTitle"
+              sort={sort.key}
+              dir={sort.dir}
+              pathname="/rh/collaborateurs"
+              searchParams={listParams}
+            />
+            <SortableTh
+              label="Type"
+              column="type"
+              sort={sort.key}
+              dir={sort.dir}
+              pathname="/rh/collaborateurs"
+              searchParams={listParams}
+            />
+            <SortableTh
+              label="Statut"
+              column="status"
+              sort={sort.key}
+              dir={sort.dir}
+              pathname="/rh/collaborateurs"
+              searchParams={listParams}
+            />
+            <SortableTh
+              label="Embauché le"
+              column="hireDate"
+              sort={sort.key}
+              dir={sort.dir}
+              pathname="/rh/collaborateurs"
+              searchParams={listParams}
+              defaultDir="desc"
+            />
           </tr>
         </thead>
         <tbody>

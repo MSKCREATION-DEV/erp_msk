@@ -188,6 +188,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-10-28 — Tri colonnes sur les tableaux listing
+
+- **Pourquoi** : en-têtes non cliquables ; règle produit « tout tableau listing doit se trier ».
+- **Quoi** : helpers `?sort=`/`?dir=` + `SortableTh` ; règle `.cursor/rules/list-pagination-search.mdc` étendue ; branché sur les listes métier (CRM, commercial, RH, stocks, compta, ops, projets, patrimoine, espace…).
+- **Fichiers** : `src/lib/list/sort.ts`, `src/components/ui/sortable-th.tsx`, pages listing concernées.
+- **Statut doc** : règle agent ; guides parcours inchangés (comportement UX).
+
 ### 2026-10-28 — UI français simple (motifs perte, RDV, jargon)
 
 - **Pourquoi** : libellés anglais (« Timing », « No-show ») et préfixe « GUIDE : » peu clairs pour toute l’équipe.

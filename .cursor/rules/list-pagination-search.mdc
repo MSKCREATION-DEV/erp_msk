@@ -6,21 +6,39 @@ Toute page qui affiche des **données en tableau** (listing métier) doit :
 
 1. **Pagination** via `searchParams` (`page`, éventuellement `pageSize`) — helpers `src/lib/list/pagination.ts`
 2. **Recherche** via `q` — composant `ListSearchForm` + filtre serveur
-3. UI : `ListPagination` en bas du tableau ; compteur « X–Y sur N »
+3. **Tri colonnes** via `searchParams` (`sort`, `dir`) — helpers `src/lib/list/sort.ts` + UI `SortableTh`
+4. UI : `ListPagination` en bas du tableau ; compteur « X–Y sur N » ; en-têtes cliquables avec indicateur de sens
 
 ## Interdit
 
 - `findMany` sans `take` / `skip` sur un listing (plafond « take: 400 » seul = insuffisant)
 - Recherche uniquement côté client sur un gros jeu chargé
 - Tableau sans moyen de paginer dès qu’il peut dépasser ~20 lignes
+- En-têtes de listing **non triables** (sauf colonnes d’actions / cases à cocher — `PlainTh`)
+- Tri uniquement côté client sur une liste paginée serveur (désync pages)
+- Inventer des clés `sort` hors allow-list (toujours `parseListSort` + map colonnes)
 
 ## Pattern
 
 ```
-?q=…&page=2&…autresFiltres
+?q=…&page=2&sort=updatedAt&dir=desc&…autresFiltres
 ```
 
 - Recherche : `ListSearchForm` — debounce + `router.replace` (instantané, historique propre)
 - Pagination : `ListPagination` — numéros + ellipses (inspiré [shadcn Pagination](https://ui.shadcn.com/docs/components/base/pagination))
-- Changement de `q` → reset `page`
+- Tri : `SortableTh` — `Link` serveur, `aria-sort`, icône sens ; `buildSortHref` reset `page`
+- Changement de `q` **ou** de `sort`/`dir` → reset `page`
 - Pas de champ recherche dupliqué dans les modales de filtres (`q` = barre seule)
+
+## Nouveaux tableaux
+
+1. Définir une map `SortColumnMap` (clé URL → `orderBy` Prisma)
+2. `parseListSort(sp, columns, { key, dir })` avant le `findMany`
+3. Remplacer chaque `<th>` métier par `<SortableTh … />` ; actions → `<PlainTh>`
+4. Dates / montants : `defaultDir="desc"` sur la colonne
+
+## Exceptions
+
+- Tableaux de **saisie** (lignes éditables dans un formulaire)
+- Matrices fixes non listables (ex. budget mois × catégorie en grille de saisie)
+- En-têtes purement décoratifs sans données triables

@@ -18,6 +18,8 @@ import {
   totalPages,
 } from "@/lib/list/pagination";
 import { firstParam } from "@/lib/list/search-params";
+import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import type { Prisma } from "@prisma/client";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -26,6 +28,18 @@ import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
+import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
+
+const FACTURE_SORT_COLUMNS = {
+  number: (dir: SortDir) => ({ number: dir }),
+  client: (dir: SortDir) => ({ client: { name: dir } }),
+  status: (dir: SortDir) => ({ status: dir }),
+  totalTtc: (dir: SortDir) => ({ totalTtc: dir }),
+  amountPaid: (dir: SortDir) => ({ amountPaid: dir }),
+  createdAt: (dir: SortDir) => ({ createdAt: dir }),
+} satisfies SortColumnMap<
+  "number" | "client" | "status" | "totalTtc" | "amountPaid" | "createdAt"
+>;
 
 export const metadata: Metadata = { title: "Factures" };
 
@@ -81,6 +95,15 @@ async function FacturesResults({
   const q = (firstParam(raw.q) ?? "").trim();
   const requestedPage = parsePage(firstParam(raw.page));
   const pageSize = DEFAULT_PAGE_SIZE;
+  const sp: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: firstParam(raw.sort),
+    dir: firstParam(raw.dir),
+  };
+  const sort = parseListSort(sp, FACTURE_SORT_COLUMNS, {
+    key: "createdAt",
+    dir: "desc",
+  });
 
   const where = {
     AND: [
@@ -107,7 +130,7 @@ async function FacturesResults({
   const page = clampPage(requestedPage, total, pageSize);
   const invoices = await prisma.comInvoice.findMany({
     where,
-    orderBy: { createdAt: "desc" },
+    orderBy: sort.orderBy as Prisma.ComInvoiceOrderByWithRelationInput,
     skip: pageSkip(page, pageSize),
     take: pageSize,
     include: { client: { select: { name: true } } },
@@ -132,6 +155,8 @@ async function FacturesResults({
   const pages = totalPages(total, pageSize);
   const listParams: Record<string, string | undefined> = {
     q: q || undefined,
+    sort: sort.key,
+    dir: sort.dir,
   };
 
   if (invoices.length === 0) {
@@ -154,12 +179,49 @@ async function FacturesResults({
         <table className="w-full min-w-200 text-left text-sm">
           <thead className="border-b border-msk-ink/10 bg-msk-chalk/40 text-msk-ink/45">
             <tr>
-              <th className="px-4 py-3 font-medium">N°</th>
-              <th className="px-4 py-3 font-medium">Client</th>
-              <th className="px-4 py-3 font-medium">Statut</th>
-              <th className="px-4 py-3 font-medium">TTC</th>
-              <th className="px-4 py-3 font-medium">Payé</th>
-              <th className="px-4 py-3 font-medium">Compta</th>
+              <SortableTh
+                label="N°"
+                column="number"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/factures"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Client"
+                column="client"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/factures"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Statut"
+                column="status"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/factures"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="TTC"
+                column="totalTtc"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/factures"
+                searchParams={listParams}
+                defaultDir="desc"
+              />
+              <SortableTh
+                label="Payé"
+                column="amountPaid"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/factures"
+                searchParams={listParams}
+                defaultDir="desc"
+              />
+              <PlainTh>Compta</PlainTh>
             </tr>
           </thead>
           <tbody>

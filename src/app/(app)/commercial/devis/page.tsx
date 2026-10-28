@@ -20,6 +20,8 @@ import {
   totalPages,
 } from "@/lib/list/pagination";
 import { firstParam } from "@/lib/list/search-params";
+import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import type { Prisma } from "@prisma/client";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -29,6 +31,18 @@ import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
+import { SortableTh } from "@/components/ui/sortable-th";
+
+const DEVIS_SORT_COLUMNS = {
+  number: (dir: SortDir) => ({ number: dir }),
+  client: (dir: SortDir) => ({ client: { name: dir } }),
+  object: (dir: SortDir) => ({ object: dir }),
+  status: (dir: SortDir) => ({ status: dir }),
+  totalTtc: (dir: SortDir) => ({ totalTtc: dir }),
+  createdAt: (dir: SortDir) => ({ createdAt: dir }),
+} satisfies SortColumnMap<
+  "number" | "client" | "object" | "status" | "totalTtc" | "createdAt"
+>;
 
 export const metadata: Metadata = { title: "Devis" };
 
@@ -101,6 +115,15 @@ async function DevisResults({
   const q = (firstParam(raw.q) ?? "").trim();
   const requestedPage = parsePage(firstParam(raw.page));
   const pageSize = DEFAULT_PAGE_SIZE;
+  const sp: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: firstParam(raw.sort),
+    dir: firstParam(raw.dir),
+  };
+  const sort = parseListSort(sp, DEVIS_SORT_COLUMNS, {
+    key: "createdAt",
+    dir: "desc",
+  });
 
   const where = {
     AND: [
@@ -127,7 +150,7 @@ async function DevisResults({
   const page = clampPage(requestedPage, total, pageSize);
   const quotes = await prisma.comQuote.findMany({
     where,
-    orderBy: { createdAt: "desc" },
+    orderBy: sort.orderBy as Prisma.ComQuoteOrderByWithRelationInput,
     skip: pageSkip(page, pageSize),
     take: pageSize,
     include: {
@@ -138,6 +161,8 @@ async function DevisResults({
   const pages = totalPages(total, pageSize);
   const listParams: Record<string, string | undefined> = {
     q: q || undefined,
+    sort: sort.key,
+    dir: sort.dir,
   };
 
   if (quotes.length === 0) {
@@ -169,12 +194,56 @@ async function DevisResults({
         <table className="w-full min-w-180 text-left text-sm">
           <thead className="border-b border-msk-ink/10 bg-msk-chalk/40 text-msk-ink/45">
             <tr>
-              <th className="px-4 py-3 font-medium">N°</th>
-              <th className="px-4 py-3 font-medium">Client</th>
-              <th className="px-4 py-3 font-medium">Objet</th>
-              <th className="px-4 py-3 font-medium">Statut</th>
-              <th className="px-4 py-3 font-medium">TTC</th>
-              <th className="px-4 py-3 font-medium">Date</th>
+              <SortableTh
+                label="N°"
+                column="number"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/devis"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Client"
+                column="client"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/devis"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Objet"
+                column="object"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/devis"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Statut"
+                column="status"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/devis"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="TTC"
+                column="totalTtc"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/devis"
+                searchParams={listParams}
+                defaultDir="desc"
+              />
+              <SortableTh
+                label="Date"
+                column="createdAt"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/devis"
+                searchParams={listParams}
+                defaultDir="desc"
+              />
             </tr>
           </thead>
           <tbody>

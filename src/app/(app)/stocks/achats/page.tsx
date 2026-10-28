@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { Prisma } from "@prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { firstParam } from "@/lib/list/search-params";
+import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
+import { SortableTh } from "@/components/ui/sortable-th";
 
 export const metadata: Metadata = { title: "Achats stock" };
 
@@ -17,16 +21,45 @@ const STATUS_LABEL: Record<string, string> = {
   CANCELLED: "Annulé",
 };
 
-export default async function StocksAchatsPage() {
+const PURCHASE_SORT_COLUMNS = {
+  number: (dir: SortDir) => ({ number: dir }),
+  supplier: (dir: SortDir) => ({ supplierName: dir }),
+  status: (dir: SortDir) => ({ status: dir }),
+  lines: (dir: SortDir) => ({ lines: { _count: dir } }),
+  createdAt: (dir: SortDir) => ({ createdAt: dir }),
+  by: (dir: SortDir) => ({ createdBy: { lastName: dir } }),
+} satisfies SortColumnMap<
+  "number" | "supplier" | "status" | "lines" | "createdAt" | "by"
+>;
+
+export default async function StocksAchatsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await requireUser();
   if (!hasAnyPermission(user, ["stk.achats.manage", "stk.access"])) {
     redirect("/accueil");
   }
   const canManage = hasPermission(user, "stk.achats.manage");
 
+  const raw = await searchParams;
+  const sp: Record<string, string | undefined> = {
+    sort: firstParam(raw.sort),
+    dir: firstParam(raw.dir),
+  };
+  const sort = parseListSort(sp, PURCHASE_SORT_COLUMNS, {
+    key: "createdAt",
+    dir: "desc",
+  });
+  const listParams: Record<string, string | undefined> = {
+    sort: sort.key,
+    dir: sort.dir,
+  };
+
   const purchases = await prisma.stkPurchase.findMany({
     take: 100,
-    orderBy: { createdAt: "desc" },
+    orderBy: sort.orderBy as Prisma.StkPurchaseOrderByWithRelationInput,
     include: {
       createdBy: { select: { firstName: true, lastName: true } },
       _count: { select: { lines: true } },
@@ -46,7 +79,8 @@ export default async function StocksAchatsPage() {
         ]}
         actions={
           canManage ? (
-            <Link prefetch={false}
+            <Link
+              prefetch={false}
               href="/stocks/achats/nouveau"
               className="inline-flex rounded-lg bg-msk-blue px-3 py-2 text-sm font-semibold text-white"
             >
@@ -61,7 +95,11 @@ export default async function StocksAchatsPage() {
           <p className="p-6 text-sm text-msk-ink/45">
             Aucun achat.{" "}
             {canManage ? (
-              <Link prefetch={false} href="/stocks/achats/nouveau" className="text-msk-blue">
+              <Link
+                prefetch={false}
+                href="/stocks/achats/nouveau"
+                className="text-msk-blue"
+              >
                 Créer le premier
               </Link>
             ) : null}
@@ -70,19 +108,65 @@ export default async function StocksAchatsPage() {
           <table className="w-full min-w-180 text-left text-sm">
             <thead className="border-b border-msk-paper bg-msk-chalk/60 text-xs tracking-caps uppercase text-msk-ink/45">
               <tr>
-                <th className="px-4 py-3 font-semibold">N°</th>
-                <th className="px-4 py-3 font-semibold">Fournisseur</th>
-                <th className="px-4 py-3 font-semibold">Statut</th>
-                <th className="px-4 py-3 font-semibold text-right">Lignes</th>
-                <th className="px-4 py-3 font-semibold">Créé le</th>
-                <th className="px-4 py-3 font-semibold">Par</th>
+                <SortableTh
+                  label="N°"
+                  column="number"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/stocks/achats"
+                  searchParams={listParams}
+                />
+                <SortableTh
+                  label="Fournisseur"
+                  column="supplier"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/stocks/achats"
+                  searchParams={listParams}
+                />
+                <SortableTh
+                  label="Statut"
+                  column="status"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/stocks/achats"
+                  searchParams={listParams}
+                />
+                <SortableTh
+                  label="Lignes"
+                  column="lines"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/stocks/achats"
+                  searchParams={listParams}
+                  defaultDir="desc"
+                  align="right"
+                />
+                <SortableTh
+                  label="Créé le"
+                  column="createdAt"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/stocks/achats"
+                  searchParams={listParams}
+                  defaultDir="desc"
+                />
+                <SortableTh
+                  label="Par"
+                  column="by"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/stocks/achats"
+                  searchParams={listParams}
+                />
               </tr>
             </thead>
             <tbody className="divide-y divide-msk-paper">
               {purchases.map((p) => (
                 <tr key={p.id} className="hover:bg-msk-chalk/40">
                   <td className="px-4 py-3">
-                    <Link prefetch={false}
+                    <Link
+                      prefetch={false}
                       href={`/stocks/achats/${p.id}`}
                       className="font-medium text-msk-blue hover:underline"
                     >

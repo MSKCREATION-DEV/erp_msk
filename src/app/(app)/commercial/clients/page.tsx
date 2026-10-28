@@ -24,6 +24,7 @@ import {
   parsePage,
   totalPages,
 } from "@/lib/list/pagination";
+import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -32,8 +33,29 @@ import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
+import { SortableTh } from "@/components/ui/sortable-th";
 import { Badge } from "@/components/ui/badge";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
+
+const CLIENT_SORT_COLUMNS = {
+  name: (dir: SortDir) => ({ name: dir }),
+  contact: (dir: SortDir) => ({ contactName: dir }),
+  phone: (dir: SortDir) => ({ phone: dir }),
+  city: (dir: SortDir) => ({ city: dir }),
+  owner: (dir: SortDir) => ({ owner: { lastName: dir } }),
+  quotes: (dir: SortDir) => ({ quotes: { _count: dir } }),
+  invoices: (dir: SortDir) => ({ invoices: { _count: dir } }),
+  updatedAt: (dir: SortDir) => ({ updatedAt: dir }),
+} satisfies SortColumnMap<
+  | "name"
+  | "contact"
+  | "phone"
+  | "city"
+  | "owner"
+  | "quotes"
+  | "invoices"
+  | "updatedAt"
+>;
 
 export const metadata: Metadata = { title: "Clients" };
 
@@ -182,11 +204,16 @@ async function ClientsResults({
     ],
   };
 
+  const sort = parseListSort(sp, CLIENT_SORT_COLUMNS, {
+    key: "updatedAt",
+    dir: "desc",
+  });
+
   const total = await prisma.comClient.count({ where });
   const page = clampPage(requestedPage, total, pageSize);
   const clients = await prisma.comClient.findMany({
     where,
-    orderBy: { updatedAt: "desc" },
+    orderBy: sort.orderBy as Prisma.ComClientOrderByWithRelationInput,
     skip: pageSkip(page, pageSize),
     take: pageSize,
     include: {
@@ -199,6 +226,8 @@ async function ClientsResults({
   const pages = totalPages(total, pageSize);
   const listParams: Record<string, string | undefined> = { ...sp };
   delete listParams.page;
+  listParams.sort = sort.key;
+  listParams.dir = sort.dir;
 
   const clearOwnerHref =
     period != null
@@ -267,14 +296,73 @@ async function ClientsResults({
         <table className="w-full min-w-220 text-left text-sm">
           <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
             <tr>
-              <th className="px-4 py-3 font-semibold">Client</th>
-              <th className="px-4 py-3 font-semibold">Contact</th>
-              <th className="px-4 py-3 font-semibold">Tél.</th>
-              <th className="px-4 py-3 font-semibold">Ville</th>
-              <th className="px-4 py-3 font-semibold">Suivi par</th>
-              <th className="px-4 py-3 font-semibold">Devis</th>
-              <th className="px-4 py-3 font-semibold">Factures</th>
-              <th className="px-4 py-3 font-semibold">Mis à jour</th>
+              <SortableTh
+                label="Client"
+                column="name"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/clients"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Contact"
+                column="contact"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/clients"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Tél."
+                column="phone"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/clients"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Ville"
+                column="city"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/clients"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Suivi par"
+                column="owner"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/clients"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Devis"
+                column="quotes"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/clients"
+                searchParams={listParams}
+                defaultDir="desc"
+              />
+              <SortableTh
+                label="Factures"
+                column="invoices"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/clients"
+                searchParams={listParams}
+                defaultDir="desc"
+              />
+              <SortableTh
+                label="Mis à jour"
+                column="updatedAt"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/clients"
+                searchParams={listParams}
+                defaultDir="desc"
+              />
             </tr>
           </thead>
           <tbody className="divide-y divide-msk-ink/6">

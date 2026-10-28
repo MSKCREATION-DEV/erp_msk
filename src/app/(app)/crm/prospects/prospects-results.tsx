@@ -28,10 +28,12 @@ import {
   parsePage,
   totalPages,
 } from "@/lib/list/pagination";
+import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { Badge } from "@/components/ui/badge";
 import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { StopPropagationTd } from "@/components/ui/stop-propagation-td";
 import { ListPagination } from "@/components/ui/list-pagination";
+import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
@@ -45,6 +47,29 @@ import {
   parseCrmPeriod,
   shouldFilterProspectsByCrmPeriod,
 } from "@/lib/crm/scope-period";
+
+const PROSPECT_SORT_COLUMNS = {
+  org: (dir: SortDir) => ({ organization: { name: dir } }),
+  source: (dir: SortDir) => ({ source: dir }),
+  stage: (dir: SortDir) => ({ stage: dir }),
+  nextAction: (dir: SortDir) => ({ nextAction: dir }),
+  followUpAt: (dir: SortDir) => [
+    { followUpAt: dir },
+    { updatedAt: "desc" as const },
+  ],
+  owner: (dir: SortDir) => ({ owner: { lastName: dir } }),
+  createdAt: (dir: SortDir) => ({ createdAt: dir }),
+  createdBy: (dir: SortDir) => ({ createdBy: { lastName: dir } }),
+} satisfies SortColumnMap<
+  | "org"
+  | "source"
+  | "stage"
+  | "nextAction"
+  | "followUpAt"
+  | "owner"
+  | "createdAt"
+  | "createdBy"
+>;
 
 function stageTone(stage: string): "muted" | "success" | "coral" | "blue" {
   if (stage === "GAGNE") return "success";
@@ -222,12 +247,17 @@ export async function ProspectsResults({
     createdBy: { select: { firstName: true, lastName: true } },
   } as const;
 
+  const sort = parseListSort(sp, PROSPECT_SORT_COLUMNS, {
+    key: "followUpAt",
+    dir: "asc",
+  });
+
   const total = await prisma.crmOpportunity.count({ where });
   const page = clampPage(requestedPage, total, pageSize);
   const deals = await prisma.crmOpportunity.findMany({
     where,
     include: dealInclude,
-    orderBy: [{ followUpAt: "asc" }, { updatedAt: "desc" }],
+    orderBy: sort.orderBy as Prisma.CrmOpportunityOrderByWithRelationInput,
     skip: pageSkip(page, pageSize),
     take: pageSize,
   });
@@ -285,6 +315,8 @@ export async function ProspectsResults({
   const listParams: Record<string, string | undefined> = { ...sp };
   delete listParams.vue;
   delete listParams.page;
+  listParams.sort = sort.key;
+  listParams.dir = sort.dir;
 
   const legacyDateFilter =
     !hasCrmScopePeriodParams(sp) &&
@@ -376,20 +408,84 @@ export async function ProspectsResults({
         <table className="w-full min-w-280 text-center text-sm">
           <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
             <tr>
-              <th className="px-4 py-3 font-semibold">Entreprise</th>
-              <th className="px-4 py-3 font-semibold">Contact / poste</th>
-              <th className="px-4 py-3 font-semibold">Téléphone</th>
-              <th className="px-4 py-3 font-semibold">Origine</th>
-              <th className="px-4 py-3 font-semibold">Statut</th>
-              <th className="px-4 py-3 font-semibold">Relances</th>
-              <th className="px-4 py-3 font-semibold">Prochaine action</th>
-              <th className="px-4 py-3 font-semibold">Relance</th>
-              <th className="px-4 py-3 font-semibold">Suivi par</th>
-              <th className="px-4 py-3 font-semibold">Créé</th>
-              <th className="px-4 py-3 font-semibold">Créé par</th>
-              {canReassign ? (
-                <th className="px-4 py-3 font-semibold">Affecter</th>
-              ) : null}
+              <SortableTh
+                label="Entreprise"
+                column="org"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/crm/prospects"
+                searchParams={listParams}
+                align="center"
+              />
+              <PlainTh align="center">Contact / poste</PlainTh>
+              <PlainTh align="center">Téléphone</PlainTh>
+              <SortableTh
+                label="Origine"
+                column="source"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/crm/prospects"
+                searchParams={listParams}
+                align="center"
+              />
+              <SortableTh
+                label="Statut"
+                column="stage"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/crm/prospects"
+                searchParams={listParams}
+                align="center"
+              />
+              <PlainTh align="center">Relances</PlainTh>
+              <SortableTh
+                label="Prochaine action"
+                column="nextAction"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/crm/prospects"
+                searchParams={listParams}
+                align="center"
+              />
+              <SortableTh
+                label="Relance"
+                column="followUpAt"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/crm/prospects"
+                searchParams={listParams}
+                defaultDir="asc"
+                align="center"
+              />
+              <SortableTh
+                label="Suivi par"
+                column="owner"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/crm/prospects"
+                searchParams={listParams}
+                align="center"
+              />
+              <SortableTh
+                label="Créé"
+                column="createdAt"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/crm/prospects"
+                searchParams={listParams}
+                defaultDir="desc"
+                align="center"
+              />
+              <SortableTh
+                label="Créé par"
+                column="createdBy"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/crm/prospects"
+                searchParams={listParams}
+                align="center"
+              />
+              {canReassign ? <PlainTh align="center">Affecter</PlainTh> : null}
             </tr>
           </thead>
           <tbody className="divide-y divide-msk-ink/6">

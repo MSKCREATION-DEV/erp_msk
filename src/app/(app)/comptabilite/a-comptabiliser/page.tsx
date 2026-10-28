@@ -1,22 +1,54 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { Prisma } from "@prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { firstParam } from "@/lib/list/search-params";
+import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { formatComMoney, INVOICE_STATUS_LABELS } from "@/lib/commercial/labels";
 import { ProposeInvoiceButton } from "@/components/comptabilite/propose-invoice-button";
 
 export const metadata: Metadata = { title: "À comptabiliser" };
 
+const PENDING_SORT_COLUMNS = {
+  number: (dir: SortDir) => ({ number: dir }),
+  client: (dir: SortDir) => ({ client: { name: dir } }),
+  status: (dir: SortDir) => ({ status: dir }),
+  totalTtc: (dir: SortDir) => ({ totalTtc: dir }),
+  issuedAt: (dir: SortDir) => ({ issuedAt: dir }),
+} satisfies SortColumnMap<
+  "number" | "client" | "status" | "totalTtc" | "issuedAt"
+>;
+
 /** Factures COM émises/payées sans écriture VE liée — file comptable. */
-export default async function AComptabiliserPage() {
+export default async function AComptabiliserPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await requireUser();
   if (!hasPermission(user, "cpt.ecritures.manage")) redirect("/accueil");
+
+  const raw = await searchParams;
+  const sp: Record<string, string | undefined> = {
+    sort: firstParam(raw.sort),
+    dir: firstParam(raw.dir),
+  };
+  const sort = parseListSort(sp, PENDING_SORT_COLUMNS, {
+    key: "issuedAt",
+    dir: "desc",
+  });
+  const listParams: Record<string, string | undefined> = {
+    sort: sort.key,
+    dir: sort.dir,
+  };
 
   const linked = await prisma.cptEntry.findMany({
     where: { sourceType: "COM_INVOICE", sourceId: { not: null } },
@@ -37,7 +69,7 @@ export default async function AComptabiliserPage() {
     where: {
       status: { in: ["EMISE", "PARTIELLEMENT_PAYEE", "PAYEE"] },
     },
-    orderBy: { issuedAt: "desc" },
+    orderBy: sort.orderBy as Prisma.ComInvoiceOrderByWithRelationInput,
     take: 100,
     include: {
       client: { select: { name: true } },
@@ -71,11 +103,40 @@ export default async function AComptabiliserPage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-msk-ink/10 text-msk-ink/45">
               <tr>
-                <th className="px-4 py-3 font-medium">Facture</th>
-                <th className="px-4 py-3 font-medium">Client</th>
-                <th className="px-4 py-3 font-medium">Statut</th>
-                <th className="px-4 py-3 font-medium">TTC</th>
-                <th className="px-4 py-3 font-medium">Action</th>
+                <SortableTh
+                  label="Facture"
+                  column="number"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/comptabilite/a-comptabiliser"
+                  searchParams={listParams}
+                />
+                <SortableTh
+                  label="Client"
+                  column="client"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/comptabilite/a-comptabiliser"
+                  searchParams={listParams}
+                />
+                <SortableTh
+                  label="Statut"
+                  column="status"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/comptabilite/a-comptabiliser"
+                  searchParams={listParams}
+                />
+                <SortableTh
+                  label="TTC"
+                  column="totalTtc"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/comptabilite/a-comptabiliser"
+                  searchParams={listParams}
+                  defaultDir="desc"
+                />
+                <PlainTh>Action</PlainTh>
               </tr>
             </thead>
             <tbody>

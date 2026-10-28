@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import type { Prisma } from "@prisma/client";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { USER_STATUS_LABEL, USER_STATUS_TONE } from "@/lib/users/status";
+import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { KpiGrid } from "@/components/ui/kpi-card";
@@ -12,18 +14,44 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { UserAvatar } from "@/components/ui/user-avatar";
+import { PlainTh, SortableTh } from "@/components/ui/sortable-th";
 
 export const metadata: Metadata = {
   title: "Utilisateurs",
 };
 
-export default async function UsersAdminPage() {
+const USER_SORT_COLUMNS = {
+  name: (dir: SortDir) => [{ lastName: dir }, { firstName: dir }],
+  status: (dir: SortDir) => ({ status: dir }),
+} satisfies SortColumnMap<"name" | "status">;
+
+export default async function UsersAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await requireUser({ permission: "users.view" });
   const canInvite = hasPermission(user, "users.create");
 
+  const raw = await searchParams;
+  const sp: Record<string, string | undefined> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    sp[k] = Array.isArray(v) ? v[0] : v;
+  }
+  const sort = parseListSort(sp, USER_SORT_COLUMNS, {
+    key: "name",
+    dir: "asc",
+  });
+  const listParams: Record<string, string | undefined> = {
+    sort: sort.key,
+    dir: sort.dir,
+  };
+
   const [users, pendingResets, counts] = await Promise.all([
     prisma.user.findMany({
-      orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+      orderBy: sort.orderBy as
+        | Prisma.UserOrderByWithRelationInput
+        | Prisma.UserOrderByWithRelationInput[],
       select: {
         id: true,
         email: true,
@@ -144,10 +172,30 @@ export default async function UsersAdminPage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-msk-ink/6 bg-[#F8F9FB] text-[11px] font-semibold uppercase tracking-[0.1em] text-msk-ink/40">
               <tr>
-                <th className="px-5 py-3.5">Collaborateur</th>
-                <th className="px-5 py-3.5">Statut</th>
-                <th className="hidden px-5 py-3.5 md:table-cell">Groupes</th>
-                <th className="hidden px-5 py-3.5 lg:table-cell">Packs</th>
+                <SortableTh
+                  label="Collaborateur"
+                  column="name"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/administration/utilisateurs"
+                  searchParams={listParams}
+                  className="px-5 py-3.5"
+                />
+                <SortableTh
+                  label="Statut"
+                  column="status"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/administration/utilisateurs"
+                  searchParams={listParams}
+                  className="px-5 py-3.5"
+                />
+                <PlainTh className="hidden px-5 py-3.5 md:table-cell">
+                  Groupes
+                </PlainTh>
+                <PlainTh className="hidden px-5 py-3.5 lg:table-cell">
+                  Packs
+                </PlainTh>
               </tr>
             </thead>
             <tbody>

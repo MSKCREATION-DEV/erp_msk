@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
+import type { Prisma } from "@prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { canReassignCrmDeal } from "@/lib/crm/scope";
@@ -10,14 +11,43 @@ import { prisma } from "@/lib/prisma";
 import { STAGE_LABELS, STAGE_ORDER } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { firstSearchParam } from "@/lib/crm/scope-period";
+import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ListSearchForm } from "@/components/ui/list-search-form";
+import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { AssignmentResolveActions } from "@/components/crm/assignment-resolve-actions";
 import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
 import { AffectationsLive } from "@/components/crm/affectations-live";
+
+const PENDING_SORT = {
+  prospect: (dir: SortDir) => ({
+    opportunity: { organization: { name: dir } },
+  }),
+  requester: (dir: SortDir) => ({ requester: { lastName: dir } }),
+  owner: (dir: SortDir) => ({
+    opportunity: { owner: { lastName: dir } },
+  }),
+  createdAt: (dir: SortDir) => ({ createdAt: dir }),
+  stage: (dir: SortDir) => ({ opportunity: { stage: dir } }),
+} satisfies SortColumnMap<
+  "prospect" | "requester" | "owner" | "createdAt" | "stage"
+>;
+
+const RECENT_SORT = {
+  prospect: (dir: SortDir) => ({
+    opportunity: { organization: { name: dir } },
+  }),
+  requester: (dir: SortDir) => ({ requester: { lastName: dir } }),
+  resolver: (dir: SortDir) => ({ resolvedBy: { lastName: dir } }),
+  createdAt: (dir: SortDir) => ({ createdAt: dir }),
+  resolvedAt: (dir: SortDir) => ({ resolvedAt: dir }),
+  status: (dir: SortDir) => ({ status: dir }),
+} satisfies SortColumnMap<
+  "prospect" | "requester" | "resolver" | "createdAt" | "resolvedAt" | "status"
+>;
 
 export const metadata: Metadata = { title: "Affectations" };
 
@@ -39,9 +69,32 @@ export default async function CrmAffectationsPage({
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
   if (!canReassignCrmDeal(user)) redirect("/crm/prospects");
 
-  const sp = await searchParams;
-  const q = (firstSearchParam(sp.q) ?? "").trim().toLowerCase();
-  const statusFilter = firstSearchParam(sp.statut)?.toUpperCase();
+  const spRaw = await searchParams;
+  const sp: Record<string, string | undefined> = {};
+  for (const [k, v] of Object.entries(spRaw)) {
+    sp[k] = Array.isArray(v) ? v[0] : v;
+  }
+  const q = (firstSearchParam(spRaw.q) ?? "").trim().toLowerCase();
+  const statusFilter = firstSearchParam(spRaw.statut)?.toUpperCase();
+
+  const sort = parseListSort(sp, PENDING_SORT, {
+    key: "createdAt",
+    dir: "asc",
+  });
+  const recentSort =
+    sort.key in RECENT_SORT
+      ? parseListSort(sp, RECENT_SORT, { key: "resolvedAt", dir: "desc" })
+      : parseListSort(
+          { sort: "resolvedAt", dir: "desc" },
+          RECENT_SORT,
+          { key: "resolvedAt", dir: "desc" },
+        );
+  const listParams: Record<string, string | undefined> = {
+    q: sp.q,
+    statut: sp.statut,
+    sort: sort.key,
+    dir: sort.dir,
+  };
 
   const [commercials, assignableDeals, pending, recent] = await Promise.all([
     listCommercialRoster({ mode: "assign", extraIds: [user.id] }).then((rows) =>
@@ -67,7 +120,8 @@ export default async function CrmAffectationsPage({
     }),
     prisma.crmAssignmentRequest.findMany({
       where: { status: "PENDING" },
-      orderBy: { createdAt: "asc" },
+      orderBy:
+        sort.orderBy as Prisma.CrmAssignmentRequestOrderByWithRelationInput,
       include: {
         requester: { select: { firstName: true, lastName: true, email: true } },
         opportunity: {
@@ -94,7 +148,8 @@ export default async function CrmAffectationsPage({
               : ["APPROVED", "REJECTED", "CANCELLED"],
         },
       },
-      orderBy: { resolvedAt: "desc" },
+      orderBy:
+        recentSort.orderBy as Prisma.CrmAssignmentRequestOrderByWithRelationInput,
       take: 50,
       include: {
         requester: { select: { firstName: true, lastName: true } },
@@ -205,12 +260,48 @@ export default async function CrmAffectationsPage({
             <table className="w-full min-w-200 text-left text-sm">
               <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
                 <tr>
-                  <th className="px-4 py-3 font-semibold">Prospect</th>
-                  <th className="px-4 py-3 font-semibold">Demandeur</th>
-                  <th className="px-4 py-3 font-semibold">Suivi actuel</th>
-                  <th className="px-4 py-3 font-semibold">Créée le</th>
-                  <th className="px-4 py-3 font-semibold">Statut CRM</th>
-                  <th className="px-4 py-3 font-semibold">Actions</th>
+                  <SortableTh
+                    label="Prospect"
+                    column="prospect"
+                    sort={sort.key}
+                    dir={sort.dir}
+                    pathname="/crm/affectations"
+                    searchParams={listParams}
+                  />
+                  <SortableTh
+                    label="Demandeur"
+                    column="requester"
+                    sort={sort.key}
+                    dir={sort.dir}
+                    pathname="/crm/affectations"
+                    searchParams={listParams}
+                  />
+                  <SortableTh
+                    label="Suivi actuel"
+                    column="owner"
+                    sort={sort.key}
+                    dir={sort.dir}
+                    pathname="/crm/affectations"
+                    searchParams={listParams}
+                  />
+                  <SortableTh
+                    label="Créée le"
+                    column="createdAt"
+                    sort={sort.key}
+                    dir={sort.dir}
+                    pathname="/crm/affectations"
+                    searchParams={listParams}
+                    defaultDir="asc"
+                  />
+                  <SortableTh
+                    label="Statut CRM"
+                    column="stage"
+                    sort={sort.key}
+                    dir={sort.dir}
+                    pathname="/crm/affectations"
+                    searchParams={listParams}
+                  />
+                  <PlainTh>Actions</PlainTh>
                 </tr>
               </thead>
               <tbody className="divide-y divide-msk-ink/6">
@@ -318,12 +409,34 @@ export default async function CrmAffectationsPage({
             <table className="w-full min-w-200 text-left text-sm">
               <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
                 <tr>
-                  <th className="px-4 py-3 font-semibold">Prospect</th>
-                  <th className="px-4 py-3 font-semibold">Demandeur</th>
-                  <th className="px-4 py-3 font-semibold">Décidé par</th>
-                  <th className="px-4 py-3 font-semibold">Créée</th>
-                  <th className="px-4 py-3 font-semibold">Décidée</th>
-                  <th className="px-4 py-3 font-semibold">Statut</th>
+                  <SortableTh
+                    label="Prospect"
+                    column="prospect"
+                    sort={recentSort.key}
+                    dir={recentSort.dir}
+                    pathname="/crm/affectations"
+                    searchParams={listParams}
+                  />
+                  <SortableTh
+                    label="Demandeur"
+                    column="requester"
+                    sort={recentSort.key}
+                    dir={recentSort.dir}
+                    pathname="/crm/affectations"
+                    searchParams={listParams}
+                  />
+                  <PlainTh>Décidé par</PlainTh>
+                  <SortableTh
+                    label="Créée"
+                    column="createdAt"
+                    sort={recentSort.key}
+                    dir={recentSort.dir}
+                    pathname="/crm/affectations"
+                    searchParams={listParams}
+                    defaultDir="desc"
+                  />
+                  <PlainTh>Décidée</PlainTh>
+                  <PlainTh>Statut</PlainTh>
                 </tr>
               </thead>
               <tbody className="divide-y divide-msk-ink/6">

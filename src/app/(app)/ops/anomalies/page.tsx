@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { Prisma } from "@prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { firstParam } from "@/lib/list/search-params";
+import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
+import { SortableTh } from "@/components/ui/sortable-th";
 
 export const metadata: Metadata = { title: "Anomalies" };
 
@@ -36,7 +40,21 @@ function isEscalated(ticket: {
   return Date.now() - ticket.createdAt.getTime() > ESCALATION_MS;
 }
 
-export default async function OpsAnomaliesPage() {
+const TICKET_SORT_COLUMNS = {
+  equipment: (dir: SortDir) => ({ equipment: dir }),
+  priority: (dir: SortDir) => ({ priority: dir }),
+  status: (dir: SortDir) => ({ status: dir }),
+  assigned: (dir: SortDir) => ({ assignedTo: { lastName: dir } }),
+  noticedAt: (dir: SortDir) => ({ noticedAt: dir }),
+} satisfies SortColumnMap<
+  "equipment" | "priority" | "status" | "assigned" | "noticedAt"
+>;
+
+export default async function OpsAnomaliesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await requireUser();
   if (!hasPermission(user, "ops.access")) redirect("/accueil");
 
@@ -44,9 +62,23 @@ export default async function OpsAnomaliesPage() {
     hasPermission(user, "ops.ticket.create") ||
     hasPermission(user, "ops.ticket.manage");
 
+  const raw = await searchParams;
+  const sp: Record<string, string | undefined> = {
+    sort: firstParam(raw.sort),
+    dir: firstParam(raw.dir),
+  };
+  const sort = parseListSort(sp, TICKET_SORT_COLUMNS, {
+    key: "priority",
+    dir: "desc",
+  });
+  const listParams: Record<string, string | undefined> = {
+    sort: sort.key,
+    dir: sort.dir,
+  };
+
   const tickets = await prisma.opsTicket.findMany({
     take: 100,
-    orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
+    orderBy: sort.orderBy as Prisma.OpsTicketOrderByWithRelationInput,
     include: {
       assignedTo: { select: { firstName: true, lastName: true } },
     },
@@ -59,10 +91,14 @@ export default async function OpsAnomaliesPage() {
       <PageHeader
         title="Anomalies"
         description="Tickets équipement / zone — priorité et suivi d’intervention."
-        breadcrumbs={[{ label: "Ops", href: "/ops/anomalies" }, { label: "Anomalies" }]}
+        breadcrumbs={[
+          { label: "Ops", href: "/ops/anomalies" },
+          { label: "Anomalies" },
+        ]}
         actions={
           canCreate ? (
-            <Link prefetch={false}
+            <Link
+              prefetch={false}
               href="/ops/anomalies/nouveau"
               className="inline-flex rounded-lg bg-msk-blue px-3 py-2 text-sm font-semibold text-white"
             >
@@ -75,7 +111,8 @@ export default async function OpsAnomaliesPage() {
       {escalatedCount > 0 ? (
         <Surface className="border-msk-coral/25 bg-msk-coral/5 p-4">
           <p className="text-sm font-semibold text-msk-coral">
-            {escalatedCount} anomalie(s) critique(s) ouverte(s) depuis plus de 48 h
+            {escalatedCount} anomalie(s) critique(s) ouverte(s) depuis plus de
+            48 h
           </p>
         </Surface>
       ) : null}
@@ -85,7 +122,11 @@ export default async function OpsAnomaliesPage() {
           <p className="p-6 text-sm text-msk-ink/45">
             Aucun ticket.{" "}
             {canCreate ? (
-              <Link prefetch={false} href="/ops/anomalies/nouveau" className="text-msk-blue">
+              <Link
+                prefetch={false}
+                href="/ops/anomalies/nouveau"
+                className="text-msk-blue"
+              >
                 Signaler la première
               </Link>
             ) : null}
@@ -94,11 +135,48 @@ export default async function OpsAnomaliesPage() {
           <table className="w-full min-w-180 text-left text-sm">
             <thead className="border-b border-msk-paper bg-msk-chalk/60 text-xs tracking-caps uppercase text-msk-ink/45">
               <tr>
-                <th className="px-4 py-3 font-semibold">Équipement</th>
-                <th className="px-4 py-3 font-semibold">Priorité</th>
-                <th className="px-4 py-3 font-semibold">Statut</th>
-                <th className="px-4 py-3 font-semibold">Assigné</th>
-                <th className="px-4 py-3 font-semibold">Signalé</th>
+                <SortableTh
+                  label="Équipement"
+                  column="equipment"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/ops/anomalies"
+                  searchParams={listParams}
+                />
+                <SortableTh
+                  label="Priorité"
+                  column="priority"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/ops/anomalies"
+                  searchParams={listParams}
+                  defaultDir="desc"
+                />
+                <SortableTh
+                  label="Statut"
+                  column="status"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/ops/anomalies"
+                  searchParams={listParams}
+                />
+                <SortableTh
+                  label="Assigné"
+                  column="assigned"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/ops/anomalies"
+                  searchParams={listParams}
+                />
+                <SortableTh
+                  label="Signalé"
+                  column="noticedAt"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/ops/anomalies"
+                  searchParams={listParams}
+                  defaultDir="desc"
+                />
               </tr>
             </thead>
             <tbody className="divide-y divide-msk-paper">
@@ -114,7 +192,8 @@ export default async function OpsAnomaliesPage() {
                     }
                   >
                     <td className="px-4 py-3">
-                      <Link prefetch={false}
+                      <Link
+                        prefetch={false}
                         href={`/ops/anomalies/${t.id}`}
                         className="font-medium text-msk-blue hover:underline"
                       >

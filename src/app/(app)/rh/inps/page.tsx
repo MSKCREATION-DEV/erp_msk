@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import type { Prisma } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { PlainTh, SortableTh } from "@/components/ui/sortable-th";
 import {
   DEFAULT_INPS_RATES,
   INPS_PROVISIONAL_NOTE,
@@ -17,13 +20,33 @@ import { MarkInpsDeclaredButton } from "@/components/paie/mark-inps-declared";
 
 export const metadata: Metadata = { title: "INPS" };
 
-export default async function RhInpsPage() {
+const INPS_PERIOD_SORT_COLUMNS = {
+  period: (dir: SortDir) => [{ year: dir }, { month: dir }],
+} satisfies SortColumnMap<"period">;
+
+export default async function RhInpsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await requireUser();
   if (
     !hasAnyPermission(user, ["rh.inps.manage", "rh.payroll.view", "rh.payroll.approve"])
   ) {
     redirect("/accueil");
   }
+
+  const raw = await searchParams;
+  const sp: Record<string, string | undefined> = {};
+  for (const [k, v] of Object.entries(raw)) sp[k] = Array.isArray(v) ? v[0] : v;
+  const sort = parseListSort(sp, INPS_PERIOD_SORT_COLUMNS, {
+    key: "period",
+    dir: "desc",
+  });
+  const listParams: Record<string, string | undefined> = {
+    sort: sort.key,
+    dir: sort.dir,
+  };
 
   const settings = await prisma.rhInpsSettings.findFirst({
     orderBy: { effectiveFrom: "desc" },
@@ -32,7 +55,9 @@ export default async function RhInpsPage() {
 
   const periods = await prisma.rhPayrollPeriod.findMany({
     where: { status: { in: ["CALCULATED", "APPROVED", "CLOSED"] } },
-    orderBy: [{ year: "desc" }, { month: "desc" }],
+    orderBy: sort.orderBy as
+      | Prisma.RhPayrollPeriodOrderByWithRelationInput
+      | Prisma.RhPayrollPeriodOrderByWithRelationInput[],
     take: 12,
     include: {
       inpsLines: true,
@@ -67,10 +92,10 @@ export default async function RhInpsPage() {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-msk-ink/10 text-msk-ink/45">
             <tr>
-              <th className="px-4 py-3 font-medium">Code</th>
-              <th className="px-4 py-3 font-medium">Libellé</th>
-              <th className="px-4 py-3 font-medium">Taux</th>
-              <th className="px-4 py-3 font-medium">Part</th>
+              <PlainTh>Code</PlainTh>
+              <PlainTh>Libellé</PlainTh>
+              <PlainTh>Taux</PlainTh>
+              <PlainTh>Part</PlainTh>
             </tr>
           </thead>
           <tbody>
@@ -104,11 +129,19 @@ export default async function RhInpsPage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-msk-ink/10 text-msk-ink/45">
               <tr>
-                <th className="px-4 py-3 font-medium">Période</th>
-                <th className="px-4 py-3 font-medium">Assiette</th>
-                <th className="px-4 py-3 font-medium">Part sal.</th>
-                <th className="px-4 py-3 font-medium">Part emp.</th>
-                <th className="px-4 py-3 font-medium">Action</th>
+                <SortableTh
+                  label="Période"
+                  column="period"
+                  sort={sort.key}
+                  dir={sort.dir}
+                  pathname="/rh/inps"
+                  searchParams={listParams}
+                  defaultDir="desc"
+                />
+                <PlainTh>Assiette</PlainTh>
+                <PlainTh>Part sal.</PlainTh>
+                <PlainTh>Part emp.</PlainTh>
+                <PlainTh>Action</PlainTh>
               </tr>
             </thead>
             <tbody>
