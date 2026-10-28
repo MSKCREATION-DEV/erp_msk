@@ -5,7 +5,6 @@ import { useState } from "react";
 import type { CrmActivityType, CrmLossReason, CrmPipelineStage } from "@prisma/client";
 import { updateOpportunityStageAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldError, FieldHint, FieldLabel } from "@/components/ui/field-label";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
@@ -13,9 +12,14 @@ import { usePendingAction } from "@/hooks/use-pending-action";
 import {
   CONTACT_COMMENT_MIN_LEN,
   CONTACT_STAGE_CHANNELS,
+  LOSS_NOTE_MIN_LEN,
   normalizeUiStage,
 } from "@/lib/crm/guide-rules";
 import { RELANCE_GUIDE_THRESHOLD } from "@/lib/crm/follow-up-count";
+import {
+  linkedEntitiesLabels,
+  type ProspectLinkedSummary,
+} from "@/lib/crm/prospect-linked-entities";
 import {
   ACTIVITY_LABELS,
   LOSS_LABELS,
@@ -29,12 +33,14 @@ export function StageForm({
   stage,
   activityCount = 0,
   hasFollowUp = false,
+  linked,
   onSuccess,
 }: {
   opportunityId: string;
   stage: CrmPipelineStage;
   activityCount?: number;
   hasFollowUp?: boolean;
+  linked?: ProspectLinkedSummary;
   onSuccess?: () => void;
 }) {
   const router = useRouter();
@@ -43,6 +49,8 @@ export function StageForm({
     normalizeUiStage(stage),
   );
   const [lossReason, setLossReason] = useState<CrmLossReason | null>("BUDGET");
+  const [lossNote, setLossNote] = useState("");
+  const [confirmLinked, setConfirmLinked] = useState(false);
   const [contactChannel, setContactChannel] = useState<CrmActivityType | null>(
     null,
   );
@@ -51,6 +59,9 @@ export function StageForm({
 
   const enteringContacte =
     current === "CONTACTE" && normalizeUiStage(stage) !== "CONTACTE";
+
+  const linkedLines = linked ? linkedEntitiesLabels(linked) : [];
+  const hasLinked = linkedLines.length > 0;
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -69,9 +80,32 @@ export function StageForm({
       }
     }
 
+    if (current === "PERDU") {
+      if (!lossReason) {
+        setError("Motif de perte obligatoire.");
+        return;
+      }
+      if (lossNote.trim().length < LOSS_NOTE_MIN_LEN) {
+        setError(
+          `Commentaire obligatoire (min. ${LOSS_NOTE_MIN_LEN} caractères) pour expliquer la perte.`,
+        );
+        return;
+      }
+      if (hasLinked && !confirmLinked) {
+        setError(
+          "Cochez la confirmation après avoir lu les éléments liés au prospect.",
+        );
+        return;
+      }
+    }
+
     const fd = new FormData(e.currentTarget);
     fd.set("stage", current);
     if (current === "PERDU" && lossReason) fd.set("lossReason", lossReason);
+    if (current === "PERDU") {
+      fd.set("lossNote", lossNote.trim());
+      if (hasLinked && confirmLinked) fd.set("confirmLinked", "1");
+    }
     if (enteringContacte && contactChannel) {
       fd.set("contactChannel", contactChannel);
       fd.set("contactComment", contactComment.trim());
@@ -108,6 +142,7 @@ export function StageForm({
           if (!v) return;
           setCurrent(v as CrmPipelineStage);
           setError(null);
+          setConfirmLinked(false);
         }}
         disabled={pending}
         placeholder="Choisir le statut"
@@ -172,13 +207,47 @@ export function StageForm({
 
       {current === "PERDU" ? (
         <div className="space-y-3 rounded-xl border border-msk-ink/8 bg-msk-chalk/40 p-3.5">
-          {activityCount < RELANCE_GUIDE_THRESHOLD ? (
-            <p className="text-xs text-msk-coral">
-              GUIDE : {activityCount}/{RELANCE_GUIDE_THRESHOLD} relances
-              (appel, WhatsApp…) — minimum {RELANCE_GUIDE_THRESHOLD} avant
-              Perdu.
+          {activityCount > 0 ? (
+            <p className="text-xs text-msk-ink/55">
+              Relances journalisées : {activityCount}
+              {activityCount < RELANCE_GUIDE_THRESHOLD
+                ? ` (indicatif : souvent ≥ ${RELANCE_GUIDE_THRESHOLD} avant abandon)`
+                : ""}
+              .
             </p>
+          ) : (
+            <p className="text-xs text-msk-ink/55">
+              Aucune relance journalisée — vous pouvez tout de même marquer
+              Perdu avec un motif et un commentaire.
+            </p>
+          )}
+
+          {hasLinked ? (
+            <div className="rounded-lg border border-msk-coral/25 bg-msk-coral/5 px-3 py-2.5">
+              <p className="text-xs font-semibold text-msk-coral">
+                Éléments encore liés à ce prospect
+              </p>
+              <ul className="mt-1.5 list-inside list-disc text-xs text-msk-ink/70">
+                {linkedLines.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+              <label className="mt-3 flex cursor-pointer items-start gap-2 text-xs text-msk-ink/80">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 rounded border-msk-ink/20 text-msk-blue focus:ring-msk-blue/40"
+                  checked={confirmLinked}
+                  disabled={pending}
+                  onChange={(e) => setConfirmLinked(e.target.checked)}
+                />
+                <span>
+                  J’ai pris connaissance de ces éléments et je confirme le
+                  passage en Perdu (les relances ouvertes seront annulées).
+                </span>
+              </label>
+            </div>
           ) : null}
+
           <OptionPickerSingle
             label="Motif de perte"
             required
@@ -192,14 +261,22 @@ export function StageForm({
             modalTitle="Motif de perte"
           />
           <div>
-            <FieldLabel htmlFor="lossNote">Précision</FieldLabel>
-            <Input
+            <FieldLabel htmlFor="lossNote" required>
+              Commentaire
+            </FieldLabel>
+            <Textarea
               id="lossNote"
               name="lossNote"
+              value={lossNote}
+              onChange={(e) => setLossNote(e.target.value)}
               disabled={pending}
-              placeholder="Ex. budget insuffisant, concurrent choisi…"
+              rows={3}
+              placeholder="Ex. Client a choisi un concurrent / plus de budget / pas de réponse après plusieurs tentatives…"
+              className="min-h-20"
             />
-            <FieldHint>Optionnel — utile pour le rapport équipe.</FieldHint>
+            <FieldHint>
+              Min. {LOSS_NOTE_MIN_LEN} caractères — visible dans le journal.
+            </FieldHint>
           </div>
         </div>
       ) : null}

@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { AssignmentResolveActions } from "@/components/crm/assignment-resolve-actions";
 import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
+import { AffectationsLive } from "@/components/crm/affectations-live";
 
 export const metadata: Metadata = { title: "Affectations" };
 
@@ -148,6 +149,7 @@ export default async function CrmAffectationsPage({
 
   return (
     <PageShell>
+      <AffectationsLive userId={user.id} />
       <PageHeader
         title="Affectations"
         description="Demandes de reprise de suivi et historique des décisions."

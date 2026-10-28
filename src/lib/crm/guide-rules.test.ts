@@ -4,6 +4,7 @@ import {
   CONTACT_STAGE_CHANNELS,
   followUpRequiredForStage,
   isEnteringContacte,
+  LOSS_NOTE_MIN_LEN,
   MIN_ACTIVITIES_BEFORE_LOST,
   normalizeUiStage,
 } from "./guide-rules";
@@ -19,6 +20,7 @@ assert.ok(CONTACT_STAGE_CHANNELS.includes("WHATSAPP"));
 assert.ok(!(CONTACT_STAGE_CHANNELS as readonly string[]).includes("RDV"));
 
 assert.equal(MIN_ACTIVITIES_BEFORE_LOST, 3);
+assert.ok(LOSS_NOTE_MIN_LEN >= 10);
 assert.equal(normalizeUiStage("NEGOCIATION"), "DEVIS_ENVOYE");
 assert.equal(normalizeUiStage("INTERESSE"), "INTERESSE");
 

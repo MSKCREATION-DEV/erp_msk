@@ -12,6 +12,7 @@ import {
 } from "@/components/crm/prospect-quote-cta";
 import type { QuotePrefillLine } from "@/components/commercial/quote-form";
 import { COM_DOCS_GATED } from "@/lib/commercial/gates";
+import type { ProspectLinkedSummary } from "@/lib/crm/prospect-linked-entities";
 
 type OfferOpt = {
   id: string;
@@ -35,6 +36,7 @@ export function ProspectDetailActions({
   stage,
   activityCount,
   hasFollowUp,
+  linked,
   canEditStage,
   canLogActivity,
   requireFollowUp,
@@ -44,6 +46,7 @@ export function ProspectDetailActions({
   stage: CrmPipelineStage;
   activityCount: number;
   hasFollowUp: boolean;
+  linked?: ProspectLinkedSummary;
   canEditStage: boolean;
   canLogActivity: boolean;
   requireFollowUp: boolean;
@@ -126,6 +129,7 @@ export function ProspectDetailActions({
               stage={stage}
               activityCount={activityCount}
               hasFollowUp={hasFollowUp}
+              linked={linked}
               onSuccess={() => setStageOpen(false)}
             />
           </div>

@@ -434,3 +434,47 @@ export function systemTestEmailText() {
     `${company.legalForm} — ${company.email}`,
   ].join("\n");
 }
+
+export function notificationEmailHtml(params: {
+  firstName: string;
+  title: string;
+  body?: string;
+  ctaHref: string;
+}) {
+  const bodyHtml = params.body
+    ? detailCard(`
+      <p style="margin:0;font-size:14px;color:${INK};line-height:1.55;text-align:left;">
+        ${escapeHtml(params.body)}
+      </p>
+    `)
+    : "";
+  return emailShell({
+    preheader: params.title,
+    title: params.title,
+    lead: `Bonjour ${params.firstName}, une alerte vous concerne dans l’ERP ${brand.name}.`,
+    bodyHtml,
+    ctaLabel: "Ouvrir dans l’ERP",
+    ctaHref: params.ctaHref,
+    align: "center",
+  });
+}
+
+export function notificationEmailText(params: {
+  firstName: string;
+  title: string;
+  body?: string;
+  ctaHref: string;
+}) {
+  return [
+    `Bonjour ${params.firstName},`,
+    ``,
+    params.title,
+    params.body ? params.body : "",
+    ``,
+    `Ouvrir : ${params.ctaHref}`,
+    ``,
+    `${company.legalForm} — ${company.email}`,
+  ]
+    .filter((l) => l !== undefined)
+    .join("\n");
+}

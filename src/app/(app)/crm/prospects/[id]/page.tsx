@@ -44,11 +44,20 @@ import { ProspectDetailActions } from "@/components/crm/prospect-detail-actions"
 import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
 import { AssignmentRequestForm } from "@/components/crm/assignment-request-form";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
+import { RelanceActions } from "@/components/crm/relance-actions";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { OfferConfigBadges } from "@/components/crm/offer-config-badges";
 import { SocialNetworkBadges } from "@/components/crm/social-network-badges";
 import { countOutreachActivities } from "@/lib/crm/follow-up-count";
-import { normalizeUiStage } from "@/lib/crm/guide-rules";
+import { loadProspectLinkedEntities } from "@/lib/crm/prospect-linked-entities";
+import {
+  buildProspectTimeline,
+  timelineKindLabel,
+} from "@/lib/crm/prospect-timeline";
+import {
+  followUpRequiredForStage,
+  normalizeUiStage,
+} from "@/lib/crm/guide-rules";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 import {
   COM_DOCS_GATED,
@@ -259,6 +268,7 @@ export default async function CrmProspectDetailPage({
   }
 
   const outreachCount = await countOutreachActivities(deal.id);
+  const linkedEntities = await loadProspectLinkedEntities(deal.id);
 
   const pendingAssignment = await prisma.crmAssignmentRequest.findFirst({
     where: {
@@ -341,32 +351,14 @@ export default async function CrmProspectDetailPage({
   });
   const sameOwnerAsCreator = deal.ownerId === deal.createdById;
 
-  /** Journal : toujours ancré à la création (synthétique si ancien dossier). */
-  const hasCreationActivity = deal.activities.some((a) =>
-    a.summary.toLowerCase().startsWith("prospect créé"),
-  );
-  const journalEntries = [
-    ...deal.activities.map((a) => ({
-      id: a.id,
-      summary: a.summary,
-      body: a.body,
-      typeLabel: ACTIVITY_LABELS[a.type],
-      occurredAt: a.occurredAt,
-      actorName: `${a.actor.firstName} ${a.actor.lastName}`,
-    })),
-    ...(hasCreationActivity
-      ? []
-      : [
-          {
-            id: `created-${deal.id}`,
-            summary: "Prospect créé",
-            body: null as string | null,
-            typeLabel: "Création",
-            occurredAt: deal.createdAt,
-            actorName: `${deal.createdBy.firstName} ${deal.createdBy.lastName}`,
-          },
-        ]),
-  ].sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime());
+  const journalEntries = buildProspectTimeline({
+    activities: deal.activities,
+    deal: {
+      id: deal.id,
+      createdAt: deal.createdAt,
+      createdBy: deal.createdBy,
+    },
+  });
 
   const canLog =
     canMutate && hasPermission(user, "crm.activity.log");
@@ -496,11 +488,20 @@ export default async function CrmProspectDetailPage({
                 Scripts
               </Link>
             ) : null}
+            {canLog ? (
+              <Link
+                href={`/crm/rdv/nouveau?opportunityId=${deal.id}`}
+                className="inline-flex h-9 items-center justify-center rounded-lg border border-msk-ink/10 bg-white px-3 text-sm font-medium text-msk-ink transition hover:bg-msk-chalk"
+              >
+                Planifier un RDV
+              </Link>
+            ) : null}
             <ProspectDetailActions
               opportunityId={deal.id}
               stage={deal.stage}
               activityCount={outreachCount}
               hasFollowUp={deal.followUpAt != null}
+              linked={linkedEntities}
               canEditStage={canEdit}
               canLogActivity={canLog}
               requireFollowUp={requireFollowUp}
@@ -851,22 +852,35 @@ export default async function CrmProspectDetailPage({
                 <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
                   Relances ouvertes
                 </p>
-                <ul className="space-y-2">
+                <ul className="space-y-3">
                   {deal.tasks.map((t) => (
                     <li
                       key={t.id}
-                      className="flex items-start gap-2 text-sm text-msk-ink/75"
+                      className="rounded-xl border border-msk-ink/6 bg-white p-3"
                     >
-                      <CalendarClock
-                        className="mt-0.5 h-3.5 w-3.5 shrink-0 text-msk-ink/35"
-                        aria-hidden
-                      />
-                      <span>
-                        {t.title}
-                        <span className="block text-xs text-msk-ink/40">
-                          {t.dueAt.toLocaleDateString("fr-FR")}
+                      <div className="flex items-start gap-2 text-sm text-msk-ink/75">
+                        <CalendarClock
+                          className="mt-0.5 h-3.5 w-3.5 shrink-0 text-msk-ink/35"
+                          aria-hidden
+                        />
+                        <span className="min-w-0 flex-1">
+                          {t.title}
+                          <span className="block text-xs text-msk-ink/40">
+                            {t.dueAt.toLocaleDateString("fr-FR")}
+                          </span>
                         </span>
-                      </span>
+                      </div>
+                      <RelanceActions
+                        className="mt-2"
+                        taskId={t.id}
+                        opportunityId={deal.id}
+                        requireFollowUp={followUpRequiredForStage(
+                          normalizeUiStage(deal.stage),
+                        )}
+                        orgName={deal.organization.name}
+                        title={t.title}
+                        dueAt={t.dueAt}
+                      />
                     </li>
                   ))}
                 </ul>
@@ -1010,7 +1024,7 @@ export default async function CrmProspectDetailPage({
         </div>
 
         <div className="xl:col-span-12">
-          <Section title="Journal d’activités">
+          <Section title="Historique & traçabilité">
             {journalEntries.length === 0 ? (
               <p className="text-sm text-msk-ink/40">
                 Aucune activité — utilisez « Enregistrer une action ».
@@ -1019,7 +1033,18 @@ export default async function CrmProspectDetailPage({
               <ol className="relative space-y-0 border-l border-msk-blue/25 pl-5">
                 {journalEntries.map((a) => (
                   <li key={a.id} className="relative pb-5 last:pb-0">
-                    <span className="absolute -left-[1.41rem] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-msk-blue shadow-sm" />
+                    <span
+                      className={cn(
+                        "absolute -left-[1.41rem] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-white shadow-sm",
+                        a.kind === "rdv"
+                          ? "bg-msk-blue"
+                          : a.kind === "outreach"
+                            ? "bg-msk-coral"
+                            : a.kind === "creation"
+                              ? "bg-msk-ink/40"
+                              : "bg-msk-ink/25",
+                      )}
+                    />
                     <p className="text-sm font-semibold text-msk-ink">
                       {a.summary}
                     </p>
@@ -1029,8 +1054,8 @@ export default async function CrmProspectDetailPage({
                       </p>
                     ) : null}
                     <p className="mt-1 text-xs text-msk-ink/40">
-                      {a.typeLabel} · {a.occurredAt.toLocaleString("fr-FR")} ·{" "}
-                      {a.actorName}
+                      {timelineKindLabel(a.kind)} · {a.typeLabel} ·{" "}
+                      {a.occurredAt.toLocaleString("fr-FR")} · {a.actorName}
                     </p>
                   </li>
                 ))}

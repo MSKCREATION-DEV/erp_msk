@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { Bell, Search } from "lucide-react";
+import { TopbarNotifications } from "@/components/app/topbar-notifications";
 
 /** Barre globale minimale — le titre de page vit dans PageHeader. */
 export function Topbar() {
@@ -12,14 +14,18 @@ export function Topbar() {
       >
         <Search className="h-4 w-4" />
       </button>
-      <button
-        type="button"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-msk-ink/10 text-msk-ink/40"
-        aria-label="Notifications — bientôt"
-        disabled
+      <Suspense
+        fallback={
+          <span
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-msk-ink/10 text-msk-ink/30"
+            aria-hidden
+          >
+            <Bell className="h-4 w-4" />
+          </span>
+        }
       >
-        <Bell className="h-4 w-4" />
-      </button>
+        <TopbarNotifications />
+      </Suspense>
     </header>
   );
 }

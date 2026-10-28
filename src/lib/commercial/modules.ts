@@ -101,6 +101,15 @@ export const COMMERCIAL_MODULES: CommercialModule[] = [
     permission: "crm.access",
   },
   {
+    id: "rdv",
+    href: "/crm/rdv",
+    title: "RDV",
+    description: "Rendez-vous planifiés, tenus et no-show.",
+    section: "prospection",
+    tone: "blue",
+    permission: "crm.access",
+  },
+  {
     id: "scripts",
     href: "/crm/scripts",
     title: "Scripts",

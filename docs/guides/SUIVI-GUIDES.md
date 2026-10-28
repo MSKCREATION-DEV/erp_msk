@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-26 (Lot sécurité MDP + Vue Équipe / objectifs) |
+| Dernière mise à jour | 2026-10-27 (CRM-ops : relances CRUD, RDV, Perdu, notifs) |
 
 ### Légende statuts documentaires
 
@@ -102,7 +102,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `iam-inviter-utilisateur` | Inviter un collaborateur | administration | `validated` | manuel 01 + routes admin |
 | `ged-comprendre-acces` | Comprendre son accès GED | ged | `validated` | manuel 02 + permissions |
 | `crm-creer-prospect` | Créer un prospect | commercial | `to_validate` | live doublons 3 car. + ack contact — revalider UI |
-| `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `to_validate` | manuel 05 · recherche `?q=` |
+| `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `outdated` | CRUD relances + RDV + Perdu sans min 3× — à réécrire |
 | `crm-transformer-client` | Transformer un prospect en client | commercial | `validated` | manuel 05 (Intéressé → Client) |
 | `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `to_validate` | dual total/suivis + owner URL own — à revalider UI |
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
@@ -187,6 +187,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-10-27 — CRM-ops : relances CRUD, RDV, Perdu, notifications
+
+- **Pourquoi** : erreurs de saisie relances non corrigibles ; pas de module RDV ; blocage Perdu à 3 relances incohérent ; pas de notifs instantanées pour demandes à distance.
+- **Quoi** : sync tâches / follow-up ; modifier / annuler relances ; Perdu avec motif+note + éléments liés ; timeline fiche ; `/crm/rdv` ; `AppNotification` + cloche Realtime + e-mails ciblés + cron overdue.
+- **Fichiers** : `sync-follow-up-tasks.ts`, `actions/crm.ts`, `actions/appointments.ts`, `actions/notifications.ts`, `lib/notifications/*`, pages `/crm/rdv`, `/notifications`, topbar cloche, `affectations-live`, migration `crm_ops_rdv_notifications`.
+- **Statut doc** : `crm-suivre-relancer` → `outdated` (à réécrire).
 
 ### 2026-10-25 — Création prospect : anti-doublon live + blocage
 

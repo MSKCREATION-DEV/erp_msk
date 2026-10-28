@@ -325,6 +325,10 @@ function RelanceTable({
                     opportunityId={t.opportunity?.id ?? null}
                     requireFollowUp
                     orgName={org?.name}
+                    title={
+                      t.opportunity?.nextAction?.trim() || t.title || "Relance"
+                    }
+                    dueAt={t.dueAt}
                   />
                 </td>
               </tr>

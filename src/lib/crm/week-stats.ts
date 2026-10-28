@@ -72,14 +72,25 @@ export async function computePeriodStats(
           type: { in: ["APPEL", "WHATSAPP", "INSTAGRAM", "LINKEDIN", "EMAIL"] },
         },
       }),
-    () =>
-      prisma.crmActivity.count({
-        where: {
-          ...oppOwner,
-          ...occurred,
-          type: "RDV",
-        },
-      }),
+    async () => {
+      const [legacyRdv, apptDone] = await Promise.all([
+        prisma.crmActivity.count({
+          where: {
+            ...oppOwner,
+            ...occurred,
+            type: "RDV",
+          },
+        }),
+        prisma.crmAppointment.count({
+          where: {
+            ...assigneeIn,
+            status: "DONE",
+            completedAt: { gte: from, lte: to },
+          },
+        }),
+      ]);
+      return legacyRdv + apptDone;
+    },
     () =>
       prisma.crmTask.count({
         where: {

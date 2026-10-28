@@ -22,7 +22,7 @@ import {
   CONTACT_STAGE_CHANNELS,
   followUpRequiredForStage,
   isEnteringContacte,
-  MIN_ACTIVITIES_BEFORE_LOST,
+  LOSS_NOTE_MIN_LEN,
   normalizeUiStage,
 } from "@/lib/crm/guide-rules";
 import { ACTIVITY_LABELS, STAGE_LABELS } from "@/lib/crm/labels";
@@ -33,7 +33,15 @@ import {
   canReassignCrmDeal,
 } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
-import { countOutreachActivities } from "@/lib/crm/follow-up-count";
+import { syncOpportunityFollowUpTasks } from "@/lib/crm/sync-follow-up-tasks";
+import {
+  countLinkedEntities,
+  loadProspectLinkedEntities,
+} from "@/lib/crm/prospect-linked-entities";
+import {
+  notifyUsers,
+  usersWithPermission,
+} from "@/lib/notifications/notify";
 import {
   mirrorPhoneEmail,
   normalizeChannelValue,
@@ -381,15 +389,13 @@ export async function createProspectAction(
   }
 
   if (followUpAt && !Number.isNaN(followUpAt.getTime())) {
-    await prisma.crmTask.create({
-      data: {
-        organizationId: org.id,
-        opportunityId: deal.id,
-        title: nextAction || `Relance ${orgName}`,
-        dueAt: followUpAt,
-        assigneeId: actor.id,
-        createdById: actor.id,
-      },
+    await syncOpportunityFollowUpTasks(prisma, {
+      opportunityId: deal.id,
+      organizationId: org.id,
+      assigneeId: actor.id,
+      createdById: actor.id,
+      nextAction: nextAction || `Relance ${orgName}`,
+      followUpAt,
     });
   }
 
@@ -700,6 +706,16 @@ export async function updateProspectAction(
       },
     });
 
+    await syncOpportunityFollowUpTasks(tx, {
+      opportunityId: deal.id,
+      organizationId: deal.organizationId,
+      assigneeId: deal.ownerId,
+      createdById: actor.id,
+      nextAction: data.nextAction || null,
+      followUpAt: followUpOk,
+      closeAs: followUpOk ? "DONE" : "CANCELLED",
+    });
+
     const fieldLabels: Record<string, string> = {
       orgName: "entreprise",
       sector: "secteur",
@@ -851,6 +867,14 @@ export async function reassignProspectAction(
     },
   });
 
+  await notifyUsers({
+    userIds: [newOwnerId],
+    kind: "crm.assigned",
+    title: "Un prospect vous a été affecté",
+    body: `Vous suivez désormais « ${deal.organization.name} ».`,
+    href: `/crm/prospects/${deal.id}`,
+  });
+
   revalidatePath("/crm");
   revalidatePath("/crm/prospects");
   revalidatePath(`/crm/prospects/${deal.id}`);
@@ -936,6 +960,17 @@ export async function requestAssignmentAction(
     metadata: { opportunityId },
   });
 
+  const recipients = (await usersWithPermission("crm.reassign")).filter(
+    (id) => id !== actor.id,
+  );
+  await notifyUsers({
+    userIds: recipients,
+    kind: "crm.assignment_request",
+    title: "Demande d’affectation prospect",
+    body: `${actor.firstName} ${actor.lastName} demande le suivi de « ${deal.organization.name} ».`,
+    href: "/crm/affectations",
+  });
+
   revalidatePath(`/crm/prospects/${opportunityId}`);
   revalidatePath("/crm/affectations");
   return {
@@ -1003,6 +1038,13 @@ export async function resolveAssignmentRequestAction(
       action: "crm.assignment.reject",
       entityType: "crm_assignment_request",
       entityId: req.id,
+    });
+    await notifyUsers({
+      userIds: [req.requesterId],
+      kind: "crm.assignment_resolved",
+      title: "Demande d’affectation refusée",
+      body: `Votre demande pour « ${req.opportunity.organization.name} » a été refusée.`,
+      href: `/crm/prospects/${req.opportunityId}`,
     });
     revalidatePath("/crm/affectations");
     revalidatePath(`/crm/prospects/${req.opportunityId}`);
@@ -1089,6 +1131,14 @@ export async function resolveAssignmentRequestAction(
     },
   });
 
+  await notifyUsers({
+    userIds: [req.requesterId],
+    kind: "crm.assigned",
+    title: "Un prospect vous a été affecté",
+    body: `Votre demande a été approuvée — vous suivez désormais « ${req.opportunity.organization.name} ».`,
+    href: `/crm/prospects/${req.opportunityId}`,
+  });
+
   revalidatePath("/crm/affectations");
   revalidatePath("/crm");
   revalidatePath("/crm/prospects");
@@ -1133,11 +1183,20 @@ export async function updateOpportunityStageAction(
     if (!loss.success) {
       return { ok: false, error: "Motif de perte obligatoire" };
     }
-    const outreachCount = await countOutreachActivities(id);
-    if (outreachCount < MIN_ACTIVITIES_BEFORE_LOST) {
+    if (!lossNote || lossNote.length < LOSS_NOTE_MIN_LEN) {
       return {
         ok: false,
-        error: `GUIDE : au moins ${MIN_ACTIVITIES_BEFORE_LOST} relances journalisées (appel, WhatsApp…) avant de marquer Perdu (${outreachCount}/${MIN_ACTIVITIES_BEFORE_LOST}).`,
+        error: `Commentaire obligatoire (min. ${LOSS_NOTE_MIN_LEN} caractères) pour expliquer la perte.`,
+      };
+    }
+    const linked = await loadProspectLinkedEntities(id);
+    const linkedCount = countLinkedEntities(linked);
+    const confirmed = String(formData.get("confirmLinked") ?? "") === "1";
+    if (linkedCount > 0 && !confirmed) {
+      return {
+        ok: false,
+        error:
+          "Des éléments liés existent encore sur ce prospect — confirmez le passage Perdu après lecture.",
       };
     }
   }
@@ -1190,8 +1249,34 @@ export async function updateOpportunityStageAction(
         lostAt: stage === "PERDU" ? now : null,
         interestedAt: enteringInteresse ? now : deal.interestedAt,
         lastActivityAt: stageChanged || enteringContacte ? now : deal.lastActivityAt,
+        ...(stage === "PERDU"
+          ? { followUpAt: null, nextAction: null }
+          : {}),
       },
     });
+
+    if (stage === "PERDU") {
+      await tx.crmTask.updateMany({
+        where: { opportunityId: id, status: CrmTaskStatus.OPEN },
+        data: { status: CrmTaskStatus.CANCELLED, completedAt: now },
+      });
+      await tx.crmAppointment.updateMany({
+        where: { opportunityId: id, status: "SCHEDULED" },
+        data: { status: "CANCELLED", completedAt: now },
+      });
+      await tx.crmAssignmentRequest.updateMany({
+        where: {
+          opportunityId: id,
+          status: "PENDING",
+        },
+        data: {
+          status: "CANCELLED",
+          resolvedAt: now,
+          resolvedById: actor.id,
+          resolveNote: "Prospect marqué Perdu",
+        },
+      });
+    }
 
     if (enteringContacte && contactChannel) {
       const channelLabel = ACTIVITY_LABELS[contactChannel];
@@ -1293,63 +1378,58 @@ export async function logActivityAction(
   const completeTaskId = String(formData.get("completeTaskId") ?? "").trim();
   const now = new Date();
 
-  await prisma.crmActivity.create({
-    data: {
-      opportunityId,
-      organizationId: deal.organizationId,
-      type: typeParsed.data,
-      summary,
-      body,
-      actorId: actor.id,
-    },
-  });
+  const resolvedNext = nextAction ?? deal.nextAction;
+  const resolvedFollow = hasNewFollowUp ? followUpAt : deal.followUpAt;
 
-  await prisma.crmOpportunity.update({
-    where: { id: opportunityId },
-    data: {
-      lastActivityAt: now,
-      nextAction: nextAction ?? deal.nextAction,
-      followUpAt: hasNewFollowUp ? followUpAt : deal.followUpAt,
-    },
-  });
-
-  // Clôturer la relance en cours (file Relances) + éviter les doublons OPEN
-  if (completeTaskId) {
-    const task = await prisma.crmTask.findUnique({
-      where: { id: completeTaskId },
-    });
-    if (
-      task &&
-      task.status === CrmTaskStatus.OPEN &&
-      task.opportunityId === opportunityId
-    ) {
-      await prisma.crmTask.update({
-        where: { id: completeTaskId },
-        data: { status: CrmTaskStatus.DONE, completedAt: now },
-      });
-    }
-  }
-
-  if (hasNewFollowUp && followUpAt) {
-    await prisma.crmTask.updateMany({
-      where: {
-        opportunityId,
-        status: CrmTaskStatus.OPEN,
-        ...(completeTaskId ? { id: { not: completeTaskId } } : {}),
-      },
-      data: { status: CrmTaskStatus.DONE, completedAt: now },
-    });
-    await prisma.crmTask.create({
+  await prisma.$transaction(async (tx) => {
+    await tx.crmActivity.create({
       data: {
-        organizationId: deal.organizationId,
         opportunityId,
-        title: nextAction || summary,
-        dueAt: followUpAt,
+        organizationId: deal.organizationId,
+        type: typeParsed.data,
+        summary,
+        body,
+        actorId: actor.id,
+      },
+    });
+
+    await tx.crmOpportunity.update({
+      where: { id: opportunityId },
+      data: {
+        lastActivityAt: now,
+        nextAction: resolvedNext,
+        followUpAt: resolvedFollow,
+      },
+    });
+
+    if (hasNewFollowUp && followUpAt) {
+      await syncOpportunityFollowUpTasks(tx, {
+        opportunityId,
+        organizationId: deal.organizationId,
         assigneeId: deal.ownerId,
         createdById: actor.id,
-      },
-    });
-  }
+        nextAction: resolvedNext || summary,
+        followUpAt,
+        completeTaskId: completeTaskId || null,
+        closeAs: "DONE",
+        now,
+      });
+    } else if (completeTaskId) {
+      const task = await tx.crmTask.findUnique({
+        where: { id: completeTaskId },
+      });
+      if (
+        task &&
+        task.status === CrmTaskStatus.OPEN &&
+        task.opportunityId === opportunityId
+      ) {
+        await tx.crmTask.update({
+          where: { id: completeTaskId },
+          data: { status: CrmTaskStatus.DONE, completedAt: now },
+        });
+      }
+    }
+  });
 
   revalidatePath(`/crm/prospects/${opportunityId}`);
   revalidatePath("/crm/relances");
@@ -1400,6 +1480,16 @@ export async function rescheduleTaskAction(
       where: { id: task.opportunityId },
       data: { followUpAt: base },
     });
+    await prisma.crmActivity.create({
+      data: {
+        opportunityId: task.opportunityId,
+        organizationId: task.organizationId,
+        type: CrmActivityType.NOTE,
+        summary: `Relance reportée de ${daysRaw} jour${daysRaw > 1 ? "s" : ""}`,
+        body: `Nouvelle échéance : ${base.toLocaleDateString("fr-FR")}`,
+        actorId: actor.id,
+      },
+    });
     revalidatePath(`/crm/prospects/${task.opportunityId}`);
   }
 
@@ -1409,6 +1499,121 @@ export async function rescheduleTaskAction(
     ok: true,
     message: `Relance reportée de ${daysRaw} jour${daysRaw > 1 ? "s" : ""}`,
   };
+}
+
+/** Modifier une relance OPEN (titre + échéance) + sync deal. */
+export async function updateOpenTaskAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.activity.log" });
+  const id = String(formData.get("taskId") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const dueRaw = String(formData.get("dueAt") ?? "").trim();
+  if (!id) return { ok: false, error: "Relance manquante" };
+  if (!title) return { ok: false, error: "Intitulé obligatoire" };
+  const dueAt = dueRaw ? new Date(dueRaw) : null;
+  if (!dueAt || Number.isNaN(dueAt.getTime())) {
+    return { ok: false, error: "Date d’échéance invalide" };
+  }
+
+  const task = await prisma.crmTask.findUnique({ where: { id } });
+  if (!task || task.status !== CrmTaskStatus.OPEN) {
+    return { ok: false, error: "Relance introuvable" };
+  }
+  if (!canActOnTask(actor, task.assigneeId)) {
+    return { ok: false, error: "Pas le droit sur cette relance" };
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.crmTask.update({
+      where: { id },
+      data: { title, dueAt },
+    });
+    if (task.opportunityId) {
+      await tx.crmOpportunity.update({
+        where: { id: task.opportunityId },
+        data: { nextAction: title, followUpAt: dueAt },
+      });
+      await tx.crmActivity.create({
+        data: {
+          opportunityId: task.opportunityId,
+          organizationId: task.organizationId,
+          type: CrmActivityType.NOTE,
+          summary: "Relance modifiée",
+          body: `${title} — échéance ${dueAt.toLocaleDateString("fr-FR")}`,
+          actorId: actor.id,
+        },
+      });
+    }
+  });
+
+  if (task.opportunityId) {
+    revalidatePath(`/crm/prospects/${task.opportunityId}`);
+  }
+  revalidatePath("/crm/relances");
+  revalidatePath("/crm");
+  return { ok: true, message: "Relance mise à jour" };
+}
+
+/** Annuler une relance OPEN (CANCELLED) + note traçable. */
+export async function cancelTaskAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.activity.log" });
+  const id = String(formData.get("taskId") ?? "").trim();
+  const reason = String(formData.get("reason") ?? "").trim();
+  if (!id) return { ok: false, error: "Relance manquante" };
+  if (reason.length < 5) {
+    return { ok: false, error: "Motif d’annulation obligatoire (min. 5 caractères)" };
+  }
+
+  const task = await prisma.crmTask.findUnique({ where: { id } });
+  if (!task || task.status !== CrmTaskStatus.OPEN) {
+    return { ok: false, error: "Relance introuvable" };
+  }
+  if (!canActOnTask(actor, task.assigneeId)) {
+    return { ok: false, error: "Pas le droit sur cette relance" };
+  }
+
+  const now = new Date();
+  await prisma.$transaction(async (tx) => {
+    await tx.crmTask.update({
+      where: { id },
+      data: { status: CrmTaskStatus.CANCELLED, completedAt: now },
+    });
+    if (task.opportunityId) {
+      const stillOpen = await tx.crmTask.count({
+        where: {
+          opportunityId: task.opportunityId,
+          status: CrmTaskStatus.OPEN,
+          id: { not: id },
+        },
+      });
+      if (stillOpen === 0) {
+        await tx.crmOpportunity.update({
+          where: { id: task.opportunityId },
+          data: { followUpAt: null, nextAction: null },
+        });
+      }
+      await tx.crmActivity.create({
+        data: {
+          opportunityId: task.opportunityId,
+          organizationId: task.organizationId,
+          type: CrmActivityType.NOTE,
+          summary: "Relance annulée",
+          body: reason,
+          actorId: actor.id,
+        },
+      });
+    }
+  });
+
+  if (task.opportunityId) {
+    revalidatePath(`/crm/prospects/${task.opportunityId}`);
+  }
+  revalidatePath("/crm/relances");
+  revalidatePath("/crm");
+  return { ok: true, message: "Relance annulée" };
 }
 
 export async function saveWeeklyReportAction(

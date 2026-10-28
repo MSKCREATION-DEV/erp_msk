@@ -144,9 +144,10 @@ DIRECT_URL=postgresql://postgres.[REF]:[PWD]@aws-0-….pooler.supabase.com:5432/
 
 (risque de réécriture MDP des comptes ACTIVE)
 
-### Optionnel plus tard (Phase 8)
+### Cron notifications (CRM-ops)
 
-- `CRON_SECRET` — pour `/api/cron/automations`
+- `CRON_SECRET` — Bearer pour `/api/cron/notifications` (digest relances en retard, quotidien 07:00 UTC via `vercel.json`)
+- Realtime : table `app_notifications` dans la publication Supabase Realtime + policy SELECT own (`userId = auth.uid()`)
 
 ## 3. Domaine & e-mail
 

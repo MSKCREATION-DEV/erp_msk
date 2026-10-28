@@ -138,6 +138,13 @@ enum CrmTaskStatus {
   CANCELLED
 }
 
+enum CrmAppointmentStatus {
+  SCHEDULED
+  DONE
+  NO_SHOW
+  CANCELLED
+}
+
 enum CrmLossReason {
   BUDGET
   CONCURRENT
@@ -246,6 +253,9 @@ model User {
   crmPeriodGoals    CrmPeriodGoal[]   @relation("CrmPeriodGoalUser")
   crmAssignmentRequests CrmAssignmentRequest[] @relation("CrmAssignmentRequester")
   crmAssignmentResolved CrmAssignmentRequest[] @relation("CrmAssignmentResolver")
+  crmAppointmentsAssigned CrmAppointment[] @relation("CrmAppointmentAssignee")
+  crmAppointmentsCreated  CrmAppointment[] @relation("CrmAppointmentCreator")
+  appNotifications AppNotification[]
   comClientsOwned  ComClient[]     @relation("ComClientOwner")
   comClientsCreated ComClient[]    @relation("ComClientCreator")
   comQuotesOwned   ComQuote[]      @relation("ComQuoteOwner")
@@ -700,6 +710,7 @@ model CrmOpportunity {
   createdBy    User            @relation("CrmDealCreator", fields: [createdById], references: [id])
   activities   CrmActivity[]
   tasks        CrmTask[]
+  appointments CrmAppointment[]
   opportunityOffers CrmOpportunityOffer[]
   comClients   ComClient[]
   comQuotes    ComQuote[]
@@ -792,6 +803,50 @@ model CrmTask {
   @@index([assigneeId, status, dueAt])
   @@index([dueAt])
   @@map("crm_tasks")
+}
+
+model CrmAppointment {
+  id             String               @id @default(cuid())
+  opportunityId  String
+  title          String
+  startsAt       DateTime
+  endsAt         DateTime?
+  location       String?
+  notes          String?
+  status         CrmAppointmentStatus @default(SCHEDULED)
+  assigneeId     String               @db.Uuid
+  createdById    String               @db.Uuid
+  completedAt    DateTime?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  opportunity CrmOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  assignee    User           @relation("CrmAppointmentAssignee", fields: [assigneeId], references: [id])
+  createdBy   User           @relation("CrmAppointmentCreator", fields: [createdById], references: [id])
+
+  @@index([assigneeId, startsAt])
+  @@index([opportunityId, startsAt])
+  @@index([status, startsAt])
+  @@map("crm_appointments")
+}
+
+/// Notifications in-app (écriture Prisma uniquement ; Realtime SELECT own).
+model AppNotification {
+  id          String    @id @default(cuid())
+  userId      String    @db.Uuid
+  title       String
+  body        String?
+  href        String?
+  kind        String
+  readAt      DateTime?
+  emailSentAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@index([userId, createdAt])
+  @@map("app_notifications")
 }
 
 model CrmScript {

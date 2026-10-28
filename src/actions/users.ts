@@ -9,6 +9,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { writeAudit } from "@/lib/audit";
 import { sendEmail } from "@/lib/email/resend";
 import { inviteEmailHtml, inviteEmailText } from "@/lib/email/templates";
+import {
+  notifyUsers,
+  usersWithPermission,
+} from "@/lib/notifications/notify";
 import { hasPermission } from "@/lib/rbac/resolve";
 import type { ActionResult } from "@/actions/auth";
 
@@ -153,6 +157,18 @@ export async function inviteUserAction(
     entityType: "user",
     entityId: authId,
     metadata: { email, emailSent, packs: packs.map((p) => p.code) },
+  });
+
+  const managers = (await usersWithPermission("users.create")).filter(
+    (id) => id !== actor.id,
+  );
+  await notifyUsers({
+    userIds: managers,
+    kind: "iam.user_created",
+    title: "Nouveau compte collaborateur",
+    body: `${parsed.data.firstName} ${parsed.data.lastName} (${email}) a été invité.`,
+    href: `/administration/utilisateurs/${authId}`,
+    channels: ["in_app"],
   });
 
   revalidatePath("/administration/utilisateurs");

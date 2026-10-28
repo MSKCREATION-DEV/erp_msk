@@ -1,7 +1,7 @@
 import type { CrmActivityType, CrmPipelineStage } from "@prisma/client";
 
 /**
- * GUIDE MSK : min. 3 relances (activités de suivi, hors NOTE) avant PERDU.
+ * Seuil informatif « Relancé N× » (badge) — n’bloque plus le passage PERDU.
  * Aligné LOT-G — voir `OUTREACH_ACTIVITY_TYPES` dans follow-up-count.ts.
  */
 export const MIN_ACTIVITIES_BEFORE_LOST = 3;
@@ -20,6 +20,9 @@ export type ContactStageChannel = (typeof CONTACT_STAGE_CHANNELS)[number];
 
 /** Longueur min. du commentaire au passage Contacté. */
 export const CONTACT_COMMENT_MIN_LEN = 10;
+
+/** Longueur min. du commentaire obligatoire au passage Perdu. */
+export const LOSS_NOTE_MIN_LEN = CONTACT_COMMENT_MIN_LEN;
 
 /** Stages où une date de relance est obligatoire. */
 export function followUpRequiredForStage(stage: CrmPipelineStage): boolean {

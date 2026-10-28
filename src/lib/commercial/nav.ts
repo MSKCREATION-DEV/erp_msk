@@ -29,6 +29,7 @@ export function commercialNavItems(user: SessionUser): CommercialSubnavItem[] {
       match: ["/commercial/prospects", "/crm/par-etapes"],
     });
     items.push({ href: "/crm/relances", label: "Relances" });
+    items.push({ href: "/crm/rdv", label: "RDV" });
   }
   if (canScripts) {
     items.push({ href: "/crm/scripts", label: "Scripts" });
