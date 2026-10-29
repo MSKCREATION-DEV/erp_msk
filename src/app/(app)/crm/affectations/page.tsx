@@ -11,7 +11,12 @@ import { prisma } from "@/lib/prisma";
 import { STAGE_LABELS, STAGE_ORDER } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { firstSearchParam } from "@/lib/crm/scope-period";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  appendSortParams,
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -82,21 +87,20 @@ export default async function CrmAffectationsPage({
     key: "createdAt",
     dir: "asc",
   });
-  const recentSort =
-    sort.key in RECENT_SORT
-      ? parseListSort(sp, RECENT_SORT, { key: "resolvedAt", dir: "desc" })
-      : parseListSort(
-          { sort: "resolvedAt", dir: "desc" },
-          RECENT_SORT,
-          { key: "resolvedAt", dir: "desc" },
-        );
+  const recentSort = parseListSort(
+    sp,
+    RECENT_SORT,
+    { key: "resolvedAt", dir: "desc" },
+    { sortKey: "hsort", dirKey: "hdir" },
+  );
   const listParams: Record<string, string | undefined> = {
     q: sp.q,
     statut: sp.statut,
     sort: sort.key,
     dir: sort.dir,
+    hsort: recentSort.key,
+    hdir: recentSort.dir,
   };
-
   const [commercials, assignableDeals, pending, recent] = await Promise.all([
     listCommercialRoster({ mode: "assign", extraIds: [user.id] }).then((rows) =>
       rows.map((u) => ({
@@ -380,11 +384,18 @@ export default async function CrmAffectationsPage({
           <div className="flex flex-wrap gap-1.5">
             {statutLinks.map((s) => {
               const active = (statusFilter ?? "") === s.id;
-              const href = s.id
-                ? `/crm/affectations?statut=${s.id}${q ? `&q=${encodeURIComponent(q)}` : ""}`
-                : q
-                  ? `/crm/affectations?q=${encodeURIComponent(q)}`
-                  : "/crm/affectations";
+              const params = new URLSearchParams();
+              if (s.id) params.set("statut", s.id);
+              if (sp.q) params.set("q", sp.q);
+              appendSortParams(params, listParams);
+              appendSortParams(params, listParams, {
+                sortKey: "hsort",
+                dirKey: "hdir",
+              });
+              const qs = params.toString();
+              const href = qs
+                ? `/crm/affectations?${qs}`
+                : "/crm/affectations";
               return (
                 <Link
                   key={s.id || "all"}
@@ -428,6 +439,8 @@ export default async function CrmAffectationsPage({
                     dir={recentSort.dir}
                     pathname="/crm/affectations"
                     searchParams={listParams}
+                    sortParam="hsort"
+                    dirParam="hdir"
                   />
                   <SortableTh
                     label="Décidé par"
@@ -436,6 +449,8 @@ export default async function CrmAffectationsPage({
                     dir={recentSort.dir}
                     pathname="/crm/affectations"
                     searchParams={listParams}
+                    sortParam="hsort"
+                    dirParam="hdir"
                   />
                   <SortableTh
                     label="Créée"
@@ -444,6 +459,8 @@ export default async function CrmAffectationsPage({
                     dir={recentSort.dir}
                     pathname="/crm/affectations"
                     searchParams={listParams}
+                    sortParam="hsort"
+                    dirParam="hdir"
                     defaultDir="desc"
                   />
                   <SortableTh
@@ -453,6 +470,8 @@ export default async function CrmAffectationsPage({
                     dir={recentSort.dir}
                     pathname="/crm/affectations"
                     searchParams={listParams}
+                    sortParam="hsort"
+                    dirParam="hdir"
                     defaultDir="desc"
                   />
                   <SortableTh
@@ -462,6 +481,8 @@ export default async function CrmAffectationsPage({
                     dir={recentSort.dir}
                     pathname="/crm/affectations"
                     searchParams={listParams}
+                    sortParam="hsort"
+                    dirParam="hdir"
                   />
                 </tr>
               </thead>

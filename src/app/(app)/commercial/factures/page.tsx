@@ -189,6 +189,15 @@ async function FacturesResults({
                 searchParams={listParams}
               />
               <SortableTh
+                label="Date"
+                column="createdAt"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/commercial/factures"
+                searchParams={listParams}
+                defaultDir="desc"
+              />
+              <SortableTh
                 label="Client"
                 column="client"
                 sort={sort.key}
@@ -241,6 +250,13 @@ async function FacturesResults({
                 >
                   <td className="px-4 py-3 font-medium text-msk-ink">
                     {inv.number}
+                  </td>
+                  <td className="px-4 py-3 tabular-nums text-msk-ink/70">
+                    {inv.createdAt.toLocaleDateString("fr-FR", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "2-digit",
+                    })}
                   </td>
                   <td className="px-4 py-3">{inv.client.name}</td>
                   <td className="px-4 py-3">

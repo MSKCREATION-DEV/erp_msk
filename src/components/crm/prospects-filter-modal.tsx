@@ -15,6 +15,7 @@ import {
   copyCrmScopeParams,
   hasCrmScopePeriodParams,
 } from "@/lib/crm/scope-period";
+import { appendSortParams } from "@/lib/list/sort";
 import { cn } from "@/lib/utils";
 
 type OwnerOpt = { value: string; label: string };
@@ -158,6 +159,8 @@ export function ProspectsFilterButton({
         stages.length > 0 ||
         sp.get("view") === "stock");
     if (keepStock) params.set("view", "stock");
+    // Conserver le tri courant (ne pas le perdre au apply filtre).
+    appendSortParams(params, sp);
 
     const qs = params.toString();
     start(() => {

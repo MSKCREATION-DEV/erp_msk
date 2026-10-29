@@ -42,21 +42,41 @@ export function parseSortKey<TKey extends string>(
 
 /**
  * Lit `sort` / `dir` depuis les searchParams et résout le `orderBy` Prisma.
+ * `paramKeys` permet une 2ᵉ table sur la même page (ex. `hsort` / `hdir`).
  */
 export function parseListSort<TKey extends string>(
   sp: Record<string, string | undefined>,
   columns: SortColumnMap<TKey>,
   defaults: { key: TKey; dir: SortDir },
+  paramKeys?: { sortKey?: string; dirKey?: string },
 ): ParsedListSort<TKey> {
+  const sortKey = paramKeys?.sortKey ?? SORT_PARAM;
+  const dirKey = paramKeys?.dirKey ?? DIR_PARAM;
   const keys = Object.keys(columns) as TKey[];
-  const key = parseSortKey(sp[SORT_PARAM], keys, defaults.key);
+  const key = parseSortKey(sp[sortKey], keys, defaults.key);
   const defaultDirForKey = key === defaults.key ? defaults.dir : "asc";
-  const dir = parseSortDir(sp[DIR_PARAM], defaultDirForKey);
+  const dir = parseSortDir(sp[dirKey], defaultDirForKey);
   return {
     key,
     dir,
     orderBy: columns[key](dir),
   };
+}
+
+/** Recopie `sort`/`dir` (ou clés custom) dans un URLSearchParams cible. */
+export function appendSortParams(
+  target: URLSearchParams,
+  source: Record<string, string | undefined> | URLSearchParams,
+  paramKeys?: { sortKey?: string; dirKey?: string },
+) {
+  const sortKey = paramKeys?.sortKey ?? SORT_PARAM;
+  const dirKey = paramKeys?.dirKey ?? DIR_PARAM;
+  const get = (k: string) =>
+    source instanceof URLSearchParams ? source.get(k) : source[k];
+  const sort = get(sortKey)?.trim();
+  const dir = get(dirKey)?.trim();
+  if (sort) target.set(sortKey, sort);
+  if (dir === "asc" || dir === "desc") target.set(dirKey, dir);
 }
 
 /**

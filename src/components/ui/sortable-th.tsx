@@ -17,6 +17,9 @@ type SortableThProps = {
   searchParams: Record<string, string | undefined>;
   /** Dir initiale si on change de colonne (`desc` pour dates / montants). */
   defaultDir?: SortDir;
+  /** Clés URL custom (2ᵉ tableau sur la même page). */
+  sortParam?: string;
+  dirParam?: string;
   className?: string;
   /** Alignement contenu (ex. chiffres). */
   align?: "left" | "center" | "right";
@@ -34,6 +37,8 @@ export function SortableTh({
   pathname,
   searchParams,
   defaultDir = "asc",
+  sortParam,
+  dirParam,
   className,
   align = "left",
 }: SortableThProps) {
@@ -45,6 +50,8 @@ export function SortableTh({
     currentSort: sort,
     currentDir: dir,
     defaultDir,
+    sortKey: sortParam,
+    dirKey: dirParam,
   });
 
   const Icon = !active

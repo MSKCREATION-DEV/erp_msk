@@ -30,7 +30,7 @@
     "gate:phase7a": "node scripts/gate-phase7a.mjs",
     "gate:phase7b": "node scripts/gate-phase7b.mjs",
     "test:paie-calc": "tsx src/lib/paie/calc.test.ts",
-    "test:list": "tsx src/lib/list/search-href.test.ts && tsx src/lib/ui/page-breadcrumbs.test.ts",
+    "test:list": "tsx src/lib/list/search-href.test.ts && tsx src/lib/list/sort.test.ts && tsx src/lib/ui/page-breadcrumbs.test.ts",
     "test:auth-recovery": "tsx src/lib/auth/password-recovery.test.ts",
     "test:notify": "tsx src/lib/notifications/kinds.test.ts && tsx src/lib/notifications/notify.test.ts",
     "test:crm": "tsx src/lib/crm/follow-up-count.test.ts && tsx src/lib/crm/guide-rules.test.ts && tsx src/lib/crm/sync-follow-up-tasks.test.ts && tsx src/lib/crm/prospect-linked-entities.test.ts && tsx src/lib/crm/prospect-timeline.test.ts && tsx src/lib/crm/labels.test.ts && tsx src/lib/crm/sectors.test.ts && tsx src/lib/crm/scope.test.ts && tsx src/lib/crm/scope-period.test.ts && tsx src/lib/crm/relance-buckets.test.ts && tsx src/lib/crm/relance-search.test.ts && tsx src/lib/crm/duplicates.test.ts && tsx src/lib/crm/channels.test.ts && tsx src/lib/crm/social.test.ts && tsx src/lib/crm/devis-sla.test.ts && tsx src/lib/crm/week.test.ts && tsx src/lib/crm/goal-scale.test.ts && tsx src/lib/crm/goals-resolve.test.ts && tsx src/lib/crm/team-status.test.ts && tsx src/lib/crm/collaborator-status.test.ts && tsx src/lib/commercial/client-identity.test.ts && npm run test:notify && npm run test:crm-import && npm run test:list && npm run test:auth-recovery",

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  appendSortParams,
   buildSortHref,
   parseListSort,
   parseSortDir,
@@ -71,5 +72,32 @@ assert.equal(parseSortKey("x", ["name", "date"] as const, "date"), "date");
 
 assert.ok(sortAriaLabel("Client", false, "asc").includes("Trier"));
 assert.ok(sortAriaLabel("Client", true, "asc").includes("croissant"));
+
+{
+  const parsed = parseListSort(
+    { hsort: "resolvedAt", hdir: "asc" },
+    {
+      resolvedAt: (d: SortDir) => ({ resolvedAt: d }),
+      status: (d: SortDir) => ({ status: d }),
+    },
+    { key: "resolvedAt", dir: "desc" },
+    { sortKey: "hsort", dirKey: "hdir" },
+  );
+  assert.equal(parsed.key, "resolvedAt");
+  assert.equal(parsed.dir, "asc");
+}
+
+{
+  const target = new URLSearchParams("statut=APPROVED");
+  appendSortParams(target, { sort: "owner", dir: "desc", hsort: "status", hdir: "asc" });
+  appendSortParams(target, { hsort: "status", hdir: "asc" }, {
+    sortKey: "hsort",
+    dirKey: "hdir",
+  });
+  assert.equal(target.get("sort"), "owner");
+  assert.equal(target.get("dir"), "desc");
+  assert.equal(target.get("hsort"), "status");
+  assert.equal(target.get("hdir"), "asc");
+}
 
 console.log("sort.test.ts OK");

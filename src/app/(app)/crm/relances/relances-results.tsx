@@ -67,18 +67,28 @@ import { cn } from "@/lib/utils";
 
 type VueFilter = "tous" | "retard" | "aujourdhui" | "semaine" | "plus-tard";
 
-type TaskRow = Awaited<ReturnType<typeof loadTasks>>[number];
-type ActivityRow = Awaited<ReturnType<typeof loadOutreachDone>>[number];
+type TaskRow = Awaited<ReturnType<typeof loadTasksPage>>["rows"][number];
+type ActivityRow = Awaited<
+  ReturnType<typeof loadOutreachDonePage>
+>["rows"][number];
 
 type TaskSortKey = "org" | "stage" | "action" | "dueAt" | "assignee";
 
-/** Tri en mémoire (file déjà filtrée / bucketée) — orderBy Prisma non utilisé. */
+/** Tri serveur Prisma — avant skip/take (jamais re-tri client d’une page). */
 const TASK_SORT_COLUMNS = {
-  org: () => ({}),
-  stage: () => ({}),
-  action: () => ({}),
-  dueAt: () => ({}),
-  assignee: () => ({}),
+  org: (dir: SortDir) => ({
+    opportunity: { organization: { name: dir } },
+  }),
+  stage: (dir: SortDir) => ({ opportunity: { stage: dir } }),
+  action: (dir: SortDir) => [
+    { opportunity: { nextAction: dir } },
+    { title: dir },
+  ],
+  dueAt: (dir: SortDir) => ({ dueAt: dir }),
+  assignee: (dir: SortDir) => [
+    { assignee: { lastName: dir } },
+    { assignee: { firstName: dir } },
+  ],
 } satisfies SortColumnMap<TaskSortKey>;
 
 type ActivitySortKey =
@@ -90,101 +100,20 @@ type ActivitySortKey =
   | "actor";
 
 const ACTIVITY_SORT_COLUMNS = {
-  occurredAt: () => ({}),
-  type: () => ({}),
-  org: () => ({}),
-  summary: () => ({}),
-  owner: () => ({}),
-  actor: () => ({}),
+  occurredAt: (dir: SortDir) => ({ occurredAt: dir }),
+  type: (dir: SortDir) => ({ type: dir }),
+  org: (dir: SortDir) => ({
+    opportunity: { organization: { name: dir } },
+  }),
+  summary: (dir: SortDir) => ({ summary: dir }),
+  owner: (dir: SortDir) => ({
+    opportunity: { owner: { lastName: dir } },
+  }),
+  actor: (dir: SortDir) => [
+    { actor: { lastName: dir } },
+    { actor: { firstName: dir } },
+  ],
 } satisfies SortColumnMap<ActivitySortKey>;
-
-function cmpText(a: string, b: string, dir: SortDir) {
-  const mul = dir === "asc" ? 1 : -1;
-  return mul * a.localeCompare(b, "fr", { sensitivity: "base" });
-}
-
-function cmpNum(a: number, b: number, dir: SortDir) {
-  return dir === "asc" ? a - b : b - a;
-}
-
-function sortTasks(tasks: TaskRow[], key: TaskSortKey, dir: SortDir): TaskRow[] {
-  return [...tasks].sort((a, b) => {
-    switch (key) {
-      case "org":
-        return cmpText(
-          a.opportunity?.organization.name ?? a.title ?? "",
-          b.opportunity?.organization.name ?? b.title ?? "",
-          dir,
-        );
-      case "stage":
-        return cmpText(
-          a.opportunity?.stage ?? "",
-          b.opportunity?.stage ?? "",
-          dir,
-        );
-      case "action":
-        return cmpText(
-          a.opportunity?.nextAction?.trim() || a.title || "",
-          b.opportunity?.nextAction?.trim() || b.title || "",
-          dir,
-        );
-      case "dueAt":
-        return cmpNum(a.dueAt.getTime(), b.dueAt.getTime(), dir);
-      case "assignee":
-        return cmpText(
-          `${a.assignee.lastName} ${a.assignee.firstName}`,
-          `${b.assignee.lastName} ${b.assignee.firstName}`,
-          dir,
-        );
-      default:
-        return 0;
-    }
-  });
-}
-
-function sortActivities(
-  rows: ActivityRow[],
-  key: ActivitySortKey,
-  dir: SortDir,
-): ActivityRow[] {
-  return [...rows].sort((a, b) => {
-    switch (key) {
-      case "occurredAt":
-        return cmpNum(a.occurredAt.getTime(), b.occurredAt.getTime(), dir);
-      case "type":
-        return cmpText(
-          ACTIVITY_LABELS[a.type] ?? a.type,
-          ACTIVITY_LABELS[b.type] ?? b.type,
-          dir,
-        );
-      case "org":
-        return cmpText(
-          a.opportunity?.organization.name ?? a.opportunity?.title ?? "",
-          b.opportunity?.organization.name ?? b.opportunity?.title ?? "",
-          dir,
-        );
-      case "summary":
-        return cmpText(a.summary?.trim() ?? "", b.summary?.trim() ?? "", dir);
-      case "owner": {
-        const ao = a.opportunity?.owner;
-        const bo = b.opportunity?.owner;
-        return cmpText(
-          ao ? `${ao.lastName} ${ao.firstName}` : "",
-          bo ? `${bo.lastName} ${bo.firstName}` : "",
-          dir,
-        );
-      }
-      case "actor":
-        return cmpText(
-          `${a.actor.lastName} ${a.actor.firstName}`,
-          `${b.actor.lastName} ${b.actor.firstName}`,
-          dir,
-        );
-      default:
-        return 0;
-    }
-  });
-}
 
 const taskInclude = {
   opportunity: {
@@ -215,44 +144,65 @@ const taskInclude = {
   assignee: { select: { firstName: true, lastName: true } },
 } satisfies Prisma.CrmTaskInclude;
 
-/** Plafond liste détaillée — KPI utilisent `loadOpenDueAts` (léger). */
-const RELANCES_LIST_TAKE = 500;
-
-async function loadTasks(
+function taskWhere(
   assigneeFilter: string[] | null,
   searchWhere: Prisma.CrmTaskWhereInput | null,
   dueAtFilter?: ReturnType<typeof dueAtWhereForBucket>,
-) {
-  const where: Prisma.CrmTaskWhereInput = {
+): Prisma.CrmTaskWhereInput {
+  return {
     status: CrmTaskStatus.OPEN,
     ...(assigneeFilter ? { assigneeId: { in: assigneeFilter } } : {}),
     ...(dueAtFilter ? { dueAt: dueAtFilter } : {}),
     ...(searchWhere ? { AND: [searchWhere] } : {}),
   };
-  return prisma.crmTask.findMany({
+}
+
+async function loadTasksPage(opts: {
+  assigneeFilter: string[] | null;
+  searchWhere: Prisma.CrmTaskWhereInput | null;
+  dueAtFilter?: ReturnType<typeof dueAtWhereForBucket>;
+  orderBy: Prisma.CrmTaskOrderByWithRelationInput | Prisma.CrmTaskOrderByWithRelationInput[];
+  requestedPage: number;
+  pageSize: number;
+}) {
+  const where = taskWhere(
+    opts.assigneeFilter,
+    opts.searchWhere,
+    opts.dueAtFilter,
+  );
+  const total = await prisma.crmTask.count({ where });
+  const page = clampPage(opts.requestedPage, total, opts.pageSize);
+  const rows = await prisma.crmTask.findMany({
     where,
     include: taskInclude,
-    orderBy: { dueAt: "asc" },
-    take: RELANCES_LIST_TAKE,
+    orderBy: opts.orderBy,
+    skip: (page - 1) * opts.pageSize,
+    take: opts.pageSize,
   });
+  return { total, page, rows };
 }
 
 /** Due dates seules — KPI / chips globaux (payload minimal). */
-async function loadOpenDueAts(assigneeFilter: string[] | null) {
+async function loadOpenDueAts(
+  assigneeFilter: string[] | null,
+  searchWhere?: Prisma.CrmTaskWhereInput | null,
+) {
   return prisma.crmTask.findMany({
-    where: {
-      status: CrmTaskStatus.OPEN,
-      ...(assigneeFilter ? { assigneeId: { in: assigneeFilter } } : {}),
-    },
+    where: taskWhere(assigneeFilter, searchWhere ?? null),
     select: { dueAt: true },
     take: 2000,
   });
 }
 
-async function loadOutreachDone(opts: {
+async function loadOutreachDonePage(opts: {
   ownerIds: string[] | null;
   occurredBetween: { gte: Date; lte: Date };
   searchWhere: Prisma.CrmActivityWhereInput | null;
+  orderBy:
+    | Prisma.CrmActivityOrderByWithRelationInput
+    | Prisma.CrmActivityOrderByWithRelationInput[];
+  requestedPage: number;
+  pageSize: number;
 }) {
   const where: Prisma.CrmActivityWhereInput = {
     type: { in: OUTREACH_ACTIVITY_TYPES },
@@ -262,7 +212,9 @@ async function loadOutreachDone(opts: {
       : {}),
     ...(opts.searchWhere ? { AND: [opts.searchWhere] } : {}),
   };
-  return prisma.crmActivity.findMany({
+  const total = await prisma.crmActivity.count({ where });
+  const page = clampPage(opts.requestedPage, total, opts.pageSize);
+  const rows = await prisma.crmActivity.findMany({
     where,
     include: {
       opportunity: {
@@ -276,9 +228,11 @@ async function loadOutreachDone(opts: {
       },
       actor: { select: { firstName: true, lastName: true } },
     },
-    orderBy: { occurredAt: "desc" },
-    take: RELANCES_LIST_TAKE,
+    orderBy: opts.orderBy,
+    skip: (page - 1) * opts.pageSize,
+    take: opts.pageSize,
   });
+  return { total, page, rows };
 }
 
 function stageTone(stage: string): "muted" | "success" | "coral" | "blue" {
@@ -622,6 +576,8 @@ export async function RelancesResults({
     vue: vue !== "tous" ? vue : undefined,
     focus: focusFaites ? "faites" : undefined,
     q: q || undefined,
+    sort: sp.sort,
+    dir: sp.dir,
   };
 
   const clearOwnerHref = buildCrmScopeHref("/crm/relances", {
@@ -650,7 +606,12 @@ export async function RelancesResults({
       ownerId: ownerScope.ownerId,
       canFilterOwners: ownerScope.canFilterOwners,
       forcePeriod: focusFaites,
-      keep: { q: q || undefined, ...keep },
+      keep: {
+        q: q || undefined,
+        sort: sp.sort,
+        dir: sp.dir,
+        ...keep,
+      },
     });
 
   const pageSize = DEFAULT_PAGE_SIZE;
@@ -661,22 +622,20 @@ export async function RelancesResults({
       key: "occurredAt",
       dir: "desc",
     });
-    const activitiesRaw = await loadOutreachDone({
+    const {
+      total: totalFaites,
+      page: pageFaites,
+      rows: pageActivities,
+    } = await loadOutreachDonePage({
       ownerIds: ownerScope.canFilterOwners ? ownerIds : [user.id],
       occurredBetween,
       searchWhere: activitySearchWhere,
+      orderBy: activitySort.orderBy as
+        | Prisma.CrmActivityOrderByWithRelationInput
+        | Prisma.CrmActivityOrderByWithRelationInput[],
+      requestedPage,
+      pageSize,
     });
-    const activities = sortActivities(
-      activitiesRaw,
-      activitySort.key,
-      activitySort.dir,
-    );
-    const totalFaites = activities.length;
-    const pageFaites = clampPage(requestedPage, totalFaites, pageSize);
-    const pageActivities = activities.slice(
-      (pageFaites - 1) * pageSize,
-      pageFaites * pageSize,
-    );
     const listParamsFaites: Record<string, string | undefined> = {
       ...sp,
       focus: "faites",
@@ -881,21 +840,35 @@ export async function RelancesResults({
             ? "later"
             : "tous";
 
-  // Séquentiel (pool connection_limit=1) — KPI légers puis liste.
+  const taskSort = parseListSort(sp, TASK_SORT_COLUMNS, {
+    key: "dueAt",
+    dir: "asc",
+  });
+
+  // Séquentiel (pool connection_limit=1) — KPI légers puis page triée serveur.
   const dueForKpis = await loadOpenDueAts(assigneeFilter);
-  // Filtre SQL dueAt si chip actif sans recherche (évite de charger toute la file).
+  const dueForChips = q
+    ? await loadOpenDueAts(assigneeFilter, taskSearchWhere)
+    : dueForKpis;
   const listDueFilter =
-    !q && vueBucket !== "tous"
-      ? dueAtWhereForBucket(vueBucket)
-      : undefined;
-  const tasks = await loadTasks(
+    vueBucket !== "tous" ? dueAtWhereForBucket(vueBucket) : undefined;
+  const {
+    total: listTotal,
+    page,
+    rows: pageTasks,
+  } = await loadTasksPage({
     assigneeFilter,
-    taskSearchWhere,
-    listDueFilter,
-  );
+    searchWhere: taskSearchWhere,
+    dueAtFilter: listDueFilter,
+    orderBy: taskSort.orderBy as
+      | Prisma.CrmTaskOrderByWithRelationInput
+      | Prisma.CrmTaskOrderByWithRelationInput[],
+    requestedPage,
+    pageSize,
+  });
 
   const outreachMap = await outreachCountByOpportunityIds(
-    tasks
+    pageTasks
       .map((t) => t.opportunity?.id)
       .filter((id): id is string => Boolean(id)),
   );
@@ -912,28 +885,11 @@ export async function RelancesResults({
 
   const now = new Date();
   const kpiBuckets = partitionRelanceDue(dueForKpis, now);
+  const chipBuckets = partitionRelanceDue(dueForChips, now);
   const dueSummary = summarizeRelanceDueBuckets(kpiBuckets);
+  const chipSummary = summarizeRelanceDueBuckets(chipBuckets);
+  const pages = totalPages(listTotal, pageSize);
 
-  const listBuckets = listDueFilter
-    ? {
-        overdue: vue === "retard" ? tasks : [],
-        today: vue === "aujourdhui" ? tasks : [],
-        week: vue === "semaine" ? tasks : [],
-        later: vue === "plus-tard" ? tasks : [],
-      }
-    : partitionRelanceDue(tasks, now);
-  const overdue = listBuckets.overdue;
-  const today = listBuckets.today;
-  const thisWeek = listBuckets.week;
-  const later = listBuckets.later;
-
-  const listByVue: Record<VueFilter, TaskRow[]> = {
-    tous: tasks,
-    retard: overdue,
-    aujourdhui: today,
-    semaine: thisWeek,
-    "plus-tard": later,
-  };
   const listTitleByVue: Record<VueFilter, string> = {
     tous: "Toutes les échéances",
     retard: "En retard",
@@ -969,23 +925,6 @@ export async function RelancesResults({
       : "Aucune échéance plus lointaine.",
   };
 
-  const taskSort = parseListSort(sp, TASK_SORT_COLUMNS, {
-    key: "dueAt",
-    dir: "asc",
-  });
-  const activeList = sortTasks(
-    listDueFilter ? tasks : listByVue[vue],
-    taskSort.key,
-    taskSort.dir,
-  );
-  const listTotal = activeList.length;
-  const page = clampPage(requestedPage, listTotal, pageSize);
-  const pageTasks = activeList.slice(
-    (page - 1) * pageSize,
-    page * pageSize,
-  );
-  const pages = totalPages(listTotal, pageSize);
-
   const listParams: Record<string, string | undefined> = { ...sp };
   delete listParams.page;
   if (vue === "tous") delete listParams.vue;
@@ -995,30 +934,13 @@ export async function RelancesResults({
   listParams.sort = taskSort.key;
   listParams.dir = taskSort.dir;
 
-  /** Chips : avec `q` = file recherchée ; sinon = portefeuille (dueAts légers). */
-  const chipBuckets = q ? partitionRelanceDue(tasks, now) : kpiBuckets;
+  /** Chips : dueAts (portefeuille ou recherche) — pas la page courante. */
   const filters: { id: VueFilter; label: string; count: number }[] = [
-    {
-      id: "tous",
-      label: "Toutes",
-      count: q ? tasks.length : dueSummary.open,
-    },
+    { id: "tous", label: "Toutes", count: chipSummary.open },
     { id: "retard", label: "En retard", count: chipBuckets.overdue.length },
-    {
-      id: "aujourdhui",
-      label: "Aujourd’hui",
-      count: chipBuckets.today.length,
-    },
-    {
-      id: "semaine",
-      label: "Sous 7 jours",
-      count: chipBuckets.week.length,
-    },
-    {
-      id: "plus-tard",
-      label: "Plus tard",
-      count: chipBuckets.later.length,
-    },
+    { id: "aujourdhui", label: "Aujourd’hui", count: chipBuckets.today.length },
+    { id: "semaine", label: "Sous 7 jours", count: chipBuckets.week.length },
+    { id: "plus-tard", label: "Plus tard", count: chipBuckets.later.length },
   ];
 
   const prospectsHref = buildPortfolioProspectsHref({
@@ -1071,7 +993,7 @@ export async function RelancesResults({
         <SearchToolbar
           q={q}
           clearSearchHref={clearSearchHref}
-          resultCount={tasks.length}
+          resultCount={listTotal}
         />
         <div className="flex flex-wrap gap-1.5">
           {filters.map((f) => {
@@ -1108,7 +1030,7 @@ export async function RelancesResults({
         </div>
       </div>
 
-      {!q && tasks.length === 0 ? (
+      {!q && dueSummary.open === 0 ? (
         <Surface className="p-10 text-center">
           <p className="text-sm font-medium text-msk-ink">
             Aucune relance ouverte
