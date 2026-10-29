@@ -14,13 +14,18 @@ export type LiveNotification = {
   createdAt: string;
 };
 
-type Opts = {
+/** Event bus local — 1 seul poller (cloche) ; AffectationsLive écoute sans 2ᵉ poll. */
+export const MSK_NOTIF_ACTIONABLE = "msk:notif-actionable";
+
+export type Opts = {
   userId: string;
   initial: LiveNotification[];
   initialUnread: number;
   onActionable?: (n: LiveNotification) => void;
   /** Poll de secours — toujours actif (Realtime peut être « SUBSCRIBED » sans events). */
   pollMs?: number;
+  /** Intervalle de secours quand Realtime est SUBSCRIBED. */
+  pollMsWhenRealtimeOk?: number;
 };
 
 /**
@@ -32,7 +37,8 @@ export function useNotificationsLive({
   initial,
   initialUnread,
   onActionable,
-  pollMs = 4000,
+  pollMs = 12_000,
+  pollMsWhenRealtimeOk = 25_000,
 }: Opts) {
   const instanceId = useId().replace(/:/g, "");
   const [items, setItems] = useState(initial);
@@ -40,36 +46,48 @@ export function useNotificationsLive({
   const [realtimeOk, setRealtimeOk] = useState(false);
   const onActionableRef = useRef(onActionable);
   onActionableRef.current = onActionable;
+  const realtimeOkRef = useRef(false);
 
-  const prepend = useCallback((n: LiveNotification) => {
-    setItems((prev) => {
-      if (prev.some((x) => x.id === n.id)) return prev;
-      return [n, ...prev].slice(0, 40);
-    });
-    if (!n.readAt) {
-      setUnread((u) => u + 1);
-    }
-    if (isActionableNotificationKind(n.kind)) {
-      onActionableRef.current?.(n);
+  const emitActionable = useCallback((n: LiveNotification) => {
+    onActionableRef.current?.(n);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent(MSK_NOTIF_ACTIONABLE, { detail: n }),
+      );
     }
   }, []);
+
+  const prepend = useCallback(
+    (n: LiveNotification) => {
+      setItems((prev) => {
+        if (prev.some((x) => x.id === n.id)) return prev;
+        return [n, ...prev].slice(0, 40);
+      });
+      if (!n.readAt) {
+        setUnread((u) => u + 1);
+      }
+      if (isActionableNotificationKind(n.kind)) {
+        emitActionable(n);
+      }
+    },
+    [emitActionable],
+  );
 
   const applyPoll = useCallback(
     (data: { items?: LiveNotification[]; unread?: number }) => {
       if (!data.items) return;
       setItems((prev) => {
-        // Détecter nouveaux IDs pour callbacks actionnables
         const prevIds = new Set(prev.map((x) => x.id));
         for (const n of data.items!) {
           if (!prevIds.has(n.id) && isActionableNotificationKind(n.kind)) {
-            onActionableRef.current?.(n);
+            emitActionable(n);
           }
         }
         return data.items!;
       });
       if (typeof data.unread === "number") setUnread(data.unread);
     },
-    [],
+    [emitActionable],
   );
 
   useEffect(() => {
@@ -110,41 +128,62 @@ export function useNotificationsLive({
           },
         )
         .subscribe((status) => {
-          if (!cancelled) setRealtimeOk(status === "SUBSCRIBED");
+          if (!cancelled) {
+            const ok = status === "SUBSCRIBED";
+            realtimeOkRef.current = ok;
+            setRealtimeOk(ok);
+          }
         });
     } catch (err) {
       console.error("[MSK] notifications realtime", err);
+      realtimeOkRef.current = false;
       setRealtimeOk(false);
     }
 
     return () => {
       cancelled = true;
+      realtimeOkRef.current = false;
       setRealtimeOk(false);
       void supabase.removeChannel(channel);
     };
   }, [userId, instanceId, prepend]);
 
   // Poll **toujours** — Realtime seul n’est pas fiable (RLS / faux SUBSCRIBED).
+  // Intervalle adaptatif : plus long si Realtime OK (secours uniquement).
   useEffect(() => {
     if (!userId) return;
 
+    let cancelled = false;
+    let timeoutId = 0;
+
+    function schedule(ms: number) {
+      timeoutId = window.setTimeout(tick, ms);
+    }
+
     function tick() {
+      if (cancelled) return;
       void fetch("/api/notifications/poll", { cache: "no-store" })
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
-          if (data) applyPoll(data);
+          if (!cancelled && data) applyPoll(data);
         })
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => {
+          if (cancelled) return;
+          const next = realtimeOkRef.current
+            ? pollMsWhenRealtimeOk
+            : pollMs;
+          schedule(next);
+        });
     }
 
     // Premier tick rapide pour rattraper une notif créée pendant la session.
-    const first = window.setTimeout(tick, 800);
-    const t = window.setInterval(tick, pollMs);
+    schedule(1_200);
     return () => {
-      window.clearTimeout(first);
-      window.clearInterval(t);
+      cancelled = true;
+      window.clearTimeout(timeoutId);
     };
-  }, [userId, pollMs, applyPoll]);
+  }, [userId, pollMs, pollMsWhenRealtimeOk, applyPoll]);
 
   function markLocalRead(id: string) {
     setItems((prev) =>

@@ -9,16 +9,15 @@ export async function GET() {
     if (!hasPermission(user, "self.notifications.view") && !user.isSuperAdmin) {
       return NextResponse.json({ error: "forbidden" }, { status: 403 });
     }
-    const [items, unread] = await Promise.all([
-      prisma.appNotification.findMany({
-        where: { userId: user.id },
-        orderBy: { createdAt: "desc" },
-        take: 30,
-      }),
-      prisma.appNotification.count({
-        where: { userId: user.id, readAt: null },
-      }),
-    ]);
+    // Séquentiel — pool Prisma connection_limit=1 (évite P2024).
+    const items = await prisma.appNotification.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      take: 30,
+    });
+    const unread = await prisma.appNotification.count({
+      where: { userId: user.id, readAt: null },
+    });
     return NextResponse.json({
       unread,
       items: items.map((n) => ({

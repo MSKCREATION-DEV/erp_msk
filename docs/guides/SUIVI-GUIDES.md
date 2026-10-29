@@ -195,6 +195,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - **Fichiers** : `mobile-nav*`, `topbar`, `sidebar*`, `list-table-scroll`, `globals.css`, fiches CRM/Commercial, listes P0/P1, `RESPONSIVE.md`, `scripts/responsive-audit.mjs`.
 - **Statut doc** : parcours mobile / listes → `to_validate` après lecture du rapport `tmp/responsive-audit/`.
 
+### 2026-10-29 — Audit perf : notifs Direction, poll, overlays, Relances
+
+- **Pourquoi** : `usersWithPermission` matchait le **code** métier sur `permissionId` (cuid) et ignorait les packs défaut de groupe → Direction non notifiée ; double poll cloche+AffectationsLive (4 s) + `router.refresh` / `revalidatePath("/", "layout")` → lenteurs ; overlays sans Escape / Confirm `unstable_rethrow` avalé ; Relances `take:2000` + `Promise.all` Prisma.
+- **Quoi** : résolution destinataires alignée RBAC (packs directs + groupe + GRANT, hors DENY) ; `createMany` notifs ; poll adaptatif 12–25 s + event bus `msk:notif-actionable` (1 poller) ; Escape / safety Confirm 45 s / GED overlay ; filtre SQL dueAt Relances + plafond 500 ; outreach owner via `groupBy`.
+- **Fichiers** : `lib/notifications/notify.ts`, `hooks/use-notifications-live.ts`, `affectations-live.tsx`, `notifications-bell.tsx`, `confirm-dialog.tsx`, `crm-week-picker.tsx`, `action-menu.tsx`, `ged-browser.tsx`, `relances-results.tsx`, `follow-up-count.ts`, `poll/route.ts`.
+- **Statut doc** : parcours notifs / affectations Direction → `to_validate` (rejouer une demande d’affectation et vérifier tous les destinataires Direction).
+
 ### 2026-10-28 — Affectation fiche → Historique + traçabilité lisible
 
 - **Pourquoi** : « Affecter » depuis la fiche écrivait une note avec UUID d’ancien suivi et ne créait pas de `CrmAssignmentRequest` → invisible dans `/crm/affectations` Historique ; timeline mal lisible.

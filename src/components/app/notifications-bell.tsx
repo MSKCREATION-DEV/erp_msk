@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Bell } from "lucide-react";
 import {
   markAllNotificationsReadAction,
@@ -25,17 +25,30 @@ export function NotificationsBell({
   initialUnread: number;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { pending, run } = usePendingAction();
   const [open, setOpen] = useState(false);
+  // Pas de router.refresh ici : le compteur / liste se mettent à jour via poll.
+  // AffectationsLive écoute MSK_NOTIF_ACTIONABLE pour rafraîchir sa file.
   const { items, unread, markLocalRead, markAllLocalRead } =
     useNotificationsLive({
       userId,
       initial: initialItems,
       initialUnread,
-      onActionable: () => {
-        router.refresh();
-      },
     });
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   function openOne(n: LiveNotification) {
     setOpen(false);

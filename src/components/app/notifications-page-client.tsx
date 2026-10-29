@@ -24,12 +24,13 @@ export function NotificationsPageClient({
   const router = useRouter();
   const { pending, run } = usePendingAction();
   const unreadInitial = initialItems.filter((n) => !n.readAt).length;
+  // Pas de router.refresh sur actionable : le poll met à jour la liste ;
+  // un refresh RSC ici doublait la charge avec la cloche topbar.
   const { items, unread, markLocalRead, markAllLocalRead } =
     useNotificationsLive({
       userId,
       initial: initialItems,
       initialUnread: unreadInitial,
-      onActionable: () => router.refresh(),
     });
 
   return (

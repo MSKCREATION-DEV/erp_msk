@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email/resend";
 import {
@@ -7,6 +8,7 @@ import {
 } from "@/lib/email/templates";
 import { shouldEmailNotificationKind } from "@/lib/notifications/kinds";
 import { publicAppBaseUrl } from "@/lib/app-url";
+import { mapSeries } from "@/lib/db/serial";
 
 export type NotifyPayload = {
   userIds: string[];
@@ -16,6 +18,50 @@ export type NotifyPayload = {
   href?: string | null;
   channels?: Array<"in_app" | "email">;
 };
+
+/**
+ * Filtre Prisma des utilisateurs ayant effectivement une permission.
+ * Aligné sur `resolveUserPermissions` : packs directs + packs défaut de groupe
+ * + GRANT, hors DENY. `permissionId` = FK cuid (jamais le code métier).
+ */
+export function usersWithPermissionWhere(
+  permissionId: string,
+): Prisma.UserWhereInput {
+  const viaPack: Prisma.PermissionPackWhereInput = {
+    permissions: { some: { permissionId } },
+  };
+  return {
+    archivedAt: null,
+    status: { in: ["ACTIVE", "MUST_CHANGE_PASSWORD", "INVITE_PENDING"] },
+    NOT: {
+      overrides: {
+        some: { permissionId, effect: "DENY" },
+      },
+    },
+    OR: [
+      { isSuperAdmin: true },
+      {
+        userPacks: {
+          some: { pack: viaPack },
+        },
+      },
+      {
+        groupMembers: {
+          some: {
+            group: {
+              defaultPack: viaPack,
+            },
+          },
+        },
+      },
+      {
+        overrides: {
+          some: { permissionId, effect: "GRANT" },
+        },
+      },
+    ],
+  };
+}
 
 export async function notifyUsers(payload: NotifyPayload): Promise<number> {
   const ids = [...new Set(payload.userIds.filter(Boolean))];
@@ -29,21 +75,39 @@ export async function notifyUsers(payload: NotifyPayload): Promise<number> {
 
   const notifByUser = new Map<string, string>();
   if (wantInApp) {
-    for (const userId of ids) {
-      const row = await prisma.appNotification.create({
-        data: {
-          userId,
+    const createdAt = new Date();
+    // createMany = 1 round-trip (pool connection_limit=1).
+    await prisma.appNotification.createMany({
+      data: ids.map((userId) => ({
+        userId,
+        kind: payload.kind,
+        title: payload.title,
+        body: payload.body ?? null,
+        href: payload.href ?? null,
+        createdAt,
+      })),
+    });
+
+    if (wantEmail) {
+      const rows = await prisma.appNotification.findMany({
+        where: {
+          userId: { in: ids },
           kind: payload.kind,
-          title: payload.title,
-          body: payload.body ?? null,
-          href: payload.href ?? null,
+          createdAt: { gte: createdAt },
         },
-        select: { id: true },
+        select: { id: true, userId: true },
+        orderBy: { createdAt: "desc" },
       });
-      notifByUser.set(userId, row.id);
+      // Un id par user (le plus récent si collision improbable).
+      for (const row of rows) {
+        if (!notifByUser.has(row.userId)) {
+          notifByUser.set(row.userId, row.id);
+        }
+      }
     }
-    // Topbar cloche (Suspense layout) — invalider le shell.
-    revalidatePath("/", "layout");
+
+    // Pas de revalidatePath("/", "layout") : trop large (shell entier).
+    // La cloche se met à jour via poll / Realtime.
     revalidatePath("/notifications");
   }
 
@@ -59,37 +123,36 @@ export async function notifyUsers(payload: NotifyPayload): Promise<number> {
         : `${base}${payload.href.startsWith("/") ? "" : "/"}${payload.href}`
       : `${base}/notifications`;
 
-    await Promise.all(
-      users.map(async (u) => {
-        try {
-          await sendEmail({
-            to: u.email,
-            subject: payload.title,
-            html: notificationEmailHtml({
-              firstName: u.firstName,
-              title: payload.title,
-              body: payload.body ?? undefined,
-              ctaHref: hrefAbs,
-            }),
-            text: notificationEmailText({
-              firstName: u.firstName,
-              title: payload.title,
-              body: payload.body ?? undefined,
-              ctaHref: hrefAbs,
-            }),
+    // Séquentiel — pool Prisma connection_limit=1 (pas Promise.all).
+    await mapSeries(users, async (u) => {
+      try {
+        await sendEmail({
+          to: u.email,
+          subject: payload.title,
+          html: notificationEmailHtml({
+            firstName: u.firstName,
+            title: payload.title,
+            body: payload.body ?? undefined,
+            ctaHref: hrefAbs,
+          }),
+          text: notificationEmailText({
+            firstName: u.firstName,
+            title: payload.title,
+            body: payload.body ?? undefined,
+            ctaHref: hrefAbs,
+          }),
+        });
+        const nid = notifByUser.get(u.id);
+        if (nid) {
+          await prisma.appNotification.update({
+            where: { id: nid },
+            data: { emailSentAt: new Date() },
           });
-          const nid = notifByUser.get(u.id);
-          if (nid) {
-            await prisma.appNotification.update({
-              where: { id: nid },
-              data: { emailSentAt: new Date() },
-            });
-          }
-        } catch (err) {
-          console.error("[notifyUsers] email failed", u.id, err);
         }
-      }),
-    );
+      } catch (err) {
+        console.error("[notifyUsers] email failed", u.id, err);
+      }
+    });
   }
 
   return ids.length;
@@ -98,28 +161,19 @@ export async function notifyUsers(payload: NotifyPayload): Promise<number> {
 export async function usersWithPermission(
   permissionCode: string,
 ): Promise<string[]> {
+  const perm = await prisma.permission.findUnique({
+    where: { code: permissionCode },
+    select: { id: true },
+  });
+  if (!perm) {
+    console.warn(
+      `[usersWithPermission] permission inconnue: ${permissionCode}`,
+    );
+    return [];
+  }
+
   const rows = await prisma.user.findMany({
-    where: {
-      archivedAt: null,
-      status: { in: ["ACTIVE", "MUST_CHANGE_PASSWORD", "INVITE_PENDING"] },
-      OR: [
-        { isSuperAdmin: true },
-        {
-          userPacks: {
-            some: {
-              pack: {
-                permissions: { some: { permissionId: permissionCode } },
-              },
-            },
-          },
-        },
-        {
-          overrides: {
-            some: { permissionId: permissionCode, effect: "GRANT" },
-          },
-        },
-      ],
-    },
+    where: usersWithPermissionWhere(perm.id),
     select: { id: true },
   });
   return rows.map((r) => r.id);
