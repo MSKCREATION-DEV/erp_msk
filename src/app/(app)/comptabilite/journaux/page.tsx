@@ -6,12 +6,20 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/list/search-params";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
 import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
+import { ListPagination } from "@/components/ui/list-pagination";
 
 export const metadata: Metadata = { title: "Journaux" };
 
@@ -37,19 +45,26 @@ export default async function ComptabiliteJournauxPage({
   const sp: Record<string, string | undefined> = {
     sort: firstParam(raw.sort),
     dir: firstParam(raw.dir),
+    page: firstParam(raw.page),
   };
   const sort = parseListSort(sp, JOURNAL_SORT_COLUMNS, {
     key: "sortOrder",
     dir: "asc",
   });
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const requestedPage = parsePage(sp.page);
   const listParams: Record<string, string | undefined> = {
     sort: sort.key,
     dir: sort.dir,
   };
 
+  const total = await prisma.cptJournal.count();
+  const page = clampPage(requestedPage, total, pageSize);
   const journals = await prisma.cptJournal.findMany({
     orderBy: sort.orderBy as Prisma.CptJournalOrderByWithRelationInput,
     include: { _count: { select: { entries: true } } },
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
   });
 
   const canCreate = hasPermission(user, "cpt.ecritures.manage");
@@ -136,6 +151,16 @@ export default async function ComptabiliteJournauxPage({
             ))}
           </tbody>
         </table>
+        {total > 0 ? (
+          <ListPagination
+            pathname="/comptabilite/journaux"
+            searchParams={listParams}
+            page={page}
+            totalPages={totalPages(total, pageSize)}
+            total={total}
+            pageSize={pageSize}
+          />
+        ) : null}
       </Surface>
 
       {canCreate ? (

@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { FileText, FolderOpen } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { prisma } from "@/lib/prisma";
 import { crmVisibility, dealOwnerScopeWhere } from "@/lib/crm/scope";
 import {
   commercialTeamUserIds,
@@ -14,10 +13,10 @@ import {
   type CommercialRosterUser,
 } from "@/lib/crm/team";
 import { STAGE_ORDER } from "@/lib/crm/labels";
-import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { resolveGoalsSnapshots } from "@/lib/crm/goals";
 import { listWeekOptions } from "@/lib/crm/week";
 import { outreachCountByOwnerInPeriod } from "@/lib/crm/follow-up-count";
+import { loadEquipeOwnerAggregates } from "@/lib/crm/equipe-aggregates";
 import {
   buildCrmScopeHref,
   buildPortfolioProspectsHref,
@@ -86,60 +85,28 @@ export default async function CrmEquipePage({
   const weeks = listWeekOptions({ fromYear: new Date().getFullYear() - 1 });
   const occurredBetween = dateRangeFilter(period.from, period.to);
 
-  const deals = await prisma.crmOpportunity.findMany({
-    where: dealOwnerScopeWhere(user, teamIds),
-    select: {
-      id: true,
-      stage: true,
-      followUpAt: true,
-      budgetXof: true,
-      ownerId: true,
-      owner: { select: { id: true, firstName: true, lastName: true } },
-    },
-  });
-
-  const now = Date.now();
-  const byOwner = new Map<string, OwnerRow>();
-
-  for (const d of deals) {
-    if (!byOwner.has(d.ownerId)) {
-      byOwner.set(
-        d.ownerId,
-        emptyRow(`${d.owner.firstName} ${d.owner.lastName}`),
-      );
-    }
-    const row = byOwner.get(d.ownerId)!;
-    const stage = normalizeUiStage(d.stage);
-    row.byStage[stage] = (row.byStage[stage] ?? 0) + 1;
-    if (stage === "GAGNE") {
-      row.clients += 1;
-    } else if (stage !== "PERDU") {
-      /** Aligné hub/TB : « actifs » = hors Client / Perdu. */
-      row.total += 1;
-    }
-    if (stage === "INTERESSE") row.interesses += 1;
-    if (stage !== "GAGNE" && stage !== "PERDU") {
-      row.caOpen += d.budgetXof ?? 0;
-    }
-    if (
-      d.followUpAt &&
-      d.followUpAt.getTime() < now &&
-      stage !== "GAGNE" &&
-      stage !== "PERDU"
-    ) {
-      row.overdue += 1;
-    }
-  }
+  const aggregates = await loadEquipeOwnerAggregates(
+    dealOwnerScopeWhere(user, teamIds),
+  );
 
   const members = await listCommercialRoster({ mode: "team" });
   const memberById = new Map<string, CommercialRosterUser>(
     members.map((m) => [m.id, m]),
   );
 
+  const byOwner = new Map<string, OwnerRow>();
   for (const m of members) {
-    if (!byOwner.has(m.id)) {
-      byOwner.set(m.id, emptyRow(`${m.firstName} ${m.lastName}`));
+    const agg = aggregates.get(m.id);
+    const row = emptyRow(`${m.firstName} ${m.lastName}`);
+    if (agg) {
+      row.total = agg.total;
+      row.overdue = agg.overdue;
+      row.caOpen = agg.caOpen;
+      row.clients = agg.clients;
+      row.interesses = agg.interesses;
+      row.byStage = { ...row.byStage, ...agg.byStage };
     }
+    byOwner.set(m.id, row);
   }
 
   const owners = rosterToOwnerOptions(members);

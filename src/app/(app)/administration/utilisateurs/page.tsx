@@ -6,6 +6,13 @@ import { requireUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { USER_STATUS_LABEL, USER_STATUS_TONE } from "@/lib/users/status";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
 import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +23,7 @@ import { Surface } from "@/components/ui/surface";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { PlainTh, SortableTh } from "@/components/ui/sortable-th";
 import { ListTableScroll } from "@/components/ui/list-table-scroll";
+import { ListPagination } from "@/components/ui/list-pagination";
 
 export const metadata: Metadata = {
   title: "Utilisateurs",
@@ -43,57 +51,61 @@ export default async function UsersAdminPage({
     key: "name",
     dir: "asc",
   });
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const requestedPage = parsePage(sp.page);
   const listParams: Record<string, string | undefined> = {
     sort: sort.key,
     dir: sort.dir,
   };
 
-  const [users, pendingResets, counts] = await Promise.all([
-    prisma.user.findMany({
-      orderBy: sort.orderBy as
-        | Prisma.UserOrderByWithRelationInput
-        | Prisma.UserOrderByWithRelationInput[],
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        status: true,
-        isSuperAdmin: true,
-        groupMembers: { select: { group: { select: { name: true } } } },
-        userPacks: { select: { pack: { select: { name: true, code: true } } } },
-      },
-    }),
-    prisma.passwordResetRequest.findMany({
-      where: { status: "PENDING" },
-      select: {
-        id: true,
-        userId: true,
-        user: { select: { firstName: true, lastName: true, email: true } },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 10,
-    }),
-    prisma.user.groupBy({
-      by: ["status"],
-      _count: { _all: true },
-    }),
-  ]);
+  const totalUsers = await prisma.user.count();
+  const page = clampPage(requestedPage, totalUsers, pageSize);
+  const users = await prisma.user.findMany({
+    orderBy: sort.orderBy as
+      | Prisma.UserOrderByWithRelationInput
+      | Prisma.UserOrderByWithRelationInput[],
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      status: true,
+      isSuperAdmin: true,
+      groupMembers: { select: { group: { select: { name: true } } } },
+      userPacks: { select: { pack: { select: { name: true, code: true } } } },
+    },
+  });
+  const pendingResets = await prisma.passwordResetRequest.findMany({
+    where: { status: "PENDING" },
+    select: {
+      id: true,
+      userId: true,
+      user: { select: { firstName: true, lastName: true, email: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+  });
+  const counts = await prisma.user.groupBy({
+    by: ["status"],
+    _count: { _all: true },
+  });
 
   const countBy = Object.fromEntries(
     counts.map((c) => [c.status, c._count._all]),
   ) as Record<string, number>;
 
   const kpis = [
-    { label: "Total", value: String(users.length), hint: "comptes" },
+    { label: "Total", value: String(totalUsers), hint: "comptes" },
     {
       label: "Actifs",
       value: String(countBy.ACTIVE ?? 0),
       hint: "accès ouvert",
       trend: {
         value:
-          users.length > 0
-            ? `${Math.round(((countBy.ACTIVE ?? 0) / users.length) * 100)}%`
+          totalUsers > 0
+            ? `${Math.round(((countBy.ACTIVE ?? 0) / totalUsers) * 100)}%`
             : "0%",
         direction: "up" as const,
       },
@@ -167,7 +179,7 @@ export default async function UsersAdminPage({
       <Surface className="overflow-hidden">
         <div className="flex items-center justify-between border-b border-msk-ink/6 px-5 py-4">
           <h2 className="font-semibold text-msk-ink">Collaborateurs</h2>
-          <p className="text-sm text-msk-ink/45">{users.length} compte(s)</p>
+          <p className="text-sm text-msk-ink/45">{totalUsers} compte(s)</p>
         </div>
         <ListTableScroll>
           <table className="w-full text-left text-sm">
@@ -247,6 +259,14 @@ export default async function UsersAdminPage({
             </tbody>
           </table>
         </ListTableScroll>
+        <ListPagination
+          pathname="/administration/utilisateurs"
+          searchParams={listParams}
+          page={page}
+          totalPages={totalPages(totalUsers, pageSize)}
+          total={totalUsers}
+          pageSize={pageSize}
+        />
       </Surface>
     </PageShell>
   );

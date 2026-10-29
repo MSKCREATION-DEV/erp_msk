@@ -6,11 +6,19 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/list/search-params";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
 import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { SortableTh } from "@/components/ui/sortable-th";
+import { ListPagination } from "@/components/ui/list-pagination";
 
 export const metadata: Metadata = { title: "Articles stock" };
 
@@ -42,18 +50,25 @@ export default async function StocksArticlesPage({
   const sp: Record<string, string | undefined> = {
     sort: firstParam(raw.sort),
     dir: firstParam(raw.dir),
+    page: firstParam(raw.page),
   };
   const sort = parseListSort(sp, ARTICLE_SORT_COLUMNS, {
     key: "code",
     dir: "asc",
   });
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const requestedPage = parsePage(sp.page);
   const listParams: Record<string, string | undefined> = {
     sort: sort.key,
     dir: sort.dir,
   };
 
+  const total = await prisma.stkArticle.count();
+  const page = clampPage(requestedPage, total, pageSize);
   const articles = await prisma.stkArticle.findMany({
     orderBy: sort.orderBy as Prisma.StkArticleOrderByWithRelationInput,
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
   });
 
   return (
@@ -195,6 +210,16 @@ export default async function StocksArticlesPage({
             </tbody>
           </table>
         )}
+        {total > 0 ? (
+          <ListPagination
+            pathname="/stocks/articles"
+            searchParams={listParams}
+            page={page}
+            totalPages={totalPages(total, pageSize)}
+            total={total}
+            pageSize={pageSize}
+          />
+        ) : null}
       </Surface>
     </PageShell>
   );

@@ -125,7 +125,7 @@ export default async function CrmDashboardPage({
     ownerIds,
     occurredBetween,
   });
-  const wonRows = await prisma.crmOpportunity.findMany({
+  const wonAgg = await prisma.crmOpportunity.aggregate({
     where: {
       ...ownerWhere,
       stage: "GAGNE",
@@ -134,7 +134,8 @@ export default async function CrmDashboardPage({
         { wonAt: null, updatedAt: occurredBetween },
       ],
     },
-    select: { budgetXof: true },
+    _count: { _all: true },
+    _sum: { budgetXof: true },
   });
   const periodStats = await computePeriodStats(
     ownerIds,
@@ -159,16 +160,13 @@ export default async function CrmDashboardPage({
           : await resolveGoalsForPeriod(user.id, period)
       : null;
 
-  // Stocks à date — uniquement lentille live (évite requêtes inutiles + chiffres trompeurs)
-  const deals = showStocks
-    ? await prisma.crmOpportunity.findMany({
+  // Stocks à date — agrégats SQL + listes ciblées (pas de findMany 500).
+  const stageGroups = showStocks
+    ? await prisma.crmOpportunity.groupBy({
+        by: ["stage"],
         where: ownerWhere,
-        include: {
-          organization: { select: { name: true } },
-          comQuotes: { select: { id: true }, take: 1 },
-        },
-        orderBy: [{ followUpAt: "asc" }, { updatedAt: "desc" }],
-        take: 500,
+        _count: { _all: true },
+        _sum: { budgetXof: true },
       })
     : [];
   const openTasks = showStocks
@@ -187,55 +185,92 @@ export default async function CrmDashboardPage({
     : 0;
 
   const now = Date.now();
-  const byStage = STAGE_ORDER.map((stage) => ({
-    stage,
-    key: stage.toLowerCase(),
-    statut: STAGE_LABELS[stage],
-    count: deals.filter((d) => normalizeUiStage(d.stage) === stage).length,
-  }));
-  const openDeals = deals.filter(
-    (d) => d.stage !== "GAGNE" && d.stage !== "PERDU",
-  );
-  const outreachMap =
-    showStocks && openDeals.length > 0
-      ? await outreachCountByOpportunityIds(openDeals.map((d) => d.id))
-      : new Map<string, number>();
+  const byStage = STAGE_ORDER.map((stage) => {
+    const matching = stageGroups.filter(
+      (g) => normalizeUiStage(g.stage) === stage,
+    );
+    return {
+      stage,
+      key: stage.toLowerCase(),
+      statut: STAGE_LABELS[stage],
+      count: matching.reduce((s, g) => s + g._count._all, 0),
+    };
+  });
+  let openDealsCount = 0;
+  let montantEnCours = 0;
+  for (const g of stageGroups) {
+    const st = normalizeUiStage(g.stage);
+    if (st !== "GAGNE" && st !== "PERDU") {
+      openDealsCount += g._count._all;
+      montantEnCours += Number(g._sum.budgetXof ?? 0);
+    }
+  }
 
-  const wonCount = wonRows.length;
-  const montantEnCours = openDeals.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
-  const montantSigne = wonRows.reduce((s, d) => s + (d.budgetXof ?? 0), 0);
-  const conversionDenom = wonCount + openDeals.length;
+  const wonCount = wonAgg._count._all;
+  const montantSigne = Number(wonAgg._sum.budgetXof ?? 0);
+  const conversionDenom = wonCount + openDealsCount;
   const conversionPct =
     conversionDenom > 0 ? (wonCount / conversionDenom) * 100 : 0;
   const interesses = byStage.find((x) => x.stage === "INTERESSE")?.count ?? 0;
   const newProspects = periodStats.newProspects;
 
-  const devisUrgent = showStocks
-    ? deals.filter((d) =>
-        isDevisSlaBreached({
-          stage: d.stage,
-          interestedAt: d.interestedAt,
-          updatedAt: d.updatedAt,
-          quoteCount: d.comQuotes.length,
-        }),
-      )
+  const devisCandidates = showStocks
+    ? await prisma.crmOpportunity.findMany({
+        where: {
+          ...ownerWhere,
+          stage: "INTERESSE",
+          comQuotes: { none: {} },
+        },
+        select: {
+          id: true,
+          stage: true,
+          interestedAt: true,
+          updatedAt: true,
+          organization: { select: { name: true } },
+        },
+        take: 100,
+      })
     : [];
+  const devisUrgent = devisCandidates.filter((d) =>
+    isDevisSlaBreached({
+      stage: d.stage,
+      interestedAt: d.interestedAt,
+      updatedAt: d.updatedAt,
+      quoteCount: 0,
+    }),
+  );
 
   const aTraiter = showStocks
-    ? deals
-        .filter((d) => {
-          const st = normalizeUiStage(d.stage);
-          if (st === "GAGNE" || st === "PERDU") return false;
-          const late = d.followUpAt != null && d.followUpAt.getTime() < now;
-          return late || st === "INTERESSE" || st === "NOUVEAU";
-        })
-        .slice(0, 5)
+    ? await prisma.crmOpportunity.findMany({
+        where: {
+          ...ownerWhere,
+          stage: { notIn: ["GAGNE", "PERDU"] },
+          OR: [
+            { followUpAt: { lt: new Date() } },
+            { stage: { in: ["INTERESSE", "NOUVEAU"] } },
+          ],
+        },
+        select: {
+          id: true,
+          stage: true,
+          followUpAt: true,
+          nextAction: true,
+          organization: { select: { name: true } },
+        },
+        orderBy: [{ followUpAt: "asc" }, { updatedAt: "desc" }],
+        take: 5,
+      })
     : [];
+
+  const outreachMap =
+    showStocks && aTraiter.length > 0
+      ? await outreachCountByOpportunityIds(aTraiter.map((d) => d.id))
+      : new Map<string, number>();
 
   const goalProgress =
     goals && showGoals ? buildGoalProgress(goals, periodStats) : [];
 
-  const openScale = Math.max(5, openDeals.length);
+  const openScale = Math.max(5, openDealsCount);
   const interesseScale = Math.max(5, interesses);
   const relancesAvenir = Math.max(0, openTasks - overdue);
   const showDevis = showStocks && devisUrgent.length > 0;
@@ -434,7 +469,7 @@ export default async function CrmDashboardPage({
           signedAmount={montantSigne}
           signedCount={wonCount}
           openAmount={montantEnCours}
-          openCount={openDeals.length}
+          openCount={openDealsCount}
           totalDeals={conversionDenom}
           periodLabel={period.label}
           signedOnly={!showStocks}
@@ -504,28 +539,28 @@ export default async function CrmDashboardPage({
                     <HubMiniRadial
                       className="w-18 sm:w-20"
                       value={sharedOpenTotal}
-                      max={Math.max(5, sharedOpenTotal, openDeals.length)}
+                      max={Math.max(5, sharedOpenTotal, openDealsCount)}
                       color={METRIC_NAV_TONE_CHART.blue}
                       centerLabel={sharedOpenTotal}
                       caption="total"
                     />
                     <HubMiniRadial
                       className="w-18 sm:w-20"
-                      value={openDeals.length}
-                      max={Math.max(5, sharedOpenTotal, openDeals.length)}
+                      value={openDealsCount}
+                      max={Math.max(5, sharedOpenTotal, openDealsCount)}
                       color={METRIC_NAV_TONE_CHART.coral}
-                      centerLabel={openDeals.length}
+                      centerLabel={openDealsCount}
                       caption="suivis par moi"
                     />
                   </div>
                 ) : (
                   <HubMiniRadial
-                    value={openDeals.length}
+                    value={openDealsCount}
                     max={openScale}
                     color={METRIC_NAV_TONE_CHART.blue}
-                    centerLabel={openDeals.length}
+                    centerLabel={openDealsCount}
                     caption={
-                      openDeals.length > 1
+                      openDealsCount > 1
                         ? "prospects actifs"
                         : "prospect actif"
                     }
