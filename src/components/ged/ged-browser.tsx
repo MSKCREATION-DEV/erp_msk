@@ -145,6 +145,13 @@ export function GedBrowser({
     setPendingHref(null);
   }, [folderId]);
 
+  // Safety : si la nav n’aboutit pas (même folder / abort), ne pas laisser l’overlay coincé.
+  useEffect(() => {
+    if (!pendingHref) return;
+    const t = window.setTimeout(() => setPendingHref(null), 8_000);
+    return () => window.clearTimeout(t);
+  }, [pendingHref]);
+
   const empty = folders.length === 0 && documents.length === 0;
 
   const entries = useMemo(() => {
@@ -313,7 +320,11 @@ export function GedBrowser({
             href="/ged"
             prefetch={false}
             scroll={false}
-            onClick={() => setPendingHref("/ged")}
+            onClick={() => {
+              // Déjà à la racine → pas d’overlay (folderId ne changera pas).
+              if (!folderId) return;
+              setPendingHref("/ged");
+            }}
             className="cursor-pointer font-medium text-msk-blue hover:underline"
           >
             GED

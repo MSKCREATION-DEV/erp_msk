@@ -173,12 +173,13 @@ function ToolbarMenu({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!open) return;
     function onDoc(e: MouseEvent) {
       if (!ref.current?.contains(e.target as Node)) setOpen(false);
     }
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
-  }, []);
+  }, [open]);
 
   return (
     <div className="relative" ref={ref}>

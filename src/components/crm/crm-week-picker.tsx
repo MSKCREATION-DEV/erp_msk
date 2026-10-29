@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import type { WeekOption } from "@/lib/crm/week";
 import { cn } from "@/lib/utils";
@@ -37,6 +37,15 @@ export function CrmWeekPicker({
 }) {
   const [open, setOpen] = useState(false);
   const compact = size === "compact";
+
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   const sortedAsc = useMemo(
     () => [...weeks].sort((a, b) => a.value.localeCompare(b.value)),

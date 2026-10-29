@@ -141,7 +141,7 @@ export function ActionMenu({
                   ? { top: coords.top, left: coords.left }
                   : { top: 0, left: 0, visibility: "hidden" as const }
               }
-              className="fixed z-[70] min-w-44 overflow-hidden rounded-xl border border-msk-ink/8 bg-white py-1 shadow-lg shadow-msk-ink/12"
+              className="fixed z-50 min-w-44 overflow-hidden rounded-xl border border-msk-ink/8 bg-white py-1 shadow-lg shadow-msk-ink/12"
             >
               {items.map((item) => (
                 <li key={item.id} role="none">
