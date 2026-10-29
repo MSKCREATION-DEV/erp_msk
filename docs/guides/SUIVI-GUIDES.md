@@ -195,6 +195,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - **Fichiers** : `mobile-nav*`, `topbar`, `sidebar*`, `list-table-scroll`, `globals.css`, fiches CRM/Commercial, listes P0/P1, `RESPONSIVE.md`, `scripts/responsive-audit.mjs`.
 - **Statut doc** : parcours mobile / listes → `to_validate` après lecture du rapport `tmp/responsive-audit/`.
 
+### 2026-10-29 — Tris listes + Hub/Équipe SQL + pagination + poll unique
+
+- **Pourquoi** : tris Relances/Affectations incohérents (client sur fenêtre tronquée, un seul `?sort=` pour 2 tables, chips/filtres droppant `sort`/`dir`) ; Hub/Équipe en `findMany` sans limite ; listes users/articles/journaux non paginées ; double poll cloche+page.
+- **Quoi** : orderBy Prisma + pagination serveur Relances ; `hsort`/`hdir` Affectations ; conservation tri filtres prospects / chips ; store notifs partagé `live-store` ; agrégats SQL Hub/Équipe ; pagination users/articles/journaux ; colonne Date factures.
+- **Fichiers** : `lib/list/sort.ts`, `sortable-th.tsx`, `relances-results.tsx`, `affectations/page.tsx`, `prospects-filter-modal.tsx`, `live-store.ts`, `equipe-aggregates.ts`, `crm/page.tsx`, `equipe/page.tsx`, pages users/articles/journaux/factures.
+- **Statut doc** : listes CRM / Commercial → `to_validate` sur tris d’en-têtes.
+
 ### 2026-10-29 — Audit perf : notifs Direction, poll, overlays, Relances
 
 - **Pourquoi** : `usersWithPermission` matchait le **code** métier sur `permissionId` (cuid) et ignorait les packs défaut de groupe → Direction non notifiée ; double poll cloche+AffectationsLive (4 s) + `router.refresh` / `revalidatePath("/", "layout")` → lenteurs ; overlays sans Escape / Confirm `unstable_rethrow` avalé ; Relances `take:2000` + `Promise.all` Prisma.

@@ -10,16 +10,15 @@ export async function TopbarNotifications() {
     return null;
   }
 
-  const [items, unread] = await Promise.all([
-    prisma.appNotification.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" },
-      take: 20,
-    }),
-    prisma.appNotification.count({
-      where: { userId: user.id, readAt: null },
-    }),
-  ]);
+  // Séquentiel — pool Prisma connection_limit=1.
+  const items = await prisma.appNotification.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+  });
+  const unread = await prisma.appNotification.count({
+    where: { userId: user.id, readAt: null },
+  });
 
   return (
     <NotificationsBell
