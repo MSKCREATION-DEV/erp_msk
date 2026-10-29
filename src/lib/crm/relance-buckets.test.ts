@@ -1,12 +1,22 @@
 import assert from "node:assert/strict";
 import {
   classifyRelanceDue,
+  dueAtWhereForBucket,
   partitionRelanceDue,
   summarizeRelanceDueBuckets,
 } from "./relance-buckets";
 
 /** Ancre fixe : mercredi 2026-10-22 15:00 local. */
 const now = new Date(2026, 9, 22, 15, 0, 0, 0);
+
+{
+  assert.equal(dueAtWhereForBucket("tous", now), undefined);
+  assert.deepEqual(dueAtWhereForBucket("overdue", now), {
+    lt: new Date(2026, 9, 22, 0, 0, 0, 0),
+  });
+  const today = dueAtWhereForBucket("today", now);
+  assert.ok(today && "gte" in today && "lte" in today);
+}
 
 {
   assert.equal(

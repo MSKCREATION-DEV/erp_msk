@@ -55,6 +55,30 @@ export function classifyRelanceDue(
   return "later";
 }
 
+/**
+ * Filtre Prisma `dueAt` pour une vue Relances (hors « tous »).
+ * Permet de ne pas charger toute la file quand un chip est actif.
+ */
+export function dueAtWhereForBucket(
+  bucket: RelanceDueBucket | "tous",
+  now: Date = new Date(),
+): { lt: Date } | { gte: Date; lte: Date } | { gt: Date; lte: Date } | { gt: Date } | undefined {
+  if (bucket === "tous") return undefined;
+  const sod = startOfLocalDay(now);
+  const eod = endOfLocalDay(now);
+  const weekEnd = endOfLocalWeekAhead(now);
+  switch (bucket) {
+    case "overdue":
+      return { lt: sod };
+    case "today":
+      return { gte: sod, lte: eod };
+    case "week":
+      return { gt: eod, lte: weekEnd };
+    case "later":
+      return { gt: weekEnd };
+  }
+}
+
 export function partitionRelanceDue<T extends { dueAt: Date }>(
   tasks: T[],
   now: Date = new Date(),

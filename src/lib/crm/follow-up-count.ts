@@ -86,7 +86,10 @@ export async function countOutreachInPeriod(opts: {
   });
 }
 
-/** Map ownerId → N relances sur la période (1 requête). */
+/**
+ * Map ownerId → N relances sur la période.
+ * groupBy opportunityId puis agrégation owner — évite de charger toutes les rows activité.
+ */
 export async function outreachCountByOwnerInPeriod(opts: {
   ownerIds: string[];
   occurredBetween: { gte: Date; lte: Date };
@@ -95,18 +98,31 @@ export async function outreachCountByOwnerInPeriod(opts: {
   for (const id of opts.ownerIds) map.set(id, 0);
   if (opts.ownerIds.length === 0) return map;
 
-  const rows = await prisma.crmActivity.findMany({
+  const byOpp = await prisma.crmActivity.groupBy({
+    by: ["opportunityId"],
     where: {
       type: { in: OUTREACH_ACTIVITY_TYPES },
       occurredAt: opts.occurredBetween,
+      opportunityId: { not: null },
       opportunity: { ownerId: { in: opts.ownerIds } },
     },
-    select: { opportunity: { select: { ownerId: true } } },
+    _count: { _all: true },
   });
-  for (const r of rows) {
-    const oid = r.opportunity?.ownerId;
-    if (!oid) continue;
-    map.set(oid, (map.get(oid) ?? 0) + 1);
+  const oppIds = byOpp
+    .map((r) => r.opportunityId)
+    .filter((id): id is string => Boolean(id));
+  if (oppIds.length === 0) return map;
+
+  const owners = await prisma.crmOpportunity.findMany({
+    where: { id: { in: oppIds } },
+    select: { id: true, ownerId: true },
+  });
+  const ownerByOpp = new Map(owners.map((o) => [o.id, o.ownerId]));
+  for (const row of byOpp) {
+    if (!row.opportunityId) continue;
+    const ownerId = ownerByOpp.get(row.opportunityId);
+    if (!ownerId) continue;
+    map.set(ownerId, (map.get(ownerId) ?? 0) + row._count._all);
   }
   return map;
 }

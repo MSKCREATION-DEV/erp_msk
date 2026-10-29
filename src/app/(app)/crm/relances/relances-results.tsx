@@ -19,6 +19,7 @@ import {
 } from "@/lib/crm/follow-up-count";
 import {
   classifyRelanceDue,
+  dueAtWhereForBucket,
   partitionRelanceDue,
   startOfLocalDay,
   summarizeRelanceDueBuckets,
@@ -214,24 +215,29 @@ const taskInclude = {
   assignee: { select: { firstName: true, lastName: true } },
 } satisfies Prisma.CrmTaskInclude;
 
+/** Plafond liste détaillée — KPI utilisent `loadOpenDueAts` (léger). */
+const RELANCES_LIST_TAKE = 500;
+
 async function loadTasks(
   assigneeFilter: string[] | null,
   searchWhere: Prisma.CrmTaskWhereInput | null,
+  dueAtFilter?: ReturnType<typeof dueAtWhereForBucket>,
 ) {
   const where: Prisma.CrmTaskWhereInput = {
     status: CrmTaskStatus.OPEN,
     ...(assigneeFilter ? { assigneeId: { in: assigneeFilter } } : {}),
+    ...(dueAtFilter ? { dueAt: dueAtFilter } : {}),
     ...(searchWhere ? { AND: [searchWhere] } : {}),
   };
   return prisma.crmTask.findMany({
     where,
     include: taskInclude,
     orderBy: { dueAt: "asc" },
-    take: 2000,
+    take: RELANCES_LIST_TAKE,
   });
 }
 
-/** Due dates seules — KPI globaux indépendants de `q`. */
+/** Due dates seules — KPI / chips globaux (payload minimal). */
 async function loadOpenDueAts(assigneeFilter: string[] | null) {
   return prisma.crmTask.findMany({
     where: {
@@ -271,7 +277,7 @@ async function loadOutreachDone(opts: {
       actor: { select: { firstName: true, lastName: true } },
     },
     orderBy: { occurredAt: "desc" },
-    take: 2000,
+    take: RELANCES_LIST_TAKE,
   });
 }
 
@@ -864,11 +870,29 @@ export async function RelancesResults({
     );
   }
 
-  const [tasks, dueForKpis] = await Promise.all([
-    loadTasks(assigneeFilter, taskSearchWhere),
-    q ? loadOpenDueAts(assigneeFilter) : Promise.resolve(null),
-  ]);
-  const kpiTasks = dueForKpis ?? tasks;
+  const vueBucket: RelanceDueBucket | "tous" =
+    vue === "retard"
+      ? "overdue"
+      : vue === "aujourdhui"
+        ? "today"
+        : vue === "semaine"
+          ? "week"
+          : vue === "plus-tard"
+            ? "later"
+            : "tous";
+
+  // Séquentiel (pool connection_limit=1) — KPI légers puis liste.
+  const dueForKpis = await loadOpenDueAts(assigneeFilter);
+  // Filtre SQL dueAt si chip actif sans recherche (évite de charger toute la file).
+  const listDueFilter =
+    !q && vueBucket !== "tous"
+      ? dueAtWhereForBucket(vueBucket)
+      : undefined;
+  const tasks = await loadTasks(
+    assigneeFilter,
+    taskSearchWhere,
+    listDueFilter,
+  );
 
   const outreachMap = await outreachCountByOpportunityIds(
     tasks
@@ -887,10 +911,17 @@ export async function RelancesResults({
   });
 
   const now = new Date();
-  const kpiBuckets = partitionRelanceDue(kpiTasks, now);
+  const kpiBuckets = partitionRelanceDue(dueForKpis, now);
   const dueSummary = summarizeRelanceDueBuckets(kpiBuckets);
 
-  const listBuckets = partitionRelanceDue(tasks, now);
+  const listBuckets = listDueFilter
+    ? {
+        overdue: vue === "retard" ? tasks : [],
+        today: vue === "aujourdhui" ? tasks : [],
+        week: vue === "semaine" ? tasks : [],
+        later: vue === "plus-tard" ? tasks : [],
+      }
+    : partitionRelanceDue(tasks, now);
   const overdue = listBuckets.overdue;
   const today = listBuckets.today;
   const thisWeek = listBuckets.week;
@@ -942,7 +973,11 @@ export async function RelancesResults({
     key: "dueAt",
     dir: "asc",
   });
-  const activeList = sortTasks(listByVue[vue], taskSort.key, taskSort.dir);
+  const activeList = sortTasks(
+    listDueFilter ? tasks : listByVue[vue],
+    taskSort.key,
+    taskSort.dir,
+  );
   const listTotal = activeList.length;
   const page = clampPage(requestedPage, listTotal, pageSize);
   const pageTasks = activeList.slice(
@@ -960,13 +995,30 @@ export async function RelancesResults({
   listParams.sort = taskSort.key;
   listParams.dir = taskSort.dir;
 
-  /** Chips = liste filtrée par `q`. KPI = portefeuille (hors q). */
+  /** Chips : avec `q` = file recherchée ; sinon = portefeuille (dueAts légers). */
+  const chipBuckets = q ? partitionRelanceDue(tasks, now) : kpiBuckets;
   const filters: { id: VueFilter; label: string; count: number }[] = [
-    { id: "tous", label: "Toutes", count: tasks.length },
-    { id: "retard", label: "En retard", count: overdue.length },
-    { id: "aujourdhui", label: "Aujourd’hui", count: today.length },
-    { id: "semaine", label: "Sous 7 jours", count: thisWeek.length },
-    { id: "plus-tard", label: "Plus tard", count: later.length },
+    {
+      id: "tous",
+      label: "Toutes",
+      count: q ? tasks.length : dueSummary.open,
+    },
+    { id: "retard", label: "En retard", count: chipBuckets.overdue.length },
+    {
+      id: "aujourdhui",
+      label: "Aujourd’hui",
+      count: chipBuckets.today.length,
+    },
+    {
+      id: "semaine",
+      label: "Sous 7 jours",
+      count: chipBuckets.week.length,
+    },
+    {
+      id: "plus-tard",
+      label: "Plus tard",
+      count: chipBuckets.later.length,
+    },
   ];
 
   const prospectsHref = buildPortfolioProspectsHref({
