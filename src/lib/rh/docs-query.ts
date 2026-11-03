@@ -24,7 +24,13 @@ function legacyTypes(entityType: string): string[] {
 export async function findLatestLinkedDoc(
   entityType: string,
   entityId: string,
-): Promise<{ id: string; originalName: string; createdAt: Date } | null> {
+): Promise<{
+  id: string;
+  originalName: string;
+  createdAt: Date;
+  mime: string;
+  size: number;
+} | null> {
   return prisma.document.findFirst({
     where: {
       status: DocStatus.ACTIVE,
@@ -36,7 +42,13 @@ export async function findLatestLinkedDoc(
       },
     },
     orderBy: { createdAt: "desc" },
-    select: { id: true, originalName: true, createdAt: true },
+    select: {
+      id: true,
+      originalName: true,
+      createdAt: true,
+      mime: true,
+      size: true,
+    },
   });
 }
 

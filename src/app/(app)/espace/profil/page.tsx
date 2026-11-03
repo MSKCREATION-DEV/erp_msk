@@ -11,11 +11,18 @@ import {
   EMPLOYEE_TYPE_LABEL,
   employeeStatusTone,
 } from "@/lib/rh/labels";
-import { maskSensitive } from "@/lib/rh/profile-fields";
+import {
+  maskSensitive,
+  PROFILE_REQUESTABLE_FIELDS,
+} from "@/lib/rh/profile-fields";
+import { readEmployeeField } from "@/lib/rh/profile-apply";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { FormShell } from "@/components/ui/form-shell";
+import { ProfileChangeForm } from "@/components/espace/profile-change-form";
+import { RequestHistoryCard } from "@/components/espace/request-history-card";
 
 export const metadata: Metadata = { title: "Mon profil" };
 
@@ -37,9 +44,19 @@ function ageFrom(birth: Date | null): string | null {
   return age >= 0 ? `${age} ans` : null;
 }
 
+const STATUS_LABEL = {
+  PENDING: "En attente",
+  APPROVED: "Approuvée",
+  REJECTED: "Refusée",
+  CANCELLED: "Annulée",
+} as const;
+
 export default async function EspaceProfilPage() {
   const user = await requireUser();
-  if (!hasPermission(user, "self.profile.edit") && !hasPermission(user, "self.documents.view")) {
+  if (
+    !hasPermission(user, "self.profile.edit") &&
+    !hasPermission(user, "self.documents.view")
+  ) {
     redirect("/espace");
   }
 
@@ -56,15 +73,35 @@ export default async function EspaceProfilPage() {
   });
   if (!employee) redirect("/espace");
 
+  const canEdit = hasPermission(user, "self.profile.edit");
+  const changes = canEdit
+    ? await prisma.rhProfileChangeRequest.findMany({
+        where: { employeeId: employee.id },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+        include: {
+          lines: true,
+          reviewedBy: { select: { firstName: true, lastName: true } },
+        },
+      })
+    : [];
+
+  const empRecord = employee as unknown as Record<string, unknown>;
+  const currentValues: Record<string, string | null> = {};
+  for (const f of PROFILE_REQUESTABLE_FIELDS) {
+    currentValues[f.key] = readEmployeeField(empRecord, f.key);
+  }
+
   const active = employee.contracts[0] ?? null;
   const seniority = formatSeniority(employee.hireDate);
   const age = ageFrom(employee.birthDate);
+  const pending = changes.some((c) => c.status === "PENDING");
 
   return (
     <PageShell>
       <PageHeader
         title="Mon profil"
-        description="Dossier personnel — les modifications passeront par une validation RH."
+        description="Dossier personnel — toute modification passe par une validation RH."
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[
@@ -86,11 +123,73 @@ export default async function EspaceProfilPage() {
           {employee.jobTitle ?? "Poste non renseigné"}
           {employee.department ? ` · ${employee.department}` : ""}
         </p>
-        <p className="mt-3 rounded-lg bg-msk-blue/5 px-3 py-2 text-sm text-msk-ink/70">
-          La demande de modification en ligne arrive dans la prochaine itération.
-          Contactez les RH pour toute correction urgente.
-        </p>
       </Surface>
+
+      {canEdit ? (
+        <FormShell>
+          <div className="mb-5">
+            <h2 className="text-base font-semibold text-msk-ink">
+              Demander une modification
+            </h2>
+            <p className="mt-1 text-sm text-msk-ink/55">
+              Les changements ne sont pas appliqués immédiatement. Les RH
+              comparent ancienne / nouvelle valeur puis approuvent ou refusent.
+            </p>
+          </div>
+          {pending ? (
+            <p className="rounded-lg bg-msk-blue/5 px-3 py-2 text-sm text-msk-ink/70">
+              Une demande est déjà en attente. Vous pourrez en soumettre une
+              nouvelle après la décision RH.
+            </p>
+          ) : (
+            <ProfileChangeForm currentValues={currentValues} />
+          )}
+        </FormShell>
+      ) : null}
+
+      {changes.length > 0 ? (
+        <div className="space-y-3">
+          <h2 className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
+            Historique des demandes
+          </h2>
+          {changes.map((c) => (
+            <RequestHistoryCard
+              key={c.id}
+              title={`${c.lines.length} champ(s)`}
+              subtitle={c.lines
+                .map((l) => {
+                  const label =
+                    PROFILE_REQUESTABLE_FIELDS.find((f) => f.key === l.fieldKey)
+                      ?.label ?? l.fieldKey;
+                  return `${label}: ${l.oldValue ?? "—"} → ${l.newValue || "—"}`;
+                })
+                .join(" · ")}
+              statusLabel={STATUS_LABEL[c.status]}
+              statusTone={
+                c.status === "APPROVED"
+                  ? "success"
+                  : c.status === "REJECTED"
+                    ? "coral"
+                    : c.status === "PENDING"
+                      ? "blue"
+                      : "muted"
+              }
+              submittedAt={c.createdAt}
+              reviewedAt={c.reviewedAt}
+              reviewedBy={
+                c.reviewedBy
+                  ? `${c.reviewedBy.firstName} ${c.reviewedBy.lastName}`
+                  : null
+              }
+              reviewActionLabel={
+                c.status === "REJECTED" ? "Refusé le" : "Approuvé le"
+              }
+              reason={c.note}
+              reviewNote={c.reviewNote}
+            />
+          ))}
+        </div>
+      ) : null}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Surface className="p-5">
@@ -186,10 +285,7 @@ export default async function EspaceProfilPage() {
               label="Tél. urgence"
               value={employee.emergencyContactPhone}
             />
-            <Row
-              label="Lien"
-              value={employee.emergencyContactRelation}
-            />
+            <Row label="Lien" value={employee.emergencyContactRelation} />
             <Row label="Banque" value={employee.bankName} />
             <Row label="Titulaire" value={employee.bankAccountHolder} />
             <Row label="IBAN / RIB" value={maskSensitive(employee.bankIban)} />

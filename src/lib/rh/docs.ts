@@ -21,6 +21,8 @@ export type LinkedRhDoc = {
   id: string;
   originalName: string;
   createdAt: Date;
+  mime: string;
+  size: number;
   kind: RhDocKind;
   label: string;
 };

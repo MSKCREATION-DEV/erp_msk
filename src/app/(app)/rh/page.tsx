@@ -7,6 +7,7 @@ import {
   FileSignature,
   Landmark,
   UserCog,
+  UserRound,
   UsersRound,
   Wallet,
 } from "lucide-react";
@@ -24,18 +25,25 @@ export default async function RhHubPage() {
   const user = await requireUser();
   if (!hasPermission(user, "rh.access")) redirect("/accueil");
 
-  const [activeEmployees, pendingLeaves, declaredAbsences, submittedSheets] =
-    await Promise.all([
-      prisma.rhEmployee.count({ where: { status: "ACTIVE" } }),
-      prisma.rhLeaveRequest.count({ where: { status: "PENDING" } }),
-      prisma.rhAbsence.count({ where: { status: "DECLARED" } }),
-      prisma.rhTimesheet.count({ where: { status: "SUBMITTED" } }),
-    ]);
+  const [
+    activeEmployees,
+    pendingLeaves,
+    declaredAbsences,
+    submittedSheets,
+    pendingProfileChanges,
+  ] = await Promise.all([
+    prisma.rhEmployee.count({ where: { status: "ACTIVE" } }),
+    prisma.rhLeaveRequest.count({ where: { status: "PENDING" } }),
+    prisma.rhAbsence.count({ where: { status: "DECLARED" } }),
+    prisma.rhTimesheet.count({ where: { status: "SUBMITTED" } }),
+    prisma.rhProfileChangeRequest.count({ where: { status: "PENDING" } }),
+  ]);
 
   const canEmployees = hasAnyPermission(user, [
     "rh.employees.view",
     "rh.employees.manage",
   ]);
+  const canProfileReview = hasPermission(user, "rh.employees.manage");
   const canContracts = hasPermission(user, "rh.contracts.manage");
   const canLeave = hasAnyPermission(user, [
     "rh.leave.validate",
@@ -59,6 +67,15 @@ export default async function RhHubPage() {
       label: "Collaborateurs",
       icon: UsersRound,
       desc: "Fiches, statuts, règlement intérieur",
+    },
+    canProfileReview && {
+      href: "/rh/profil-demandes",
+      label: "Demandes profil",
+      icon: UserRound,
+      desc:
+        pendingProfileChanges > 0
+          ? `${pendingProfileChanges} en attente`
+          : "Modifications personnelles à valider",
     },
     canContracts && {
       href: "/rh/contrats",
@@ -132,6 +149,11 @@ export default async function RhHubPage() {
             label: "Heures soumises",
             value: String(submittedSheets),
             hint: "À valider",
+          },
+          {
+            label: "Profils à valider",
+            value: String(pendingProfileChanges),
+            hint: "Demandes collab",
           },
         ]}
       />

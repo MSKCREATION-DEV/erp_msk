@@ -188,13 +188,20 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-03 — Mon espace : workflow profil + preview docs
+
+- **Pourquoi** : modifications perso sans validation ; docs collab sans aperçu in-app.
+- **Quoi** : demande de modif profil (`requestProfileChangeAction`) → file RH `/rh/profil-demandes` (approve/refuse + apply) ; notifs `rh.profile_change.*` ; aperçu GED sur `/espace/documents` ; KPI hub RH « Profils à valider ».
+- **Fichiers** : `actions/rh-profile.ts`, `espace/profil`, `espace/documents`, `rh/profil-demandes`, `espace-docs-list`, `profile-change-*`, `lib/rh/profile-apply*`, `notifications/kinds.ts`.
+- **Statut doc** : profil → `to_validate` ; `espace-conges` reste `to_validate`.
+
 ### 2026-11-03 — Hub Mon espace + historiques congés/absences/contrats
 
 - **Pourquoi** : portail collab trop « grille de raccourcis » ; historiques incomplets ; contrats multi-parcours.
 - **Quoi** : redesign `/espace` ; historiques congés/absences/contrats ; page `/espace/profil` (lecture + masquage sensibles) ; migration additif profil/ledger CP/horaires ; `leave-policy` (L.151/L.148/L.154) ; e-sign hub toujours grisé.
 - **Fichiers** : `espace/**`, `lib/espace/*`, `lib/rh/leave-policy*`, `lib/rh/profile-fields.ts`, `prisma/schema.prisma`, `prisma/migrations/20261103120000_*`, `nav.ts`, `sidebar.tsx`.
-- **Statut doc** : `espace-conges` → `to_validate` ; profil → `draft` (demande de modif pas encore en UI).
-- **Ops** : migration `20261103120000_espace_profile_leave_schedule` à déployer (additif) avant usage des nouveaux champs.
+- **Statut doc** : `espace-conges` → `to_validate` ; profil → `to_validate`.
+- **Ops** : migration `20261103120000_espace_profile_leave_schedule` déployée.
 
 ### 2026-10-28 — Audit responsive ERP (shell + primitives + matrice)
 
