@@ -19,7 +19,8 @@ export type EspaceTimelineKind =
   | "payslip"
   | "document"
   | "contract"
-  | "reglement";
+  | "reglement"
+  | "profile";
 
 export type EspaceTimelineItem = {
   id: string;
@@ -183,6 +184,7 @@ export async function loadEspaceOverview(
     recentAbsences,
     recentTimesheets,
     recentPayslips,
+    recentProfileChanges,
   ] = await Promise.all([
     prisma.rhLeaveRequest.count({
       where: { employeeId: employee.id, status: "PENDING" },
@@ -261,6 +263,18 @@ export async function loadEspaceOverview(
       take: 3,
       include: { period: { select: { year: true, month: true } } },
     }),
+    prisma.rhProfileChangeRequest.findMany({
+      where: { employeeId: employee.id },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+      select: {
+        id: true,
+        status: true,
+        createdAt: true,
+        reviewedAt: true,
+        _count: { select: { lines: true } },
+      },
+    }),
   ]);
 
   const docs = await listEmployeeRhDocs(
@@ -294,7 +308,7 @@ export async function loadEspaceOverview(
     alerts.push({
       id: "absence-declared",
       tone: "coral",
-      message: `${absencesDeclared} absence(s) en attente de qualification RH`,
+      message: `${absencesDeclared} absence(s) en attente de traitement RH`,
       href: "/espace/absences",
     });
   }
@@ -308,6 +322,25 @@ export async function loadEspaceOverview(
   }
 
   const timeline: EspaceTimelineItem[] = [];
+
+  for (const p of recentProfileChanges) {
+    const statusLabel =
+      p.status === "PENDING"
+        ? "en attente"
+        : p.status === "APPROVED"
+          ? "approuvée"
+          : p.status === "REJECTED"
+            ? "refusée"
+            : "annulée";
+    timeline.push({
+      id: `profile-${p.id}`,
+      kind: "profile",
+      title: `Modification de fiche — ${statusLabel}`,
+      detail: `${p._count.lines} champ(s)`,
+      at: p.reviewedAt ?? p.createdAt,
+      href: "/espace/profil",
+    });
+  }
 
   for (const l of recentLeaves) {
     timeline.push({

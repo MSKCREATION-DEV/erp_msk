@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-03 (avatar compress + UX fiche profil) |
+| Dernière mise à jour | 2026-11-03 (espace UX : modal photo, enums, copy) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,12 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-03 — Espace UX : modal photo, enums, activité, copy
+- **Quoi** : modal agrandissement photo ; Sexe Masculin/Féminin + pièce CNI/Passeport ; lecture fiche sans faux inputs ; dégradé bleu charte ; timeline profil dans Activité récente ; Mes heures clarifiées ; purge des libellés techniques (badgeuse V1, coffre-fort…).
+- **Pourquoi** : retours terrain Guiro — incompréhension heures, activité vide, champs trompeurs, jargon interne.
+- **Fichiers** : `avatar-photo-viewer`, `profile-fields`, `profile-editor`, `overview`, `heures/*`, pages espace descriptions, `espace-identity-hero`, `SUIVI`
+- **Statut doc** : guides RH espace → `to_validate` / relecture copy
 
 ### 2026-11-03 — Avatar photo : 413 + pending + fiche redesign
 - **Quoi** : compression client (carré JPEG ~800 px), `serverActions.bodySizeLimit` 3 Mo, overlay pending + messages erreur/succès sur upload ; redesign hero/stats/tuiles fiche `/espace/profil`.

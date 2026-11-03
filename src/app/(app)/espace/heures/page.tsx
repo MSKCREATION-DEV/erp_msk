@@ -91,6 +91,8 @@ export default async function EspaceHeuresPage() {
     (s, x) => s + x.totalMinutes,
     0,
   );
+  const hasDeclaration = Boolean(currentWeek);
+  const nothingDeclared = !hasDeclaration || decl === 0;
 
   const marks = [
     ...[...holidays].map((dateKey) => ({
@@ -112,11 +114,15 @@ export default async function EspaceHeuresPage() {
       })),
   ];
 
+  const statusLabel = currentWeek
+    ? TIMESHEET_STATUS_LABEL[currentWeek.status]
+    : "À saisir";
+
   return (
     <PageShell>
       <PageHeader
         title="Mes heures"
-        description="Suivi théorique vs déclaré — sans badgeuse V1."
+        description="Déclarez vos heures chaque semaine et suivez leur validation."
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[
@@ -143,29 +149,31 @@ export default async function EspaceHeuresPage() {
           <KpiGrid
             items={[
               {
-                label: "Théorique (semaine)",
+                label: "Horaire prévu",
                 value: formatMinutes(theo),
-                hint: schedule.label,
+                hint: `Cette semaine · ${schedule.label}`,
               },
               {
-                label: "Déclaré (semaine)",
-                value: formatMinutes(decl),
-                hint: currentWeek
-                  ? TIMESHEET_STATUS_LABEL[currentWeek.status]
-                  : "Non saisi",
+                label: "Heures saisies",
+                value: nothingDeclared ? "—" : formatMinutes(decl),
+                hint: nothingDeclared ? "Pas encore déclaré" : statusLabel,
               },
               {
-                label: "Écart",
-                value:
-                  decl - theo > 0
-                    ? `+${formatMinutes(decl - theo)}`
-                    : formatMinutes(decl - theo),
-                hint: "Déclaré − théorique",
+                label: "Statut",
+                value: statusLabel,
+                hint: nothingDeclared
+                  ? "À compléter"
+                  : currentWeek?.status === "APPROVED"
+                    ? "Validé par les RH"
+                    : "Suivi RH",
               },
               {
-                label: "Validé (historique)",
+                label: "Heures validées",
                 value: formatMinutes(validatedMinutes),
-                hint: `${approvedSheets.length} feuille(s)`,
+                hint:
+                  approvedSheets.length > 0
+                    ? `${approvedSheets.length} semaine(s)`
+                    : "Aucune pour l’instant",
               },
             ]}
           />
@@ -176,23 +184,27 @@ export default async function EspaceHeuresPage() {
                 scheduleLabel={schedule.label}
                 weeklyHours={schedule.weeklyHours}
                 days={compare}
+                hasDeclaration={hasDeclaration}
               />
             </div>
             <Surface className="p-5 lg:col-span-5">
-              <h2 className="mb-3 text-sm font-semibold text-msk-ink">
-                Calendrier du mois
+              <h2 className="mb-1 text-sm font-semibold text-msk-ink">
+                Ce mois-ci
               </h2>
+              <p className="mb-3 text-xs text-msk-ink/50">
+                Jours fériés et jours déjà saisis.
+              </p>
               <MonthCalendar marks={marks} />
             </Surface>
           </div>
 
           <div className="space-y-3">
             <h2 className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
-              Historique des feuilles
+              Mes semaines déclarées
             </h2>
             {sheets.length === 0 ? (
               <Surface className="p-6 text-sm text-msk-ink/50">
-                Aucune feuille —{" "}
+                Aucune déclaration pour le moment —{" "}
                 <Link
                   prefetch={false}
                   href="/espace/heures/nouvelle-semaine"

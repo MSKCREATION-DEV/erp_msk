@@ -8,9 +8,9 @@ import {
   uploadAvatarAction,
 } from "@/actions/rh-avatar";
 import { compressAvatarImage } from "@/lib/espace/compress-image";
+import { AvatarPhotoViewer } from "@/components/espace/avatar-photo-viewer";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
-import { cn } from "@/lib/utils";
 
 function friendlyUploadError(err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err ?? "");
@@ -39,6 +39,7 @@ export function AvatarUpload({
   const [phase, setPhase] = useState<"idle" | "compress" | "upload">("idle");
 
   const box = size === "lg" ? "h-28 w-28 sm:h-32 sm:w-32" : "h-20 w-20";
+  const displayUrl = preview ?? avatarUrl;
 
   function onFile(file: File | undefined) {
     if (!file) return;
@@ -89,24 +90,12 @@ export function AvatarUpload({
   return (
     <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-end">
       <div className="relative">
-        <div
-          className={cn(
-            "flex items-center justify-center overflow-hidden rounded-2xl bg-msk-ink text-2xl font-semibold text-white shadow-md ring-4 ring-white",
-            box,
-            pending && "opacity-70",
-          )}
-        >
-          {preview || avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={preview ?? avatarUrl!}
-              alt=""
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <span aria-hidden>{initials}</span>
-          )}
-        </div>
+        <AvatarPhotoViewer
+          avatarUrl={displayUrl}
+          initials={initials}
+          sizeClassName={box}
+          className={pending ? "opacity-70" : undefined}
+        />
         {pending ? (
           <div
             className="absolute inset-0 flex items-center justify-center rounded-2xl bg-msk-ink/50"
@@ -185,8 +174,8 @@ export function AvatarUpload({
           ) : null}
         </div>
         <p className="max-w-xs text-xs text-msk-ink/45">
-          JPEG, PNG ou WebP. Compression automatique (carré ~800 px). Mise à
-          jour immédiate — sans validation RH.
+          Cliquez la photo pour l’agrandir. JPEG, PNG ou WebP — compression
+          automatique. Mise à jour immédiate.
         </p>
         {error ? (
           <p className="text-sm font-medium text-msk-coral" role="alert">

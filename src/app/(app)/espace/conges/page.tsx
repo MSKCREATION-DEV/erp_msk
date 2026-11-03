@@ -114,7 +114,7 @@ export default async function EspaceCongesPage() {
     <PageShell>
       <PageHeader
         title="Mes congés"
-        description="Solde, calendrier, mouvements et historique des demandes."
+        description="Consultez votre solde, posez une demande et suivez son statut."
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[
@@ -149,7 +149,7 @@ export default async function EspaceCongesPage() {
               {
                 label: "Jours acquis",
                 value: formatLeaveDays(accrued),
-                hint: "Mouvements acquisition",
+                hint: "Cumul acquis",
               },
               {
                 label: "Jours consommés",
@@ -192,7 +192,7 @@ export default async function EspaceCongesPage() {
 
             <div className="space-y-3 lg:col-span-7">
               <h2 className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
-                Mouvements de solde
+                Historique du solde
               </h2>
               <LeaveMovementsList
                 movements={movements.map((m) => ({

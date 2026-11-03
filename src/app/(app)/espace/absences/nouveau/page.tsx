@@ -24,7 +24,7 @@ export default async function EspaceAbsencesNouveauPage() {
     <PageShell>
       <PageHeader
         title="Déclarer une absence"
-        description="Cette déclaration n’est pas un congé. Les RH qualifieront le motif."
+        description="Indiquez les dates — ce n’est pas une demande de congés."
         backHref="/espace/absences"
         backLabel="Retour aux absences"
         breadcrumbs={[

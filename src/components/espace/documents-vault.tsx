@@ -175,11 +175,11 @@ function DocTable({
         ))}
       </ul>
       <p className="border-t border-msk-ink/6 px-4 py-2 text-xs text-msk-ink/40">
-        Source GED —{" "}
+        Besoin d’un autre document ?{" "}
         <Link prefetch={false} href="/ged" className="text-msk-blue hover:underline">
-          ouvrir la GED
-        </Link>{" "}
-        si autorisé.
+          Parcourir les fichiers
+        </Link>
+        .
       </p>
     </Surface>
   );

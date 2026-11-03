@@ -6,6 +6,8 @@ import { requestProfileChangeAction } from "@/actions/rh-profile";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import {
   PROFILE_REQUESTABLE_FIELDS,
+  coerceProfileOptionValue,
+  formatProfileDisplayValue,
   type ProfileFieldMeta,
 } from "@/lib/rh/profile-fields";
 import { FieldLabel } from "@/components/ui/field-label";
@@ -13,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { FormShell } from "@/components/ui/form-shell";
+import { cn } from "@/lib/utils";
 
 const GROUPS: Array<{ id: ProfileFieldMeta["group"]; label: string }> = [
   { id: "civil", label: "Identité" },
@@ -23,6 +26,9 @@ const GROUPS: Array<{ id: ProfileFieldMeta["group"]; label: string }> = [
 ];
 
 const DATE_KEYS = new Set(["birthDate", "idIssuedOn", "idExpiresOn"]);
+
+const selectClassName =
+  "h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3.5 text-sm text-msk-ink shadow-sm transition focus:border-msk-blue focus:outline-none focus:ring-2 focus:ring-msk-blue/20 disabled:opacity-50";
 
 export function ProfileEditor({
   currentValues,
@@ -45,7 +51,8 @@ export function ProfileEditor({
   const initialDraft = useMemo(() => {
     const d: Record<string, string> = {};
     for (const f of PROFILE_REQUESTABLE_FIELDS) {
-      d[f.key] = currentValues[f.key] ?? "";
+      const raw = currentValues[f.key] ?? "";
+      d[f.key] = f.options ? coerceProfileOptionValue(f, raw) : raw;
     }
     return d;
   }, [currentValues]);
@@ -67,10 +74,15 @@ export function ProfileEditor({
   function submit() {
     setError(null);
     setOkMsg(null);
-    const lines = PROFILE_REQUESTABLE_FIELDS.map((f) => ({
-      fieldKey: f.key,
-      newValue: (draft[f.key] ?? "").trim(),
-    })).filter((l) => (currentValues[l.fieldKey] ?? "") !== l.newValue);
+    const lines = PROFILE_REQUESTABLE_FIELDS.map((f) => {
+      const newValue = (draft[f.key] ?? "").trim();
+      const current = f.options
+        ? coerceProfileOptionValue(f, currentValues[f.key])
+        : (currentValues[f.key] ?? "");
+      return { fieldKey: f.key, newValue, current };
+    })
+      .filter((l) => l.current !== l.newValue)
+      .map(({ fieldKey, newValue }) => ({ fieldKey, newValue }));
 
     if (lines.length === 0) {
       setError("Aucun changement détecté");
@@ -87,7 +99,7 @@ export function ProfileEditor({
           setError(res.error ?? "Échec");
           return;
         }
-        setOkMsg("Modifications enregistrées — en attente de validation RH.");
+        setOkMsg("Demande envoyée — les RH valideront vos modifications.");
         setEditing(false);
         setNote("");
         router.refresh();
@@ -111,7 +123,7 @@ export function ProfileEditor({
               Annuler
             </Button>
             <Button type="button" disabled={pending} onClick={submit}>
-              {pending ? "Enregistrement…" : "Enregistrer pour validation RH"}
+              {pending ? "Envoi…" : "Envoyer pour validation RH"}
             </Button>
           </div>
         ) : undefined
@@ -123,8 +135,8 @@ export function ProfileEditor({
             Informations personnelles
           </h2>
           <p className="mt-1 max-w-2xl text-sm text-msk-ink/55">
-            Modifiez plusieurs champs puis enregistrez. Les données officielles
-            ne changent qu&apos;après validation RH.
+            Vos données officielles. Pour les modifier, utilisez « Modifier »
+            puis envoyez une demande aux RH.
           </p>
         </div>
         {!editing && !hasOpenPending ? (
@@ -134,7 +146,7 @@ export function ProfileEditor({
         ) : null}
         {hasOpenPending && !editing ? (
           <span className="inline-flex items-center rounded-full bg-msk-blue/10 px-3 py-1 text-xs font-semibold text-msk-blue">
-            En attente de validation RH
+            Demande en attente de validation
           </span>
         ) : null}
       </div>
@@ -143,32 +155,75 @@ export function ProfileEditor({
         const fields = PROFILE_REQUESTABLE_FIELDS.filter((f) => f.group === g.id);
         return (
           <section key={g.id} className="mb-8 last:mb-0">
-            <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
+            <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
               {g.label}
             </h3>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              className={cn(
+                "grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3",
+                !editing && "sm:gap-y-6",
+              )}
+            >
               {fields.map((f) => {
                 const pendingVal = pendingByField[f.key];
                 const official = currentValues[f.key] ?? "";
+                const display = formatProfileDisplayValue(f, official);
+                const pendingDisplay =
+                  pendingVal != null
+                    ? formatProfileDisplayValue(f, pendingVal)
+                    : null;
+
                 return (
-                  <div key={f.key}>
-                    <FieldLabel htmlFor={`pf-${f.key}`}>{f.label}</FieldLabel>
+                  <div key={f.key} className="min-w-0">
                     {editing ? (
-                      <Input
-                        id={`pf-${f.key}`}
-                        type={DATE_KEYS.has(f.key) ? "date" : "text"}
-                        value={draft[f.key] ?? ""}
-                        disabled={pending}
-                        onChange={(e) =>
-                          setDraft((d) => ({ ...d, [f.key]: e.target.value }))
-                        }
-                      />
+                      <>
+                        <FieldLabel htmlFor={`pf-${f.key}`}>{f.label}</FieldLabel>
+                        {f.options ? (
+                          <select
+                            id={`pf-${f.key}`}
+                            className={selectClassName}
+                            value={draft[f.key] ?? ""}
+                            disabled={pending}
+                            onChange={(e) =>
+                              setDraft((d) => ({
+                                ...d,
+                                [f.key]: e.target.value,
+                              }))
+                            }
+                          >
+                            <option value="">— Choisir —</option>
+                            {f.options.map((o) => (
+                              <option key={o.value} value={o.value}>
+                                {o.label}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <Input
+                            id={`pf-${f.key}`}
+                            type={DATE_KEYS.has(f.key) ? "date" : "text"}
+                            value={draft[f.key] ?? ""}
+                            disabled={pending}
+                            onChange={(e) =>
+                              setDraft((d) => ({
+                                ...d,
+                                [f.key]: e.target.value,
+                              }))
+                            }
+                          />
+                        )}
+                      </>
                     ) : (
-                      <div className="rounded-lg border border-msk-ink/10 bg-msk-chalk/40 px-3 py-2.5 text-sm text-msk-ink">
-                        <span>{official || "—"}</span>
-                        {pendingVal != null ? (
-                          <p className="mt-1 text-xs font-medium text-msk-blue">
-                            Proposition : {pendingVal || "(vide)"}
+                      <div className="space-y-1">
+                        <p className="text-[11px] font-medium text-msk-ink/45">
+                          {f.label}
+                        </p>
+                        <p className="text-sm font-medium text-msk-ink">
+                          {display}
+                        </p>
+                        {pendingDisplay != null ? (
+                          <p className="text-xs font-medium text-msk-blue">
+                            Proposition : {pendingDisplay || "(vide)"}
                           </p>
                         ) : null}
                       </div>
@@ -189,7 +244,7 @@ export function ProfileEditor({
             value={note}
             disabled={pending}
             rows={2}
-            placeholder="Contexte pour la validation RH"
+            placeholder="Précision utile pour les RH"
             onChange={(e) => setNote(e.target.value)}
           />
         </div>

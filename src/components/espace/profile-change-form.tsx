@@ -112,21 +112,39 @@ export function ProfileChangeForm({
         <FieldLabel htmlFor="profile-new" required>
           Nouvelle valeur
         </FieldLabel>
-        <Input
-          id="profile-new"
-          value={newValue}
-          disabled={pending}
-          type={DATE_KEYS.has(fieldKey) ? "date" : "text"}
-          placeholder={
-            DATE_KEYS.has(fieldKey)
-              ? "AAAA-MM-JJ"
-              : meta?.sensitive
-                ? "Nouvelle valeur (sera masquée après enregistrement)"
-                : "Ex. nouvelle adresse, téléphone…"
-          }
-          onChange={(e) => setNewValue(e.target.value)}
-          required
-        />
+        {meta?.options?.length ? (
+          <select
+            id="profile-new"
+            className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm text-msk-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40"
+            value={newValue}
+            disabled={pending}
+            required
+            onChange={(e) => setNewValue(e.target.value)}
+          >
+            <option value="">— Choisir —</option>
+            {meta.options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <Input
+            id="profile-new"
+            value={newValue}
+            disabled={pending}
+            type={DATE_KEYS.has(fieldKey) ? "date" : "text"}
+            placeholder={
+              DATE_KEYS.has(fieldKey)
+                ? "AAAA-MM-JJ"
+                : meta?.sensitive
+                  ? "Nouvelle valeur (sera masquée après enregistrement)"
+                  : "Ex. nouvelle adresse, téléphone…"
+            }
+            onChange={(e) => setNewValue(e.target.value)}
+            required
+          />
+        )}
         {meta?.evidence === "required" ? (
           <p className="mt-1.5 text-xs text-msk-ink/45">
             Un justificatif pourra être demandé par les RH (pièce d’identité,

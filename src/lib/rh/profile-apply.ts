@@ -1,5 +1,8 @@
 import type { Prisma } from "@prisma/client";
-import { PROFILE_REQUESTABLE_KEYS } from "@/lib/rh/profile-fields";
+import {
+  PROFILE_REQUESTABLE_FIELDS,
+  PROFILE_REQUESTABLE_KEYS,
+} from "@/lib/rh/profile-fields";
 
 const DATE_KEYS = new Set([
   "birthDate",
@@ -46,6 +49,19 @@ export function parseProfileFieldValue(
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
       return { ok: false, error: "E-mail invalide" };
     }
+  }
+  const meta = PROFILE_REQUESTABLE_FIELDS.find((f) => f.key === fieldKey);
+  if (meta?.options?.length) {
+    const allowed = meta.options.find(
+      (o) => o.value.toLowerCase() === trimmed.toLowerCase(),
+    );
+    if (!allowed) {
+      return {
+        ok: false,
+        error: `${meta.label} : choisissez ${meta.options.map((o) => o.label).join(" ou ")}`,
+      };
+    }
+    return { ok: true, value: allowed.value };
   }
   if (trimmed.length > 500) {
     return { ok: false, error: "Valeur trop longue" };

@@ -175,9 +175,9 @@ export default async function EspaceHubPage() {
             hint: "Congés",
           },
           {
-            label: "Absences à qualifier",
+            label: "Absences en attente",
             value: String(kpis.absencesDeclared),
-            hint: "Déclarées",
+            hint: "Traitement RH",
           },
           {
             label: "Dernier bulletin",

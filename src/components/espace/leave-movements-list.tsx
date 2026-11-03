@@ -19,8 +19,8 @@ export function LeaveMovementsList({
   if (movements.length === 0) {
     return (
       <Surface className="p-6 text-sm text-msk-ink/50">
-        Aucun mouvement de solde pour l&apos;instant. L&apos;acquisition
-        mensuelle (+2,5 j) et les congés approuvés apparaîtront ici.
+        Aucune variation de solde pour l&apos;instant. Les jours acquis chaque
+        mois et les congés validés apparaîtront ici.
       </Surface>
     );
   }

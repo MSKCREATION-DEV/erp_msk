@@ -31,9 +31,9 @@ import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ProfileEditor } from "@/components/espace/profile-editor";
 import { AvatarUpload } from "@/components/espace/avatar-upload";
+import { AvatarPhotoViewer } from "@/components/espace/avatar-photo-viewer";
 import { RequestHistoryCard } from "@/components/espace/request-history-card";
 import { signedGedUrl } from "@/lib/ged/storage";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Ma fiche personnelle" };
 
@@ -201,7 +201,7 @@ export default async function EspaceProfilPage() {
     <PageShell>
       <PageHeader
         title="Ma fiche personnelle"
-        description="Dossier RH numérique — identité, photo, coordonnées et situation."
+        description="Identité, photo, coordonnées et situation professionnelle."
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[
@@ -212,20 +212,7 @@ export default async function EspaceProfilPage() {
 
       {/* Hero identité */}
       <Surface className="overflow-hidden p-0">
-        <div
-          className={cn(
-            "relative border-b border-msk-ink/6",
-            "bg-[linear-gradient(135deg,rgba(29,115,188,0.12)_0%,rgba(245,243,239,0.9)_42%,rgba(0,172,238,0.1)_100%)]",
-          )}
-        >
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.35]"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 12% 20%, rgba(29,115,188,0.18), transparent 42%), radial-gradient(circle at 88% 10%, rgba(0,172,238,0.16), transparent 38%)",
-            }}
-            aria-hidden
-          />
+        <div className="relative border-b border-msk-ink/6 bg-[linear-gradient(135deg,rgba(42,61,142,0.14)_0%,rgba(29,115,188,0.1)_45%,rgba(29,115,188,0.04)_100%)]">
           <div className="relative px-5 py-7 sm:px-8 sm:py-8">
             <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
@@ -236,18 +223,13 @@ export default async function EspaceProfilPage() {
                     size="lg"
                   />
                 ) : (
-                  <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl bg-msk-ink text-2xl font-semibold text-white shadow-md ring-4 ring-white sm:h-32 sm:w-32">
-                    {avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={avatarUrl}
-                        alt=""
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <span aria-hidden>{initials}</span>
-                    )}
-                  </div>
+                  <AvatarPhotoViewer
+                    avatarUrl={avatarUrl}
+                    initials={initials}
+                    alt={`${employee.firstName} ${employee.lastName}`}
+                    sizeClassName="h-28 w-28 sm:h-32 sm:w-32"
+                    className="shadow-md ring-4 ring-white text-2xl"
+                  />
                 )}
                 <div className="min-w-0 space-y-2.5">
                   <p className="text-[11px] font-semibold uppercase tracking-caps text-msk-blue">

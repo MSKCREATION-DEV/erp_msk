@@ -27,7 +27,7 @@ export default async function EspaceHeuresNouvellePage() {
     <PageShell>
       <PageHeader
         title="Saisir une semaine"
-        description={`Référence ${schedule.label} — ${schedule.weeklyHours} h / semaine (${schedule.startTime}–${schedule.endTime}, pause ${schedule.breakStart}–${schedule.breakEnd}).`}
+        description={`Horaire prévu : ${schedule.weeklyHours} h / semaine (${schedule.startTime}–${schedule.endTime}, pause ${schedule.breakStart}–${schedule.breakEnd}).`}
         backHref="/espace/heures"
         backLabel="Retour aux heures"
         breadcrumbs={[

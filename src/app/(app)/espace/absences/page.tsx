@@ -45,7 +45,7 @@ export default async function EspaceAbsencesPage() {
     <PageShell>
       <PageHeader
         title="Mes absences"
-        description="Déclarations distinctes des congés — qualification par les RH."
+        description="Signalez une absence (maladie, imprévu…). Les RH traiteront ensuite."
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[

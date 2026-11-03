@@ -48,7 +48,7 @@ export default async function EspaceDocumentsPage() {
     <PageShell>
       <PageHeader
         title="Mes documents"
-        description="Coffre-fort RH — contrats, bulletins, règlement et pièces liées."
+        description="Vos contrats, bulletins de paie, règlement et pièces jointes."
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[

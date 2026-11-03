@@ -25,7 +25,7 @@ export default async function EspaceCongesNouveauPage() {
     <PageShell>
       <PageHeader
         title="Nouvelle demande de congé"
-        description={`Solde actuel : ${formatLeaveDays(Number(employee.leaveBalanceDays))}. Consommation après validation RH.`}
+        description={`Solde disponible : ${formatLeaveDays(Number(employee.leaveBalanceDays))}. Décompté après validation RH.`}
         backHref="/espace/conges"
         backLabel="Retour aux congés"
         breadcrumbs={[
