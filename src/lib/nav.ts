@@ -25,6 +25,8 @@ export type NavItem = {
   label: string;
   icon: LucideIcon;
   permission?: string;
+  /** Visible si l’utilisateur a au moins une de ces permissions (prioritaire sur `permission`). */
+  anyOfPermissions?: string[];
   /** Module non livré : pas de navigation, pas d’état actif. */
   soon?: boolean;
   /** Préfixes additionnels pour l’état actif (ex. Commercial couvre /crm, /catalogue). */
@@ -180,12 +182,19 @@ export const NAV_GROUPS: NavGroup[] = [
         href: "/espace",
         label: "Mon espace",
         icon: UserRound,
-        permission: "self.leave.request",
+        anyOfPermissions: [
+          "self.leave.request",
+          "self.absence.submit",
+          "self.timesheet.submit",
+          "self.documents.view",
+          "self.payslip.view",
+          "self.profile.edit",
+        ],
       },
       {
         id: "ma-signature",
         href: "/profil/signature",
-        label: "Ma signature",
+        label: "Ma signature (image)",
         icon: UserRound,
         permission: "self.signature.manage",
       },

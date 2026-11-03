@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-10-28 (audit responsive ERP) |
+| Dernière mise à jour | 2026-11-03 (hub Mon espace redesign) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,14 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-03 — Hub Mon espace + historiques congés/absences/contrats
+
+- **Pourquoi** : portail collab trop « grille de raccourcis » ; historiques incomplets ; contrats multi-parcours.
+- **Quoi** : redesign `/espace` ; historiques congés/absences/contrats ; page `/espace/profil` (lecture + masquage sensibles) ; migration additif profil/ledger CP/horaires ; `leave-policy` (L.151/L.148/L.154) ; e-sign hub toujours grisé.
+- **Fichiers** : `espace/**`, `lib/espace/*`, `lib/rh/leave-policy*`, `lib/rh/profile-fields.ts`, `prisma/schema.prisma`, `prisma/migrations/20261103120000_*`, `nav.ts`, `sidebar.tsx`.
+- **Statut doc** : `espace-conges` → `to_validate` ; profil → `draft` (demande de modif pas encore en UI).
+- **Ops** : migration `20261103120000_espace_profile_leave_schedule` à déployer (additif) avant usage des nouveaux champs.
 
 ### 2026-10-28 — Audit responsive ERP (shell + primitives + matrice)
 

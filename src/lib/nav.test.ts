@@ -57,6 +57,11 @@ assert.equal(isNavActive("/rh/collaborateurs", rh, live), true);
 
 const monEspace = live.find((i) => i.id === "espace" || i.id === "mon-espace");
 assert.ok(monEspace, "Mon espace live");
+assert.ok(
+  Array.isArray(monEspace!.anyOfPermissions) &&
+    monEspace!.anyOfPermissions!.length > 0,
+  "Mon espace visible via anyOfPermissions self.*",
+);
 
 assert.equal(isNavActive("/profil/signature", maSig, live), true);
 

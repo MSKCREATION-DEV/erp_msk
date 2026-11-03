@@ -276,6 +276,9 @@ model User {
   rhTimesheetsValidated RhTimesheet[]  @relation("RhTimesheetValidator")
   rhPayrollOpened     RhPayrollPeriod[] @relation("RhPayrollOpener")
   rhPayrollApproved   RhPayrollPeriod[] @relation("RhPayrollApprover")
+  rhProfileChangesRequested RhProfileChangeRequest[] @relation("RhProfileChangeRequester")
+  rhProfileChangesReviewed  RhProfileChangeRequest[] @relation("RhProfileChangeReviewer")
+  rhLeaveMovementsCreated   RhLeaveMovement[]        @relation("RhLeaveMovementCreator")
   stkArticlesCreated  StkArticle[]      @relation("StkArticleCreator")
   stkMovementsCreated StkMovement[]     @relation("StkMovementCreator")
   stkPurchasesCreated StkPurchase[]     @relation("StkPurchaseCreator")
@@ -1416,31 +1419,168 @@ model RhEmployee {
   userId           String?           @unique @db.Uuid
   firstName        String
   lastName         String
+  /// Nom de naissance (si distinct).
+  birthName        String?
   email            String?
   phone            String?
+  personalEmail    String?
+  personalPhone    String?
   jobTitle         String?
+  department       String?
+  workLocation     String?
+  employeeCode     String?
   employeeType     RhEmployeeType    @default(SALARIE)
   status           RhEmployeeStatus  @default(ACTIVE)
   hireDate         DateTime?         @db.Date
   endDate          DateTime?         @db.Date
+  birthDate        DateTime?         @db.Date
+  birthPlace       String?
+  nationality      String?
+  gender           String?
+  idDocumentType   String?
+  idDocumentNumber String?
+  idIssuedOn       DateTime?         @db.Date
+  idExpiresOn      DateTime?         @db.Date
+  idIssuedBy       String?
+  addressLine1     String?
+  addressLine2     String?
+  city             String?
+  region           String?
+  postalCode       String?
+  country          String?           @default("Mali")
+  emergencyContact String?
+  emergencyContactName     String?
+  emergencyContactPhone    String?
+  emergencyContactRelation String?
+  bankName         String?
+  bankAccountHolder String?
+  /// IBAN / RIB — accès masqué côté UI collab.
+  bankIban         String?
+  managerEmployeeId String?
   leaveBalanceDays Decimal           @default(0) @db.Decimal(6, 2)
   reglementStatus  RhReglementStatus @default(PENDING)
   reglementSignedAt DateTime?
-  emergencyContact String?
   notes            String?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
   user       User?            @relation("RhEmployeeUser", fields: [userId], references: [id], onDelete: SetNull)
+  manager    RhEmployee?      @relation("RhEmployeeManager", fields: [managerEmployeeId], references: [id], onDelete: SetNull)
+  reports    RhEmployee[]     @relation("RhEmployeeManager")
   contracts  RhContract[]
   leaves     RhLeaveRequest[]
   absences   RhAbsence[]
   timesheets RhTimesheet[]
   payslips   RhPayslip[]
   inpsLines  RhInpsLine[]
+  profileChanges RhProfileChangeRequest[]
+  leaveMovements RhLeaveMovement[]
 
   @@index([status, lastName])
+  @@index([managerEmployeeId])
   @@map("rh_employees")
+}
+
+enum RhProfileChangeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model RhProfileChangeRequest {
+  id           String                 @id @default(cuid())
+  employeeId   String
+  requesterId  String                 @db.Uuid
+  status       RhProfileChangeStatus  @default(PENDING)
+  note         String?
+  gedDocumentId String?
+  reviewedById String?                @db.Uuid
+  reviewedAt   DateTime?
+  reviewNote   String?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  employee   RhEmployee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  requester  User       @relation("RhProfileChangeRequester", fields: [requesterId], references: [id])
+  reviewedBy User?      @relation("RhProfileChangeReviewer", fields: [reviewedById], references: [id])
+  lines      RhProfileChangeLine[]
+
+  @@index([employeeId, status])
+  @@index([status, createdAt])
+  @@map("rh_profile_change_requests")
+}
+
+model RhProfileChangeLine {
+  id        String @id @default(cuid())
+  requestId String
+  fieldKey  String
+  oldValue  String?
+  newValue  String
+
+  request RhProfileChangeRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId])
+  @@map("rh_profile_change_lines")
+}
+
+enum RhLeaveMovementType {
+  OPENING_BALANCE
+  ACCRUAL
+  CONSUMPTION
+  ADJUSTMENT
+  CANCEL
+  SENIORITY_BONUS
+}
+
+model RhLeaveMovement {
+  id            String               @id @default(cuid())
+  employeeId    String
+  type          RhLeaveMovementType
+  days          Decimal              @db.Decimal(6, 2)
+  effectiveDate DateTime             @db.Date
+  sourceType    String?
+  sourceId      String?
+  note          String?
+  createdById   String?              @db.Uuid
+  createdAt     DateTime             @default(now())
+
+  employee  RhEmployee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  createdBy User?      @relation("RhLeaveMovementCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([employeeId, effectiveDate])
+  @@index([sourceType, sourceId])
+  @@map("rh_leave_movements")
+}
+
+model RhWorkSchedule {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  label       String
+  weeklyHours Int      @default(40)
+  /// Jours ISO 1=lundi … 7=dimanche, JSON number[].
+  workDaysJson String  @default("[1,2,3,4,5]")
+  startTime   String   @default("08:00")
+  endTime     String   @default("17:00")
+  breakStart  String   @default("13:00")
+  breakEnd    String   @default("14:00")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("rh_work_schedules")
+}
+
+model RhPublicHoliday {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  label     String
+  year      Int
+  createdAt DateTime @default(now())
+
+  @@unique([date])
+  @@index([year])
+  @@map("rh_public_holidays")
 }
 
 model RhContract {

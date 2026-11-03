@@ -4,8 +4,22 @@ import { SidebarNav } from "@/components/app/sidebar-nav";
 import { LogoutButton } from "@/components/app/logout-button";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { NAV_GROUPS } from "@/lib/nav";
-import { hasPermission, type SessionUser } from "@/lib/rbac/resolve";
+import {
+  hasAnyPermission,
+  hasPermission,
+  type SessionUser,
+} from "@/lib/rbac/resolve";
 import { cn } from "@/lib/utils";
+
+function canSeeNavItem(
+  user: SessionUser,
+  item: { permission?: string; anyOfPermissions?: string[] },
+): boolean {
+  if (item.anyOfPermissions?.length) {
+    return hasAnyPermission(user, item.anyOfPermissions);
+  }
+  return !item.permission || hasPermission(user, item.permission);
+}
 
 export function Sidebar({
   user,
@@ -19,7 +33,7 @@ export function Sidebar({
 }) {
   const allowedIds = NAV_GROUPS.flatMap((g) =>
     g.items
-      .filter((item) => !item.permission || hasPermission(user, item.permission))
+      .filter((item) => canSeeNavItem(user, item))
       .map((item) => item.id),
   );
 
