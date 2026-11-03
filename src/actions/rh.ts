@@ -488,6 +488,56 @@ export async function declareAbsenceAction(
   const end = new Date(parsed.data.endDate);
   if (end < start) return { ok: false, error: "Dates invalides" };
 
+  let gedDocumentId: string | null = null;
+  const file = formData.get("justificatif");
+  if (file instanceof File && file.size > 0) {
+    const allowed = new Set([
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ]);
+    if (!allowed.has(file.type)) {
+      return { ok: false, error: "Justificatif : PDF, JPEG, PNG ou WebP" };
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return { ok: false, error: "Justificatif trop lourd (max 5 Mo)" };
+    }
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const ext =
+      file.type === "application/pdf"
+        ? "pdf"
+        : file.type === "image/png"
+          ? "png"
+          : file.type === "image/webp"
+            ? "webp"
+            : "jpg";
+    const folder = await ensureCollaboratorSubfolder(
+      emp.firstName,
+      emp.lastName,
+      "01_IDENTITE_ADMIN",
+      new Date().getFullYear(),
+      user.id,
+    );
+    const fileName = `absence-${Date.now()}.${ext}`;
+    const storagePath = `${folder.path.replace(/^\//, "")}/${fileName}`;
+    await uploadGedObject(storagePath, bytes, file.type, { upsert: true });
+    const checksum = createHash("sha256").update(bytes).digest("hex");
+    const doc = await prisma.document.create({
+      data: {
+        folderId: folder.id,
+        storagePath,
+        originalName: file.name.slice(0, 180) || fileName,
+        mime: file.type,
+        size: bytes.byteLength,
+        checksum,
+        status: DocStatus.ACTIVE,
+        createdById: user.id,
+      },
+    });
+    gedDocumentId = doc.id;
+  }
+
   const absence = await prisma.rhAbsence.create({
     data: {
       employeeId: emp.id,
@@ -496,6 +546,7 @@ export async function declareAbsenceAction(
       endDate: end,
       reason: parsed.data.reason,
       status: "DECLARED",
+      gedDocumentId,
     },
   });
 

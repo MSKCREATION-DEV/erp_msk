@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -6,7 +7,6 @@ import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
-import { FormShell } from "@/components/ui/form-shell";
 import { Badge } from "@/components/ui/badge";
 import { KpiGrid } from "@/components/ui/kpi-card";
 import {
@@ -14,13 +14,13 @@ import {
   formatMinutes,
   timesheetStatusTone,
 } from "@/lib/rh/labels";
-import { TimesheetForm } from "@/components/rh/timesheet-form";
 import { HoursWeekCompare } from "@/components/espace/hours-week-compare";
 import {
   getDefaultWorkSchedule,
   getHolidayDateKeys,
 } from "@/lib/rh/work-schedule-db";
 import { compareWeekHours } from "@/lib/rh/work-schedule";
+import { MonthCalendar } from "@/components/ui/month-calendar";
 
 export const metadata: Metadata = { title: "Mes heures" };
 
@@ -28,7 +28,7 @@ function mondayUtc(d = new Date()): Date {
   const x = new Date(
     Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()),
   );
-  const day = x.getUTCDay(); // 0=dim
+  const day = x.getUTCDay();
   const diff = day === 0 ? -6 : 1 - day;
   x.setUTCDate(x.getUTCDate() + diff);
   return x;
@@ -63,7 +63,9 @@ export default async function EspaceHeuresPage() {
     : [];
 
   const currentWeek = sheets.find(
-    (s) => s.weekStart.toISOString().slice(0, 10) === weekStart.toISOString().slice(0, 10),
+    (s) =>
+      s.weekStart.toISOString().slice(0, 10) ===
+      weekStart.toISOString().slice(0, 10),
   );
 
   const declaredByDate = new Map<string, number>();
@@ -84,24 +86,57 @@ export default async function EspaceHeuresPage() {
 
   const theo = compare.reduce((s, d) => s + d.theoreticalMinutes, 0);
   const decl = compare.reduce((s, d) => s + d.declaredMinutes, 0);
+  const approvedSheets = sheets.filter((s) => s.status === "APPROVED");
+  const validatedMinutes = approvedSheets.reduce(
+    (s, x) => s + x.totalMinutes,
+    0,
+  );
+
+  const marks = [
+    ...[...holidays].map((dateKey) => ({
+      dateKey,
+      tone: "muted" as const,
+      label: "Férié",
+    })),
+    ...compare
+      .filter((d) => d.declaredMinutes > 0)
+      .map((d) => ({
+        dateKey: d.dateKey,
+        tone:
+          d.deltaMinutes < 0
+            ? ("coral" as const)
+            : d.deltaMinutes > 0
+              ? ("blue" as const)
+              : ("success" as const),
+        label: formatMinutes(d.declaredMinutes),
+      })),
+  ];
 
   return (
     <PageShell>
       <PageHeader
         title="Mes heures"
-        description="Référence théorique 40 h et saisie hebdomadaire déclarée."
+        description="Suivi théorique vs déclaré — sans badgeuse V1."
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[
           { label: "Mon espace", href: "/espace" },
           { label: "Heures" },
         ]}
+        actions={
+          <Link
+            prefetch={false}
+            href="/espace/heures/nouvelle-semaine"
+            className="inline-flex h-9 items-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
+          >
+            Saisir une semaine
+          </Link>
+        }
       />
 
       {!employee ? (
         <Surface className="p-6 text-sm text-msk-ink/60">
-          Aucune fiche RH n&apos;est liée à votre compte — contactez
-          l&apos;administration RH.
+          Aucune fiche RH n&apos;est liée à votre compte.
         </Surface>
       ) : (
         <>
@@ -128,39 +163,44 @@ export default async function EspaceHeuresPage() {
                 hint: "Déclaré − théorique",
               },
               {
-                label: "Feuilles",
-                value: String(sheets.length),
-                hint: "Historique affiché",
+                label: "Validé (historique)",
+                value: formatMinutes(validatedMinutes),
+                hint: `${approvedSheets.length} feuille(s)`,
               },
             ]}
           />
 
-          <HoursWeekCompare
-            scheduleLabel={schedule.label}
-            weeklyHours={schedule.weeklyHours}
-            days={compare}
-          />
-
-          <FormShell>
-            <div className="mb-5">
-              <h2 className="text-base font-semibold text-msk-ink">
-                Nouvelle semaine
-              </h2>
-              <p className="mt-1 text-sm text-msk-ink/55">
-                Saisissez vos heures par jour (0 si non travaillé). La
-                comparaison ci-dessus se met à jour après soumission.
-              </p>
+          <div className="grid gap-4 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <HoursWeekCompare
+                scheduleLabel={schedule.label}
+                weeklyHours={schedule.weeklyHours}
+                days={compare}
+              />
             </div>
-            <TimesheetForm />
-          </FormShell>
+            <Surface className="p-5 lg:col-span-5">
+              <h2 className="mb-3 text-sm font-semibold text-msk-ink">
+                Calendrier du mois
+              </h2>
+              <MonthCalendar marks={marks} />
+            </Surface>
+          </div>
 
           <div className="space-y-3">
             <h2 className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
-              Historique
+              Historique des feuilles
             </h2>
             {sheets.length === 0 ? (
               <Surface className="p-6 text-sm text-msk-ink/50">
-                Aucune feuille soumise.
+                Aucune feuille —{" "}
+                <Link
+                  prefetch={false}
+                  href="/espace/heures/nouvelle-semaine"
+                  className="text-msk-blue hover:underline"
+                >
+                  saisir une semaine
+                </Link>
+                .
               </Surface>
             ) : (
               sheets.map((s) => (

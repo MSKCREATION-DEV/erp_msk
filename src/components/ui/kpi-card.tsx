@@ -52,7 +52,7 @@ export function KpiGrid({
   className?: string;
 }) {
   return (
-    <div className={cn(gridKpi4, className)}>
+    <div className={cn(className ?? gridKpi4)}>
       {items.map((item) => (
         <KpiCard key={item.label} {...item} />
       ))}

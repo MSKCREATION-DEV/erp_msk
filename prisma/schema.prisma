@@ -1460,6 +1460,8 @@ model RhEmployee {
   leaveBalanceDays Decimal           @default(0) @db.Decimal(6, 2)
   reglementStatus  RhReglementStatus @default(PENDING)
   reglementSignedAt DateTime?
+  /// Photo profil (GED Document) — mise à jour immédiate collab.
+  avatarDocumentId String?
   notes            String?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
@@ -1522,6 +1524,27 @@ model RhProfileChangeLine {
 
   @@index([requestId])
   @@map("rh_profile_change_lines")
+}
+
+/// Catalogue administrable des types de congés / absences autorisées (réf. Mali + params MSK).
+model RhLeaveTypeConfig {
+  id                    String   @id @default(cuid())
+  /// Aligné sur RhLeaveType quand mappé (ex. CONGES_PAYES) ; codes étendus possibles.
+  code                  String   @unique
+  label                 String
+  legalBasis            String?
+  paid                  Boolean  @default(true)
+  impactsLeaveBalance   Boolean  @default(false)
+  requiresJustification Boolean  @default(false)
+  defaultDays           Decimal? @db.Decimal(5, 2)
+  active                Boolean  @default(true)
+  sortOrder             Int      @default(0)
+  notes                 String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([active, sortOrder])
+  @@map("rh_leave_type_configs")
 }
 
 enum RhLeaveMovementType {
@@ -1640,6 +1663,8 @@ model RhAbsence {
   endDate       DateTime        @db.Date
   reason        String
   justificationNote String?
+  /// Justificatif GED (PDF / image) — optionnel à la déclaration.
+  gedDocumentId String?
   reviewedById  String?         @db.Uuid
   reviewedAt    DateTime?
   createdAt     DateTime        @default(now())

@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-03 (Mon espace CP + heures + notifs + vault) |
+| Dernière mise à jour | 2026-11-03 (refonte Mon espace IA 5 entrées) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-03 — Refonte Mon espace (IA + coffre + list/create)
+
+- **Pourquoi** : hub cartes fragmenté ; profil/contrats/bulletins/règlement dispersés ; formulaires collés aux listes.
+- **Quoi** : subnav 5 (vue / heures / congés / absences / documents) ; identité → fiche ; édition multi-champs + avatar ; coffre docs (règlement inclus) ; redirects contrats/bulletins ; pages `/nouveau` ; calendrier congés/heures ; `/rh/horaires` + `/rh/conges/types` ; migration avatar + `RhLeaveTypeConfig`.
+- **Fichiers** : `espace/**`, `components/espace/*`, `lib/espace/*`, `rh/horaires`, `rh/conges/types`, `actions/rh-avatar.ts`, migration `20261103140000_*`, `09-rh.md`.
+- **Statut doc** : guides espace → `to_validate` / `outdated` à confirmer UI.
 
 ### 2026-11-03 — Notifs RH + vault bulletins + pilotage hub
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -11,20 +12,19 @@ import {
   EMPLOYEE_TYPE_LABEL,
   employeeStatusTone,
 } from "@/lib/rh/labels";
-import {
-  maskSensitive,
-  PROFILE_REQUESTABLE_FIELDS,
-} from "@/lib/rh/profile-fields";
+import { maskSensitive } from "@/lib/rh/profile-fields";
 import { readEmployeeField } from "@/lib/rh/profile-apply";
+import { PROFILE_REQUESTABLE_FIELDS } from "@/lib/rh/profile-fields";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
-import { FormShell } from "@/components/ui/form-shell";
-import { ProfileChangeForm } from "@/components/espace/profile-change-form";
+import { ProfileEditor } from "@/components/espace/profile-editor";
+import { AvatarUpload } from "@/components/espace/avatar-upload";
 import { RequestHistoryCard } from "@/components/espace/request-history-card";
+import { signedGedUrl } from "@/lib/ged/storage";
 
-export const metadata: Metadata = { title: "Mon profil" };
+export const metadata: Metadata = { title: "Ma fiche personnelle" };
 
 function Row({ label, value }: { label: string; value: ReactNode }) {
   return (
@@ -92,78 +92,197 @@ export default async function EspaceProfilPage() {
     currentValues[f.key] = readEmployeeField(empRecord, f.key);
   }
 
+  const pendingReq = changes.find((c) => c.status === "PENDING");
+  const pendingByField: Record<string, string> = {};
+  if (pendingReq) {
+    for (const line of pendingReq.lines) {
+      pendingByField[line.fieldKey] = line.newValue;
+    }
+  }
+
   const active = employee.contracts[0] ?? null;
   const seniority = formatSeniority(employee.hireDate);
   const age = ageFrom(employee.birthDate);
-  const pending = changes.some((c) => c.status === "PENDING");
+  const initials =
+    `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`.toUpperCase();
+
+  let avatarUrl: string | null = null;
+  if (employee.avatarDocumentId) {
+    const doc = await prisma.document.findUnique({
+      where: { id: employee.avatarDocumentId },
+      select: { storagePath: true },
+    });
+    if (doc?.storagePath) {
+      try {
+        avatarUrl = await signedGedUrl(doc.storagePath, 3600);
+      } catch {
+        avatarUrl = null;
+      }
+    }
+  }
 
   return (
     <PageShell>
       <PageHeader
-        title="Mon profil"
-        description="Dossier personnel — toute modification passe par une validation RH."
+        title="Ma fiche personnelle"
+        description="Dossier RH numérique — identité, coordonnées et situation professionnelle."
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[
           { label: "Mon espace", href: "/espace" },
-          { label: "Profil" },
+          { label: "Fiche personnelle" },
         ]}
       />
 
-      <Surface className="p-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-lg font-semibold text-msk-ink">
-            {employee.firstName} {employee.lastName}
-          </h2>
-          <Badge tone={employeeStatusTone(employee.status)}>
-            {EMPLOYEE_STATUS_LABEL[employee.status]}
-          </Badge>
+      <Surface className="overflow-hidden p-0">
+        <div className="border-b border-msk-ink/6 bg-gradient-to-br from-msk-blue/8 via-white to-[#00ACEE]/6 px-5 py-6 sm:px-8">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <div className="min-w-0 space-y-3">
+              <h2 className="text-2xl font-semibold tracking-tight text-msk-ink">
+                {employee.firstName}{" "}
+                <span className="font-accent text-msk-blue">
+                  {employee.lastName}
+                </span>
+              </h2>
+              <div className="flex flex-wrap items-center gap-2 text-sm text-msk-ink/60">
+                {employee.jobTitle ? (
+                  <span className="font-medium text-msk-ink/80">
+                    {employee.jobTitle}
+                  </span>
+                ) : null}
+                {employee.department ? (
+                  <>
+                    <span aria-hidden>·</span>
+                    <span>{employee.department}</span>
+                  </>
+                ) : null}
+                {employee.employeeCode ? (
+                  <>
+                    <span aria-hidden>·</span>
+                    <span className="tabular-nums">
+                      N° {employee.employeeCode}
+                    </span>
+                  </>
+                ) : null}
+                <Badge tone={employeeStatusTone(employee.status)}>
+                  {EMPLOYEE_STATUS_LABEL[employee.status]}
+                </Badge>
+              </div>
+              <p className="text-sm text-msk-ink/55">
+                {employee.hireDate
+                  ? `Embauche ${employee.hireDate.toLocaleDateString("fr-FR")}`
+                  : "Date d’embauche non renseignée"}
+                {seniority ? ` · ${seniority}` : ""}
+                {employee.manager
+                  ? ` · N+1 ${employee.manager.firstName} ${employee.manager.lastName}`
+                  : ""}
+              </p>
+            </div>
+            {canEdit ? (
+              <AvatarUpload avatarUrl={avatarUrl} initials={initials} />
+            ) : avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={avatarUrl}
+                alt=""
+                className="h-24 w-24 rounded-2xl object-cover"
+              />
+            ) : null}
+          </div>
         </div>
-        <p className="mt-1 text-sm text-msk-ink/55">
-          {employee.jobTitle ?? "Poste non renseigné"}
-          {employee.department ? ` · ${employee.department}` : ""}
-        </p>
       </Surface>
 
-      {canEdit ? (
-        <FormShell>
-          <div className="mb-5">
-            <h2 className="text-base font-semibold text-msk-ink">
-              Demander une modification
-            </h2>
-            <p className="mt-1 text-sm text-msk-ink/55">
-              Les changements ne sont pas appliqués immédiatement. Les RH
-              comparent ancienne / nouvelle valeur puis approuvent ou refusent.
-            </p>
-          </div>
-          {pending ? (
-            <p className="rounded-lg bg-msk-blue/5 px-3 py-2 text-sm text-msk-ink/70">
-              Une demande est déjà en attente. Vous pourrez en soumettre une
-              nouvelle après la décision RH.
-            </p>
-          ) : (
-            <ProfileChangeForm currentValues={currentValues} />
-          )}
-        </FormShell>
-      ) : null}
+      <div className="grid gap-4 @xl:grid-cols-12">
+        <Surface className="p-5 @xl:col-span-5">
+          <h3 className="text-sm font-semibold text-msk-ink">
+            Situation professionnelle
+          </h3>
+          <dl className="mt-2">
+            <Row
+              label="Type"
+              value={EMPLOYEE_TYPE_LABEL[employee.employeeType]}
+            />
+            <Row
+              label="Contrat actuel"
+              value={
+                active ? (
+                  <span>
+                    {CONTRACT_TYPE_LABEL[active.type]} — {active.title}
+                    <Link
+                      prefetch={false}
+                      href="/espace/documents?cat=pro"
+                      className="ml-2 text-msk-blue hover:underline"
+                    >
+                      Documents
+                    </Link>
+                  </span>
+                ) : (
+                  "—"
+                )
+              }
+            />
+            <Row
+              label="Début contrat"
+              value={
+                active
+                  ? active.startDate.toLocaleDateString("fr-FR")
+                  : "—"
+              }
+            />
+            <Row
+              label="Fin contrat"
+              value={
+                active?.endDate
+                  ? active.endDate.toLocaleDateString("fr-FR")
+                  : active
+                    ? "Indéterminée"
+                    : "—"
+              }
+            />
+            <Row label="Lieu de travail" value={employee.workLocation} />
+            <Row label="Âge" value={age} />
+          </dl>
+        </Surface>
 
-      {changes.length > 0 ? (
+        <Surface className="p-5 @xl:col-span-7">
+          <h3 className="text-sm font-semibold text-msk-ink">
+            Administratif (lecture)
+          </h3>
+          <dl className="mt-2">
+            <Row label="E-mail pro" value={employee.email} />
+            <Row
+              label="IBAN"
+              value={maskSensitive(employee.bankIban)}
+            />
+            <Row label="Banque" value={employee.bankName} />
+          </dl>
+        </Surface>
+      </div>
+
+      {canEdit ? (
+        <ProfileEditor
+          currentValues={currentValues}
+          pendingByField={pendingByField}
+        />
+      ) : (
+        <Surface className="p-5 text-sm text-msk-ink/55">
+          Consultation seule — demandez le droit de modification à
+          l&apos;administration.
+        </Surface>
+      )}
+
+      {canEdit && changes.length > 0 ? (
         <div className="space-y-3">
           <h2 className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
-            Historique des demandes
+            Historique des modifications
           </h2>
           {changes.map((c) => (
             <RequestHistoryCard
               key={c.id}
               title={`${c.lines.length} champ(s)`}
               subtitle={c.lines
-                .map((l) => {
-                  const label =
-                    PROFILE_REQUESTABLE_FIELDS.find((f) => f.key === l.fieldKey)
-                      ?.label ?? l.fieldKey;
-                  return `${label}: ${l.oldValue ?? "—"} → ${l.newValue || "—"}`;
-                })
-                .join(" · ")}
+                .map((l) => PROFILE_REQUESTABLE_FIELDS.find((f) => f.key === l.fieldKey)?.label ?? l.fieldKey)
+                .join(", ")}
               statusLabel={STATUS_LABEL[c.status]}
               statusTone={
                 c.status === "APPROVED"
@@ -181,117 +300,12 @@ export default async function EspaceProfilPage() {
                   ? `${c.reviewedBy.firstName} ${c.reviewedBy.lastName}`
                   : null
               }
-              reviewActionLabel={
-                c.status === "REJECTED" ? "Refusé le" : "Approuvé le"
-              }
               reason={c.note}
               reviewNote={c.reviewNote}
             />
           ))}
         </div>
       ) : null}
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Surface className="p-5">
-          <h3 className="text-sm font-semibold text-msk-ink">Identité</h3>
-          <dl>
-            <Row label="Prénom" value={employee.firstName} />
-            <Row label="Nom" value={employee.lastName} />
-            <Row label="Nom de naissance" value={employee.birthName} />
-            <Row
-              label="Date de naissance"
-              value={
-                employee.birthDate
-                  ? `${employee.birthDate.toLocaleDateString("fr-FR")}${age ? ` (${age})` : ""}`
-                  : null
-              }
-            />
-            <Row label="Lieu de naissance" value={employee.birthPlace} />
-            <Row label="Nationalité" value={employee.nationality} />
-            <Row label="Sexe" value={employee.gender} />
-            <Row label="Pièce d’identité" value={employee.idDocumentType} />
-            <Row
-              label="N° pièce"
-              value={maskSensitive(employee.idDocumentNumber)}
-            />
-          </dl>
-        </Surface>
-
-        <Surface className="p-5">
-          <h3 className="text-sm font-semibold text-msk-ink">Professionnel</h3>
-          <dl>
-            <Row label="Matricule" value={employee.employeeCode} />
-            <Row label="Poste" value={employee.jobTitle} />
-            <Row label="Département" value={employee.department} />
-            <Row
-              label="Type"
-              value={EMPLOYEE_TYPE_LABEL[employee.employeeType]}
-            />
-            <Row
-              label="Contrat actuel"
-              value={
-                active
-                  ? `${CONTRACT_TYPE_LABEL[active.type]} — ${active.title}`
-                  : null
-              }
-            />
-            <Row
-              label="Responsable"
-              value={
-                employee.manager
-                  ? `${employee.manager.firstName} ${employee.manager.lastName}${employee.manager.jobTitle ? ` (${employee.manager.jobTitle})` : ""}`
-                  : null
-              }
-            />
-            <Row
-              label="Embauche"
-              value={
-                employee.hireDate
-                  ? `${employee.hireDate.toLocaleDateString("fr-FR")}${seniority ? ` · ${seniority}` : ""}`
-                  : null
-              }
-            />
-            <Row label="Lieu de travail" value={employee.workLocation} />
-            <Row label="E-mail pro" value={employee.email ?? user.email} />
-            <Row label="Téléphone" value={employee.phone} />
-          </dl>
-        </Surface>
-
-        <Surface className="p-5">
-          <h3 className="text-sm font-semibold text-msk-ink">Coordonnées</h3>
-          <dl>
-            <Row label="Adresse" value={employee.addressLine1} />
-            <Row label="Complément" value={employee.addressLine2} />
-            <Row label="Ville" value={employee.city} />
-            <Row label="Région" value={employee.region} />
-            <Row label="Pays" value={employee.country} />
-            <Row label="Tél. personnel" value={employee.personalPhone} />
-            <Row label="E-mail personnel" value={employee.personalEmail} />
-          </dl>
-        </Surface>
-
-        <Surface className="p-5">
-          <h3 className="text-sm font-semibold text-msk-ink">
-            Urgence & paie
-          </h3>
-          <dl>
-            <Row
-              label="Contact d’urgence"
-              value={
-                employee.emergencyContactName ?? employee.emergencyContact
-              }
-            />
-            <Row
-              label="Tél. urgence"
-              value={employee.emergencyContactPhone}
-            />
-            <Row label="Lien" value={employee.emergencyContactRelation} />
-            <Row label="Banque" value={employee.bankName} />
-            <Row label="Titulaire" value={employee.bankAccountHolder} />
-            <Row label="IBAN / RIB" value={maskSensitive(employee.bankIban)} />
-          </dl>
-        </Surface>
-      </div>
     </PageShell>
   );
 }

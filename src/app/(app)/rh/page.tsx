@@ -113,6 +113,18 @@ export default async function RhHubPage() {
       icon: Clock,
       desc: "Feuilles hebdomadaires soumises",
     },
+    (canTimesheet || canEmployees) && {
+      href: "/rh/horaires",
+      label: "Horaires",
+      icon: Clock,
+      desc: "Horaires collectifs et jours fériés",
+    },
+    canLeave && {
+      href: "/rh/conges/types",
+      label: "Types de congés",
+      icon: CalendarDays,
+      desc: "Catalogue réglementaire",
+    },
   ].filter(Boolean) as {
     href: string;
     label: string;

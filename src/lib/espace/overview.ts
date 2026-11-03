@@ -278,8 +278,8 @@ export async function loadEspaceOverview(
     alerts.push({
       id: "reglement",
       tone: "coral",
-      message: "Règlement intérieur à accuser",
-      href: "/espace",
+      message: "Règlement intérieur à signer",
+      href: "/espace/documents?cat=a_signer",
     });
   }
   if (leavePending > 0) {
@@ -347,7 +347,7 @@ export async function loadEspaceOverview(
       title: "Bulletin de paie disponible",
       detail: monthLabelFr(p.period.month, p.period.year),
       at: p.updatedAt,
-      href: "/espace/bulletins",
+      href: "/espace/documents?cat=paie",
     });
   }
   for (const c of employee.contracts.slice(0, 3)) {
@@ -357,7 +357,7 @@ export async function loadEspaceOverview(
       title: `Contrat ${c.type}`,
       detail: `${c.title} · ${c.status}`,
       at: c.updatedAt,
-      href: "/espace/contrats",
+      href: "/espace/documents?cat=pro",
     });
   }
   for (const d of docs.slice(0, 3)) {

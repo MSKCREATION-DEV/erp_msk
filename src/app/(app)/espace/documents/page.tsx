@@ -1,18 +1,28 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { loadEmployeeDocumentVault } from "@/lib/espace/documents-vault";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
-import { listEmployeeRhDocs } from "@/lib/rh/docs-query";
-import { EspaceDocsList } from "@/components/espace/espace-docs-list";
+import { KpiGrid } from "@/components/ui/kpi-card";
+import { DocumentsVault } from "@/components/espace/documents-vault";
+import { countByCategory } from "@/lib/espace/documents-vault-types";
 
 export const metadata: Metadata = { title: "Mes documents" };
 
 export default async function EspaceDocumentsPage() {
   const user = await requireUser();
+  if (
+    !hasPermission(user, "self.documents.view") &&
+    !hasPermission(user, "self.payslip.view")
+  ) {
+    redirect("/espace");
+  }
+
   const employee = await prisma.rhEmployee.findUnique({
     where: { userId: user.id },
     include: {
@@ -21,39 +31,64 @@ export default async function EspaceDocumentsPage() {
   });
   if (!employee) redirect("/espace");
 
-  const docs = await listEmployeeRhDocs(
-    employee.id,
-    employee.contracts.map((c) => c.id),
-  );
+  const docs = await loadEmployeeDocumentVault({
+    employeeId: employee.id,
+    contractIds: employee.contracts.map((c) => c.id),
+    reglementStatus: employee.reglementStatus,
+  });
+  const counts = countByCategory(docs);
+
+  // Sérialiser dates pour client
+  const serialized = docs.map((d) => ({
+    ...d,
+    createdAt: d.createdAt,
+  }));
 
   return (
     <PageShell>
       <PageHeader
         title="Mes documents"
-        description="Attestations, contrats, règlement, solde, fiches de paie — aperçu et téléchargement."
+        description="Coffre-fort RH — contrats, bulletins, règlement et pièces liées."
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[
           { label: "Mon espace", href: "/espace" },
-          { label: "Mes documents" },
+          { label: "Documents" },
         ]}
       />
 
-      <p className="text-sm text-msk-ink/55">
-        Fichiers issus de la GED (pas de copie). Voir aussi{" "}
-        <Link
-          prefetch={false}
-          href="/espace/contrats"
-          className="font-medium text-msk-blue hover:underline"
-        >
-          Mes contrats
-        </Link>{" "}
-        pour le parcours carrière.
-      </p>
+      <KpiGrid
+        items={[
+          {
+            label: "Documents",
+            value: String(counts.all),
+            hint: "Total coffre",
+          },
+          {
+            label: "À signer",
+            value: String(counts.a_signer),
+            hint: "Action requise",
+          },
+          {
+            label: "Paie",
+            value: String(counts.paie),
+            hint: "Bulletins",
+          },
+          {
+            label: "Professionnels",
+            value: String(counts.pro),
+            hint: "Contrats & attestations",
+          },
+        ]}
+      />
 
-      <Surface className="p-0">
-        <EspaceDocsList docs={docs} />
-      </Surface>
+      <Suspense
+        fallback={
+          <Surface className="h-40 animate-pulse bg-msk-ink/4" />
+        }
+      >
+        <DocumentsVault docs={serialized} />
+      </Suspense>
     </PageShell>
   );
 }

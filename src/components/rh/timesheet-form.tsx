@@ -23,7 +23,6 @@ export function TimesheetForm() {
   const [weekStart, setWeekStart] = useState(() => mondayOf(""));
   const [hours, setHours] = useState<number[]>(Array(7).fill(0));
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const days = useMemo(() => {
     const monday = new Date(weekStart);
@@ -35,7 +34,6 @@ export function TimesheetForm() {
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
 
     const lines = days
       .map((d, i) => ({
@@ -59,8 +57,7 @@ export function TimesheetForm() {
         setError(res.error ?? "Échec");
         return;
       }
-      setSuccess(res.message ?? "Feuille soumise");
-      setHours(Array(7).fill(0));
+      router.push("/espace/heures");
       router.refresh();
     });
   }
@@ -114,7 +111,6 @@ export function TimesheetForm() {
       </p>
 
       {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
-      {success ? <p className="text-sm text-emerald-700">{success}</p> : null}
       <Button type="submit" disabled={pending}>
         {pending ? "Envoi…" : "Soumettre la semaine"}
       </Button>

@@ -9,17 +9,15 @@ import { Label } from "@/components/ui/label";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { LEAVE_TYPE_LABEL } from "@/lib/rh/labels";
 
-/** Demande de congé (collaborateur) — reste sur la page, liste rafraîchie. */
+/** Demande de congé — page dédiée `/espace/conges/nouveau`. */
 export function LeaveRequestForm() {
   const router = useRouter();
   const { pending, run } = usePendingAction();
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
     const fd = new FormData(e.currentTarget);
 
     void run(async () => {
@@ -28,10 +26,7 @@ export function LeaveRequestForm() {
         setError(res.error ?? "Échec");
         return;
       }
-      setSuccess(res.message ?? "Demande envoyée");
-      (
-        document.getElementById("leave-request-form") as HTMLFormElement | null
-      )?.reset();
+      router.push("/espace/conges");
       router.refresh();
     });
   }
@@ -95,7 +90,6 @@ export function LeaveRequestForm() {
       </div>
 
       {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
-      {success ? <p className="text-sm text-emerald-700">{success}</p> : null}
       <Button type="submit" size="sm" disabled={pending}>
         {pending ? "Envoi…" : "Envoyer la demande"}
       </Button>

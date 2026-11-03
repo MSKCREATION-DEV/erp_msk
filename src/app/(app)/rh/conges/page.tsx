@@ -55,6 +55,17 @@ export default async function RhCongesPage({
         backHref="/rh"
         backLabel="Retour RH"
         breadcrumbs={[{ label: "RH", href: "/rh" }, { label: "Congés" }]}
+        actions={
+          canValidate ? (
+            <Link
+              prefetch={false}
+              href="/rh/conges/types"
+              className="text-sm font-medium text-msk-blue hover:underline"
+            >
+              Catalogue des types
+            </Link>
+          ) : null
+        }
       />
 
       <div className="flex flex-wrap gap-2 text-sm">
