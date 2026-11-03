@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { fontVariables } from "@/fonts";
 import { brand } from "@/lib/brand";
 import { AppProviders } from "@/components/app/app-providers";
@@ -30,6 +31,7 @@ export default function RootLayout({
     <html lang="fr" className={fontVariables}>
       <body className="min-h-screen bg-msk-chalk font-sans text-msk-ink antialiased">
         <AppProviders>{children}</AppProviders>
+        <Analytics />
       </body>
     </html>
   );
