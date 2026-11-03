@@ -10,8 +10,9 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { KpiGrid } from "@/components/ui/kpi-card";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
-import { DocDownloadButton } from "@/components/rh/doc-download-button";
+import { PayslipPdfActions } from "@/components/espace/payslip-pdf-actions";
 import { monthLabel, PAYSLIP_STATUS_LABEL } from "@/lib/paie/labels";
 
 export const metadata: Metadata = { title: "Mes bulletins" };
@@ -31,7 +32,10 @@ export default async function EspaceBulletinsPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await requireUser();
-  if (!hasPermission(user, "self.payslip.view") && !hasPermission(user, "self.documents.view")) {
+  if (
+    !hasPermission(user, "self.payslip.view") &&
+    !hasPermission(user, "self.documents.view")
+  ) {
     redirect("/espace");
   }
 
@@ -65,16 +69,58 @@ export default async function EspaceBulletinsPage({
       | Prisma.RhPayslipOrderByWithRelationInput[],
   });
 
+  const docIds = slips
+    .map((s) => s.gedDocumentId)
+    .filter((id): id is string => Boolean(id));
+  const docs = docIds.length
+    ? await prisma.document.findMany({
+        where: { id: { in: docIds } },
+        select: {
+          id: true,
+          originalName: true,
+          mime: true,
+          size: true,
+        },
+      })
+    : [];
+  const docById = new Map(docs.map((d) => [d.id, d]));
+
+  const withPdf = slips.filter((s) => s.gedDocumentId).length;
+  const lastNet = slips[0]?.netXof;
+
   return (
     <PageShell>
       <PageHeader
         title="Mes bulletins"
-        description="Bulletins de paie approuvés — téléchargement direct."
+        description="Coffre-fort des bulletins approuvés — aperçu et téléchargement."
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[
           { label: "Mon espace", href: "/espace" },
           { label: "Mes bulletins" },
+        ]}
+      />
+
+      <KpiGrid
+        items={[
+          {
+            label: "Bulletins",
+            value: String(slips.length),
+            hint: "Approuvés / payés",
+          },
+          {
+            label: "PDF disponibles",
+            value: String(withPdf),
+            hint: "Aperçu + téléchargement",
+          },
+          {
+            label: "Dernier net",
+            value:
+              lastNet != null
+                ? `${lastNet.toLocaleString("fr-FR")} XOF`
+                : "—",
+            hint: "Période la plus récente",
+          },
         ]}
       />
 
@@ -85,7 +131,7 @@ export default async function EspaceBulletinsPage({
           </p>
         ) : (
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-msk-ink/10 text-msk-ink/45">
+            <thead className="border-b border-msk-ink/6 text-msk-ink/45">
               <tr>
                 <SortableTh
                   label="Période"
@@ -117,32 +163,40 @@ export default async function EspaceBulletinsPage({
               </tr>
             </thead>
             <tbody>
-              {slips.map((s) => (
-                <tr key={s.id} className="border-b border-msk-ink/5">
-                  <td className="px-4 py-3 capitalize">
-                    {monthLabel(s.period.month)} {s.period.year}
-                  </td>
-                  <td className="px-4 py-3 tabular-nums font-medium">
-                    {s.netXof.toLocaleString("fr-FR")} XOF
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge tone="success">
-                      {PAYSLIP_STATUS_LABEL[s.status]}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    {s.gedDocumentId ? (
-                      <DocDownloadButton
-                        documentId={s.gedDocumentId}
-                        label="Télécharger"
-                        variant="primary"
+              {slips.map((s) => {
+                const doc = s.gedDocumentId
+                  ? docById.get(s.gedDocumentId)
+                  : undefined;
+                return (
+                  <tr key={s.id} className="border-b border-msk-ink/6">
+                    <td className="px-4 py-3 capitalize">
+                      {monthLabel(s.period.month)} {s.period.year}
+                    </td>
+                    <td className="px-4 py-3 font-medium tabular-nums">
+                      {s.netXof.toLocaleString("fr-FR")} XOF
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge tone="success">
+                        {PAYSLIP_STATUS_LABEL[s.status]}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3">
+                      <PayslipPdfActions
+                        doc={
+                          doc
+                            ? {
+                                id: doc.id,
+                                originalName: doc.originalName,
+                                mime: doc.mime,
+                                size: doc.size,
+                              }
+                            : null
+                        }
                       />
-                    ) : (
-                      <span className="text-xs text-msk-ink/40">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}

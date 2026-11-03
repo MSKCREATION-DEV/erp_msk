@@ -5,6 +5,9 @@ export const ACTIONABLE_NOTIFICATION_KINDS = [
   "crm.assignment_resolved",
   "iam.user_created",
   "rh.profile_change.request",
+  "rh.leave.request",
+  "rh.absence.declared",
+  "rh.timesheet.submitted",
 ] as const;
 
 export type ActionableNotificationKind =
@@ -23,6 +26,13 @@ export const EMAIL_NOTIFICATION_KINDS = [
   "rh.profile_change.request",
   "rh.profile_change.approved",
   "rh.profile_change.rejected",
+  "rh.leave.request",
+  "rh.leave.approved",
+  "rh.leave.rejected",
+  "rh.absence.declared",
+  "rh.absence.reviewed",
+  "rh.timesheet.submitted",
+  "rh.timesheet.reviewed",
 ] as const;
 
 export function shouldEmailNotificationKind(kind: string): boolean {

@@ -152,11 +152,15 @@ export function timesheetStatusTone(status: RhTimesheetStatus): BadgeTone {
   }
 }
 
-/** Minutes → libellé "7h30". */
+/** Minutes → libellé "7h30" (signe conservé pour les écarts). */
 export function formatMinutes(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m > 0 ? `${h}h${String(m).padStart(2, "0")}` : `${h}h`;
+  const sign = minutes < 0 ? "-" : "";
+  const abs = Math.abs(minutes);
+  const h = Math.floor(abs / 60);
+  const m = abs % 60;
+  return m > 0
+    ? `${sign}${h}h${String(m).padStart(2, "0")}`
+    : `${sign}${h}h`;
 }
 
 export const WEEKDAY_LABELS = [

@@ -144,9 +144,11 @@ DIRECT_URL=postgresql://postgres.[REF]:[PWD]@aws-0-….pooler.supabase.com:5432/
 
 (risque de réécriture MDP des comptes ACTIVE)
 
-### Cron notifications (CRM-ops)
+### Cron (CRM-ops + RH)
 
-- `CRON_SECRET` — Bearer pour `/api/cron/notifications` (digest relances en retard, quotidien 07:00 UTC via `vercel.json`)
+- `CRON_SECRET` — Bearer pour les routes `/api/cron/*` (`vercel.json`)
+- `/api/cron/notifications` — digest relances en retard (quotidien 07:00 UTC)
+- `/api/cron/rh-leave-accrual` — acquisition congés payés +2,5 j / mois (1er du mois 01:15 UTC, mois civil précédent) ; override `?year=YYYY&month=M`
 - Realtime : table `app_notifications` dans la publication Supabase Realtime + policy SELECT own (`userId = auth.uid()`)
 
 ## 3. Domaine & e-mail

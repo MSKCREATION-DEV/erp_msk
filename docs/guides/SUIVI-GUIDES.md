@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-03 (hub Mon espace redesign) |
+| Dernière mise à jour | 2026-11-03 (Mon espace CP + heures + notifs + vault) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,27 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-03 — Notifs RH + vault bulletins + pilotage hub
+
+- **Pourquoi** : demandes congés/absences/heures silencieuses ; bulletins sans aperçu ; hub RH sans raccourcis files.
+- **Quoi** : kinds `rh.leave.*` / `rh.absence.*` / `rh.timesheet.*` + `notifyUsers` dans actions RH ; vault `/espace/bulletins` (KPI + aperçu GED) ; chips « Files à traiter » sur `/rh`.
+- **Fichiers** : `notifications/kinds*`, `actions/rh.ts`, `espace/bulletins`, `payslip-pdf-actions.tsx`, `rh/page.tsx`.
+- **Statut doc** : espace bulletins / notifs → `to_validate`.
+
+### 2026-11-03 — Heures : théorique vs déclaré
+
+- **Pourquoi** : feuille d’heures sans référence 40 h / jours fériés.
+- **Quoi** : `work-schedule` + calendrier semaine sur `/espace/heures` (horaire `msk_default`, fériés, écart déclaré − théorique) ; FormShell plein largeur.
+- **Fichiers** : `lib/rh/work-schedule*`, `work-schedule-db.ts`, `hours-week-compare.tsx`, `espace/heures/page.tsx`, `docs/manuels/09-rh.md`.
+- **Statut doc** : guide heures → `to_validate`.
+
+### 2026-11-03 — Ledger CP : consommation, accrual, UI
+
+- **Pourquoi** : solde CP sans traçabilité ni acquisition automatique.
+- **Quoi** : `leave-ledger` branché à l’approbation CP ; cron mensuel `/api/cron/rh-leave-accrual` (+2,5 j, idempotent) ; mouvements sur `/espace/conges` + fiche collab ; régularisation RH (`adjustLeaveBalanceAction`) ; ouverture ledger à la création collab.
+- **Fichiers** : `lib/rh/leave-ledger*`, `actions/rh.ts`, `actions/rh-leave-ledger.ts`, `api/cron/rh-leave-accrual`, `vercel.json`, `espace/conges`, `leave-movements-list`, `leave-adjust-form`, `docs/deploy/VERCEL.md`, `docs/manuels/09-rh.md`.
+- **Statut doc** : `espace-conges` → `to_validate` (mouvements + accrual à confirmer UI).
 
 ### 2026-11-03 — Mon espace : workflow profil + preview docs
 

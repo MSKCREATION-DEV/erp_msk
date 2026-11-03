@@ -20,9 +20,12 @@ import {
 } from "@/lib/rh/labels";
 import { EmployeeStatusButtons } from "@/components/rh/employee-status-buttons";
 import { EmployeeDocsActions } from "@/components/rh/employee-docs-actions";
+import { LeaveAdjustForm } from "@/components/rh/leave-adjust-form";
+import { LeaveMovementsList } from "@/components/espace/leave-movements-list";
 import { findLatestLinkedDoc, mapEmployeeDocIds } from "@/lib/rh/docs-query";
 import { RH_DOC } from "@/lib/rh/docs";
 import { DocDownloadButton } from "@/components/rh/doc-download-button";
+import { FormShell } from "@/components/ui/form-shell";
 
 export const metadata: Metadata = { title: "Collaborateur" };
 
@@ -48,7 +51,14 @@ export default async function RhCollaborateurDetailPage({
 
   const canManage = hasPermission(user, "rh.employees.manage");
   const canContracts = hasPermission(user, "rh.contracts.manage");
+  const canAdjustLeave = hasPermission(user, "rh.leave.validate");
   const docIds = await mapEmployeeDocIds(employee.id);
+
+  const leaveMovements = await prisma.rhLeaveMovement.findMany({
+    where: { employeeId: employee.id },
+    orderBy: [{ effectiveDate: "desc" }, { createdAt: "desc" }],
+    take: 50,
+  });
 
   const contractPdfs = await Promise.all(
     employee.contracts.map(async (c) => {
@@ -206,7 +216,35 @@ export default async function RhCollaborateurDetailPage({
         )}
       </Surface>
 
-      {/* 3. Documents */}
+      {/* 3. Solde congés / ledger */}
+      <div className="space-y-3">
+        <h2 className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
+          Solde congés — mouvements
+        </h2>
+        <LeaveMovementsList
+          movements={leaveMovements.map((m) => ({
+            id: m.id,
+            type: m.type,
+            days: Number(m.days),
+            effectiveDate: m.effectiveDate,
+            note: m.note,
+          }))}
+        />
+        {canAdjustLeave ? (
+          <FormShell>
+            <h3 className="mb-1 text-sm font-semibold text-msk-ink">
+              Régularisation RH
+            </h3>
+            <p className="mb-4 text-xs text-msk-ink/50">
+              Écart signé (+ crédit / − débit) avec motif — crée un mouvement
+              ADJUSTMENT et resynchronise le solde.
+            </p>
+            <LeaveAdjustForm employeeId={employee.id} />
+          </FormShell>
+        ) : null}
+      </div>
+
+      {/* 4. Documents */}
       {canManage ? (
         <Surface className="p-5">
           <h2 className="mb-1 text-sm font-semibold text-msk-ink">
@@ -226,7 +264,7 @@ export default async function RhCollaborateurDetailPage({
         </Surface>
       ) : null}
 
-      {/* 4. Cycle de vie */}
+      {/* 5. Cycle de vie */}
       {canManage ? (
         <Surface className="p-5">
           <h2 className="mb-3 text-sm font-semibold text-msk-ink">

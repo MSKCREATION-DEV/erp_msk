@@ -34,10 +34,18 @@ import {
 import { uploadGedObject } from "@/lib/ged/storage";
 import { ensureCollaboratorSubfolder } from "@/lib/ged/tree";
 import { getSignaturePngBytes } from "@/lib/signatures/resolve";
-import { CONTRACT_TYPE_LABEL } from "@/lib/rh/labels";
+import { CONTRACT_TYPE_LABEL, LEAVE_TYPE_LABEL } from "@/lib/rh/labels";
 import { RH_DOC } from "@/lib/rh/docs";
 import { signedGedUrl } from "@/lib/ged/storage";
 import { canViewFolderPath } from "@/lib/ged/scope";
+import {
+  ensureOpeningBalance,
+  recordLeaveConsumption,
+} from "@/lib/rh/leave-ledger";
+import {
+  notifyUsers,
+  usersWithPermission,
+} from "@/lib/notifications/notify";
 
 const cuidSchema = z.string().min(8).max(40);
 
@@ -117,21 +125,27 @@ export async function createEmployeeAction(
     }
   }
 
-  const employee = await prisma.rhEmployee.create({
-    data: {
-      firstName: parsed.data.firstName,
-      lastName: parsed.data.lastName,
-      email: parsed.data.email || null,
-      phone: parsed.data.phone || null,
-      jobTitle: parsed.data.jobTitle || null,
-      employeeType: parsed.data.employeeType,
-      hireDate: parsed.data.hireDate
-        ? new Date(parsed.data.hireDate)
-        : null,
-      leaveBalanceDays: parsed.data.leaveBalanceDays,
-      userId: linkUserId,
-      status: "ACTIVE",
-    },
+  const employee = await prisma.$transaction(async (tx) => {
+    const created = await tx.rhEmployee.create({
+      data: {
+        firstName: parsed.data.firstName,
+        lastName: parsed.data.lastName,
+        email: parsed.data.email || null,
+        phone: parsed.data.phone || null,
+        jobTitle: parsed.data.jobTitle || null,
+        employeeType: parsed.data.employeeType,
+        hireDate: parsed.data.hireDate
+          ? new Date(parsed.data.hireDate)
+          : null,
+        leaveBalanceDays: parsed.data.leaveBalanceDays,
+        userId: linkUserId,
+        status: "ACTIVE",
+      },
+    });
+    if (parsed.data.leaveBalanceDays > 0) {
+      await ensureOpeningBalance(created.id, tx);
+    }
+    return created;
   });
 
   await writeAudit({
@@ -344,6 +358,15 @@ export async function requestLeaveAction(
     },
   });
 
+  const validators = await usersWithPermission("rh.leave.validate");
+  await notifyUsers({
+    userIds: validators.filter((id) => id !== user.id),
+    kind: "rh.leave.request",
+    title: "Nouvelle demande de congé",
+    body: `${emp.firstName} ${emp.lastName} — ${LEAVE_TYPE_LABEL[leave.type]} · ${Number(leave.days)} j (${start.toLocaleDateString("fr-FR")} → ${end.toLocaleDateString("fr-FR")})`,
+    href: "/rh/conges",
+  });
+
   revalidateRh();
   return { ok: true, leaveId: leave.id, message: "Demande envoyée" };
 }
@@ -385,19 +408,13 @@ export async function reviewLeaveAction(
   try {
     await prisma.$transaction(async (tx) => {
       if (decision.data === "APPROVED" && leave.type === "CONGES_PAYES") {
-        const need = Number(leave.days);
-        const updated = await tx.rhEmployee.updateMany({
-          where: {
-            id: leave.employeeId,
-            leaveBalanceDays: { gte: need },
-          },
-          data: {
-            leaveBalanceDays: { decrement: need },
-          },
+        await recordLeaveConsumption(tx, {
+          employeeId: leave.employeeId,
+          leaveRequestId: leave.id,
+          days: Number(leave.days),
+          startDate: leave.startDate,
+          createdById: user.id,
         });
-        if (updated.count !== 1) {
-          throw new Error("SOLDE_INSUFFISANT");
-        }
       }
       await tx.rhLeaveRequest.update({
         where: { id: leave.id },
@@ -424,10 +441,19 @@ export async function reviewLeaveAction(
     metadata: { decision: decision.data },
   });
 
+  const approved = decision.data === "APPROVED";
+  await notifyUsers({
+    userIds: [leave.requesterId].filter((id) => id !== user.id),
+    kind: approved ? "rh.leave.approved" : "rh.leave.rejected",
+    title: approved ? "Congé approuvé" : "Congé refusé",
+    body: `${LEAVE_TYPE_LABEL[leave.type]} · ${Number(leave.days)} j (${leave.startDate.toLocaleDateString("fr-FR")} → ${leave.endDate.toLocaleDateString("fr-FR")})${reviewNote ? ` — ${reviewNote}` : ""}`,
+    href: "/espace/conges",
+  });
+
   revalidateRh();
   return {
     ok: true,
-    message: decision.data === "APPROVED" ? "Congé approuvé" : "Congé refusé",
+    message: approved ? "Congé approuvé" : "Congé refusé",
   };
 }
 
@@ -473,6 +499,15 @@ export async function declareAbsenceAction(
     },
   });
 
+  const managers = await usersWithPermission("rh.absence.manage");
+  await notifyUsers({
+    userIds: managers.filter((id) => id !== user.id),
+    kind: "rh.absence.declared",
+    title: "Absence déclarée",
+    body: `${emp.firstName} ${emp.lastName} · ${start.toLocaleDateString("fr-FR")} → ${end.toLocaleDateString("fr-FR")}`,
+    href: "/rh/absences",
+  });
+
   revalidateRh();
   return { ok: true, absenceId: absence.id, message: "Absence déclarée" };
 }
@@ -494,7 +529,7 @@ export async function reviewAbsenceAction(
     return { ok: false, error: "Données invalides" };
   }
 
-  await prisma.rhAbsence.update({
+  const absence = await prisma.rhAbsence.update({
     where: { id: id.data },
     data: {
       status: status.data as RhAbsenceStatus,
@@ -502,6 +537,17 @@ export async function reviewAbsenceAction(
       reviewedById: user.id,
       reviewedAt: new Date(),
     },
+  });
+
+  await notifyUsers({
+    userIds: [absence.declaredById].filter((id) => id !== user.id),
+    kind: "rh.absence.reviewed",
+    title:
+      status.data === "JUSTIFIED"
+        ? "Absence justifiée"
+        : "Absence non justifiée",
+    body: `${absence.startDate.toLocaleDateString("fr-FR")} → ${absence.endDate.toLocaleDateString("fr-FR")}${note ? ` — ${note}` : ""}`,
+    href: "/espace/absences",
   });
 
   revalidateRh();
@@ -596,6 +642,15 @@ export async function submitTimesheetAction(
           },
         });
 
+    const validators = await usersWithPermission("rh.timesheet.validate");
+    await notifyUsers({
+      userIds: validators.filter((id) => id !== user.id),
+      kind: "rh.timesheet.submitted",
+      title: "Feuille d’heures soumise",
+      body: `${emp.firstName} ${emp.lastName} · semaine du ${sheet.weekStart.toLocaleDateString("fr-FR")}`,
+      href: "/rh/heures",
+    });
+
     revalidateRh();
     return {
       ok: true,
@@ -638,11 +693,19 @@ export async function reviewTimesheetAction(
     },
   });
 
+  const approved = decision.data === "APPROVED";
+  await notifyUsers({
+    userIds: [sheet.ownerId].filter((id) => id !== user.id),
+    kind: "rh.timesheet.reviewed",
+    title: approved ? "Heures approuvées" : "Heures refusées",
+    body: `Semaine du ${sheet.weekStart.toLocaleDateString("fr-FR")}`,
+    href: "/espace/heures",
+  });
+
   revalidateRh();
   return {
     ok: true,
-    message:
-      decision.data === "APPROVED" ? "Heures approuvées" : "Heures refusées",
+    message: approved ? "Heures approuvées" : "Heures refusées",
   };
 }
 

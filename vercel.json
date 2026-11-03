@@ -5,6 +5,10 @@
     {
       "path": "/api/cron/notifications",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/rh-leave-accrual",
+      "schedule": "15 1 1 * *"
     }
   ]
 }

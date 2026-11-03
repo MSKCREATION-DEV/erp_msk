@@ -158,6 +158,53 @@ export default async function RhHubPage() {
         ]}
       />
 
+      {(pendingLeaves > 0 ||
+        declaredAbsences > 0 ||
+        submittedSheets > 0 ||
+        pendingProfileChanges > 0) && (
+        <Surface className="flex flex-wrap gap-2 p-4 text-sm">
+          <span className="w-full text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
+            Files à traiter
+          </span>
+          {canLeave && pendingLeaves > 0 ? (
+            <Link
+              prefetch={false}
+              href="/rh/conges?status=PENDING"
+              className="rounded-lg bg-msk-blue/10 px-3 py-1.5 font-medium text-msk-blue hover:bg-msk-blue/15"
+            >
+              {pendingLeaves} congé(s)
+            </Link>
+          ) : null}
+          {canAbsence && declaredAbsences > 0 ? (
+            <Link
+              prefetch={false}
+              href="/rh/absences"
+              className="rounded-lg bg-msk-coral/10 px-3 py-1.5 font-medium text-msk-coral hover:bg-msk-coral/15"
+            >
+              {declaredAbsences} absence(s)
+            </Link>
+          ) : null}
+          {canTimesheet && submittedSheets > 0 ? (
+            <Link
+              prefetch={false}
+              href="/rh/heures"
+              className="rounded-lg bg-msk-ink/6 px-3 py-1.5 font-medium text-msk-ink hover:bg-msk-ink/10"
+            >
+              {submittedSheets} feuille(s) d’heures
+            </Link>
+          ) : null}
+          {canProfileReview && pendingProfileChanges > 0 ? (
+            <Link
+              prefetch={false}
+              href="/rh/profil-demandes"
+              className="rounded-lg bg-msk-blue/10 px-3 py-1.5 font-medium text-msk-blue hover:bg-msk-blue/15"
+            >
+              {pendingProfileChanges} profil(s)
+            </Link>
+          ) : null}
+        </Surface>
+      )}
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {navItems.map((item) => {
           const Icon = item.icon;

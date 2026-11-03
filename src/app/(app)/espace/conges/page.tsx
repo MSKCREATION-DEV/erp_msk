@@ -16,6 +16,7 @@ import {
 } from "@/lib/rh/labels";
 import { LeaveRequestForm } from "@/components/rh/leave-request-form";
 import { RequestHistoryCard } from "@/components/espace/request-history-card";
+import { LeaveMovementsList } from "@/components/espace/leave-movements-list";
 
 export const metadata: Metadata = { title: "Mes congés" };
 
@@ -27,21 +28,28 @@ export default async function EspaceCongesPage() {
     where: { userId: user.id },
   });
 
-  const leaves = employee
-    ? await prisma.rhLeaveRequest.findMany({
-        where: { employeeId: employee.id },
-        orderBy: { createdAt: "desc" },
-        take: 50,
-        include: {
-          validatedBy: {
-            select: { firstName: true, lastName: true },
+  const [leaves, movements] = employee
+    ? await Promise.all([
+        prisma.rhLeaveRequest.findMany({
+          where: { employeeId: employee.id },
+          orderBy: { createdAt: "desc" },
+          take: 50,
+          include: {
+            validatedBy: {
+              select: { firstName: true, lastName: true },
+            },
+            requester: {
+              select: { firstName: true, lastName: true },
+            },
           },
-          requester: {
-            select: { firstName: true, lastName: true },
-          },
-        },
-      })
-    : [];
+        }),
+        prisma.rhLeaveMovement.findMany({
+          where: { employeeId: employee.id },
+          orderBy: [{ effectiveDate: "desc" }, { createdAt: "desc" }],
+          take: 100,
+        }),
+      ])
+    : [[], []];
 
   const pending = leaves.filter((l) => l.status === "PENDING").length;
   const approved = leaves.filter((l) => l.status === "APPROVED").length;
@@ -101,10 +109,26 @@ export default async function EspaceCongesPage() {
                 Solde actuel :{" "}
                 {formatLeaveDays(Number(employee.leaveBalanceDays))}. La
                 consommation n&apos;intervient qu&apos;après validation RH.
+                Acquisition automatique : +2,5 j / mois de service.
               </p>
             </div>
             <LeaveRequestForm />
           </FormShell>
+
+          <div className="space-y-3">
+            <h2 className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
+              Mouvements de solde
+            </h2>
+            <LeaveMovementsList
+              movements={movements.map((m) => ({
+                id: m.id,
+                type: m.type,
+                days: Number(m.days),
+                effectiveDate: m.effectiveDate,
+                note: m.note,
+              }))}
+            />
+          </div>
 
           <div className="space-y-3">
             <h2 className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
