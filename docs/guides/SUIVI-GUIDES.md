@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-03 (refonte Mon espace IA 5 entrées) |
+| Dernière mise à jour | 2026-11-03 (avatar compress + UX fiche profil) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,12 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-03 — Avatar photo : 413 + pending + fiche redesign
+- **Quoi** : compression client (carré JPEG ~800 px), `serverActions.bodySizeLimit` 3 Mo, overlay pending + messages erreur/succès sur upload ; redesign hero/stats/tuiles fiche `/espace/profil`.
+- **Pourquoi** : 413 Payload Too Large (limite défaut Server Actions 1 Mo) + soumission sans feedback ; UI trop basique.
+- **Fichiers** : `next.config.ts`, `compress-image.ts`, `avatar-upload.tsx`, `rh-avatar.ts`, `espace/profil/page.tsx`, `use-pending-action.ts`, `profile-editor.tsx`
+- **Statut doc** : parcours photo immédiat inchangé (sans validation RH) — guide RH à revalider sur UX pending
 
 ### 2026-11-03 — Refonte Mon espace (IA + coffre + list/create)
 

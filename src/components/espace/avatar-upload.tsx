@@ -2,59 +2,132 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Camera, Loader2 } from "lucide-react";
 import {
   removeAvatarAction,
   uploadAvatarAction,
 } from "@/actions/rh-avatar";
+import { compressAvatarImage } from "@/lib/espace/compress-image";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
+import { cn } from "@/lib/utils";
+
+function friendlyUploadError(err: unknown): string {
+  const msg = err instanceof Error ? err.message : String(err ?? "");
+  if (/413|too large|body.*limit|unexpected response/i.test(msg)) {
+    return "Fichier trop volumineux pour le serveur. Réessayez — la photo est compressée automatiquement.";
+  }
+  if (msg) return msg;
+  return "Échec de l’envoi";
+}
 
 export function AvatarUpload({
   avatarUrl,
   initials,
+  size = "lg",
 }: {
   avatarUrl: string | null;
   initials: string;
+  size?: "md" | "lg";
 }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const { pending, run } = usePendingAction();
   const [error, setError] = useState<string | null>(null);
+  const [okMsg, setOkMsg] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [phase, setPhase] = useState<"idle" | "compress" | "upload">("idle");
+
+  const box = size === "lg" ? "h-28 w-28 sm:h-32 sm:w-32" : "h-20 w-20";
 
   function onFile(file: File | undefined) {
     if (!file) return;
     setError(null);
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-    const fd = new FormData();
-    fd.set("avatar", file);
+    setOkMsg(null);
+    const localUrl = URL.createObjectURL(file);
+    setPreview(localUrl);
+
     void run(async () => {
-      const res = await uploadAvatarAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
+      try {
+        setPhase("compress");
+        const compressed = await compressAvatarImage(file);
+        setPhase("upload");
+        const fd = new FormData();
+        fd.set(
+          "avatar",
+          new File([compressed.blob], compressed.fileName, {
+            type: compressed.mime,
+          }),
+        );
+        const res = await uploadAvatarAction(fd);
+        if (!res.ok) {
+          setError(res.error ?? "Échec");
+          setPreview(null);
+          return;
+        }
+        setOkMsg(res.message ?? "Photo mise à jour");
+        router.refresh();
+      } catch (e) {
+        setError(friendlyUploadError(e));
         setPreview(null);
-        return;
+      } finally {
+        setPhase("idle");
+        if (inputRef.current) inputRef.current.value = "";
       }
-      router.refresh();
     });
   }
 
+  const label =
+    phase === "compress"
+      ? "Compression…"
+      : phase === "upload" || pending
+        ? "Envoi…"
+        : avatarUrl
+          ? "Remplacer"
+          : "Ajouter une photo";
+
   return (
-    <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-      <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl bg-msk-ink text-xl font-semibold text-white">
-        {preview || avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={preview ?? avatarUrl!}
-            alt=""
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <span aria-hidden>{initials}</span>
-        )}
+    <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-end">
+      <div className="relative">
+        <div
+          className={cn(
+            "flex items-center justify-center overflow-hidden rounded-2xl bg-msk-ink text-2xl font-semibold text-white shadow-md ring-4 ring-white",
+            box,
+            pending && "opacity-70",
+          )}
+        >
+          {preview || avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={preview ?? avatarUrl!}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span aria-hidden>{initials}</span>
+          )}
+        </div>
+        {pending ? (
+          <div
+            className="absolute inset-0 flex items-center justify-center rounded-2xl bg-msk-ink/50"
+            aria-live="polite"
+            aria-busy="true"
+          >
+            <Loader2 className="h-7 w-7 animate-spin text-white" />
+          </div>
+        ) : null}
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => inputRef.current?.click()}
+          className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-msk-blue text-white shadow-md ring-2 ring-white transition hover:bg-msk-blue/90 disabled:opacity-50"
+          aria-label={label}
+        >
+          <Camera className="h-4 w-4" aria-hidden />
+        </button>
       </div>
-      <div className="space-y-2">
+
+      <div className="min-w-0 space-y-2">
         <input
           ref={inputRef}
           type="file"
@@ -70,7 +143,14 @@ export function AvatarUpload({
             disabled={pending}
             onClick={() => inputRef.current?.click()}
           >
-            {pending ? "Envoi…" : avatarUrl ? "Remplacer la photo" : "Ajouter une photo"}
+            {pending ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                {label}
+              </>
+            ) : (
+              label
+            )}
           </Button>
           {avatarUrl ? (
             <Button
@@ -80,25 +160,44 @@ export function AvatarUpload({
               disabled={pending}
               onClick={() => {
                 setError(null);
+                setOkMsg(null);
                 void run(async () => {
-                  const res = await removeAvatarAction();
-                  if (!res.ok) {
-                    setError(res.error ?? "Échec");
-                    return;
+                  try {
+                    setPhase("upload");
+                    const res = await removeAvatarAction();
+                    if (!res.ok) {
+                      setError(res.error ?? "Échec");
+                      return;
+                    }
+                    setPreview(null);
+                    setOkMsg("Photo retirée");
+                    router.refresh();
+                  } catch (e) {
+                    setError(friendlyUploadError(e));
+                  } finally {
+                    setPhase("idle");
                   }
-                  setPreview(null);
-                  router.refresh();
                 });
               }}
             >
-              Retirer
+              {pending ? "…" : "Retirer"}
             </Button>
           ) : null}
         </div>
-        <p className="text-xs text-msk-ink/45">
-          JPEG, PNG ou WebP — max 2 Mo. Mise à jour immédiate (sans validation RH).
+        <p className="max-w-xs text-xs text-msk-ink/45">
+          JPEG, PNG ou WebP. Compression automatique (carré ~800 px). Mise à
+          jour immédiate — sans validation RH.
         </p>
-        {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
+        {error ? (
+          <p className="text-sm font-medium text-msk-coral" role="alert">
+            {error}
+          </p>
+        ) : null}
+        {okMsg && !error ? (
+          <p className="text-sm font-medium text-msk-blue" role="status">
+            {okMsg}
+          </p>
+        ) : null}
       </div>
     </div>
   );

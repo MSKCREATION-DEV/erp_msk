@@ -11,7 +11,8 @@ import type { ActionResult } from "@/actions/auth";
 import { uploadGedObject, removeGedObject } from "@/lib/ged/storage";
 import { ensureCollaboratorSubfolder } from "@/lib/ged/tree";
 
-const MAX_BYTES = 2 * 1024 * 1024;
+/** Après compression client (~700 Ko) ; garde-fou serveur. */
+const MAX_BYTES = 1.5 * 1024 * 1024;
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 function revalidateAvatar(employeeId: string) {
@@ -44,7 +45,10 @@ export async function uploadAvatarAction(
     return { ok: false, error: "Formats acceptés : JPEG, PNG, WebP" };
   }
   if (file.size > MAX_BYTES) {
-    return { ok: false, error: "Image trop lourde (max 2 Mo)" };
+    return {
+      ok: false,
+      error: "Image trop lourde après compression — choisissez une autre photo",
+    };
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());

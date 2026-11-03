@@ -81,15 +81,19 @@ export function ProfileEditor({
     fd.set("note", note);
     fd.set("lines", JSON.stringify(lines));
     void run(async () => {
-      const res = await requestProfileChangeAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
+      try {
+        const res = await requestProfileChangeAction(fd);
+        if (!res.ok) {
+          setError(res.error ?? "Échec");
+          return;
+        }
+        setOkMsg("Modifications enregistrées — en attente de validation RH.");
+        setEditing(false);
+        setNote("");
+        router.refresh();
+      } catch {
+        setError("Réponse serveur inattendue — réessayez.");
       }
-      setOkMsg("Modifications enregistrées — en attente de validation RH.");
-      setEditing(false);
-      setNote("");
-      router.refresh();
     });
   }
 
@@ -113,12 +117,12 @@ export function ProfileEditor({
         ) : undefined
       }
     >
-      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3 border-b border-msk-ink/6 pb-5">
         <div>
           <h2 className="text-base font-semibold text-msk-ink">
             Informations personnelles
           </h2>
-          <p className="mt-1 text-sm text-msk-ink/55">
+          <p className="mt-1 max-w-2xl text-sm text-msk-ink/55">
             Modifiez plusieurs champs puis enregistrez. Les données officielles
             ne changent qu&apos;après validation RH.
           </p>
@@ -129,9 +133,9 @@ export function ProfileEditor({
           </Button>
         ) : null}
         {hasOpenPending && !editing ? (
-          <p className="text-sm font-medium text-msk-blue">
-            Modifications en attente de validation
-          </p>
+          <span className="inline-flex items-center rounded-full bg-msk-blue/10 px-3 py-1 text-xs font-semibold text-msk-blue">
+            En attente de validation RH
+          </span>
         ) : null}
       </div>
 

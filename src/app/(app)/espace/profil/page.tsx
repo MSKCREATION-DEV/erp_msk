@@ -2,6 +2,16 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import {
+  Briefcase,
+  Building2,
+  CalendarDays,
+  CreditCard,
+  FileText,
+  Mail,
+  MapPin,
+  UserRound,
+} from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -23,14 +33,76 @@ import { ProfileEditor } from "@/components/espace/profile-editor";
 import { AvatarUpload } from "@/components/espace/avatar-upload";
 import { RequestHistoryCard } from "@/components/espace/request-history-card";
 import { signedGedUrl } from "@/lib/ged/storage";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Ma fiche personnelle" };
 
-function Row({ label, value }: { label: string; value: ReactNode }) {
+function MetaStat({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  icon: typeof Briefcase;
+}) {
   return (
-    <div className="grid gap-1 border-b border-msk-ink/6 py-3 sm:grid-cols-3 sm:gap-4">
-      <dt className="text-xs font-medium text-msk-ink/45">{label}</dt>
-      <dd className="text-sm text-msk-ink sm:col-span-2">{value ?? "—"}</dd>
+    <div className="flex min-w-0 items-start gap-3 rounded-xl border border-msk-ink/6 bg-white/80 px-3.5 py-3 backdrop-blur-sm">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-msk-blue/8 text-msk-blue">
+        <Icon className="h-4 w-4" aria-hidden />
+      </span>
+      <div className="min-w-0">
+        <p className="text-[10px] font-semibold uppercase tracking-caps text-msk-ink/40">
+          {label}
+        </p>
+        <p className="mt-0.5 truncate text-sm font-semibold text-msk-ink">
+          {value}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function InfoTile({
+  label,
+  value,
+  icon: Icon,
+  href,
+}: {
+  label: string;
+  value: ReactNode;
+  icon: typeof Mail;
+  href?: string;
+}) {
+  const body = (
+    <>
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-msk-chalk text-msk-ink/45">
+        <Icon className="h-3.5 w-3.5" aria-hidden />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] font-semibold uppercase tracking-caps text-msk-ink/40">
+          {label}
+        </p>
+        <div className="mt-0.5 text-sm font-medium text-msk-ink">
+          {value ?? "—"}
+        </div>
+      </div>
+    </>
+  );
+  if (href) {
+    return (
+      <Link
+        prefetch={false}
+        href={href}
+        className="flex items-start gap-3 rounded-xl border border-msk-ink/6 bg-msk-chalk/30 px-3.5 py-3 transition hover:border-msk-blue/25 hover:bg-msk-blue/4"
+      >
+        {body}
+      </Link>
+    );
+  }
+  return (
+    <div className="flex items-start gap-3 rounded-xl border border-msk-ink/6 bg-msk-chalk/30 px-3.5 py-3">
+      {body}
     </div>
   );
 }
@@ -121,11 +193,15 @@ export default async function EspaceProfilPage() {
     }
   }
 
+  const hireLabel = employee.hireDate
+    ? employee.hireDate.toLocaleDateString("fr-FR")
+    : null;
+
   return (
     <PageShell>
       <PageHeader
         title="Ma fiche personnelle"
-        description="Dossier RH numérique — identité, coordonnées et situation professionnelle."
+        description="Dossier RH numérique — identité, photo, coordonnées et situation."
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[
@@ -134,94 +210,162 @@ export default async function EspaceProfilPage() {
         ]}
       />
 
+      {/* Hero identité */}
       <Surface className="overflow-hidden p-0">
-        <div className="border-b border-msk-ink/6 bg-gradient-to-br from-msk-blue/8 via-white to-[#00ACEE]/6 px-5 py-6 sm:px-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-            <div className="min-w-0 space-y-3">
-              <h2 className="text-2xl font-semibold tracking-tight text-msk-ink">
-                {employee.firstName}{" "}
-                <span className="font-accent text-msk-blue">
-                  {employee.lastName}
-                </span>
-              </h2>
-              <div className="flex flex-wrap items-center gap-2 text-sm text-msk-ink/60">
-                {employee.jobTitle ? (
-                  <span className="font-medium text-msk-ink/80">
-                    {employee.jobTitle}
-                  </span>
-                ) : null}
-                {employee.department ? (
-                  <>
-                    <span aria-hidden>·</span>
-                    <span>{employee.department}</span>
-                  </>
-                ) : null}
-                {employee.employeeCode ? (
-                  <>
-                    <span aria-hidden>·</span>
-                    <span className="tabular-nums">
-                      N° {employee.employeeCode}
+        <div
+          className={cn(
+            "relative border-b border-msk-ink/6",
+            "bg-[linear-gradient(135deg,rgba(29,115,188,0.12)_0%,rgba(245,243,239,0.9)_42%,rgba(0,172,238,0.1)_100%)]",
+          )}
+        >
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.35]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 12% 20%, rgba(29,115,188,0.18), transparent 42%), radial-gradient(circle at 88% 10%, rgba(0,172,238,0.16), transparent 38%)",
+            }}
+            aria-hidden
+          />
+          <div className="relative px-5 py-7 sm:px-8 sm:py-8">
+            <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
+                {canEdit ? (
+                  <AvatarUpload
+                    avatarUrl={avatarUrl}
+                    initials={initials}
+                    size="lg"
+                  />
+                ) : (
+                  <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl bg-msk-ink text-2xl font-semibold text-white shadow-md ring-4 ring-white sm:h-32 sm:w-32">
+                    {avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={avatarUrl}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span aria-hidden>{initials}</span>
+                    )}
+                  </div>
+                )}
+                <div className="min-w-0 space-y-2.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-caps text-msk-blue">
+                    Collaborateur MSK
+                  </p>
+                  <h2 className="text-3xl font-semibold tracking-tight text-msk-ink sm:text-4xl">
+                    {employee.firstName}{" "}
+                    <span className="font-accent text-msk-blue">
+                      {employee.lastName}
                     </span>
-                  </>
-                ) : null}
-                <Badge tone={employeeStatusTone(employee.status)}>
-                  {EMPLOYEE_STATUS_LABEL[employee.status]}
-                </Badge>
+                  </h2>
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-msk-ink/65">
+                    {employee.jobTitle ? (
+                      <span className="font-medium text-msk-ink/85">
+                        {employee.jobTitle}
+                      </span>
+                    ) : null}
+                    {employee.department ? (
+                      <>
+                        <span aria-hidden className="text-msk-ink/25">
+                          ·
+                        </span>
+                        <span>{employee.department}</span>
+                      </>
+                    ) : null}
+                    {employee.employeeCode ? (
+                      <>
+                        <span aria-hidden className="text-msk-ink/25">
+                          ·
+                        </span>
+                        <span className="tabular-nums">
+                          N° {employee.employeeCode}
+                        </span>
+                      </>
+                    ) : null}
+                    <Badge tone={employeeStatusTone(employee.status)}>
+                      {EMPLOYEE_STATUS_LABEL[employee.status]}
+                    </Badge>
+                  </div>
+                  {employee.manager ? (
+                    <p className="text-sm text-msk-ink/50">
+                      N+1 · {employee.manager.firstName}{" "}
+                      {employee.manager.lastName}
+                      {employee.manager.jobTitle
+                        ? ` (${employee.manager.jobTitle})`
+                        : ""}
+                    </p>
+                  ) : null}
+                </div>
               </div>
-              <p className="text-sm text-msk-ink/55">
-                {employee.hireDate
-                  ? `Embauche ${employee.hireDate.toLocaleDateString("fr-FR")}`
-                  : "Date d’embauche non renseignée"}
-                {seniority ? ` · ${seniority}` : ""}
-                {employee.manager
-                  ? ` · N+1 ${employee.manager.firstName} ${employee.manager.lastName}`
-                  : ""}
-              </p>
             </div>
-            {canEdit ? (
-              <AvatarUpload avatarUrl={avatarUrl} initials={initials} />
-            ) : avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={avatarUrl}
-                alt=""
-                className="h-24 w-24 rounded-2xl object-cover"
+
+            <div className="mt-7 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+              <MetaStat
+                icon={Briefcase}
+                label="Type"
+                value={EMPLOYEE_TYPE_LABEL[employee.employeeType]}
               />
-            ) : null}
+              <MetaStat
+                icon={FileText}
+                label="Contrat"
+                value={
+                  active
+                    ? CONTRACT_TYPE_LABEL[active.type]
+                    : "Aucun actif"
+                }
+              />
+              <MetaStat
+                icon={CalendarDays}
+                label="Ancienneté"
+                value={
+                  seniority
+                    ? seniority
+                    : hireLabel
+                      ? `Depuis ${hireLabel}`
+                      : "—"
+                }
+              />
+              <MetaStat
+                icon={UserRound}
+                label="Âge"
+                value={age ?? "—"}
+              />
+            </div>
           </div>
         </div>
       </Surface>
 
-      <div className="grid gap-4 @xl:grid-cols-12">
-        <Surface className="p-5 @xl:col-span-5">
-          <h3 className="text-sm font-semibold text-msk-ink">
-            Situation professionnelle
-          </h3>
-          <dl className="mt-2">
-            <Row
-              label="Type"
-              value={EMPLOYEE_TYPE_LABEL[employee.employeeType]}
-            />
-            <Row
+      {/* Situation + admin */}
+      <div className="grid gap-4 lg:grid-cols-12">
+        <Surface className="p-5 sm:p-6 lg:col-span-7">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-base font-semibold text-msk-ink">
+                Situation professionnelle
+              </h3>
+              <p className="mt-0.5 text-sm text-msk-ink/50">
+                Poste, contrat et rattachement.
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            <InfoTile
+              icon={Briefcase}
               label="Contrat actuel"
               value={
                 active ? (
                   <span>
                     {CONTRACT_TYPE_LABEL[active.type]} — {active.title}
-                    <Link
-                      prefetch={false}
-                      href="/espace/documents?cat=pro"
-                      className="ml-2 text-msk-blue hover:underline"
-                    >
-                      Documents
-                    </Link>
                   </span>
                 ) : (
                   "—"
                 )
               }
+              href={active ? "/espace/documents?cat=pro" : undefined}
             />
-            <Row
+            <InfoTile
+              icon={CalendarDays}
               label="Début contrat"
               value={
                 active
@@ -229,7 +373,8 @@ export default async function EspaceProfilPage() {
                   : "—"
               }
             />
-            <Row
+            <InfoTile
+              icon={CalendarDays}
               label="Fin contrat"
               value={
                 active?.endDate
@@ -239,23 +384,50 @@ export default async function EspaceProfilPage() {
                     : "—"
               }
             />
-            <Row label="Lieu de travail" value={employee.workLocation} />
-            <Row label="Âge" value={age} />
-          </dl>
+            <InfoTile
+              icon={MapPin}
+              label="Lieu de travail"
+              value={employee.workLocation || "—"}
+            />
+            <InfoTile
+              icon={Building2}
+              label="Embauche"
+              value={
+                hireLabel
+                  ? `${hireLabel}${seniority ? ` · ${seniority}` : ""}`
+                  : "—"
+              }
+            />
+            <InfoTile
+              icon={UserRound}
+              label="Type collaborateur"
+              value={EMPLOYEE_TYPE_LABEL[employee.employeeType]}
+            />
+          </div>
         </Surface>
 
-        <Surface className="p-5 @xl:col-span-7">
-          <h3 className="text-sm font-semibold text-msk-ink">
-            Administratif (lecture)
-          </h3>
-          <dl className="mt-2">
-            <Row label="E-mail pro" value={employee.email} />
-            <Row
+        <Surface className="p-5 sm:p-6 lg:col-span-5">
+          <div className="mb-4">
+            <h3 className="text-base font-semibold text-msk-ink">
+              Administratif
+            </h3>
+            <p className="mt-0.5 text-sm text-msk-ink/50">
+              Lecture seule — modification via demande RH.
+            </p>
+          </div>
+          <div className="grid gap-2.5">
+            <InfoTile icon={Mail} label="E-mail pro" value={employee.email} />
+            <InfoTile
+              icon={CreditCard}
               label="IBAN"
-              value={maskSensitive(employee.bankIban)}
+              value={maskSensitive(employee.bankIban) || "—"}
             />
-            <Row label="Banque" value={employee.bankName} />
-          </dl>
+            <InfoTile
+              icon={Building2}
+              label="Banque"
+              value={employee.bankName || "—"}
+            />
+          </div>
         </Surface>
       </div>
 
@@ -281,7 +453,11 @@ export default async function EspaceProfilPage() {
               key={c.id}
               title={`${c.lines.length} champ(s)`}
               subtitle={c.lines
-                .map((l) => PROFILE_REQUESTABLE_FIELDS.find((f) => f.key === l.fieldKey)?.label ?? l.fieldKey)
+                .map(
+                  (l) =>
+                    PROFILE_REQUESTABLE_FIELDS.find((f) => f.key === l.fieldKey)
+                      ?.label ?? l.fieldKey,
+                )
                 .join(", ")}
               statusLabel={STATUS_LABEL[c.status]}
               statusTone={

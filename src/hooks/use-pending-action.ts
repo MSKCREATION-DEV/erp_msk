@@ -17,6 +17,9 @@ export function usePendingAction() {
     setPending(true);
     try {
       await fn();
+    } catch {
+      // L’appelant gère l’erreur UI ; on évite un « Uncaught (in promise) »
+      // si run() est fire-and-forget (void run(...)).
     } finally {
       lock.current = false;
       setPending(false);
