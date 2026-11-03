@@ -51,7 +51,7 @@ export default async function RhCongesPage({
     <PageShell>
       <PageHeader
         title="Congés"
-        description="Demandes de congés et validation."
+        description="Demandes à traiter — approuver ou refuser."
         backHref="/rh"
         backLabel="Retour RH"
         breadcrumbs={[{ label: "RH", href: "/rh" }, { label: "Congés" }]}
@@ -107,7 +107,7 @@ export default async function RhCongesPage({
                 </Badge>
               </div>
               {l.status === "PENDING" && canValidate ? (
-                <div className="mt-4 border-t border-msk-ink/10 pt-4">
+                <div className="mt-3 flex justify-end border-t border-msk-ink/6 pt-3">
                   <LeaveReviewButtons leaveId={l.id} />
                 </div>
               ) : l.reviewNote ? (

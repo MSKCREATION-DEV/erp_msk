@@ -2,63 +2,134 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { reviewAbsenceAction } from "@/actions/rh";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
+import { Textarea } from "@/components/ui/textarea";
+import { FieldLabel } from "@/components/ui/field-label";
 import { usePendingAction } from "@/hooks/use-pending-action";
 
-/** Marquage justifiée / injustifiée d'une absence (RH). */
+/** Justifiée / injustifiée — pattern Commercial (boutons + modal note). */
 export function AbsenceReviewButtons({ absenceId }: { absenceId: string }) {
   const router = useRouter();
   const { pending, run } = usePendingAction();
+  const [mode, setMode] = useState<"JUSTIFIED" | "UNJUSTIFIED" | null>(null);
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  function decide(status: "JUSTIFIED" | "UNJUSTIFIED") {
+  function confirm() {
+    if (!mode) return;
     setError(null);
     const fd = new FormData();
     fd.set("absenceId", absenceId);
-    fd.set("status", status);
-    fd.set("justificationNote", note);
+    fd.set("status", mode);
+    if (note.trim()) fd.set("justificationNote", note.trim());
     void run(async () => {
       const res = await reviewAbsenceAction(fd);
       if (!res.ok) {
         setError(res.error ?? "Échec");
         return;
       }
+      setMode(null);
+      setNote("");
       router.refresh();
     });
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <textarea
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
+    <div
+      className="flex flex-wrap items-center justify-end gap-2"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <Button
+        type="button"
+        size="sm"
         disabled={pending}
-        rows={2}
-        placeholder="Note de justification (optionnel)…"
-        className="w-full rounded-lg border border-msk-ink/15 bg-white px-3 py-2 text-sm"
-      />
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          size="sm"
-          disabled={pending}
-          onClick={() => decide("JUSTIFIED")}
-        >
-          {pending ? "…" : "Justifiée"}
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="danger"
-          disabled={pending}
-          onClick={() => decide("UNJUSTIFIED")}
-        >
-          {pending ? "…" : "Injustifiée"}
-        </Button>
-      </div>
-      {error ? <p className="text-sm text-msk-coral">{error}</p> : null}
+        onClick={() => {
+          setMode("JUSTIFIED");
+          setError(null);
+        }}
+      >
+        <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
+        Justifiée
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant="danger"
+        disabled={pending}
+        onClick={() => {
+          setMode("UNJUSTIFIED");
+          setError(null);
+        }}
+      >
+        <XCircle className="h-3.5 w-3.5" aria-hidden />
+        Injustifiée
+      </Button>
+
+      <Modal
+        open={mode != null}
+        onOpenChange={(open) => {
+          if (!open && !pending) {
+            setMode(null);
+            setNote("");
+            setError(null);
+          }
+        }}
+        title={
+          mode === "JUSTIFIED"
+            ? "Marquer justifiée"
+            : "Marquer injustifiée"
+        }
+        description="Note optionnelle pour le dossier."
+        size="md"
+        footer={
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={pending}
+              onClick={() => {
+                setMode(null);
+                setNote("");
+                setError(null);
+              }}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="button"
+              variant={mode === "UNJUSTIFIED" ? "danger" : "primary"}
+              disabled={pending}
+              onClick={confirm}
+            >
+              {pending ? "Traitement…" : "Confirmer"}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-3 p-5">
+          <div>
+            <FieldLabel htmlFor={`abs-note-${absenceId}`}>
+              Note (optionnel)
+            </FieldLabel>
+            <Textarea
+              id={`abs-note-${absenceId}`}
+              rows={3}
+              value={note}
+              disabled={pending}
+              placeholder="Motif / précision RH"
+              onChange={(e) => setNote(e.target.value)}
+            />
+          </div>
+          {error ? (
+            <p className="text-sm text-msk-coral" role="alert">
+              {error}
+            </p>
+          ) : null}
+        </div>
+      </Modal>
     </div>
   );
 }

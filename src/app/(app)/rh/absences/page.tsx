@@ -46,7 +46,7 @@ export default async function RhAbsencesPage({
     <PageShell>
       <PageHeader
         title="Absences"
-        description="Déclarations et justification."
+        description="Absences déclarées — marquer justifiée ou injustifiée."
         backHref="/rh"
         backLabel="Retour RH"
         breadcrumbs={[{ label: "RH", href: "/rh" }, { label: "Absences" }]}
@@ -88,7 +88,7 @@ export default async function RhAbsencesPage({
                 </Badge>
               </div>
               {a.status === "DECLARED" ? (
-                <div className="mt-4 border-t border-msk-ink/10 pt-4">
+                <div className="mt-3 flex justify-end border-t border-msk-ink/6 pt-3">
                   <AbsenceReviewButtons absenceId={a.id} />
                 </div>
               ) : a.justificationNote ? (

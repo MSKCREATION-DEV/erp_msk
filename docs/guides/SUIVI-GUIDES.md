@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-03 (espace UX : modal photo, enums, copy) |
+| Dernière mise à jour | 2026-11-03 (GED↔espace docs + shell scroll + RH actions) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,12 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-03 — GED ↔ Mes documents + shell scroll + RH = pattern Commercial
+- **Quoi** : coffre espace lit l’arborescence GED collaborateur (plus seulement DocumentLink) ; html/body + shell `h-dvh` — seul `<main>` scroll ; actions RH (congés/absences/profil/heures) en boutons + modal comme RDV Commercial ; règle `list-actions-commercial-ref.mdc`.
+- **Pourquoi** : Yaye Bah — docs GED visibles, espace à 0 ; double scroll désagréable ; listes RH avec textarea inline (mélange responsabilités).
+- **Fichiers** : `documents-vault.ts`, `espace/documents`, `overview`, `(app)/layout`, `root layout`, `*-review-*.tsx`, rule commercial-ref
+- **Statut doc** : guide documents espace → `to_validate`
 
 ### 2026-11-03 — Espace UX : modal photo, enums, activité, copy
 - **Quoi** : modal agrandissement photo ; Sexe Masculin/Féminin + pièce CNI/Passeport ; lecture fiche sans faux inputs ; dégradé bleu charte ; timeline profil dans Activité récente ; Mes heures clarifiées ; purge des libellés techniques (badgeuse V1, coffre-fort…).

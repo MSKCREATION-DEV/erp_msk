@@ -27,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={fontVariables}>
-      <body className="min-h-screen bg-msk-chalk font-sans text-msk-ink antialiased">
+    <html lang="fr" className={`h-full overflow-hidden ${fontVariables}`}>
+      <body className="h-full overflow-hidden bg-msk-chalk font-sans text-msk-ink antialiased">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

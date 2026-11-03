@@ -1,0 +1,28 @@
+---
+description: Listes / actions — référence Commercial (pas de mélange de responsabilités)
+alwaysApply: true
+---
+
+# Listes & actions — référence Commercial (absolu)
+
+La partie **Commercial / CRM** est la **référence** pour listing + actions partout dans l’ERP (RH, Stocks, Compta, Espace…), sauf décision explicite contraire.
+
+## Obligatoire
+
+| Intention | Pattern (comme Commercial) |
+|---|---|
+| Liste | Lignes / cartes **lisibles** — statut, résumé, lien fiche |
+| Création | Route dédiée `/…/nouveau` (`list-create-separation`) |
+| Décision courte (approuver, statut RDV…) | Boutons compacts → **Modal** pour note / confirm (ex. `AppointmentActions`) |
+| Édition riche | Page `/[id]` ou `/[id]/edit` |
+
+## Interdit
+
+- Textarea / formulaire de validation **toujours ouvert** sur chaque ligne d’une liste
+- Mélanger « parcourir » et « traiter » sur le même écran sans modal / fiche
+- Réinventer un pattern d’actions différent module par module
+
+## Test mental
+
+> Si un commercial ouvre la liste RH Congés, se sent-il dans le même produit que Prospects / RDV ?
+> Si non → aligner avant gate.

@@ -10,7 +10,7 @@ import type {
   RhTimesheetStatus,
 } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { listEmployeeRhDocs } from "@/lib/rh/docs-query";
+import { loadEmployeeDocumentVault } from "@/lib/espace/documents-vault";
 
 export type EspaceTimelineKind =
   | "leave"
@@ -277,10 +277,13 @@ export async function loadEspaceOverview(
     }),
   ]);
 
-  const docs = await listEmployeeRhDocs(
-    employee.id,
-    employee.contracts.map((c) => c.id),
-  );
+  const vaultDocs = await loadEmployeeDocumentVault({
+    employeeId: employee.id,
+    firstName: employee.firstName,
+    lastName: employee.lastName,
+    contractIds: employee.contracts.map((c) => c.id),
+    reglementStatus: employee.reglementStatus,
+  });
 
   const activeContract =
     employee.contracts.find((c) => c.status === "ACTIVE") ??
@@ -393,12 +396,12 @@ export async function loadEspaceOverview(
       href: "/espace/documents?cat=pro",
     });
   }
-  for (const d of docs.slice(0, 3)) {
+  for (const d of vaultDocs.slice(0, 3)) {
     timeline.push({
       id: `doc-${d.id}`,
       kind: "document",
-      title: "Document RH",
-      detail: d.label ?? d.originalName ?? d.id,
+      title: "Document disponible",
+      detail: d.title || d.originalName,
       at: d.createdAt,
       href: "/espace/documents",
     });
@@ -442,7 +445,7 @@ export async function loadEspaceOverview(
             gedDocumentId: latestPayslip.gedDocumentId,
           }
         : null,
-      docsCount: docs.length,
+      docsCount: vaultDocs.length,
     },
     alerts,
     timeline: timeline.slice(0, 12),

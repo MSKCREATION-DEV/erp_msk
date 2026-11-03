@@ -23,19 +23,23 @@ export default function AppLayout({
   return (
     <>
       <NavigationProgress />
-      <div className="flex h-screen overflow-hidden bg-[#F4F6F9]">
+      {/*
+        Shell figé viewport : sidebar + topbar fixes ;
+        seul <main> défile (évite double scroll body + conteneur).
+      */}
+      <div className="flex h-dvh max-h-dvh overflow-hidden bg-[#F4F6F9]">
         <div className="z-20 hidden h-full shrink-0 md:flex">
           <Suspense fallback={<SidebarSkeleton />}>
             <AppSidebar />
           </Suspense>
         </div>
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <Topbar />
           {/*
             @container : les grilles KPI / cards (`src/lib/ui/layout-grids`)
             réagissent à la largeur réelle du contenu (après sidebar), pas au viewport.
           */}
-          <main className="@container w-full min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-5 sm:px-6 lg:px-6 xl:px-8">
+          <main className="@container w-full min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain px-4 py-5 sm:px-6 lg:px-6 xl:px-8">
             {children}
           </main>
         </div>

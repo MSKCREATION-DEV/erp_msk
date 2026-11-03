@@ -33,7 +33,7 @@ export default async function RhProfilDemandesPage() {
     <PageShell>
       <PageHeader
         title="Demandes de modification de profil"
-        description="Comparer ancienne / nouvelle valeur, puis approuver ou refuser."
+        description="Vérifiez les changements proposés, puis approuvez ou refusez."
         backHref="/rh"
         backLabel="Retour RH"
         breadcrumbs={[

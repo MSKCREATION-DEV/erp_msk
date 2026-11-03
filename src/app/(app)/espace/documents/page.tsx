@@ -27,12 +27,17 @@ export default async function EspaceDocumentsPage() {
     where: { userId: user.id },
     include: {
       contracts: { select: { id: true } },
+      user: { select: { firstName: true, lastName: true } },
     },
   });
   if (!employee) redirect("/espace");
 
   const docs = await loadEmployeeDocumentVault({
     employeeId: employee.id,
+    firstName: employee.firstName,
+    lastName: employee.lastName,
+    userFirstName: employee.user?.firstName,
+    userLastName: employee.user?.lastName,
     contractIds: employee.contracts.map((c) => c.id),
     reglementStatus: employee.reglementStatus,
   });
@@ -62,7 +67,7 @@ export default async function EspaceDocumentsPage() {
           {
             label: "Documents",
             value: String(counts.all),
-            hint: "Total coffre",
+            hint: "Tous documents",
           },
           {
             label: "À signer",

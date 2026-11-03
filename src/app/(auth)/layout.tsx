@@ -6,7 +6,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="auth-atmosphere flex min-h-screen flex-col">
+    <div className="auth-atmosphere flex h-full min-h-0 flex-col overflow-y-auto">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 py-12">
         <div className="mb-10 flex justify-center">
           <Logo variant="intercale" href={null} priority />
