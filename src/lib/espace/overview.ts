@@ -281,6 +281,7 @@ export async function loadEspaceOverview(
     employeeId: employee.id,
     firstName: employee.firstName,
     lastName: employee.lastName,
+    avatarDocumentId: employee.avatarDocumentId,
     contractIds: employee.contracts.map((c) => c.id),
     reglementStatus: employee.reglementStatus,
   });

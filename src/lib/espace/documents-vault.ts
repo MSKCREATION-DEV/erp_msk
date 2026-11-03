@@ -59,19 +59,58 @@ function categoryForCollabSubfolder(
   }
 }
 
+/** Noms techniques (cuid, avatar-…) — jamais affichés tels quels. */
+export function isTechnicalFileName(name: string): boolean {
+  const base = name.replace(/\.[^.]+$/, "").trim();
+  if (/^avatar[-_]/i.test(base)) return true;
+  if (/^[a-z]+-c[a-z0-9]{20,}$/i.test(base)) return true;
+  if (/^c[a-z0-9]{20,}$/i.test(base)) return true;
+  return false;
+}
+
+function defaultTitleForFolder(folderCode: string, folderName: string): string {
+  switch (folderCode as CollabSubCode) {
+    case "01_IDENTITE_ADMIN":
+      return "Pièce d’identité / admin";
+    case "02_CONTRATS":
+      return "Contrat";
+    case "03_PAIE":
+      return "Bulletin de paie";
+    case "04_CONGES_ABSENCES":
+      return "Justificatif d’absence";
+    case "05_DIPLOMES_ATTESTATIONS":
+      return "Diplôme / attestation";
+    case "06_REGLEMENT_INTERIEUR":
+      return "Règlement intérieur";
+    case "09_SORTIE":
+      return "Document de sortie";
+    case "99_AUTRES":
+      return "Document";
+    default:
+      return folderName || "Document";
+  }
+}
+
 function titleForFolderDoc(
   originalName: string,
   folderCode: string,
   folderName: string,
 ): string {
-  const base = originalName.replace(/\.[^.]+$/, "").trim() || originalName;
   if (folderCode === "06_REGLEMENT_INTERIEUR") return "Règlement intérieur";
-  if (folderCode === "02_CONTRATS") return base || "Contrat";
-  if (folderCode === "03_PAIE") return base || "Bulletin de paie";
-  if (folderCode === "05_DIPLOMES_ATTESTATIONS") {
-    return base || "Diplôme / attestation";
+  if (isTechnicalFileName(originalName) || /^avatar[-_]/i.test(originalName)) {
+    return defaultTitleForFolder(folderCode, folderName);
   }
-  return base || folderName;
+  const base = originalName.replace(/\.[^.]+$/, "").trim();
+  // Remplace tirets/underscores techniques par espaces lisibles
+  const pretty = base.replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+  if (!pretty || isTechnicalFileName(pretty)) {
+    return defaultTitleForFolder(folderCode, folderName);
+  }
+  return pretty;
+}
+
+function shouldSkipVaultFile(originalName: string): boolean {
+  return /^avatar[-_]/i.test(originalName);
 }
 
 /**
@@ -117,6 +156,7 @@ async function listCollaboratorFolderDocs(input: {
 
   const out: VaultDoc[] = [];
   for (const d of docs) {
+    if (shouldSkipVaultFile(d.originalName)) continue;
     const folder = folderById.get(d.folderId);
     if (!folder) continue;
     // Racine personne : pas de sous-code COLLAB → internes
@@ -150,6 +190,8 @@ export async function loadEmployeeDocumentVault(input: {
   /** Noms compte Auth (slug GED souvent basé sur User, pas RhEmployee). */
   userFirstName?: string | null;
   userLastName?: string | null;
+  /** Photo profil — hors coffre (gérée sur la fiche). */
+  avatarDocumentId?: string | null;
   contractIds: string[];
   reglementStatus: RhReglementStatus;
 }): Promise<VaultDoc[]> {
@@ -267,6 +309,32 @@ export async function loadEmployeeDocumentVault(input: {
       year: s.period.year,
       month: s.period.month,
     });
+  }
+
+  if (input.avatarDocumentId) {
+    byId.delete(input.avatarDocumentId);
+  }
+
+  // Nettoyage titres techniques restants
+  for (const d of byId.values()) {
+    if (isTechnicalFileName(d.title) || isTechnicalFileName(d.originalName)) {
+      if (d.kind === RH_DOC.REGLEMENT || d.kind === "ged:06_REGLEMENT_INTERIEUR") {
+        d.title = "Règlement intérieur";
+      } else if (d.category === "paie" || d.kind === "payslip") {
+        d.title =
+          d.year && d.month
+            ? `Bulletin ${String(d.month).padStart(2, "0")}/${d.year}`
+            : "Bulletin de paie";
+      } else if (d.category === "pro") {
+        d.title = "Document professionnel";
+      } else if (d.category === "identite") {
+        d.title = "Pièce d’identité / admin";
+      } else if (d.category === "justificatifs") {
+        d.title = "Justificatif";
+      } else {
+        d.title = "Document";
+      }
+    }
   }
 
   return [...byId.values()].sort(

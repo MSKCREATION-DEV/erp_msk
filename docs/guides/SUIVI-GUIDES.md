@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-03 (GED↔espace docs + shell scroll + RH actions) |
+| Dernière mise à jour | 2026-11-03 (espace docs vignettes + titres lisibles) |
 
 ### Légende statuts documentaires
 
@@ -187,6 +187,12 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-03 — Mes documents : vignettes GED + titres humains
+- **Quoi** : grille vignettes (aperçu/télécharger ghost comme GED) ; exclusion photo profil du coffre ; titres UI (plus de `avatar-cuid…`) ; `originalName` avatar = « Photo de profil ».
+- **Pourquoi** : noms techniques en UI ; actions/liste non alignées GED.
+- **Fichiers** : `documents-vault.tsx`, `documents-vault.ts`, `rh-avatar.ts`, `espace/documents`, `overview`
+- **Statut doc** : guide documents → `to_validate`
 
 ### 2026-11-03 — GED ↔ Mes documents + shell scroll + RH = pattern Commercial
 - **Quoi** : coffre espace lit l’arborescence GED collaborateur (plus seulement DocumentLink) ; html/body + shell `h-dvh` — seul `<main>` scroll ; actions RH (congés/absences/profil/heures) en boutons + modal comme RDV Commercial ; règle `list-actions-commercial-ref.mdc`.

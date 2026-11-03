@@ -61,8 +61,9 @@ export async function uploadAvatarAction(
     new Date().getFullYear(),
     user.id,
   );
-  const fileName = `avatar-${employee.id}.${ext}`;
-  const storagePath = `${folder.path.replace(/^\//, "")}/${fileName}`;
+  const storageFile = `avatar-${employee.id}.${ext}`;
+  const displayName = `Photo de profil.${ext}`;
+  const storagePath = `${folder.path.replace(/^\//, "")}/${storageFile}`;
   await uploadGedObject(storagePath, bytes, file.type, { upsert: true });
   const checksum = createHash("sha256").update(bytes).digest("hex");
 
@@ -71,7 +72,7 @@ export async function uploadAvatarAction(
     data: {
       folderId: folder.id,
       storagePath,
-      originalName: fileName,
+      originalName: displayName,
       mime: file.type,
       size: bytes.byteLength,
       checksum,

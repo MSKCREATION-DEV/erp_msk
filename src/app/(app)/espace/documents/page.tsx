@@ -38,6 +38,7 @@ export default async function EspaceDocumentsPage() {
     lastName: employee.lastName,
     userFirstName: employee.user?.firstName,
     userLastName: employee.user?.lastName,
+    avatarDocumentId: employee.avatarDocumentId,
     contractIds: employee.contracts.map((c) => c.id),
     reglementStatus: employee.reglementStatus,
   });
