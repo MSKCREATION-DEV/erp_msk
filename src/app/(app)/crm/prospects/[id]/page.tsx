@@ -242,6 +242,7 @@ export default async function CrmProspectDetailPage({
         select: {
           id: true,
           number: true,
+          draftCode: true,
           status: true,
           currency: true,
           totalTtc: true,
@@ -252,6 +253,7 @@ export default async function CrmProspectDetailPage({
             select: {
               id: true,
               number: true,
+              draftCode: true,
               status: true,
               currency: true,
               totalTtc: true,
@@ -989,7 +991,12 @@ export default async function CrmProspectDetailPage({
                       {doc ? (
                         <DocPdfThumb
                           documentId={doc.id}
-                          title={doc.originalName || q.number}
+                          title={
+                            doc.originalName ||
+                            q.number ||
+                            q.draftCode ||
+                            "Devis"
+                          }
                           subtitle={`${QUOTE_STATUS_LABELS[q.status]} · ${formatComMoney(q.totalTtc, q.currency)}`}
                           className="max-w-36 shrink-0"
                         />
@@ -1006,7 +1013,7 @@ export default async function CrmProspectDetailPage({
                           href={`/commercial/devis/${q.id}`}
                           className="text-sm font-semibold text-msk-blue hover:underline"
                         >
-                          Devis {q.number}
+                          Devis {q.number || q.draftCode}
                         </Link>
                         <p className="mt-0.5 text-xs text-msk-ink/45">
                           {QUOTE_STATUS_LABELS[q.status]} ·{" "}

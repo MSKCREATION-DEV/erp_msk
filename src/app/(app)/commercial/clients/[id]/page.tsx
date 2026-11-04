@@ -15,6 +15,8 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { canAccessOwned } from "@/lib/commercial/scope";
+import { computeClientFinancials } from "@/lib/billing/client-financials";
+import { displayDocNumber } from "@/lib/commercial/doc-display";
 import {
   formatComMoney,
   invoiceStatusTone,
@@ -105,6 +107,7 @@ export default async function CommercialClientDetailPage({
         select: {
           id: true,
           number: true,
+          draftCode: true,
           status: true,
           totalTtc: true,
           currency: true,
@@ -114,15 +117,43 @@ export default async function CommercialClientDetailPage({
       },
       invoices: {
         orderBy: { createdAt: "desc" },
-        take: 20,
+        take: 50,
         select: {
           id: true,
           number: true,
+          draftCode: true,
           status: true,
           totalTtc: true,
+          amountPaid: true,
           currency: true,
           gedDocumentId: true,
+          dueDate: true,
+          issuedAt: true,
           createdAt: true,
+          allocations: {
+            select: { paymentId: true, invoiceId: true, amount: true },
+          },
+          creditNotes: { select: { amount: true } },
+        },
+      },
+      payments: {
+        orderBy: { paidAt: "desc" },
+        take: 50,
+        select: {
+          id: true,
+          amount: true,
+          paidAt: true,
+          allocations: { select: { amount: true } },
+        },
+      },
+      contracts: {
+        orderBy: { updatedAt: "desc" },
+        take: 10,
+        select: {
+          id: true,
+          reference: true,
+          status: true,
+          title: true,
         },
       },
       owner: { select: { id: true, firstName: true, lastName: true } },
@@ -204,6 +235,26 @@ export default async function CommercialClientDetailPage({
     }
   }
 
+  const fin = computeClientFinancials({
+    invoices: client.invoices.map((inv) => ({
+      id: inv.id,
+      status: inv.status,
+      totalTtc: inv.totalTtc,
+      amountPaid: inv.amountPaid,
+      dueDate: inv.dueDate,
+      issuedAt: inv.issuedAt,
+      createdAt: inv.createdAt,
+      allocations: inv.allocations,
+      creditNotesApplied: inv.creditNotes.reduce((s, n) => s + n.amount, 0),
+    })),
+    payments: client.payments.map((p) => ({
+      id: p.id,
+      amount: p.amount,
+      paidAt: p.paidAt,
+      allocationsSum: p.allocations.reduce((s, a) => s + a.amount, 0),
+    })),
+  });
+
   return (
     <PageShell>
       <PageHeader
@@ -240,6 +291,68 @@ export default async function CommercialClientDetailPage({
           </div>
         }
       />
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Surface className="p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/40">
+            Facturé
+          </p>
+          <p className="mt-1 text-lg font-semibold tabular-nums">
+            {formatComMoney(fin.totalInvoiced)}
+          </p>
+        </Surface>
+        <Surface className="p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/40">
+            Encaissé (imputé)
+          </p>
+          <p className="mt-1 text-lg font-semibold tabular-nums">
+            {formatComMoney(fin.totalPaidAllocated)}
+          </p>
+        </Surface>
+        <Surface className="p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/40">
+            Créances
+          </p>
+          <p className="mt-1 text-lg font-semibold tabular-nums text-msk-blue">
+            {formatComMoney(fin.openReceivable)}
+          </p>
+        </Surface>
+        <Surface className="p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/40">
+            Retard
+          </p>
+          <p className="mt-1 text-lg font-semibold tabular-nums text-msk-coral">
+            {formatComMoney(fin.overdueAmount)}
+          </p>
+          {fin.nextDueDate ? (
+            <p className="mt-1 text-xs text-msk-ink/45">
+              Prochaine échéance {fin.nextDueDate.toLocaleDateString("fr-FR")}
+            </p>
+          ) : null}
+        </Surface>
+      </div>
+
+      {client.contracts.length > 0 ? (
+        <Surface className="p-4 sm:p-5">
+          <h2 className="mb-3 text-sm font-semibold">Contrats</h2>
+          <ul className="flex flex-wrap gap-2">
+            {client.contracts.map((c) => (
+              <li key={c.id}>
+                <Link
+                  prefetch={false}
+                  href={`/commercial/contrats/${c.id}`}
+                  className="inline-flex items-center gap-2 rounded-full border border-msk-ink/10 bg-white px-3 py-1 text-sm text-msk-blue hover:bg-msk-blue/4"
+                >
+                  {c.reference}
+                  <Badge tone={c.status === "ACTIF" ? "success" : "muted"}>
+                    {c.status}
+                  </Badge>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Surface>
+      ) : null}
 
       {/* Bandeau identité — même structure que fiche prospect */}
       <Surface className="overflow-hidden p-0">
@@ -557,7 +670,7 @@ export default async function CommercialClientDetailPage({
                     {q.gedDocumentId ? (
                       <DocPdfThumb
                         documentId={q.gedDocumentId}
-                        title={q.number}
+                        title={displayDocNumber(q.number, q.draftCode)}
                         subtitle={QUOTE_STATUS_LABELS[q.status]}
                         className="max-w-26 shrink-0"
                       />
@@ -569,7 +682,7 @@ export default async function CommercialClientDetailPage({
                           href={`/commercial/devis/${q.id}`}
                           className="font-medium text-msk-blue hover:underline"
                         >
-                          {q.number}
+                          {displayDocNumber(q.number, q.draftCode)}
                         </Link>
                         <Badge tone={quoteStatusTone(q.status)}>
                           {QUOTE_STATUS_LABELS[q.status]}
@@ -607,7 +720,7 @@ export default async function CommercialClientDetailPage({
                     {inv.gedDocumentId ? (
                       <DocPdfThumb
                         documentId={inv.gedDocumentId}
-                        title={inv.number}
+                        title={displayDocNumber(inv.number, inv.draftCode)}
                         subtitle={INVOICE_STATUS_LABELS[inv.status]}
                         className="max-w-26 shrink-0"
                       />
@@ -619,7 +732,7 @@ export default async function CommercialClientDetailPage({
                           href={`/commercial/factures/${inv.id}`}
                           className="font-medium text-msk-blue hover:underline"
                         >
-                          {inv.number}
+                          {displayDocNumber(inv.number, inv.draftCode)}
                         </Link>
                         <Badge tone={invoiceStatusTone(inv.status)}>
                           {INVOICE_STATUS_LABELS[inv.status]}

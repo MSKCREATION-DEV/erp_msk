@@ -294,6 +294,11 @@ export type UserWhereInput = {
   comInvoicesOwned?: Prisma.ComInvoiceListRelationFilter
   comInvoicesCreated?: Prisma.ComInvoiceListRelationFilter
   comPaymentsRecorded?: Prisma.ComPaymentListRelationFilter
+  comContractsOwned?: Prisma.ComContractListRelationFilter
+  comContractsCreated?: Prisma.ComContractListRelationFilter
+  comCreditNotesCreated?: Prisma.ComCreditNoteListRelationFilter
+  comClientEvents?: Prisma.ComClientEventListRelationFilter
+  comImportBatches?: Prisma.ComImportBatchListRelationFilter
   cptEntriesCreated?: Prisma.CptEntryListRelationFilter
   cptEntriesValidated?: Prisma.CptEntryListRelationFilter
   cptBankTxnsCreated?: Prisma.CptBankTxnListRelationFilter
@@ -371,6 +376,11 @@ export type UserOrderByWithRelationInput = {
   comInvoicesOwned?: Prisma.ComInvoiceOrderByRelationAggregateInput
   comInvoicesCreated?: Prisma.ComInvoiceOrderByRelationAggregateInput
   comPaymentsRecorded?: Prisma.ComPaymentOrderByRelationAggregateInput
+  comContractsOwned?: Prisma.ComContractOrderByRelationAggregateInput
+  comContractsCreated?: Prisma.ComContractOrderByRelationAggregateInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteOrderByRelationAggregateInput
+  comClientEvents?: Prisma.ComClientEventOrderByRelationAggregateInput
+  comImportBatches?: Prisma.ComImportBatchOrderByRelationAggregateInput
   cptEntriesCreated?: Prisma.CptEntryOrderByRelationAggregateInput
   cptEntriesValidated?: Prisma.CptEntryOrderByRelationAggregateInput
   cptBankTxnsCreated?: Prisma.CptBankTxnOrderByRelationAggregateInput
@@ -451,6 +461,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   comInvoicesOwned?: Prisma.ComInvoiceListRelationFilter
   comInvoicesCreated?: Prisma.ComInvoiceListRelationFilter
   comPaymentsRecorded?: Prisma.ComPaymentListRelationFilter
+  comContractsOwned?: Prisma.ComContractListRelationFilter
+  comContractsCreated?: Prisma.ComContractListRelationFilter
+  comCreditNotesCreated?: Prisma.ComCreditNoteListRelationFilter
+  comClientEvents?: Prisma.ComClientEventListRelationFilter
+  comImportBatches?: Prisma.ComImportBatchListRelationFilter
   cptEntriesCreated?: Prisma.CptEntryListRelationFilter
   cptEntriesValidated?: Prisma.CptEntryListRelationFilter
   cptBankTxnsCreated?: Prisma.CptBankTxnListRelationFilter
@@ -570,6 +585,11 @@ export type UserCreateInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -647,6 +667,11 @@ export type UserUncheckedCreateInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -724,6 +749,11 @@ export type UserUpdateInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -801,6 +831,11 @@ export type UserUncheckedUpdateInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1386,6 +1421,34 @@ export type UserUpdateOneRequiredWithoutComQuotesCreatedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutComQuotesCreatedInput, Prisma.UserUpdateWithoutComQuotesCreatedInput>, Prisma.UserUncheckedUpdateWithoutComQuotesCreatedInput>
 }
 
+export type UserCreateNestedOneWithoutComContractsOwnedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutComContractsOwnedInput, Prisma.UserUncheckedCreateWithoutComContractsOwnedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutComContractsOwnedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutComContractsCreatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutComContractsCreatedInput, Prisma.UserUncheckedCreateWithoutComContractsCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutComContractsCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutComContractsOwnedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutComContractsOwnedInput, Prisma.UserUncheckedCreateWithoutComContractsOwnedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutComContractsOwnedInput
+  upsert?: Prisma.UserUpsertWithoutComContractsOwnedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutComContractsOwnedInput, Prisma.UserUpdateWithoutComContractsOwnedInput>, Prisma.UserUncheckedUpdateWithoutComContractsOwnedInput>
+}
+
+export type UserUpdateOneRequiredWithoutComContractsCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutComContractsCreatedInput, Prisma.UserUncheckedCreateWithoutComContractsCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutComContractsCreatedInput
+  upsert?: Prisma.UserUpsertWithoutComContractsCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutComContractsCreatedInput, Prisma.UserUpdateWithoutComContractsCreatedInput>, Prisma.UserUncheckedUpdateWithoutComContractsCreatedInput>
+}
+
 export type UserCreateNestedOneWithoutComInvoicesOwnedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutComInvoicesOwnedInput, Prisma.UserUncheckedCreateWithoutComInvoicesOwnedInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutComInvoicesOwnedInput
@@ -1414,6 +1477,20 @@ export type UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutComInvoicesCreatedInput, Prisma.UserUpdateWithoutComInvoicesCreatedInput>, Prisma.UserUncheckedUpdateWithoutComInvoicesCreatedInput>
 }
 
+export type UserCreateNestedOneWithoutComCreditNotesCreatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutComCreditNotesCreatedInput, Prisma.UserUncheckedCreateWithoutComCreditNotesCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutComCreditNotesCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutComCreditNotesCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutComCreditNotesCreatedInput, Prisma.UserUncheckedCreateWithoutComCreditNotesCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutComCreditNotesCreatedInput
+  upsert?: Prisma.UserUpsertWithoutComCreditNotesCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutComCreditNotesCreatedInput, Prisma.UserUpdateWithoutComCreditNotesCreatedInput>, Prisma.UserUncheckedUpdateWithoutComCreditNotesCreatedInput>
+}
+
 export type UserCreateNestedOneWithoutComPaymentsRecordedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutComPaymentsRecordedInput, Prisma.UserUncheckedCreateWithoutComPaymentsRecordedInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutComPaymentsRecordedInput
@@ -1426,6 +1503,36 @@ export type UserUpdateOneRequiredWithoutComPaymentsRecordedNestedInput = {
   upsert?: Prisma.UserUpsertWithoutComPaymentsRecordedInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutComPaymentsRecordedInput, Prisma.UserUpdateWithoutComPaymentsRecordedInput>, Prisma.UserUncheckedUpdateWithoutComPaymentsRecordedInput>
+}
+
+export type UserCreateNestedOneWithoutComClientEventsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutComClientEventsInput, Prisma.UserUncheckedCreateWithoutComClientEventsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutComClientEventsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutComClientEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutComClientEventsInput, Prisma.UserUncheckedCreateWithoutComClientEventsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutComClientEventsInput
+  upsert?: Prisma.UserUpsertWithoutComClientEventsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutComClientEventsInput, Prisma.UserUpdateWithoutComClientEventsInput>, Prisma.UserUncheckedUpdateWithoutComClientEventsInput>
+}
+
+export type UserCreateNestedOneWithoutComImportBatchesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutComImportBatchesInput, Prisma.UserUncheckedCreateWithoutComImportBatchesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutComImportBatchesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutComImportBatchesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutComImportBatchesInput, Prisma.UserUncheckedCreateWithoutComImportBatchesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutComImportBatchesInput
+  upsert?: Prisma.UserUpsertWithoutComImportBatchesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutComImportBatchesInput, Prisma.UserUpdateWithoutComImportBatchesInput>, Prisma.UserUncheckedUpdateWithoutComImportBatchesInput>
 }
 
 export type UserCreateNestedOneWithoutCptEntriesCreatedInput = {
@@ -1877,6 +1984,11 @@ export type UserCreateWithoutGroupMembersInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -1953,6 +2065,11 @@ export type UserUncheckedCreateWithoutGroupMembersInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2045,6 +2162,11 @@ export type UserUpdateWithoutGroupMembersInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -2121,6 +2243,11 @@ export type UserUncheckedUpdateWithoutGroupMembersInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2197,6 +2324,11 @@ export type UserCreateWithoutUserPacksInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -2273,6 +2405,11 @@ export type UserUncheckedCreateWithoutUserPacksInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2365,6 +2502,11 @@ export type UserUpdateWithoutUserPacksInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -2441,6 +2583,11 @@ export type UserUncheckedUpdateWithoutUserPacksInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2517,6 +2664,11 @@ export type UserCreateWithoutOverridesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -2593,6 +2745,11 @@ export type UserUncheckedCreateWithoutOverridesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2685,6 +2842,11 @@ export type UserUpdateWithoutOverridesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -2761,6 +2923,11 @@ export type UserUncheckedUpdateWithoutOverridesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2837,6 +3004,11 @@ export type UserCreateWithoutAuditLogsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -2913,6 +3085,11 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3005,6 +3182,11 @@ export type UserUpdateWithoutAuditLogsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -3081,6 +3263,11 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3157,6 +3344,11 @@ export type UserCreateWithoutResetRequestsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -3233,6 +3425,11 @@ export type UserUncheckedCreateWithoutResetRequestsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3314,6 +3511,11 @@ export type UserCreateWithoutResetsResolvedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -3390,6 +3592,11 @@ export type UserUncheckedCreateWithoutResetsResolvedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3482,6 +3689,11 @@ export type UserUpdateWithoutResetRequestsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -3558,6 +3770,11 @@ export type UserUncheckedUpdateWithoutResetRequestsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3645,6 +3862,11 @@ export type UserUpdateWithoutResetsResolvedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -3721,6 +3943,11 @@ export type UserUncheckedUpdateWithoutResetsResolvedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3797,6 +4024,11 @@ export type UserCreateWithoutFoldersCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -3873,6 +4105,11 @@ export type UserUncheckedCreateWithoutFoldersCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3965,6 +4202,11 @@ export type UserUpdateWithoutFoldersCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -4041,6 +4283,11 @@ export type UserUncheckedUpdateWithoutFoldersCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -4117,6 +4364,11 @@ export type UserCreateWithoutDocsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -4193,6 +4445,11 @@ export type UserUncheckedCreateWithoutDocsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -4285,6 +4542,11 @@ export type UserUpdateWithoutDocsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -4361,6 +4623,11 @@ export type UserUncheckedUpdateWithoutDocsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -4437,6 +4704,11 @@ export type UserCreateWithoutDocumentAclsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -4513,6 +4785,11 @@ export type UserUncheckedCreateWithoutDocumentAclsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -4605,6 +4882,11 @@ export type UserUpdateWithoutDocumentAclsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -4681,6 +4963,11 @@ export type UserUncheckedUpdateWithoutDocumentAclsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -4757,6 +5044,11 @@ export type UserCreateWithoutSignaturesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -4833,6 +5125,11 @@ export type UserUncheckedCreateWithoutSignaturesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -4925,6 +5222,11 @@ export type UserUpdateWithoutSignaturesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -5001,6 +5303,11 @@ export type UserUncheckedUpdateWithoutSignaturesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -5077,6 +5384,11 @@ export type UserCreateWithoutOrgNodesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -5153,6 +5465,11 @@ export type UserUncheckedCreateWithoutOrgNodesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -5245,6 +5562,11 @@ export type UserUpdateWithoutOrgNodesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -5321,6 +5643,11 @@ export type UserUncheckedUpdateWithoutOrgNodesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -5397,6 +5724,11 @@ export type UserCreateWithoutCrmOrgsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -5473,6 +5805,11 @@ export type UserUncheckedCreateWithoutCrmOrgsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -5554,6 +5891,11 @@ export type UserCreateWithoutCrmOrgsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -5630,6 +5972,11 @@ export type UserUncheckedCreateWithoutCrmOrgsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -5722,6 +6069,11 @@ export type UserUpdateWithoutCrmOrgsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -5798,6 +6150,11 @@ export type UserUncheckedUpdateWithoutCrmOrgsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -5885,6 +6242,11 @@ export type UserUpdateWithoutCrmOrgsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -5961,6 +6323,11 @@ export type UserUncheckedUpdateWithoutCrmOrgsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -6037,6 +6404,11 @@ export type UserCreateWithoutCrmDealsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -6113,6 +6485,11 @@ export type UserUncheckedCreateWithoutCrmDealsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -6194,6 +6571,11 @@ export type UserCreateWithoutCrmDealsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -6270,6 +6652,11 @@ export type UserUncheckedCreateWithoutCrmDealsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -6362,6 +6749,11 @@ export type UserUpdateWithoutCrmDealsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -6438,6 +6830,11 @@ export type UserUncheckedUpdateWithoutCrmDealsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -6525,6 +6922,11 @@ export type UserUpdateWithoutCrmDealsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -6601,6 +7003,11 @@ export type UserUncheckedUpdateWithoutCrmDealsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -6677,6 +7084,11 @@ export type UserCreateWithoutCrmAssignmentRequestsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -6753,6 +7165,11 @@ export type UserUncheckedCreateWithoutCrmAssignmentRequestsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -6834,6 +7251,11 @@ export type UserCreateWithoutCrmAssignmentResolvedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -6910,6 +7332,11 @@ export type UserUncheckedCreateWithoutCrmAssignmentResolvedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -7002,6 +7429,11 @@ export type UserUpdateWithoutCrmAssignmentRequestsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -7078,6 +7510,11 @@ export type UserUncheckedUpdateWithoutCrmAssignmentRequestsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -7165,6 +7602,11 @@ export type UserUpdateWithoutCrmAssignmentResolvedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -7241,6 +7683,11 @@ export type UserUncheckedUpdateWithoutCrmAssignmentResolvedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -7317,6 +7764,11 @@ export type UserCreateWithoutCrmActivitiesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -7393,6 +7845,11 @@ export type UserUncheckedCreateWithoutCrmActivitiesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -7485,6 +7942,11 @@ export type UserUpdateWithoutCrmActivitiesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -7561,6 +8023,11 @@ export type UserUncheckedUpdateWithoutCrmActivitiesInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -7637,6 +8104,11 @@ export type UserCreateWithoutCrmTasksAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -7713,6 +8185,11 @@ export type UserUncheckedCreateWithoutCrmTasksAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -7794,6 +8271,11 @@ export type UserCreateWithoutCrmTasksCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -7870,6 +8352,11 @@ export type UserUncheckedCreateWithoutCrmTasksCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -7962,6 +8449,11 @@ export type UserUpdateWithoutCrmTasksAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -8038,6 +8530,11 @@ export type UserUncheckedUpdateWithoutCrmTasksAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -8125,6 +8622,11 @@ export type UserUpdateWithoutCrmTasksCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -8201,6 +8703,11 @@ export type UserUncheckedUpdateWithoutCrmTasksCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -8277,6 +8784,11 @@ export type UserCreateWithoutCrmAppointmentsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -8353,6 +8865,11 @@ export type UserUncheckedCreateWithoutCrmAppointmentsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -8434,6 +8951,11 @@ export type UserCreateWithoutCrmAppointmentsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -8510,6 +9032,11 @@ export type UserUncheckedCreateWithoutCrmAppointmentsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -8602,6 +9129,11 @@ export type UserUpdateWithoutCrmAppointmentsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -8678,6 +9210,11 @@ export type UserUncheckedUpdateWithoutCrmAppointmentsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -8765,6 +9302,11 @@ export type UserUpdateWithoutCrmAppointmentsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -8841,6 +9383,11 @@ export type UserUncheckedUpdateWithoutCrmAppointmentsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -8917,6 +9464,11 @@ export type UserCreateWithoutAppNotificationsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -8993,6 +9545,11 @@ export type UserUncheckedCreateWithoutAppNotificationsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -9085,6 +9642,11 @@ export type UserUpdateWithoutAppNotificationsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -9161,6 +9723,11 @@ export type UserUncheckedUpdateWithoutAppNotificationsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -9237,6 +9804,11 @@ export type UserCreateWithoutCrmPeriodGoalsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -9313,6 +9885,11 @@ export type UserUncheckedCreateWithoutCrmPeriodGoalsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -9405,6 +9982,11 @@ export type UserUpdateWithoutCrmPeriodGoalsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -9481,6 +10063,11 @@ export type UserUncheckedUpdateWithoutCrmPeriodGoalsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -9557,6 +10144,11 @@ export type UserCreateWithoutCrmWeeklyReportsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -9633,6 +10225,11 @@ export type UserUncheckedCreateWithoutCrmWeeklyReportsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -9725,6 +10322,11 @@ export type UserUpdateWithoutCrmWeeklyReportsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -9801,6 +10403,11 @@ export type UserUncheckedUpdateWithoutCrmWeeklyReportsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -9877,6 +10484,11 @@ export type UserCreateWithoutComClientsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -9953,6 +10565,11 @@ export type UserUncheckedCreateWithoutComClientsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -10034,6 +10651,11 @@ export type UserCreateWithoutComClientsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -10110,6 +10732,11 @@ export type UserUncheckedCreateWithoutComClientsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -10202,6 +10829,11 @@ export type UserUpdateWithoutComClientsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -10278,6 +10910,11 @@ export type UserUncheckedUpdateWithoutComClientsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -10365,6 +11002,11 @@ export type UserUpdateWithoutComClientsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -10441,6 +11083,11 @@ export type UserUncheckedUpdateWithoutComClientsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -10517,6 +11164,11 @@ export type UserCreateWithoutComQuotesOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -10593,6 +11245,11 @@ export type UserUncheckedCreateWithoutComQuotesOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -10674,6 +11331,11 @@ export type UserCreateWithoutComQuotesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -10750,6 +11412,11 @@ export type UserUncheckedCreateWithoutComQuotesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -10842,6 +11509,11 @@ export type UserUpdateWithoutComQuotesOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -10918,6 +11590,11 @@ export type UserUncheckedUpdateWithoutComQuotesOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -11005,6 +11682,11 @@ export type UserUpdateWithoutComQuotesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -11081,6 +11763,691 @@ export type UserUncheckedUpdateWithoutComQuotesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUncheckedUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+}
+
+export type UserCreateWithoutComContractsOwnedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserUncheckedCreateWithoutComContractsOwnedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackUncheckedCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclUncheckedCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetUncheckedCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeUncheckedCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityUncheckedCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationUncheckedCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientUncheckedCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientUncheckedCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberUncheckedCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserCreateOrConnectWithoutComContractsOwnedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutComContractsOwnedInput, Prisma.UserUncheckedCreateWithoutComContractsOwnedInput>
+}
+
+export type UserCreateWithoutComContractsCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserUncheckedCreateWithoutComContractsCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackUncheckedCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclUncheckedCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetUncheckedCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeUncheckedCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityUncheckedCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationUncheckedCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientUncheckedCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientUncheckedCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberUncheckedCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserCreateOrConnectWithoutComContractsCreatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutComContractsCreatedInput, Prisma.UserUncheckedCreateWithoutComContractsCreatedInput>
+}
+
+export type UserUpsertWithoutComContractsOwnedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutComContractsOwnedInput, Prisma.UserUncheckedUpdateWithoutComContractsOwnedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutComContractsOwnedInput, Prisma.UserUncheckedCreateWithoutComContractsOwnedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutComContractsOwnedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutComContractsOwnedInput, Prisma.UserUncheckedUpdateWithoutComContractsOwnedInput>
+}
+
+export type UserUpdateWithoutComContractsOwnedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+}
+
+export type UserUncheckedUpdateWithoutComContractsOwnedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUncheckedUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUncheckedUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUncheckedUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUncheckedUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUncheckedUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUncheckedUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUncheckedUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+}
+
+export type UserUpsertWithoutComContractsCreatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutComContractsCreatedInput, Prisma.UserUncheckedUpdateWithoutComContractsCreatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutComContractsCreatedInput, Prisma.UserUncheckedCreateWithoutComContractsCreatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutComContractsCreatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutComContractsCreatedInput, Prisma.UserUncheckedUpdateWithoutComContractsCreatedInput>
+}
+
+export type UserUpdateWithoutComContractsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+}
+
+export type UserUncheckedUpdateWithoutComContractsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUncheckedUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUncheckedUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUncheckedUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUncheckedUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUncheckedUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUncheckedUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -11157,6 +12524,11 @@ export type UserCreateWithoutComInvoicesOwnedInput = {
   comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -11233,6 +12605,11 @@ export type UserUncheckedCreateWithoutComInvoicesOwnedInput = {
   comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -11314,6 +12691,11 @@ export type UserCreateWithoutComInvoicesCreatedInput = {
   comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -11390,6 +12772,11 @@ export type UserUncheckedCreateWithoutComInvoicesCreatedInput = {
   comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -11482,6 +12869,11 @@ export type UserUpdateWithoutComInvoicesOwnedInput = {
   comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -11558,6 +12950,11 @@ export type UserUncheckedUpdateWithoutComInvoicesOwnedInput = {
   comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -11645,6 +13042,11 @@ export type UserUpdateWithoutComInvoicesCreatedInput = {
   comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -11721,6 +13123,351 @@ export type UserUncheckedUpdateWithoutComInvoicesCreatedInput = {
   comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUncheckedUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+}
+
+export type UserCreateWithoutComCreditNotesCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserUncheckedCreateWithoutComCreditNotesCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackUncheckedCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclUncheckedCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetUncheckedCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeUncheckedCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityUncheckedCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationUncheckedCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientUncheckedCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientUncheckedCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberUncheckedCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserCreateOrConnectWithoutComCreditNotesCreatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutComCreditNotesCreatedInput, Prisma.UserUncheckedCreateWithoutComCreditNotesCreatedInput>
+}
+
+export type UserUpsertWithoutComCreditNotesCreatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutComCreditNotesCreatedInput, Prisma.UserUncheckedUpdateWithoutComCreditNotesCreatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutComCreditNotesCreatedInput, Prisma.UserUncheckedCreateWithoutComCreditNotesCreatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutComCreditNotesCreatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutComCreditNotesCreatedInput, Prisma.UserUncheckedUpdateWithoutComCreditNotesCreatedInput>
+}
+
+export type UserUpdateWithoutComCreditNotesCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+}
+
+export type UserUncheckedUpdateWithoutComCreditNotesCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUncheckedUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUncheckedUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUncheckedUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUncheckedUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUncheckedUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUncheckedUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -11797,6 +13544,11 @@ export type UserCreateWithoutComPaymentsRecordedInput = {
   comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -11873,6 +13625,11 @@ export type UserUncheckedCreateWithoutComPaymentsRecordedInput = {
   comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -11965,6 +13722,11 @@ export type UserUpdateWithoutComPaymentsRecordedInput = {
   comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -12041,6 +13803,691 @@ export type UserUncheckedUpdateWithoutComPaymentsRecordedInput = {
   comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUncheckedUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+}
+
+export type UserCreateWithoutComClientEventsInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserUncheckedCreateWithoutComClientEventsInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackUncheckedCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclUncheckedCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetUncheckedCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeUncheckedCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityUncheckedCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationUncheckedCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientUncheckedCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientUncheckedCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberUncheckedCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserCreateOrConnectWithoutComClientEventsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutComClientEventsInput, Prisma.UserUncheckedCreateWithoutComClientEventsInput>
+}
+
+export type UserUpsertWithoutComClientEventsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutComClientEventsInput, Prisma.UserUncheckedUpdateWithoutComClientEventsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutComClientEventsInput, Prisma.UserUncheckedCreateWithoutComClientEventsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutComClientEventsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutComClientEventsInput, Prisma.UserUncheckedUpdateWithoutComClientEventsInput>
+}
+
+export type UserUpdateWithoutComClientEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+}
+
+export type UserUncheckedUpdateWithoutComClientEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUncheckedUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUncheckedUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUncheckedUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUncheckedUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUncheckedUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUncheckedUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUncheckedUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+}
+
+export type UserCreateWithoutComImportBatchesInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserUncheckedCreateWithoutComImportBatchesInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackUncheckedCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclUncheckedCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetUncheckedCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeUncheckedCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityUncheckedCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationUncheckedCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientUncheckedCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientUncheckedCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberUncheckedCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+}
+
+export type UserCreateOrConnectWithoutComImportBatchesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutComImportBatchesInput, Prisma.UserUncheckedCreateWithoutComImportBatchesInput>
+}
+
+export type UserUpsertWithoutComImportBatchesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutComImportBatchesInput, Prisma.UserUncheckedUpdateWithoutComImportBatchesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutComImportBatchesInput, Prisma.UserUncheckedCreateWithoutComImportBatchesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutComImportBatchesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutComImportBatchesInput, Prisma.UserUncheckedUpdateWithoutComImportBatchesInput>
+}
+
+export type UserUpdateWithoutComImportBatchesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+}
+
+export type UserUncheckedUpdateWithoutComImportBatchesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUncheckedUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUncheckedUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUncheckedUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUncheckedUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUncheckedUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUncheckedUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -12118,6 +14565,11 @@ export type UserCreateWithoutCptEntriesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
   budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
@@ -12194,6 +14646,11 @@ export type UserUncheckedCreateWithoutCptEntriesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
   budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
@@ -12275,6 +14732,11 @@ export type UserCreateWithoutCptEntriesValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
   budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
@@ -12351,6 +14813,11 @@ export type UserUncheckedCreateWithoutCptEntriesValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
   budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
@@ -12443,6 +14910,11 @@ export type UserUpdateWithoutCptEntriesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
   budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
@@ -12519,6 +14991,11 @@ export type UserUncheckedUpdateWithoutCptEntriesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
   budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -12606,6 +15083,11 @@ export type UserUpdateWithoutCptEntriesValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
   budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
@@ -12682,6 +15164,11 @@ export type UserUncheckedUpdateWithoutCptEntriesValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
   budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -12758,6 +15245,11 @@ export type UserCreateWithoutCptBankTxnsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
@@ -12834,6 +15326,11 @@ export type UserUncheckedCreateWithoutCptBankTxnsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
@@ -12926,6 +15423,11 @@ export type UserUpdateWithoutCptBankTxnsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
@@ -13002,6 +15504,11 @@ export type UserUncheckedUpdateWithoutCptBankTxnsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -13078,6 +15585,11 @@ export type UserCreateWithoutBudLinesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -13154,6 +15666,11 @@ export type UserUncheckedCreateWithoutBudLinesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -13246,6 +15763,11 @@ export type UserUpdateWithoutBudLinesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -13322,6 +15844,11 @@ export type UserUncheckedUpdateWithoutBudLinesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -13398,6 +15925,11 @@ export type UserCreateWithoutRhEmployeeInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -13474,6 +16006,11 @@ export type UserUncheckedCreateWithoutRhEmployeeInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -13566,6 +16103,11 @@ export type UserUpdateWithoutRhEmployeeInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -13642,6 +16184,11 @@ export type UserUncheckedUpdateWithoutRhEmployeeInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -13718,6 +16265,11 @@ export type UserCreateWithoutRhProfileChangesRequestedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -13794,6 +16346,11 @@ export type UserUncheckedCreateWithoutRhProfileChangesRequestedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -13875,6 +16432,11 @@ export type UserCreateWithoutRhProfileChangesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -13951,6 +16513,11 @@ export type UserUncheckedCreateWithoutRhProfileChangesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -14043,6 +16610,11 @@ export type UserUpdateWithoutRhProfileChangesRequestedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -14119,6 +16691,11 @@ export type UserUncheckedUpdateWithoutRhProfileChangesRequestedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -14206,6 +16783,11 @@ export type UserUpdateWithoutRhProfileChangesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -14282,6 +16864,11 @@ export type UserUncheckedUpdateWithoutRhProfileChangesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -14358,6 +16945,11 @@ export type UserCreateWithoutRhLeaveMovementsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -14434,6 +17026,11 @@ export type UserUncheckedCreateWithoutRhLeaveMovementsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -14526,6 +17123,11 @@ export type UserUpdateWithoutRhLeaveMovementsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -14602,6 +17204,11 @@ export type UserUncheckedUpdateWithoutRhLeaveMovementsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -14678,6 +17285,11 @@ export type UserCreateWithoutRhLeavesRequestedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -14754,6 +17366,11 @@ export type UserUncheckedCreateWithoutRhLeavesRequestedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -14835,6 +17452,11 @@ export type UserCreateWithoutRhLeavesValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -14911,6 +17533,11 @@ export type UserUncheckedCreateWithoutRhLeavesValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -15003,6 +17630,11 @@ export type UserUpdateWithoutRhLeavesRequestedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -15079,6 +17711,11 @@ export type UserUncheckedUpdateWithoutRhLeavesRequestedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -15166,6 +17803,11 @@ export type UserUpdateWithoutRhLeavesValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -15242,6 +17884,11 @@ export type UserUncheckedUpdateWithoutRhLeavesValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -15318,6 +17965,11 @@ export type UserCreateWithoutRhAbsencesDeclaredInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -15394,6 +18046,11 @@ export type UserUncheckedCreateWithoutRhAbsencesDeclaredInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -15475,6 +18132,11 @@ export type UserCreateWithoutRhAbsencesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -15551,6 +18213,11 @@ export type UserUncheckedCreateWithoutRhAbsencesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -15643,6 +18310,11 @@ export type UserUpdateWithoutRhAbsencesDeclaredInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -15719,6 +18391,11 @@ export type UserUncheckedUpdateWithoutRhAbsencesDeclaredInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -15806,6 +18483,11 @@ export type UserUpdateWithoutRhAbsencesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -15882,6 +18564,11 @@ export type UserUncheckedUpdateWithoutRhAbsencesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -15958,6 +18645,11 @@ export type UserCreateWithoutRhTimesheetsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -16034,6 +18726,11 @@ export type UserUncheckedCreateWithoutRhTimesheetsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -16115,6 +18812,11 @@ export type UserCreateWithoutRhTimesheetsValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -16191,6 +18893,11 @@ export type UserUncheckedCreateWithoutRhTimesheetsValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -16283,6 +18990,11 @@ export type UserUpdateWithoutRhTimesheetsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -16359,6 +19071,11 @@ export type UserUncheckedUpdateWithoutRhTimesheetsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -16446,6 +19163,11 @@ export type UserUpdateWithoutRhTimesheetsValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -16522,6 +19244,11 @@ export type UserUncheckedUpdateWithoutRhTimesheetsValidatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -16598,6 +19325,11 @@ export type UserCreateWithoutRhPayrollOpenedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -16674,6 +19406,11 @@ export type UserUncheckedCreateWithoutRhPayrollOpenedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -16755,6 +19492,11 @@ export type UserCreateWithoutRhPayrollApprovedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -16831,6 +19573,11 @@ export type UserUncheckedCreateWithoutRhPayrollApprovedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -16923,6 +19670,11 @@ export type UserUpdateWithoutRhPayrollOpenedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -16999,6 +19751,11 @@ export type UserUncheckedUpdateWithoutRhPayrollOpenedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -17086,6 +19843,11 @@ export type UserUpdateWithoutRhPayrollApprovedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -17162,6 +19924,11 @@ export type UserUncheckedUpdateWithoutRhPayrollApprovedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -17238,6 +20005,11 @@ export type UserCreateWithoutStkArticlesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -17314,6 +20086,11 @@ export type UserUncheckedCreateWithoutStkArticlesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -17406,6 +20183,11 @@ export type UserUpdateWithoutStkArticlesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -17482,6 +20264,11 @@ export type UserUncheckedUpdateWithoutStkArticlesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -17558,6 +20345,11 @@ export type UserCreateWithoutStkMovementsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -17634,6 +20426,11 @@ export type UserUncheckedCreateWithoutStkMovementsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -17726,6 +20523,11 @@ export type UserUpdateWithoutStkMovementsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -17802,6 +20604,11 @@ export type UserUncheckedUpdateWithoutStkMovementsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -17878,6 +20685,11 @@ export type UserCreateWithoutStkPurchasesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -17954,6 +20766,11 @@ export type UserUncheckedCreateWithoutStkPurchasesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18046,6 +20863,11 @@ export type UserUpdateWithoutStkPurchasesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -18122,6 +20944,11 @@ export type UserUncheckedUpdateWithoutStkPurchasesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -18198,6 +21025,11 @@ export type UserCreateWithoutPatAssetsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -18274,6 +21106,11 @@ export type UserUncheckedCreateWithoutPatAssetsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18355,6 +21192,11 @@ export type UserCreateWithoutPatAssetsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -18431,6 +21273,11 @@ export type UserUncheckedCreateWithoutPatAssetsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18523,6 +21370,11 @@ export type UserUpdateWithoutPatAssetsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -18599,6 +21451,11 @@ export type UserUncheckedUpdateWithoutPatAssetsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -18686,6 +21543,11 @@ export type UserUpdateWithoutPatAssetsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -18762,6 +21624,11 @@ export type UserUncheckedUpdateWithoutPatAssetsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -18838,6 +21705,11 @@ export type UserCreateWithoutPrjProjectsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -18914,6 +21786,11 @@ export type UserUncheckedCreateWithoutPrjProjectsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -19006,6 +21883,11 @@ export type UserUpdateWithoutPrjProjectsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -19082,6 +21964,11 @@ export type UserUncheckedUpdateWithoutPrjProjectsOwnedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -19158,6 +22045,11 @@ export type UserCreateWithoutPrjMembershipsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -19234,6 +22126,11 @@ export type UserUncheckedCreateWithoutPrjMembershipsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -19326,6 +22223,11 @@ export type UserUpdateWithoutPrjMembershipsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -19402,6 +22304,11 @@ export type UserUncheckedUpdateWithoutPrjMembershipsInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -19478,6 +22385,11 @@ export type UserCreateWithoutPrjExpensesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -19554,6 +22466,11 @@ export type UserUncheckedCreateWithoutPrjExpensesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -19635,6 +22552,11 @@ export type UserCreateWithoutPrjExpensesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -19711,6 +22633,11 @@ export type UserUncheckedCreateWithoutPrjExpensesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -19803,6 +22730,11 @@ export type UserUpdateWithoutPrjExpensesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -19879,6 +22811,11 @@ export type UserUncheckedUpdateWithoutPrjExpensesCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -19966,6 +22903,11 @@ export type UserUpdateWithoutPrjExpensesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -20042,6 +22984,11 @@ export type UserUncheckedUpdateWithoutPrjExpensesReviewedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -20118,6 +23065,11 @@ export type UserCreateWithoutOpsTicketsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -20194,6 +23146,11 @@ export type UserUncheckedCreateWithoutOpsTicketsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -20275,6 +23232,11 @@ export type UserCreateWithoutOpsTicketsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
@@ -20351,6 +23313,11 @@ export type UserUncheckedCreateWithoutOpsTicketsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
@@ -20443,6 +23410,11 @@ export type UserUpdateWithoutOpsTicketsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -20519,6 +23491,11 @@ export type UserUncheckedUpdateWithoutOpsTicketsAssignedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -20606,6 +23583,11 @@ export type UserUpdateWithoutOpsTicketsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
@@ -20682,6 +23664,11 @@ export type UserUncheckedUpdateWithoutOpsTicketsCreatedInput = {
   comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
   comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
   cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
   cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -20748,6 +23735,11 @@ export type UserCountOutputType = {
   comInvoicesOwned: number
   comInvoicesCreated: number
   comPaymentsRecorded: number
+  comContractsOwned: number
+  comContractsCreated: number
+  comCreditNotesCreated: number
+  comClientEvents: number
+  comImportBatches: number
   cptEntriesCreated: number
   cptEntriesValidated: number
   cptBankTxnsCreated: number
@@ -20809,6 +23801,11 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   comInvoicesOwned?: boolean | UserCountOutputTypeCountComInvoicesOwnedArgs
   comInvoicesCreated?: boolean | UserCountOutputTypeCountComInvoicesCreatedArgs
   comPaymentsRecorded?: boolean | UserCountOutputTypeCountComPaymentsRecordedArgs
+  comContractsOwned?: boolean | UserCountOutputTypeCountComContractsOwnedArgs
+  comContractsCreated?: boolean | UserCountOutputTypeCountComContractsCreatedArgs
+  comCreditNotesCreated?: boolean | UserCountOutputTypeCountComCreditNotesCreatedArgs
+  comClientEvents?: boolean | UserCountOutputTypeCountComClientEventsArgs
+  comImportBatches?: boolean | UserCountOutputTypeCountComImportBatchesArgs
   cptEntriesCreated?: boolean | UserCountOutputTypeCountCptEntriesCreatedArgs
   cptEntriesValidated?: boolean | UserCountOutputTypeCountCptEntriesValidatedArgs
   cptBankTxnsCreated?: boolean | UserCountOutputTypeCountCptBankTxnsCreatedArgs
@@ -21074,6 +24071,41 @@ export type UserCountOutputTypeCountComPaymentsRecordedArgs<ExtArgs extends runt
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountComContractsOwnedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComContractWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountComContractsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComContractWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountComCreditNotesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComCreditNoteWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountComClientEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComClientEventWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountComImportBatchesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComImportBatchWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountCptEntriesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CptEntryWhereInput
 }
@@ -21302,6 +24334,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   comInvoicesOwned?: boolean | Prisma.User$comInvoicesOwnedArgs<ExtArgs>
   comInvoicesCreated?: boolean | Prisma.User$comInvoicesCreatedArgs<ExtArgs>
   comPaymentsRecorded?: boolean | Prisma.User$comPaymentsRecordedArgs<ExtArgs>
+  comContractsOwned?: boolean | Prisma.User$comContractsOwnedArgs<ExtArgs>
+  comContractsCreated?: boolean | Prisma.User$comContractsCreatedArgs<ExtArgs>
+  comCreditNotesCreated?: boolean | Prisma.User$comCreditNotesCreatedArgs<ExtArgs>
+  comClientEvents?: boolean | Prisma.User$comClientEventsArgs<ExtArgs>
+  comImportBatches?: boolean | Prisma.User$comImportBatchesArgs<ExtArgs>
   cptEntriesCreated?: boolean | Prisma.User$cptEntriesCreatedArgs<ExtArgs>
   cptEntriesValidated?: boolean | Prisma.User$cptEntriesValidatedArgs<ExtArgs>
   cptBankTxnsCreated?: boolean | Prisma.User$cptBankTxnsCreatedArgs<ExtArgs>
@@ -21420,6 +24457,11 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   comInvoicesOwned?: boolean | Prisma.User$comInvoicesOwnedArgs<ExtArgs>
   comInvoicesCreated?: boolean | Prisma.User$comInvoicesCreatedArgs<ExtArgs>
   comPaymentsRecorded?: boolean | Prisma.User$comPaymentsRecordedArgs<ExtArgs>
+  comContractsOwned?: boolean | Prisma.User$comContractsOwnedArgs<ExtArgs>
+  comContractsCreated?: boolean | Prisma.User$comContractsCreatedArgs<ExtArgs>
+  comCreditNotesCreated?: boolean | Prisma.User$comCreditNotesCreatedArgs<ExtArgs>
+  comClientEvents?: boolean | Prisma.User$comClientEventsArgs<ExtArgs>
+  comImportBatches?: boolean | Prisma.User$comImportBatchesArgs<ExtArgs>
   cptEntriesCreated?: boolean | Prisma.User$cptEntriesCreatedArgs<ExtArgs>
   cptEntriesValidated?: boolean | Prisma.User$cptEntriesValidatedArgs<ExtArgs>
   cptBankTxnsCreated?: boolean | Prisma.User$cptBankTxnsCreatedArgs<ExtArgs>
@@ -21487,6 +24529,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     comInvoicesOwned: Prisma.$ComInvoicePayload<ExtArgs>[]
     comInvoicesCreated: Prisma.$ComInvoicePayload<ExtArgs>[]
     comPaymentsRecorded: Prisma.$ComPaymentPayload<ExtArgs>[]
+    comContractsOwned: Prisma.$ComContractPayload<ExtArgs>[]
+    comContractsCreated: Prisma.$ComContractPayload<ExtArgs>[]
+    comCreditNotesCreated: Prisma.$ComCreditNotePayload<ExtArgs>[]
+    comClientEvents: Prisma.$ComClientEventPayload<ExtArgs>[]
+    comImportBatches: Prisma.$ComImportBatchPayload<ExtArgs>[]
     cptEntriesCreated: Prisma.$CptEntryPayload<ExtArgs>[]
     cptEntriesValidated: Prisma.$CptEntryPayload<ExtArgs>[]
     cptBankTxnsCreated: Prisma.$CptBankTxnPayload<ExtArgs>[]
@@ -21957,6 +25004,11 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   comInvoicesOwned<T extends Prisma.User$comInvoicesOwnedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$comInvoicesOwnedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   comInvoicesCreated<T extends Prisma.User$comInvoicesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$comInvoicesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   comPaymentsRecorded<T extends Prisma.User$comPaymentsRecordedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$comPaymentsRecordedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  comContractsOwned<T extends Prisma.User$comContractsOwnedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$comContractsOwnedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComContractPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  comContractsCreated<T extends Prisma.User$comContractsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$comContractsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComContractPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  comCreditNotesCreated<T extends Prisma.User$comCreditNotesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$comCreditNotesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComCreditNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  comClientEvents<T extends Prisma.User$comClientEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$comClientEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComClientEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  comImportBatches<T extends Prisma.User$comImportBatchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$comImportBatchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComImportBatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cptEntriesCreated<T extends Prisma.User$cptEntriesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$cptEntriesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CptEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cptEntriesValidated<T extends Prisma.User$cptEntriesValidatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$cptEntriesValidatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CptEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cptBankTxnsCreated<T extends Prisma.User$cptBankTxnsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$cptBankTxnsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CptBankTxnPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -23186,6 +26238,126 @@ export type User$comPaymentsRecordedArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.ComPaymentScalarFieldEnum | Prisma.ComPaymentScalarFieldEnum[]
+}
+
+/**
+ * User.comContractsOwned
+ */
+export type User$comContractsOwnedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComContract
+   */
+  select?: Prisma.ComContractSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComContract
+   */
+  omit?: Prisma.ComContractOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComContractInclude<ExtArgs> | null
+  where?: Prisma.ComContractWhereInput
+  orderBy?: Prisma.ComContractOrderByWithRelationInput | Prisma.ComContractOrderByWithRelationInput[]
+  cursor?: Prisma.ComContractWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComContractScalarFieldEnum | Prisma.ComContractScalarFieldEnum[]
+}
+
+/**
+ * User.comContractsCreated
+ */
+export type User$comContractsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComContract
+   */
+  select?: Prisma.ComContractSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComContract
+   */
+  omit?: Prisma.ComContractOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComContractInclude<ExtArgs> | null
+  where?: Prisma.ComContractWhereInput
+  orderBy?: Prisma.ComContractOrderByWithRelationInput | Prisma.ComContractOrderByWithRelationInput[]
+  cursor?: Prisma.ComContractWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComContractScalarFieldEnum | Prisma.ComContractScalarFieldEnum[]
+}
+
+/**
+ * User.comCreditNotesCreated
+ */
+export type User$comCreditNotesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComCreditNote
+   */
+  select?: Prisma.ComCreditNoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComCreditNote
+   */
+  omit?: Prisma.ComCreditNoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComCreditNoteInclude<ExtArgs> | null
+  where?: Prisma.ComCreditNoteWhereInput
+  orderBy?: Prisma.ComCreditNoteOrderByWithRelationInput | Prisma.ComCreditNoteOrderByWithRelationInput[]
+  cursor?: Prisma.ComCreditNoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComCreditNoteScalarFieldEnum | Prisma.ComCreditNoteScalarFieldEnum[]
+}
+
+/**
+ * User.comClientEvents
+ */
+export type User$comClientEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComClientEvent
+   */
+  select?: Prisma.ComClientEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComClientEvent
+   */
+  omit?: Prisma.ComClientEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComClientEventInclude<ExtArgs> | null
+  where?: Prisma.ComClientEventWhereInput
+  orderBy?: Prisma.ComClientEventOrderByWithRelationInput | Prisma.ComClientEventOrderByWithRelationInput[]
+  cursor?: Prisma.ComClientEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComClientEventScalarFieldEnum | Prisma.ComClientEventScalarFieldEnum[]
+}
+
+/**
+ * User.comImportBatches
+ */
+export type User$comImportBatchesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComImportBatch
+   */
+  select?: Prisma.ComImportBatchSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComImportBatch
+   */
+  omit?: Prisma.ComImportBatchOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComImportBatchInclude<ExtArgs> | null
+  where?: Prisma.ComImportBatchWhereInput
+  orderBy?: Prisma.ComImportBatchOrderByWithRelationInput | Prisma.ComImportBatchOrderByWithRelationInput[]
+  cursor?: Prisma.ComImportBatchWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComImportBatchScalarFieldEnum | Prisma.ComImportBatchScalarFieldEnum[]
 }
 
 /**

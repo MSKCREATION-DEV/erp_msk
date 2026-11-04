@@ -2,8 +2,23 @@ import { ComQuoteStatus } from "@/generated/prisma/client";
 
 /** Transitions autorisées serveur (indépendamment de l’UI). */
 const ALLOWED: Record<ComQuoteStatus, ReadonlySet<ComQuoteStatus>> = {
-  BROUILLON: new Set([ComQuoteStatus.ENVOYE, ComQuoteStatus.ANNULE]),
+  BROUILLON: new Set([
+    ComQuoteStatus.EMISE,
+    ComQuoteStatus.ENVOYE,
+    ComQuoteStatus.ANNULE,
+  ]),
+  EMISE: new Set([
+    ComQuoteStatus.ENVOYE,
+    ComQuoteStatus.ANNULE,
+  ]),
   ENVOYE: new Set([
+    ComQuoteStatus.CONSULTE,
+    ComQuoteStatus.ACCEPTE,
+    ComQuoteStatus.REFUSE,
+    ComQuoteStatus.EXPIRE,
+    ComQuoteStatus.ANNULE,
+  ]),
+  CONSULTE: new Set([
     ComQuoteStatus.ACCEPTE,
     ComQuoteStatus.REFUSE,
     ComQuoteStatus.EXPIRE,
@@ -27,7 +42,9 @@ export function canTransitionQuoteStatus(
 export function permissionForQuoteStatus(
   status: ComQuoteStatus,
 ): "com.devis.send" | "com.devis.accept_reject" | "com.devis.edit_own" {
-  if (status === ComQuoteStatus.ENVOYE) return "com.devis.send";
+  if (status === ComQuoteStatus.ENVOYE || status === ComQuoteStatus.EMISE) {
+    return "com.devis.send";
+  }
   if (
     status === ComQuoteStatus.ACCEPTE ||
     status === ComQuoteStatus.REFUSE

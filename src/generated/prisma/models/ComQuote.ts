@@ -27,6 +27,7 @@ export type AggregateComQuote = {
 }
 
 export type ComQuoteAvgAggregateOutputType = {
+  revision: number | null
   vatRate: number | null
   promoPercent: number | null
   totalHt: number | null
@@ -35,6 +36,7 @@ export type ComQuoteAvgAggregateOutputType = {
 }
 
 export type ComQuoteSumAggregateOutputType = {
+  revision: number | null
   vatRate: number | null
   promoPercent: number | null
   totalHt: number | null
@@ -45,7 +47,12 @@ export type ComQuoteSumAggregateOutputType = {
 export type ComQuoteMinAggregateOutputType = {
   id: string | null
   number: string | null
+  draftCode: string | null
+  legacyNumber: string | null
+  legacyInternalRef: string | null
   status: $Enums.ComQuoteStatus | null
+  template: $Enums.ComQuoteTemplate | null
+  revision: number | null
   regime: $Enums.ComDocRegime | null
   currency: string | null
   vatEnabled: boolean | null
@@ -64,6 +71,7 @@ export type ComQuoteMinAggregateOutputType = {
   ownerId: string | null
   createdById: string | null
   gedDocumentId: string | null
+  issuedAt: Date | null
   sentAt: Date | null
   acceptedAt: Date | null
   createdAt: Date | null
@@ -73,7 +81,12 @@ export type ComQuoteMinAggregateOutputType = {
 export type ComQuoteMaxAggregateOutputType = {
   id: string | null
   number: string | null
+  draftCode: string | null
+  legacyNumber: string | null
+  legacyInternalRef: string | null
   status: $Enums.ComQuoteStatus | null
+  template: $Enums.ComQuoteTemplate | null
+  revision: number | null
   regime: $Enums.ComDocRegime | null
   currency: string | null
   vatEnabled: boolean | null
@@ -92,6 +105,7 @@ export type ComQuoteMaxAggregateOutputType = {
   ownerId: string | null
   createdById: string | null
   gedDocumentId: string | null
+  issuedAt: Date | null
   sentAt: Date | null
   acceptedAt: Date | null
   createdAt: Date | null
@@ -101,7 +115,12 @@ export type ComQuoteMaxAggregateOutputType = {
 export type ComQuoteCountAggregateOutputType = {
   id: number
   number: number
+  draftCode: number
+  legacyNumber: number
+  legacyInternalRef: number
   status: number
+  template: number
+  revision: number
   regime: number
   currency: number
   vatEnabled: number
@@ -111,6 +130,7 @@ export type ComQuoteCountAggregateOutputType = {
   includeTravel: number
   object: number
   missionNote: number
+  conditionsJson: number
   validUntil: number
   totalHt: number
   totalVat: number
@@ -120,6 +140,7 @@ export type ComQuoteCountAggregateOutputType = {
   ownerId: number
   createdById: number
   gedDocumentId: number
+  issuedAt: number
   sentAt: number
   acceptedAt: number
   createdAt: number
@@ -129,6 +150,7 @@ export type ComQuoteCountAggregateOutputType = {
 
 
 export type ComQuoteAvgAggregateInputType = {
+  revision?: true
   vatRate?: true
   promoPercent?: true
   totalHt?: true
@@ -137,6 +159,7 @@ export type ComQuoteAvgAggregateInputType = {
 }
 
 export type ComQuoteSumAggregateInputType = {
+  revision?: true
   vatRate?: true
   promoPercent?: true
   totalHt?: true
@@ -147,7 +170,12 @@ export type ComQuoteSumAggregateInputType = {
 export type ComQuoteMinAggregateInputType = {
   id?: true
   number?: true
+  draftCode?: true
+  legacyNumber?: true
+  legacyInternalRef?: true
   status?: true
+  template?: true
+  revision?: true
   regime?: true
   currency?: true
   vatEnabled?: true
@@ -166,6 +194,7 @@ export type ComQuoteMinAggregateInputType = {
   ownerId?: true
   createdById?: true
   gedDocumentId?: true
+  issuedAt?: true
   sentAt?: true
   acceptedAt?: true
   createdAt?: true
@@ -175,7 +204,12 @@ export type ComQuoteMinAggregateInputType = {
 export type ComQuoteMaxAggregateInputType = {
   id?: true
   number?: true
+  draftCode?: true
+  legacyNumber?: true
+  legacyInternalRef?: true
   status?: true
+  template?: true
+  revision?: true
   regime?: true
   currency?: true
   vatEnabled?: true
@@ -194,6 +228,7 @@ export type ComQuoteMaxAggregateInputType = {
   ownerId?: true
   createdById?: true
   gedDocumentId?: true
+  issuedAt?: true
   sentAt?: true
   acceptedAt?: true
   createdAt?: true
@@ -203,7 +238,12 @@ export type ComQuoteMaxAggregateInputType = {
 export type ComQuoteCountAggregateInputType = {
   id?: true
   number?: true
+  draftCode?: true
+  legacyNumber?: true
+  legacyInternalRef?: true
   status?: true
+  template?: true
+  revision?: true
   regime?: true
   currency?: true
   vatEnabled?: true
@@ -213,6 +253,7 @@ export type ComQuoteCountAggregateInputType = {
   includeTravel?: true
   object?: true
   missionNote?: true
+  conditionsJson?: true
   validUntil?: true
   totalHt?: true
   totalVat?: true
@@ -222,6 +263,7 @@ export type ComQuoteCountAggregateInputType = {
   ownerId?: true
   createdById?: true
   gedDocumentId?: true
+  issuedAt?: true
   sentAt?: true
   acceptedAt?: true
   createdAt?: true
@@ -317,8 +359,13 @@ export type ComQuoteGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type ComQuoteGroupByOutputType = {
   id: string
-  number: string
+  number: string | null
+  draftCode: string
+  legacyNumber: string | null
+  legacyInternalRef: string | null
   status: $Enums.ComQuoteStatus
+  template: $Enums.ComQuoteTemplate
+  revision: number
   regime: $Enums.ComDocRegime
   currency: string
   vatEnabled: boolean
@@ -328,6 +375,7 @@ export type ComQuoteGroupByOutputType = {
   includeTravel: boolean
   object: string | null
   missionNote: string | null
+  conditionsJson: runtime.JsonValue | null
   validUntil: Date | null
   totalHt: number
   totalVat: number
@@ -337,6 +385,7 @@ export type ComQuoteGroupByOutputType = {
   ownerId: string
   createdById: string
   gedDocumentId: string | null
+  issuedAt: Date | null
   sentAt: Date | null
   acceptedAt: Date | null
   createdAt: Date
@@ -368,8 +417,13 @@ export type ComQuoteWhereInput = {
   OR?: Prisma.ComQuoteWhereInput[]
   NOT?: Prisma.ComQuoteWhereInput | Prisma.ComQuoteWhereInput[]
   id?: Prisma.StringFilter<"ComQuote"> | string
-  number?: Prisma.StringFilter<"ComQuote"> | string
+  number?: Prisma.StringNullableFilter<"ComQuote"> | string | null
+  draftCode?: Prisma.StringFilter<"ComQuote"> | string
+  legacyNumber?: Prisma.StringNullableFilter<"ComQuote"> | string | null
+  legacyInternalRef?: Prisma.StringNullableFilter<"ComQuote"> | string | null
   status?: Prisma.EnumComQuoteStatusFilter<"ComQuote"> | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFilter<"ComQuote"> | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFilter<"ComQuote"> | number
   regime?: Prisma.EnumComDocRegimeFilter<"ComQuote"> | $Enums.ComDocRegime
   currency?: Prisma.StringFilter<"ComQuote"> | string
   vatEnabled?: Prisma.BoolFilter<"ComQuote"> | boolean
@@ -379,6 +433,7 @@ export type ComQuoteWhereInput = {
   includeTravel?: Prisma.BoolFilter<"ComQuote"> | boolean
   object?: Prisma.StringNullableFilter<"ComQuote"> | string | null
   missionNote?: Prisma.StringNullableFilter<"ComQuote"> | string | null
+  conditionsJson?: Prisma.JsonNullableFilter<"ComQuote">
   validUntil?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   totalHt?: Prisma.IntFilter<"ComQuote"> | number
   totalVat?: Prisma.IntFilter<"ComQuote"> | number
@@ -388,6 +443,7 @@ export type ComQuoteWhereInput = {
   ownerId?: Prisma.UuidFilter<"ComQuote"> | string
   createdById?: Prisma.UuidFilter<"ComQuote"> | string
   gedDocumentId?: Prisma.StringNullableFilter<"ComQuote"> | string | null
+  issuedAt?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   sentAt?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   acceptedAt?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ComQuote"> | Date | string
@@ -398,12 +454,18 @@ export type ComQuoteWhereInput = {
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   lines?: Prisma.ComQuoteLineListRelationFilter
   invoices?: Prisma.ComInvoiceListRelationFilter
+  contracts?: Prisma.ComContractListRelationFilter
 }
 
 export type ComQuoteOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  number?: Prisma.SortOrder
+  number?: Prisma.SortOrderInput | Prisma.SortOrder
+  draftCode?: Prisma.SortOrder
+  legacyNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  legacyInternalRef?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  template?: Prisma.SortOrder
+  revision?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
@@ -413,6 +475,7 @@ export type ComQuoteOrderByWithRelationInput = {
   includeTravel?: Prisma.SortOrder
   object?: Prisma.SortOrderInput | Prisma.SortOrder
   missionNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  conditionsJson?: Prisma.SortOrderInput | Prisma.SortOrder
   validUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   totalHt?: Prisma.SortOrder
   totalVat?: Prisma.SortOrder
@@ -422,6 +485,7 @@ export type ComQuoteOrderByWithRelationInput = {
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   gedDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  issuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   sentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   acceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -432,16 +496,22 @@ export type ComQuoteOrderByWithRelationInput = {
   createdBy?: Prisma.UserOrderByWithRelationInput
   lines?: Prisma.ComQuoteLineOrderByRelationAggregateInput
   invoices?: Prisma.ComInvoiceOrderByRelationAggregateInput
+  contracts?: Prisma.ComContractOrderByRelationAggregateInput
 }
 
 export type ComQuoteWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   number?: string
+  draftCode?: string
   opportunityId?: string
   AND?: Prisma.ComQuoteWhereInput | Prisma.ComQuoteWhereInput[]
   OR?: Prisma.ComQuoteWhereInput[]
   NOT?: Prisma.ComQuoteWhereInput | Prisma.ComQuoteWhereInput[]
+  legacyNumber?: Prisma.StringNullableFilter<"ComQuote"> | string | null
+  legacyInternalRef?: Prisma.StringNullableFilter<"ComQuote"> | string | null
   status?: Prisma.EnumComQuoteStatusFilter<"ComQuote"> | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFilter<"ComQuote"> | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFilter<"ComQuote"> | number
   regime?: Prisma.EnumComDocRegimeFilter<"ComQuote"> | $Enums.ComDocRegime
   currency?: Prisma.StringFilter<"ComQuote"> | string
   vatEnabled?: Prisma.BoolFilter<"ComQuote"> | boolean
@@ -451,6 +521,7 @@ export type ComQuoteWhereUniqueInput = Prisma.AtLeast<{
   includeTravel?: Prisma.BoolFilter<"ComQuote"> | boolean
   object?: Prisma.StringNullableFilter<"ComQuote"> | string | null
   missionNote?: Prisma.StringNullableFilter<"ComQuote"> | string | null
+  conditionsJson?: Prisma.JsonNullableFilter<"ComQuote">
   validUntil?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   totalHt?: Prisma.IntFilter<"ComQuote"> | number
   totalVat?: Prisma.IntFilter<"ComQuote"> | number
@@ -459,6 +530,7 @@ export type ComQuoteWhereUniqueInput = Prisma.AtLeast<{
   ownerId?: Prisma.UuidFilter<"ComQuote"> | string
   createdById?: Prisma.UuidFilter<"ComQuote"> | string
   gedDocumentId?: Prisma.StringNullableFilter<"ComQuote"> | string | null
+  issuedAt?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   sentAt?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   acceptedAt?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ComQuote"> | Date | string
@@ -469,12 +541,18 @@ export type ComQuoteWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   lines?: Prisma.ComQuoteLineListRelationFilter
   invoices?: Prisma.ComInvoiceListRelationFilter
-}, "id" | "number" | "opportunityId">
+  contracts?: Prisma.ComContractListRelationFilter
+}, "id" | "number" | "draftCode" | "opportunityId">
 
 export type ComQuoteOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  number?: Prisma.SortOrder
+  number?: Prisma.SortOrderInput | Prisma.SortOrder
+  draftCode?: Prisma.SortOrder
+  legacyNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  legacyInternalRef?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  template?: Prisma.SortOrder
+  revision?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
@@ -484,6 +562,7 @@ export type ComQuoteOrderByWithAggregationInput = {
   includeTravel?: Prisma.SortOrder
   object?: Prisma.SortOrderInput | Prisma.SortOrder
   missionNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  conditionsJson?: Prisma.SortOrderInput | Prisma.SortOrder
   validUntil?: Prisma.SortOrderInput | Prisma.SortOrder
   totalHt?: Prisma.SortOrder
   totalVat?: Prisma.SortOrder
@@ -493,6 +572,7 @@ export type ComQuoteOrderByWithAggregationInput = {
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   gedDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  issuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   sentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   acceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -509,8 +589,13 @@ export type ComQuoteScalarWhereWithAggregatesInput = {
   OR?: Prisma.ComQuoteScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ComQuoteScalarWhereWithAggregatesInput | Prisma.ComQuoteScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ComQuote"> | string
-  number?: Prisma.StringWithAggregatesFilter<"ComQuote"> | string
+  number?: Prisma.StringNullableWithAggregatesFilter<"ComQuote"> | string | null
+  draftCode?: Prisma.StringWithAggregatesFilter<"ComQuote"> | string
+  legacyNumber?: Prisma.StringNullableWithAggregatesFilter<"ComQuote"> | string | null
+  legacyInternalRef?: Prisma.StringNullableWithAggregatesFilter<"ComQuote"> | string | null
   status?: Prisma.EnumComQuoteStatusWithAggregatesFilter<"ComQuote"> | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateWithAggregatesFilter<"ComQuote"> | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntWithAggregatesFilter<"ComQuote"> | number
   regime?: Prisma.EnumComDocRegimeWithAggregatesFilter<"ComQuote"> | $Enums.ComDocRegime
   currency?: Prisma.StringWithAggregatesFilter<"ComQuote"> | string
   vatEnabled?: Prisma.BoolWithAggregatesFilter<"ComQuote"> | boolean
@@ -520,6 +605,7 @@ export type ComQuoteScalarWhereWithAggregatesInput = {
   includeTravel?: Prisma.BoolWithAggregatesFilter<"ComQuote"> | boolean
   object?: Prisma.StringNullableWithAggregatesFilter<"ComQuote"> | string | null
   missionNote?: Prisma.StringNullableWithAggregatesFilter<"ComQuote"> | string | null
+  conditionsJson?: Prisma.JsonNullableWithAggregatesFilter<"ComQuote">
   validUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"ComQuote"> | Date | string | null
   totalHt?: Prisma.IntWithAggregatesFilter<"ComQuote"> | number
   totalVat?: Prisma.IntWithAggregatesFilter<"ComQuote"> | number
@@ -529,6 +615,7 @@ export type ComQuoteScalarWhereWithAggregatesInput = {
   ownerId?: Prisma.UuidWithAggregatesFilter<"ComQuote"> | string
   createdById?: Prisma.UuidWithAggregatesFilter<"ComQuote"> | string
   gedDocumentId?: Prisma.StringNullableWithAggregatesFilter<"ComQuote"> | string | null
+  issuedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ComQuote"> | Date | string | null
   sentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ComQuote"> | Date | string | null
   acceptedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ComQuote"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ComQuote"> | Date | string
@@ -537,8 +624,13 @@ export type ComQuoteScalarWhereWithAggregatesInput = {
 
 export type ComQuoteCreateInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -548,11 +640,13 @@ export type ComQuoteCreateInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -563,12 +657,18 @@ export type ComQuoteCreateInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutComQuotesCreatedInput
   lines?: Prisma.ComQuoteLineCreateNestedManyWithoutQuoteInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteUncheckedCreateInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -578,6 +678,7 @@ export type ComQuoteUncheckedCreateInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -587,18 +688,25 @@ export type ComQuoteUncheckedCreateInput = {
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutQuoteInput
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -608,11 +716,13 @@ export type ComQuoteUpdateInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -623,12 +733,18 @@ export type ComQuoteUpdateInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComQuotesCreatedNestedInput
   lines?: Prisma.ComQuoteLineUpdateManyWithoutQuoteNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -638,6 +754,7 @@ export type ComQuoteUncheckedUpdateInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -647,18 +764,25 @@ export type ComQuoteUncheckedUpdateInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutQuoteNestedInput
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteCreateManyInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -668,6 +792,7 @@ export type ComQuoteCreateManyInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -677,6 +802,7 @@ export type ComQuoteCreateManyInput = {
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -685,8 +811,13 @@ export type ComQuoteCreateManyInput = {
 
 export type ComQuoteUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -696,11 +827,13 @@ export type ComQuoteUpdateManyMutationInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -709,8 +842,13 @@ export type ComQuoteUpdateManyMutationInput = {
 
 export type ComQuoteUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -720,6 +858,7 @@ export type ComQuoteUncheckedUpdateManyInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -729,6 +868,7 @@ export type ComQuoteUncheckedUpdateManyInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -748,7 +888,12 @@ export type ComQuoteOrderByRelationAggregateInput = {
 export type ComQuoteCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   number?: Prisma.SortOrder
+  draftCode?: Prisma.SortOrder
+  legacyNumber?: Prisma.SortOrder
+  legacyInternalRef?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  template?: Prisma.SortOrder
+  revision?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
@@ -758,6 +903,7 @@ export type ComQuoteCountOrderByAggregateInput = {
   includeTravel?: Prisma.SortOrder
   object?: Prisma.SortOrder
   missionNote?: Prisma.SortOrder
+  conditionsJson?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
   totalHt?: Prisma.SortOrder
   totalVat?: Prisma.SortOrder
@@ -767,6 +913,7 @@ export type ComQuoteCountOrderByAggregateInput = {
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   gedDocumentId?: Prisma.SortOrder
+  issuedAt?: Prisma.SortOrder
   sentAt?: Prisma.SortOrder
   acceptedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -774,6 +921,7 @@ export type ComQuoteCountOrderByAggregateInput = {
 }
 
 export type ComQuoteAvgOrderByAggregateInput = {
+  revision?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   promoPercent?: Prisma.SortOrder
   totalHt?: Prisma.SortOrder
@@ -784,7 +932,12 @@ export type ComQuoteAvgOrderByAggregateInput = {
 export type ComQuoteMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   number?: Prisma.SortOrder
+  draftCode?: Prisma.SortOrder
+  legacyNumber?: Prisma.SortOrder
+  legacyInternalRef?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  template?: Prisma.SortOrder
+  revision?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
@@ -803,6 +956,7 @@ export type ComQuoteMaxOrderByAggregateInput = {
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   gedDocumentId?: Prisma.SortOrder
+  issuedAt?: Prisma.SortOrder
   sentAt?: Prisma.SortOrder
   acceptedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -812,7 +966,12 @@ export type ComQuoteMaxOrderByAggregateInput = {
 export type ComQuoteMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   number?: Prisma.SortOrder
+  draftCode?: Prisma.SortOrder
+  legacyNumber?: Prisma.SortOrder
+  legacyInternalRef?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  template?: Prisma.SortOrder
+  revision?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
@@ -831,6 +990,7 @@ export type ComQuoteMinOrderByAggregateInput = {
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   gedDocumentId?: Prisma.SortOrder
+  issuedAt?: Prisma.SortOrder
   sentAt?: Prisma.SortOrder
   acceptedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -838,6 +998,7 @@ export type ComQuoteMinOrderByAggregateInput = {
 }
 
 export type ComQuoteSumOrderByAggregateInput = {
+  revision?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   promoPercent?: Prisma.SortOrder
   totalHt?: Prisma.SortOrder
@@ -1027,6 +1188,10 @@ export type EnumComQuoteStatusFieldUpdateOperationsInput = {
   set?: $Enums.ComQuoteStatus
 }
 
+export type EnumComQuoteTemplateFieldUpdateOperationsInput = {
+  set?: $Enums.ComQuoteTemplate
+}
+
 export type EnumComDocRegimeFieldUpdateOperationsInput = {
   set?: $Enums.ComDocRegime
 }
@@ -1043,6 +1208,22 @@ export type ComQuoteUpdateOneRequiredWithoutLinesNestedInput = {
   upsert?: Prisma.ComQuoteUpsertWithoutLinesInput
   connect?: Prisma.ComQuoteWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ComQuoteUpdateToOneWithWhereWithoutLinesInput, Prisma.ComQuoteUpdateWithoutLinesInput>, Prisma.ComQuoteUncheckedUpdateWithoutLinesInput>
+}
+
+export type ComQuoteCreateNestedOneWithoutContractsInput = {
+  create?: Prisma.XOR<Prisma.ComQuoteCreateWithoutContractsInput, Prisma.ComQuoteUncheckedCreateWithoutContractsInput>
+  connectOrCreate?: Prisma.ComQuoteCreateOrConnectWithoutContractsInput
+  connect?: Prisma.ComQuoteWhereUniqueInput
+}
+
+export type ComQuoteUpdateOneWithoutContractsNestedInput = {
+  create?: Prisma.XOR<Prisma.ComQuoteCreateWithoutContractsInput, Prisma.ComQuoteUncheckedCreateWithoutContractsInput>
+  connectOrCreate?: Prisma.ComQuoteCreateOrConnectWithoutContractsInput
+  upsert?: Prisma.ComQuoteUpsertWithoutContractsInput
+  disconnect?: Prisma.ComQuoteWhereInput | boolean
+  delete?: Prisma.ComQuoteWhereInput | boolean
+  connect?: Prisma.ComQuoteWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComQuoteUpdateToOneWithWhereWithoutContractsInput, Prisma.ComQuoteUpdateWithoutContractsInput>, Prisma.ComQuoteUncheckedUpdateWithoutContractsInput>
 }
 
 export type ComQuoteCreateNestedOneWithoutInvoicesInput = {
@@ -1063,8 +1244,13 @@ export type ComQuoteUpdateOneWithoutInvoicesNestedInput = {
 
 export type ComQuoteCreateWithoutOwnerInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1074,11 +1260,13 @@ export type ComQuoteCreateWithoutOwnerInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -1088,12 +1276,18 @@ export type ComQuoteCreateWithoutOwnerInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutComQuotesCreatedInput
   lines?: Prisma.ComQuoteLineCreateNestedManyWithoutQuoteInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteUncheckedCreateWithoutOwnerInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1103,6 +1297,7 @@ export type ComQuoteUncheckedCreateWithoutOwnerInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -1111,12 +1306,14 @@ export type ComQuoteUncheckedCreateWithoutOwnerInput = {
   opportunityId?: string | null
   createdById: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutQuoteInput
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteCreateOrConnectWithoutOwnerInput = {
@@ -1131,8 +1328,13 @@ export type ComQuoteCreateManyOwnerInputEnvelope = {
 
 export type ComQuoteCreateWithoutCreatedByInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1142,11 +1344,13 @@ export type ComQuoteCreateWithoutCreatedByInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -1156,12 +1360,18 @@ export type ComQuoteCreateWithoutCreatedByInput = {
   owner: Prisma.UserCreateNestedOneWithoutComQuotesOwnedInput
   lines?: Prisma.ComQuoteLineCreateNestedManyWithoutQuoteInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1171,6 +1381,7 @@ export type ComQuoteUncheckedCreateWithoutCreatedByInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -1179,12 +1390,14 @@ export type ComQuoteUncheckedCreateWithoutCreatedByInput = {
   opportunityId?: string | null
   ownerId: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutQuoteInput
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteCreateOrConnectWithoutCreatedByInput = {
@@ -1218,8 +1431,13 @@ export type ComQuoteScalarWhereInput = {
   OR?: Prisma.ComQuoteScalarWhereInput[]
   NOT?: Prisma.ComQuoteScalarWhereInput | Prisma.ComQuoteScalarWhereInput[]
   id?: Prisma.StringFilter<"ComQuote"> | string
-  number?: Prisma.StringFilter<"ComQuote"> | string
+  number?: Prisma.StringNullableFilter<"ComQuote"> | string | null
+  draftCode?: Prisma.StringFilter<"ComQuote"> | string
+  legacyNumber?: Prisma.StringNullableFilter<"ComQuote"> | string | null
+  legacyInternalRef?: Prisma.StringNullableFilter<"ComQuote"> | string | null
   status?: Prisma.EnumComQuoteStatusFilter<"ComQuote"> | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFilter<"ComQuote"> | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFilter<"ComQuote"> | number
   regime?: Prisma.EnumComDocRegimeFilter<"ComQuote"> | $Enums.ComDocRegime
   currency?: Prisma.StringFilter<"ComQuote"> | string
   vatEnabled?: Prisma.BoolFilter<"ComQuote"> | boolean
@@ -1229,6 +1447,7 @@ export type ComQuoteScalarWhereInput = {
   includeTravel?: Prisma.BoolFilter<"ComQuote"> | boolean
   object?: Prisma.StringNullableFilter<"ComQuote"> | string | null
   missionNote?: Prisma.StringNullableFilter<"ComQuote"> | string | null
+  conditionsJson?: Prisma.JsonNullableFilter<"ComQuote">
   validUntil?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   totalHt?: Prisma.IntFilter<"ComQuote"> | number
   totalVat?: Prisma.IntFilter<"ComQuote"> | number
@@ -1238,6 +1457,7 @@ export type ComQuoteScalarWhereInput = {
   ownerId?: Prisma.UuidFilter<"ComQuote"> | string
   createdById?: Prisma.UuidFilter<"ComQuote"> | string
   gedDocumentId?: Prisma.StringNullableFilter<"ComQuote"> | string | null
+  issuedAt?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   sentAt?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   acceptedAt?: Prisma.DateTimeNullableFilter<"ComQuote"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ComQuote"> | Date | string
@@ -1262,8 +1482,13 @@ export type ComQuoteUpdateManyWithWhereWithoutCreatedByInput = {
 
 export type ComQuoteCreateWithoutOpportunityInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1273,11 +1498,13 @@ export type ComQuoteCreateWithoutOpportunityInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -1287,12 +1514,18 @@ export type ComQuoteCreateWithoutOpportunityInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutComQuotesCreatedInput
   lines?: Prisma.ComQuoteLineCreateNestedManyWithoutQuoteInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteUncheckedCreateWithoutOpportunityInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1302,6 +1535,7 @@ export type ComQuoteUncheckedCreateWithoutOpportunityInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -1310,12 +1544,14 @@ export type ComQuoteUncheckedCreateWithoutOpportunityInput = {
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutQuoteInput
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteCreateOrConnectWithoutOpportunityInput = {
@@ -1346,8 +1582,13 @@ export type ComQuoteUpdateManyWithWhereWithoutOpportunityInput = {
 
 export type ComQuoteCreateWithoutClientInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1357,11 +1598,13 @@ export type ComQuoteCreateWithoutClientInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -1371,12 +1614,18 @@ export type ComQuoteCreateWithoutClientInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutComQuotesCreatedInput
   lines?: Prisma.ComQuoteLineCreateNestedManyWithoutQuoteInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteUncheckedCreateWithoutClientInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1386,6 +1635,7 @@ export type ComQuoteUncheckedCreateWithoutClientInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -1394,12 +1644,14 @@ export type ComQuoteUncheckedCreateWithoutClientInput = {
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutQuoteInput
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteCreateOrConnectWithoutClientInput = {
@@ -1430,8 +1682,13 @@ export type ComQuoteUpdateManyWithWhereWithoutClientInput = {
 
 export type ComQuoteCreateWithoutLinesInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1441,11 +1698,13 @@ export type ComQuoteCreateWithoutLinesInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -1455,12 +1714,18 @@ export type ComQuoteCreateWithoutLinesInput = {
   owner: Prisma.UserCreateNestedOneWithoutComQuotesOwnedInput
   createdBy: Prisma.UserCreateNestedOneWithoutComQuotesCreatedInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteUncheckedCreateWithoutLinesInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1470,6 +1735,7 @@ export type ComQuoteUncheckedCreateWithoutLinesInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -1479,11 +1745,13 @@ export type ComQuoteUncheckedCreateWithoutLinesInput = {
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteCreateOrConnectWithoutLinesInput = {
@@ -1504,8 +1772,13 @@ export type ComQuoteUpdateToOneWithWhereWithoutLinesInput = {
 
 export type ComQuoteUpdateWithoutLinesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1515,11 +1788,13 @@ export type ComQuoteUpdateWithoutLinesInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1529,12 +1804,18 @@ export type ComQuoteUpdateWithoutLinesInput = {
   owner?: Prisma.UserUpdateOneRequiredWithoutComQuotesOwnedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComQuotesCreatedNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteUncheckedUpdateWithoutLinesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1544,6 +1825,7 @@ export type ComQuoteUncheckedUpdateWithoutLinesInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1553,17 +1835,24 @@ export type ComQuoteUncheckedUpdateWithoutLinesInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutQuoteNestedInput
 }
 
-export type ComQuoteCreateWithoutInvoicesInput = {
+export type ComQuoteCreateWithoutContractsInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1573,11 +1862,13 @@ export type ComQuoteCreateWithoutInvoicesInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -1587,12 +1878,18 @@ export type ComQuoteCreateWithoutInvoicesInput = {
   owner: Prisma.UserCreateNestedOneWithoutComQuotesOwnedInput
   createdBy: Prisma.UserCreateNestedOneWithoutComQuotesCreatedInput
   lines?: Prisma.ComQuoteLineCreateNestedManyWithoutQuoteInput
+  invoices?: Prisma.ComInvoiceCreateNestedManyWithoutQuoteInput
 }
 
-export type ComQuoteUncheckedCreateWithoutInvoicesInput = {
+export type ComQuoteUncheckedCreateWithoutContractsInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1602,6 +1899,7 @@ export type ComQuoteUncheckedCreateWithoutInvoicesInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -1611,11 +1909,177 @@ export type ComQuoteUncheckedCreateWithoutInvoicesInput = {
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutQuoteInput
+  invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutQuoteInput
+}
+
+export type ComQuoteCreateOrConnectWithoutContractsInput = {
+  where: Prisma.ComQuoteWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComQuoteCreateWithoutContractsInput, Prisma.ComQuoteUncheckedCreateWithoutContractsInput>
+}
+
+export type ComQuoteUpsertWithoutContractsInput = {
+  update: Prisma.XOR<Prisma.ComQuoteUpdateWithoutContractsInput, Prisma.ComQuoteUncheckedUpdateWithoutContractsInput>
+  create: Prisma.XOR<Prisma.ComQuoteCreateWithoutContractsInput, Prisma.ComQuoteUncheckedCreateWithoutContractsInput>
+  where?: Prisma.ComQuoteWhereInput
+}
+
+export type ComQuoteUpdateToOneWithWhereWithoutContractsInput = {
+  where?: Prisma.ComQuoteWhereInput
+  data: Prisma.XOR<Prisma.ComQuoteUpdateWithoutContractsInput, Prisma.ComQuoteUncheckedUpdateWithoutContractsInput>
+}
+
+export type ComQuoteUpdateWithoutContractsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  promoEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ComClientUpdateOneRequiredWithoutQuotesNestedInput
+  opportunity?: Prisma.CrmOpportunityUpdateOneWithoutComQuotesNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComQuotesOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComQuotesCreatedNestedInput
+  lines?: Prisma.ComQuoteLineUpdateManyWithoutQuoteNestedInput
+  invoices?: Prisma.ComInvoiceUpdateManyWithoutQuoteNestedInput
+}
+
+export type ComQuoteUncheckedUpdateWithoutContractsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  promoEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  promoPercent?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  opportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutQuoteNestedInput
+  invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutQuoteNestedInput
+}
+
+export type ComQuoteCreateWithoutInvoicesInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  promoEnabled?: boolean
+  promoPercent?: number | null
+  includeTravel?: boolean
+  object?: string | null
+  missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  validUntil?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  client: Prisma.ComClientCreateNestedOneWithoutQuotesInput
+  opportunity?: Prisma.CrmOpportunityCreateNestedOneWithoutComQuotesInput
+  owner: Prisma.UserCreateNestedOneWithoutComQuotesOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComQuotesCreatedInput
+  lines?: Prisma.ComQuoteLineCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutQuoteInput
+}
+
+export type ComQuoteUncheckedCreateWithoutInvoicesInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  promoEnabled?: boolean
+  promoPercent?: number | null
+  includeTravel?: boolean
+  object?: string | null
+  missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  validUntil?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  clientId: string
+  opportunityId?: string | null
+  ownerId: string
+  createdById: string
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  acceptedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutQuoteInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutQuoteInput
 }
 
 export type ComQuoteCreateOrConnectWithoutInvoicesInput = {
@@ -1636,8 +2100,13 @@ export type ComQuoteUpdateToOneWithWhereWithoutInvoicesInput = {
 
 export type ComQuoteUpdateWithoutInvoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1647,11 +2116,13 @@ export type ComQuoteUpdateWithoutInvoicesInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1661,12 +2132,18 @@ export type ComQuoteUpdateWithoutInvoicesInput = {
   owner?: Prisma.UserUpdateOneRequiredWithoutComQuotesOwnedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComQuotesCreatedNestedInput
   lines?: Prisma.ComQuoteLineUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteUncheckedUpdateWithoutInvoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1676,6 +2153,7 @@ export type ComQuoteUncheckedUpdateWithoutInvoicesInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1685,17 +2163,24 @@ export type ComQuoteUncheckedUpdateWithoutInvoicesInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteCreateManyOwnerInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1705,6 +2190,7 @@ export type ComQuoteCreateManyOwnerInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -1713,6 +2199,7 @@ export type ComQuoteCreateManyOwnerInput = {
   opportunityId?: string | null
   createdById: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -1721,8 +2208,13 @@ export type ComQuoteCreateManyOwnerInput = {
 
 export type ComQuoteCreateManyCreatedByInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1732,6 +2224,7 @@ export type ComQuoteCreateManyCreatedByInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -1740,6 +2233,7 @@ export type ComQuoteCreateManyCreatedByInput = {
   opportunityId?: string | null
   ownerId: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -1748,8 +2242,13 @@ export type ComQuoteCreateManyCreatedByInput = {
 
 export type ComQuoteUpdateWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1759,11 +2258,13 @@ export type ComQuoteUpdateWithoutOwnerInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1773,12 +2274,18 @@ export type ComQuoteUpdateWithoutOwnerInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComQuotesCreatedNestedInput
   lines?: Prisma.ComQuoteLineUpdateManyWithoutQuoteNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteUncheckedUpdateWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1788,6 +2295,7 @@ export type ComQuoteUncheckedUpdateWithoutOwnerInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1796,18 +2304,25 @@ export type ComQuoteUncheckedUpdateWithoutOwnerInput = {
   opportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutQuoteNestedInput
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteUncheckedUpdateManyWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1817,6 +2332,7 @@ export type ComQuoteUncheckedUpdateManyWithoutOwnerInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1825,6 +2341,7 @@ export type ComQuoteUncheckedUpdateManyWithoutOwnerInput = {
   opportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1833,8 +2350,13 @@ export type ComQuoteUncheckedUpdateManyWithoutOwnerInput = {
 
 export type ComQuoteUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1844,11 +2366,13 @@ export type ComQuoteUpdateWithoutCreatedByInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1858,12 +2382,18 @@ export type ComQuoteUpdateWithoutCreatedByInput = {
   owner?: Prisma.UserUpdateOneRequiredWithoutComQuotesOwnedNestedInput
   lines?: Prisma.ComQuoteLineUpdateManyWithoutQuoteNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1873,6 +2403,7 @@ export type ComQuoteUncheckedUpdateWithoutCreatedByInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1881,18 +2412,25 @@ export type ComQuoteUncheckedUpdateWithoutCreatedByInput = {
   opportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutQuoteNestedInput
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1902,6 +2440,7 @@ export type ComQuoteUncheckedUpdateManyWithoutCreatedByInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1910,6 +2449,7 @@ export type ComQuoteUncheckedUpdateManyWithoutCreatedByInput = {
   opportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1918,8 +2458,13 @@ export type ComQuoteUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type ComQuoteCreateManyOpportunityInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1929,6 +2474,7 @@ export type ComQuoteCreateManyOpportunityInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -1937,6 +2483,7 @@ export type ComQuoteCreateManyOpportunityInput = {
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -1945,8 +2492,13 @@ export type ComQuoteCreateManyOpportunityInput = {
 
 export type ComQuoteUpdateWithoutOpportunityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1956,11 +2508,13 @@ export type ComQuoteUpdateWithoutOpportunityInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1970,12 +2524,18 @@ export type ComQuoteUpdateWithoutOpportunityInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComQuotesCreatedNestedInput
   lines?: Prisma.ComQuoteLineUpdateManyWithoutQuoteNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteUncheckedUpdateWithoutOpportunityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1985,6 +2545,7 @@ export type ComQuoteUncheckedUpdateWithoutOpportunityInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1993,18 +2554,25 @@ export type ComQuoteUncheckedUpdateWithoutOpportunityInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutQuoteNestedInput
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteUncheckedUpdateManyWithoutOpportunityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2014,6 +2582,7 @@ export type ComQuoteUncheckedUpdateManyWithoutOpportunityInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2022,6 +2591,7 @@ export type ComQuoteUncheckedUpdateManyWithoutOpportunityInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2030,8 +2600,13 @@ export type ComQuoteUncheckedUpdateManyWithoutOpportunityInput = {
 
 export type ComQuoteCreateManyClientInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComQuoteStatus
+  template?: $Enums.ComQuoteTemplate
+  revision?: number
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -2041,6 +2616,7 @@ export type ComQuoteCreateManyClientInput = {
   includeTravel?: boolean
   object?: string | null
   missionNote?: string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Date | string | null
   totalHt?: number
   totalVat?: number
@@ -2049,6 +2625,7 @@ export type ComQuoteCreateManyClientInput = {
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
+  issuedAt?: Date | string | null
   sentAt?: Date | string | null
   acceptedAt?: Date | string | null
   createdAt?: Date | string
@@ -2057,8 +2634,13 @@ export type ComQuoteCreateManyClientInput = {
 
 export type ComQuoteUpdateWithoutClientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2068,11 +2650,13 @@ export type ComQuoteUpdateWithoutClientInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2082,12 +2666,18 @@ export type ComQuoteUpdateWithoutClientInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComQuotesCreatedNestedInput
   lines?: Prisma.ComQuoteLineUpdateManyWithoutQuoteNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteUncheckedUpdateWithoutClientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2097,6 +2687,7 @@ export type ComQuoteUncheckedUpdateWithoutClientInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2105,18 +2696,25 @@ export type ComQuoteUncheckedUpdateWithoutClientInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutQuoteNestedInput
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutQuoteNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutQuoteNestedInput
 }
 
 export type ComQuoteUncheckedUpdateManyWithoutClientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComQuoteStatusFieldUpdateOperationsInput | $Enums.ComQuoteStatus
+  template?: Prisma.EnumComQuoteTemplateFieldUpdateOperationsInput | $Enums.ComQuoteTemplate
+  revision?: Prisma.IntFieldUpdateOperationsInput | number
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2126,6 +2724,7 @@ export type ComQuoteUncheckedUpdateManyWithoutClientInput = {
   includeTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   missionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conditionsJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2134,6 +2733,7 @@ export type ComQuoteUncheckedUpdateManyWithoutClientInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2148,11 +2748,13 @@ export type ComQuoteUncheckedUpdateManyWithoutClientInput = {
 export type ComQuoteCountOutputType = {
   lines: number
   invoices: number
+  contracts: number
 }
 
 export type ComQuoteCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lines?: boolean | ComQuoteCountOutputTypeCountLinesArgs
   invoices?: boolean | ComQuoteCountOutputTypeCountInvoicesArgs
+  contracts?: boolean | ComQuoteCountOutputTypeCountContractsArgs
 }
 
 /**
@@ -2179,11 +2781,23 @@ export type ComQuoteCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Typ
   where?: Prisma.ComInvoiceWhereInput
 }
 
+/**
+ * ComQuoteCountOutputType without action
+ */
+export type ComQuoteCountOutputTypeCountContractsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComContractWhereInput
+}
+
 
 export type ComQuoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   number?: boolean
+  draftCode?: boolean
+  legacyNumber?: boolean
+  legacyInternalRef?: boolean
   status?: boolean
+  template?: boolean
+  revision?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
@@ -2193,6 +2807,7 @@ export type ComQuoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   includeTravel?: boolean
   object?: boolean
   missionNote?: boolean
+  conditionsJson?: boolean
   validUntil?: boolean
   totalHt?: boolean
   totalVat?: boolean
@@ -2202,6 +2817,7 @@ export type ComQuoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   ownerId?: boolean
   createdById?: boolean
   gedDocumentId?: boolean
+  issuedAt?: boolean
   sentAt?: boolean
   acceptedAt?: boolean
   createdAt?: boolean
@@ -2212,13 +2828,19 @@ export type ComQuoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   lines?: boolean | Prisma.ComQuote$linesArgs<ExtArgs>
   invoices?: boolean | Prisma.ComQuote$invoicesArgs<ExtArgs>
+  contracts?: boolean | Prisma.ComQuote$contractsArgs<ExtArgs>
   _count?: boolean | Prisma.ComQuoteCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["comQuote"]>
 
 export type ComQuoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   number?: boolean
+  draftCode?: boolean
+  legacyNumber?: boolean
+  legacyInternalRef?: boolean
   status?: boolean
+  template?: boolean
+  revision?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
@@ -2228,6 +2850,7 @@ export type ComQuoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   includeTravel?: boolean
   object?: boolean
   missionNote?: boolean
+  conditionsJson?: boolean
   validUntil?: boolean
   totalHt?: boolean
   totalVat?: boolean
@@ -2237,6 +2860,7 @@ export type ComQuoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   ownerId?: boolean
   createdById?: boolean
   gedDocumentId?: boolean
+  issuedAt?: boolean
   sentAt?: boolean
   acceptedAt?: boolean
   createdAt?: boolean
@@ -2250,7 +2874,12 @@ export type ComQuoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type ComQuoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   number?: boolean
+  draftCode?: boolean
+  legacyNumber?: boolean
+  legacyInternalRef?: boolean
   status?: boolean
+  template?: boolean
+  revision?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
@@ -2260,6 +2889,7 @@ export type ComQuoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   includeTravel?: boolean
   object?: boolean
   missionNote?: boolean
+  conditionsJson?: boolean
   validUntil?: boolean
   totalHt?: boolean
   totalVat?: boolean
@@ -2269,6 +2899,7 @@ export type ComQuoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   ownerId?: boolean
   createdById?: boolean
   gedDocumentId?: boolean
+  issuedAt?: boolean
   sentAt?: boolean
   acceptedAt?: boolean
   createdAt?: boolean
@@ -2282,7 +2913,12 @@ export type ComQuoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type ComQuoteSelectScalar = {
   id?: boolean
   number?: boolean
+  draftCode?: boolean
+  legacyNumber?: boolean
+  legacyInternalRef?: boolean
   status?: boolean
+  template?: boolean
+  revision?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
@@ -2292,6 +2928,7 @@ export type ComQuoteSelectScalar = {
   includeTravel?: boolean
   object?: boolean
   missionNote?: boolean
+  conditionsJson?: boolean
   validUntil?: boolean
   totalHt?: boolean
   totalVat?: boolean
@@ -2301,13 +2938,14 @@ export type ComQuoteSelectScalar = {
   ownerId?: boolean
   createdById?: boolean
   gedDocumentId?: boolean
+  issuedAt?: boolean
   sentAt?: boolean
   acceptedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ComQuoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "number" | "status" | "regime" | "currency" | "vatEnabled" | "vatRate" | "promoEnabled" | "promoPercent" | "includeTravel" | "object" | "missionNote" | "validUntil" | "totalHt" | "totalVat" | "totalTtc" | "clientId" | "opportunityId" | "ownerId" | "createdById" | "gedDocumentId" | "sentAt" | "acceptedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["comQuote"]>
+export type ComQuoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "number" | "draftCode" | "legacyNumber" | "legacyInternalRef" | "status" | "template" | "revision" | "regime" | "currency" | "vatEnabled" | "vatRate" | "promoEnabled" | "promoPercent" | "includeTravel" | "object" | "missionNote" | "conditionsJson" | "validUntil" | "totalHt" | "totalVat" | "totalTtc" | "clientId" | "opportunityId" | "ownerId" | "createdById" | "gedDocumentId" | "issuedAt" | "sentAt" | "acceptedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["comQuote"]>
 export type ComQuoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
   opportunity?: boolean | Prisma.ComQuote$opportunityArgs<ExtArgs>
@@ -2315,6 +2953,7 @@ export type ComQuoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   lines?: boolean | Prisma.ComQuote$linesArgs<ExtArgs>
   invoices?: boolean | Prisma.ComQuote$invoicesArgs<ExtArgs>
+  contracts?: boolean | Prisma.ComQuote$contractsArgs<ExtArgs>
   _count?: boolean | Prisma.ComQuoteCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ComQuoteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2339,11 +2978,20 @@ export type $ComQuotePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     createdBy: Prisma.$UserPayload<ExtArgs>
     lines: Prisma.$ComQuoteLinePayload<ExtArgs>[]
     invoices: Prisma.$ComInvoicePayload<ExtArgs>[]
+    contracts: Prisma.$ComContractPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    number: string
+    /**
+     * Numéro officiel (null tant que brouillon non émis).
+     */
+    number: string | null
+    draftCode: string
+    legacyNumber: string | null
+    legacyInternalRef: string | null
     status: $Enums.ComQuoteStatus
+    template: $Enums.ComQuoteTemplate
+    revision: number
     regime: $Enums.ComDocRegime
     currency: string
     vatEnabled: boolean
@@ -2353,6 +3001,7 @@ export type $ComQuotePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     includeTravel: boolean
     object: string | null
     missionNote: string | null
+    conditionsJson: runtime.JsonValue | null
     validUntil: Date | null
     totalHt: number
     totalVat: number
@@ -2362,6 +3011,7 @@ export type $ComQuotePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     ownerId: string
     createdById: string
     gedDocumentId: string | null
+    issuedAt: Date | null
     sentAt: Date | null
     acceptedAt: Date | null
     createdAt: Date
@@ -2766,6 +3416,7 @@ export interface Prisma__ComQuoteClient<T, Null = never, ExtArgs extends runtime
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   lines<T extends Prisma.ComQuote$linesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComQuote$linesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComQuoteLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoices<T extends Prisma.ComQuote$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComQuote$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contracts<T extends Prisma.ComQuote$contractsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComQuote$contractsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComContractPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2797,7 +3448,12 @@ export interface Prisma__ComQuoteClient<T, Null = never, ExtArgs extends runtime
 export interface ComQuoteFieldRefs {
   readonly id: Prisma.FieldRef<"ComQuote", 'String'>
   readonly number: Prisma.FieldRef<"ComQuote", 'String'>
+  readonly draftCode: Prisma.FieldRef<"ComQuote", 'String'>
+  readonly legacyNumber: Prisma.FieldRef<"ComQuote", 'String'>
+  readonly legacyInternalRef: Prisma.FieldRef<"ComQuote", 'String'>
   readonly status: Prisma.FieldRef<"ComQuote", 'ComQuoteStatus'>
+  readonly template: Prisma.FieldRef<"ComQuote", 'ComQuoteTemplate'>
+  readonly revision: Prisma.FieldRef<"ComQuote", 'Int'>
   readonly regime: Prisma.FieldRef<"ComQuote", 'ComDocRegime'>
   readonly currency: Prisma.FieldRef<"ComQuote", 'String'>
   readonly vatEnabled: Prisma.FieldRef<"ComQuote", 'Boolean'>
@@ -2807,6 +3463,7 @@ export interface ComQuoteFieldRefs {
   readonly includeTravel: Prisma.FieldRef<"ComQuote", 'Boolean'>
   readonly object: Prisma.FieldRef<"ComQuote", 'String'>
   readonly missionNote: Prisma.FieldRef<"ComQuote", 'String'>
+  readonly conditionsJson: Prisma.FieldRef<"ComQuote", 'Json'>
   readonly validUntil: Prisma.FieldRef<"ComQuote", 'DateTime'>
   readonly totalHt: Prisma.FieldRef<"ComQuote", 'Int'>
   readonly totalVat: Prisma.FieldRef<"ComQuote", 'Int'>
@@ -2816,6 +3473,7 @@ export interface ComQuoteFieldRefs {
   readonly ownerId: Prisma.FieldRef<"ComQuote", 'String'>
   readonly createdById: Prisma.FieldRef<"ComQuote", 'String'>
   readonly gedDocumentId: Prisma.FieldRef<"ComQuote", 'String'>
+  readonly issuedAt: Prisma.FieldRef<"ComQuote", 'DateTime'>
   readonly sentAt: Prisma.FieldRef<"ComQuote", 'DateTime'>
   readonly acceptedAt: Prisma.FieldRef<"ComQuote", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"ComQuote", 'DateTime'>
@@ -3285,6 +3943,30 @@ export type ComQuote$invoicesArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.ComInvoiceScalarFieldEnum | Prisma.ComInvoiceScalarFieldEnum[]
+}
+
+/**
+ * ComQuote.contracts
+ */
+export type ComQuote$contractsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComContract
+   */
+  select?: Prisma.ComContractSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComContract
+   */
+  omit?: Prisma.ComContractOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComContractInclude<ExtArgs> | null
+  where?: Prisma.ComContractWhereInput
+  orderBy?: Prisma.ComContractOrderByWithRelationInput | Prisma.ComContractOrderByWithRelationInput[]
+  cursor?: Prisma.ComContractWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComContractScalarFieldEnum | Prisma.ComContractScalarFieldEnum[]
 }
 
 /**

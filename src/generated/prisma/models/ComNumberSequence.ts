@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model ComNumberSequence
- * 
+ * Séquences documentaires — periodKey = YYYYMMDD (ou YYYY legacy).
  */
 export type ComNumberSequenceModel = runtime.Types.Result.DefaultSelection<Prisma.$ComNumberSequencePayload>
 
@@ -27,19 +27,17 @@ export type AggregateComNumberSequence = {
 }
 
 export type ComNumberSequenceAvgAggregateOutputType = {
-  year: number | null
   lastValue: number | null
 }
 
 export type ComNumberSequenceSumAggregateOutputType = {
-  year: number | null
   lastValue: number | null
 }
 
 export type ComNumberSequenceMinAggregateOutputType = {
   id: string | null
   kind: $Enums.ComDocKind | null
-  year: number | null
+  periodKey: string | null
   lastValue: number | null
   updatedAt: Date | null
 }
@@ -47,7 +45,7 @@ export type ComNumberSequenceMinAggregateOutputType = {
 export type ComNumberSequenceMaxAggregateOutputType = {
   id: string | null
   kind: $Enums.ComDocKind | null
-  year: number | null
+  periodKey: string | null
   lastValue: number | null
   updatedAt: Date | null
 }
@@ -55,7 +53,7 @@ export type ComNumberSequenceMaxAggregateOutputType = {
 export type ComNumberSequenceCountAggregateOutputType = {
   id: number
   kind: number
-  year: number
+  periodKey: number
   lastValue: number
   updatedAt: number
   _all: number
@@ -63,19 +61,17 @@ export type ComNumberSequenceCountAggregateOutputType = {
 
 
 export type ComNumberSequenceAvgAggregateInputType = {
-  year?: true
   lastValue?: true
 }
 
 export type ComNumberSequenceSumAggregateInputType = {
-  year?: true
   lastValue?: true
 }
 
 export type ComNumberSequenceMinAggregateInputType = {
   id?: true
   kind?: true
-  year?: true
+  periodKey?: true
   lastValue?: true
   updatedAt?: true
 }
@@ -83,7 +79,7 @@ export type ComNumberSequenceMinAggregateInputType = {
 export type ComNumberSequenceMaxAggregateInputType = {
   id?: true
   kind?: true
-  year?: true
+  periodKey?: true
   lastValue?: true
   updatedAt?: true
 }
@@ -91,7 +87,7 @@ export type ComNumberSequenceMaxAggregateInputType = {
 export type ComNumberSequenceCountAggregateInputType = {
   id?: true
   kind?: true
-  year?: true
+  periodKey?: true
   lastValue?: true
   updatedAt?: true
   _all?: true
@@ -186,7 +182,7 @@ export type ComNumberSequenceGroupByArgs<ExtArgs extends runtime.Types.Extension
 export type ComNumberSequenceGroupByOutputType = {
   id: string
   kind: $Enums.ComDocKind
-  year: number
+  periodKey: string
   lastValue: number
   updatedAt: Date
   _count: ComNumberSequenceCountAggregateOutputType | null
@@ -217,7 +213,7 @@ export type ComNumberSequenceWhereInput = {
   NOT?: Prisma.ComNumberSequenceWhereInput | Prisma.ComNumberSequenceWhereInput[]
   id?: Prisma.StringFilter<"ComNumberSequence"> | string
   kind?: Prisma.EnumComDocKindFilter<"ComNumberSequence"> | $Enums.ComDocKind
-  year?: Prisma.IntFilter<"ComNumberSequence"> | number
+  periodKey?: Prisma.StringFilter<"ComNumberSequence"> | string
   lastValue?: Prisma.IntFilter<"ComNumberSequence"> | number
   updatedAt?: Prisma.DateTimeFilter<"ComNumberSequence"> | Date | string
 }
@@ -225,27 +221,27 @@ export type ComNumberSequenceWhereInput = {
 export type ComNumberSequenceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   kind?: Prisma.SortOrder
-  year?: Prisma.SortOrder
+  periodKey?: Prisma.SortOrder
   lastValue?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ComNumberSequenceWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  kind_year?: Prisma.ComNumberSequenceKindYearCompoundUniqueInput
+  kind_periodKey?: Prisma.ComNumberSequenceKindPeriodKeyCompoundUniqueInput
   AND?: Prisma.ComNumberSequenceWhereInput | Prisma.ComNumberSequenceWhereInput[]
   OR?: Prisma.ComNumberSequenceWhereInput[]
   NOT?: Prisma.ComNumberSequenceWhereInput | Prisma.ComNumberSequenceWhereInput[]
   kind?: Prisma.EnumComDocKindFilter<"ComNumberSequence"> | $Enums.ComDocKind
-  year?: Prisma.IntFilter<"ComNumberSequence"> | number
+  periodKey?: Prisma.StringFilter<"ComNumberSequence"> | string
   lastValue?: Prisma.IntFilter<"ComNumberSequence"> | number
   updatedAt?: Prisma.DateTimeFilter<"ComNumberSequence"> | Date | string
-}, "id" | "kind_year">
+}, "id" | "kind_periodKey">
 
 export type ComNumberSequenceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   kind?: Prisma.SortOrder
-  year?: Prisma.SortOrder
+  periodKey?: Prisma.SortOrder
   lastValue?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ComNumberSequenceCountOrderByAggregateInput
@@ -261,7 +257,7 @@ export type ComNumberSequenceScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ComNumberSequenceScalarWhereWithAggregatesInput | Prisma.ComNumberSequenceScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ComNumberSequence"> | string
   kind?: Prisma.EnumComDocKindWithAggregatesFilter<"ComNumberSequence"> | $Enums.ComDocKind
-  year?: Prisma.IntWithAggregatesFilter<"ComNumberSequence"> | number
+  periodKey?: Prisma.StringWithAggregatesFilter<"ComNumberSequence"> | string
   lastValue?: Prisma.IntWithAggregatesFilter<"ComNumberSequence"> | number
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ComNumberSequence"> | Date | string
 }
@@ -269,7 +265,7 @@ export type ComNumberSequenceScalarWhereWithAggregatesInput = {
 export type ComNumberSequenceCreateInput = {
   id?: string
   kind: $Enums.ComDocKind
-  year: number
+  periodKey: string
   lastValue?: number
   updatedAt?: Date | string
 }
@@ -277,7 +273,7 @@ export type ComNumberSequenceCreateInput = {
 export type ComNumberSequenceUncheckedCreateInput = {
   id?: string
   kind: $Enums.ComDocKind
-  year: number
+  periodKey: string
   lastValue?: number
   updatedAt?: Date | string
 }
@@ -285,7 +281,7 @@ export type ComNumberSequenceUncheckedCreateInput = {
 export type ComNumberSequenceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumComDocKindFieldUpdateOperationsInput | $Enums.ComDocKind
-  year?: Prisma.IntFieldUpdateOperationsInput | number
+  periodKey?: Prisma.StringFieldUpdateOperationsInput | string
   lastValue?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -293,7 +289,7 @@ export type ComNumberSequenceUpdateInput = {
 export type ComNumberSequenceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumComDocKindFieldUpdateOperationsInput | $Enums.ComDocKind
-  year?: Prisma.IntFieldUpdateOperationsInput | number
+  periodKey?: Prisma.StringFieldUpdateOperationsInput | string
   lastValue?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -301,7 +297,7 @@ export type ComNumberSequenceUncheckedUpdateInput = {
 export type ComNumberSequenceCreateManyInput = {
   id?: string
   kind: $Enums.ComDocKind
-  year: number
+  periodKey: string
   lastValue?: number
   updatedAt?: Date | string
 }
@@ -309,7 +305,7 @@ export type ComNumberSequenceCreateManyInput = {
 export type ComNumberSequenceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumComDocKindFieldUpdateOperationsInput | $Enums.ComDocKind
-  year?: Prisma.IntFieldUpdateOperationsInput | number
+  periodKey?: Prisma.StringFieldUpdateOperationsInput | string
   lastValue?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -317,33 +313,32 @@ export type ComNumberSequenceUpdateManyMutationInput = {
 export type ComNumberSequenceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumComDocKindFieldUpdateOperationsInput | $Enums.ComDocKind
-  year?: Prisma.IntFieldUpdateOperationsInput | number
+  periodKey?: Prisma.StringFieldUpdateOperationsInput | string
   lastValue?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type ComNumberSequenceKindYearCompoundUniqueInput = {
+export type ComNumberSequenceKindPeriodKeyCompoundUniqueInput = {
   kind: $Enums.ComDocKind
-  year: number
+  periodKey: string
 }
 
 export type ComNumberSequenceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   kind?: Prisma.SortOrder
-  year?: Prisma.SortOrder
+  periodKey?: Prisma.SortOrder
   lastValue?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ComNumberSequenceAvgOrderByAggregateInput = {
-  year?: Prisma.SortOrder
   lastValue?: Prisma.SortOrder
 }
 
 export type ComNumberSequenceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   kind?: Prisma.SortOrder
-  year?: Prisma.SortOrder
+  periodKey?: Prisma.SortOrder
   lastValue?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -351,13 +346,12 @@ export type ComNumberSequenceMaxOrderByAggregateInput = {
 export type ComNumberSequenceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   kind?: Prisma.SortOrder
-  year?: Prisma.SortOrder
+  periodKey?: Prisma.SortOrder
   lastValue?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type ComNumberSequenceSumOrderByAggregateInput = {
-  year?: Prisma.SortOrder
   lastValue?: Prisma.SortOrder
 }
 
@@ -370,7 +364,7 @@ export type EnumComDocKindFieldUpdateOperationsInput = {
 export type ComNumberSequenceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   kind?: boolean
-  year?: boolean
+  periodKey?: boolean
   lastValue?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["comNumberSequence"]>
@@ -378,7 +372,7 @@ export type ComNumberSequenceSelect<ExtArgs extends runtime.Types.Extensions.Int
 export type ComNumberSequenceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   kind?: boolean
-  year?: boolean
+  periodKey?: boolean
   lastValue?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["comNumberSequence"]>
@@ -386,7 +380,7 @@ export type ComNumberSequenceSelectCreateManyAndReturn<ExtArgs extends runtime.T
 export type ComNumberSequenceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   kind?: boolean
-  year?: boolean
+  periodKey?: boolean
   lastValue?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["comNumberSequence"]>
@@ -394,12 +388,12 @@ export type ComNumberSequenceSelectUpdateManyAndReturn<ExtArgs extends runtime.T
 export type ComNumberSequenceSelectScalar = {
   id?: boolean
   kind?: boolean
-  year?: boolean
+  periodKey?: boolean
   lastValue?: boolean
   updatedAt?: boolean
 }
 
-export type ComNumberSequenceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "kind" | "year" | "lastValue" | "updatedAt", ExtArgs["result"]["comNumberSequence"]>
+export type ComNumberSequenceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "kind" | "periodKey" | "lastValue" | "updatedAt", ExtArgs["result"]["comNumberSequence"]>
 
 export type $ComNumberSequencePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ComNumberSequence"
@@ -407,7 +401,7 @@ export type $ComNumberSequencePayload<ExtArgs extends runtime.Types.Extensions.I
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     kind: $Enums.ComDocKind
-    year: number
+    periodKey: string
     lastValue: number
     updatedAt: Date
   }, ExtArgs["result"]["comNumberSequence"]>
@@ -835,7 +829,7 @@ export interface Prisma__ComNumberSequenceClient<T, Null = never, ExtArgs extend
 export interface ComNumberSequenceFieldRefs {
   readonly id: Prisma.FieldRef<"ComNumberSequence", 'String'>
   readonly kind: Prisma.FieldRef<"ComNumberSequence", 'ComDocKind'>
-  readonly year: Prisma.FieldRef<"ComNumberSequence", 'Int'>
+  readonly periodKey: Prisma.FieldRef<"ComNumberSequence", 'String'>
   readonly lastValue: Prisma.FieldRef<"ComNumberSequence", 'Int'>
   readonly updatedAt: Prisma.FieldRef<"ComNumberSequence", 'DateTime'>
 }

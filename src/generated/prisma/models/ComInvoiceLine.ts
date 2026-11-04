@@ -43,9 +43,11 @@ export type ComInvoiceLineMinAggregateOutputType = {
   invoiceId: string | null
   sortOrder: number | null
   label: string | null
+  description: string | null
   qty: number | null
   unitPrice: number | null
   catalogOfferId: string | null
+  contractLineId: string | null
   isTravel: boolean | null
 }
 
@@ -54,9 +56,11 @@ export type ComInvoiceLineMaxAggregateOutputType = {
   invoiceId: string | null
   sortOrder: number | null
   label: string | null
+  description: string | null
   qty: number | null
   unitPrice: number | null
   catalogOfferId: string | null
+  contractLineId: string | null
   isTravel: boolean | null
 }
 
@@ -65,10 +69,13 @@ export type ComInvoiceLineCountAggregateOutputType = {
   invoiceId: number
   sortOrder: number
   label: number
+  description: number
   qty: number
   unitPrice: number
   catalogOfferId: number
+  contractLineId: number
   isTravel: number
+  snapshotJson: number
   _all: number
 }
 
@@ -90,9 +97,11 @@ export type ComInvoiceLineMinAggregateInputType = {
   invoiceId?: true
   sortOrder?: true
   label?: true
+  description?: true
   qty?: true
   unitPrice?: true
   catalogOfferId?: true
+  contractLineId?: true
   isTravel?: true
 }
 
@@ -101,9 +110,11 @@ export type ComInvoiceLineMaxAggregateInputType = {
   invoiceId?: true
   sortOrder?: true
   label?: true
+  description?: true
   qty?: true
   unitPrice?: true
   catalogOfferId?: true
+  contractLineId?: true
   isTravel?: true
 }
 
@@ -112,10 +123,13 @@ export type ComInvoiceLineCountAggregateInputType = {
   invoiceId?: true
   sortOrder?: true
   label?: true
+  description?: true
   qty?: true
   unitPrice?: true
   catalogOfferId?: true
+  contractLineId?: true
   isTravel?: true
+  snapshotJson?: true
   _all?: true
 }
 
@@ -210,10 +224,13 @@ export type ComInvoiceLineGroupByOutputType = {
   invoiceId: string
   sortOrder: number
   label: string
+  description: string | null
   qty: number
   unitPrice: number
   catalogOfferId: string | null
+  contractLineId: string | null
   isTravel: boolean
+  snapshotJson: runtime.JsonValue | null
   _count: ComInvoiceLineCountAggregateOutputType | null
   _avg: ComInvoiceLineAvgAggregateOutputType | null
   _sum: ComInvoiceLineSumAggregateOutputType | null
@@ -244,12 +261,16 @@ export type ComInvoiceLineWhereInput = {
   invoiceId?: Prisma.StringFilter<"ComInvoiceLine"> | string
   sortOrder?: Prisma.IntFilter<"ComInvoiceLine"> | number
   label?: Prisma.StringFilter<"ComInvoiceLine"> | string
+  description?: Prisma.StringNullableFilter<"ComInvoiceLine"> | string | null
   qty?: Prisma.IntFilter<"ComInvoiceLine"> | number
   unitPrice?: Prisma.IntFilter<"ComInvoiceLine"> | number
   catalogOfferId?: Prisma.StringNullableFilter<"ComInvoiceLine"> | string | null
+  contractLineId?: Prisma.StringNullableFilter<"ComInvoiceLine"> | string | null
   isTravel?: Prisma.BoolFilter<"ComInvoiceLine"> | boolean
+  snapshotJson?: Prisma.JsonNullableFilter<"ComInvoiceLine">
   invoice?: Prisma.XOR<Prisma.ComInvoiceScalarRelationFilter, Prisma.ComInvoiceWhereInput>
   catalogOffer?: Prisma.XOR<Prisma.CatalogOfferNullableScalarRelationFilter, Prisma.CatalogOfferWhereInput> | null
+  contractLine?: Prisma.XOR<Prisma.ComContractLineNullableScalarRelationFilter, Prisma.ComContractLineWhereInput> | null
 }
 
 export type ComInvoiceLineOrderByWithRelationInput = {
@@ -257,12 +278,16 @@ export type ComInvoiceLineOrderByWithRelationInput = {
   invoiceId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   qty?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   catalogOfferId?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractLineId?: Prisma.SortOrderInput | Prisma.SortOrder
   isTravel?: Prisma.SortOrder
+  snapshotJson?: Prisma.SortOrderInput | Prisma.SortOrder
   invoice?: Prisma.ComInvoiceOrderByWithRelationInput
   catalogOffer?: Prisma.CatalogOfferOrderByWithRelationInput
+  contractLine?: Prisma.ComContractLineOrderByWithRelationInput
 }
 
 export type ComInvoiceLineWhereUniqueInput = Prisma.AtLeast<{
@@ -273,12 +298,16 @@ export type ComInvoiceLineWhereUniqueInput = Prisma.AtLeast<{
   invoiceId?: Prisma.StringFilter<"ComInvoiceLine"> | string
   sortOrder?: Prisma.IntFilter<"ComInvoiceLine"> | number
   label?: Prisma.StringFilter<"ComInvoiceLine"> | string
+  description?: Prisma.StringNullableFilter<"ComInvoiceLine"> | string | null
   qty?: Prisma.IntFilter<"ComInvoiceLine"> | number
   unitPrice?: Prisma.IntFilter<"ComInvoiceLine"> | number
   catalogOfferId?: Prisma.StringNullableFilter<"ComInvoiceLine"> | string | null
+  contractLineId?: Prisma.StringNullableFilter<"ComInvoiceLine"> | string | null
   isTravel?: Prisma.BoolFilter<"ComInvoiceLine"> | boolean
+  snapshotJson?: Prisma.JsonNullableFilter<"ComInvoiceLine">
   invoice?: Prisma.XOR<Prisma.ComInvoiceScalarRelationFilter, Prisma.ComInvoiceWhereInput>
   catalogOffer?: Prisma.XOR<Prisma.CatalogOfferNullableScalarRelationFilter, Prisma.CatalogOfferWhereInput> | null
+  contractLine?: Prisma.XOR<Prisma.ComContractLineNullableScalarRelationFilter, Prisma.ComContractLineWhereInput> | null
 }, "id">
 
 export type ComInvoiceLineOrderByWithAggregationInput = {
@@ -286,10 +315,13 @@ export type ComInvoiceLineOrderByWithAggregationInput = {
   invoiceId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   qty?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   catalogOfferId?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractLineId?: Prisma.SortOrderInput | Prisma.SortOrder
   isTravel?: Prisma.SortOrder
+  snapshotJson?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ComInvoiceLineCountOrderByAggregateInput
   _avg?: Prisma.ComInvoiceLineAvgOrderByAggregateInput
   _max?: Prisma.ComInvoiceLineMaxOrderByAggregateInput
@@ -305,21 +337,27 @@ export type ComInvoiceLineScalarWhereWithAggregatesInput = {
   invoiceId?: Prisma.StringWithAggregatesFilter<"ComInvoiceLine"> | string
   sortOrder?: Prisma.IntWithAggregatesFilter<"ComInvoiceLine"> | number
   label?: Prisma.StringWithAggregatesFilter<"ComInvoiceLine"> | string
+  description?: Prisma.StringNullableWithAggregatesFilter<"ComInvoiceLine"> | string | null
   qty?: Prisma.IntWithAggregatesFilter<"ComInvoiceLine"> | number
   unitPrice?: Prisma.IntWithAggregatesFilter<"ComInvoiceLine"> | number
   catalogOfferId?: Prisma.StringNullableWithAggregatesFilter<"ComInvoiceLine"> | string | null
+  contractLineId?: Prisma.StringNullableWithAggregatesFilter<"ComInvoiceLine"> | string | null
   isTravel?: Prisma.BoolWithAggregatesFilter<"ComInvoiceLine"> | boolean
+  snapshotJson?: Prisma.JsonNullableWithAggregatesFilter<"ComInvoiceLine">
 }
 
 export type ComInvoiceLineCreateInput = {
   id?: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   invoice: Prisma.ComInvoiceCreateNestedOneWithoutLinesInput
   catalogOffer?: Prisma.CatalogOfferCreateNestedOneWithoutInvoiceLinesInput
+  contractLine?: Prisma.ComContractLineCreateNestedOneWithoutInvoiceLinesInput
 }
 
 export type ComInvoiceLineUncheckedCreateInput = {
@@ -327,21 +365,27 @@ export type ComInvoiceLineUncheckedCreateInput = {
   invoiceId: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   catalogOfferId?: string | null
+  contractLineId?: string | null
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   invoice?: Prisma.ComInvoiceUpdateOneRequiredWithoutLinesNestedInput
   catalogOffer?: Prisma.CatalogOfferUpdateOneWithoutInvoiceLinesNestedInput
+  contractLine?: Prisma.ComContractLineUpdateOneWithoutInvoiceLinesNestedInput
 }
 
 export type ComInvoiceLineUncheckedUpdateInput = {
@@ -349,10 +393,13 @@ export type ComInvoiceLineUncheckedUpdateInput = {
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   catalogOfferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractLineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineCreateManyInput = {
@@ -360,19 +407,24 @@ export type ComInvoiceLineCreateManyInput = {
   invoiceId: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   catalogOfferId?: string | null
+  contractLineId?: string | null
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineUncheckedUpdateManyInput = {
@@ -380,10 +432,13 @@ export type ComInvoiceLineUncheckedUpdateManyInput = {
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   catalogOfferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractLineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineListRelationFilter = {
@@ -401,10 +456,13 @@ export type ComInvoiceLineCountOrderByAggregateInput = {
   invoiceId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   qty?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   catalogOfferId?: Prisma.SortOrder
+  contractLineId?: Prisma.SortOrder
   isTravel?: Prisma.SortOrder
+  snapshotJson?: Prisma.SortOrder
 }
 
 export type ComInvoiceLineAvgOrderByAggregateInput = {
@@ -418,9 +476,11 @@ export type ComInvoiceLineMaxOrderByAggregateInput = {
   invoiceId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   qty?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   catalogOfferId?: Prisma.SortOrder
+  contractLineId?: Prisma.SortOrder
   isTravel?: Prisma.SortOrder
 }
 
@@ -429,9 +489,11 @@ export type ComInvoiceLineMinOrderByAggregateInput = {
   invoiceId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   qty?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   catalogOfferId?: Prisma.SortOrder
+  contractLineId?: Prisma.SortOrder
   isTravel?: Prisma.SortOrder
 }
 
@@ -483,6 +545,48 @@ export type ComInvoiceLineUncheckedUpdateManyWithoutCatalogOfferNestedInput = {
   deleteMany?: Prisma.ComInvoiceLineScalarWhereInput | Prisma.ComInvoiceLineScalarWhereInput[]
 }
 
+export type ComInvoiceLineCreateNestedManyWithoutContractLineInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceLineCreateWithoutContractLineInput, Prisma.ComInvoiceLineUncheckedCreateWithoutContractLineInput> | Prisma.ComInvoiceLineCreateWithoutContractLineInput[] | Prisma.ComInvoiceLineUncheckedCreateWithoutContractLineInput[]
+  connectOrCreate?: Prisma.ComInvoiceLineCreateOrConnectWithoutContractLineInput | Prisma.ComInvoiceLineCreateOrConnectWithoutContractLineInput[]
+  createMany?: Prisma.ComInvoiceLineCreateManyContractLineInputEnvelope
+  connect?: Prisma.ComInvoiceLineWhereUniqueInput | Prisma.ComInvoiceLineWhereUniqueInput[]
+}
+
+export type ComInvoiceLineUncheckedCreateNestedManyWithoutContractLineInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceLineCreateWithoutContractLineInput, Prisma.ComInvoiceLineUncheckedCreateWithoutContractLineInput> | Prisma.ComInvoiceLineCreateWithoutContractLineInput[] | Prisma.ComInvoiceLineUncheckedCreateWithoutContractLineInput[]
+  connectOrCreate?: Prisma.ComInvoiceLineCreateOrConnectWithoutContractLineInput | Prisma.ComInvoiceLineCreateOrConnectWithoutContractLineInput[]
+  createMany?: Prisma.ComInvoiceLineCreateManyContractLineInputEnvelope
+  connect?: Prisma.ComInvoiceLineWhereUniqueInput | Prisma.ComInvoiceLineWhereUniqueInput[]
+}
+
+export type ComInvoiceLineUpdateManyWithoutContractLineNestedInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceLineCreateWithoutContractLineInput, Prisma.ComInvoiceLineUncheckedCreateWithoutContractLineInput> | Prisma.ComInvoiceLineCreateWithoutContractLineInput[] | Prisma.ComInvoiceLineUncheckedCreateWithoutContractLineInput[]
+  connectOrCreate?: Prisma.ComInvoiceLineCreateOrConnectWithoutContractLineInput | Prisma.ComInvoiceLineCreateOrConnectWithoutContractLineInput[]
+  upsert?: Prisma.ComInvoiceLineUpsertWithWhereUniqueWithoutContractLineInput | Prisma.ComInvoiceLineUpsertWithWhereUniqueWithoutContractLineInput[]
+  createMany?: Prisma.ComInvoiceLineCreateManyContractLineInputEnvelope
+  set?: Prisma.ComInvoiceLineWhereUniqueInput | Prisma.ComInvoiceLineWhereUniqueInput[]
+  disconnect?: Prisma.ComInvoiceLineWhereUniqueInput | Prisma.ComInvoiceLineWhereUniqueInput[]
+  delete?: Prisma.ComInvoiceLineWhereUniqueInput | Prisma.ComInvoiceLineWhereUniqueInput[]
+  connect?: Prisma.ComInvoiceLineWhereUniqueInput | Prisma.ComInvoiceLineWhereUniqueInput[]
+  update?: Prisma.ComInvoiceLineUpdateWithWhereUniqueWithoutContractLineInput | Prisma.ComInvoiceLineUpdateWithWhereUniqueWithoutContractLineInput[]
+  updateMany?: Prisma.ComInvoiceLineUpdateManyWithWhereWithoutContractLineInput | Prisma.ComInvoiceLineUpdateManyWithWhereWithoutContractLineInput[]
+  deleteMany?: Prisma.ComInvoiceLineScalarWhereInput | Prisma.ComInvoiceLineScalarWhereInput[]
+}
+
+export type ComInvoiceLineUncheckedUpdateManyWithoutContractLineNestedInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceLineCreateWithoutContractLineInput, Prisma.ComInvoiceLineUncheckedCreateWithoutContractLineInput> | Prisma.ComInvoiceLineCreateWithoutContractLineInput[] | Prisma.ComInvoiceLineUncheckedCreateWithoutContractLineInput[]
+  connectOrCreate?: Prisma.ComInvoiceLineCreateOrConnectWithoutContractLineInput | Prisma.ComInvoiceLineCreateOrConnectWithoutContractLineInput[]
+  upsert?: Prisma.ComInvoiceLineUpsertWithWhereUniqueWithoutContractLineInput | Prisma.ComInvoiceLineUpsertWithWhereUniqueWithoutContractLineInput[]
+  createMany?: Prisma.ComInvoiceLineCreateManyContractLineInputEnvelope
+  set?: Prisma.ComInvoiceLineWhereUniqueInput | Prisma.ComInvoiceLineWhereUniqueInput[]
+  disconnect?: Prisma.ComInvoiceLineWhereUniqueInput | Prisma.ComInvoiceLineWhereUniqueInput[]
+  delete?: Prisma.ComInvoiceLineWhereUniqueInput | Prisma.ComInvoiceLineWhereUniqueInput[]
+  connect?: Prisma.ComInvoiceLineWhereUniqueInput | Prisma.ComInvoiceLineWhereUniqueInput[]
+  update?: Prisma.ComInvoiceLineUpdateWithWhereUniqueWithoutContractLineInput | Prisma.ComInvoiceLineUpdateWithWhereUniqueWithoutContractLineInput[]
+  updateMany?: Prisma.ComInvoiceLineUpdateManyWithWhereWithoutContractLineInput | Prisma.ComInvoiceLineUpdateManyWithWhereWithoutContractLineInput[]
+  deleteMany?: Prisma.ComInvoiceLineScalarWhereInput | Prisma.ComInvoiceLineScalarWhereInput[]
+}
+
 export type ComInvoiceLineCreateNestedManyWithoutInvoiceInput = {
   create?: Prisma.XOR<Prisma.ComInvoiceLineCreateWithoutInvoiceInput, Prisma.ComInvoiceLineUncheckedCreateWithoutInvoiceInput> | Prisma.ComInvoiceLineCreateWithoutInvoiceInput[] | Prisma.ComInvoiceLineUncheckedCreateWithoutInvoiceInput[]
   connectOrCreate?: Prisma.ComInvoiceLineCreateOrConnectWithoutInvoiceInput | Prisma.ComInvoiceLineCreateOrConnectWithoutInvoiceInput[]
@@ -529,10 +633,13 @@ export type ComInvoiceLineCreateWithoutCatalogOfferInput = {
   id?: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   invoice: Prisma.ComInvoiceCreateNestedOneWithoutLinesInput
+  contractLine?: Prisma.ComContractLineCreateNestedOneWithoutInvoiceLinesInput
 }
 
 export type ComInvoiceLineUncheckedCreateWithoutCatalogOfferInput = {
@@ -540,9 +647,12 @@ export type ComInvoiceLineUncheckedCreateWithoutCatalogOfferInput = {
   invoiceId: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
+  contractLineId?: string | null
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineCreateOrConnectWithoutCatalogOfferInput = {
@@ -579,30 +689,91 @@ export type ComInvoiceLineScalarWhereInput = {
   invoiceId?: Prisma.StringFilter<"ComInvoiceLine"> | string
   sortOrder?: Prisma.IntFilter<"ComInvoiceLine"> | number
   label?: Prisma.StringFilter<"ComInvoiceLine"> | string
+  description?: Prisma.StringNullableFilter<"ComInvoiceLine"> | string | null
   qty?: Prisma.IntFilter<"ComInvoiceLine"> | number
   unitPrice?: Prisma.IntFilter<"ComInvoiceLine"> | number
   catalogOfferId?: Prisma.StringNullableFilter<"ComInvoiceLine"> | string | null
+  contractLineId?: Prisma.StringNullableFilter<"ComInvoiceLine"> | string | null
   isTravel?: Prisma.BoolFilter<"ComInvoiceLine"> | boolean
+  snapshotJson?: Prisma.JsonNullableFilter<"ComInvoiceLine">
+}
+
+export type ComInvoiceLineCreateWithoutContractLineInput = {
+  id?: string
+  sortOrder?: number
+  label: string
+  description?: string | null
+  qty?: number
+  unitPrice: number
+  isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  invoice: Prisma.ComInvoiceCreateNestedOneWithoutLinesInput
+  catalogOffer?: Prisma.CatalogOfferCreateNestedOneWithoutInvoiceLinesInput
+}
+
+export type ComInvoiceLineUncheckedCreateWithoutContractLineInput = {
+  id?: string
+  invoiceId: string
+  sortOrder?: number
+  label: string
+  description?: string | null
+  qty?: number
+  unitPrice: number
+  catalogOfferId?: string | null
+  isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+}
+
+export type ComInvoiceLineCreateOrConnectWithoutContractLineInput = {
+  where: Prisma.ComInvoiceLineWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComInvoiceLineCreateWithoutContractLineInput, Prisma.ComInvoiceLineUncheckedCreateWithoutContractLineInput>
+}
+
+export type ComInvoiceLineCreateManyContractLineInputEnvelope = {
+  data: Prisma.ComInvoiceLineCreateManyContractLineInput | Prisma.ComInvoiceLineCreateManyContractLineInput[]
+  skipDuplicates?: boolean
+}
+
+export type ComInvoiceLineUpsertWithWhereUniqueWithoutContractLineInput = {
+  where: Prisma.ComInvoiceLineWhereUniqueInput
+  update: Prisma.XOR<Prisma.ComInvoiceLineUpdateWithoutContractLineInput, Prisma.ComInvoiceLineUncheckedUpdateWithoutContractLineInput>
+  create: Prisma.XOR<Prisma.ComInvoiceLineCreateWithoutContractLineInput, Prisma.ComInvoiceLineUncheckedCreateWithoutContractLineInput>
+}
+
+export type ComInvoiceLineUpdateWithWhereUniqueWithoutContractLineInput = {
+  where: Prisma.ComInvoiceLineWhereUniqueInput
+  data: Prisma.XOR<Prisma.ComInvoiceLineUpdateWithoutContractLineInput, Prisma.ComInvoiceLineUncheckedUpdateWithoutContractLineInput>
+}
+
+export type ComInvoiceLineUpdateManyWithWhereWithoutContractLineInput = {
+  where: Prisma.ComInvoiceLineScalarWhereInput
+  data: Prisma.XOR<Prisma.ComInvoiceLineUpdateManyMutationInput, Prisma.ComInvoiceLineUncheckedUpdateManyWithoutContractLineInput>
 }
 
 export type ComInvoiceLineCreateWithoutInvoiceInput = {
   id?: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   catalogOffer?: Prisma.CatalogOfferCreateNestedOneWithoutInvoiceLinesInput
+  contractLine?: Prisma.ComContractLineCreateNestedOneWithoutInvoiceLinesInput
 }
 
 export type ComInvoiceLineUncheckedCreateWithoutInvoiceInput = {
   id?: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   catalogOfferId?: string | null
+  contractLineId?: string | null
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineCreateOrConnectWithoutInvoiceInput = {
@@ -636,19 +807,25 @@ export type ComInvoiceLineCreateManyCatalogOfferInput = {
   invoiceId: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
+  contractLineId?: string | null
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineUpdateWithoutCatalogOfferInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   invoice?: Prisma.ComInvoiceUpdateOneRequiredWithoutLinesNestedInput
+  contractLine?: Prisma.ComContractLineUpdateOneWithoutInvoiceLinesNestedInput
 }
 
 export type ComInvoiceLineUncheckedUpdateWithoutCatalogOfferInput = {
@@ -656,9 +833,12 @@ export type ComInvoiceLineUncheckedUpdateWithoutCatalogOfferInput = {
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
+  contractLineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineUncheckedUpdateManyWithoutCatalogOfferInput = {
@@ -666,49 +846,116 @@ export type ComInvoiceLineUncheckedUpdateManyWithoutCatalogOfferInput = {
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qty?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
+  contractLineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+}
+
+export type ComInvoiceLineCreateManyContractLineInput = {
+  id?: string
+  invoiceId: string
+  sortOrder?: number
+  label: string
+  description?: string | null
+  qty?: number
+  unitPrice: number
+  catalogOfferId?: string | null
+  isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+}
+
+export type ComInvoiceLineUpdateWithoutContractLineInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  invoice?: Prisma.ComInvoiceUpdateOneRequiredWithoutLinesNestedInput
+  catalogOffer?: Prisma.CatalogOfferUpdateOneWithoutInvoiceLinesNestedInput
+}
+
+export type ComInvoiceLineUncheckedUpdateWithoutContractLineInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qty?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
+  catalogOfferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+}
+
+export type ComInvoiceLineUncheckedUpdateManyWithoutContractLineInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  qty?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
+  catalogOfferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineCreateManyInvoiceInput = {
   id?: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   catalogOfferId?: string | null
+  contractLineId?: string | null
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineUpdateWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   catalogOffer?: Prisma.CatalogOfferUpdateOneWithoutInvoiceLinesNestedInput
+  contractLine?: Prisma.ComContractLineUpdateOneWithoutInvoiceLinesNestedInput
 }
 
 export type ComInvoiceLineUncheckedUpdateWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   catalogOfferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractLineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComInvoiceLineUncheckedUpdateManyWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   catalogOfferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractLineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -718,12 +965,16 @@ export type ComInvoiceLineSelect<ExtArgs extends runtime.Types.Extensions.Intern
   invoiceId?: boolean
   sortOrder?: boolean
   label?: boolean
+  description?: boolean
   qty?: boolean
   unitPrice?: boolean
   catalogOfferId?: boolean
+  contractLineId?: boolean
   isTravel?: boolean
+  snapshotJson?: boolean
   invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
   catalogOffer?: boolean | Prisma.ComInvoiceLine$catalogOfferArgs<ExtArgs>
+  contractLine?: boolean | Prisma.ComInvoiceLine$contractLineArgs<ExtArgs>
 }, ExtArgs["result"]["comInvoiceLine"]>
 
 export type ComInvoiceLineSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -731,12 +982,16 @@ export type ComInvoiceLineSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   invoiceId?: boolean
   sortOrder?: boolean
   label?: boolean
+  description?: boolean
   qty?: boolean
   unitPrice?: boolean
   catalogOfferId?: boolean
+  contractLineId?: boolean
   isTravel?: boolean
+  snapshotJson?: boolean
   invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
   catalogOffer?: boolean | Prisma.ComInvoiceLine$catalogOfferArgs<ExtArgs>
+  contractLine?: boolean | Prisma.ComInvoiceLine$contractLineArgs<ExtArgs>
 }, ExtArgs["result"]["comInvoiceLine"]>
 
 export type ComInvoiceLineSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -744,12 +999,16 @@ export type ComInvoiceLineSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   invoiceId?: boolean
   sortOrder?: boolean
   label?: boolean
+  description?: boolean
   qty?: boolean
   unitPrice?: boolean
   catalogOfferId?: boolean
+  contractLineId?: boolean
   isTravel?: boolean
+  snapshotJson?: boolean
   invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
   catalogOffer?: boolean | Prisma.ComInvoiceLine$catalogOfferArgs<ExtArgs>
+  contractLine?: boolean | Prisma.ComInvoiceLine$contractLineArgs<ExtArgs>
 }, ExtArgs["result"]["comInvoiceLine"]>
 
 export type ComInvoiceLineSelectScalar = {
@@ -757,24 +1016,30 @@ export type ComInvoiceLineSelectScalar = {
   invoiceId?: boolean
   sortOrder?: boolean
   label?: boolean
+  description?: boolean
   qty?: boolean
   unitPrice?: boolean
   catalogOfferId?: boolean
+  contractLineId?: boolean
   isTravel?: boolean
+  snapshotJson?: boolean
 }
 
-export type ComInvoiceLineOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceId" | "sortOrder" | "label" | "qty" | "unitPrice" | "catalogOfferId" | "isTravel", ExtArgs["result"]["comInvoiceLine"]>
+export type ComInvoiceLineOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceId" | "sortOrder" | "label" | "description" | "qty" | "unitPrice" | "catalogOfferId" | "contractLineId" | "isTravel" | "snapshotJson", ExtArgs["result"]["comInvoiceLine"]>
 export type ComInvoiceLineInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
   catalogOffer?: boolean | Prisma.ComInvoiceLine$catalogOfferArgs<ExtArgs>
+  contractLine?: boolean | Prisma.ComInvoiceLine$contractLineArgs<ExtArgs>
 }
 export type ComInvoiceLineIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
   catalogOffer?: boolean | Prisma.ComInvoiceLine$catalogOfferArgs<ExtArgs>
+  contractLine?: boolean | Prisma.ComInvoiceLine$contractLineArgs<ExtArgs>
 }
 export type ComInvoiceLineIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
   catalogOffer?: boolean | Prisma.ComInvoiceLine$catalogOfferArgs<ExtArgs>
+  contractLine?: boolean | Prisma.ComInvoiceLine$contractLineArgs<ExtArgs>
 }
 
 export type $ComInvoiceLinePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -782,16 +1047,20 @@ export type $ComInvoiceLinePayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     invoice: Prisma.$ComInvoicePayload<ExtArgs>
     catalogOffer: Prisma.$CatalogOfferPayload<ExtArgs> | null
+    contractLine: Prisma.$ComContractLinePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     invoiceId: string
     sortOrder: number
     label: string
+    description: string | null
     qty: number
     unitPrice: number
     catalogOfferId: string | null
+    contractLineId: string | null
     isTravel: boolean
+    snapshotJson: runtime.JsonValue | null
   }, ExtArgs["result"]["comInvoiceLine"]>
   composites: {}
 }
@@ -1188,6 +1457,7 @@ export interface Prisma__ComInvoiceLineClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   invoice<T extends Prisma.ComInvoiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoiceDefaultArgs<ExtArgs>>): Prisma.Prisma__ComInvoiceClient<runtime.Types.Result.GetResult<Prisma.$ComInvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   catalogOffer<T extends Prisma.ComInvoiceLine$catalogOfferArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoiceLine$catalogOfferArgs<ExtArgs>>): Prisma.Prisma__CatalogOfferClient<runtime.Types.Result.GetResult<Prisma.$CatalogOfferPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  contractLine<T extends Prisma.ComInvoiceLine$contractLineArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoiceLine$contractLineArgs<ExtArgs>>): Prisma.Prisma__ComContractLineClient<runtime.Types.Result.GetResult<Prisma.$ComContractLinePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1221,10 +1491,13 @@ export interface ComInvoiceLineFieldRefs {
   readonly invoiceId: Prisma.FieldRef<"ComInvoiceLine", 'String'>
   readonly sortOrder: Prisma.FieldRef<"ComInvoiceLine", 'Int'>
   readonly label: Prisma.FieldRef<"ComInvoiceLine", 'String'>
+  readonly description: Prisma.FieldRef<"ComInvoiceLine", 'String'>
   readonly qty: Prisma.FieldRef<"ComInvoiceLine", 'Int'>
   readonly unitPrice: Prisma.FieldRef<"ComInvoiceLine", 'Int'>
   readonly catalogOfferId: Prisma.FieldRef<"ComInvoiceLine", 'String'>
+  readonly contractLineId: Prisma.FieldRef<"ComInvoiceLine", 'String'>
   readonly isTravel: Prisma.FieldRef<"ComInvoiceLine", 'Boolean'>
+  readonly snapshotJson: Prisma.FieldRef<"ComInvoiceLine", 'Json'>
 }
     
 
@@ -1642,6 +1915,25 @@ export type ComInvoiceLine$catalogOfferArgs<ExtArgs extends runtime.Types.Extens
    */
   include?: Prisma.CatalogOfferInclude<ExtArgs> | null
   where?: Prisma.CatalogOfferWhereInput
+}
+
+/**
+ * ComInvoiceLine.contractLine
+ */
+export type ComInvoiceLine$contractLineArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComContractLine
+   */
+  select?: Prisma.ComContractLineSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComContractLine
+   */
+  omit?: Prisma.ComContractLineOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComContractLineInclude<ExtArgs> | null
+  where?: Prisma.ComContractLineWhereInput
 }
 
 /**

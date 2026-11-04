@@ -42,6 +42,14 @@ export function useNotificationsLive({
     bootRef.current = { initial, initialUnread };
   }
 
+  // Snapshot de secours stable — getSnapshot ne doit jamais allouer
+  // un nouvel objet à chaque appel (sinon boucle useSyncExternalStore).
+  const fallbackRef = useRef<LiveSnapshot>({
+    items: bootRef.current.initial,
+    unread: bootRef.current.initialUnread,
+    realtimeOk: false,
+  });
+
   const stableActionable = useCallback((n: LiveNotification) => {
     onActionableRef.current?.(n);
   }, []);
@@ -63,13 +71,7 @@ export function useNotificationsLive({
   );
 
   const getSnapshot = useCallback((): LiveSnapshot => {
-    return (
-      getLiveSnapshot(userId) ?? {
-        items: bootRef.current.initial,
-        unread: bootRef.current.initialUnread,
-        realtimeOk: false,
-      }
-    );
+    return getLiveSnapshot(userId) ?? fallbackRef.current;
   }, [userId]);
 
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);

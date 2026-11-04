@@ -32,6 +32,7 @@ export type ComInvoiceAvgAggregateOutputType = {
   totalVat: number | null
   totalTtc: number | null
   amountPaid: number | null
+  presentedNetPayable: number | null
 }
 
 export type ComInvoiceSumAggregateOutputType = {
@@ -40,27 +41,39 @@ export type ComInvoiceSumAggregateOutputType = {
   totalVat: number | null
   totalTtc: number | null
   amountPaid: number | null
+  presentedNetPayable: number | null
 }
 
 export type ComInvoiceMinAggregateOutputType = {
   id: string | null
   number: string | null
+  draftCode: string | null
+  legacyNumber: string | null
+  legacyInternalRef: string | null
   status: $Enums.ComInvoiceStatus | null
+  source: $Enums.ComInvoiceSource | null
   regime: $Enums.ComDocRegime | null
   currency: string | null
   vatEnabled: boolean | null
   vatRate: number | null
   object: string | null
+  periodStart: Date | null
+  periodEnd: Date | null
+  dueDate: Date | null
   totalHt: number | null
   totalVat: number | null
   totalTtc: number | null
   amountPaid: number | null
+  presentedNetPayable: number | null
   clientId: string | null
   quoteId: string | null
+  contractId: string | null
   ownerId: string | null
   createdById: string | null
   gedDocumentId: string | null
   issuedAt: Date | null
+  sentAt: Date | null
+  importBatchId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -68,22 +81,33 @@ export type ComInvoiceMinAggregateOutputType = {
 export type ComInvoiceMaxAggregateOutputType = {
   id: string | null
   number: string | null
+  draftCode: string | null
+  legacyNumber: string | null
+  legacyInternalRef: string | null
   status: $Enums.ComInvoiceStatus | null
+  source: $Enums.ComInvoiceSource | null
   regime: $Enums.ComDocRegime | null
   currency: string | null
   vatEnabled: boolean | null
   vatRate: number | null
   object: string | null
+  periodStart: Date | null
+  periodEnd: Date | null
+  dueDate: Date | null
   totalHt: number | null
   totalVat: number | null
   totalTtc: number | null
   amountPaid: number | null
+  presentedNetPayable: number | null
   clientId: string | null
   quoteId: string | null
+  contractId: string | null
   ownerId: string | null
   createdById: string | null
   gedDocumentId: string | null
   issuedAt: Date | null
+  sentAt: Date | null
+  importBatchId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -91,22 +115,33 @@ export type ComInvoiceMaxAggregateOutputType = {
 export type ComInvoiceCountAggregateOutputType = {
   id: number
   number: number
+  draftCode: number
+  legacyNumber: number
+  legacyInternalRef: number
   status: number
+  source: number
   regime: number
   currency: number
   vatEnabled: number
   vatRate: number
   object: number
+  periodStart: number
+  periodEnd: number
+  dueDate: number
   totalHt: number
   totalVat: number
   totalTtc: number
   amountPaid: number
+  presentedNetPayable: number
   clientId: number
   quoteId: number
+  contractId: number
   ownerId: number
   createdById: number
   gedDocumentId: number
   issuedAt: number
+  sentAt: number
+  importBatchId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -119,6 +154,7 @@ export type ComInvoiceAvgAggregateInputType = {
   totalVat?: true
   totalTtc?: true
   amountPaid?: true
+  presentedNetPayable?: true
 }
 
 export type ComInvoiceSumAggregateInputType = {
@@ -127,27 +163,39 @@ export type ComInvoiceSumAggregateInputType = {
   totalVat?: true
   totalTtc?: true
   amountPaid?: true
+  presentedNetPayable?: true
 }
 
 export type ComInvoiceMinAggregateInputType = {
   id?: true
   number?: true
+  draftCode?: true
+  legacyNumber?: true
+  legacyInternalRef?: true
   status?: true
+  source?: true
   regime?: true
   currency?: true
   vatEnabled?: true
   vatRate?: true
   object?: true
+  periodStart?: true
+  periodEnd?: true
+  dueDate?: true
   totalHt?: true
   totalVat?: true
   totalTtc?: true
   amountPaid?: true
+  presentedNetPayable?: true
   clientId?: true
   quoteId?: true
+  contractId?: true
   ownerId?: true
   createdById?: true
   gedDocumentId?: true
   issuedAt?: true
+  sentAt?: true
+  importBatchId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -155,22 +203,33 @@ export type ComInvoiceMinAggregateInputType = {
 export type ComInvoiceMaxAggregateInputType = {
   id?: true
   number?: true
+  draftCode?: true
+  legacyNumber?: true
+  legacyInternalRef?: true
   status?: true
+  source?: true
   regime?: true
   currency?: true
   vatEnabled?: true
   vatRate?: true
   object?: true
+  periodStart?: true
+  periodEnd?: true
+  dueDate?: true
   totalHt?: true
   totalVat?: true
   totalTtc?: true
   amountPaid?: true
+  presentedNetPayable?: true
   clientId?: true
   quoteId?: true
+  contractId?: true
   ownerId?: true
   createdById?: true
   gedDocumentId?: true
   issuedAt?: true
+  sentAt?: true
+  importBatchId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -178,22 +237,33 @@ export type ComInvoiceMaxAggregateInputType = {
 export type ComInvoiceCountAggregateInputType = {
   id?: true
   number?: true
+  draftCode?: true
+  legacyNumber?: true
+  legacyInternalRef?: true
   status?: true
+  source?: true
   regime?: true
   currency?: true
   vatEnabled?: true
   vatRate?: true
   object?: true
+  periodStart?: true
+  periodEnd?: true
+  dueDate?: true
   totalHt?: true
   totalVat?: true
   totalTtc?: true
   amountPaid?: true
+  presentedNetPayable?: true
   clientId?: true
   quoteId?: true
+  contractId?: true
   ownerId?: true
   createdById?: true
   gedDocumentId?: true
   issuedAt?: true
+  sentAt?: true
+  importBatchId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -287,23 +357,34 @@ export type ComInvoiceGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type ComInvoiceGroupByOutputType = {
   id: string
-  number: string
+  number: string | null
+  draftCode: string
+  legacyNumber: string | null
+  legacyInternalRef: string | null
   status: $Enums.ComInvoiceStatus
+  source: $Enums.ComInvoiceSource
   regime: $Enums.ComDocRegime
   currency: string
   vatEnabled: boolean
   vatRate: number
   object: string | null
+  periodStart: Date | null
+  periodEnd: Date | null
+  dueDate: Date | null
   totalHt: number
   totalVat: number
   totalTtc: number
   amountPaid: number
+  presentedNetPayable: number | null
   clientId: string
   quoteId: string | null
+  contractId: string | null
   ownerId: string
   createdById: string
   gedDocumentId: string | null
   issuedAt: Date | null
+  sentAt: Date | null
+  importBatchId: string | null
   createdAt: Date
   updatedAt: Date
   _count: ComInvoiceCountAggregateOutputType | null
@@ -333,113 +414,178 @@ export type ComInvoiceWhereInput = {
   OR?: Prisma.ComInvoiceWhereInput[]
   NOT?: Prisma.ComInvoiceWhereInput | Prisma.ComInvoiceWhereInput[]
   id?: Prisma.StringFilter<"ComInvoice"> | string
-  number?: Prisma.StringFilter<"ComInvoice"> | string
+  number?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
+  draftCode?: Prisma.StringFilter<"ComInvoice"> | string
+  legacyNumber?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
+  legacyInternalRef?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   status?: Prisma.EnumComInvoiceStatusFilter<"ComInvoice"> | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFilter<"ComInvoice"> | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFilter<"ComInvoice"> | $Enums.ComDocRegime
   currency?: Prisma.StringFilter<"ComInvoice"> | string
   vatEnabled?: Prisma.BoolFilter<"ComInvoice"> | boolean
   vatRate?: Prisma.IntFilter<"ComInvoice"> | number
   object?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
+  periodStart?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  periodEnd?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  dueDate?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
   totalHt?: Prisma.IntFilter<"ComInvoice"> | number
   totalVat?: Prisma.IntFilter<"ComInvoice"> | number
   totalTtc?: Prisma.IntFilter<"ComInvoice"> | number
   amountPaid?: Prisma.IntFilter<"ComInvoice"> | number
+  presentedNetPayable?: Prisma.IntNullableFilter<"ComInvoice"> | number | null
   clientId?: Prisma.StringFilter<"ComInvoice"> | string
   quoteId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
+  contractId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   ownerId?: Prisma.UuidFilter<"ComInvoice"> | string
   createdById?: Prisma.UuidFilter<"ComInvoice"> | string
   gedDocumentId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   issuedAt?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  sentAt?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  importBatchId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ComInvoice"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ComInvoice"> | Date | string
   client?: Prisma.XOR<Prisma.ComClientScalarRelationFilter, Prisma.ComClientWhereInput>
   quote?: Prisma.XOR<Prisma.ComQuoteNullableScalarRelationFilter, Prisma.ComQuoteWhereInput> | null
+  contract?: Prisma.XOR<Prisma.ComContractNullableScalarRelationFilter, Prisma.ComContractWhereInput> | null
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  importBatch?: Prisma.XOR<Prisma.ComImportBatchNullableScalarRelationFilter, Prisma.ComImportBatchWhereInput> | null
   lines?: Prisma.ComInvoiceLineListRelationFilter
   payments?: Prisma.ComPaymentListRelationFilter
+  allocations?: Prisma.ComPaymentAllocationListRelationFilter
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefListRelationFilter
+  arrearsOf?: Prisma.ComInvoiceArrearsRefListRelationFilter
+  creditNotes?: Prisma.ComCreditNoteListRelationFilter
+  reminders?: Prisma.ComInvoiceReminderListRelationFilter
 }
 
 export type ComInvoiceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  number?: Prisma.SortOrder
+  number?: Prisma.SortOrderInput | Prisma.SortOrder
+  draftCode?: Prisma.SortOrder
+  legacyNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  legacyInternalRef?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   object?: Prisma.SortOrderInput | Prisma.SortOrder
+  periodStart?: Prisma.SortOrderInput | Prisma.SortOrder
+  periodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
+  dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   totalHt?: Prisma.SortOrder
   totalVat?: Prisma.SortOrder
   totalTtc?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
+  presentedNetPayable?: Prisma.SortOrderInput | Prisma.SortOrder
   clientId?: Prisma.SortOrder
   quoteId?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractId?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   gedDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
   issuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  importBatchId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   client?: Prisma.ComClientOrderByWithRelationInput
   quote?: Prisma.ComQuoteOrderByWithRelationInput
+  contract?: Prisma.ComContractOrderByWithRelationInput
   owner?: Prisma.UserOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
+  importBatch?: Prisma.ComImportBatchOrderByWithRelationInput
   lines?: Prisma.ComInvoiceLineOrderByRelationAggregateInput
   payments?: Prisma.ComPaymentOrderByRelationAggregateInput
+  allocations?: Prisma.ComPaymentAllocationOrderByRelationAggregateInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefOrderByRelationAggregateInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefOrderByRelationAggregateInput
+  creditNotes?: Prisma.ComCreditNoteOrderByRelationAggregateInput
+  reminders?: Prisma.ComInvoiceReminderOrderByRelationAggregateInput
 }
 
 export type ComInvoiceWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   number?: string
-  quoteId?: string
+  draftCode?: string
   AND?: Prisma.ComInvoiceWhereInput | Prisma.ComInvoiceWhereInput[]
   OR?: Prisma.ComInvoiceWhereInput[]
   NOT?: Prisma.ComInvoiceWhereInput | Prisma.ComInvoiceWhereInput[]
+  legacyNumber?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
+  legacyInternalRef?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   status?: Prisma.EnumComInvoiceStatusFilter<"ComInvoice"> | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFilter<"ComInvoice"> | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFilter<"ComInvoice"> | $Enums.ComDocRegime
   currency?: Prisma.StringFilter<"ComInvoice"> | string
   vatEnabled?: Prisma.BoolFilter<"ComInvoice"> | boolean
   vatRate?: Prisma.IntFilter<"ComInvoice"> | number
   object?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
+  periodStart?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  periodEnd?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  dueDate?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
   totalHt?: Prisma.IntFilter<"ComInvoice"> | number
   totalVat?: Prisma.IntFilter<"ComInvoice"> | number
   totalTtc?: Prisma.IntFilter<"ComInvoice"> | number
   amountPaid?: Prisma.IntFilter<"ComInvoice"> | number
+  presentedNetPayable?: Prisma.IntNullableFilter<"ComInvoice"> | number | null
   clientId?: Prisma.StringFilter<"ComInvoice"> | string
+  quoteId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
+  contractId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   ownerId?: Prisma.UuidFilter<"ComInvoice"> | string
   createdById?: Prisma.UuidFilter<"ComInvoice"> | string
   gedDocumentId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   issuedAt?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  sentAt?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  importBatchId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ComInvoice"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ComInvoice"> | Date | string
   client?: Prisma.XOR<Prisma.ComClientScalarRelationFilter, Prisma.ComClientWhereInput>
   quote?: Prisma.XOR<Prisma.ComQuoteNullableScalarRelationFilter, Prisma.ComQuoteWhereInput> | null
+  contract?: Prisma.XOR<Prisma.ComContractNullableScalarRelationFilter, Prisma.ComContractWhereInput> | null
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  importBatch?: Prisma.XOR<Prisma.ComImportBatchNullableScalarRelationFilter, Prisma.ComImportBatchWhereInput> | null
   lines?: Prisma.ComInvoiceLineListRelationFilter
   payments?: Prisma.ComPaymentListRelationFilter
-}, "id" | "number" | "quoteId">
+  allocations?: Prisma.ComPaymentAllocationListRelationFilter
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefListRelationFilter
+  arrearsOf?: Prisma.ComInvoiceArrearsRefListRelationFilter
+  creditNotes?: Prisma.ComCreditNoteListRelationFilter
+  reminders?: Prisma.ComInvoiceReminderListRelationFilter
+}, "id" | "number" | "draftCode">
 
 export type ComInvoiceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  number?: Prisma.SortOrder
+  number?: Prisma.SortOrderInput | Prisma.SortOrder
+  draftCode?: Prisma.SortOrder
+  legacyNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  legacyInternalRef?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   object?: Prisma.SortOrderInput | Prisma.SortOrder
+  periodStart?: Prisma.SortOrderInput | Prisma.SortOrder
+  periodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
+  dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   totalHt?: Prisma.SortOrder
   totalVat?: Prisma.SortOrder
   totalTtc?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
+  presentedNetPayable?: Prisma.SortOrderInput | Prisma.SortOrder
   clientId?: Prisma.SortOrder
   quoteId?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractId?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   gedDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
   issuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  importBatchId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ComInvoiceCountOrderByAggregateInput
@@ -454,188 +600,294 @@ export type ComInvoiceScalarWhereWithAggregatesInput = {
   OR?: Prisma.ComInvoiceScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ComInvoiceScalarWhereWithAggregatesInput | Prisma.ComInvoiceScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ComInvoice"> | string
-  number?: Prisma.StringWithAggregatesFilter<"ComInvoice"> | string
+  number?: Prisma.StringNullableWithAggregatesFilter<"ComInvoice"> | string | null
+  draftCode?: Prisma.StringWithAggregatesFilter<"ComInvoice"> | string
+  legacyNumber?: Prisma.StringNullableWithAggregatesFilter<"ComInvoice"> | string | null
+  legacyInternalRef?: Prisma.StringNullableWithAggregatesFilter<"ComInvoice"> | string | null
   status?: Prisma.EnumComInvoiceStatusWithAggregatesFilter<"ComInvoice"> | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceWithAggregatesFilter<"ComInvoice"> | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeWithAggregatesFilter<"ComInvoice"> | $Enums.ComDocRegime
   currency?: Prisma.StringWithAggregatesFilter<"ComInvoice"> | string
   vatEnabled?: Prisma.BoolWithAggregatesFilter<"ComInvoice"> | boolean
   vatRate?: Prisma.IntWithAggregatesFilter<"ComInvoice"> | number
   object?: Prisma.StringNullableWithAggregatesFilter<"ComInvoice"> | string | null
+  periodStart?: Prisma.DateTimeNullableWithAggregatesFilter<"ComInvoice"> | Date | string | null
+  periodEnd?: Prisma.DateTimeNullableWithAggregatesFilter<"ComInvoice"> | Date | string | null
+  dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"ComInvoice"> | Date | string | null
   totalHt?: Prisma.IntWithAggregatesFilter<"ComInvoice"> | number
   totalVat?: Prisma.IntWithAggregatesFilter<"ComInvoice"> | number
   totalTtc?: Prisma.IntWithAggregatesFilter<"ComInvoice"> | number
   amountPaid?: Prisma.IntWithAggregatesFilter<"ComInvoice"> | number
+  presentedNetPayable?: Prisma.IntNullableWithAggregatesFilter<"ComInvoice"> | number | null
   clientId?: Prisma.StringWithAggregatesFilter<"ComInvoice"> | string
   quoteId?: Prisma.StringNullableWithAggregatesFilter<"ComInvoice"> | string | null
+  contractId?: Prisma.StringNullableWithAggregatesFilter<"ComInvoice"> | string | null
   ownerId?: Prisma.UuidWithAggregatesFilter<"ComInvoice"> | string
   createdById?: Prisma.UuidWithAggregatesFilter<"ComInvoice"> | string
   gedDocumentId?: Prisma.StringNullableWithAggregatesFilter<"ComInvoice"> | string | null
   issuedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ComInvoice"> | Date | string | null
+  sentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ComInvoice"> | Date | string | null
+  importBatchId?: Prisma.StringNullableWithAggregatesFilter<"ComInvoice"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ComInvoice"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ComInvoice"> | Date | string
 }
 
 export type ComInvoiceCreateInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
   quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
   owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
   createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
   lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
   payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceUncheckedCreateInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   clientId: string
   quoteId?: string | null
+  contractId?: string | null
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
   quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
   lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
   payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
   payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceCreateManyInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   clientId: string
   quoteId?: string | null
+  contractId?: string | null
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ComInvoiceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ComInvoiceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -653,22 +905,33 @@ export type ComInvoiceOrderByRelationAggregateInput = {
 export type ComInvoiceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   number?: Prisma.SortOrder
+  draftCode?: Prisma.SortOrder
+  legacyNumber?: Prisma.SortOrder
+  legacyInternalRef?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   object?: Prisma.SortOrder
+  periodStart?: Prisma.SortOrder
+  periodEnd?: Prisma.SortOrder
+  dueDate?: Prisma.SortOrder
   totalHt?: Prisma.SortOrder
   totalVat?: Prisma.SortOrder
   totalTtc?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
+  presentedNetPayable?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   quoteId?: Prisma.SortOrder
+  contractId?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   gedDocumentId?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrder
+  sentAt?: Prisma.SortOrder
+  importBatchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -679,27 +942,39 @@ export type ComInvoiceAvgOrderByAggregateInput = {
   totalVat?: Prisma.SortOrder
   totalTtc?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
+  presentedNetPayable?: Prisma.SortOrder
 }
 
 export type ComInvoiceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   number?: Prisma.SortOrder
+  draftCode?: Prisma.SortOrder
+  legacyNumber?: Prisma.SortOrder
+  legacyInternalRef?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   object?: Prisma.SortOrder
+  periodStart?: Prisma.SortOrder
+  periodEnd?: Prisma.SortOrder
+  dueDate?: Prisma.SortOrder
   totalHt?: Prisma.SortOrder
   totalVat?: Prisma.SortOrder
   totalTtc?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
+  presentedNetPayable?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   quoteId?: Prisma.SortOrder
+  contractId?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   gedDocumentId?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrder
+  sentAt?: Prisma.SortOrder
+  importBatchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -707,22 +982,33 @@ export type ComInvoiceMaxOrderByAggregateInput = {
 export type ComInvoiceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   number?: Prisma.SortOrder
+  draftCode?: Prisma.SortOrder
+  legacyNumber?: Prisma.SortOrder
+  legacyInternalRef?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
   vatRate?: Prisma.SortOrder
   object?: Prisma.SortOrder
+  periodStart?: Prisma.SortOrder
+  periodEnd?: Prisma.SortOrder
+  dueDate?: Prisma.SortOrder
   totalHt?: Prisma.SortOrder
   totalVat?: Prisma.SortOrder
   totalTtc?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
+  presentedNetPayable?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   quoteId?: Prisma.SortOrder
+  contractId?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   gedDocumentId?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrder
+  sentAt?: Prisma.SortOrder
+  importBatchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -733,11 +1019,17 @@ export type ComInvoiceSumOrderByAggregateInput = {
   totalVat?: Prisma.SortOrder
   totalTtc?: Prisma.SortOrder
   amountPaid?: Prisma.SortOrder
+  presentedNetPayable?: Prisma.SortOrder
 }
 
 export type ComInvoiceScalarRelationFilter = {
   is?: Prisma.ComInvoiceWhereInput
   isNot?: Prisma.ComInvoiceWhereInput
+}
+
+export type ComInvoiceNullableScalarRelationFilter = {
+  is?: Prisma.ComInvoiceWhereInput | null
+  isNot?: Prisma.ComInvoiceWhereInput | null
 }
 
 export type ComInvoiceCreateNestedManyWithoutOwnerInput = {
@@ -908,8 +1200,54 @@ export type ComInvoiceUncheckedUpdateManyWithoutQuoteNestedInput = {
   deleteMany?: Prisma.ComInvoiceScalarWhereInput | Prisma.ComInvoiceScalarWhereInput[]
 }
 
+export type ComInvoiceCreateNestedManyWithoutContractInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutContractInput, Prisma.ComInvoiceUncheckedCreateWithoutContractInput> | Prisma.ComInvoiceCreateWithoutContractInput[] | Prisma.ComInvoiceUncheckedCreateWithoutContractInput[]
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutContractInput | Prisma.ComInvoiceCreateOrConnectWithoutContractInput[]
+  createMany?: Prisma.ComInvoiceCreateManyContractInputEnvelope
+  connect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+}
+
+export type ComInvoiceUncheckedCreateNestedManyWithoutContractInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutContractInput, Prisma.ComInvoiceUncheckedCreateWithoutContractInput> | Prisma.ComInvoiceCreateWithoutContractInput[] | Prisma.ComInvoiceUncheckedCreateWithoutContractInput[]
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutContractInput | Prisma.ComInvoiceCreateOrConnectWithoutContractInput[]
+  createMany?: Prisma.ComInvoiceCreateManyContractInputEnvelope
+  connect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+}
+
+export type ComInvoiceUpdateManyWithoutContractNestedInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutContractInput, Prisma.ComInvoiceUncheckedCreateWithoutContractInput> | Prisma.ComInvoiceCreateWithoutContractInput[] | Prisma.ComInvoiceUncheckedCreateWithoutContractInput[]
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutContractInput | Prisma.ComInvoiceCreateOrConnectWithoutContractInput[]
+  upsert?: Prisma.ComInvoiceUpsertWithWhereUniqueWithoutContractInput | Prisma.ComInvoiceUpsertWithWhereUniqueWithoutContractInput[]
+  createMany?: Prisma.ComInvoiceCreateManyContractInputEnvelope
+  set?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  disconnect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  delete?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  connect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  update?: Prisma.ComInvoiceUpdateWithWhereUniqueWithoutContractInput | Prisma.ComInvoiceUpdateWithWhereUniqueWithoutContractInput[]
+  updateMany?: Prisma.ComInvoiceUpdateManyWithWhereWithoutContractInput | Prisma.ComInvoiceUpdateManyWithWhereWithoutContractInput[]
+  deleteMany?: Prisma.ComInvoiceScalarWhereInput | Prisma.ComInvoiceScalarWhereInput[]
+}
+
+export type ComInvoiceUncheckedUpdateManyWithoutContractNestedInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutContractInput, Prisma.ComInvoiceUncheckedCreateWithoutContractInput> | Prisma.ComInvoiceCreateWithoutContractInput[] | Prisma.ComInvoiceUncheckedCreateWithoutContractInput[]
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutContractInput | Prisma.ComInvoiceCreateOrConnectWithoutContractInput[]
+  upsert?: Prisma.ComInvoiceUpsertWithWhereUniqueWithoutContractInput | Prisma.ComInvoiceUpsertWithWhereUniqueWithoutContractInput[]
+  createMany?: Prisma.ComInvoiceCreateManyContractInputEnvelope
+  set?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  disconnect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  delete?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  connect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  update?: Prisma.ComInvoiceUpdateWithWhereUniqueWithoutContractInput | Prisma.ComInvoiceUpdateWithWhereUniqueWithoutContractInput[]
+  updateMany?: Prisma.ComInvoiceUpdateManyWithWhereWithoutContractInput | Prisma.ComInvoiceUpdateManyWithWhereWithoutContractInput[]
+  deleteMany?: Prisma.ComInvoiceScalarWhereInput | Prisma.ComInvoiceScalarWhereInput[]
+}
+
 export type EnumComInvoiceStatusFieldUpdateOperationsInput = {
   set?: $Enums.ComInvoiceStatus
+}
+
+export type EnumComInvoiceSourceFieldUpdateOperationsInput = {
+  set?: $Enums.ComInvoiceSource
 }
 
 export type ComInvoiceCreateNestedOneWithoutLinesInput = {
@@ -926,66 +1264,212 @@ export type ComInvoiceUpdateOneRequiredWithoutLinesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ComInvoiceUpdateToOneWithWhereWithoutLinesInput, Prisma.ComInvoiceUpdateWithoutLinesInput>, Prisma.ComInvoiceUncheckedUpdateWithoutLinesInput>
 }
 
+export type ComInvoiceCreateNestedOneWithoutArrearsRefsInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutArrearsRefsInput, Prisma.ComInvoiceUncheckedCreateWithoutArrearsRefsInput>
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutArrearsRefsInput
+  connect?: Prisma.ComInvoiceWhereUniqueInput
+}
+
+export type ComInvoiceCreateNestedOneWithoutArrearsOfInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutArrearsOfInput, Prisma.ComInvoiceUncheckedCreateWithoutArrearsOfInput>
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutArrearsOfInput
+  connect?: Prisma.ComInvoiceWhereUniqueInput
+}
+
+export type ComInvoiceUpdateOneRequiredWithoutArrearsRefsNestedInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutArrearsRefsInput, Prisma.ComInvoiceUncheckedCreateWithoutArrearsRefsInput>
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutArrearsRefsInput
+  upsert?: Prisma.ComInvoiceUpsertWithoutArrearsRefsInput
+  connect?: Prisma.ComInvoiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComInvoiceUpdateToOneWithWhereWithoutArrearsRefsInput, Prisma.ComInvoiceUpdateWithoutArrearsRefsInput>, Prisma.ComInvoiceUncheckedUpdateWithoutArrearsRefsInput>
+}
+
+export type ComInvoiceUpdateOneRequiredWithoutArrearsOfNestedInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutArrearsOfInput, Prisma.ComInvoiceUncheckedCreateWithoutArrearsOfInput>
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutArrearsOfInput
+  upsert?: Prisma.ComInvoiceUpsertWithoutArrearsOfInput
+  connect?: Prisma.ComInvoiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComInvoiceUpdateToOneWithWhereWithoutArrearsOfInput, Prisma.ComInvoiceUpdateWithoutArrearsOfInput>, Prisma.ComInvoiceUncheckedUpdateWithoutArrearsOfInput>
+}
+
+export type ComInvoiceCreateNestedOneWithoutCreditNotesInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutCreditNotesInput, Prisma.ComInvoiceUncheckedCreateWithoutCreditNotesInput>
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutCreditNotesInput
+  connect?: Prisma.ComInvoiceWhereUniqueInput
+}
+
+export type ComInvoiceUpdateOneRequiredWithoutCreditNotesNestedInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutCreditNotesInput, Prisma.ComInvoiceUncheckedCreateWithoutCreditNotesInput>
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutCreditNotesInput
+  upsert?: Prisma.ComInvoiceUpsertWithoutCreditNotesInput
+  connect?: Prisma.ComInvoiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComInvoiceUpdateToOneWithWhereWithoutCreditNotesInput, Prisma.ComInvoiceUpdateWithoutCreditNotesInput>, Prisma.ComInvoiceUncheckedUpdateWithoutCreditNotesInput>
+}
+
 export type ComInvoiceCreateNestedOneWithoutPaymentsInput = {
   create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutPaymentsInput, Prisma.ComInvoiceUncheckedCreateWithoutPaymentsInput>
   connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutPaymentsInput
   connect?: Prisma.ComInvoiceWhereUniqueInput
 }
 
-export type ComInvoiceUpdateOneRequiredWithoutPaymentsNestedInput = {
+export type ComInvoiceUpdateOneWithoutPaymentsNestedInput = {
   create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutPaymentsInput, Prisma.ComInvoiceUncheckedCreateWithoutPaymentsInput>
   connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutPaymentsInput
   upsert?: Prisma.ComInvoiceUpsertWithoutPaymentsInput
+  disconnect?: Prisma.ComInvoiceWhereInput | boolean
+  delete?: Prisma.ComInvoiceWhereInput | boolean
   connect?: Prisma.ComInvoiceWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ComInvoiceUpdateToOneWithWhereWithoutPaymentsInput, Prisma.ComInvoiceUpdateWithoutPaymentsInput>, Prisma.ComInvoiceUncheckedUpdateWithoutPaymentsInput>
 }
 
+export type ComInvoiceCreateNestedOneWithoutAllocationsInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutAllocationsInput, Prisma.ComInvoiceUncheckedCreateWithoutAllocationsInput>
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutAllocationsInput
+  connect?: Prisma.ComInvoiceWhereUniqueInput
+}
+
+export type ComInvoiceUpdateOneRequiredWithoutAllocationsNestedInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutAllocationsInput, Prisma.ComInvoiceUncheckedCreateWithoutAllocationsInput>
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutAllocationsInput
+  upsert?: Prisma.ComInvoiceUpsertWithoutAllocationsInput
+  connect?: Prisma.ComInvoiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComInvoiceUpdateToOneWithWhereWithoutAllocationsInput, Prisma.ComInvoiceUpdateWithoutAllocationsInput>, Prisma.ComInvoiceUncheckedUpdateWithoutAllocationsInput>
+}
+
+export type ComInvoiceCreateNestedOneWithoutRemindersInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutRemindersInput, Prisma.ComInvoiceUncheckedCreateWithoutRemindersInput>
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutRemindersInput
+  connect?: Prisma.ComInvoiceWhereUniqueInput
+}
+
+export type ComInvoiceUpdateOneRequiredWithoutRemindersNestedInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutRemindersInput, Prisma.ComInvoiceUncheckedCreateWithoutRemindersInput>
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutRemindersInput
+  upsert?: Prisma.ComInvoiceUpsertWithoutRemindersInput
+  connect?: Prisma.ComInvoiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComInvoiceUpdateToOneWithWhereWithoutRemindersInput, Prisma.ComInvoiceUpdateWithoutRemindersInput>, Prisma.ComInvoiceUncheckedUpdateWithoutRemindersInput>
+}
+
+export type ComInvoiceCreateNestedManyWithoutImportBatchInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutImportBatchInput, Prisma.ComInvoiceUncheckedCreateWithoutImportBatchInput> | Prisma.ComInvoiceCreateWithoutImportBatchInput[] | Prisma.ComInvoiceUncheckedCreateWithoutImportBatchInput[]
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutImportBatchInput | Prisma.ComInvoiceCreateOrConnectWithoutImportBatchInput[]
+  createMany?: Prisma.ComInvoiceCreateManyImportBatchInputEnvelope
+  connect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+}
+
+export type ComInvoiceUncheckedCreateNestedManyWithoutImportBatchInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutImportBatchInput, Prisma.ComInvoiceUncheckedCreateWithoutImportBatchInput> | Prisma.ComInvoiceCreateWithoutImportBatchInput[] | Prisma.ComInvoiceUncheckedCreateWithoutImportBatchInput[]
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutImportBatchInput | Prisma.ComInvoiceCreateOrConnectWithoutImportBatchInput[]
+  createMany?: Prisma.ComInvoiceCreateManyImportBatchInputEnvelope
+  connect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+}
+
+export type ComInvoiceUpdateManyWithoutImportBatchNestedInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutImportBatchInput, Prisma.ComInvoiceUncheckedCreateWithoutImportBatchInput> | Prisma.ComInvoiceCreateWithoutImportBatchInput[] | Prisma.ComInvoiceUncheckedCreateWithoutImportBatchInput[]
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutImportBatchInput | Prisma.ComInvoiceCreateOrConnectWithoutImportBatchInput[]
+  upsert?: Prisma.ComInvoiceUpsertWithWhereUniqueWithoutImportBatchInput | Prisma.ComInvoiceUpsertWithWhereUniqueWithoutImportBatchInput[]
+  createMany?: Prisma.ComInvoiceCreateManyImportBatchInputEnvelope
+  set?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  disconnect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  delete?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  connect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  update?: Prisma.ComInvoiceUpdateWithWhereUniqueWithoutImportBatchInput | Prisma.ComInvoiceUpdateWithWhereUniqueWithoutImportBatchInput[]
+  updateMany?: Prisma.ComInvoiceUpdateManyWithWhereWithoutImportBatchInput | Prisma.ComInvoiceUpdateManyWithWhereWithoutImportBatchInput[]
+  deleteMany?: Prisma.ComInvoiceScalarWhereInput | Prisma.ComInvoiceScalarWhereInput[]
+}
+
+export type ComInvoiceUncheckedUpdateManyWithoutImportBatchNestedInput = {
+  create?: Prisma.XOR<Prisma.ComInvoiceCreateWithoutImportBatchInput, Prisma.ComInvoiceUncheckedCreateWithoutImportBatchInput> | Prisma.ComInvoiceCreateWithoutImportBatchInput[] | Prisma.ComInvoiceUncheckedCreateWithoutImportBatchInput[]
+  connectOrCreate?: Prisma.ComInvoiceCreateOrConnectWithoutImportBatchInput | Prisma.ComInvoiceCreateOrConnectWithoutImportBatchInput[]
+  upsert?: Prisma.ComInvoiceUpsertWithWhereUniqueWithoutImportBatchInput | Prisma.ComInvoiceUpsertWithWhereUniqueWithoutImportBatchInput[]
+  createMany?: Prisma.ComInvoiceCreateManyImportBatchInputEnvelope
+  set?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  disconnect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  delete?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  connect?: Prisma.ComInvoiceWhereUniqueInput | Prisma.ComInvoiceWhereUniqueInput[]
+  update?: Prisma.ComInvoiceUpdateWithWhereUniqueWithoutImportBatchInput | Prisma.ComInvoiceUpdateWithWhereUniqueWithoutImportBatchInput[]
+  updateMany?: Prisma.ComInvoiceUpdateManyWithWhereWithoutImportBatchInput | Prisma.ComInvoiceUpdateManyWithWhereWithoutImportBatchInput[]
+  deleteMany?: Prisma.ComInvoiceScalarWhereInput | Prisma.ComInvoiceScalarWhereInput[]
+}
+
 export type ComInvoiceCreateWithoutOwnerInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
   quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
   createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
   lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
   payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceUncheckedCreateWithoutOwnerInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   clientId: string
   quoteId?: string | null
+  contractId?: string | null
   createdById: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceCreateOrConnectWithoutOwnerInput = {
@@ -1000,50 +1484,82 @@ export type ComInvoiceCreateManyOwnerInputEnvelope = {
 
 export type ComInvoiceCreateWithoutCreatedByInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
   quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
   owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
   lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
   payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceUncheckedCreateWithoutCreatedByInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   clientId: string
   quoteId?: string | null
+  contractId?: string | null
   ownerId: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceCreateOrConnectWithoutCreatedByInput = {
@@ -1077,23 +1593,34 @@ export type ComInvoiceScalarWhereInput = {
   OR?: Prisma.ComInvoiceScalarWhereInput[]
   NOT?: Prisma.ComInvoiceScalarWhereInput | Prisma.ComInvoiceScalarWhereInput[]
   id?: Prisma.StringFilter<"ComInvoice"> | string
-  number?: Prisma.StringFilter<"ComInvoice"> | string
+  number?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
+  draftCode?: Prisma.StringFilter<"ComInvoice"> | string
+  legacyNumber?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
+  legacyInternalRef?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   status?: Prisma.EnumComInvoiceStatusFilter<"ComInvoice"> | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFilter<"ComInvoice"> | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFilter<"ComInvoice"> | $Enums.ComDocRegime
   currency?: Prisma.StringFilter<"ComInvoice"> | string
   vatEnabled?: Prisma.BoolFilter<"ComInvoice"> | boolean
   vatRate?: Prisma.IntFilter<"ComInvoice"> | number
   object?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
+  periodStart?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  periodEnd?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  dueDate?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
   totalHt?: Prisma.IntFilter<"ComInvoice"> | number
   totalVat?: Prisma.IntFilter<"ComInvoice"> | number
   totalTtc?: Prisma.IntFilter<"ComInvoice"> | number
   amountPaid?: Prisma.IntFilter<"ComInvoice"> | number
+  presentedNetPayable?: Prisma.IntNullableFilter<"ComInvoice"> | number | null
   clientId?: Prisma.StringFilter<"ComInvoice"> | string
   quoteId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
+  contractId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   ownerId?: Prisma.UuidFilter<"ComInvoice"> | string
   createdById?: Prisma.UuidFilter<"ComInvoice"> | string
   gedDocumentId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   issuedAt?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  sentAt?: Prisma.DateTimeNullableFilter<"ComInvoice"> | Date | string | null
+  importBatchId?: Prisma.StringNullableFilter<"ComInvoice"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ComInvoice"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ComInvoice"> | Date | string
 }
@@ -1116,50 +1643,82 @@ export type ComInvoiceUpdateManyWithWhereWithoutCreatedByInput = {
 
 export type ComInvoiceCreateWithoutClientInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
   owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
   createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
   lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
   payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceUncheckedCreateWithoutClientInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   quoteId?: string | null
+  contractId?: string | null
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceCreateOrConnectWithoutClientInput = {
@@ -1190,50 +1749,82 @@ export type ComInvoiceUpdateManyWithWhereWithoutClientInput = {
 
 export type ComInvoiceCreateWithoutQuoteInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
   owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
   createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
   lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
   payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceUncheckedCreateWithoutQuoteInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   clientId: string
+  contractId?: string | null
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceCreateOrConnectWithoutQuoteInput = {
@@ -1262,52 +1853,190 @@ export type ComInvoiceUpdateManyWithWhereWithoutQuoteInput = {
   data: Prisma.XOR<Prisma.ComInvoiceUpdateManyMutationInput, Prisma.ComInvoiceUncheckedUpdateManyWithoutQuoteInput>
 }
 
-export type ComInvoiceCreateWithoutLinesInput = {
+export type ComInvoiceCreateWithoutContractInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
   quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
   owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
   createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
+  lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
   payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
 }
 
-export type ComInvoiceUncheckedCreateWithoutLinesInput = {
+export type ComInvoiceUncheckedCreateWithoutContractInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   clientId: string
   quoteId?: string | null
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceCreateOrConnectWithoutContractInput = {
+  where: Prisma.ComInvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutContractInput, Prisma.ComInvoiceUncheckedCreateWithoutContractInput>
+}
+
+export type ComInvoiceCreateManyContractInputEnvelope = {
+  data: Prisma.ComInvoiceCreateManyContractInput | Prisma.ComInvoiceCreateManyContractInput[]
+  skipDuplicates?: boolean
+}
+
+export type ComInvoiceUpsertWithWhereUniqueWithoutContractInput = {
+  where: Prisma.ComInvoiceWhereUniqueInput
+  update: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutContractInput, Prisma.ComInvoiceUncheckedUpdateWithoutContractInput>
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutContractInput, Prisma.ComInvoiceUncheckedCreateWithoutContractInput>
+}
+
+export type ComInvoiceUpdateWithWhereUniqueWithoutContractInput = {
+  where: Prisma.ComInvoiceWhereUniqueInput
+  data: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutContractInput, Prisma.ComInvoiceUncheckedUpdateWithoutContractInput>
+}
+
+export type ComInvoiceUpdateManyWithWhereWithoutContractInput = {
+  where: Prisma.ComInvoiceScalarWhereInput
+  data: Prisma.XOR<Prisma.ComInvoiceUpdateManyMutationInput, Prisma.ComInvoiceUncheckedUpdateManyWithoutContractInput>
+}
+
+export type ComInvoiceCreateWithoutLinesInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
+  quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
+  owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceUncheckedCreateWithoutLinesInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  clientId: string
+  quoteId?: string | null
+  contractId?: string | null
+  ownerId: string
+  createdById: string
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceCreateOrConnectWithoutLinesInput = {
@@ -1328,98 +2057,690 @@ export type ComInvoiceUpdateToOneWithWhereWithoutLinesInput = {
 
 export type ComInvoiceUpdateWithoutLinesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
   quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
   payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceUncheckedUpdateWithoutLinesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
 }
 
-export type ComInvoiceCreateWithoutPaymentsInput = {
+export type ComInvoiceCreateWithoutArrearsRefsInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
   quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
   owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
   createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
   lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
 }
 
-export type ComInvoiceUncheckedCreateWithoutPaymentsInput = {
+export type ComInvoiceUncheckedCreateWithoutArrearsRefsInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   clientId: string
   quoteId?: string | null
+  contractId?: string | null
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceCreateOrConnectWithoutArrearsRefsInput = {
+  where: Prisma.ComInvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutArrearsRefsInput, Prisma.ComInvoiceUncheckedCreateWithoutArrearsRefsInput>
+}
+
+export type ComInvoiceCreateWithoutArrearsOfInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
+  quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
+  owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
+  lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceUncheckedCreateWithoutArrearsOfInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  clientId: string
+  quoteId?: string | null
+  contractId?: string | null
+  ownerId: string
+  createdById: string
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceCreateOrConnectWithoutArrearsOfInput = {
+  where: Prisma.ComInvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutArrearsOfInput, Prisma.ComInvoiceUncheckedCreateWithoutArrearsOfInput>
+}
+
+export type ComInvoiceUpsertWithoutArrearsRefsInput = {
+  update: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutArrearsRefsInput, Prisma.ComInvoiceUncheckedUpdateWithoutArrearsRefsInput>
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutArrearsRefsInput, Prisma.ComInvoiceUncheckedCreateWithoutArrearsRefsInput>
+  where?: Prisma.ComInvoiceWhereInput
+}
+
+export type ComInvoiceUpdateToOneWithWhereWithoutArrearsRefsInput = {
+  where?: Prisma.ComInvoiceWhereInput
+  data: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutArrearsRefsInput, Prisma.ComInvoiceUncheckedUpdateWithoutArrearsRefsInput>
+}
+
+export type ComInvoiceUpdateWithoutArrearsRefsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
+  quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
+  lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceUncheckedUpdateWithoutArrearsRefsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceUpsertWithoutArrearsOfInput = {
+  update: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutArrearsOfInput, Prisma.ComInvoiceUncheckedUpdateWithoutArrearsOfInput>
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutArrearsOfInput, Prisma.ComInvoiceUncheckedCreateWithoutArrearsOfInput>
+  where?: Prisma.ComInvoiceWhereInput
+}
+
+export type ComInvoiceUpdateToOneWithWhereWithoutArrearsOfInput = {
+  where?: Prisma.ComInvoiceWhereInput
+  data: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutArrearsOfInput, Prisma.ComInvoiceUncheckedUpdateWithoutArrearsOfInput>
+}
+
+export type ComInvoiceUpdateWithoutArrearsOfInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
+  quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
+  lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceUncheckedUpdateWithoutArrearsOfInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceCreateWithoutCreditNotesInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
+  quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
+  owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
+  lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceUncheckedCreateWithoutCreditNotesInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  clientId: string
+  quoteId?: string | null
+  contractId?: string | null
+  ownerId: string
+  createdById: string
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceCreateOrConnectWithoutCreditNotesInput = {
+  where: Prisma.ComInvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutCreditNotesInput, Prisma.ComInvoiceUncheckedCreateWithoutCreditNotesInput>
+}
+
+export type ComInvoiceUpsertWithoutCreditNotesInput = {
+  update: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutCreditNotesInput, Prisma.ComInvoiceUncheckedUpdateWithoutCreditNotesInput>
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutCreditNotesInput, Prisma.ComInvoiceUncheckedCreateWithoutCreditNotesInput>
+  where?: Prisma.ComInvoiceWhereInput
+}
+
+export type ComInvoiceUpdateToOneWithWhereWithoutCreditNotesInput = {
+  where?: Prisma.ComInvoiceWhereInput
+  data: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutCreditNotesInput, Prisma.ComInvoiceUncheckedUpdateWithoutCreditNotesInput>
+}
+
+export type ComInvoiceUpdateWithoutCreditNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
+  quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
+  lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceUncheckedUpdateWithoutCreditNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceCreateWithoutPaymentsInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
+  quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
+  owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
+  lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceUncheckedCreateWithoutPaymentsInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  clientId: string
+  quoteId?: string | null
+  contractId?: string | null
+  ownerId: string
+  createdById: string
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
 }
 
 export type ComInvoiceCreateOrConnectWithoutPaymentsInput = {
@@ -1440,416 +2761,1414 @@ export type ComInvoiceUpdateToOneWithWhereWithoutPaymentsInput = {
 
 export type ComInvoiceUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
   quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
   lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceUncheckedUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
 }
 
-export type ComInvoiceCreateManyOwnerInput = {
+export type ComInvoiceCreateWithoutAllocationsInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
+  quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
+  owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
+  lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceUncheckedCreateWithoutAllocationsInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
   clientId: string
   quoteId?: string | null
+  contractId?: string | null
+  ownerId: string
   createdById: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceCreateOrConnectWithoutAllocationsInput = {
+  where: Prisma.ComInvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutAllocationsInput, Prisma.ComInvoiceUncheckedCreateWithoutAllocationsInput>
+}
+
+export type ComInvoiceUpsertWithoutAllocationsInput = {
+  update: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutAllocationsInput, Prisma.ComInvoiceUncheckedUpdateWithoutAllocationsInput>
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutAllocationsInput, Prisma.ComInvoiceUncheckedCreateWithoutAllocationsInput>
+  where?: Prisma.ComInvoiceWhereInput
+}
+
+export type ComInvoiceUpdateToOneWithWhereWithoutAllocationsInput = {
+  where?: Prisma.ComInvoiceWhereInput
+  data: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutAllocationsInput, Prisma.ComInvoiceUncheckedUpdateWithoutAllocationsInput>
+}
+
+export type ComInvoiceUpdateWithoutAllocationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
+  quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
+  lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceUncheckedUpdateWithoutAllocationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceCreateWithoutRemindersInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
+  quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
+  owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutInvoicesInput
+  lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceUncheckedCreateWithoutRemindersInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  clientId: string
+  quoteId?: string | null
+  contractId?: string | null
+  ownerId: string
+  createdById: string
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceCreateOrConnectWithoutRemindersInput = {
+  where: Prisma.ComInvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutRemindersInput, Prisma.ComInvoiceUncheckedCreateWithoutRemindersInput>
+}
+
+export type ComInvoiceUpsertWithoutRemindersInput = {
+  update: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutRemindersInput, Prisma.ComInvoiceUncheckedUpdateWithoutRemindersInput>
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutRemindersInput, Prisma.ComInvoiceUncheckedCreateWithoutRemindersInput>
+  where?: Prisma.ComInvoiceWhereInput
+}
+
+export type ComInvoiceUpdateToOneWithWhereWithoutRemindersInput = {
+  where?: Prisma.ComInvoiceWhereInput
+  data: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutRemindersInput, Prisma.ComInvoiceUncheckedUpdateWithoutRemindersInput>
+}
+
+export type ComInvoiceUpdateWithoutRemindersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
+  quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
+  lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceUncheckedUpdateWithoutRemindersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceCreateWithoutImportBatchInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  client: Prisma.ComClientCreateNestedOneWithoutInvoicesInput
+  quote?: Prisma.ComQuoteCreateNestedOneWithoutInvoicesInput
+  contract?: Prisma.ComContractCreateNestedOneWithoutInvoicesInput
+  owner: Prisma.UserCreateNestedOneWithoutComInvoicesOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComInvoicesCreatedInput
+  lines?: Prisma.ComInvoiceLineCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceUncheckedCreateWithoutImportBatchInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  clientId: string
+  quoteId?: string | null
+  contractId?: string | null
+  ownerId: string
+  createdById: string
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutInvoiceInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutInvoiceInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedCreateNestedManyWithoutSourceInvoiceInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutInvoiceInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedCreateNestedManyWithoutInvoiceInput
+}
+
+export type ComInvoiceCreateOrConnectWithoutImportBatchInput = {
+  where: Prisma.ComInvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutImportBatchInput, Prisma.ComInvoiceUncheckedCreateWithoutImportBatchInput>
+}
+
+export type ComInvoiceCreateManyImportBatchInputEnvelope = {
+  data: Prisma.ComInvoiceCreateManyImportBatchInput | Prisma.ComInvoiceCreateManyImportBatchInput[]
+  skipDuplicates?: boolean
+}
+
+export type ComInvoiceUpsertWithWhereUniqueWithoutImportBatchInput = {
+  where: Prisma.ComInvoiceWhereUniqueInput
+  update: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutImportBatchInput, Prisma.ComInvoiceUncheckedUpdateWithoutImportBatchInput>
+  create: Prisma.XOR<Prisma.ComInvoiceCreateWithoutImportBatchInput, Prisma.ComInvoiceUncheckedCreateWithoutImportBatchInput>
+}
+
+export type ComInvoiceUpdateWithWhereUniqueWithoutImportBatchInput = {
+  where: Prisma.ComInvoiceWhereUniqueInput
+  data: Prisma.XOR<Prisma.ComInvoiceUpdateWithoutImportBatchInput, Prisma.ComInvoiceUncheckedUpdateWithoutImportBatchInput>
+}
+
+export type ComInvoiceUpdateManyWithWhereWithoutImportBatchInput = {
+  where: Prisma.ComInvoiceScalarWhereInput
+  data: Prisma.XOR<Prisma.ComInvoiceUpdateManyMutationInput, Prisma.ComInvoiceUncheckedUpdateManyWithoutImportBatchInput>
+}
+
+export type ComInvoiceCreateManyOwnerInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  clientId: string
+  quoteId?: string | null
+  contractId?: string | null
+  createdById: string
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ComInvoiceCreateManyCreatedByInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   clientId: string
   quoteId?: string | null
+  contractId?: string | null
   ownerId: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ComInvoiceUpdateWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
   quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
   lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
   payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceUncheckedUpdateWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
   payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceUncheckedUpdateManyWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ComInvoiceUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
   quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
   lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
   payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
   payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ComInvoiceCreateManyClientInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   quoteId?: string | null
+  contractId?: string | null
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ComInvoiceUpdateWithoutClientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
   lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
   payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceUncheckedUpdateWithoutClientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
   payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceUncheckedUpdateManyWithoutClientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ComInvoiceCreateManyQuoteInput = {
   id?: string
-  number: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
   status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
   vatRate?: number
   object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
   totalHt?: number
   totalVat?: number
   totalTtc?: number
   amountPaid?: number
+  presentedNetPayable?: number | null
   clientId: string
+  contractId?: string | null
   ownerId: string
   createdById: string
   gedDocumentId?: string | null
   issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type ComInvoiceUpdateWithoutQuoteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
   owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
   lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
   payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceUncheckedUpdateWithoutQuoteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
   payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
 }
 
 export type ComInvoiceUncheckedUpdateManyWithoutQuoteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  number?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vatRate?: Prisma.IntFieldUpdateOperationsInput | number
   object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalHt?: Prisma.IntFieldUpdateOperationsInput | number
   totalVat?: Prisma.IntFieldUpdateOperationsInput | number
   totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
   amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ComInvoiceCreateManyContractInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  clientId: string
+  quoteId?: string | null
+  ownerId: string
+  createdById: string
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  importBatchId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ComInvoiceUpdateWithoutContractInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
+  quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutInvoicesNestedInput
+  lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceUncheckedUpdateWithoutContractInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceUncheckedUpdateManyWithoutContractInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ComInvoiceCreateManyImportBatchInput = {
+  id?: string
+  number?: string | null
+  draftCode: string
+  legacyNumber?: string | null
+  legacyInternalRef?: string | null
+  status?: $Enums.ComInvoiceStatus
+  source?: $Enums.ComInvoiceSource
+  regime?: $Enums.ComDocRegime
+  currency?: string
+  vatEnabled?: boolean
+  vatRate?: number
+  object?: string | null
+  periodStart?: Date | string | null
+  periodEnd?: Date | string | null
+  dueDate?: Date | string | null
+  totalHt?: number
+  totalVat?: number
+  totalTtc?: number
+  amountPaid?: number
+  presentedNetPayable?: number | null
+  clientId: string
+  quoteId?: string | null
+  contractId?: string | null
+  ownerId: string
+  createdById: string
+  gedDocumentId?: string | null
+  issuedAt?: Date | string | null
+  sentAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ComInvoiceUpdateWithoutImportBatchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ComClientUpdateOneRequiredWithoutInvoicesNestedInput
+  quote?: Prisma.ComQuoteUpdateOneWithoutInvoicesNestedInput
+  contract?: Prisma.ComContractUpdateOneWithoutInvoicesNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComInvoicesOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComInvoicesCreatedNestedInput
+  lines?: Prisma.ComInvoiceLineUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceUncheckedUpdateWithoutImportBatchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutInvoiceNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceNestedInput
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsRefs?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutInvoiceNestedInput
+  arrearsOf?: Prisma.ComInvoiceArrearsRefUncheckedUpdateManyWithoutSourceInvoiceNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutInvoiceNestedInput
+  reminders?: Prisma.ComInvoiceReminderUncheckedUpdateManyWithoutInvoiceNestedInput
+}
+
+export type ComInvoiceUncheckedUpdateManyWithoutImportBatchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftCode?: Prisma.StringFieldUpdateOperationsInput | string
+  legacyNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  legacyInternalRef?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumComInvoiceStatusFieldUpdateOperationsInput | $Enums.ComInvoiceStatus
+  source?: Prisma.EnumComInvoiceSourceFieldUpdateOperationsInput | $Enums.ComInvoiceSource
+  regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  vatRate?: Prisma.IntFieldUpdateOperationsInput | number
+  object?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  periodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  periodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  totalHt?: Prisma.IntFieldUpdateOperationsInput | number
+  totalVat?: Prisma.IntFieldUpdateOperationsInput | number
+  totalTtc?: Prisma.IntFieldUpdateOperationsInput | number
+  amountPaid?: Prisma.IntFieldUpdateOperationsInput | number
+  presentedNetPayable?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contractId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1862,11 +4181,21 @@ export type ComInvoiceUncheckedUpdateManyWithoutQuoteInput = {
 export type ComInvoiceCountOutputType = {
   lines: number
   payments: number
+  allocations: number
+  arrearsRefs: number
+  arrearsOf: number
+  creditNotes: number
+  reminders: number
 }
 
 export type ComInvoiceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lines?: boolean | ComInvoiceCountOutputTypeCountLinesArgs
   payments?: boolean | ComInvoiceCountOutputTypeCountPaymentsArgs
+  allocations?: boolean | ComInvoiceCountOutputTypeCountAllocationsArgs
+  arrearsRefs?: boolean | ComInvoiceCountOutputTypeCountArrearsRefsArgs
+  arrearsOf?: boolean | ComInvoiceCountOutputTypeCountArrearsOfArgs
+  creditNotes?: boolean | ComInvoiceCountOutputTypeCountCreditNotesArgs
+  reminders?: boolean | ComInvoiceCountOutputTypeCountRemindersArgs
 }
 
 /**
@@ -1893,135 +4222,236 @@ export type ComInvoiceCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.T
   where?: Prisma.ComPaymentWhereInput
 }
 
+/**
+ * ComInvoiceCountOutputType without action
+ */
+export type ComInvoiceCountOutputTypeCountAllocationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComPaymentAllocationWhereInput
+}
+
+/**
+ * ComInvoiceCountOutputType without action
+ */
+export type ComInvoiceCountOutputTypeCountArrearsRefsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComInvoiceArrearsRefWhereInput
+}
+
+/**
+ * ComInvoiceCountOutputType without action
+ */
+export type ComInvoiceCountOutputTypeCountArrearsOfArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComInvoiceArrearsRefWhereInput
+}
+
+/**
+ * ComInvoiceCountOutputType without action
+ */
+export type ComInvoiceCountOutputTypeCountCreditNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComCreditNoteWhereInput
+}
+
+/**
+ * ComInvoiceCountOutputType without action
+ */
+export type ComInvoiceCountOutputTypeCountRemindersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComInvoiceReminderWhereInput
+}
+
 
 export type ComInvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   number?: boolean
+  draftCode?: boolean
+  legacyNumber?: boolean
+  legacyInternalRef?: boolean
   status?: boolean
+  source?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
   vatRate?: boolean
   object?: boolean
+  periodStart?: boolean
+  periodEnd?: boolean
+  dueDate?: boolean
   totalHt?: boolean
   totalVat?: boolean
   totalTtc?: boolean
   amountPaid?: boolean
+  presentedNetPayable?: boolean
   clientId?: boolean
   quoteId?: boolean
+  contractId?: boolean
   ownerId?: boolean
   createdById?: boolean
   gedDocumentId?: boolean
   issuedAt?: boolean
+  sentAt?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
   quote?: boolean | Prisma.ComInvoice$quoteArgs<ExtArgs>
+  contract?: boolean | Prisma.ComInvoice$contractArgs<ExtArgs>
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComInvoice$importBatchArgs<ExtArgs>
   lines?: boolean | Prisma.ComInvoice$linesArgs<ExtArgs>
   payments?: boolean | Prisma.ComInvoice$paymentsArgs<ExtArgs>
+  allocations?: boolean | Prisma.ComInvoice$allocationsArgs<ExtArgs>
+  arrearsRefs?: boolean | Prisma.ComInvoice$arrearsRefsArgs<ExtArgs>
+  arrearsOf?: boolean | Prisma.ComInvoice$arrearsOfArgs<ExtArgs>
+  creditNotes?: boolean | Prisma.ComInvoice$creditNotesArgs<ExtArgs>
+  reminders?: boolean | Prisma.ComInvoice$remindersArgs<ExtArgs>
   _count?: boolean | Prisma.ComInvoiceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["comInvoice"]>
 
 export type ComInvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   number?: boolean
+  draftCode?: boolean
+  legacyNumber?: boolean
+  legacyInternalRef?: boolean
   status?: boolean
+  source?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
   vatRate?: boolean
   object?: boolean
+  periodStart?: boolean
+  periodEnd?: boolean
+  dueDate?: boolean
   totalHt?: boolean
   totalVat?: boolean
   totalTtc?: boolean
   amountPaid?: boolean
+  presentedNetPayable?: boolean
   clientId?: boolean
   quoteId?: boolean
+  contractId?: boolean
   ownerId?: boolean
   createdById?: boolean
   gedDocumentId?: boolean
   issuedAt?: boolean
+  sentAt?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
   quote?: boolean | Prisma.ComInvoice$quoteArgs<ExtArgs>
+  contract?: boolean | Prisma.ComInvoice$contractArgs<ExtArgs>
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComInvoice$importBatchArgs<ExtArgs>
 }, ExtArgs["result"]["comInvoice"]>
 
 export type ComInvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   number?: boolean
+  draftCode?: boolean
+  legacyNumber?: boolean
+  legacyInternalRef?: boolean
   status?: boolean
+  source?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
   vatRate?: boolean
   object?: boolean
+  periodStart?: boolean
+  periodEnd?: boolean
+  dueDate?: boolean
   totalHt?: boolean
   totalVat?: boolean
   totalTtc?: boolean
   amountPaid?: boolean
+  presentedNetPayable?: boolean
   clientId?: boolean
   quoteId?: boolean
+  contractId?: boolean
   ownerId?: boolean
   createdById?: boolean
   gedDocumentId?: boolean
   issuedAt?: boolean
+  sentAt?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
   quote?: boolean | Prisma.ComInvoice$quoteArgs<ExtArgs>
+  contract?: boolean | Prisma.ComInvoice$contractArgs<ExtArgs>
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComInvoice$importBatchArgs<ExtArgs>
 }, ExtArgs["result"]["comInvoice"]>
 
 export type ComInvoiceSelectScalar = {
   id?: boolean
   number?: boolean
+  draftCode?: boolean
+  legacyNumber?: boolean
+  legacyInternalRef?: boolean
   status?: boolean
+  source?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
   vatRate?: boolean
   object?: boolean
+  periodStart?: boolean
+  periodEnd?: boolean
+  dueDate?: boolean
   totalHt?: boolean
   totalVat?: boolean
   totalTtc?: boolean
   amountPaid?: boolean
+  presentedNetPayable?: boolean
   clientId?: boolean
   quoteId?: boolean
+  contractId?: boolean
   ownerId?: boolean
   createdById?: boolean
   gedDocumentId?: boolean
   issuedAt?: boolean
+  sentAt?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ComInvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "number" | "status" | "regime" | "currency" | "vatEnabled" | "vatRate" | "object" | "totalHt" | "totalVat" | "totalTtc" | "amountPaid" | "clientId" | "quoteId" | "ownerId" | "createdById" | "gedDocumentId" | "issuedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["comInvoice"]>
+export type ComInvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "number" | "draftCode" | "legacyNumber" | "legacyInternalRef" | "status" | "source" | "regime" | "currency" | "vatEnabled" | "vatRate" | "object" | "periodStart" | "periodEnd" | "dueDate" | "totalHt" | "totalVat" | "totalTtc" | "amountPaid" | "presentedNetPayable" | "clientId" | "quoteId" | "contractId" | "ownerId" | "createdById" | "gedDocumentId" | "issuedAt" | "sentAt" | "importBatchId" | "createdAt" | "updatedAt", ExtArgs["result"]["comInvoice"]>
 export type ComInvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
   quote?: boolean | Prisma.ComInvoice$quoteArgs<ExtArgs>
+  contract?: boolean | Prisma.ComInvoice$contractArgs<ExtArgs>
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComInvoice$importBatchArgs<ExtArgs>
   lines?: boolean | Prisma.ComInvoice$linesArgs<ExtArgs>
   payments?: boolean | Prisma.ComInvoice$paymentsArgs<ExtArgs>
+  allocations?: boolean | Prisma.ComInvoice$allocationsArgs<ExtArgs>
+  arrearsRefs?: boolean | Prisma.ComInvoice$arrearsRefsArgs<ExtArgs>
+  arrearsOf?: boolean | Prisma.ComInvoice$arrearsOfArgs<ExtArgs>
+  creditNotes?: boolean | Prisma.ComInvoice$creditNotesArgs<ExtArgs>
+  reminders?: boolean | Prisma.ComInvoice$remindersArgs<ExtArgs>
   _count?: boolean | Prisma.ComInvoiceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ComInvoiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
   quote?: boolean | Prisma.ComInvoice$quoteArgs<ExtArgs>
+  contract?: boolean | Prisma.ComInvoice$contractArgs<ExtArgs>
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComInvoice$importBatchArgs<ExtArgs>
 }
 export type ComInvoiceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
   quote?: boolean | Prisma.ComInvoice$quoteArgs<ExtArgs>
+  contract?: boolean | Prisma.ComInvoice$contractArgs<ExtArgs>
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComInvoice$importBatchArgs<ExtArgs>
 }
 
 export type $ComInvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2029,30 +4459,57 @@ export type $ComInvoicePayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     client: Prisma.$ComClientPayload<ExtArgs>
     quote: Prisma.$ComQuotePayload<ExtArgs> | null
+    contract: Prisma.$ComContractPayload<ExtArgs> | null
     owner: Prisma.$UserPayload<ExtArgs>
     createdBy: Prisma.$UserPayload<ExtArgs>
+    importBatch: Prisma.$ComImportBatchPayload<ExtArgs> | null
     lines: Prisma.$ComInvoiceLinePayload<ExtArgs>[]
     payments: Prisma.$ComPaymentPayload<ExtArgs>[]
+    allocations: Prisma.$ComPaymentAllocationPayload<ExtArgs>[]
+    arrearsRefs: Prisma.$ComInvoiceArrearsRefPayload<ExtArgs>[]
+    arrearsOf: Prisma.$ComInvoiceArrearsRefPayload<ExtArgs>[]
+    creditNotes: Prisma.$ComCreditNotePayload<ExtArgs>[]
+    reminders: Prisma.$ComInvoiceReminderPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    number: string
+    /**
+     * Numéro officiel (null tant que brouillon).
+     */
+    number: string | null
+    draftCode: string
+    legacyNumber: string | null
+    legacyInternalRef: string | null
     status: $Enums.ComInvoiceStatus
+    source: $Enums.ComInvoiceSource
     regime: $Enums.ComDocRegime
     currency: string
     vatEnabled: boolean
     vatRate: number
     object: string | null
+    periodStart: Date | null
+    periodEnd: Date | null
+    dueDate: Date | null
     totalHt: number
     totalVat: number
     totalTtc: number
+    /**
+     * Dénormalisé depuis allocations (cache).
+     */
     amountPaid: number
+    /**
+     * Net à payer présenté (période + arriérés affichés − acomptes sur doc).
+     */
+    presentedNetPayable: number | null
     clientId: string
     quoteId: string | null
+    contractId: string | null
     ownerId: string
     createdById: string
     gedDocumentId: string | null
     issuedAt: Date | null
+    sentAt: Date | null
+    importBatchId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["comInvoice"]>
@@ -2451,10 +4908,17 @@ export interface Prisma__ComInvoiceClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   client<T extends Prisma.ComClientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComClientDefaultArgs<ExtArgs>>): Prisma.Prisma__ComClientClient<runtime.Types.Result.GetResult<Prisma.$ComClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   quote<T extends Prisma.ComInvoice$quoteArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoice$quoteArgs<ExtArgs>>): Prisma.Prisma__ComQuoteClient<runtime.Types.Result.GetResult<Prisma.$ComQuotePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  contract<T extends Prisma.ComInvoice$contractArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoice$contractArgs<ExtArgs>>): Prisma.Prisma__ComContractClient<runtime.Types.Result.GetResult<Prisma.$ComContractPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   owner<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  importBatch<T extends Prisma.ComInvoice$importBatchArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoice$importBatchArgs<ExtArgs>>): Prisma.Prisma__ComImportBatchClient<runtime.Types.Result.GetResult<Prisma.$ComImportBatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   lines<T extends Prisma.ComInvoice$linesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoice$linesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComInvoiceLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   payments<T extends Prisma.ComInvoice$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoice$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  allocations<T extends Prisma.ComInvoice$allocationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoice$allocationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComPaymentAllocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  arrearsRefs<T extends Prisma.ComInvoice$arrearsRefsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoice$arrearsRefsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComInvoiceArrearsRefPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  arrearsOf<T extends Prisma.ComInvoice$arrearsOfArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoice$arrearsOfArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComInvoiceArrearsRefPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  creditNotes<T extends Prisma.ComInvoice$creditNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoice$creditNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComCreditNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reminders<T extends Prisma.ComInvoice$remindersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoice$remindersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComInvoiceReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2486,22 +4950,33 @@ export interface Prisma__ComInvoiceClient<T, Null = never, ExtArgs extends runti
 export interface ComInvoiceFieldRefs {
   readonly id: Prisma.FieldRef<"ComInvoice", 'String'>
   readonly number: Prisma.FieldRef<"ComInvoice", 'String'>
+  readonly draftCode: Prisma.FieldRef<"ComInvoice", 'String'>
+  readonly legacyNumber: Prisma.FieldRef<"ComInvoice", 'String'>
+  readonly legacyInternalRef: Prisma.FieldRef<"ComInvoice", 'String'>
   readonly status: Prisma.FieldRef<"ComInvoice", 'ComInvoiceStatus'>
+  readonly source: Prisma.FieldRef<"ComInvoice", 'ComInvoiceSource'>
   readonly regime: Prisma.FieldRef<"ComInvoice", 'ComDocRegime'>
   readonly currency: Prisma.FieldRef<"ComInvoice", 'String'>
   readonly vatEnabled: Prisma.FieldRef<"ComInvoice", 'Boolean'>
   readonly vatRate: Prisma.FieldRef<"ComInvoice", 'Int'>
   readonly object: Prisma.FieldRef<"ComInvoice", 'String'>
+  readonly periodStart: Prisma.FieldRef<"ComInvoice", 'DateTime'>
+  readonly periodEnd: Prisma.FieldRef<"ComInvoice", 'DateTime'>
+  readonly dueDate: Prisma.FieldRef<"ComInvoice", 'DateTime'>
   readonly totalHt: Prisma.FieldRef<"ComInvoice", 'Int'>
   readonly totalVat: Prisma.FieldRef<"ComInvoice", 'Int'>
   readonly totalTtc: Prisma.FieldRef<"ComInvoice", 'Int'>
   readonly amountPaid: Prisma.FieldRef<"ComInvoice", 'Int'>
+  readonly presentedNetPayable: Prisma.FieldRef<"ComInvoice", 'Int'>
   readonly clientId: Prisma.FieldRef<"ComInvoice", 'String'>
   readonly quoteId: Prisma.FieldRef<"ComInvoice", 'String'>
+  readonly contractId: Prisma.FieldRef<"ComInvoice", 'String'>
   readonly ownerId: Prisma.FieldRef<"ComInvoice", 'String'>
   readonly createdById: Prisma.FieldRef<"ComInvoice", 'String'>
   readonly gedDocumentId: Prisma.FieldRef<"ComInvoice", 'String'>
   readonly issuedAt: Prisma.FieldRef<"ComInvoice", 'DateTime'>
+  readonly sentAt: Prisma.FieldRef<"ComInvoice", 'DateTime'>
+  readonly importBatchId: Prisma.FieldRef<"ComInvoice", 'String'>
   readonly createdAt: Prisma.FieldRef<"ComInvoice", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ComInvoice", 'DateTime'>
 }
@@ -2924,6 +5399,44 @@ export type ComInvoice$quoteArgs<ExtArgs extends runtime.Types.Extensions.Intern
 }
 
 /**
+ * ComInvoice.contract
+ */
+export type ComInvoice$contractArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComContract
+   */
+  select?: Prisma.ComContractSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComContract
+   */
+  omit?: Prisma.ComContractOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComContractInclude<ExtArgs> | null
+  where?: Prisma.ComContractWhereInput
+}
+
+/**
+ * ComInvoice.importBatch
+ */
+export type ComInvoice$importBatchArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComImportBatch
+   */
+  select?: Prisma.ComImportBatchSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComImportBatch
+   */
+  omit?: Prisma.ComImportBatchOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComImportBatchInclude<ExtArgs> | null
+  where?: Prisma.ComImportBatchWhereInput
+}
+
+/**
  * ComInvoice.lines
  */
 export type ComInvoice$linesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2969,6 +5482,126 @@ export type ComInvoice$paymentsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.ComPaymentScalarFieldEnum | Prisma.ComPaymentScalarFieldEnum[]
+}
+
+/**
+ * ComInvoice.allocations
+ */
+export type ComInvoice$allocationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComPaymentAllocation
+   */
+  select?: Prisma.ComPaymentAllocationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComPaymentAllocation
+   */
+  omit?: Prisma.ComPaymentAllocationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComPaymentAllocationInclude<ExtArgs> | null
+  where?: Prisma.ComPaymentAllocationWhereInput
+  orderBy?: Prisma.ComPaymentAllocationOrderByWithRelationInput | Prisma.ComPaymentAllocationOrderByWithRelationInput[]
+  cursor?: Prisma.ComPaymentAllocationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComPaymentAllocationScalarFieldEnum | Prisma.ComPaymentAllocationScalarFieldEnum[]
+}
+
+/**
+ * ComInvoice.arrearsRefs
+ */
+export type ComInvoice$arrearsRefsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComInvoiceArrearsRef
+   */
+  select?: Prisma.ComInvoiceArrearsRefSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComInvoiceArrearsRef
+   */
+  omit?: Prisma.ComInvoiceArrearsRefOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComInvoiceArrearsRefInclude<ExtArgs> | null
+  where?: Prisma.ComInvoiceArrearsRefWhereInput
+  orderBy?: Prisma.ComInvoiceArrearsRefOrderByWithRelationInput | Prisma.ComInvoiceArrearsRefOrderByWithRelationInput[]
+  cursor?: Prisma.ComInvoiceArrearsRefWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComInvoiceArrearsRefScalarFieldEnum | Prisma.ComInvoiceArrearsRefScalarFieldEnum[]
+}
+
+/**
+ * ComInvoice.arrearsOf
+ */
+export type ComInvoice$arrearsOfArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComInvoiceArrearsRef
+   */
+  select?: Prisma.ComInvoiceArrearsRefSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComInvoiceArrearsRef
+   */
+  omit?: Prisma.ComInvoiceArrearsRefOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComInvoiceArrearsRefInclude<ExtArgs> | null
+  where?: Prisma.ComInvoiceArrearsRefWhereInput
+  orderBy?: Prisma.ComInvoiceArrearsRefOrderByWithRelationInput | Prisma.ComInvoiceArrearsRefOrderByWithRelationInput[]
+  cursor?: Prisma.ComInvoiceArrearsRefWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComInvoiceArrearsRefScalarFieldEnum | Prisma.ComInvoiceArrearsRefScalarFieldEnum[]
+}
+
+/**
+ * ComInvoice.creditNotes
+ */
+export type ComInvoice$creditNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComCreditNote
+   */
+  select?: Prisma.ComCreditNoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComCreditNote
+   */
+  omit?: Prisma.ComCreditNoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComCreditNoteInclude<ExtArgs> | null
+  where?: Prisma.ComCreditNoteWhereInput
+  orderBy?: Prisma.ComCreditNoteOrderByWithRelationInput | Prisma.ComCreditNoteOrderByWithRelationInput[]
+  cursor?: Prisma.ComCreditNoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComCreditNoteScalarFieldEnum | Prisma.ComCreditNoteScalarFieldEnum[]
+}
+
+/**
+ * ComInvoice.reminders
+ */
+export type ComInvoice$remindersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComInvoiceReminder
+   */
+  select?: Prisma.ComInvoiceReminderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComInvoiceReminder
+   */
+  omit?: Prisma.ComInvoiceReminderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComInvoiceReminderInclude<ExtArgs> | null
+  where?: Prisma.ComInvoiceReminderWhereInput
+  orderBy?: Prisma.ComInvoiceReminderOrderByWithRelationInput | Prisma.ComInvoiceReminderOrderByWithRelationInput[]
+  cursor?: Prisma.ComInvoiceReminderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComInvoiceReminderScalarFieldEnum | Prisma.ComInvoiceReminderScalarFieldEnum[]
 }
 
 /**

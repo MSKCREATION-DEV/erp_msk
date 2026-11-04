@@ -36,34 +36,49 @@ export type ComPaymentSumAggregateOutputType = {
 
 export type ComPaymentMinAggregateOutputType = {
   id: string | null
+  clientId: string | null
   invoiceId: string | null
   amount: number | null
   method: $Enums.ComPaymentMethod | null
+  status: $Enums.ComPaymentStatus | null
   paidAt: Date | null
+  reference: string | null
   note: string | null
+  gedDocumentId: string | null
   recordedById: string | null
+  importBatchId: string | null
   createdAt: Date | null
 }
 
 export type ComPaymentMaxAggregateOutputType = {
   id: string | null
+  clientId: string | null
   invoiceId: string | null
   amount: number | null
   method: $Enums.ComPaymentMethod | null
+  status: $Enums.ComPaymentStatus | null
   paidAt: Date | null
+  reference: string | null
   note: string | null
+  gedDocumentId: string | null
   recordedById: string | null
+  importBatchId: string | null
   createdAt: Date | null
 }
 
 export type ComPaymentCountAggregateOutputType = {
   id: number
+  clientId: number
   invoiceId: number
   amount: number
   method: number
+  status: number
   paidAt: number
+  reference: number
   note: number
+  gedDocumentId: number
   recordedById: number
+  importBatchId: number
   createdAt: number
   _all: number
 }
@@ -79,34 +94,49 @@ export type ComPaymentSumAggregateInputType = {
 
 export type ComPaymentMinAggregateInputType = {
   id?: true
+  clientId?: true
   invoiceId?: true
   amount?: true
   method?: true
+  status?: true
   paidAt?: true
+  reference?: true
   note?: true
+  gedDocumentId?: true
   recordedById?: true
+  importBatchId?: true
   createdAt?: true
 }
 
 export type ComPaymentMaxAggregateInputType = {
   id?: true
+  clientId?: true
   invoiceId?: true
   amount?: true
   method?: true
+  status?: true
   paidAt?: true
+  reference?: true
   note?: true
+  gedDocumentId?: true
   recordedById?: true
+  importBatchId?: true
   createdAt?: true
 }
 
 export type ComPaymentCountAggregateInputType = {
   id?: true
+  clientId?: true
   invoiceId?: true
   amount?: true
   method?: true
+  status?: true
   paidAt?: true
+  reference?: true
   note?: true
+  gedDocumentId?: true
   recordedById?: true
+  importBatchId?: true
   createdAt?: true
   _all?: true
 }
@@ -199,12 +229,17 @@ export type ComPaymentGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type ComPaymentGroupByOutputType = {
   id: string
-  invoiceId: string
+  clientId: string
+  invoiceId: string | null
   amount: number
   method: $Enums.ComPaymentMethod
+  status: $Enums.ComPaymentStatus
   paidAt: Date
+  reference: string | null
   note: string | null
+  gedDocumentId: string | null
   recordedById: string
+  importBatchId: string | null
   createdAt: Date
   _count: ComPaymentCountAggregateOutputType | null
   _avg: ComPaymentAvgAggregateOutputType | null
@@ -233,28 +268,44 @@ export type ComPaymentWhereInput = {
   OR?: Prisma.ComPaymentWhereInput[]
   NOT?: Prisma.ComPaymentWhereInput | Prisma.ComPaymentWhereInput[]
   id?: Prisma.StringFilter<"ComPayment"> | string
-  invoiceId?: Prisma.StringFilter<"ComPayment"> | string
+  clientId?: Prisma.StringFilter<"ComPayment"> | string
+  invoiceId?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   amount?: Prisma.IntFilter<"ComPayment"> | number
   method?: Prisma.EnumComPaymentMethodFilter<"ComPayment"> | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFilter<"ComPayment"> | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFilter<"ComPayment"> | Date | string
+  reference?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   note?: Prisma.StringNullableFilter<"ComPayment"> | string | null
+  gedDocumentId?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   recordedById?: Prisma.UuidFilter<"ComPayment"> | string
+  importBatchId?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ComPayment"> | Date | string
-  invoice?: Prisma.XOR<Prisma.ComInvoiceScalarRelationFilter, Prisma.ComInvoiceWhereInput>
+  client?: Prisma.XOR<Prisma.ComClientScalarRelationFilter, Prisma.ComClientWhereInput>
+  invoice?: Prisma.XOR<Prisma.ComInvoiceNullableScalarRelationFilter, Prisma.ComInvoiceWhereInput> | null
   recordedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  importBatch?: Prisma.XOR<Prisma.ComImportBatchNullableScalarRelationFilter, Prisma.ComImportBatchWhereInput> | null
+  allocations?: Prisma.ComPaymentAllocationListRelationFilter
 }
 
 export type ComPaymentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  invoiceId?: Prisma.SortOrder
+  clientId?: Prisma.SortOrder
+  invoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
   method?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  reference?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
+  gedDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
   recordedById?: Prisma.SortOrder
+  importBatchId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  client?: Prisma.ComClientOrderByWithRelationInput
   invoice?: Prisma.ComInvoiceOrderByWithRelationInput
   recordedBy?: Prisma.UserOrderByWithRelationInput
+  importBatch?: Prisma.ComImportBatchOrderByWithRelationInput
+  allocations?: Prisma.ComPaymentAllocationOrderByRelationAggregateInput
 }
 
 export type ComPaymentWhereUniqueInput = Prisma.AtLeast<{
@@ -262,25 +313,38 @@ export type ComPaymentWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ComPaymentWhereInput | Prisma.ComPaymentWhereInput[]
   OR?: Prisma.ComPaymentWhereInput[]
   NOT?: Prisma.ComPaymentWhereInput | Prisma.ComPaymentWhereInput[]
-  invoiceId?: Prisma.StringFilter<"ComPayment"> | string
+  clientId?: Prisma.StringFilter<"ComPayment"> | string
+  invoiceId?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   amount?: Prisma.IntFilter<"ComPayment"> | number
   method?: Prisma.EnumComPaymentMethodFilter<"ComPayment"> | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFilter<"ComPayment"> | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFilter<"ComPayment"> | Date | string
+  reference?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   note?: Prisma.StringNullableFilter<"ComPayment"> | string | null
+  gedDocumentId?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   recordedById?: Prisma.UuidFilter<"ComPayment"> | string
+  importBatchId?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ComPayment"> | Date | string
-  invoice?: Prisma.XOR<Prisma.ComInvoiceScalarRelationFilter, Prisma.ComInvoiceWhereInput>
+  client?: Prisma.XOR<Prisma.ComClientScalarRelationFilter, Prisma.ComClientWhereInput>
+  invoice?: Prisma.XOR<Prisma.ComInvoiceNullableScalarRelationFilter, Prisma.ComInvoiceWhereInput> | null
   recordedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  importBatch?: Prisma.XOR<Prisma.ComImportBatchNullableScalarRelationFilter, Prisma.ComImportBatchWhereInput> | null
+  allocations?: Prisma.ComPaymentAllocationListRelationFilter
 }, "id">
 
 export type ComPaymentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  invoiceId?: Prisma.SortOrder
+  clientId?: Prisma.SortOrder
+  invoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
   method?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  reference?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
+  gedDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
   recordedById?: Prisma.SortOrder
+  importBatchId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ComPaymentCountOrderByAggregateInput
   _avg?: Prisma.ComPaymentAvgOrderByAggregateInput
@@ -294,12 +358,17 @@ export type ComPaymentScalarWhereWithAggregatesInput = {
   OR?: Prisma.ComPaymentScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ComPaymentScalarWhereWithAggregatesInput | Prisma.ComPaymentScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ComPayment"> | string
-  invoiceId?: Prisma.StringWithAggregatesFilter<"ComPayment"> | string
+  clientId?: Prisma.StringWithAggregatesFilter<"ComPayment"> | string
+  invoiceId?: Prisma.StringNullableWithAggregatesFilter<"ComPayment"> | string | null
   amount?: Prisma.IntWithAggregatesFilter<"ComPayment"> | number
   method?: Prisma.EnumComPaymentMethodWithAggregatesFilter<"ComPayment"> | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusWithAggregatesFilter<"ComPayment"> | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeWithAggregatesFilter<"ComPayment"> | Date | string
+  reference?: Prisma.StringNullableWithAggregatesFilter<"ComPayment"> | string | null
   note?: Prisma.StringNullableWithAggregatesFilter<"ComPayment"> | string | null
+  gedDocumentId?: Prisma.StringNullableWithAggregatesFilter<"ComPayment"> | string | null
   recordedById?: Prisma.UuidWithAggregatesFilter<"ComPayment"> | string
+  importBatchId?: Prisma.StringNullableWithAggregatesFilter<"ComPayment"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ComPayment"> | Date | string
 }
 
@@ -307,54 +376,83 @@ export type ComPaymentCreateInput = {
   id?: string
   amount: number
   method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
   paidAt?: Date | string
+  reference?: string | null
   note?: string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
-  invoice: Prisma.ComInvoiceCreateNestedOneWithoutPaymentsInput
+  client: Prisma.ComClientCreateNestedOneWithoutPaymentsInput
+  invoice?: Prisma.ComInvoiceCreateNestedOneWithoutPaymentsInput
   recordedBy: Prisma.UserCreateNestedOneWithoutComPaymentsRecordedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutPaymentsInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutPaymentInput
 }
 
 export type ComPaymentUncheckedCreateInput = {
   id?: string
-  invoiceId: string
+  clientId: string
+  invoiceId?: string | null
   amount: number
   method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
   paidAt?: Date | string
+  reference?: string | null
   note?: string | null
+  gedDocumentId?: string | null
   recordedById: string
+  importBatchId?: string | null
   createdAt?: Date | string
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type ComPaymentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoice?: Prisma.ComInvoiceUpdateOneRequiredWithoutPaymentsNestedInput
+  client?: Prisma.ComClientUpdateOneRequiredWithoutPaymentsNestedInput
+  invoice?: Prisma.ComInvoiceUpdateOneWithoutPaymentsNestedInput
   recordedBy?: Prisma.UserUpdateOneRequiredWithoutComPaymentsRecordedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutPaymentsNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutPaymentNestedInput
 }
 
 export type ComPaymentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recordedById?: Prisma.StringFieldUpdateOperationsInput | string
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type ComPaymentCreateManyInput = {
   id?: string
-  invoiceId: string
+  clientId: string
+  invoiceId?: string | null
   amount: number
   method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
   paidAt?: Date | string
+  reference?: string | null
   note?: string | null
+  gedDocumentId?: string | null
   recordedById: string
+  importBatchId?: string | null
   createdAt?: Date | string
 }
 
@@ -362,19 +460,27 @@ export type ComPaymentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ComPaymentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recordedById?: Prisma.StringFieldUpdateOperationsInput | string
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -390,12 +496,17 @@ export type ComPaymentOrderByRelationAggregateInput = {
 
 export type ComPaymentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  clientId?: Prisma.SortOrder
   invoiceId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   method?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  reference?: Prisma.SortOrder
   note?: Prisma.SortOrder
+  gedDocumentId?: Prisma.SortOrder
   recordedById?: Prisma.SortOrder
+  importBatchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -405,28 +516,43 @@ export type ComPaymentAvgOrderByAggregateInput = {
 
 export type ComPaymentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  clientId?: Prisma.SortOrder
   invoiceId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   method?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  reference?: Prisma.SortOrder
   note?: Prisma.SortOrder
+  gedDocumentId?: Prisma.SortOrder
   recordedById?: Prisma.SortOrder
+  importBatchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ComPaymentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  clientId?: Prisma.SortOrder
   invoiceId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   method?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
+  reference?: Prisma.SortOrder
   note?: Prisma.SortOrder
+  gedDocumentId?: Prisma.SortOrder
   recordedById?: Prisma.SortOrder
+  importBatchId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ComPaymentSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
+}
+
+export type ComPaymentScalarRelationFilter = {
+  is?: Prisma.ComPaymentWhereInput
+  isNot?: Prisma.ComPaymentWhereInput
 }
 
 export type ComPaymentCreateNestedManyWithoutRecordedByInput = {
@@ -468,6 +594,48 @@ export type ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput = {
   connect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
   update?: Prisma.ComPaymentUpdateWithWhereUniqueWithoutRecordedByInput | Prisma.ComPaymentUpdateWithWhereUniqueWithoutRecordedByInput[]
   updateMany?: Prisma.ComPaymentUpdateManyWithWhereWithoutRecordedByInput | Prisma.ComPaymentUpdateManyWithWhereWithoutRecordedByInput[]
+  deleteMany?: Prisma.ComPaymentScalarWhereInput | Prisma.ComPaymentScalarWhereInput[]
+}
+
+export type ComPaymentCreateNestedManyWithoutClientInput = {
+  create?: Prisma.XOR<Prisma.ComPaymentCreateWithoutClientInput, Prisma.ComPaymentUncheckedCreateWithoutClientInput> | Prisma.ComPaymentCreateWithoutClientInput[] | Prisma.ComPaymentUncheckedCreateWithoutClientInput[]
+  connectOrCreate?: Prisma.ComPaymentCreateOrConnectWithoutClientInput | Prisma.ComPaymentCreateOrConnectWithoutClientInput[]
+  createMany?: Prisma.ComPaymentCreateManyClientInputEnvelope
+  connect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+}
+
+export type ComPaymentUncheckedCreateNestedManyWithoutClientInput = {
+  create?: Prisma.XOR<Prisma.ComPaymentCreateWithoutClientInput, Prisma.ComPaymentUncheckedCreateWithoutClientInput> | Prisma.ComPaymentCreateWithoutClientInput[] | Prisma.ComPaymentUncheckedCreateWithoutClientInput[]
+  connectOrCreate?: Prisma.ComPaymentCreateOrConnectWithoutClientInput | Prisma.ComPaymentCreateOrConnectWithoutClientInput[]
+  createMany?: Prisma.ComPaymentCreateManyClientInputEnvelope
+  connect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+}
+
+export type ComPaymentUpdateManyWithoutClientNestedInput = {
+  create?: Prisma.XOR<Prisma.ComPaymentCreateWithoutClientInput, Prisma.ComPaymentUncheckedCreateWithoutClientInput> | Prisma.ComPaymentCreateWithoutClientInput[] | Prisma.ComPaymentUncheckedCreateWithoutClientInput[]
+  connectOrCreate?: Prisma.ComPaymentCreateOrConnectWithoutClientInput | Prisma.ComPaymentCreateOrConnectWithoutClientInput[]
+  upsert?: Prisma.ComPaymentUpsertWithWhereUniqueWithoutClientInput | Prisma.ComPaymentUpsertWithWhereUniqueWithoutClientInput[]
+  createMany?: Prisma.ComPaymentCreateManyClientInputEnvelope
+  set?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  disconnect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  delete?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  connect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  update?: Prisma.ComPaymentUpdateWithWhereUniqueWithoutClientInput | Prisma.ComPaymentUpdateWithWhereUniqueWithoutClientInput[]
+  updateMany?: Prisma.ComPaymentUpdateManyWithWhereWithoutClientInput | Prisma.ComPaymentUpdateManyWithWhereWithoutClientInput[]
+  deleteMany?: Prisma.ComPaymentScalarWhereInput | Prisma.ComPaymentScalarWhereInput[]
+}
+
+export type ComPaymentUncheckedUpdateManyWithoutClientNestedInput = {
+  create?: Prisma.XOR<Prisma.ComPaymentCreateWithoutClientInput, Prisma.ComPaymentUncheckedCreateWithoutClientInput> | Prisma.ComPaymentCreateWithoutClientInput[] | Prisma.ComPaymentUncheckedCreateWithoutClientInput[]
+  connectOrCreate?: Prisma.ComPaymentCreateOrConnectWithoutClientInput | Prisma.ComPaymentCreateOrConnectWithoutClientInput[]
+  upsert?: Prisma.ComPaymentUpsertWithWhereUniqueWithoutClientInput | Prisma.ComPaymentUpsertWithWhereUniqueWithoutClientInput[]
+  createMany?: Prisma.ComPaymentCreateManyClientInputEnvelope
+  set?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  disconnect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  delete?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  connect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  update?: Prisma.ComPaymentUpdateWithWhereUniqueWithoutClientInput | Prisma.ComPaymentUpdateWithWhereUniqueWithoutClientInput[]
+  updateMany?: Prisma.ComPaymentUpdateManyWithWhereWithoutClientInput | Prisma.ComPaymentUpdateManyWithWhereWithoutClientInput[]
   deleteMany?: Prisma.ComPaymentScalarWhereInput | Prisma.ComPaymentScalarWhereInput[]
 }
 
@@ -517,24 +685,96 @@ export type EnumComPaymentMethodFieldUpdateOperationsInput = {
   set?: $Enums.ComPaymentMethod
 }
 
+export type EnumComPaymentStatusFieldUpdateOperationsInput = {
+  set?: $Enums.ComPaymentStatus
+}
+
+export type ComPaymentCreateNestedOneWithoutAllocationsInput = {
+  create?: Prisma.XOR<Prisma.ComPaymentCreateWithoutAllocationsInput, Prisma.ComPaymentUncheckedCreateWithoutAllocationsInput>
+  connectOrCreate?: Prisma.ComPaymentCreateOrConnectWithoutAllocationsInput
+  connect?: Prisma.ComPaymentWhereUniqueInput
+}
+
+export type ComPaymentUpdateOneRequiredWithoutAllocationsNestedInput = {
+  create?: Prisma.XOR<Prisma.ComPaymentCreateWithoutAllocationsInput, Prisma.ComPaymentUncheckedCreateWithoutAllocationsInput>
+  connectOrCreate?: Prisma.ComPaymentCreateOrConnectWithoutAllocationsInput
+  upsert?: Prisma.ComPaymentUpsertWithoutAllocationsInput
+  connect?: Prisma.ComPaymentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComPaymentUpdateToOneWithWhereWithoutAllocationsInput, Prisma.ComPaymentUpdateWithoutAllocationsInput>, Prisma.ComPaymentUncheckedUpdateWithoutAllocationsInput>
+}
+
+export type ComPaymentCreateNestedManyWithoutImportBatchInput = {
+  create?: Prisma.XOR<Prisma.ComPaymentCreateWithoutImportBatchInput, Prisma.ComPaymentUncheckedCreateWithoutImportBatchInput> | Prisma.ComPaymentCreateWithoutImportBatchInput[] | Prisma.ComPaymentUncheckedCreateWithoutImportBatchInput[]
+  connectOrCreate?: Prisma.ComPaymentCreateOrConnectWithoutImportBatchInput | Prisma.ComPaymentCreateOrConnectWithoutImportBatchInput[]
+  createMany?: Prisma.ComPaymentCreateManyImportBatchInputEnvelope
+  connect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+}
+
+export type ComPaymentUncheckedCreateNestedManyWithoutImportBatchInput = {
+  create?: Prisma.XOR<Prisma.ComPaymentCreateWithoutImportBatchInput, Prisma.ComPaymentUncheckedCreateWithoutImportBatchInput> | Prisma.ComPaymentCreateWithoutImportBatchInput[] | Prisma.ComPaymentUncheckedCreateWithoutImportBatchInput[]
+  connectOrCreate?: Prisma.ComPaymentCreateOrConnectWithoutImportBatchInput | Prisma.ComPaymentCreateOrConnectWithoutImportBatchInput[]
+  createMany?: Prisma.ComPaymentCreateManyImportBatchInputEnvelope
+  connect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+}
+
+export type ComPaymentUpdateManyWithoutImportBatchNestedInput = {
+  create?: Prisma.XOR<Prisma.ComPaymentCreateWithoutImportBatchInput, Prisma.ComPaymentUncheckedCreateWithoutImportBatchInput> | Prisma.ComPaymentCreateWithoutImportBatchInput[] | Prisma.ComPaymentUncheckedCreateWithoutImportBatchInput[]
+  connectOrCreate?: Prisma.ComPaymentCreateOrConnectWithoutImportBatchInput | Prisma.ComPaymentCreateOrConnectWithoutImportBatchInput[]
+  upsert?: Prisma.ComPaymentUpsertWithWhereUniqueWithoutImportBatchInput | Prisma.ComPaymentUpsertWithWhereUniqueWithoutImportBatchInput[]
+  createMany?: Prisma.ComPaymentCreateManyImportBatchInputEnvelope
+  set?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  disconnect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  delete?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  connect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  update?: Prisma.ComPaymentUpdateWithWhereUniqueWithoutImportBatchInput | Prisma.ComPaymentUpdateWithWhereUniqueWithoutImportBatchInput[]
+  updateMany?: Prisma.ComPaymentUpdateManyWithWhereWithoutImportBatchInput | Prisma.ComPaymentUpdateManyWithWhereWithoutImportBatchInput[]
+  deleteMany?: Prisma.ComPaymentScalarWhereInput | Prisma.ComPaymentScalarWhereInput[]
+}
+
+export type ComPaymentUncheckedUpdateManyWithoutImportBatchNestedInput = {
+  create?: Prisma.XOR<Prisma.ComPaymentCreateWithoutImportBatchInput, Prisma.ComPaymentUncheckedCreateWithoutImportBatchInput> | Prisma.ComPaymentCreateWithoutImportBatchInput[] | Prisma.ComPaymentUncheckedCreateWithoutImportBatchInput[]
+  connectOrCreate?: Prisma.ComPaymentCreateOrConnectWithoutImportBatchInput | Prisma.ComPaymentCreateOrConnectWithoutImportBatchInput[]
+  upsert?: Prisma.ComPaymentUpsertWithWhereUniqueWithoutImportBatchInput | Prisma.ComPaymentUpsertWithWhereUniqueWithoutImportBatchInput[]
+  createMany?: Prisma.ComPaymentCreateManyImportBatchInputEnvelope
+  set?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  disconnect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  delete?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  connect?: Prisma.ComPaymentWhereUniqueInput | Prisma.ComPaymentWhereUniqueInput[]
+  update?: Prisma.ComPaymentUpdateWithWhereUniqueWithoutImportBatchInput | Prisma.ComPaymentUpdateWithWhereUniqueWithoutImportBatchInput[]
+  updateMany?: Prisma.ComPaymentUpdateManyWithWhereWithoutImportBatchInput | Prisma.ComPaymentUpdateManyWithWhereWithoutImportBatchInput[]
+  deleteMany?: Prisma.ComPaymentScalarWhereInput | Prisma.ComPaymentScalarWhereInput[]
+}
+
 export type ComPaymentCreateWithoutRecordedByInput = {
   id?: string
   amount: number
   method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
   paidAt?: Date | string
+  reference?: string | null
   note?: string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
-  invoice: Prisma.ComInvoiceCreateNestedOneWithoutPaymentsInput
+  client: Prisma.ComClientCreateNestedOneWithoutPaymentsInput
+  invoice?: Prisma.ComInvoiceCreateNestedOneWithoutPaymentsInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutPaymentsInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutPaymentInput
 }
 
 export type ComPaymentUncheckedCreateWithoutRecordedByInput = {
   id?: string
-  invoiceId: string
+  clientId: string
+  invoiceId?: string | null
   amount: number
   method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
   paidAt?: Date | string
+  reference?: string | null
   note?: string | null
+  gedDocumentId?: string | null
+  importBatchId?: string | null
   createdAt?: Date | string
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type ComPaymentCreateOrConnectWithoutRecordedByInput = {
@@ -568,33 +808,108 @@ export type ComPaymentScalarWhereInput = {
   OR?: Prisma.ComPaymentScalarWhereInput[]
   NOT?: Prisma.ComPaymentScalarWhereInput | Prisma.ComPaymentScalarWhereInput[]
   id?: Prisma.StringFilter<"ComPayment"> | string
-  invoiceId?: Prisma.StringFilter<"ComPayment"> | string
+  clientId?: Prisma.StringFilter<"ComPayment"> | string
+  invoiceId?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   amount?: Prisma.IntFilter<"ComPayment"> | number
   method?: Prisma.EnumComPaymentMethodFilter<"ComPayment"> | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFilter<"ComPayment"> | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFilter<"ComPayment"> | Date | string
+  reference?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   note?: Prisma.StringNullableFilter<"ComPayment"> | string | null
+  gedDocumentId?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   recordedById?: Prisma.UuidFilter<"ComPayment"> | string
+  importBatchId?: Prisma.StringNullableFilter<"ComPayment"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ComPayment"> | Date | string
+}
+
+export type ComPaymentCreateWithoutClientInput = {
+  id?: string
+  amount: number
+  method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
+  paidAt?: Date | string
+  reference?: string | null
+  note?: string | null
+  gedDocumentId?: string | null
+  createdAt?: Date | string
+  invoice?: Prisma.ComInvoiceCreateNestedOneWithoutPaymentsInput
+  recordedBy: Prisma.UserCreateNestedOneWithoutComPaymentsRecordedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutPaymentsInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutPaymentInput
+}
+
+export type ComPaymentUncheckedCreateWithoutClientInput = {
+  id?: string
+  invoiceId?: string | null
+  amount: number
+  method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
+  paidAt?: Date | string
+  reference?: string | null
+  note?: string | null
+  gedDocumentId?: string | null
+  recordedById: string
+  importBatchId?: string | null
+  createdAt?: Date | string
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutPaymentInput
+}
+
+export type ComPaymentCreateOrConnectWithoutClientInput = {
+  where: Prisma.ComPaymentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComPaymentCreateWithoutClientInput, Prisma.ComPaymentUncheckedCreateWithoutClientInput>
+}
+
+export type ComPaymentCreateManyClientInputEnvelope = {
+  data: Prisma.ComPaymentCreateManyClientInput | Prisma.ComPaymentCreateManyClientInput[]
+  skipDuplicates?: boolean
+}
+
+export type ComPaymentUpsertWithWhereUniqueWithoutClientInput = {
+  where: Prisma.ComPaymentWhereUniqueInput
+  update: Prisma.XOR<Prisma.ComPaymentUpdateWithoutClientInput, Prisma.ComPaymentUncheckedUpdateWithoutClientInput>
+  create: Prisma.XOR<Prisma.ComPaymentCreateWithoutClientInput, Prisma.ComPaymentUncheckedCreateWithoutClientInput>
+}
+
+export type ComPaymentUpdateWithWhereUniqueWithoutClientInput = {
+  where: Prisma.ComPaymentWhereUniqueInput
+  data: Prisma.XOR<Prisma.ComPaymentUpdateWithoutClientInput, Prisma.ComPaymentUncheckedUpdateWithoutClientInput>
+}
+
+export type ComPaymentUpdateManyWithWhereWithoutClientInput = {
+  where: Prisma.ComPaymentScalarWhereInput
+  data: Prisma.XOR<Prisma.ComPaymentUpdateManyMutationInput, Prisma.ComPaymentUncheckedUpdateManyWithoutClientInput>
 }
 
 export type ComPaymentCreateWithoutInvoiceInput = {
   id?: string
   amount: number
   method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
   paidAt?: Date | string
+  reference?: string | null
   note?: string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
+  client: Prisma.ComClientCreateNestedOneWithoutPaymentsInput
   recordedBy: Prisma.UserCreateNestedOneWithoutComPaymentsRecordedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutPaymentsInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutPaymentInput
 }
 
 export type ComPaymentUncheckedCreateWithoutInvoiceInput = {
   id?: string
+  clientId: string
   amount: number
   method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
   paidAt?: Date | string
+  reference?: string | null
   note?: string | null
+  gedDocumentId?: string | null
   recordedById: string
+  importBatchId?: string | null
   createdAt?: Date | string
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type ComPaymentCreateOrConnectWithoutInvoiceInput = {
@@ -623,13 +938,156 @@ export type ComPaymentUpdateManyWithWhereWithoutInvoiceInput = {
   data: Prisma.XOR<Prisma.ComPaymentUpdateManyMutationInput, Prisma.ComPaymentUncheckedUpdateManyWithoutInvoiceInput>
 }
 
-export type ComPaymentCreateManyRecordedByInput = {
+export type ComPaymentCreateWithoutAllocationsInput = {
   id?: string
-  invoiceId: string
   amount: number
   method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
   paidAt?: Date | string
+  reference?: string | null
   note?: string | null
+  gedDocumentId?: string | null
+  createdAt?: Date | string
+  client: Prisma.ComClientCreateNestedOneWithoutPaymentsInput
+  invoice?: Prisma.ComInvoiceCreateNestedOneWithoutPaymentsInput
+  recordedBy: Prisma.UserCreateNestedOneWithoutComPaymentsRecordedInput
+  importBatch?: Prisma.ComImportBatchCreateNestedOneWithoutPaymentsInput
+}
+
+export type ComPaymentUncheckedCreateWithoutAllocationsInput = {
+  id?: string
+  clientId: string
+  invoiceId?: string | null
+  amount: number
+  method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
+  paidAt?: Date | string
+  reference?: string | null
+  note?: string | null
+  gedDocumentId?: string | null
+  recordedById: string
+  importBatchId?: string | null
+  createdAt?: Date | string
+}
+
+export type ComPaymentCreateOrConnectWithoutAllocationsInput = {
+  where: Prisma.ComPaymentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComPaymentCreateWithoutAllocationsInput, Prisma.ComPaymentUncheckedCreateWithoutAllocationsInput>
+}
+
+export type ComPaymentUpsertWithoutAllocationsInput = {
+  update: Prisma.XOR<Prisma.ComPaymentUpdateWithoutAllocationsInput, Prisma.ComPaymentUncheckedUpdateWithoutAllocationsInput>
+  create: Prisma.XOR<Prisma.ComPaymentCreateWithoutAllocationsInput, Prisma.ComPaymentUncheckedCreateWithoutAllocationsInput>
+  where?: Prisma.ComPaymentWhereInput
+}
+
+export type ComPaymentUpdateToOneWithWhereWithoutAllocationsInput = {
+  where?: Prisma.ComPaymentWhereInput
+  data: Prisma.XOR<Prisma.ComPaymentUpdateWithoutAllocationsInput, Prisma.ComPaymentUncheckedUpdateWithoutAllocationsInput>
+}
+
+export type ComPaymentUpdateWithoutAllocationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ComClientUpdateOneRequiredWithoutPaymentsNestedInput
+  invoice?: Prisma.ComInvoiceUpdateOneWithoutPaymentsNestedInput
+  recordedBy?: Prisma.UserUpdateOneRequiredWithoutComPaymentsRecordedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutPaymentsNestedInput
+}
+
+export type ComPaymentUncheckedUpdateWithoutAllocationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordedById?: Prisma.StringFieldUpdateOperationsInput | string
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ComPaymentCreateWithoutImportBatchInput = {
+  id?: string
+  amount: number
+  method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
+  paidAt?: Date | string
+  reference?: string | null
+  note?: string | null
+  gedDocumentId?: string | null
+  createdAt?: Date | string
+  client: Prisma.ComClientCreateNestedOneWithoutPaymentsInput
+  invoice?: Prisma.ComInvoiceCreateNestedOneWithoutPaymentsInput
+  recordedBy: Prisma.UserCreateNestedOneWithoutComPaymentsRecordedInput
+  allocations?: Prisma.ComPaymentAllocationCreateNestedManyWithoutPaymentInput
+}
+
+export type ComPaymentUncheckedCreateWithoutImportBatchInput = {
+  id?: string
+  clientId: string
+  invoiceId?: string | null
+  amount: number
+  method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
+  paidAt?: Date | string
+  reference?: string | null
+  note?: string | null
+  gedDocumentId?: string | null
+  recordedById: string
+  createdAt?: Date | string
+  allocations?: Prisma.ComPaymentAllocationUncheckedCreateNestedManyWithoutPaymentInput
+}
+
+export type ComPaymentCreateOrConnectWithoutImportBatchInput = {
+  where: Prisma.ComPaymentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComPaymentCreateWithoutImportBatchInput, Prisma.ComPaymentUncheckedCreateWithoutImportBatchInput>
+}
+
+export type ComPaymentCreateManyImportBatchInputEnvelope = {
+  data: Prisma.ComPaymentCreateManyImportBatchInput | Prisma.ComPaymentCreateManyImportBatchInput[]
+  skipDuplicates?: boolean
+}
+
+export type ComPaymentUpsertWithWhereUniqueWithoutImportBatchInput = {
+  where: Prisma.ComPaymentWhereUniqueInput
+  update: Prisma.XOR<Prisma.ComPaymentUpdateWithoutImportBatchInput, Prisma.ComPaymentUncheckedUpdateWithoutImportBatchInput>
+  create: Prisma.XOR<Prisma.ComPaymentCreateWithoutImportBatchInput, Prisma.ComPaymentUncheckedCreateWithoutImportBatchInput>
+}
+
+export type ComPaymentUpdateWithWhereUniqueWithoutImportBatchInput = {
+  where: Prisma.ComPaymentWhereUniqueInput
+  data: Prisma.XOR<Prisma.ComPaymentUpdateWithoutImportBatchInput, Prisma.ComPaymentUncheckedUpdateWithoutImportBatchInput>
+}
+
+export type ComPaymentUpdateManyWithWhereWithoutImportBatchInput = {
+  where: Prisma.ComPaymentScalarWhereInput
+  data: Prisma.XOR<Prisma.ComPaymentUpdateManyMutationInput, Prisma.ComPaymentUncheckedUpdateManyWithoutImportBatchInput>
+}
+
+export type ComPaymentCreateManyRecordedByInput = {
+  id?: string
+  clientId: string
+  invoiceId?: string | null
+  amount: number
+  method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
+  paidAt?: Date | string
+  reference?: string | null
+  note?: string | null
+  gedDocumentId?: string | null
+  importBatchId?: string | null
   createdAt?: Date | string
 }
 
@@ -637,39 +1095,123 @@ export type ComPaymentUpdateWithoutRecordedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invoice?: Prisma.ComInvoiceUpdateOneRequiredWithoutPaymentsNestedInput
+  client?: Prisma.ComClientUpdateOneRequiredWithoutPaymentsNestedInput
+  invoice?: Prisma.ComInvoiceUpdateOneWithoutPaymentsNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutPaymentsNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutPaymentNestedInput
 }
 
 export type ComPaymentUncheckedUpdateWithoutRecordedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type ComPaymentUncheckedUpdateManyWithoutRecordedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ComPaymentCreateManyClientInput = {
+  id?: string
+  invoiceId?: string | null
+  amount: number
+  method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
+  paidAt?: Date | string
+  reference?: string | null
+  note?: string | null
+  gedDocumentId?: string | null
+  recordedById: string
+  importBatchId?: string | null
+  createdAt?: Date | string
+}
+
+export type ComPaymentUpdateWithoutClientInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invoice?: Prisma.ComInvoiceUpdateOneWithoutPaymentsNestedInput
+  recordedBy?: Prisma.UserUpdateOneRequiredWithoutComPaymentsRecordedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutPaymentsNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutPaymentNestedInput
+}
+
+export type ComPaymentUncheckedUpdateWithoutClientInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordedById?: Prisma.StringFieldUpdateOperationsInput | string
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutPaymentNestedInput
+}
+
+export type ComPaymentUncheckedUpdateManyWithoutClientInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordedById?: Prisma.StringFieldUpdateOperationsInput | string
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ComPaymentCreateManyInvoiceInput = {
   id?: string
+  clientId: string
   amount: number
   method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
   paidAt?: Date | string
+  reference?: string | null
   note?: string | null
+  gedDocumentId?: string | null
   recordedById: string
+  importBatchId?: string | null
   createdAt?: Date | string
 }
 
@@ -677,112 +1219,267 @@ export type ComPaymentUpdateWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ComClientUpdateOneRequiredWithoutPaymentsNestedInput
   recordedBy?: Prisma.UserUpdateOneRequiredWithoutComPaymentsRecordedNestedInput
+  importBatch?: Prisma.ComImportBatchUpdateOneWithoutPaymentsNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutPaymentNestedInput
 }
 
 export type ComPaymentUncheckedUpdateWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recordedById?: Prisma.StringFieldUpdateOperationsInput | string
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type ComPaymentUncheckedUpdateManyWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.IntFieldUpdateOperationsInput | number
   method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
   paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordedById?: Prisma.StringFieldUpdateOperationsInput | string
+  importBatchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ComPaymentCreateManyImportBatchInput = {
+  id?: string
+  clientId: string
+  invoiceId?: string | null
+  amount: number
+  method?: $Enums.ComPaymentMethod
+  status?: $Enums.ComPaymentStatus
+  paidAt?: Date | string
+  reference?: string | null
+  note?: string | null
+  gedDocumentId?: string | null
+  recordedById: string
+  createdAt?: Date | string
+}
+
+export type ComPaymentUpdateWithoutImportBatchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ComClientUpdateOneRequiredWithoutPaymentsNestedInput
+  invoice?: Prisma.ComInvoiceUpdateOneWithoutPaymentsNestedInput
+  recordedBy?: Prisma.UserUpdateOneRequiredWithoutComPaymentsRecordedNestedInput
+  allocations?: Prisma.ComPaymentAllocationUpdateManyWithoutPaymentNestedInput
+}
+
+export type ComPaymentUncheckedUpdateWithoutImportBatchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordedById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  allocations?: Prisma.ComPaymentAllocationUncheckedUpdateManyWithoutPaymentNestedInput
+}
+
+export type ComPaymentUncheckedUpdateManyWithoutImportBatchInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  method?: Prisma.EnumComPaymentMethodFieldUpdateOperationsInput | $Enums.ComPaymentMethod
+  status?: Prisma.EnumComPaymentStatusFieldUpdateOperationsInput | $Enums.ComPaymentStatus
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recordedById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
+/**
+ * Count Type ComPaymentCountOutputType
+ */
+
+export type ComPaymentCountOutputType = {
+  allocations: number
+}
+
+export type ComPaymentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  allocations?: boolean | ComPaymentCountOutputTypeCountAllocationsArgs
+}
+
+/**
+ * ComPaymentCountOutputType without action
+ */
+export type ComPaymentCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComPaymentCountOutputType
+   */
+  select?: Prisma.ComPaymentCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ComPaymentCountOutputType without action
+ */
+export type ComPaymentCountOutputTypeCountAllocationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComPaymentAllocationWhereInput
+}
+
 
 export type ComPaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  clientId?: boolean
   invoiceId?: boolean
   amount?: boolean
   method?: boolean
+  status?: boolean
   paidAt?: boolean
+  reference?: boolean
   note?: boolean
+  gedDocumentId?: boolean
   recordedById?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
-  invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
+  client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
+  invoice?: boolean | Prisma.ComPayment$invoiceArgs<ExtArgs>
   recordedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComPayment$importBatchArgs<ExtArgs>
+  allocations?: boolean | Prisma.ComPayment$allocationsArgs<ExtArgs>
+  _count?: boolean | Prisma.ComPaymentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["comPayment"]>
 
 export type ComPaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  clientId?: boolean
   invoiceId?: boolean
   amount?: boolean
   method?: boolean
+  status?: boolean
   paidAt?: boolean
+  reference?: boolean
   note?: boolean
+  gedDocumentId?: boolean
   recordedById?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
-  invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
+  client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
+  invoice?: boolean | Prisma.ComPayment$invoiceArgs<ExtArgs>
   recordedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComPayment$importBatchArgs<ExtArgs>
 }, ExtArgs["result"]["comPayment"]>
 
 export type ComPaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  clientId?: boolean
   invoiceId?: boolean
   amount?: boolean
   method?: boolean
+  status?: boolean
   paidAt?: boolean
+  reference?: boolean
   note?: boolean
+  gedDocumentId?: boolean
   recordedById?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
-  invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
+  client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
+  invoice?: boolean | Prisma.ComPayment$invoiceArgs<ExtArgs>
   recordedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComPayment$importBatchArgs<ExtArgs>
 }, ExtArgs["result"]["comPayment"]>
 
 export type ComPaymentSelectScalar = {
   id?: boolean
+  clientId?: boolean
   invoiceId?: boolean
   amount?: boolean
   method?: boolean
+  status?: boolean
   paidAt?: boolean
+  reference?: boolean
   note?: boolean
+  gedDocumentId?: boolean
   recordedById?: boolean
+  importBatchId?: boolean
   createdAt?: boolean
 }
 
-export type ComPaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceId" | "amount" | "method" | "paidAt" | "note" | "recordedById" | "createdAt", ExtArgs["result"]["comPayment"]>
+export type ComPaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "clientId" | "invoiceId" | "amount" | "method" | "status" | "paidAt" | "reference" | "note" | "gedDocumentId" | "recordedById" | "importBatchId" | "createdAt", ExtArgs["result"]["comPayment"]>
 export type ComPaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
+  client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
+  invoice?: boolean | Prisma.ComPayment$invoiceArgs<ExtArgs>
   recordedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComPayment$importBatchArgs<ExtArgs>
+  allocations?: boolean | Prisma.ComPayment$allocationsArgs<ExtArgs>
+  _count?: boolean | Prisma.ComPaymentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ComPaymentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
+  client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
+  invoice?: boolean | Prisma.ComPayment$invoiceArgs<ExtArgs>
   recordedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComPayment$importBatchArgs<ExtArgs>
 }
 export type ComPaymentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  invoice?: boolean | Prisma.ComInvoiceDefaultArgs<ExtArgs>
+  client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
+  invoice?: boolean | Prisma.ComPayment$invoiceArgs<ExtArgs>
   recordedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  importBatch?: boolean | Prisma.ComPayment$importBatchArgs<ExtArgs>
 }
 
 export type $ComPaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ComPayment"
   objects: {
-    invoice: Prisma.$ComInvoicePayload<ExtArgs>
+    client: Prisma.$ComClientPayload<ExtArgs>
+    invoice: Prisma.$ComInvoicePayload<ExtArgs> | null
     recordedBy: Prisma.$UserPayload<ExtArgs>
+    importBatch: Prisma.$ComImportBatchPayload<ExtArgs> | null
+    allocations: Prisma.$ComPaymentAllocationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    invoiceId: string
+    clientId: string
+    /**
+     * Conservé pour compat Phase 3 ; préférer allocations.
+     */
+    invoiceId: string | null
     amount: number
     method: $Enums.ComPaymentMethod
+    status: $Enums.ComPaymentStatus
     paidAt: Date
+    reference: string | null
     note: string | null
+    gedDocumentId: string | null
     recordedById: string
+    importBatchId: string | null
     createdAt: Date
   }, ExtArgs["result"]["comPayment"]>
   composites: {}
@@ -1178,8 +1875,11 @@ readonly fields: ComPaymentFieldRefs;
  */
 export interface Prisma__ComPaymentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  invoice<T extends Prisma.ComInvoiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComInvoiceDefaultArgs<ExtArgs>>): Prisma.Prisma__ComInvoiceClient<runtime.Types.Result.GetResult<Prisma.$ComInvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  client<T extends Prisma.ComClientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComClientDefaultArgs<ExtArgs>>): Prisma.Prisma__ComClientClient<runtime.Types.Result.GetResult<Prisma.$ComClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  invoice<T extends Prisma.ComPayment$invoiceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComPayment$invoiceArgs<ExtArgs>>): Prisma.Prisma__ComInvoiceClient<runtime.Types.Result.GetResult<Prisma.$ComInvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   recordedBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  importBatch<T extends Prisma.ComPayment$importBatchArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComPayment$importBatchArgs<ExtArgs>>): Prisma.Prisma__ComImportBatchClient<runtime.Types.Result.GetResult<Prisma.$ComImportBatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  allocations<T extends Prisma.ComPayment$allocationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComPayment$allocationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComPaymentAllocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1210,12 +1910,17 @@ export interface Prisma__ComPaymentClient<T, Null = never, ExtArgs extends runti
  */
 export interface ComPaymentFieldRefs {
   readonly id: Prisma.FieldRef<"ComPayment", 'String'>
+  readonly clientId: Prisma.FieldRef<"ComPayment", 'String'>
   readonly invoiceId: Prisma.FieldRef<"ComPayment", 'String'>
   readonly amount: Prisma.FieldRef<"ComPayment", 'Int'>
   readonly method: Prisma.FieldRef<"ComPayment", 'ComPaymentMethod'>
+  readonly status: Prisma.FieldRef<"ComPayment", 'ComPaymentStatus'>
   readonly paidAt: Prisma.FieldRef<"ComPayment", 'DateTime'>
+  readonly reference: Prisma.FieldRef<"ComPayment", 'String'>
   readonly note: Prisma.FieldRef<"ComPayment", 'String'>
+  readonly gedDocumentId: Prisma.FieldRef<"ComPayment", 'String'>
   readonly recordedById: Prisma.FieldRef<"ComPayment", 'String'>
+  readonly importBatchId: Prisma.FieldRef<"ComPayment", 'String'>
   readonly createdAt: Prisma.FieldRef<"ComPayment", 'DateTime'>
 }
     
@@ -1615,6 +2320,68 @@ export type ComPaymentDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many ComPayments to delete.
    */
   limit?: number
+}
+
+/**
+ * ComPayment.invoice
+ */
+export type ComPayment$invoiceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComInvoice
+   */
+  select?: Prisma.ComInvoiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComInvoice
+   */
+  omit?: Prisma.ComInvoiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComInvoiceInclude<ExtArgs> | null
+  where?: Prisma.ComInvoiceWhereInput
+}
+
+/**
+ * ComPayment.importBatch
+ */
+export type ComPayment$importBatchArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComImportBatch
+   */
+  select?: Prisma.ComImportBatchSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComImportBatch
+   */
+  omit?: Prisma.ComImportBatchOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComImportBatchInclude<ExtArgs> | null
+  where?: Prisma.ComImportBatchWhereInput
+}
+
+/**
+ * ComPayment.allocations
+ */
+export type ComPayment$allocationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComPaymentAllocation
+   */
+  select?: Prisma.ComPaymentAllocationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComPaymentAllocation
+   */
+  omit?: Prisma.ComPaymentAllocationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComPaymentAllocationInclude<ExtArgs> | null
+  where?: Prisma.ComPaymentAllocationWhereInput
+  orderBy?: Prisma.ComPaymentAllocationOrderByWithRelationInput | Prisma.ComPaymentAllocationOrderByWithRelationInput[]
+  cursor?: Prisma.ComPaymentAllocationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComPaymentAllocationScalarFieldEnum | Prisma.ComPaymentAllocationScalarFieldEnum[]
 }
 
 /**

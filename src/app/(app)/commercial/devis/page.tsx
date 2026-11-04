@@ -255,7 +255,7 @@ async function DevisResults({
                 className="border-b border-msk-ink/5"
               >
                 <td className="px-4 py-3 font-medium text-msk-ink">
-                  {row.number}
+                  {row.number ?? row.draftCode}
                 </td>
                 <td className="px-4 py-3">{row.client.name}</td>
                 <td className="max-w-56 truncate px-4 py-3 text-msk-ink/70">

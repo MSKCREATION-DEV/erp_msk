@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { canAccessOwned } from "@/lib/commercial/scope";
+import { displayDocNumber } from "@/lib/commercial/doc-display";
 import {
   formatComMoney,
   INVOICE_STATUS_LABELS,
@@ -51,7 +52,10 @@ export default async function CommercialDevisDetailPage({
     include: {
       client: true,
       lines: { orderBy: { sortOrder: "asc" } },
-      invoices: { select: { id: true, number: true, status: true }, take: 5 },
+      invoices: {
+        select: { id: true, number: true, draftCode: true, status: true },
+        take: 5,
+      },
     },
   });
   if (!quote) notFound();
@@ -69,14 +73,14 @@ export default async function CommercialDevisDetailPage({
   return (
     <PageShell>
       <PageHeader
-        title={quote.number}
+        title={displayDocNumber(quote.number, quote.draftCode)}
         description={quote.object ?? quote.client.name}
         backHref="/commercial/devis"
         backLabel="Retour aux devis"
         breadcrumbs={[
           { label: "Commercial", href: "/commercial" },
           { label: "Devis", href: "/commercial/devis" },
-          { label: quote.number },
+          { label: displayDocNumber(quote.number, quote.draftCode) },
         ]}
         actions={
           <div className="flex flex-wrap items-center gap-2">
@@ -95,6 +99,7 @@ export default async function CommercialDevisDetailPage({
         canSend={hasPermission(user, "com.devis.send")}
         canAccept={hasPermission(user, "com.devis.accept_reject")}
         canInvoice={hasPermission(user, "com.factures.create")}
+        canContract={hasPermission(user, "com.contrats.manage")}
         canPdf={canPdf}
         gedDocumentId={pdfDoc?.id ?? null}
       />
@@ -172,7 +177,7 @@ export default async function CommercialDevisDetailPage({
                       href={`/commercial/factures/${inv.id}`}
                       className="text-sm font-medium text-msk-blue hover:underline"
                     >
-                      {inv.number}
+                      {displayDocNumber(inv.number, inv.draftCode)}
                     </Link>
                     <span className="ml-2 text-xs text-msk-ink/45">
                       {INVOICE_STATUS_LABELS[inv.status]}
@@ -232,7 +237,10 @@ export default async function CommercialDevisDetailPage({
           {pdfDoc ? (
             <DocPdfThumb
               documentId={pdfDoc.id}
-              title={pdfDoc.originalName || quote.number}
+              title={
+                pdfDoc.originalName ||
+                displayDocNumber(quote.number, quote.draftCode)
+              }
               subtitle={`${QUOTE_STATUS_LABELS[quote.status]} · ${formatComMoney(quote.totalTtc, quote.currency)}`}
               className="max-w-44"
             />

@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { canAccessOwned } from "@/lib/commercial/scope";
+import { displayDocNumber } from "@/lib/commercial/doc-display";
 import {
   formatComMoney,
   INVOICE_STATUS_LABELS,
@@ -53,7 +54,7 @@ export default async function CommercialFactureDetailPage({
     where: { id },
     include: {
       client: true,
-      quote: { select: { id: true, number: true } },
+      quote: { select: { id: true, number: true, draftCode: true } },
       lines: { orderBy: { sortOrder: "asc" } },
       payments: {
         orderBy: { paidAt: "desc" },
@@ -98,7 +99,7 @@ export default async function CommercialFactureDetailPage({
   return (
     <PageShell>
       <PageHeader
-        title={invoice.number}
+        title={displayDocNumber(invoice.number, invoice.draftCode)}
         description={invoice.object ?? invoice.client.name}
         backHref={canCom ? "/commercial/factures" : "/comptabilite/a-comptabiliser"}
         backLabel={canCom ? "Retour aux factures" : "Retour à comptabiliser"}
@@ -107,7 +108,9 @@ export default async function CommercialFactureDetailPage({
             ? [
                 { label: "Commercial", href: "/commercial" },
                 { label: "Factures", href: "/commercial/factures" },
-                { label: invoice.number },
+                {
+                  label: displayDocNumber(invoice.number, invoice.draftCode),
+                },
               ]
             : [
                 { label: "Comptabilité", href: "/comptabilite" },
@@ -115,7 +118,9 @@ export default async function CommercialFactureDetailPage({
                   label: "À comptabiliser",
                   href: "/comptabilite/a-comptabiliser",
                 },
-                { label: invoice.number },
+                {
+                  label: displayDocNumber(invoice.number, invoice.draftCode),
+                },
               ]
         }
         actions={
@@ -197,7 +202,10 @@ export default async function CommercialFactureDetailPage({
                   href={`/commercial/devis/${invoice.quote.id}`}
                   className="font-medium text-msk-blue hover:underline"
                 >
-                  {invoice.quote.number}
+                  {displayDocNumber(
+                    invoice.quote.number,
+                    invoice.quote.draftCode,
+                  )}
                 </Link>
               </MetaItem>
             ) : null}
@@ -276,7 +284,10 @@ export default async function CommercialFactureDetailPage({
           {pdfDoc ? (
             <DocPdfThumb
               documentId={pdfDoc.id}
-              title={pdfDoc.originalName || invoice.number}
+              title={
+                pdfDoc.originalName ||
+                displayDocNumber(invoice.number, invoice.draftCode)
+              }
               subtitle={`${INVOICE_STATUS_LABELS[invoice.status]} · ${formatComMoney(invoice.totalTtc, invoice.currency)}`}
               className="max-w-44"
             />

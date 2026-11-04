@@ -16,18 +16,19 @@ Pôles **URGENTS** pour MSK :
 - **Commercial** (CRM, clients, devis, factures, paiements) — **livré E2E 2026-10-12**
 - **Finance / Comptabilité** (journaux, banques, budget, TVA, états) — base livrée + bridge VE facture
 
-### État des phases (2026-10-14)
+### État des phases (2026-11-04)
 
 | Zone | État |
 |---|---|
-| Phase 0–3 (IAM, GED, catalogue/CRM base, commercial docs) | **OK** |
-| Phase 4 RH + Phase 5 Paie/INPS | **Livrées** (base) — reprise métier Direction = **Phase RH** après POST-DEMO |
+| Phase 0–3 (IAM, GED, catalogue/CRM base, commercial docs) | **OK** (devis/factures **gelés** `COM_DOCS_GATED`) |
+| Phase 4 RH + Phase 5 Paie/INPS | **Livrées** (base) |
 | Phase 6 Compta | **OK** + COM-6 bridge facture→VE |
 | Phase 7A Stocks + 7B Ops | **Livrées** |
 | **Phase COM E2E** (plan 2 phases) | **Livrée** — CRM + COM-4…7 · docs [`PLAN-2-PHASES-COM-RH.md`](./PLAN-2-PHASES-COM-RH.md) |
-| **POST-DEMO CRM** (Direction 13/10) | **LOT-A…G + I OK** · prochain = LOT-H (objectifs clients) · [`LOT-G-COMPTEUR-RELANCES.md`](./LOT-G-COMPTEUR-RELANCES.md) |
-| Phase RH (Direction 11/10) | Après vague POST-DEMO CRM — SPEC puis GO |
-| Phase 8 Automatisations | Doc — attendre « Phase 8 GO » |
+| **POST-DEMO CRM** (Direction 13/10) | **LOT-A…G + I OK** · LOT-H (objectifs clients) en attente |
+| **COM-FACTU** (facturation pro / contrats / AR / import) | **En cours** — [`PHASE-COM-FACTU.md`](./PHASE-COM-FACTU.md) · ADR [`COMMERCIAL-FACTURATION-CIBLE.md`](../architecture/COMMERCIAL-FACTURATION-CIBLE.md) |
+| Phase RH (Direction 11/10) | Après COM-FACTU / priorités Direction |
+| Phase 8 Automatisations | Doc — attendre « Phase 8 GO » (relances AR partiellement dans COM-FACTU) |
 | Deploy | `main` ≈ `dev` · [VERCEL.md](../deploy/VERCEL.md) |
 
 ### Documentation

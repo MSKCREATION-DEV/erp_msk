@@ -1,9 +1,8 @@
 /**
- * Direction 13/10 — devis & factures gelés jusqu’à
- * numérotation + règles comptables figées.
- * Remettre à `false` pour réouvrir (1 seul endroit).
+ * COM-FACTU — numérotation FAC|DEV-YYYYMMDD-XXXX + moteurs billing livrés.
+ * Remettre à `true` uniquement pour un gel Direction exceptionnel.
  */
-export const COM_DOCS_GATED = true;
+export const COM_DOCS_GATED = false;
 
 export const COM_DOCS_GATED_MESSAGE =
   "Bientôt — numérotation et règles comptables en cours";

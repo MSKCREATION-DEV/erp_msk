@@ -118,6 +118,11 @@ export type DocumentTemplate = Prisma.DocumentTemplateModel
  */
 export type CatalogOffer = Prisma.CatalogOfferModel
 /**
+ * Model CatalogOfferVersion
+ * Version immuable d’une offre (contrats / devis historiques).
+ */
+export type CatalogOfferVersion = Prisma.CatalogOfferVersionModel
+/**
  * Model CrmOrganization
  * 
  */
@@ -184,7 +189,7 @@ export type CrmPeriodGoal = Prisma.CrmPeriodGoalModel
 export type CrmWeeklyReport = Prisma.CrmWeeklyReportModel
 /**
  * Model ComNumberSequence
- * 
+ * Séquences documentaires — periodKey = YYYYMMDD (ou YYYY legacy).
  */
 export type ComNumberSequence = Prisma.ComNumberSequenceModel
 /**
@@ -203,6 +208,16 @@ export type ComQuote = Prisma.ComQuoteModel
  */
 export type ComQuoteLine = Prisma.ComQuoteLineModel
 /**
+ * Model ComContract
+ * 
+ */
+export type ComContract = Prisma.ComContractModel
+/**
+ * Model ComContractLine
+ * 
+ */
+export type ComContractLine = Prisma.ComContractLineModel
+/**
  * Model ComInvoice
  * 
  */
@@ -213,10 +228,45 @@ export type ComInvoice = Prisma.ComInvoiceModel
  */
 export type ComInvoiceLine = Prisma.ComInvoiceLineModel
 /**
+ * Model ComInvoiceArrearsRef
+ * Présentation d’arriéré sur une facture (pas une nouvelle créance).
+ */
+export type ComInvoiceArrearsRef = Prisma.ComInvoiceArrearsRefModel
+/**
+ * Model ComCreditNote
+ * 
+ */
+export type ComCreditNote = Prisma.ComCreditNoteModel
+/**
  * Model ComPayment
  * 
  */
 export type ComPayment = Prisma.ComPaymentModel
+/**
+ * Model ComPaymentAllocation
+ * 
+ */
+export type ComPaymentAllocation = Prisma.ComPaymentAllocationModel
+/**
+ * Model ComClientEvent
+ * 
+ */
+export type ComClientEvent = Prisma.ComClientEventModel
+/**
+ * Model ComInvoiceReminder
+ * 
+ */
+export type ComInvoiceReminder = Prisma.ComInvoiceReminderModel
+/**
+ * Model ComImportBatch
+ * 
+ */
+export type ComImportBatch = Prisma.ComImportBatchModel
+/**
+ * Model ComImportAnomaly
+ * 
+ */
+export type ComImportAnomaly = Prisma.ComImportAnomalyModel
 /**
  * Model CptAccount
  * Plan de comptes SYSCOHADA (minimal PME, extensible)

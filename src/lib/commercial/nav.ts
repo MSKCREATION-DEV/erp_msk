@@ -49,6 +49,7 @@ export function commercialNavItems(user: SessionUser): CommercialSubnavItem[] {
   }
   if (canCom) {
     items.push({ href: "/commercial/clients", label: "Clients" });
+    items.push({ href: "/commercial/contrats", label: "Contrats" });
     if (!COM_DOCS_GATED) {
       items.push({ href: "/commercial/devis", label: "Devis" });
       items.push({ href: "/commercial/factures", label: "Factures" });

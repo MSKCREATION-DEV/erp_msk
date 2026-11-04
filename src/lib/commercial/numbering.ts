@@ -1,25 +1,32 @@
 import type { ComDocKind, PrismaClient } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { allocateOfficialNumber } from "@/lib/document-numbering/allocate";
+import type { DocNumberKind } from "@/lib/document-numbering/kinds";
 
 type Tx = Omit<
   PrismaClient,
   "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
 >;
 
-/** DEV-2026-0001 / FAC-2026-0001 — séquence transactionnelle. */
+function toDocKind(kind: ComDocKind): DocNumberKind {
+  if (kind === "DEVIS") return "DEVIS";
+  if (kind === "FACTURE") return "FACTURE";
+  if (kind === "AVOIR") return "AVOIR";
+  if (kind === "BDC") return "BDC";
+  throw new Error(`Unsupported ComDocKind: ${kind}`);
+}
+
+/**
+ * Alloue un numéro officiel (FAC|DEV|AVO|BDC-YYYYMMDD-XXXX).
+ * `year` est ignoré (compat Phase 3) — la période est le jour d’émission.
+ */
 export async function nextComNumber(
   kind: ComDocKind,
-  year = new Date().getFullYear(),
+  _year = new Date().getFullYear(),
   db: Tx = prisma,
 ): Promise<string> {
-  const prefix = kind === "DEVIS" ? "DEV" : "FAC";
-
-  const seq = await db.comNumberSequence.upsert({
-    where: { kind_year: { kind, year } },
-    create: { kind, year, lastValue: 1 },
-    update: { lastValue: { increment: 1 } },
+  return allocateOfficialNumber({
+    kind: toDocKind(kind),
+    db,
   });
-
-  const n = String(seq.lastValue).padStart(4, "0");
-  return `${prefix}-${year}-${n}`;
 }

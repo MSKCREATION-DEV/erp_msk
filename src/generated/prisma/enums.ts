@@ -113,10 +113,22 @@ export type CatalogPillar = (typeof CatalogPillar)[keyof typeof CatalogPillar]
 export const CatalogBilling = {
   ONE_SHOT: 'ONE_SHOT',
   MONTHLY: 'MONTHLY',
-  PACKAGE: 'PACKAGE'
+  PACKAGE: 'PACKAGE',
+  RECURRING: 'RECURRING',
+  SUR_DEVIS: 'SUR_DEVIS',
+  COMPLEMENTAIRE: 'COMPLEMENTAIRE'
 } as const
 
 export type CatalogBilling = (typeof CatalogBilling)[keyof typeof CatalogBilling]
+
+
+export const CatalogPriceMode = {
+  FIXED: 'FIXED',
+  FROM: 'FROM',
+  CUSTOM: 'CUSTOM'
+} as const
+
+export type CatalogPriceMode = (typeof CatalogPriceMode)[keyof typeof CatalogPriceMode]
 
 
 export const CrmSource = {
@@ -227,7 +239,9 @@ export type ComDocRegime = (typeof ComDocRegime)[keyof typeof ComDocRegime]
 
 export const ComDocKind = {
   DEVIS: 'DEVIS',
-  FACTURE: 'FACTURE'
+  FACTURE: 'FACTURE',
+  AVOIR: 'AVOIR',
+  BDC: 'BDC'
 } as const
 
 export type ComDocKind = (typeof ComDocKind)[keyof typeof ComDocKind]
@@ -235,7 +249,9 @@ export type ComDocKind = (typeof ComDocKind)[keyof typeof ComDocKind]
 
 export const ComQuoteStatus = {
   BROUILLON: 'BROUILLON',
+  EMISE: 'EMISE',
   ENVOYE: 'ENVOYE',
+  CONSULTE: 'CONSULTE',
   ACCEPTE: 'ACCEPTE',
   REFUSE: 'REFUSE',
   EXPIRE: 'EXPIRE',
@@ -245,25 +261,117 @@ export const ComQuoteStatus = {
 export type ComQuoteStatus = (typeof ComQuoteStatus)[keyof typeof ComQuoteStatus]
 
 
+export const ComQuoteTemplate = {
+  LINE_ITEMS: 'LINE_ITEMS',
+  COMPARATIVE_RS: 'COMPARATIVE_RS',
+  CUSTOM: 'CUSTOM'
+} as const
+
+export type ComQuoteTemplate = (typeof ComQuoteTemplate)[keyof typeof ComQuoteTemplate]
+
+
 export const ComInvoiceStatus = {
   BROUILLON: 'BROUILLON',
   EMISE: 'EMISE',
+  ENVOYEE: 'ENVOYEE',
   PARTIELLEMENT_PAYEE: 'PARTIELLEMENT_PAYEE',
   PAYEE: 'PAYEE',
-  ANNULEE: 'ANNULEE'
+  EN_RETARD: 'EN_RETARD',
+  ANNULEE: 'ANNULEE',
+  AVOIREE: 'AVOIREE'
 } as const
 
 export type ComInvoiceStatus = (typeof ComInvoiceStatus)[keyof typeof ComInvoiceStatus]
 
 
+export const ComInvoiceSource = {
+  QUOTE: 'QUOTE',
+  CONTRACT: 'CONTRACT',
+  MANUAL: 'MANUAL',
+  IMPORT: 'IMPORT'
+} as const
+
+export type ComInvoiceSource = (typeof ComInvoiceSource)[keyof typeof ComInvoiceSource]
+
+
 export const ComPaymentMethod = {
   ESPECES: 'ESPECES',
   VIREMENT: 'VIREMENT',
+  ORANGE_MONEY: 'ORANGE_MONEY',
+  WAVE: 'WAVE',
   MOBILE_MONEY: 'MOBILE_MONEY',
+  CHEQUE: 'CHEQUE',
   AUTRE: 'AUTRE'
 } as const
 
 export type ComPaymentMethod = (typeof ComPaymentMethod)[keyof typeof ComPaymentMethod]
+
+
+export const ComPaymentStatus = {
+  DRAFT: 'DRAFT',
+  VALIDATED: 'VALIDATED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ComPaymentStatus = (typeof ComPaymentStatus)[keyof typeof ComPaymentStatus]
+
+
+export const ComClientStatus = {
+  PROSPECT: 'PROSPECT',
+  ACTIF: 'ACTIF',
+  SUSPENDU: 'SUSPENDU',
+  TERMINE: 'TERMINE',
+  ARCHIVE: 'ARCHIVE'
+} as const
+
+export type ComClientStatus = (typeof ComClientStatus)[keyof typeof ComClientStatus]
+
+
+export const ComClientType = {
+  ENTREPRISE: 'ENTREPRISE',
+  PARTICULIER: 'PARTICULIER'
+} as const
+
+export type ComClientType = (typeof ComClientType)[keyof typeof ComClientType]
+
+
+export const ComContractStatus = {
+  BROUILLON: 'BROUILLON',
+  ACTIF: 'ACTIF',
+  SUSPENDU: 'SUSPENDU',
+  RESILIE: 'RESILIE',
+  TERMINE: 'TERMINE'
+} as const
+
+export type ComContractStatus = (typeof ComContractStatus)[keyof typeof ComContractStatus]
+
+
+export const ComContractLineStatus = {
+  ACTIF: 'ACTIF',
+  SUSPENDU: 'SUSPENDU',
+  RESILIE: 'RESILIE',
+  TERMINE: 'TERMINE'
+} as const
+
+export type ComContractLineStatus = (typeof ComContractLineStatus)[keyof typeof ComContractLineStatus]
+
+
+export const ComImportBatchStatus = {
+  DRY_RUN: 'DRY_RUN',
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  COMMITTED: 'COMMITTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ComImportBatchStatus = (typeof ComImportBatchStatus)[keyof typeof ComImportBatchStatus]
+
+
+export const ComImportAnomalySeverity = {
+  WARNING: 'WARNING',
+  ERROR: 'ERROR'
+} as const
+
+export type ComImportAnomalySeverity = (typeof ComImportAnomalySeverity)[keyof typeof ComImportAnomalySeverity]
 
 
 export const CptAccountNature = {

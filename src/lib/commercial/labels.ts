@@ -6,7 +6,9 @@ import type {
 
 export const QUOTE_STATUS_LABELS: Record<ComQuoteStatus, string> = {
   BROUILLON: "Brouillon",
+  EMISE: "Émis",
   ENVOYE: "Envoyé",
+  CONSULTE: "Consulté",
   ACCEPTE: "Accepté",
   REFUSE: "Refusé",
   EXPIRE: "Expiré",
@@ -16,15 +18,21 @@ export const QUOTE_STATUS_LABELS: Record<ComQuoteStatus, string> = {
 export const INVOICE_STATUS_LABELS: Record<ComInvoiceStatus, string> = {
   BROUILLON: "Brouillon",
   EMISE: "Émise",
+  ENVOYEE: "Envoyée",
   PARTIELLEMENT_PAYEE: "Partiellement payée",
   PAYEE: "Payée",
+  EN_RETARD: "En retard",
   ANNULEE: "Annulée",
+  AVOIREE: "Avoirée",
 };
 
 export const PAYMENT_METHOD_LABELS: Record<ComPaymentMethod, string> = {
   ESPECES: "Espèces",
   VIREMENT: "Virement",
+  ORANGE_MONEY: "Orange Money",
+  WAVE: "Wave",
   MOBILE_MONEY: "Mobile Money",
+  CHEQUE: "Chèque",
   AUTRE: "Autre",
 };
 
@@ -57,13 +65,22 @@ export type ComBadgeTone = "muted" | "success" | "coral" | "blue";
 export function quoteStatusTone(status: string): ComBadgeTone {
   if (status === "ACCEPTE") return "success";
   if (status === "REFUSE" || status === "ANNULE") return "coral";
-  if (status === "ENVOYE") return "blue";
+  if (status === "ENVOYE" || status === "EMISE" || status === "CONSULTE") {
+    return "blue";
+  }
   return "muted";
 }
 
 export function invoiceStatusTone(status: string): ComBadgeTone {
   if (status === "PAYEE") return "success";
-  if (status === "ANNULEE") return "coral";
-  if (status === "EMISE" || status === "PARTIELLEMENT_PAYEE") return "blue";
+  if (status === "ANNULEE" || status === "EN_RETARD") return "coral";
+  if (
+    status === "EMISE" ||
+    status === "ENVOYEE" ||
+    status === "PARTIELLEMENT_PAYEE" ||
+    status === "AVOIREE"
+  ) {
+    return "blue";
+  }
   return "muted";
 }

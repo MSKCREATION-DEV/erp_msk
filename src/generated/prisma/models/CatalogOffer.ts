@@ -30,6 +30,7 @@ export type CatalogOfferAvgAggregateOutputType = {
   priceXof: number | null
   floorPriceXof: number | null
   priceEurHint: number | null
+  minEngagementMonths: number | null
   sortOrder: number | null
 }
 
@@ -37,6 +38,7 @@ export type CatalogOfferSumAggregateOutputType = {
   priceXof: number | null
   floorPriceXof: number | null
   priceEurHint: number | null
+  minEngagementMonths: number | null
   sortOrder: number | null
 }
 
@@ -45,12 +47,17 @@ export type CatalogOfferMinAggregateOutputType = {
   sku: string | null
   name: string | null
   description: string | null
+  longDescription: string | null
   pillar: $Enums.CatalogPillar | null
   billing: $Enums.CatalogBilling | null
+  priceMode: $Enums.CatalogPriceMode | null
   priceXof: number | null
   floorPriceXof: number | null
   priceEurHint: number | null
+  currency: string | null
   vatEligible: boolean | null
+  minEngagementMonths: number | null
+  conditions: string | null
   active: boolean | null
   sortOrder: number | null
   createdAt: Date | null
@@ -62,12 +69,17 @@ export type CatalogOfferMaxAggregateOutputType = {
   sku: string | null
   name: string | null
   description: string | null
+  longDescription: string | null
   pillar: $Enums.CatalogPillar | null
   billing: $Enums.CatalogBilling | null
+  priceMode: $Enums.CatalogPriceMode | null
   priceXof: number | null
   floorPriceXof: number | null
   priceEurHint: number | null
+  currency: string | null
   vatEligible: boolean | null
+  minEngagementMonths: number | null
+  conditions: string | null
   active: boolean | null
   sortOrder: number | null
   createdAt: Date | null
@@ -79,12 +91,18 @@ export type CatalogOfferCountAggregateOutputType = {
   sku: number
   name: number
   description: number
+  longDescription: number
   pillar: number
   billing: number
+  priceMode: number
   priceXof: number
   floorPriceXof: number
   priceEurHint: number
+  currency: number
   vatEligible: number
+  minEngagementMonths: number
+  conditions: number
+  featuresJson: number
   active: number
   sortOrder: number
   optionSchema: number
@@ -98,6 +116,7 @@ export type CatalogOfferAvgAggregateInputType = {
   priceXof?: true
   floorPriceXof?: true
   priceEurHint?: true
+  minEngagementMonths?: true
   sortOrder?: true
 }
 
@@ -105,6 +124,7 @@ export type CatalogOfferSumAggregateInputType = {
   priceXof?: true
   floorPriceXof?: true
   priceEurHint?: true
+  minEngagementMonths?: true
   sortOrder?: true
 }
 
@@ -113,12 +133,17 @@ export type CatalogOfferMinAggregateInputType = {
   sku?: true
   name?: true
   description?: true
+  longDescription?: true
   pillar?: true
   billing?: true
+  priceMode?: true
   priceXof?: true
   floorPriceXof?: true
   priceEurHint?: true
+  currency?: true
   vatEligible?: true
+  minEngagementMonths?: true
+  conditions?: true
   active?: true
   sortOrder?: true
   createdAt?: true
@@ -130,12 +155,17 @@ export type CatalogOfferMaxAggregateInputType = {
   sku?: true
   name?: true
   description?: true
+  longDescription?: true
   pillar?: true
   billing?: true
+  priceMode?: true
   priceXof?: true
   floorPriceXof?: true
   priceEurHint?: true
+  currency?: true
   vatEligible?: true
+  minEngagementMonths?: true
+  conditions?: true
   active?: true
   sortOrder?: true
   createdAt?: true
@@ -147,12 +177,18 @@ export type CatalogOfferCountAggregateInputType = {
   sku?: true
   name?: true
   description?: true
+  longDescription?: true
   pillar?: true
   billing?: true
+  priceMode?: true
   priceXof?: true
   floorPriceXof?: true
   priceEurHint?: true
+  currency?: true
   vatEligible?: true
+  minEngagementMonths?: true
+  conditions?: true
+  featuresJson?: true
   active?: true
   sortOrder?: true
   optionSchema?: true
@@ -252,12 +288,18 @@ export type CatalogOfferGroupByOutputType = {
   sku: string
   name: string
   description: string | null
+  longDescription: string | null
   pillar: $Enums.CatalogPillar
   billing: $Enums.CatalogBilling
+  priceMode: $Enums.CatalogPriceMode
   priceXof: number | null
   floorPriceXof: number | null
   priceEurHint: number | null
+  currency: string
   vatEligible: boolean
+  minEngagementMonths: number | null
+  conditions: string | null
+  featuresJson: runtime.JsonValue | null
   active: boolean
   sortOrder: number
   optionSchema: runtime.JsonValue | null
@@ -293,21 +335,29 @@ export type CatalogOfferWhereInput = {
   sku?: Prisma.StringFilter<"CatalogOffer"> | string
   name?: Prisma.StringFilter<"CatalogOffer"> | string
   description?: Prisma.StringNullableFilter<"CatalogOffer"> | string | null
+  longDescription?: Prisma.StringNullableFilter<"CatalogOffer"> | string | null
   pillar?: Prisma.EnumCatalogPillarFilter<"CatalogOffer"> | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFilter<"CatalogOffer"> | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFilter<"CatalogOffer"> | $Enums.CatalogPriceMode
   priceXof?: Prisma.IntNullableFilter<"CatalogOffer"> | number | null
   floorPriceXof?: Prisma.IntNullableFilter<"CatalogOffer"> | number | null
   priceEurHint?: Prisma.IntNullableFilter<"CatalogOffer"> | number | null
+  currency?: Prisma.StringFilter<"CatalogOffer"> | string
   vatEligible?: Prisma.BoolFilter<"CatalogOffer"> | boolean
+  minEngagementMonths?: Prisma.IntNullableFilter<"CatalogOffer"> | number | null
+  conditions?: Prisma.StringNullableFilter<"CatalogOffer"> | string | null
+  featuresJson?: Prisma.JsonNullableFilter<"CatalogOffer">
   active?: Prisma.BoolFilter<"CatalogOffer"> | boolean
   sortOrder?: Prisma.IntFilter<"CatalogOffer"> | number
   optionSchema?: Prisma.JsonNullableFilter<"CatalogOffer">
   createdAt?: Prisma.DateTimeFilter<"CatalogOffer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CatalogOffer"> | Date | string
+  versions?: Prisma.CatalogOfferVersionListRelationFilter
   opportunities?: Prisma.CrmOpportunityListRelationFilter
   opportunityOffers?: Prisma.CrmOpportunityOfferListRelationFilter
   quoteLines?: Prisma.ComQuoteLineListRelationFilter
   invoiceLines?: Prisma.ComInvoiceLineListRelationFilter
+  contractLines?: Prisma.ComContractLineListRelationFilter
 }
 
 export type CatalogOfferOrderByWithRelationInput = {
@@ -315,21 +365,29 @@ export type CatalogOfferOrderByWithRelationInput = {
   sku?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  longDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   pillar?: Prisma.SortOrder
   billing?: Prisma.SortOrder
+  priceMode?: Prisma.SortOrder
   priceXof?: Prisma.SortOrderInput | Prisma.SortOrder
   floorPriceXof?: Prisma.SortOrderInput | Prisma.SortOrder
   priceEurHint?: Prisma.SortOrderInput | Prisma.SortOrder
+  currency?: Prisma.SortOrder
   vatEligible?: Prisma.SortOrder
+  minEngagementMonths?: Prisma.SortOrderInput | Prisma.SortOrder
+  conditions?: Prisma.SortOrderInput | Prisma.SortOrder
+  featuresJson?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   optionSchema?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  versions?: Prisma.CatalogOfferVersionOrderByRelationAggregateInput
   opportunities?: Prisma.CrmOpportunityOrderByRelationAggregateInput
   opportunityOffers?: Prisma.CrmOpportunityOfferOrderByRelationAggregateInput
   quoteLines?: Prisma.ComQuoteLineOrderByRelationAggregateInput
   invoiceLines?: Prisma.ComInvoiceLineOrderByRelationAggregateInput
+  contractLines?: Prisma.ComContractLineOrderByRelationAggregateInput
 }
 
 export type CatalogOfferWhereUniqueInput = Prisma.AtLeast<{
@@ -340,21 +398,29 @@ export type CatalogOfferWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.CatalogOfferWhereInput | Prisma.CatalogOfferWhereInput[]
   name?: Prisma.StringFilter<"CatalogOffer"> | string
   description?: Prisma.StringNullableFilter<"CatalogOffer"> | string | null
+  longDescription?: Prisma.StringNullableFilter<"CatalogOffer"> | string | null
   pillar?: Prisma.EnumCatalogPillarFilter<"CatalogOffer"> | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFilter<"CatalogOffer"> | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFilter<"CatalogOffer"> | $Enums.CatalogPriceMode
   priceXof?: Prisma.IntNullableFilter<"CatalogOffer"> | number | null
   floorPriceXof?: Prisma.IntNullableFilter<"CatalogOffer"> | number | null
   priceEurHint?: Prisma.IntNullableFilter<"CatalogOffer"> | number | null
+  currency?: Prisma.StringFilter<"CatalogOffer"> | string
   vatEligible?: Prisma.BoolFilter<"CatalogOffer"> | boolean
+  minEngagementMonths?: Prisma.IntNullableFilter<"CatalogOffer"> | number | null
+  conditions?: Prisma.StringNullableFilter<"CatalogOffer"> | string | null
+  featuresJson?: Prisma.JsonNullableFilter<"CatalogOffer">
   active?: Prisma.BoolFilter<"CatalogOffer"> | boolean
   sortOrder?: Prisma.IntFilter<"CatalogOffer"> | number
   optionSchema?: Prisma.JsonNullableFilter<"CatalogOffer">
   createdAt?: Prisma.DateTimeFilter<"CatalogOffer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CatalogOffer"> | Date | string
+  versions?: Prisma.CatalogOfferVersionListRelationFilter
   opportunities?: Prisma.CrmOpportunityListRelationFilter
   opportunityOffers?: Prisma.CrmOpportunityOfferListRelationFilter
   quoteLines?: Prisma.ComQuoteLineListRelationFilter
   invoiceLines?: Prisma.ComInvoiceLineListRelationFilter
+  contractLines?: Prisma.ComContractLineListRelationFilter
 }, "id" | "sku">
 
 export type CatalogOfferOrderByWithAggregationInput = {
@@ -362,12 +428,18 @@ export type CatalogOfferOrderByWithAggregationInput = {
   sku?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  longDescription?: Prisma.SortOrderInput | Prisma.SortOrder
   pillar?: Prisma.SortOrder
   billing?: Prisma.SortOrder
+  priceMode?: Prisma.SortOrder
   priceXof?: Prisma.SortOrderInput | Prisma.SortOrder
   floorPriceXof?: Prisma.SortOrderInput | Prisma.SortOrder
   priceEurHint?: Prisma.SortOrderInput | Prisma.SortOrder
+  currency?: Prisma.SortOrder
   vatEligible?: Prisma.SortOrder
+  minEngagementMonths?: Prisma.SortOrderInput | Prisma.SortOrder
+  conditions?: Prisma.SortOrderInput | Prisma.SortOrder
+  featuresJson?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   optionSchema?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -388,12 +460,18 @@ export type CatalogOfferScalarWhereWithAggregatesInput = {
   sku?: Prisma.StringWithAggregatesFilter<"CatalogOffer"> | string
   name?: Prisma.StringWithAggregatesFilter<"CatalogOffer"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"CatalogOffer"> | string | null
+  longDescription?: Prisma.StringNullableWithAggregatesFilter<"CatalogOffer"> | string | null
   pillar?: Prisma.EnumCatalogPillarWithAggregatesFilter<"CatalogOffer"> | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingWithAggregatesFilter<"CatalogOffer"> | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeWithAggregatesFilter<"CatalogOffer"> | $Enums.CatalogPriceMode
   priceXof?: Prisma.IntNullableWithAggregatesFilter<"CatalogOffer"> | number | null
   floorPriceXof?: Prisma.IntNullableWithAggregatesFilter<"CatalogOffer"> | number | null
   priceEurHint?: Prisma.IntNullableWithAggregatesFilter<"CatalogOffer"> | number | null
+  currency?: Prisma.StringWithAggregatesFilter<"CatalogOffer"> | string
   vatEligible?: Prisma.BoolWithAggregatesFilter<"CatalogOffer"> | boolean
+  minEngagementMonths?: Prisma.IntNullableWithAggregatesFilter<"CatalogOffer"> | number | null
+  conditions?: Prisma.StringNullableWithAggregatesFilter<"CatalogOffer"> | string | null
+  featuresJson?: Prisma.JsonNullableWithAggregatesFilter<"CatalogOffer">
   active?: Prisma.BoolWithAggregatesFilter<"CatalogOffer"> | boolean
   sortOrder?: Prisma.IntWithAggregatesFilter<"CatalogOffer"> | number
   optionSchema?: Prisma.JsonNullableWithAggregatesFilter<"CatalogOffer">
@@ -406,21 +484,29 @@ export type CatalogOfferCreateInput = {
   sku: string
   name: string
   description?: string | null
+  longDescription?: string | null
   pillar: $Enums.CatalogPillar
   billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
   priceXof?: number | null
   floorPriceXof?: number | null
   priceEurHint?: number | null
+  currency?: string
   vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   sortOrder?: number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionCreateNestedManyWithoutCatalogOfferInput
   opportunities?: Prisma.CrmOpportunityCreateNestedManyWithoutCatalogOfferInput
   opportunityOffers?: Prisma.CrmOpportunityOfferCreateNestedManyWithoutCatalogOfferInput
   quoteLines?: Prisma.ComQuoteLineCreateNestedManyWithoutCatalogOfferInput
   invoiceLines?: Prisma.ComInvoiceLineCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineCreateNestedManyWithoutCatalogOfferInput
 }
 
 export type CatalogOfferUncheckedCreateInput = {
@@ -428,21 +514,29 @@ export type CatalogOfferUncheckedCreateInput = {
   sku: string
   name: string
   description?: string | null
+  longDescription?: string | null
   pillar: $Enums.CatalogPillar
   billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
   priceXof?: number | null
   floorPriceXof?: number | null
   priceEurHint?: number | null
+  currency?: string
   vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   sortOrder?: number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedCreateNestedManyWithoutCatalogOfferInput
   opportunities?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCatalogOfferInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedCreateNestedManyWithoutCatalogOfferInput
   quoteLines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutCatalogOfferInput
   invoiceLines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutCatalogOfferInput
 }
 
 export type CatalogOfferUpdateInput = {
@@ -450,21 +544,29 @@ export type CatalogOfferUpdateInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUpdateManyWithoutCatalogOfferNestedInput
   opportunities?: Prisma.CrmOpportunityUpdateManyWithoutCatalogOfferNestedInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUpdateManyWithoutCatalogOfferNestedInput
   quoteLines?: Prisma.ComQuoteLineUpdateManyWithoutCatalogOfferNestedInput
   invoiceLines?: Prisma.ComInvoiceLineUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUpdateManyWithoutCatalogOfferNestedInput
 }
 
 export type CatalogOfferUncheckedUpdateInput = {
@@ -472,21 +574,29 @@ export type CatalogOfferUncheckedUpdateInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedUpdateManyWithoutCatalogOfferNestedInput
   opportunities?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCatalogOfferNestedInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedUpdateManyWithoutCatalogOfferNestedInput
   quoteLines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
   invoiceLines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
 }
 
 export type CatalogOfferCreateManyInput = {
@@ -494,12 +604,18 @@ export type CatalogOfferCreateManyInput = {
   sku: string
   name: string
   description?: string | null
+  longDescription?: string | null
   pillar: $Enums.CatalogPillar
   billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
   priceXof?: number | null
   floorPriceXof?: number | null
   priceEurHint?: number | null
+  currency?: string
   vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   sortOrder?: number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -512,12 +628,18 @@ export type CatalogOfferUpdateManyMutationInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -530,12 +652,18 @@ export type CatalogOfferUncheckedUpdateManyInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -548,12 +676,18 @@ export type CatalogOfferCountOrderByAggregateInput = {
   sku?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  longDescription?: Prisma.SortOrder
   pillar?: Prisma.SortOrder
   billing?: Prisma.SortOrder
+  priceMode?: Prisma.SortOrder
   priceXof?: Prisma.SortOrder
   floorPriceXof?: Prisma.SortOrder
   priceEurHint?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
   vatEligible?: Prisma.SortOrder
+  minEngagementMonths?: Prisma.SortOrder
+  conditions?: Prisma.SortOrder
+  featuresJson?: Prisma.SortOrder
   active?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   optionSchema?: Prisma.SortOrder
@@ -565,6 +699,7 @@ export type CatalogOfferAvgOrderByAggregateInput = {
   priceXof?: Prisma.SortOrder
   floorPriceXof?: Prisma.SortOrder
   priceEurHint?: Prisma.SortOrder
+  minEngagementMonths?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
 
@@ -573,12 +708,17 @@ export type CatalogOfferMaxOrderByAggregateInput = {
   sku?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  longDescription?: Prisma.SortOrder
   pillar?: Prisma.SortOrder
   billing?: Prisma.SortOrder
+  priceMode?: Prisma.SortOrder
   priceXof?: Prisma.SortOrder
   floorPriceXof?: Prisma.SortOrder
   priceEurHint?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
   vatEligible?: Prisma.SortOrder
+  minEngagementMonths?: Prisma.SortOrder
+  conditions?: Prisma.SortOrder
   active?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -590,12 +730,17 @@ export type CatalogOfferMinOrderByAggregateInput = {
   sku?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  longDescription?: Prisma.SortOrder
   pillar?: Prisma.SortOrder
   billing?: Prisma.SortOrder
+  priceMode?: Prisma.SortOrder
   priceXof?: Prisma.SortOrder
   floorPriceXof?: Prisma.SortOrder
   priceEurHint?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
   vatEligible?: Prisma.SortOrder
+  minEngagementMonths?: Prisma.SortOrder
+  conditions?: Prisma.SortOrder
   active?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -606,17 +751,18 @@ export type CatalogOfferSumOrderByAggregateInput = {
   priceXof?: Prisma.SortOrder
   floorPriceXof?: Prisma.SortOrder
   priceEurHint?: Prisma.SortOrder
+  minEngagementMonths?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
-}
-
-export type CatalogOfferNullableScalarRelationFilter = {
-  is?: Prisma.CatalogOfferWhereInput | null
-  isNot?: Prisma.CatalogOfferWhereInput | null
 }
 
 export type CatalogOfferScalarRelationFilter = {
   is?: Prisma.CatalogOfferWhereInput
   isNot?: Prisma.CatalogOfferWhereInput
+}
+
+export type CatalogOfferNullableScalarRelationFilter = {
+  is?: Prisma.CatalogOfferWhereInput | null
+  isNot?: Prisma.CatalogOfferWhereInput | null
 }
 
 export type EnumCatalogPillarFieldUpdateOperationsInput = {
@@ -625,6 +771,24 @@ export type EnumCatalogPillarFieldUpdateOperationsInput = {
 
 export type EnumCatalogBillingFieldUpdateOperationsInput = {
   set?: $Enums.CatalogBilling
+}
+
+export type EnumCatalogPriceModeFieldUpdateOperationsInput = {
+  set?: $Enums.CatalogPriceMode
+}
+
+export type CatalogOfferCreateNestedOneWithoutVersionsInput = {
+  create?: Prisma.XOR<Prisma.CatalogOfferCreateWithoutVersionsInput, Prisma.CatalogOfferUncheckedCreateWithoutVersionsInput>
+  connectOrCreate?: Prisma.CatalogOfferCreateOrConnectWithoutVersionsInput
+  connect?: Prisma.CatalogOfferWhereUniqueInput
+}
+
+export type CatalogOfferUpdateOneRequiredWithoutVersionsNestedInput = {
+  create?: Prisma.XOR<Prisma.CatalogOfferCreateWithoutVersionsInput, Prisma.CatalogOfferUncheckedCreateWithoutVersionsInput>
+  connectOrCreate?: Prisma.CatalogOfferCreateOrConnectWithoutVersionsInput
+  upsert?: Prisma.CatalogOfferUpsertWithoutVersionsInput
+  connect?: Prisma.CatalogOfferWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CatalogOfferUpdateToOneWithWhereWithoutVersionsInput, Prisma.CatalogOfferUpdateWithoutVersionsInput>, Prisma.CatalogOfferUncheckedUpdateWithoutVersionsInput>
 }
 
 export type CatalogOfferCreateNestedOneWithoutOpportunitiesInput = {
@@ -673,6 +837,22 @@ export type CatalogOfferUpdateOneWithoutQuoteLinesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CatalogOfferUpdateToOneWithWhereWithoutQuoteLinesInput, Prisma.CatalogOfferUpdateWithoutQuoteLinesInput>, Prisma.CatalogOfferUncheckedUpdateWithoutQuoteLinesInput>
 }
 
+export type CatalogOfferCreateNestedOneWithoutContractLinesInput = {
+  create?: Prisma.XOR<Prisma.CatalogOfferCreateWithoutContractLinesInput, Prisma.CatalogOfferUncheckedCreateWithoutContractLinesInput>
+  connectOrCreate?: Prisma.CatalogOfferCreateOrConnectWithoutContractLinesInput
+  connect?: Prisma.CatalogOfferWhereUniqueInput
+}
+
+export type CatalogOfferUpdateOneWithoutContractLinesNestedInput = {
+  create?: Prisma.XOR<Prisma.CatalogOfferCreateWithoutContractLinesInput, Prisma.CatalogOfferUncheckedCreateWithoutContractLinesInput>
+  connectOrCreate?: Prisma.CatalogOfferCreateOrConnectWithoutContractLinesInput
+  upsert?: Prisma.CatalogOfferUpsertWithoutContractLinesInput
+  disconnect?: Prisma.CatalogOfferWhereInput | boolean
+  delete?: Prisma.CatalogOfferWhereInput | boolean
+  connect?: Prisma.CatalogOfferWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CatalogOfferUpdateToOneWithWhereWithoutContractLinesInput, Prisma.CatalogOfferUpdateWithoutContractLinesInput>, Prisma.CatalogOfferUncheckedUpdateWithoutContractLinesInput>
+}
+
 export type CatalogOfferCreateNestedOneWithoutInvoiceLinesInput = {
   create?: Prisma.XOR<Prisma.CatalogOfferCreateWithoutInvoiceLinesInput, Prisma.CatalogOfferUncheckedCreateWithoutInvoiceLinesInput>
   connectOrCreate?: Prisma.CatalogOfferCreateOrConnectWithoutInvoiceLinesInput
@@ -689,25 +869,165 @@ export type CatalogOfferUpdateOneWithoutInvoiceLinesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CatalogOfferUpdateToOneWithWhereWithoutInvoiceLinesInput, Prisma.CatalogOfferUpdateWithoutInvoiceLinesInput>, Prisma.CatalogOfferUncheckedUpdateWithoutInvoiceLinesInput>
 }
 
-export type CatalogOfferCreateWithoutOpportunitiesInput = {
+export type CatalogOfferCreateWithoutVersionsInput = {
   id?: string
   sku: string
   name: string
   description?: string | null
+  longDescription?: string | null
   pillar: $Enums.CatalogPillar
   billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
   priceXof?: number | null
   floorPriceXof?: number | null
   priceEurHint?: number | null
+  currency?: string
   vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   sortOrder?: number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  opportunities?: Prisma.CrmOpportunityCreateNestedManyWithoutCatalogOfferInput
   opportunityOffers?: Prisma.CrmOpportunityOfferCreateNestedManyWithoutCatalogOfferInput
   quoteLines?: Prisma.ComQuoteLineCreateNestedManyWithoutCatalogOfferInput
   invoiceLines?: Prisma.ComInvoiceLineCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineCreateNestedManyWithoutCatalogOfferInput
+}
+
+export type CatalogOfferUncheckedCreateWithoutVersionsInput = {
+  id?: string
+  sku: string
+  name: string
+  description?: string | null
+  longDescription?: string | null
+  pillar: $Enums.CatalogPillar
+  billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
+  priceXof?: number | null
+  floorPriceXof?: number | null
+  priceEurHint?: number | null
+  currency?: string
+  vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: boolean
+  sortOrder?: number
+  optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  opportunities?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCatalogOfferInput
+  opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedCreateNestedManyWithoutCatalogOfferInput
+  quoteLines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutCatalogOfferInput
+  invoiceLines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutCatalogOfferInput
+}
+
+export type CatalogOfferCreateOrConnectWithoutVersionsInput = {
+  where: Prisma.CatalogOfferWhereUniqueInput
+  create: Prisma.XOR<Prisma.CatalogOfferCreateWithoutVersionsInput, Prisma.CatalogOfferUncheckedCreateWithoutVersionsInput>
+}
+
+export type CatalogOfferUpsertWithoutVersionsInput = {
+  update: Prisma.XOR<Prisma.CatalogOfferUpdateWithoutVersionsInput, Prisma.CatalogOfferUncheckedUpdateWithoutVersionsInput>
+  create: Prisma.XOR<Prisma.CatalogOfferCreateWithoutVersionsInput, Prisma.CatalogOfferUncheckedCreateWithoutVersionsInput>
+  where?: Prisma.CatalogOfferWhereInput
+}
+
+export type CatalogOfferUpdateToOneWithWhereWithoutVersionsInput = {
+  where?: Prisma.CatalogOfferWhereInput
+  data: Prisma.XOR<Prisma.CatalogOfferUpdateWithoutVersionsInput, Prisma.CatalogOfferUncheckedUpdateWithoutVersionsInput>
+}
+
+export type CatalogOfferUpdateWithoutVersionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
+  billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
+  priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  opportunities?: Prisma.CrmOpportunityUpdateManyWithoutCatalogOfferNestedInput
+  opportunityOffers?: Prisma.CrmOpportunityOfferUpdateManyWithoutCatalogOfferNestedInput
+  quoteLines?: Prisma.ComQuoteLineUpdateManyWithoutCatalogOfferNestedInput
+  invoiceLines?: Prisma.ComInvoiceLineUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUpdateManyWithoutCatalogOfferNestedInput
+}
+
+export type CatalogOfferUncheckedUpdateWithoutVersionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
+  billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
+  priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  opportunities?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  quoteLines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  invoiceLines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
+}
+
+export type CatalogOfferCreateWithoutOpportunitiesInput = {
+  id?: string
+  sku: string
+  name: string
+  description?: string | null
+  longDescription?: string | null
+  pillar: $Enums.CatalogPillar
+  billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
+  priceXof?: number | null
+  floorPriceXof?: number | null
+  priceEurHint?: number | null
+  currency?: string
+  vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: boolean
+  sortOrder?: number
+  optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionCreateNestedManyWithoutCatalogOfferInput
+  opportunityOffers?: Prisma.CrmOpportunityOfferCreateNestedManyWithoutCatalogOfferInput
+  quoteLines?: Prisma.ComQuoteLineCreateNestedManyWithoutCatalogOfferInput
+  invoiceLines?: Prisma.ComInvoiceLineCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineCreateNestedManyWithoutCatalogOfferInput
 }
 
 export type CatalogOfferUncheckedCreateWithoutOpportunitiesInput = {
@@ -715,20 +1035,28 @@ export type CatalogOfferUncheckedCreateWithoutOpportunitiesInput = {
   sku: string
   name: string
   description?: string | null
+  longDescription?: string | null
   pillar: $Enums.CatalogPillar
   billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
   priceXof?: number | null
   floorPriceXof?: number | null
   priceEurHint?: number | null
+  currency?: string
   vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   sortOrder?: number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedCreateNestedManyWithoutCatalogOfferInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedCreateNestedManyWithoutCatalogOfferInput
   quoteLines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutCatalogOfferInput
   invoiceLines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutCatalogOfferInput
 }
 
 export type CatalogOfferCreateOrConnectWithoutOpportunitiesInput = {
@@ -752,20 +1080,28 @@ export type CatalogOfferUpdateWithoutOpportunitiesInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUpdateManyWithoutCatalogOfferNestedInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUpdateManyWithoutCatalogOfferNestedInput
   quoteLines?: Prisma.ComQuoteLineUpdateManyWithoutCatalogOfferNestedInput
   invoiceLines?: Prisma.ComInvoiceLineUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUpdateManyWithoutCatalogOfferNestedInput
 }
 
 export type CatalogOfferUncheckedUpdateWithoutOpportunitiesInput = {
@@ -773,20 +1109,28 @@ export type CatalogOfferUncheckedUpdateWithoutOpportunitiesInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedUpdateManyWithoutCatalogOfferNestedInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedUpdateManyWithoutCatalogOfferNestedInput
   quoteLines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
   invoiceLines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
 }
 
 export type CatalogOfferCreateWithoutOpportunityOffersInput = {
@@ -794,20 +1138,28 @@ export type CatalogOfferCreateWithoutOpportunityOffersInput = {
   sku: string
   name: string
   description?: string | null
+  longDescription?: string | null
   pillar: $Enums.CatalogPillar
   billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
   priceXof?: number | null
   floorPriceXof?: number | null
   priceEurHint?: number | null
+  currency?: string
   vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   sortOrder?: number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionCreateNestedManyWithoutCatalogOfferInput
   opportunities?: Prisma.CrmOpportunityCreateNestedManyWithoutCatalogOfferInput
   quoteLines?: Prisma.ComQuoteLineCreateNestedManyWithoutCatalogOfferInput
   invoiceLines?: Prisma.ComInvoiceLineCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineCreateNestedManyWithoutCatalogOfferInput
 }
 
 export type CatalogOfferUncheckedCreateWithoutOpportunityOffersInput = {
@@ -815,20 +1167,28 @@ export type CatalogOfferUncheckedCreateWithoutOpportunityOffersInput = {
   sku: string
   name: string
   description?: string | null
+  longDescription?: string | null
   pillar: $Enums.CatalogPillar
   billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
   priceXof?: number | null
   floorPriceXof?: number | null
   priceEurHint?: number | null
+  currency?: string
   vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   sortOrder?: number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedCreateNestedManyWithoutCatalogOfferInput
   opportunities?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCatalogOfferInput
   quoteLines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutCatalogOfferInput
   invoiceLines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutCatalogOfferInput
 }
 
 export type CatalogOfferCreateOrConnectWithoutOpportunityOffersInput = {
@@ -852,20 +1212,28 @@ export type CatalogOfferUpdateWithoutOpportunityOffersInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUpdateManyWithoutCatalogOfferNestedInput
   opportunities?: Prisma.CrmOpportunityUpdateManyWithoutCatalogOfferNestedInput
   quoteLines?: Prisma.ComQuoteLineUpdateManyWithoutCatalogOfferNestedInput
   invoiceLines?: Prisma.ComInvoiceLineUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUpdateManyWithoutCatalogOfferNestedInput
 }
 
 export type CatalogOfferUncheckedUpdateWithoutOpportunityOffersInput = {
@@ -873,20 +1241,28 @@ export type CatalogOfferUncheckedUpdateWithoutOpportunityOffersInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedUpdateManyWithoutCatalogOfferNestedInput
   opportunities?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCatalogOfferNestedInput
   quoteLines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
   invoiceLines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
 }
 
 export type CatalogOfferCreateWithoutQuoteLinesInput = {
@@ -894,20 +1270,28 @@ export type CatalogOfferCreateWithoutQuoteLinesInput = {
   sku: string
   name: string
   description?: string | null
+  longDescription?: string | null
   pillar: $Enums.CatalogPillar
   billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
   priceXof?: number | null
   floorPriceXof?: number | null
   priceEurHint?: number | null
+  currency?: string
   vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   sortOrder?: number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionCreateNestedManyWithoutCatalogOfferInput
   opportunities?: Prisma.CrmOpportunityCreateNestedManyWithoutCatalogOfferInput
   opportunityOffers?: Prisma.CrmOpportunityOfferCreateNestedManyWithoutCatalogOfferInput
   invoiceLines?: Prisma.ComInvoiceLineCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineCreateNestedManyWithoutCatalogOfferInput
 }
 
 export type CatalogOfferUncheckedCreateWithoutQuoteLinesInput = {
@@ -915,20 +1299,28 @@ export type CatalogOfferUncheckedCreateWithoutQuoteLinesInput = {
   sku: string
   name: string
   description?: string | null
+  longDescription?: string | null
   pillar: $Enums.CatalogPillar
   billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
   priceXof?: number | null
   floorPriceXof?: number | null
   priceEurHint?: number | null
+  currency?: string
   vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   sortOrder?: number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedCreateNestedManyWithoutCatalogOfferInput
   opportunities?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCatalogOfferInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedCreateNestedManyWithoutCatalogOfferInput
   invoiceLines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutCatalogOfferInput
 }
 
 export type CatalogOfferCreateOrConnectWithoutQuoteLinesInput = {
@@ -952,20 +1344,28 @@ export type CatalogOfferUpdateWithoutQuoteLinesInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUpdateManyWithoutCatalogOfferNestedInput
   opportunities?: Prisma.CrmOpportunityUpdateManyWithoutCatalogOfferNestedInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUpdateManyWithoutCatalogOfferNestedInput
   invoiceLines?: Prisma.ComInvoiceLineUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUpdateManyWithoutCatalogOfferNestedInput
 }
 
 export type CatalogOfferUncheckedUpdateWithoutQuoteLinesInput = {
@@ -973,19 +1373,159 @@ export type CatalogOfferUncheckedUpdateWithoutQuoteLinesInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedUpdateManyWithoutCatalogOfferNestedInput
   opportunities?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCatalogOfferNestedInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  invoiceLines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
+}
+
+export type CatalogOfferCreateWithoutContractLinesInput = {
+  id?: string
+  sku: string
+  name: string
+  description?: string | null
+  longDescription?: string | null
+  pillar: $Enums.CatalogPillar
+  billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
+  priceXof?: number | null
+  floorPriceXof?: number | null
+  priceEurHint?: number | null
+  currency?: string
+  vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: boolean
+  sortOrder?: number
+  optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionCreateNestedManyWithoutCatalogOfferInput
+  opportunities?: Prisma.CrmOpportunityCreateNestedManyWithoutCatalogOfferInput
+  opportunityOffers?: Prisma.CrmOpportunityOfferCreateNestedManyWithoutCatalogOfferInput
+  quoteLines?: Prisma.ComQuoteLineCreateNestedManyWithoutCatalogOfferInput
+  invoiceLines?: Prisma.ComInvoiceLineCreateNestedManyWithoutCatalogOfferInput
+}
+
+export type CatalogOfferUncheckedCreateWithoutContractLinesInput = {
+  id?: string
+  sku: string
+  name: string
+  description?: string | null
+  longDescription?: string | null
+  pillar: $Enums.CatalogPillar
+  billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
+  priceXof?: number | null
+  floorPriceXof?: number | null
+  priceEurHint?: number | null
+  currency?: string
+  vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: boolean
+  sortOrder?: number
+  optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedCreateNestedManyWithoutCatalogOfferInput
+  opportunities?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCatalogOfferInput
+  opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedCreateNestedManyWithoutCatalogOfferInput
+  quoteLines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutCatalogOfferInput
+  invoiceLines?: Prisma.ComInvoiceLineUncheckedCreateNestedManyWithoutCatalogOfferInput
+}
+
+export type CatalogOfferCreateOrConnectWithoutContractLinesInput = {
+  where: Prisma.CatalogOfferWhereUniqueInput
+  create: Prisma.XOR<Prisma.CatalogOfferCreateWithoutContractLinesInput, Prisma.CatalogOfferUncheckedCreateWithoutContractLinesInput>
+}
+
+export type CatalogOfferUpsertWithoutContractLinesInput = {
+  update: Prisma.XOR<Prisma.CatalogOfferUpdateWithoutContractLinesInput, Prisma.CatalogOfferUncheckedUpdateWithoutContractLinesInput>
+  create: Prisma.XOR<Prisma.CatalogOfferCreateWithoutContractLinesInput, Prisma.CatalogOfferUncheckedCreateWithoutContractLinesInput>
+  where?: Prisma.CatalogOfferWhereInput
+}
+
+export type CatalogOfferUpdateToOneWithWhereWithoutContractLinesInput = {
+  where?: Prisma.CatalogOfferWhereInput
+  data: Prisma.XOR<Prisma.CatalogOfferUpdateWithoutContractLinesInput, Prisma.CatalogOfferUncheckedUpdateWithoutContractLinesInput>
+}
+
+export type CatalogOfferUpdateWithoutContractLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
+  billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
+  priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUpdateManyWithoutCatalogOfferNestedInput
+  opportunities?: Prisma.CrmOpportunityUpdateManyWithoutCatalogOfferNestedInput
+  opportunityOffers?: Prisma.CrmOpportunityOfferUpdateManyWithoutCatalogOfferNestedInput
+  quoteLines?: Prisma.ComQuoteLineUpdateManyWithoutCatalogOfferNestedInput
+  invoiceLines?: Prisma.ComInvoiceLineUpdateManyWithoutCatalogOfferNestedInput
+}
+
+export type CatalogOfferUncheckedUpdateWithoutContractLinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sku?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
+  billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
+  priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  opportunities?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  quoteLines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
   invoiceLines?: Prisma.ComInvoiceLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
 }
 
@@ -994,20 +1534,28 @@ export type CatalogOfferCreateWithoutInvoiceLinesInput = {
   sku: string
   name: string
   description?: string | null
+  longDescription?: string | null
   pillar: $Enums.CatalogPillar
   billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
   priceXof?: number | null
   floorPriceXof?: number | null
   priceEurHint?: number | null
+  currency?: string
   vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   sortOrder?: number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionCreateNestedManyWithoutCatalogOfferInput
   opportunities?: Prisma.CrmOpportunityCreateNestedManyWithoutCatalogOfferInput
   opportunityOffers?: Prisma.CrmOpportunityOfferCreateNestedManyWithoutCatalogOfferInput
   quoteLines?: Prisma.ComQuoteLineCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineCreateNestedManyWithoutCatalogOfferInput
 }
 
 export type CatalogOfferUncheckedCreateWithoutInvoiceLinesInput = {
@@ -1015,20 +1563,28 @@ export type CatalogOfferUncheckedCreateWithoutInvoiceLinesInput = {
   sku: string
   name: string
   description?: string | null
+  longDescription?: string | null
   pillar: $Enums.CatalogPillar
   billing?: $Enums.CatalogBilling
+  priceMode?: $Enums.CatalogPriceMode
   priceXof?: number | null
   floorPriceXof?: number | null
   priceEurHint?: number | null
+  currency?: string
   vatEligible?: boolean
+  minEngagementMonths?: number | null
+  conditions?: string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: boolean
   sortOrder?: number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedCreateNestedManyWithoutCatalogOfferInput
   opportunities?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCatalogOfferInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedCreateNestedManyWithoutCatalogOfferInput
   quoteLines?: Prisma.ComQuoteLineUncheckedCreateNestedManyWithoutCatalogOfferInput
+  contractLines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutCatalogOfferInput
 }
 
 export type CatalogOfferCreateOrConnectWithoutInvoiceLinesInput = {
@@ -1052,20 +1608,28 @@ export type CatalogOfferUpdateWithoutInvoiceLinesInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUpdateManyWithoutCatalogOfferNestedInput
   opportunities?: Prisma.CrmOpportunityUpdateManyWithoutCatalogOfferNestedInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUpdateManyWithoutCatalogOfferNestedInput
   quoteLines?: Prisma.ComQuoteLineUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUpdateManyWithoutCatalogOfferNestedInput
 }
 
 export type CatalogOfferUncheckedUpdateWithoutInvoiceLinesInput = {
@@ -1073,20 +1637,28 @@ export type CatalogOfferUncheckedUpdateWithoutInvoiceLinesInput = {
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  longDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   pillar?: Prisma.EnumCatalogPillarFieldUpdateOperationsInput | $Enums.CatalogPillar
   billing?: Prisma.EnumCatalogBillingFieldUpdateOperationsInput | $Enums.CatalogBilling
+  priceMode?: Prisma.EnumCatalogPriceModeFieldUpdateOperationsInput | $Enums.CatalogPriceMode
   priceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   floorPriceXof?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   priceEurHint?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEligible?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  minEngagementMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  conditions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  featuresJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   optionSchema?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CatalogOfferVersionUncheckedUpdateManyWithoutCatalogOfferNestedInput
   opportunities?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCatalogOfferNestedInput
   opportunityOffers?: Prisma.CrmOpportunityOfferUncheckedUpdateManyWithoutCatalogOfferNestedInput
   quoteLines?: Prisma.ComQuoteLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
+  contractLines?: Prisma.ComContractLineUncheckedUpdateManyWithoutCatalogOfferNestedInput
 }
 
 
@@ -1095,17 +1667,21 @@ export type CatalogOfferUncheckedUpdateWithoutInvoiceLinesInput = {
  */
 
 export type CatalogOfferCountOutputType = {
+  versions: number
   opportunities: number
   opportunityOffers: number
   quoteLines: number
   invoiceLines: number
+  contractLines: number
 }
 
 export type CatalogOfferCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  versions?: boolean | CatalogOfferCountOutputTypeCountVersionsArgs
   opportunities?: boolean | CatalogOfferCountOutputTypeCountOpportunitiesArgs
   opportunityOffers?: boolean | CatalogOfferCountOutputTypeCountOpportunityOffersArgs
   quoteLines?: boolean | CatalogOfferCountOutputTypeCountQuoteLinesArgs
   invoiceLines?: boolean | CatalogOfferCountOutputTypeCountInvoiceLinesArgs
+  contractLines?: boolean | CatalogOfferCountOutputTypeCountContractLinesArgs
 }
 
 /**
@@ -1116,6 +1692,13 @@ export type CatalogOfferCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types
    * Select specific fields to fetch from the CatalogOfferCountOutputType
    */
   select?: Prisma.CatalogOfferCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * CatalogOfferCountOutputType without action
+ */
+export type CatalogOfferCountOutputTypeCountVersionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CatalogOfferVersionWhereInput
 }
 
 /**
@@ -1146,27 +1729,42 @@ export type CatalogOfferCountOutputTypeCountInvoiceLinesArgs<ExtArgs extends run
   where?: Prisma.ComInvoiceLineWhereInput
 }
 
+/**
+ * CatalogOfferCountOutputType without action
+ */
+export type CatalogOfferCountOutputTypeCountContractLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComContractLineWhereInput
+}
+
 
 export type CatalogOfferSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   sku?: boolean
   name?: boolean
   description?: boolean
+  longDescription?: boolean
   pillar?: boolean
   billing?: boolean
+  priceMode?: boolean
   priceXof?: boolean
   floorPriceXof?: boolean
   priceEurHint?: boolean
+  currency?: boolean
   vatEligible?: boolean
+  minEngagementMonths?: boolean
+  conditions?: boolean
+  featuresJson?: boolean
   active?: boolean
   sortOrder?: boolean
   optionSchema?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  versions?: boolean | Prisma.CatalogOffer$versionsArgs<ExtArgs>
   opportunities?: boolean | Prisma.CatalogOffer$opportunitiesArgs<ExtArgs>
   opportunityOffers?: boolean | Prisma.CatalogOffer$opportunityOffersArgs<ExtArgs>
   quoteLines?: boolean | Prisma.CatalogOffer$quoteLinesArgs<ExtArgs>
   invoiceLines?: boolean | Prisma.CatalogOffer$invoiceLinesArgs<ExtArgs>
+  contractLines?: boolean | Prisma.CatalogOffer$contractLinesArgs<ExtArgs>
   _count?: boolean | Prisma.CatalogOfferCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["catalogOffer"]>
 
@@ -1175,12 +1773,18 @@ export type CatalogOfferSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   sku?: boolean
   name?: boolean
   description?: boolean
+  longDescription?: boolean
   pillar?: boolean
   billing?: boolean
+  priceMode?: boolean
   priceXof?: boolean
   floorPriceXof?: boolean
   priceEurHint?: boolean
+  currency?: boolean
   vatEligible?: boolean
+  minEngagementMonths?: boolean
+  conditions?: boolean
+  featuresJson?: boolean
   active?: boolean
   sortOrder?: boolean
   optionSchema?: boolean
@@ -1193,12 +1797,18 @@ export type CatalogOfferSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   sku?: boolean
   name?: boolean
   description?: boolean
+  longDescription?: boolean
   pillar?: boolean
   billing?: boolean
+  priceMode?: boolean
   priceXof?: boolean
   floorPriceXof?: boolean
   priceEurHint?: boolean
+  currency?: boolean
   vatEligible?: boolean
+  minEngagementMonths?: boolean
+  conditions?: boolean
+  featuresJson?: boolean
   active?: boolean
   sortOrder?: boolean
   optionSchema?: boolean
@@ -1211,12 +1821,18 @@ export type CatalogOfferSelectScalar = {
   sku?: boolean
   name?: boolean
   description?: boolean
+  longDescription?: boolean
   pillar?: boolean
   billing?: boolean
+  priceMode?: boolean
   priceXof?: boolean
   floorPriceXof?: boolean
   priceEurHint?: boolean
+  currency?: boolean
   vatEligible?: boolean
+  minEngagementMonths?: boolean
+  conditions?: boolean
+  featuresJson?: boolean
   active?: boolean
   sortOrder?: boolean
   optionSchema?: boolean
@@ -1224,12 +1840,14 @@ export type CatalogOfferSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CatalogOfferOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sku" | "name" | "description" | "pillar" | "billing" | "priceXof" | "floorPriceXof" | "priceEurHint" | "vatEligible" | "active" | "sortOrder" | "optionSchema" | "createdAt" | "updatedAt", ExtArgs["result"]["catalogOffer"]>
+export type CatalogOfferOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sku" | "name" | "description" | "longDescription" | "pillar" | "billing" | "priceMode" | "priceXof" | "floorPriceXof" | "priceEurHint" | "currency" | "vatEligible" | "minEngagementMonths" | "conditions" | "featuresJson" | "active" | "sortOrder" | "optionSchema" | "createdAt" | "updatedAt", ExtArgs["result"]["catalogOffer"]>
 export type CatalogOfferInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  versions?: boolean | Prisma.CatalogOffer$versionsArgs<ExtArgs>
   opportunities?: boolean | Prisma.CatalogOffer$opportunitiesArgs<ExtArgs>
   opportunityOffers?: boolean | Prisma.CatalogOffer$opportunityOffersArgs<ExtArgs>
   quoteLines?: boolean | Prisma.CatalogOffer$quoteLinesArgs<ExtArgs>
   invoiceLines?: boolean | Prisma.CatalogOffer$invoiceLinesArgs<ExtArgs>
+  contractLines?: boolean | Prisma.CatalogOffer$contractLinesArgs<ExtArgs>
   _count?: boolean | Prisma.CatalogOfferCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CatalogOfferIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1238,25 +1856,39 @@ export type CatalogOfferIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types
 export type $CatalogOfferPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CatalogOffer"
   objects: {
+    versions: Prisma.$CatalogOfferVersionPayload<ExtArgs>[]
     opportunities: Prisma.$CrmOpportunityPayload<ExtArgs>[]
     opportunityOffers: Prisma.$CrmOpportunityOfferPayload<ExtArgs>[]
     quoteLines: Prisma.$ComQuoteLinePayload<ExtArgs>[]
     invoiceLines: Prisma.$ComInvoiceLinePayload<ExtArgs>[]
+    contractLines: Prisma.$ComContractLinePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     sku: string
     name: string
     description: string | null
+    /**
+     * Description commerciale longue (devis).
+     */
+    longDescription: string | null
     pillar: $Enums.CatalogPillar
     billing: $Enums.CatalogBilling
+    priceMode: $Enums.CatalogPriceMode
     priceXof: number | null
     /**
      * Plancher commercial — prix unitaire devis ne peut pas descendre en dessous.
      */
     floorPriceXof: number | null
     priceEurHint: number | null
+    currency: string
     vatEligible: boolean
+    minEngagementMonths: number | null
+    conditions: string | null
+    /**
+     * Prestations incluses / exclues / options (JSON structuré).
+     */
+    featuresJson: runtime.JsonValue | null
     active: boolean
     sortOrder: number
     /**
@@ -1659,10 +2291,12 @@ readonly fields: CatalogOfferFieldRefs;
  */
 export interface Prisma__CatalogOfferClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  versions<T extends Prisma.CatalogOffer$versionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CatalogOffer$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CatalogOfferVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   opportunities<T extends Prisma.CatalogOffer$opportunitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CatalogOffer$opportunitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CrmOpportunityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   opportunityOffers<T extends Prisma.CatalogOffer$opportunityOffersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CatalogOffer$opportunityOffersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CrmOpportunityOfferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   quoteLines<T extends Prisma.CatalogOffer$quoteLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CatalogOffer$quoteLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComQuoteLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoiceLines<T extends Prisma.CatalogOffer$invoiceLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CatalogOffer$invoiceLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComInvoiceLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contractLines<T extends Prisma.CatalogOffer$contractLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CatalogOffer$contractLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComContractLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1696,12 +2330,18 @@ export interface CatalogOfferFieldRefs {
   readonly sku: Prisma.FieldRef<"CatalogOffer", 'String'>
   readonly name: Prisma.FieldRef<"CatalogOffer", 'String'>
   readonly description: Prisma.FieldRef<"CatalogOffer", 'String'>
+  readonly longDescription: Prisma.FieldRef<"CatalogOffer", 'String'>
   readonly pillar: Prisma.FieldRef<"CatalogOffer", 'CatalogPillar'>
   readonly billing: Prisma.FieldRef<"CatalogOffer", 'CatalogBilling'>
+  readonly priceMode: Prisma.FieldRef<"CatalogOffer", 'CatalogPriceMode'>
   readonly priceXof: Prisma.FieldRef<"CatalogOffer", 'Int'>
   readonly floorPriceXof: Prisma.FieldRef<"CatalogOffer", 'Int'>
   readonly priceEurHint: Prisma.FieldRef<"CatalogOffer", 'Int'>
+  readonly currency: Prisma.FieldRef<"CatalogOffer", 'String'>
   readonly vatEligible: Prisma.FieldRef<"CatalogOffer", 'Boolean'>
+  readonly minEngagementMonths: Prisma.FieldRef<"CatalogOffer", 'Int'>
+  readonly conditions: Prisma.FieldRef<"CatalogOffer", 'String'>
+  readonly featuresJson: Prisma.FieldRef<"CatalogOffer", 'Json'>
   readonly active: Prisma.FieldRef<"CatalogOffer", 'Boolean'>
   readonly sortOrder: Prisma.FieldRef<"CatalogOffer", 'Int'>
   readonly optionSchema: Prisma.FieldRef<"CatalogOffer", 'Json'>
@@ -2100,6 +2740,30 @@ export type CatalogOfferDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
+ * CatalogOffer.versions
+ */
+export type CatalogOffer$versionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CatalogOfferVersion
+   */
+  select?: Prisma.CatalogOfferVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CatalogOfferVersion
+   */
+  omit?: Prisma.CatalogOfferVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CatalogOfferVersionInclude<ExtArgs> | null
+  where?: Prisma.CatalogOfferVersionWhereInput
+  orderBy?: Prisma.CatalogOfferVersionOrderByWithRelationInput | Prisma.CatalogOfferVersionOrderByWithRelationInput[]
+  cursor?: Prisma.CatalogOfferVersionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CatalogOfferVersionScalarFieldEnum | Prisma.CatalogOfferVersionScalarFieldEnum[]
+}
+
+/**
  * CatalogOffer.opportunities
  */
 export type CatalogOffer$opportunitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2193,6 +2857,30 @@ export type CatalogOffer$invoiceLinesArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.ComInvoiceLineScalarFieldEnum | Prisma.ComInvoiceLineScalarFieldEnum[]
+}
+
+/**
+ * CatalogOffer.contractLines
+ */
+export type CatalogOffer$contractLinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComContractLine
+   */
+  select?: Prisma.ComContractLineSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComContractLine
+   */
+  omit?: Prisma.ComContractLineOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComContractLineInclude<ExtArgs> | null
+  where?: Prisma.ComContractLineWhereInput
+  orderBy?: Prisma.ComContractLineOrderByWithRelationInput | Prisma.ComContractLineOrderByWithRelationInput[]
+  cursor?: Prisma.ComContractLineWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComContractLineScalarFieldEnum | Prisma.ComContractLineScalarFieldEnum[]
 }
 
 /**

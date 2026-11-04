@@ -28,13 +28,20 @@ export type ComClientMinAggregateOutputType = {
   id: string | null
   name: string | null
   normalizedName: string | null
+  legalName: string | null
+  clientType: $Enums.ComClientType | null
+  status: $Enums.ComClientStatus | null
+  sector: string | null
   gedFolderCode: string | null
   contactName: string | null
+  contactRole: string | null
   email: string | null
   phone: string | null
+  website: string | null
   address: string | null
   city: string | null
   country: string | null
+  taxId: string | null
   notes: string | null
   includeTravelDefault: boolean | null
   crmOrganizationId: string | null
@@ -49,13 +56,20 @@ export type ComClientMaxAggregateOutputType = {
   id: string | null
   name: string | null
   normalizedName: string | null
+  legalName: string | null
+  clientType: $Enums.ComClientType | null
+  status: $Enums.ComClientStatus | null
+  sector: string | null
   gedFolderCode: string | null
   contactName: string | null
+  contactRole: string | null
   email: string | null
   phone: string | null
+  website: string | null
   address: string | null
   city: string | null
   country: string | null
+  taxId: string | null
   notes: string | null
   includeTravelDefault: boolean | null
   crmOrganizationId: string | null
@@ -70,13 +84,20 @@ export type ComClientCountAggregateOutputType = {
   id: number
   name: number
   normalizedName: number
+  legalName: number
+  clientType: number
+  status: number
+  sector: number
   gedFolderCode: number
   contactName: number
+  contactRole: number
   email: number
   phone: number
+  website: number
   address: number
   city: number
   country: number
+  taxId: number
   notes: number
   includeTravelDefault: number
   crmOrganizationId: number
@@ -93,13 +114,20 @@ export type ComClientMinAggregateInputType = {
   id?: true
   name?: true
   normalizedName?: true
+  legalName?: true
+  clientType?: true
+  status?: true
+  sector?: true
   gedFolderCode?: true
   contactName?: true
+  contactRole?: true
   email?: true
   phone?: true
+  website?: true
   address?: true
   city?: true
   country?: true
+  taxId?: true
   notes?: true
   includeTravelDefault?: true
   crmOrganizationId?: true
@@ -114,13 +142,20 @@ export type ComClientMaxAggregateInputType = {
   id?: true
   name?: true
   normalizedName?: true
+  legalName?: true
+  clientType?: true
+  status?: true
+  sector?: true
   gedFolderCode?: true
   contactName?: true
+  contactRole?: true
   email?: true
   phone?: true
+  website?: true
   address?: true
   city?: true
   country?: true
+  taxId?: true
   notes?: true
   includeTravelDefault?: true
   crmOrganizationId?: true
@@ -135,13 +170,20 @@ export type ComClientCountAggregateInputType = {
   id?: true
   name?: true
   normalizedName?: true
+  legalName?: true
+  clientType?: true
+  status?: true
+  sector?: true
   gedFolderCode?: true
   contactName?: true
+  contactRole?: true
   email?: true
   phone?: true
+  website?: true
   address?: true
   city?: true
   country?: true
+  taxId?: true
   notes?: true
   includeTravelDefault?: true
   crmOrganizationId?: true
@@ -229,13 +271,20 @@ export type ComClientGroupByOutputType = {
   id: string
   name: string
   normalizedName: string
+  legalName: string | null
+  clientType: $Enums.ComClientType
+  status: $Enums.ComClientStatus
+  sector: string | null
   gedFolderCode: string
   contactName: string | null
+  contactRole: string | null
   email: string | null
   phone: string | null
+  website: string | null
   address: string | null
   city: string | null
   country: string
+  taxId: string | null
   notes: string | null
   includeTravelDefault: boolean
   crmOrganizationId: string | null
@@ -271,13 +320,20 @@ export type ComClientWhereInput = {
   id?: Prisma.StringFilter<"ComClient"> | string
   name?: Prisma.StringFilter<"ComClient"> | string
   normalizedName?: Prisma.StringFilter<"ComClient"> | string
+  legalName?: Prisma.StringNullableFilter<"ComClient"> | string | null
+  clientType?: Prisma.EnumComClientTypeFilter<"ComClient"> | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFilter<"ComClient"> | $Enums.ComClientStatus
+  sector?: Prisma.StringNullableFilter<"ComClient"> | string | null
   gedFolderCode?: Prisma.StringFilter<"ComClient"> | string
   contactName?: Prisma.StringNullableFilter<"ComClient"> | string | null
+  contactRole?: Prisma.StringNullableFilter<"ComClient"> | string | null
   email?: Prisma.StringNullableFilter<"ComClient"> | string | null
   phone?: Prisma.StringNullableFilter<"ComClient"> | string | null
+  website?: Prisma.StringNullableFilter<"ComClient"> | string | null
   address?: Prisma.StringNullableFilter<"ComClient"> | string | null
   city?: Prisma.StringNullableFilter<"ComClient"> | string | null
   country?: Prisma.StringFilter<"ComClient"> | string
+  taxId?: Prisma.StringNullableFilter<"ComClient"> | string | null
   notes?: Prisma.StringNullableFilter<"ComClient"> | string | null
   includeTravelDefault?: Prisma.BoolFilter<"ComClient"> | boolean
   crmOrganizationId?: Prisma.StringNullableFilter<"ComClient"> | string | null
@@ -292,19 +348,30 @@ export type ComClientWhereInput = {
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   quotes?: Prisma.ComQuoteListRelationFilter
   invoices?: Prisma.ComInvoiceListRelationFilter
+  contracts?: Prisma.ComContractListRelationFilter
+  payments?: Prisma.ComPaymentListRelationFilter
+  creditNotes?: Prisma.ComCreditNoteListRelationFilter
+  events?: Prisma.ComClientEventListRelationFilter
 }
 
 export type ComClientOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
+  legalName?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientType?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  sector?: Prisma.SortOrderInput | Prisma.SortOrder
   gedFolderCode?: Prisma.SortOrder
   contactName?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactRole?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  website?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
   country?: Prisma.SortOrder
+  taxId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   includeTravelDefault?: Prisma.SortOrder
   crmOrganizationId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -319,6 +386,10 @@ export type ComClientOrderByWithRelationInput = {
   createdBy?: Prisma.UserOrderByWithRelationInput
   quotes?: Prisma.ComQuoteOrderByRelationAggregateInput
   invoices?: Prisma.ComInvoiceOrderByRelationAggregateInput
+  contracts?: Prisma.ComContractOrderByRelationAggregateInput
+  payments?: Prisma.ComPaymentOrderByRelationAggregateInput
+  creditNotes?: Prisma.ComCreditNoteOrderByRelationAggregateInput
+  events?: Prisma.ComClientEventOrderByRelationAggregateInput
 }
 
 export type ComClientWhereUniqueInput = Prisma.AtLeast<{
@@ -329,12 +400,19 @@ export type ComClientWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ComClientWhereInput | Prisma.ComClientWhereInput[]
   name?: Prisma.StringFilter<"ComClient"> | string
   normalizedName?: Prisma.StringFilter<"ComClient"> | string
+  legalName?: Prisma.StringNullableFilter<"ComClient"> | string | null
+  clientType?: Prisma.EnumComClientTypeFilter<"ComClient"> | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFilter<"ComClient"> | $Enums.ComClientStatus
+  sector?: Prisma.StringNullableFilter<"ComClient"> | string | null
   contactName?: Prisma.StringNullableFilter<"ComClient"> | string | null
+  contactRole?: Prisma.StringNullableFilter<"ComClient"> | string | null
   email?: Prisma.StringNullableFilter<"ComClient"> | string | null
   phone?: Prisma.StringNullableFilter<"ComClient"> | string | null
+  website?: Prisma.StringNullableFilter<"ComClient"> | string | null
   address?: Prisma.StringNullableFilter<"ComClient"> | string | null
   city?: Prisma.StringNullableFilter<"ComClient"> | string | null
   country?: Prisma.StringFilter<"ComClient"> | string
+  taxId?: Prisma.StringNullableFilter<"ComClient"> | string | null
   notes?: Prisma.StringNullableFilter<"ComClient"> | string | null
   includeTravelDefault?: Prisma.BoolFilter<"ComClient"> | boolean
   crmOrganizationId?: Prisma.StringNullableFilter<"ComClient"> | string | null
@@ -349,19 +427,30 @@ export type ComClientWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   quotes?: Prisma.ComQuoteListRelationFilter
   invoices?: Prisma.ComInvoiceListRelationFilter
+  contracts?: Prisma.ComContractListRelationFilter
+  payments?: Prisma.ComPaymentListRelationFilter
+  creditNotes?: Prisma.ComCreditNoteListRelationFilter
+  events?: Prisma.ComClientEventListRelationFilter
 }, "id" | "gedFolderCode">
 
 export type ComClientOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
+  legalName?: Prisma.SortOrderInput | Prisma.SortOrder
+  clientType?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  sector?: Prisma.SortOrderInput | Prisma.SortOrder
   gedFolderCode?: Prisma.SortOrder
   contactName?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactRole?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  website?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
   country?: Prisma.SortOrder
+  taxId?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   includeTravelDefault?: Prisma.SortOrder
   crmOrganizationId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -382,13 +471,20 @@ export type ComClientScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"ComClient"> | string
   name?: Prisma.StringWithAggregatesFilter<"ComClient"> | string
   normalizedName?: Prisma.StringWithAggregatesFilter<"ComClient"> | string
+  legalName?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
+  clientType?: Prisma.EnumComClientTypeWithAggregatesFilter<"ComClient"> | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusWithAggregatesFilter<"ComClient"> | $Enums.ComClientStatus
+  sector?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
   gedFolderCode?: Prisma.StringWithAggregatesFilter<"ComClient"> | string
   contactName?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
+  contactRole?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
+  website?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
   address?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
   city?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
   country?: Prisma.StringWithAggregatesFilter<"ComClient"> | string
+  taxId?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
   includeTravelDefault?: Prisma.BoolWithAggregatesFilter<"ComClient"> | boolean
   crmOrganizationId?: Prisma.StringNullableWithAggregatesFilter<"ComClient"> | string | null
@@ -403,13 +499,20 @@ export type ComClientCreateInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   createdAt?: Date | string
@@ -420,19 +523,30 @@ export type ComClientCreateInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutComClientsCreatedInput
   quotes?: Prisma.ComQuoteCreateNestedManyWithoutClientInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventCreateNestedManyWithoutClientInput
 }
 
 export type ComClientUncheckedCreateInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   crmOrganizationId?: string | null
@@ -443,19 +557,30 @@ export type ComClientUncheckedCreateInput = {
   updatedAt?: Date | string
   quotes?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutClientInput
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ComClientUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -466,19 +591,30 @@ export type ComClientUpdateInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComClientsCreatedNestedInput
   quotes?: Prisma.ComQuoteUpdateManyWithoutClientNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -489,19 +625,30 @@ export type ComClientUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotes?: Prisma.ComQuoteUncheckedUpdateManyWithoutClientNestedInput
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientCreateManyInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   crmOrganizationId?: string | null
@@ -516,13 +663,20 @@ export type ComClientUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -533,13 +687,20 @@ export type ComClientUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -564,13 +725,20 @@ export type ComClientCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
+  legalName?: Prisma.SortOrder
+  clientType?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   gedFolderCode?: Prisma.SortOrder
   contactName?: Prisma.SortOrder
+  contactRole?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  website?: Prisma.SortOrder
   address?: Prisma.SortOrder
   city?: Prisma.SortOrder
   country?: Prisma.SortOrder
+  taxId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   includeTravelDefault?: Prisma.SortOrder
   crmOrganizationId?: Prisma.SortOrder
@@ -585,13 +753,20 @@ export type ComClientMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
+  legalName?: Prisma.SortOrder
+  clientType?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   gedFolderCode?: Prisma.SortOrder
   contactName?: Prisma.SortOrder
+  contactRole?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  website?: Prisma.SortOrder
   address?: Prisma.SortOrder
   city?: Prisma.SortOrder
   country?: Prisma.SortOrder
+  taxId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   includeTravelDefault?: Prisma.SortOrder
   crmOrganizationId?: Prisma.SortOrder
@@ -606,13 +781,20 @@ export type ComClientMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
+  legalName?: Prisma.SortOrder
+  clientType?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  sector?: Prisma.SortOrder
   gedFolderCode?: Prisma.SortOrder
   contactName?: Prisma.SortOrder
+  contactRole?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  website?: Prisma.SortOrder
   address?: Prisma.SortOrder
   city?: Prisma.SortOrder
   country?: Prisma.SortOrder
+  taxId?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   includeTravelDefault?: Prisma.SortOrder
   crmOrganizationId?: Prisma.SortOrder
@@ -796,6 +978,14 @@ export type ComClientUncheckedUpdateManyWithoutSourceOpportunityNestedInput = {
   deleteMany?: Prisma.ComClientScalarWhereInput | Prisma.ComClientScalarWhereInput[]
 }
 
+export type EnumComClientTypeFieldUpdateOperationsInput = {
+  set?: $Enums.ComClientType
+}
+
+export type EnumComClientStatusFieldUpdateOperationsInput = {
+  set?: $Enums.ComClientStatus
+}
+
 export type ComClientCreateNestedOneWithoutQuotesInput = {
   create?: Prisma.XOR<Prisma.ComClientCreateWithoutQuotesInput, Prisma.ComClientUncheckedCreateWithoutQuotesInput>
   connectOrCreate?: Prisma.ComClientCreateOrConnectWithoutQuotesInput
@@ -808,6 +998,20 @@ export type ComClientUpdateOneRequiredWithoutQuotesNestedInput = {
   upsert?: Prisma.ComClientUpsertWithoutQuotesInput
   connect?: Prisma.ComClientWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ComClientUpdateToOneWithWhereWithoutQuotesInput, Prisma.ComClientUpdateWithoutQuotesInput>, Prisma.ComClientUncheckedUpdateWithoutQuotesInput>
+}
+
+export type ComClientCreateNestedOneWithoutContractsInput = {
+  create?: Prisma.XOR<Prisma.ComClientCreateWithoutContractsInput, Prisma.ComClientUncheckedCreateWithoutContractsInput>
+  connectOrCreate?: Prisma.ComClientCreateOrConnectWithoutContractsInput
+  connect?: Prisma.ComClientWhereUniqueInput
+}
+
+export type ComClientUpdateOneRequiredWithoutContractsNestedInput = {
+  create?: Prisma.XOR<Prisma.ComClientCreateWithoutContractsInput, Prisma.ComClientUncheckedCreateWithoutContractsInput>
+  connectOrCreate?: Prisma.ComClientCreateOrConnectWithoutContractsInput
+  upsert?: Prisma.ComClientUpsertWithoutContractsInput
+  connect?: Prisma.ComClientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComClientUpdateToOneWithWhereWithoutContractsInput, Prisma.ComClientUpdateWithoutContractsInput>, Prisma.ComClientUncheckedUpdateWithoutContractsInput>
 }
 
 export type ComClientCreateNestedOneWithoutInvoicesInput = {
@@ -824,17 +1028,66 @@ export type ComClientUpdateOneRequiredWithoutInvoicesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ComClientUpdateToOneWithWhereWithoutInvoicesInput, Prisma.ComClientUpdateWithoutInvoicesInput>, Prisma.ComClientUncheckedUpdateWithoutInvoicesInput>
 }
 
+export type ComClientCreateNestedOneWithoutCreditNotesInput = {
+  create?: Prisma.XOR<Prisma.ComClientCreateWithoutCreditNotesInput, Prisma.ComClientUncheckedCreateWithoutCreditNotesInput>
+  connectOrCreate?: Prisma.ComClientCreateOrConnectWithoutCreditNotesInput
+  connect?: Prisma.ComClientWhereUniqueInput
+}
+
+export type ComClientUpdateOneRequiredWithoutCreditNotesNestedInput = {
+  create?: Prisma.XOR<Prisma.ComClientCreateWithoutCreditNotesInput, Prisma.ComClientUncheckedCreateWithoutCreditNotesInput>
+  connectOrCreate?: Prisma.ComClientCreateOrConnectWithoutCreditNotesInput
+  upsert?: Prisma.ComClientUpsertWithoutCreditNotesInput
+  connect?: Prisma.ComClientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComClientUpdateToOneWithWhereWithoutCreditNotesInput, Prisma.ComClientUpdateWithoutCreditNotesInput>, Prisma.ComClientUncheckedUpdateWithoutCreditNotesInput>
+}
+
+export type ComClientCreateNestedOneWithoutPaymentsInput = {
+  create?: Prisma.XOR<Prisma.ComClientCreateWithoutPaymentsInput, Prisma.ComClientUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.ComClientCreateOrConnectWithoutPaymentsInput
+  connect?: Prisma.ComClientWhereUniqueInput
+}
+
+export type ComClientUpdateOneRequiredWithoutPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.ComClientCreateWithoutPaymentsInput, Prisma.ComClientUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.ComClientCreateOrConnectWithoutPaymentsInput
+  upsert?: Prisma.ComClientUpsertWithoutPaymentsInput
+  connect?: Prisma.ComClientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComClientUpdateToOneWithWhereWithoutPaymentsInput, Prisma.ComClientUpdateWithoutPaymentsInput>, Prisma.ComClientUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type ComClientCreateNestedOneWithoutEventsInput = {
+  create?: Prisma.XOR<Prisma.ComClientCreateWithoutEventsInput, Prisma.ComClientUncheckedCreateWithoutEventsInput>
+  connectOrCreate?: Prisma.ComClientCreateOrConnectWithoutEventsInput
+  connect?: Prisma.ComClientWhereUniqueInput
+}
+
+export type ComClientUpdateOneRequiredWithoutEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.ComClientCreateWithoutEventsInput, Prisma.ComClientUncheckedCreateWithoutEventsInput>
+  connectOrCreate?: Prisma.ComClientCreateOrConnectWithoutEventsInput
+  upsert?: Prisma.ComClientUpsertWithoutEventsInput
+  connect?: Prisma.ComClientWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ComClientUpdateToOneWithWhereWithoutEventsInput, Prisma.ComClientUpdateWithoutEventsInput>, Prisma.ComClientUncheckedUpdateWithoutEventsInput>
+}
+
 export type ComClientCreateWithoutOwnerInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   createdAt?: Date | string
@@ -844,19 +1097,30 @@ export type ComClientCreateWithoutOwnerInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutComClientsCreatedInput
   quotes?: Prisma.ComQuoteCreateNestedManyWithoutClientInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventCreateNestedManyWithoutClientInput
 }
 
 export type ComClientUncheckedCreateWithoutOwnerInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   crmOrganizationId?: string | null
@@ -866,6 +1130,10 @@ export type ComClientUncheckedCreateWithoutOwnerInput = {
   updatedAt?: Date | string
   quotes?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutClientInput
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ComClientCreateOrConnectWithoutOwnerInput = {
@@ -882,13 +1150,20 @@ export type ComClientCreateWithoutCreatedByInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   createdAt?: Date | string
@@ -898,19 +1173,30 @@ export type ComClientCreateWithoutCreatedByInput = {
   owner: Prisma.UserCreateNestedOneWithoutComClientsOwnedInput
   quotes?: Prisma.ComQuoteCreateNestedManyWithoutClientInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventCreateNestedManyWithoutClientInput
 }
 
 export type ComClientUncheckedCreateWithoutCreatedByInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   crmOrganizationId?: string | null
@@ -920,6 +1206,10 @@ export type ComClientUncheckedCreateWithoutCreatedByInput = {
   updatedAt?: Date | string
   quotes?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutClientInput
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ComClientCreateOrConnectWithoutCreatedByInput = {
@@ -955,13 +1245,20 @@ export type ComClientScalarWhereInput = {
   id?: Prisma.StringFilter<"ComClient"> | string
   name?: Prisma.StringFilter<"ComClient"> | string
   normalizedName?: Prisma.StringFilter<"ComClient"> | string
+  legalName?: Prisma.StringNullableFilter<"ComClient"> | string | null
+  clientType?: Prisma.EnumComClientTypeFilter<"ComClient"> | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFilter<"ComClient"> | $Enums.ComClientStatus
+  sector?: Prisma.StringNullableFilter<"ComClient"> | string | null
   gedFolderCode?: Prisma.StringFilter<"ComClient"> | string
   contactName?: Prisma.StringNullableFilter<"ComClient"> | string | null
+  contactRole?: Prisma.StringNullableFilter<"ComClient"> | string | null
   email?: Prisma.StringNullableFilter<"ComClient"> | string | null
   phone?: Prisma.StringNullableFilter<"ComClient"> | string | null
+  website?: Prisma.StringNullableFilter<"ComClient"> | string | null
   address?: Prisma.StringNullableFilter<"ComClient"> | string | null
   city?: Prisma.StringNullableFilter<"ComClient"> | string | null
   country?: Prisma.StringFilter<"ComClient"> | string
+  taxId?: Prisma.StringNullableFilter<"ComClient"> | string | null
   notes?: Prisma.StringNullableFilter<"ComClient"> | string | null
   includeTravelDefault?: Prisma.BoolFilter<"ComClient"> | boolean
   crmOrganizationId?: Prisma.StringNullableFilter<"ComClient"> | string | null
@@ -992,13 +1289,20 @@ export type ComClientCreateWithoutCrmOrganizationInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   createdAt?: Date | string
@@ -1008,19 +1312,30 @@ export type ComClientCreateWithoutCrmOrganizationInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutComClientsCreatedInput
   quotes?: Prisma.ComQuoteCreateNestedManyWithoutClientInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventCreateNestedManyWithoutClientInput
 }
 
 export type ComClientUncheckedCreateWithoutCrmOrganizationInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   sourceOpportunityId?: string | null
@@ -1030,6 +1345,10 @@ export type ComClientUncheckedCreateWithoutCrmOrganizationInput = {
   updatedAt?: Date | string
   quotes?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutClientInput
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ComClientCreateOrConnectWithoutCrmOrganizationInput = {
@@ -1062,13 +1381,20 @@ export type ComClientCreateWithoutSourceOpportunityInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   createdAt?: Date | string
@@ -1078,19 +1404,30 @@ export type ComClientCreateWithoutSourceOpportunityInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutComClientsCreatedInput
   quotes?: Prisma.ComQuoteCreateNestedManyWithoutClientInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventCreateNestedManyWithoutClientInput
 }
 
 export type ComClientUncheckedCreateWithoutSourceOpportunityInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   crmOrganizationId?: string | null
@@ -1100,6 +1437,10 @@ export type ComClientUncheckedCreateWithoutSourceOpportunityInput = {
   updatedAt?: Date | string
   quotes?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutClientInput
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ComClientCreateOrConnectWithoutSourceOpportunityInput = {
@@ -1132,13 +1473,20 @@ export type ComClientCreateWithoutQuotesInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   createdAt?: Date | string
@@ -1148,19 +1496,30 @@ export type ComClientCreateWithoutQuotesInput = {
   owner: Prisma.UserCreateNestedOneWithoutComClientsOwnedInput
   createdBy: Prisma.UserCreateNestedOneWithoutComClientsCreatedInput
   invoices?: Prisma.ComInvoiceCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventCreateNestedManyWithoutClientInput
 }
 
 export type ComClientUncheckedCreateWithoutQuotesInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   crmOrganizationId?: string | null
@@ -1170,6 +1529,10 @@ export type ComClientUncheckedCreateWithoutQuotesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ComClientCreateOrConnectWithoutQuotesInput = {
@@ -1192,13 +1555,20 @@ export type ComClientUpdateWithoutQuotesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1208,19 +1578,30 @@ export type ComClientUpdateWithoutQuotesInput = {
   owner?: Prisma.UserUpdateOneRequiredWithoutComClientsOwnedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComClientsCreatedNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientUncheckedUpdateWithoutQuotesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1230,19 +1611,30 @@ export type ComClientUncheckedUpdateWithoutQuotesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUncheckedUpdateManyWithoutClientNestedInput
 }
 
-export type ComClientCreateWithoutInvoicesInput = {
+export type ComClientCreateWithoutContractsInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   createdAt?: Date | string
@@ -1252,19 +1644,30 @@ export type ComClientCreateWithoutInvoicesInput = {
   owner: Prisma.UserCreateNestedOneWithoutComClientsOwnedInput
   createdBy: Prisma.UserCreateNestedOneWithoutComClientsCreatedInput
   quotes?: Prisma.ComQuoteCreateNestedManyWithoutClientInput
+  invoices?: Prisma.ComInvoiceCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventCreateNestedManyWithoutClientInput
 }
 
-export type ComClientUncheckedCreateWithoutInvoicesInput = {
+export type ComClientUncheckedCreateWithoutContractsInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   crmOrganizationId?: string | null
@@ -1274,6 +1677,158 @@ export type ComClientUncheckedCreateWithoutInvoicesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   quotes?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutClientInput
+  invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutClientInput
+}
+
+export type ComClientCreateOrConnectWithoutContractsInput = {
+  where: Prisma.ComClientWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComClientCreateWithoutContractsInput, Prisma.ComClientUncheckedCreateWithoutContractsInput>
+}
+
+export type ComClientUpsertWithoutContractsInput = {
+  update: Prisma.XOR<Prisma.ComClientUpdateWithoutContractsInput, Prisma.ComClientUncheckedUpdateWithoutContractsInput>
+  create: Prisma.XOR<Prisma.ComClientCreateWithoutContractsInput, Prisma.ComClientUncheckedCreateWithoutContractsInput>
+  where?: Prisma.ComClientWhereInput
+}
+
+export type ComClientUpdateToOneWithWhereWithoutContractsInput = {
+  where?: Prisma.ComClientWhereInput
+  data: Prisma.XOR<Prisma.ComClientUpdateWithoutContractsInput, Prisma.ComClientUncheckedUpdateWithoutContractsInput>
+}
+
+export type ComClientUpdateWithoutContractsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  crmOrganization?: Prisma.CrmOrganizationUpdateOneWithoutComClientsNestedInput
+  sourceOpportunity?: Prisma.CrmOpportunityUpdateOneWithoutComClientsNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComClientsOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComClientsCreatedNestedInput
+  quotes?: Prisma.ComQuoteUpdateManyWithoutClientNestedInput
+  invoices?: Prisma.ComInvoiceUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUpdateManyWithoutClientNestedInput
+}
+
+export type ComClientUncheckedUpdateWithoutContractsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceOpportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotes?: Prisma.ComQuoteUncheckedUpdateManyWithoutClientNestedInput
+  invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUncheckedUpdateManyWithoutClientNestedInput
+}
+
+export type ComClientCreateWithoutInvoicesInput = {
+  id?: string
+  name: string
+  normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
+  gedFolderCode: string
+  contactName?: string | null
+  contactRole?: string | null
+  email?: string | null
+  phone?: string | null
+  website?: string | null
+  address?: string | null
+  city?: string | null
+  country?: string
+  taxId?: string | null
+  notes?: string | null
+  includeTravelDefault?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  crmOrganization?: Prisma.CrmOrganizationCreateNestedOneWithoutComClientsInput
+  sourceOpportunity?: Prisma.CrmOpportunityCreateNestedOneWithoutComClientsInput
+  owner: Prisma.UserCreateNestedOneWithoutComClientsOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComClientsCreatedInput
+  quotes?: Prisma.ComQuoteCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventCreateNestedManyWithoutClientInput
+}
+
+export type ComClientUncheckedCreateWithoutInvoicesInput = {
+  id?: string
+  name: string
+  normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
+  gedFolderCode: string
+  contactName?: string | null
+  contactRole?: string | null
+  email?: string | null
+  phone?: string | null
+  website?: string | null
+  address?: string | null
+  city?: string | null
+  country?: string
+  taxId?: string | null
+  notes?: string | null
+  includeTravelDefault?: boolean
+  crmOrganizationId?: string | null
+  sourceOpportunityId?: string | null
+  ownerId: string
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  quotes?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ComClientCreateOrConnectWithoutInvoicesInput = {
@@ -1296,13 +1851,20 @@ export type ComClientUpdateWithoutInvoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1312,19 +1874,30 @@ export type ComClientUpdateWithoutInvoicesInput = {
   owner?: Prisma.UserUpdateOneRequiredWithoutComClientsOwnedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComClientsCreatedNestedInput
   quotes?: Prisma.ComQuoteUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientUncheckedUpdateWithoutInvoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1334,19 +1907,474 @@ export type ComClientUncheckedUpdateWithoutInvoicesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotes?: Prisma.ComQuoteUncheckedUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUncheckedUpdateManyWithoutClientNestedInput
+}
+
+export type ComClientCreateWithoutCreditNotesInput = {
+  id?: string
+  name: string
+  normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
+  gedFolderCode: string
+  contactName?: string | null
+  contactRole?: string | null
+  email?: string | null
+  phone?: string | null
+  website?: string | null
+  address?: string | null
+  city?: string | null
+  country?: string
+  taxId?: string | null
+  notes?: string | null
+  includeTravelDefault?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  crmOrganization?: Prisma.CrmOrganizationCreateNestedOneWithoutComClientsInput
+  sourceOpportunity?: Prisma.CrmOpportunityCreateNestedOneWithoutComClientsInput
+  owner: Prisma.UserCreateNestedOneWithoutComClientsOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComClientsCreatedInput
+  quotes?: Prisma.ComQuoteCreateNestedManyWithoutClientInput
+  invoices?: Prisma.ComInvoiceCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventCreateNestedManyWithoutClientInput
+}
+
+export type ComClientUncheckedCreateWithoutCreditNotesInput = {
+  id?: string
+  name: string
+  normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
+  gedFolderCode: string
+  contactName?: string | null
+  contactRole?: string | null
+  email?: string | null
+  phone?: string | null
+  website?: string | null
+  address?: string | null
+  city?: string | null
+  country?: string
+  taxId?: string | null
+  notes?: string | null
+  includeTravelDefault?: boolean
+  crmOrganizationId?: string | null
+  sourceOpportunityId?: string | null
+  ownerId: string
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  quotes?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutClientInput
+  invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutClientInput
+}
+
+export type ComClientCreateOrConnectWithoutCreditNotesInput = {
+  where: Prisma.ComClientWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComClientCreateWithoutCreditNotesInput, Prisma.ComClientUncheckedCreateWithoutCreditNotesInput>
+}
+
+export type ComClientUpsertWithoutCreditNotesInput = {
+  update: Prisma.XOR<Prisma.ComClientUpdateWithoutCreditNotesInput, Prisma.ComClientUncheckedUpdateWithoutCreditNotesInput>
+  create: Prisma.XOR<Prisma.ComClientCreateWithoutCreditNotesInput, Prisma.ComClientUncheckedCreateWithoutCreditNotesInput>
+  where?: Prisma.ComClientWhereInput
+}
+
+export type ComClientUpdateToOneWithWhereWithoutCreditNotesInput = {
+  where?: Prisma.ComClientWhereInput
+  data: Prisma.XOR<Prisma.ComClientUpdateWithoutCreditNotesInput, Prisma.ComClientUncheckedUpdateWithoutCreditNotesInput>
+}
+
+export type ComClientUpdateWithoutCreditNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  crmOrganization?: Prisma.CrmOrganizationUpdateOneWithoutComClientsNestedInput
+  sourceOpportunity?: Prisma.CrmOpportunityUpdateOneWithoutComClientsNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComClientsOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComClientsCreatedNestedInput
+  quotes?: Prisma.ComQuoteUpdateManyWithoutClientNestedInput
+  invoices?: Prisma.ComInvoiceUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUpdateManyWithoutClientNestedInput
+}
+
+export type ComClientUncheckedUpdateWithoutCreditNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceOpportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotes?: Prisma.ComQuoteUncheckedUpdateManyWithoutClientNestedInput
+  invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUncheckedUpdateManyWithoutClientNestedInput
+}
+
+export type ComClientCreateWithoutPaymentsInput = {
+  id?: string
+  name: string
+  normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
+  gedFolderCode: string
+  contactName?: string | null
+  contactRole?: string | null
+  email?: string | null
+  phone?: string | null
+  website?: string | null
+  address?: string | null
+  city?: string | null
+  country?: string
+  taxId?: string | null
+  notes?: string | null
+  includeTravelDefault?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  crmOrganization?: Prisma.CrmOrganizationCreateNestedOneWithoutComClientsInput
+  sourceOpportunity?: Prisma.CrmOpportunityCreateNestedOneWithoutComClientsInput
+  owner: Prisma.UserCreateNestedOneWithoutComClientsOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComClientsCreatedInput
+  quotes?: Prisma.ComQuoteCreateNestedManyWithoutClientInput
+  invoices?: Prisma.ComInvoiceCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventCreateNestedManyWithoutClientInput
+}
+
+export type ComClientUncheckedCreateWithoutPaymentsInput = {
+  id?: string
+  name: string
+  normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
+  gedFolderCode: string
+  contactName?: string | null
+  contactRole?: string | null
+  email?: string | null
+  phone?: string | null
+  website?: string | null
+  address?: string | null
+  city?: string | null
+  country?: string
+  taxId?: string | null
+  notes?: string | null
+  includeTravelDefault?: boolean
+  crmOrganizationId?: string | null
+  sourceOpportunityId?: string | null
+  ownerId: string
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  quotes?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutClientInput
+  invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutClientInput
+  events?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutClientInput
+}
+
+export type ComClientCreateOrConnectWithoutPaymentsInput = {
+  where: Prisma.ComClientWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComClientCreateWithoutPaymentsInput, Prisma.ComClientUncheckedCreateWithoutPaymentsInput>
+}
+
+export type ComClientUpsertWithoutPaymentsInput = {
+  update: Prisma.XOR<Prisma.ComClientUpdateWithoutPaymentsInput, Prisma.ComClientUncheckedUpdateWithoutPaymentsInput>
+  create: Prisma.XOR<Prisma.ComClientCreateWithoutPaymentsInput, Prisma.ComClientUncheckedCreateWithoutPaymentsInput>
+  where?: Prisma.ComClientWhereInput
+}
+
+export type ComClientUpdateToOneWithWhereWithoutPaymentsInput = {
+  where?: Prisma.ComClientWhereInput
+  data: Prisma.XOR<Prisma.ComClientUpdateWithoutPaymentsInput, Prisma.ComClientUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type ComClientUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  crmOrganization?: Prisma.CrmOrganizationUpdateOneWithoutComClientsNestedInput
+  sourceOpportunity?: Prisma.CrmOpportunityUpdateOneWithoutComClientsNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComClientsOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComClientsCreatedNestedInput
+  quotes?: Prisma.ComQuoteUpdateManyWithoutClientNestedInput
+  invoices?: Prisma.ComInvoiceUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUpdateManyWithoutClientNestedInput
+}
+
+export type ComClientUncheckedUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceOpportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotes?: Prisma.ComQuoteUncheckedUpdateManyWithoutClientNestedInput
+  invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUncheckedUpdateManyWithoutClientNestedInput
+}
+
+export type ComClientCreateWithoutEventsInput = {
+  id?: string
+  name: string
+  normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
+  gedFolderCode: string
+  contactName?: string | null
+  contactRole?: string | null
+  email?: string | null
+  phone?: string | null
+  website?: string | null
+  address?: string | null
+  city?: string | null
+  country?: string
+  taxId?: string | null
+  notes?: string | null
+  includeTravelDefault?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  crmOrganization?: Prisma.CrmOrganizationCreateNestedOneWithoutComClientsInput
+  sourceOpportunity?: Prisma.CrmOpportunityCreateNestedOneWithoutComClientsInput
+  owner: Prisma.UserCreateNestedOneWithoutComClientsOwnedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutComClientsCreatedInput
+  quotes?: Prisma.ComQuoteCreateNestedManyWithoutClientInput
+  invoices?: Prisma.ComInvoiceCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteCreateNestedManyWithoutClientInput
+}
+
+export type ComClientUncheckedCreateWithoutEventsInput = {
+  id?: string
+  name: string
+  normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
+  gedFolderCode: string
+  contactName?: string | null
+  contactRole?: string | null
+  email?: string | null
+  phone?: string | null
+  website?: string | null
+  address?: string | null
+  city?: string | null
+  country?: string
+  taxId?: string | null
+  notes?: string | null
+  includeTravelDefault?: boolean
+  crmOrganizationId?: string | null
+  sourceOpportunityId?: string | null
+  ownerId: string
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  quotes?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutClientInput
+  invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutClientInput
+  contracts?: Prisma.ComContractUncheckedCreateNestedManyWithoutClientInput
+  payments?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutClientInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutClientInput
+}
+
+export type ComClientCreateOrConnectWithoutEventsInput = {
+  where: Prisma.ComClientWhereUniqueInput
+  create: Prisma.XOR<Prisma.ComClientCreateWithoutEventsInput, Prisma.ComClientUncheckedCreateWithoutEventsInput>
+}
+
+export type ComClientUpsertWithoutEventsInput = {
+  update: Prisma.XOR<Prisma.ComClientUpdateWithoutEventsInput, Prisma.ComClientUncheckedUpdateWithoutEventsInput>
+  create: Prisma.XOR<Prisma.ComClientCreateWithoutEventsInput, Prisma.ComClientUncheckedCreateWithoutEventsInput>
+  where?: Prisma.ComClientWhereInput
+}
+
+export type ComClientUpdateToOneWithWhereWithoutEventsInput = {
+  where?: Prisma.ComClientWhereInput
+  data: Prisma.XOR<Prisma.ComClientUpdateWithoutEventsInput, Prisma.ComClientUncheckedUpdateWithoutEventsInput>
+}
+
+export type ComClientUpdateWithoutEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  crmOrganization?: Prisma.CrmOrganizationUpdateOneWithoutComClientsNestedInput
+  sourceOpportunity?: Prisma.CrmOpportunityUpdateOneWithoutComClientsNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutComClientsOwnedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutComClientsCreatedNestedInput
+  quotes?: Prisma.ComQuoteUpdateManyWithoutClientNestedInput
+  invoices?: Prisma.ComInvoiceUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutClientNestedInput
+}
+
+export type ComClientUncheckedUpdateWithoutEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceOpportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  quotes?: Prisma.ComQuoteUncheckedUpdateManyWithoutClientNestedInput
+  invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientCreateManyOwnerInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   crmOrganizationId?: string | null
@@ -1360,13 +2388,20 @@ export type ComClientCreateManyCreatedByInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   crmOrganizationId?: string | null
@@ -1380,13 +2415,20 @@ export type ComClientUpdateWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1396,19 +2438,30 @@ export type ComClientUpdateWithoutOwnerInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComClientsCreatedNestedInput
   quotes?: Prisma.ComQuoteUpdateManyWithoutClientNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientUncheckedUpdateWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1418,19 +2471,30 @@ export type ComClientUncheckedUpdateWithoutOwnerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotes?: Prisma.ComQuoteUncheckedUpdateManyWithoutClientNestedInput
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientUncheckedUpdateManyWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1444,13 +2508,20 @@ export type ComClientUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1460,19 +2531,30 @@ export type ComClientUpdateWithoutCreatedByInput = {
   owner?: Prisma.UserUpdateOneRequiredWithoutComClientsOwnedNestedInput
   quotes?: Prisma.ComQuoteUpdateManyWithoutClientNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1482,19 +2564,30 @@ export type ComClientUncheckedUpdateWithoutCreatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotes?: Prisma.ComQuoteUncheckedUpdateManyWithoutClientNestedInput
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1508,13 +2601,20 @@ export type ComClientCreateManyCrmOrganizationInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   sourceOpportunityId?: string | null
@@ -1528,13 +2628,20 @@ export type ComClientUpdateWithoutCrmOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1544,19 +2651,30 @@ export type ComClientUpdateWithoutCrmOrganizationInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComClientsCreatedNestedInput
   quotes?: Prisma.ComQuoteUpdateManyWithoutClientNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientUncheckedUpdateWithoutCrmOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceOpportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1566,19 +2684,30 @@ export type ComClientUncheckedUpdateWithoutCrmOrganizationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotes?: Prisma.ComQuoteUncheckedUpdateManyWithoutClientNestedInput
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientUncheckedUpdateManyWithoutCrmOrganizationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sourceOpportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1592,13 +2721,20 @@ export type ComClientCreateManySourceOpportunityInput = {
   id?: string
   name: string
   normalizedName: string
+  legalName?: string | null
+  clientType?: $Enums.ComClientType
+  status?: $Enums.ComClientStatus
+  sector?: string | null
   gedFolderCode: string
   contactName?: string | null
+  contactRole?: string | null
   email?: string | null
   phone?: string | null
+  website?: string | null
   address?: string | null
   city?: string | null
   country?: string
+  taxId?: string | null
   notes?: string | null
   includeTravelDefault?: boolean
   crmOrganizationId?: string | null
@@ -1612,13 +2748,20 @@ export type ComClientUpdateWithoutSourceOpportunityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1628,19 +2771,30 @@ export type ComClientUpdateWithoutSourceOpportunityInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutComClientsCreatedNestedInput
   quotes?: Prisma.ComQuoteUpdateManyWithoutClientNestedInput
   invoices?: Prisma.ComInvoiceUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientUncheckedUpdateWithoutSourceOpportunityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1650,19 +2804,30 @@ export type ComClientUncheckedUpdateWithoutSourceOpportunityInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quotes?: Prisma.ComQuoteUncheckedUpdateManyWithoutClientNestedInput
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutClientNestedInput
+  contracts?: Prisma.ComContractUncheckedUpdateManyWithoutClientNestedInput
+  payments?: Prisma.ComPaymentUncheckedUpdateManyWithoutClientNestedInput
+  creditNotes?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutClientNestedInput
+  events?: Prisma.ComClientEventUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ComClientUncheckedUpdateManyWithoutSourceOpportunityInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientType?: Prisma.EnumComClientTypeFieldUpdateOperationsInput | $Enums.ComClientType
+  status?: Prisma.EnumComClientStatusFieldUpdateOperationsInput | $Enums.ComClientStatus
+  sector?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   gedFolderCode?: Prisma.StringFieldUpdateOperationsInput | string
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactRole?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   includeTravelDefault?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmOrganizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1680,11 +2845,19 @@ export type ComClientUncheckedUpdateManyWithoutSourceOpportunityInput = {
 export type ComClientCountOutputType = {
   quotes: number
   invoices: number
+  contracts: number
+  payments: number
+  creditNotes: number
+  events: number
 }
 
 export type ComClientCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   quotes?: boolean | ComClientCountOutputTypeCountQuotesArgs
   invoices?: boolean | ComClientCountOutputTypeCountInvoicesArgs
+  contracts?: boolean | ComClientCountOutputTypeCountContractsArgs
+  payments?: boolean | ComClientCountOutputTypeCountPaymentsArgs
+  creditNotes?: boolean | ComClientCountOutputTypeCountCreditNotesArgs
+  events?: boolean | ComClientCountOutputTypeCountEventsArgs
 }
 
 /**
@@ -1711,18 +2884,53 @@ export type ComClientCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Ty
   where?: Prisma.ComInvoiceWhereInput
 }
 
+/**
+ * ComClientCountOutputType without action
+ */
+export type ComClientCountOutputTypeCountContractsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComContractWhereInput
+}
+
+/**
+ * ComClientCountOutputType without action
+ */
+export type ComClientCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComPaymentWhereInput
+}
+
+/**
+ * ComClientCountOutputType without action
+ */
+export type ComClientCountOutputTypeCountCreditNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComCreditNoteWhereInput
+}
+
+/**
+ * ComClientCountOutputType without action
+ */
+export type ComClientCountOutputTypeCountEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ComClientEventWhereInput
+}
+
 
 export type ComClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   normalizedName?: boolean
+  legalName?: boolean
+  clientType?: boolean
+  status?: boolean
+  sector?: boolean
   gedFolderCode?: boolean
   contactName?: boolean
+  contactRole?: boolean
   email?: boolean
   phone?: boolean
+  website?: boolean
   address?: boolean
   city?: boolean
   country?: boolean
+  taxId?: boolean
   notes?: boolean
   includeTravelDefault?: boolean
   crmOrganizationId?: boolean
@@ -1737,6 +2945,10 @@ export type ComClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   quotes?: boolean | Prisma.ComClient$quotesArgs<ExtArgs>
   invoices?: boolean | Prisma.ComClient$invoicesArgs<ExtArgs>
+  contracts?: boolean | Prisma.ComClient$contractsArgs<ExtArgs>
+  payments?: boolean | Prisma.ComClient$paymentsArgs<ExtArgs>
+  creditNotes?: boolean | Prisma.ComClient$creditNotesArgs<ExtArgs>
+  events?: boolean | Prisma.ComClient$eventsArgs<ExtArgs>
   _count?: boolean | Prisma.ComClientCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["comClient"]>
 
@@ -1744,13 +2956,20 @@ export type ComClientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   name?: boolean
   normalizedName?: boolean
+  legalName?: boolean
+  clientType?: boolean
+  status?: boolean
+  sector?: boolean
   gedFolderCode?: boolean
   contactName?: boolean
+  contactRole?: boolean
   email?: boolean
   phone?: boolean
+  website?: boolean
   address?: boolean
   city?: boolean
   country?: boolean
+  taxId?: boolean
   notes?: boolean
   includeTravelDefault?: boolean
   crmOrganizationId?: boolean
@@ -1769,13 +2988,20 @@ export type ComClientSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   name?: boolean
   normalizedName?: boolean
+  legalName?: boolean
+  clientType?: boolean
+  status?: boolean
+  sector?: boolean
   gedFolderCode?: boolean
   contactName?: boolean
+  contactRole?: boolean
   email?: boolean
   phone?: boolean
+  website?: boolean
   address?: boolean
   city?: boolean
   country?: boolean
+  taxId?: boolean
   notes?: boolean
   includeTravelDefault?: boolean
   crmOrganizationId?: boolean
@@ -1794,13 +3020,20 @@ export type ComClientSelectScalar = {
   id?: boolean
   name?: boolean
   normalizedName?: boolean
+  legalName?: boolean
+  clientType?: boolean
+  status?: boolean
+  sector?: boolean
   gedFolderCode?: boolean
   contactName?: boolean
+  contactRole?: boolean
   email?: boolean
   phone?: boolean
+  website?: boolean
   address?: boolean
   city?: boolean
   country?: boolean
+  taxId?: boolean
   notes?: boolean
   includeTravelDefault?: boolean
   crmOrganizationId?: boolean
@@ -1811,7 +3044,7 @@ export type ComClientSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ComClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "normalizedName" | "gedFolderCode" | "contactName" | "email" | "phone" | "address" | "city" | "country" | "notes" | "includeTravelDefault" | "crmOrganizationId" | "sourceOpportunityId" | "ownerId" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["comClient"]>
+export type ComClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "normalizedName" | "legalName" | "clientType" | "status" | "sector" | "gedFolderCode" | "contactName" | "contactRole" | "email" | "phone" | "website" | "address" | "city" | "country" | "taxId" | "notes" | "includeTravelDefault" | "crmOrganizationId" | "sourceOpportunityId" | "ownerId" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["comClient"]>
 export type ComClientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   crmOrganization?: boolean | Prisma.ComClient$crmOrganizationArgs<ExtArgs>
   sourceOpportunity?: boolean | Prisma.ComClient$sourceOpportunityArgs<ExtArgs>
@@ -1819,6 +3052,10 @@ export type ComClientInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   quotes?: boolean | Prisma.ComClient$quotesArgs<ExtArgs>
   invoices?: boolean | Prisma.ComClient$invoicesArgs<ExtArgs>
+  contracts?: boolean | Prisma.ComClient$contractsArgs<ExtArgs>
+  payments?: boolean | Prisma.ComClient$paymentsArgs<ExtArgs>
+  creditNotes?: boolean | Prisma.ComClient$creditNotesArgs<ExtArgs>
+  events?: boolean | Prisma.ComClient$eventsArgs<ExtArgs>
   _count?: boolean | Prisma.ComClientCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ComClientIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1843,21 +3080,32 @@ export type $ComClientPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     createdBy: Prisma.$UserPayload<ExtArgs>
     quotes: Prisma.$ComQuotePayload<ExtArgs>[]
     invoices: Prisma.$ComInvoicePayload<ExtArgs>[]
+    contracts: Prisma.$ComContractPayload<ExtArgs>[]
+    payments: Prisma.$ComPaymentPayload<ExtArgs>[]
+    creditNotes: Prisma.$ComCreditNotePayload<ExtArgs>[]
+    events: Prisma.$ComClientEventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
     normalizedName: string
+    legalName: string | null
+    clientType: $Enums.ComClientType
+    status: $Enums.ComClientStatus
+    sector: string | null
     /**
      * Code dossier GED unique sous `03_CLIENTS` (évite collision nom → slug).
      */
     gedFolderCode: string
     contactName: string | null
+    contactRole: string | null
     email: string | null
     phone: string | null
+    website: string | null
     address: string | null
     city: string | null
     country: string
+    taxId: string | null
     notes: string | null
     includeTravelDefault: boolean
     crmOrganizationId: string | null
@@ -2266,6 +3514,10 @@ export interface Prisma__ComClientClient<T, Null = never, ExtArgs extends runtim
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   quotes<T extends Prisma.ComClient$quotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComClient$quotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComQuotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoices<T extends Prisma.ComClient$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComClient$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contracts<T extends Prisma.ComClient$contractsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComClient$contractsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComContractPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payments<T extends Prisma.ComClient$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComClient$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  creditNotes<T extends Prisma.ComClient$creditNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComClient$creditNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComCreditNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  events<T extends Prisma.ComClient$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ComClient$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ComClientEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2298,13 +3550,20 @@ export interface ComClientFieldRefs {
   readonly id: Prisma.FieldRef<"ComClient", 'String'>
   readonly name: Prisma.FieldRef<"ComClient", 'String'>
   readonly normalizedName: Prisma.FieldRef<"ComClient", 'String'>
+  readonly legalName: Prisma.FieldRef<"ComClient", 'String'>
+  readonly clientType: Prisma.FieldRef<"ComClient", 'ComClientType'>
+  readonly status: Prisma.FieldRef<"ComClient", 'ComClientStatus'>
+  readonly sector: Prisma.FieldRef<"ComClient", 'String'>
   readonly gedFolderCode: Prisma.FieldRef<"ComClient", 'String'>
   readonly contactName: Prisma.FieldRef<"ComClient", 'String'>
+  readonly contactRole: Prisma.FieldRef<"ComClient", 'String'>
   readonly email: Prisma.FieldRef<"ComClient", 'String'>
   readonly phone: Prisma.FieldRef<"ComClient", 'String'>
+  readonly website: Prisma.FieldRef<"ComClient", 'String'>
   readonly address: Prisma.FieldRef<"ComClient", 'String'>
   readonly city: Prisma.FieldRef<"ComClient", 'String'>
   readonly country: Prisma.FieldRef<"ComClient", 'String'>
+  readonly taxId: Prisma.FieldRef<"ComClient", 'String'>
   readonly notes: Prisma.FieldRef<"ComClient", 'String'>
   readonly includeTravelDefault: Prisma.FieldRef<"ComClient", 'Boolean'>
   readonly crmOrganizationId: Prisma.FieldRef<"ComClient", 'String'>
@@ -2797,6 +4056,102 @@ export type ComClient$invoicesArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.ComInvoiceScalarFieldEnum | Prisma.ComInvoiceScalarFieldEnum[]
+}
+
+/**
+ * ComClient.contracts
+ */
+export type ComClient$contractsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComContract
+   */
+  select?: Prisma.ComContractSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComContract
+   */
+  omit?: Prisma.ComContractOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComContractInclude<ExtArgs> | null
+  where?: Prisma.ComContractWhereInput
+  orderBy?: Prisma.ComContractOrderByWithRelationInput | Prisma.ComContractOrderByWithRelationInput[]
+  cursor?: Prisma.ComContractWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComContractScalarFieldEnum | Prisma.ComContractScalarFieldEnum[]
+}
+
+/**
+ * ComClient.payments
+ */
+export type ComClient$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComPayment
+   */
+  select?: Prisma.ComPaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComPayment
+   */
+  omit?: Prisma.ComPaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComPaymentInclude<ExtArgs> | null
+  where?: Prisma.ComPaymentWhereInput
+  orderBy?: Prisma.ComPaymentOrderByWithRelationInput | Prisma.ComPaymentOrderByWithRelationInput[]
+  cursor?: Prisma.ComPaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComPaymentScalarFieldEnum | Prisma.ComPaymentScalarFieldEnum[]
+}
+
+/**
+ * ComClient.creditNotes
+ */
+export type ComClient$creditNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComCreditNote
+   */
+  select?: Prisma.ComCreditNoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComCreditNote
+   */
+  omit?: Prisma.ComCreditNoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComCreditNoteInclude<ExtArgs> | null
+  where?: Prisma.ComCreditNoteWhereInput
+  orderBy?: Prisma.ComCreditNoteOrderByWithRelationInput | Prisma.ComCreditNoteOrderByWithRelationInput[]
+  cursor?: Prisma.ComCreditNoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComCreditNoteScalarFieldEnum | Prisma.ComCreditNoteScalarFieldEnum[]
+}
+
+/**
+ * ComClient.events
+ */
+export type ComClient$eventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ComClientEvent
+   */
+  select?: Prisma.ComClientEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ComClientEvent
+   */
+  omit?: Prisma.ComClientEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ComClientEventInclude<ExtArgs> | null
+  where?: Prisma.ComClientEventWhereInput
+  orderBy?: Prisma.ComClientEventOrderByWithRelationInput | Prisma.ComClientEventOrderByWithRelationInput[]
+  cursor?: Prisma.ComClientEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ComClientEventScalarFieldEnum | Prisma.ComClientEventScalarFieldEnum[]
 }
 
 /**

@@ -249,7 +249,7 @@ async function FacturesResults({
                   className="border-b border-msk-ink/5"
                 >
                   <td className="px-4 py-3 font-medium text-msk-ink">
-                    {inv.number}
+                    {inv.number ?? inv.draftCode}
                   </td>
                   <td className="px-4 py-3 tabular-nums text-msk-ink/70">
                     {inv.createdAt.toLocaleDateString("fr-FR", {

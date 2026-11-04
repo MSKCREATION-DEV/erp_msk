@@ -108,6 +108,12 @@ export default async function ComptabiliteHubPage() {
           ? `${toBookCount} facture${toBookCount > 1 ? "s" : ""} en attente`
           : "Factures COM → proposition VE",
     },
+    (canEtats || canCpt) && {
+      href: "/comptabilite/creances",
+      label: "Créances clients",
+      icon: Wallet,
+      desc: "Soldes, retards, aging — facturé ≠ encaissé",
+    },
     canEtats && {
       href: "/comptabilite/grand-livre",
       label: "Grand livre",

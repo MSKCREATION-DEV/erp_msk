@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-03 (espace docs vignettes + titres lisibles) |
+| Dernière mise à jour | 2026-11-04 (COM-FACTU : contrats, créances, dégel devis/factures) |
 
 ### Légende statuts documentaires
 
@@ -61,7 +61,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 
 ### Contraintes / risques
 
-- Ne pas inventer de procédures (devis gelés Direction 13/10 — documenter l’état réel).
+- Ne pas inventer de procédures. Devis/factures **rouverts** (COM-FACTU 2026-11-04) — guides commerciaux à repasser en `to_validate`.
 - Visibilité guide ≠ droit d’agir : filtrer l’affichage par `viewPermission` sans dupliquer le RBAC métier.
 - Pas de nouvelle dépendance sans besoin (recherche locale index TS).
 - Préserve manuels `docs/manuels` ; le centre app les complète, ne les remplace pas d’un coup.
@@ -187,6 +187,12 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-04 — COM-FACTU fondations + dégel devis/factures
+- **Quoi** : ADR facturation ; moteurs billing (ECOSOL/Prosperity) ; numérotation `FAC|DEV-YYYYMMDD-XXXX` à l’émission ; contrats + facture depuis contrat ; créances `/comptabilite/creances` ; fiche client KPI financiers ; import Excel suivi (dry-run anomalies) ; `COM_DOCS_GATED=false`.
+- **Pourquoi** : professionnaliser commercial/facturation/AR (Direction).
+- **Fichiers** : `docs/architecture/COMMERCIAL-FACTURATION-CIBLE.md`, `docs/phases/PHASE-COM-FACTU.md`, `src/lib/billing/**`, `src/lib/document-numbering/**`, `prisma/migrations/20261104150000_com_factu_foundations`, `commercial/contrats/**`, `comptabilite/creances/**`, `gates.ts`
+- **Statut doc** : guides commercial / compta → `to_validate` (parcours à revalider UI)
 
 ### 2026-11-03 — Mes documents : vignettes GED + titres humains
 - **Quoi** : grille vignettes (aperçu/télécharger ghost comme GED) ; exclusion photo profil du coffre ; titres UI (plus de `avatar-cuid…`) ; `originalName` avatar = « Photo de profil ».

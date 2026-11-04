@@ -85,6 +85,15 @@ enum CatalogBilling {
   ONE_SHOT
   MONTHLY
   PACKAGE
+  RECURRING
+  SUR_DEVIS
+  COMPLEMENTAIRE
+}
+
+enum CatalogPriceMode {
+  FIXED
+  FROM
+  CUSTOM
 }
 
 enum CrmSource {
@@ -170,30 +179,99 @@ enum ComDocRegime {
 enum ComDocKind {
   DEVIS
   FACTURE
+  AVOIR
+  BDC
 }
 
 enum ComQuoteStatus {
   BROUILLON
+  EMISE
   ENVOYE
+  CONSULTE
   ACCEPTE
   REFUSE
   EXPIRE
   ANNULE
 }
 
+enum ComQuoteTemplate {
+  LINE_ITEMS
+  COMPARATIVE_RS
+  CUSTOM
+}
+
 enum ComInvoiceStatus {
   BROUILLON
   EMISE
+  ENVOYEE
   PARTIELLEMENT_PAYEE
   PAYEE
+  EN_RETARD
   ANNULEE
+  AVOIREE
+}
+
+enum ComInvoiceSource {
+  QUOTE
+  CONTRACT
+  MANUAL
+  IMPORT
 }
 
 enum ComPaymentMethod {
   ESPECES
   VIREMENT
+  ORANGE_MONEY
+  WAVE
   MOBILE_MONEY
+  CHEQUE
   AUTRE
+}
+
+enum ComPaymentStatus {
+  DRAFT
+  VALIDATED
+  CANCELLED
+}
+
+enum ComClientStatus {
+  PROSPECT
+  ACTIF
+  SUSPENDU
+  TERMINE
+  ARCHIVE
+}
+
+enum ComClientType {
+  ENTREPRISE
+  PARTICULIER
+}
+
+enum ComContractStatus {
+  BROUILLON
+  ACTIF
+  SUSPENDU
+  RESILIE
+  TERMINE
+}
+
+enum ComContractLineStatus {
+  ACTIF
+  SUSPENDU
+  RESILIE
+  TERMINE
+}
+
+enum ComImportBatchStatus {
+  DRY_RUN
+  PENDING_REVIEW
+  COMMITTED
+  CANCELLED
+}
+
+enum ComImportAnomalySeverity {
+  WARNING
+  ERROR
 }
 
 /// Singleton single-tenant MSK (id fixe = "msk")
@@ -262,6 +340,11 @@ model User {
   comInvoicesOwned ComInvoice[]    @relation("ComInvoiceOwner")
   comInvoicesCreated ComInvoice[]  @relation("ComInvoiceCreator")
   comPaymentsRecorded ComPayment[] @relation("ComPaymentRecorder")
+  comContractsOwned   ComContract[]  @relation("ComContractOwner")
+  comContractsCreated ComContract[]  @relation("ComContractCreator")
+  comCreditNotesCreated ComCreditNote[] @relation("ComCreditNoteCreator")
+  comClientEvents     ComClientEvent[] @relation("ComClientEventActor")
+  comImportBatches    ComImportBatch[] @relation("ComImportBatchCreator")
   cptEntriesCreated   CptEntry[]     @relation("CptEntryCreator")
   cptEntriesValidated CptEntry[]     @relation("CptEntryValidator")
   cptBankTxnsCreated  CptBankTxn[]   @relation("CptBankTxnCreator")
@@ -578,31 +661,67 @@ model DocumentTemplate {
 
 /// Offre catalogue MSK (5 piliers)
 model CatalogOffer {
-  id            String         @id @default(cuid())
-  sku           String         @unique
+  id            String           @id @default(cuid())
+  sku           String           @unique
   name          String
   description   String?
+  /// Description commerciale longue (devis).
+  longDescription String?
   pillar        CatalogPillar
-  billing       CatalogBilling @default(ONE_SHOT)
+  billing       CatalogBilling   @default(ONE_SHOT)
+  priceMode     CatalogPriceMode @default(FIXED)
   priceXof      Int?
   /// Plancher commercial — prix unitaire devis ne peut pas descendre en dessous.
   floorPriceXof Int?
   priceEurHint  Int?
-  vatEligible   Boolean        @default(true)
-  active        Boolean        @default(true)
-  sortOrder     Int            @default(0)
+  currency      String           @default("XOF")
+  vatEligible   Boolean          @default(true)
+  minEngagementMonths Int?
+  conditions    String?
+  /// Prestations incluses / exclues / options (JSON structuré).
+  featuresJson  Json?
+  active        Boolean          @default(true)
+  sortOrder     Int              @default(0)
   /// Schéma UI options (RS / WEB / ECOM…) — JSON OfferOptionSchema.
   optionSchema  Json?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
+  versions      CatalogOfferVersion[]
   opportunities CrmOpportunity[]
   opportunityOffers CrmOpportunityOffer[]
   quoteLines    ComQuoteLine[]
   invoiceLines  ComInvoiceLine[]
+  contractLines ComContractLine[]
 
   @@index([pillar, active])
   @@map("catalog_offers")
+}
+
+/// Version immuable d’une offre (contrats / devis historiques).
+model CatalogOfferVersion {
+  id              String   @id @default(cuid())
+  catalogOfferId  String
+  version         Int
+  isOfficial      Boolean  @default(false)
+  sku             String
+  name            String
+  description     String?
+  billing         CatalogBilling
+  priceMode       CatalogPriceMode
+  priceXof        Int?
+  floorPriceXof   Int?
+  vatEligible     Boolean  @default(true)
+  featuresJson    Json?
+  snapshotJson    Json
+  createdAt       DateTime @default(now())
+
+  catalogOffer  CatalogOffer      @relation(fields: [catalogOfferId], references: [id], onDelete: Cascade)
+  contractLines ComContractLine[]
+
+  @@unique([catalogOfferId, version])
+  @@index([sku, version])
+  @@map("catalog_offer_versions")
 }
 
 model CrmOrganization {
@@ -917,77 +1036,98 @@ model CrmWeeklyReport {
   @@map("crm_weekly_reports")
 }
 
+/// Séquences documentaires — periodKey = YYYYMMDD (ou YYYY legacy).
 model ComNumberSequence {
-  id        String     @id @default(cuid())
-  kind      ComDocKind
-  year      Int
-  lastValue Int        @default(0)
-  updatedAt DateTime   @updatedAt
+  id         String     @id @default(cuid())
+  kind       ComDocKind
+  periodKey  String
+  lastValue  Int        @default(0)
+  updatedAt  DateTime   @updatedAt
 
-  @@unique([kind, year])
+  @@unique([kind, periodKey])
   @@map("com_number_sequences")
 }
 
 model ComClient {
-  id                   String   @id @default(cuid())
+  id                   String          @id @default(cuid())
   name                 String
   normalizedName       String
+  legalName            String?
+  clientType           ComClientType   @default(ENTREPRISE)
+  status               ComClientStatus @default(ACTIF)
+  sector               String?
   /// Code dossier GED unique sous `03_CLIENTS` (évite collision nom → slug).
-  gedFolderCode        String   @unique
+  gedFolderCode        String          @unique
   contactName          String?
+  contactRole          String?
   email                String?
   phone                String?
+  website              String?
   address              String?
   city                 String?
-  country              String   @default("ML")
+  country              String          @default("ML")
+  taxId                String?
   notes                String?
-  includeTravelDefault Boolean  @default(false)
+  includeTravelDefault Boolean         @default(false)
   crmOrganizationId    String?
   sourceOpportunityId  String?
-  ownerId              String   @db.Uuid
-  createdById          String   @db.Uuid
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  ownerId              String          @db.Uuid
+  createdById          String          @db.Uuid
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
 
-  crmOrganization CrmOrganization? @relation(fields: [crmOrganizationId], references: [id], onDelete: SetNull)
-  sourceOpportunity CrmOpportunity? @relation(fields: [sourceOpportunityId], references: [id], onDelete: SetNull)
-  owner     User @relation("ComClientOwner", fields: [ownerId], references: [id])
-  createdBy User @relation("ComClientCreator", fields: [createdById], references: [id])
-  quotes    ComQuote[]
-  invoices  ComInvoice[]
+  crmOrganization   CrmOrganization? @relation(fields: [crmOrganizationId], references: [id], onDelete: SetNull)
+  sourceOpportunity CrmOpportunity?  @relation(fields: [sourceOpportunityId], references: [id], onDelete: SetNull)
+  owner             User             @relation("ComClientOwner", fields: [ownerId], references: [id])
+  createdBy         User             @relation("ComClientCreator", fields: [createdById], references: [id])
+  quotes            ComQuote[]
+  invoices          ComInvoice[]
+  contracts         ComContract[]
+  payments          ComPayment[]
+  creditNotes       ComCreditNote[]
+  events            ComClientEvent[]
 
   @@index([ownerId])
   @@index([normalizedName])
   @@index([crmOrganizationId])
+  @@index([status])
   @@map("com_clients")
 }
 
 model ComQuote {
-  id              String         @id @default(cuid())
-  number          String         @unique
-  status          ComQuoteStatus @default(BROUILLON)
-  regime          ComDocRegime   @default(ML)
-  currency        String         @default("XOF")
-  vatEnabled      Boolean        @default(true)
-  vatRate         Int            @default(18)
-  promoEnabled    Boolean        @default(false)
+  id              String           @id @default(cuid())
+  /// Numéro officiel (null tant que brouillon non émis).
+  number          String?          @unique
+  draftCode       String           @unique
+  legacyNumber    String?
+  legacyInternalRef String?
+  status          ComQuoteStatus   @default(BROUILLON)
+  template        ComQuoteTemplate @default(LINE_ITEMS)
+  revision        Int              @default(1)
+  regime          ComDocRegime     @default(ML)
+  currency        String           @default("XOF")
+  vatEnabled      Boolean          @default(true)
+  vatRate         Int              @default(18)
+  promoEnabled    Boolean          @default(false)
   promoPercent    Int?
-  includeTravel   Boolean        @default(false)
+  includeTravel   Boolean          @default(false)
   object          String?
   missionNote     String?
+  conditionsJson  Json?
   validUntil      DateTime?
-  totalHt         Int            @default(0)
-  totalVat        Int            @default(0)
-  totalTtc        Int            @default(0)
+  totalHt         Int              @default(0)
+  totalVat        Int              @default(0)
+  totalTtc        Int              @default(0)
   clientId        String
   opportunityId   String?
-  ownerId         String         @db.Uuid
-  createdById     String         @db.Uuid
+  ownerId         String           @db.Uuid
+  createdById     String           @db.Uuid
   gedDocumentId   String?
+  issuedAt        DateTime?
   sentAt          DateTime?
   acceptedAt      DateTime?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   client      ComClient       @relation(fields: [clientId], references: [id], onDelete: Cascade)
   opportunity CrmOpportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
@@ -995,9 +1135,11 @@ model ComQuote {
   createdBy   User            @relation("ComQuoteCreator", fields: [createdById], references: [id])
   lines       ComQuoteLine[]
   invoices    ComInvoice[]
+  contracts   ComContract[]
 
   @@index([clientId])
   @@index([ownerId, status])
+  @@index([legacyNumber])
   /// Un seul devis lié par prospect (NULL autorisé plusieurs fois en PG).
   @@unique([opportunityId])
   @@map("com_quotes")
@@ -1008,10 +1150,13 @@ model ComQuoteLine {
   quoteId        String
   sortOrder      Int     @default(0)
   label          String
+  description    String?
   qty            Int     @default(1)
   unitPrice      Int
   catalogOfferId String?
   isTravel       Boolean @default(false)
+  /// Snapshot optionnel au moment de la ligne.
+  snapshotJson   Json?
 
   quote        ComQuote      @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   catalogOffer CatalogOffer? @relation(fields: [catalogOfferId], references: [id], onDelete: SetNull)
@@ -1020,38 +1165,128 @@ model ComQuoteLine {
   @@map("com_quote_lines")
 }
 
-model ComInvoice {
-  id            String           @id @default(cuid())
-  number        String           @unique
-  status        ComInvoiceStatus @default(BROUILLON)
-  regime        ComDocRegime     @default(ML)
-  currency      String           @default("XOF")
-  vatEnabled    Boolean          @default(true)
-  vatRate       Int              @default(18)
-  object        String?
-  totalHt       Int              @default(0)
-  totalVat      Int              @default(0)
-  totalTtc      Int              @default(0)
-  amountPaid    Int              @default(0)
-  clientId      String
-  quoteId       String?
-  ownerId       String           @db.Uuid
-  createdById   String           @db.Uuid
-  gedDocumentId String?
-  issuedAt      DateTime?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+model ComContract {
+  id              String            @id @default(cuid())
+  reference       String            @unique
+  status          ComContractStatus @default(BROUILLON)
+  title           String?
+  regime          ComDocRegime      @default(ML)
+  currency        String            @default("XOF")
+  vatEnabled      Boolean           @default(true)
+  vatRate         Int               @default(18)
+  billingDay      Int               @default(5)
+  startDate       DateTime?
+  endDate         DateTime?
+  paymentTerms    String?
+  renewalTerms    String?
+  terminationTerms String?
+  notes           String?
+  clientId        String
+  quoteId         String?
+  ownerId         String            @db.Uuid
+  createdById     String            @db.Uuid
+  signedAt        DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 
-  client    ComClient      @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  quote     ComQuote?      @relation(fields: [quoteId], references: [id], onDelete: SetNull)
-  owner     User           @relation("ComInvoiceOwner", fields: [ownerId], references: [id])
-  createdBy User           @relation("ComInvoiceCreator", fields: [createdById], references: [id])
-  lines     ComInvoiceLine[]
-  payments  ComPayment[]
+  client    ComClient         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  quote     ComQuote?         @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  owner     User              @relation("ComContractOwner", fields: [ownerId], references: [id])
+  createdBy User              @relation("ComContractCreator", fields: [createdById], references: [id])
+  lines     ComContractLine[]
+  invoices  ComInvoice[]
+
+  @@index([clientId, status])
+  @@index([ownerId])
+  @@map("com_contracts")
+}
+
+model ComContractLine {
+  id                    String                @id @default(cuid())
+  contractId            String
+  sortOrder             Int                   @default(0)
+  label                 String
+  description           String?
+  qty                   Int                   @default(1)
+  unitPrice             Int
+  billing               CatalogBilling        @default(MONTHLY)
+  status                ComContractLineStatus @default(ACTIF)
+  startDate             DateTime?
+  endDate               DateTime?
+  nextBillAt            DateTime?
+  catalogOfferId        String?
+  catalogOfferVersionId String?
+  /// Snapshot immuable tarifs / conditions à la signature.
+  snapshotJson          Json
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  contract            ComContract           @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  catalogOffer        CatalogOffer?         @relation(fields: [catalogOfferId], references: [id], onDelete: SetNull)
+  catalogOfferVersion CatalogOfferVersion?  @relation(fields: [catalogOfferVersionId], references: [id], onDelete: SetNull)
+  invoiceLines        ComInvoiceLine[]
+
+  @@index([contractId, status])
+  @@index([nextBillAt])
+  @@map("com_contract_lines")
+}
+
+model ComInvoice {
+  id              String            @id @default(cuid())
+  /// Numéro officiel (null tant que brouillon).
+  number          String?           @unique
+  draftCode       String            @unique
+  legacyNumber    String?
+  legacyInternalRef String?
+  status          ComInvoiceStatus  @default(BROUILLON)
+  source          ComInvoiceSource  @default(MANUAL)
+  regime          ComDocRegime      @default(ML)
+  currency        String            @default("XOF")
+  vatEnabled      Boolean           @default(true)
+  vatRate         Int               @default(18)
+  object          String?
+  periodStart     DateTime?
+  periodEnd       DateTime?
+  dueDate         DateTime?
+  totalHt         Int               @default(0)
+  totalVat        Int               @default(0)
+  totalTtc        Int               @default(0)
+  /// Dénormalisé depuis allocations (cache).
+  amountPaid      Int               @default(0)
+  /// Net à payer présenté (période + arriérés affichés − acomptes sur doc).
+  presentedNetPayable Int?
+  clientId        String
+  quoteId         String?
+  contractId      String?
+  ownerId         String            @db.Uuid
+  createdById     String            @db.Uuid
+  gedDocumentId   String?
+  issuedAt        DateTime?
+  sentAt          DateTime?
+  importBatchId   String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  client      ComClient              @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  quote       ComQuote?              @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  contract    ComContract?           @relation(fields: [contractId], references: [id], onDelete: SetNull)
+  owner       User                   @relation("ComInvoiceOwner", fields: [ownerId], references: [id])
+  createdBy   User                   @relation("ComInvoiceCreator", fields: [createdById], references: [id])
+  importBatch ComImportBatch?        @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+  lines       ComInvoiceLine[]
+  payments    ComPayment[]
+  allocations ComPaymentAllocation[]
+  arrearsRefs ComInvoiceArrearsRef[] @relation("InvoiceArrearsOn")
+  arrearsOf   ComInvoiceArrearsRef[] @relation("InvoiceArrearsSource")
+  creditNotes ComCreditNote[]
+  reminders   ComInvoiceReminder[]
 
   @@index([clientId])
   @@index([ownerId, status])
-  @@unique([quoteId])
+  @@index([contractId])
+  @@index([dueDate, status])
+  @@index([legacyNumber])
+  @@index([quoteId])
   @@map("com_invoices")
 }
 
@@ -1060,33 +1295,175 @@ model ComInvoiceLine {
   invoiceId      String
   sortOrder      Int     @default(0)
   label          String
+  description    String?
   qty            Int     @default(1)
   unitPrice      Int
   catalogOfferId String?
+  contractLineId String?
   isTravel       Boolean @default(false)
+  snapshotJson   Json?
 
-  invoice      ComInvoice    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  catalogOffer CatalogOffer? @relation(fields: [catalogOfferId], references: [id], onDelete: SetNull)
+  invoice      ComInvoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  catalogOffer CatalogOffer?    @relation(fields: [catalogOfferId], references: [id], onDelete: SetNull)
+  contractLine ComContractLine? @relation(fields: [contractLineId], references: [id], onDelete: SetNull)
 
   @@index([invoiceId])
   @@map("com_invoice_lines")
 }
 
-model ComPayment {
-  id          String           @id @default(cuid())
-  invoiceId   String
-  amount      Int
-  method      ComPaymentMethod @default(VIREMENT)
-  paidAt      DateTime         @default(now())
-  note        String?
-  recordedById String          @db.Uuid
-  createdAt   DateTime         @default(now())
+/// Présentation d’arriéré sur une facture (pas une nouvelle créance).
+model ComInvoiceArrearsRef {
+  id               String @id @default(cuid())
+  invoiceId        String
+  sourceInvoiceId  String
+  presentedAmount  Int
+  label            String?
 
-  invoice    ComInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  recordedBy User       @relation("ComPaymentRecorder", fields: [recordedById], references: [id])
+  invoice       ComInvoice @relation("InvoiceArrearsOn", fields: [invoiceId], references: [id], onDelete: Cascade)
+  sourceInvoice ComInvoice @relation("InvoiceArrearsSource", fields: [sourceInvoiceId], references: [id], onDelete: Restrict)
 
+  @@unique([invoiceId, sourceInvoiceId])
+  @@index([sourceInvoiceId])
+  @@map("com_invoice_arrears_refs")
+}
+
+model ComCreditNote {
+  id            String   @id @default(cuid())
+  number        String?  @unique
+  draftCode     String   @unique
+  legacyNumber  String?
+  amount        Int
+  reason        String?
+  clientId      String
+  invoiceId     String
+  createdById   String   @db.Uuid
+  gedDocumentId String?
+  issuedAt      DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  client    ComClient  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  invoice   ComInvoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  createdBy User       @relation("ComCreditNoteCreator", fields: [createdById], references: [id])
+
+  @@index([clientId])
   @@index([invoiceId])
+  @@map("com_credit_notes")
+}
+
+model ComPayment {
+  id             String            @id @default(cuid())
+  clientId       String
+  /// Conservé pour compat Phase 3 ; préférer allocations.
+  invoiceId      String?
+  amount         Int
+  method         ComPaymentMethod  @default(VIREMENT)
+  status         ComPaymentStatus  @default(VALIDATED)
+  paidAt         DateTime          @default(now())
+  reference      String?
+  note           String?
+  gedDocumentId  String?
+  recordedById   String            @db.Uuid
+  importBatchId  String?
+  createdAt      DateTime          @default(now())
+
+  client      ComClient              @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  invoice     ComInvoice?            @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  recordedBy  User                   @relation("ComPaymentRecorder", fields: [recordedById], references: [id])
+  importBatch ComImportBatch?        @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+  allocations ComPaymentAllocation[]
+
+  @@index([clientId])
+  @@index([invoiceId])
+  @@index([paidAt])
   @@map("com_payments")
+}
+
+model ComPaymentAllocation {
+  id         String   @id @default(cuid())
+  paymentId  String
+  invoiceId  String
+  amount     Int
+  createdAt  DateTime @default(now())
+
+  payment ComPayment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  invoice ComInvoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+
+  @@unique([paymentId, invoiceId])
+  @@index([invoiceId])
+  @@map("com_payment_allocations")
+}
+
+model ComClientEvent {
+  id         String   @id @default(cuid())
+  clientId   String
+  type       String
+  summary    String
+  entityType String?
+  entityId   String?
+  metaJson   Json?
+  actorId    String?  @db.Uuid
+  createdAt  DateTime @default(now())
+
+  client ComClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  actor  User?     @relation("ComClientEventActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([clientId, createdAt])
+  @@map("com_client_events")
+}
+
+model ComInvoiceReminder {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  level       Int      @default(1)
+  channel     String
+  content     String?
+  result      String?
+  nextAction  String?
+  sentAt      DateTime @default(now())
+  createdById String?  @db.Uuid
+
+  invoice ComInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId, sentAt])
+  @@map("com_invoice_reminders")
+}
+
+model ComImportBatch {
+  id          String               @id @default(cuid())
+  label       String
+  status      ComImportBatchStatus @default(DRY_RUN)
+  sourceName  String?
+  reportJson  Json?
+  createdById String               @db.Uuid
+  committedAt DateTime?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  createdBy User                 @relation("ComImportBatchCreator", fields: [createdById], references: [id])
+  anomalies ComImportAnomaly[]
+  invoices  ComInvoice[]
+  payments  ComPayment[]
+
+  @@index([status])
+  @@map("com_import_batches")
+}
+
+model ComImportAnomaly {
+  id        String                    @id @default(cuid())
+  batchId   String
+  code      String
+  severity  ComImportAnomalySeverity  @default(WARNING)
+  message   String
+  entityRef String?
+  metaJson  Json?
+  resolved  Boolean                   @default(false)
+  createdAt DateTime                  @default(now())
+
+  batch ComImportBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  @@index([batchId, resolved])
+  @@map("com_import_anomalies")
 }
 
 // ─── Phase 6 — Comptabilité SYSCOHADA + banques + budget ───

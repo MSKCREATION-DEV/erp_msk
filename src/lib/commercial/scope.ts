@@ -32,6 +32,12 @@ export function comInvoiceOwnerScopeWhere(
   return comVisibility(user) === "global" ? {} : { ownerId: user.id };
 }
 
+export function comContractOwnerScopeWhere(
+  user: SessionUser,
+): Prisma.ComContractWhereInput {
+  return comVisibility(user) === "global" ? {} : { ownerId: user.id };
+}
+
 export function canAccessOwned(
   user: SessionUser,
   ownerId: string,

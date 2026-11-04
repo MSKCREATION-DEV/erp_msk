@@ -43,6 +43,7 @@ export type ComQuoteLineMinAggregateOutputType = {
   quoteId: string | null
   sortOrder: number | null
   label: string | null
+  description: string | null
   qty: number | null
   unitPrice: number | null
   catalogOfferId: string | null
@@ -54,6 +55,7 @@ export type ComQuoteLineMaxAggregateOutputType = {
   quoteId: string | null
   sortOrder: number | null
   label: string | null
+  description: string | null
   qty: number | null
   unitPrice: number | null
   catalogOfferId: string | null
@@ -65,10 +67,12 @@ export type ComQuoteLineCountAggregateOutputType = {
   quoteId: number
   sortOrder: number
   label: number
+  description: number
   qty: number
   unitPrice: number
   catalogOfferId: number
   isTravel: number
+  snapshotJson: number
   _all: number
 }
 
@@ -90,6 +94,7 @@ export type ComQuoteLineMinAggregateInputType = {
   quoteId?: true
   sortOrder?: true
   label?: true
+  description?: true
   qty?: true
   unitPrice?: true
   catalogOfferId?: true
@@ -101,6 +106,7 @@ export type ComQuoteLineMaxAggregateInputType = {
   quoteId?: true
   sortOrder?: true
   label?: true
+  description?: true
   qty?: true
   unitPrice?: true
   catalogOfferId?: true
@@ -112,10 +118,12 @@ export type ComQuoteLineCountAggregateInputType = {
   quoteId?: true
   sortOrder?: true
   label?: true
+  description?: true
   qty?: true
   unitPrice?: true
   catalogOfferId?: true
   isTravel?: true
+  snapshotJson?: true
   _all?: true
 }
 
@@ -210,10 +218,12 @@ export type ComQuoteLineGroupByOutputType = {
   quoteId: string
   sortOrder: number
   label: string
+  description: string | null
   qty: number
   unitPrice: number
   catalogOfferId: string | null
   isTravel: boolean
+  snapshotJson: runtime.JsonValue | null
   _count: ComQuoteLineCountAggregateOutputType | null
   _avg: ComQuoteLineAvgAggregateOutputType | null
   _sum: ComQuoteLineSumAggregateOutputType | null
@@ -244,10 +254,12 @@ export type ComQuoteLineWhereInput = {
   quoteId?: Prisma.StringFilter<"ComQuoteLine"> | string
   sortOrder?: Prisma.IntFilter<"ComQuoteLine"> | number
   label?: Prisma.StringFilter<"ComQuoteLine"> | string
+  description?: Prisma.StringNullableFilter<"ComQuoteLine"> | string | null
   qty?: Prisma.IntFilter<"ComQuoteLine"> | number
   unitPrice?: Prisma.IntFilter<"ComQuoteLine"> | number
   catalogOfferId?: Prisma.StringNullableFilter<"ComQuoteLine"> | string | null
   isTravel?: Prisma.BoolFilter<"ComQuoteLine"> | boolean
+  snapshotJson?: Prisma.JsonNullableFilter<"ComQuoteLine">
   quote?: Prisma.XOR<Prisma.ComQuoteScalarRelationFilter, Prisma.ComQuoteWhereInput>
   catalogOffer?: Prisma.XOR<Prisma.CatalogOfferNullableScalarRelationFilter, Prisma.CatalogOfferWhereInput> | null
 }
@@ -257,10 +269,12 @@ export type ComQuoteLineOrderByWithRelationInput = {
   quoteId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   qty?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   catalogOfferId?: Prisma.SortOrderInput | Prisma.SortOrder
   isTravel?: Prisma.SortOrder
+  snapshotJson?: Prisma.SortOrderInput | Prisma.SortOrder
   quote?: Prisma.ComQuoteOrderByWithRelationInput
   catalogOffer?: Prisma.CatalogOfferOrderByWithRelationInput
 }
@@ -273,10 +287,12 @@ export type ComQuoteLineWhereUniqueInput = Prisma.AtLeast<{
   quoteId?: Prisma.StringFilter<"ComQuoteLine"> | string
   sortOrder?: Prisma.IntFilter<"ComQuoteLine"> | number
   label?: Prisma.StringFilter<"ComQuoteLine"> | string
+  description?: Prisma.StringNullableFilter<"ComQuoteLine"> | string | null
   qty?: Prisma.IntFilter<"ComQuoteLine"> | number
   unitPrice?: Prisma.IntFilter<"ComQuoteLine"> | number
   catalogOfferId?: Prisma.StringNullableFilter<"ComQuoteLine"> | string | null
   isTravel?: Prisma.BoolFilter<"ComQuoteLine"> | boolean
+  snapshotJson?: Prisma.JsonNullableFilter<"ComQuoteLine">
   quote?: Prisma.XOR<Prisma.ComQuoteScalarRelationFilter, Prisma.ComQuoteWhereInput>
   catalogOffer?: Prisma.XOR<Prisma.CatalogOfferNullableScalarRelationFilter, Prisma.CatalogOfferWhereInput> | null
 }, "id">
@@ -286,10 +302,12 @@ export type ComQuoteLineOrderByWithAggregationInput = {
   quoteId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   qty?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   catalogOfferId?: Prisma.SortOrderInput | Prisma.SortOrder
   isTravel?: Prisma.SortOrder
+  snapshotJson?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ComQuoteLineCountOrderByAggregateInput
   _avg?: Prisma.ComQuoteLineAvgOrderByAggregateInput
   _max?: Prisma.ComQuoteLineMaxOrderByAggregateInput
@@ -305,19 +323,23 @@ export type ComQuoteLineScalarWhereWithAggregatesInput = {
   quoteId?: Prisma.StringWithAggregatesFilter<"ComQuoteLine"> | string
   sortOrder?: Prisma.IntWithAggregatesFilter<"ComQuoteLine"> | number
   label?: Prisma.StringWithAggregatesFilter<"ComQuoteLine"> | string
+  description?: Prisma.StringNullableWithAggregatesFilter<"ComQuoteLine"> | string | null
   qty?: Prisma.IntWithAggregatesFilter<"ComQuoteLine"> | number
   unitPrice?: Prisma.IntWithAggregatesFilter<"ComQuoteLine"> | number
   catalogOfferId?: Prisma.StringNullableWithAggregatesFilter<"ComQuoteLine"> | string | null
   isTravel?: Prisma.BoolWithAggregatesFilter<"ComQuoteLine"> | boolean
+  snapshotJson?: Prisma.JsonNullableWithAggregatesFilter<"ComQuoteLine">
 }
 
 export type ComQuoteLineCreateInput = {
   id?: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   quote: Prisma.ComQuoteCreateNestedOneWithoutLinesInput
   catalogOffer?: Prisma.CatalogOfferCreateNestedOneWithoutQuoteLinesInput
 }
@@ -327,19 +349,23 @@ export type ComQuoteLineUncheckedCreateInput = {
   quoteId: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   catalogOfferId?: string | null
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   quote?: Prisma.ComQuoteUpdateOneRequiredWithoutLinesNestedInput
   catalogOffer?: Prisma.CatalogOfferUpdateOneWithoutQuoteLinesNestedInput
 }
@@ -349,10 +375,12 @@ export type ComQuoteLineUncheckedUpdateInput = {
   quoteId?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   catalogOfferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineCreateManyInput = {
@@ -360,19 +388,23 @@ export type ComQuoteLineCreateManyInput = {
   quoteId: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   catalogOfferId?: string | null
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineUncheckedUpdateManyInput = {
@@ -380,10 +412,12 @@ export type ComQuoteLineUncheckedUpdateManyInput = {
   quoteId?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   catalogOfferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineListRelationFilter = {
@@ -401,10 +435,12 @@ export type ComQuoteLineCountOrderByAggregateInput = {
   quoteId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   qty?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   catalogOfferId?: Prisma.SortOrder
   isTravel?: Prisma.SortOrder
+  snapshotJson?: Prisma.SortOrder
 }
 
 export type ComQuoteLineAvgOrderByAggregateInput = {
@@ -418,6 +454,7 @@ export type ComQuoteLineMaxOrderByAggregateInput = {
   quoteId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   qty?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   catalogOfferId?: Prisma.SortOrder
@@ -429,6 +466,7 @@ export type ComQuoteLineMinOrderByAggregateInput = {
   quoteId?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   label?: Prisma.SortOrder
+  description?: Prisma.SortOrder
   qty?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   catalogOfferId?: Prisma.SortOrder
@@ -529,9 +567,11 @@ export type ComQuoteLineCreateWithoutCatalogOfferInput = {
   id?: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   quote: Prisma.ComQuoteCreateNestedOneWithoutLinesInput
 }
 
@@ -540,9 +580,11 @@ export type ComQuoteLineUncheckedCreateWithoutCatalogOfferInput = {
   quoteId: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineCreateOrConnectWithoutCatalogOfferInput = {
@@ -579,19 +621,23 @@ export type ComQuoteLineScalarWhereInput = {
   quoteId?: Prisma.StringFilter<"ComQuoteLine"> | string
   sortOrder?: Prisma.IntFilter<"ComQuoteLine"> | number
   label?: Prisma.StringFilter<"ComQuoteLine"> | string
+  description?: Prisma.StringNullableFilter<"ComQuoteLine"> | string | null
   qty?: Prisma.IntFilter<"ComQuoteLine"> | number
   unitPrice?: Prisma.IntFilter<"ComQuoteLine"> | number
   catalogOfferId?: Prisma.StringNullableFilter<"ComQuoteLine"> | string | null
   isTravel?: Prisma.BoolFilter<"ComQuoteLine"> | boolean
+  snapshotJson?: Prisma.JsonNullableFilter<"ComQuoteLine">
 }
 
 export type ComQuoteLineCreateWithoutQuoteInput = {
   id?: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   catalogOffer?: Prisma.CatalogOfferCreateNestedOneWithoutQuoteLinesInput
 }
 
@@ -599,10 +645,12 @@ export type ComQuoteLineUncheckedCreateWithoutQuoteInput = {
   id?: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   catalogOfferId?: string | null
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineCreateOrConnectWithoutQuoteInput = {
@@ -636,18 +684,22 @@ export type ComQuoteLineCreateManyCatalogOfferInput = {
   quoteId: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineUpdateWithoutCatalogOfferInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   quote?: Prisma.ComQuoteUpdateOneRequiredWithoutLinesNestedInput
 }
 
@@ -656,9 +708,11 @@ export type ComQuoteLineUncheckedUpdateWithoutCatalogOfferInput = {
   quoteId?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineUncheckedUpdateManyWithoutCatalogOfferInput = {
@@ -666,28 +720,34 @@ export type ComQuoteLineUncheckedUpdateManyWithoutCatalogOfferInput = {
   quoteId?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineCreateManyQuoteInput = {
   id?: string
   sortOrder?: number
   label: string
+  description?: string | null
   qty?: number
   unitPrice: number
   catalogOfferId?: string | null
   isTravel?: boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineUpdateWithoutQuoteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   catalogOffer?: Prisma.CatalogOfferUpdateOneWithoutQuoteLinesNestedInput
 }
 
@@ -695,20 +755,24 @@ export type ComQuoteLineUncheckedUpdateWithoutQuoteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   catalogOfferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ComQuoteLineUncheckedUpdateManyWithoutQuoteInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   label?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qty?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   catalogOfferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isTravel?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snapshotJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -718,10 +782,12 @@ export type ComQuoteLineSelect<ExtArgs extends runtime.Types.Extensions.Internal
   quoteId?: boolean
   sortOrder?: boolean
   label?: boolean
+  description?: boolean
   qty?: boolean
   unitPrice?: boolean
   catalogOfferId?: boolean
   isTravel?: boolean
+  snapshotJson?: boolean
   quote?: boolean | Prisma.ComQuoteDefaultArgs<ExtArgs>
   catalogOffer?: boolean | Prisma.ComQuoteLine$catalogOfferArgs<ExtArgs>
 }, ExtArgs["result"]["comQuoteLine"]>
@@ -731,10 +797,12 @@ export type ComQuoteLineSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   quoteId?: boolean
   sortOrder?: boolean
   label?: boolean
+  description?: boolean
   qty?: boolean
   unitPrice?: boolean
   catalogOfferId?: boolean
   isTravel?: boolean
+  snapshotJson?: boolean
   quote?: boolean | Prisma.ComQuoteDefaultArgs<ExtArgs>
   catalogOffer?: boolean | Prisma.ComQuoteLine$catalogOfferArgs<ExtArgs>
 }, ExtArgs["result"]["comQuoteLine"]>
@@ -744,10 +812,12 @@ export type ComQuoteLineSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   quoteId?: boolean
   sortOrder?: boolean
   label?: boolean
+  description?: boolean
   qty?: boolean
   unitPrice?: boolean
   catalogOfferId?: boolean
   isTravel?: boolean
+  snapshotJson?: boolean
   quote?: boolean | Prisma.ComQuoteDefaultArgs<ExtArgs>
   catalogOffer?: boolean | Prisma.ComQuoteLine$catalogOfferArgs<ExtArgs>
 }, ExtArgs["result"]["comQuoteLine"]>
@@ -757,13 +827,15 @@ export type ComQuoteLineSelectScalar = {
   quoteId?: boolean
   sortOrder?: boolean
   label?: boolean
+  description?: boolean
   qty?: boolean
   unitPrice?: boolean
   catalogOfferId?: boolean
   isTravel?: boolean
+  snapshotJson?: boolean
 }
 
-export type ComQuoteLineOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "quoteId" | "sortOrder" | "label" | "qty" | "unitPrice" | "catalogOfferId" | "isTravel", ExtArgs["result"]["comQuoteLine"]>
+export type ComQuoteLineOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "quoteId" | "sortOrder" | "label" | "description" | "qty" | "unitPrice" | "catalogOfferId" | "isTravel" | "snapshotJson", ExtArgs["result"]["comQuoteLine"]>
 export type ComQuoteLineInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   quote?: boolean | Prisma.ComQuoteDefaultArgs<ExtArgs>
   catalogOffer?: boolean | Prisma.ComQuoteLine$catalogOfferArgs<ExtArgs>
@@ -788,10 +860,15 @@ export type $ComQuoteLinePayload<ExtArgs extends runtime.Types.Extensions.Intern
     quoteId: string
     sortOrder: number
     label: string
+    description: string | null
     qty: number
     unitPrice: number
     catalogOfferId: string | null
     isTravel: boolean
+    /**
+     * Snapshot optionnel au moment de la ligne.
+     */
+    snapshotJson: runtime.JsonValue | null
   }, ExtArgs["result"]["comQuoteLine"]>
   composites: {}
 }
@@ -1221,10 +1298,12 @@ export interface ComQuoteLineFieldRefs {
   readonly quoteId: Prisma.FieldRef<"ComQuoteLine", 'String'>
   readonly sortOrder: Prisma.FieldRef<"ComQuoteLine", 'Int'>
   readonly label: Prisma.FieldRef<"ComQuoteLine", 'String'>
+  readonly description: Prisma.FieldRef<"ComQuoteLine", 'String'>
   readonly qty: Prisma.FieldRef<"ComQuoteLine", 'Int'>
   readonly unitPrice: Prisma.FieldRef<"ComQuoteLine", 'Int'>
   readonly catalogOfferId: Prisma.FieldRef<"ComQuoteLine", 'String'>
   readonly isTravel: Prisma.FieldRef<"ComQuoteLine", 'Boolean'>
+  readonly snapshotJson: Prisma.FieldRef<"ComQuoteLine", 'Json'>
 }
     
 

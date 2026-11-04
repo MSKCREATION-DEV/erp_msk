@@ -71,6 +71,7 @@ export const ModelName = {
   OrgNode: 'OrgNode',
   DocumentTemplate: 'DocumentTemplate',
   CatalogOffer: 'CatalogOffer',
+  CatalogOfferVersion: 'CatalogOfferVersion',
   CrmOrganization: 'CrmOrganization',
   CrmContact: 'CrmContact',
   CrmContactChannel: 'CrmContactChannel',
@@ -88,9 +89,18 @@ export const ModelName = {
   ComClient: 'ComClient',
   ComQuote: 'ComQuote',
   ComQuoteLine: 'ComQuoteLine',
+  ComContract: 'ComContract',
+  ComContractLine: 'ComContractLine',
   ComInvoice: 'ComInvoice',
   ComInvoiceLine: 'ComInvoiceLine',
+  ComInvoiceArrearsRef: 'ComInvoiceArrearsRef',
+  ComCreditNote: 'ComCreditNote',
   ComPayment: 'ComPayment',
+  ComPaymentAllocation: 'ComPaymentAllocation',
+  ComClientEvent: 'ComClientEvent',
+  ComInvoiceReminder: 'ComInvoiceReminder',
+  ComImportBatch: 'ComImportBatch',
+  ComImportAnomaly: 'ComImportAnomaly',
   CptAccount: 'CptAccount',
   CptJournal: 'CptJournal',
   CptExercise: 'CptExercise',
@@ -409,12 +419,18 @@ export const CatalogOfferScalarFieldEnum = {
   sku: 'sku',
   name: 'name',
   description: 'description',
+  longDescription: 'longDescription',
   pillar: 'pillar',
   billing: 'billing',
+  priceMode: 'priceMode',
   priceXof: 'priceXof',
   floorPriceXof: 'floorPriceXof',
   priceEurHint: 'priceEurHint',
+  currency: 'currency',
   vatEligible: 'vatEligible',
+  minEngagementMonths: 'minEngagementMonths',
+  conditions: 'conditions',
+  featuresJson: 'featuresJson',
   active: 'active',
   sortOrder: 'sortOrder',
   optionSchema: 'optionSchema',
@@ -423,6 +439,27 @@ export const CatalogOfferScalarFieldEnum = {
 } as const
 
 export type CatalogOfferScalarFieldEnum = (typeof CatalogOfferScalarFieldEnum)[keyof typeof CatalogOfferScalarFieldEnum]
+
+
+export const CatalogOfferVersionScalarFieldEnum = {
+  id: 'id',
+  catalogOfferId: 'catalogOfferId',
+  version: 'version',
+  isOfficial: 'isOfficial',
+  sku: 'sku',
+  name: 'name',
+  description: 'description',
+  billing: 'billing',
+  priceMode: 'priceMode',
+  priceXof: 'priceXof',
+  floorPriceXof: 'floorPriceXof',
+  vatEligible: 'vatEligible',
+  featuresJson: 'featuresJson',
+  snapshotJson: 'snapshotJson',
+  createdAt: 'createdAt'
+} as const
+
+export type CatalogOfferVersionScalarFieldEnum = (typeof CatalogOfferVersionScalarFieldEnum)[keyof typeof CatalogOfferVersionScalarFieldEnum]
 
 
 export const CrmOrganizationScalarFieldEnum = {
@@ -656,7 +693,7 @@ export type CrmWeeklyReportScalarFieldEnum = (typeof CrmWeeklyReportScalarFieldE
 export const ComNumberSequenceScalarFieldEnum = {
   id: 'id',
   kind: 'kind',
-  year: 'year',
+  periodKey: 'periodKey',
   lastValue: 'lastValue',
   updatedAt: 'updatedAt'
 } as const
@@ -668,13 +705,20 @@ export const ComClientScalarFieldEnum = {
   id: 'id',
   name: 'name',
   normalizedName: 'normalizedName',
+  legalName: 'legalName',
+  clientType: 'clientType',
+  status: 'status',
+  sector: 'sector',
   gedFolderCode: 'gedFolderCode',
   contactName: 'contactName',
+  contactRole: 'contactRole',
   email: 'email',
   phone: 'phone',
+  website: 'website',
   address: 'address',
   city: 'city',
   country: 'country',
+  taxId: 'taxId',
   notes: 'notes',
   includeTravelDefault: 'includeTravelDefault',
   crmOrganizationId: 'crmOrganizationId',
@@ -691,7 +735,12 @@ export type ComClientScalarFieldEnum = (typeof ComClientScalarFieldEnum)[keyof t
 export const ComQuoteScalarFieldEnum = {
   id: 'id',
   number: 'number',
+  draftCode: 'draftCode',
+  legacyNumber: 'legacyNumber',
+  legacyInternalRef: 'legacyInternalRef',
   status: 'status',
+  template: 'template',
+  revision: 'revision',
   regime: 'regime',
   currency: 'currency',
   vatEnabled: 'vatEnabled',
@@ -701,6 +750,7 @@ export const ComQuoteScalarFieldEnum = {
   includeTravel: 'includeTravel',
   object: 'object',
   missionNote: 'missionNote',
+  conditionsJson: 'conditionsJson',
   validUntil: 'validUntil',
   totalHt: 'totalHt',
   totalVat: 'totalVat',
@@ -710,6 +760,7 @@ export const ComQuoteScalarFieldEnum = {
   ownerId: 'ownerId',
   createdById: 'createdById',
   gedDocumentId: 'gedDocumentId',
+  issuedAt: 'issuedAt',
   sentAt: 'sentAt',
   acceptedAt: 'acceptedAt',
   createdAt: 'createdAt',
@@ -724,34 +775,98 @@ export const ComQuoteLineScalarFieldEnum = {
   quoteId: 'quoteId',
   sortOrder: 'sortOrder',
   label: 'label',
+  description: 'description',
   qty: 'qty',
   unitPrice: 'unitPrice',
   catalogOfferId: 'catalogOfferId',
-  isTravel: 'isTravel'
+  isTravel: 'isTravel',
+  snapshotJson: 'snapshotJson'
 } as const
 
 export type ComQuoteLineScalarFieldEnum = (typeof ComQuoteLineScalarFieldEnum)[keyof typeof ComQuoteLineScalarFieldEnum]
 
 
+export const ComContractScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  status: 'status',
+  title: 'title',
+  regime: 'regime',
+  currency: 'currency',
+  vatEnabled: 'vatEnabled',
+  vatRate: 'vatRate',
+  billingDay: 'billingDay',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  paymentTerms: 'paymentTerms',
+  renewalTerms: 'renewalTerms',
+  terminationTerms: 'terminationTerms',
+  notes: 'notes',
+  clientId: 'clientId',
+  quoteId: 'quoteId',
+  ownerId: 'ownerId',
+  createdById: 'createdById',
+  signedAt: 'signedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ComContractScalarFieldEnum = (typeof ComContractScalarFieldEnum)[keyof typeof ComContractScalarFieldEnum]
+
+
+export const ComContractLineScalarFieldEnum = {
+  id: 'id',
+  contractId: 'contractId',
+  sortOrder: 'sortOrder',
+  label: 'label',
+  description: 'description',
+  qty: 'qty',
+  unitPrice: 'unitPrice',
+  billing: 'billing',
+  status: 'status',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  nextBillAt: 'nextBillAt',
+  catalogOfferId: 'catalogOfferId',
+  catalogOfferVersionId: 'catalogOfferVersionId',
+  snapshotJson: 'snapshotJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ComContractLineScalarFieldEnum = (typeof ComContractLineScalarFieldEnum)[keyof typeof ComContractLineScalarFieldEnum]
+
+
 export const ComInvoiceScalarFieldEnum = {
   id: 'id',
   number: 'number',
+  draftCode: 'draftCode',
+  legacyNumber: 'legacyNumber',
+  legacyInternalRef: 'legacyInternalRef',
   status: 'status',
+  source: 'source',
   regime: 'regime',
   currency: 'currency',
   vatEnabled: 'vatEnabled',
   vatRate: 'vatRate',
   object: 'object',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  dueDate: 'dueDate',
   totalHt: 'totalHt',
   totalVat: 'totalVat',
   totalTtc: 'totalTtc',
   amountPaid: 'amountPaid',
+  presentedNetPayable: 'presentedNetPayable',
   clientId: 'clientId',
   quoteId: 'quoteId',
+  contractId: 'contractId',
   ownerId: 'ownerId',
   createdById: 'createdById',
   gedDocumentId: 'gedDocumentId',
   issuedAt: 'issuedAt',
+  sentAt: 'sentAt',
+  importBatchId: 'importBatchId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -764,27 +879,136 @@ export const ComInvoiceLineScalarFieldEnum = {
   invoiceId: 'invoiceId',
   sortOrder: 'sortOrder',
   label: 'label',
+  description: 'description',
   qty: 'qty',
   unitPrice: 'unitPrice',
   catalogOfferId: 'catalogOfferId',
-  isTravel: 'isTravel'
+  contractLineId: 'contractLineId',
+  isTravel: 'isTravel',
+  snapshotJson: 'snapshotJson'
 } as const
 
 export type ComInvoiceLineScalarFieldEnum = (typeof ComInvoiceLineScalarFieldEnum)[keyof typeof ComInvoiceLineScalarFieldEnum]
 
 
+export const ComInvoiceArrearsRefScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  sourceInvoiceId: 'sourceInvoiceId',
+  presentedAmount: 'presentedAmount',
+  label: 'label'
+} as const
+
+export type ComInvoiceArrearsRefScalarFieldEnum = (typeof ComInvoiceArrearsRefScalarFieldEnum)[keyof typeof ComInvoiceArrearsRefScalarFieldEnum]
+
+
+export const ComCreditNoteScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  draftCode: 'draftCode',
+  legacyNumber: 'legacyNumber',
+  amount: 'amount',
+  reason: 'reason',
+  clientId: 'clientId',
+  invoiceId: 'invoiceId',
+  createdById: 'createdById',
+  gedDocumentId: 'gedDocumentId',
+  issuedAt: 'issuedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ComCreditNoteScalarFieldEnum = (typeof ComCreditNoteScalarFieldEnum)[keyof typeof ComCreditNoteScalarFieldEnum]
+
+
 export const ComPaymentScalarFieldEnum = {
   id: 'id',
+  clientId: 'clientId',
   invoiceId: 'invoiceId',
   amount: 'amount',
   method: 'method',
+  status: 'status',
   paidAt: 'paidAt',
+  reference: 'reference',
   note: 'note',
+  gedDocumentId: 'gedDocumentId',
   recordedById: 'recordedById',
+  importBatchId: 'importBatchId',
   createdAt: 'createdAt'
 } as const
 
 export type ComPaymentScalarFieldEnum = (typeof ComPaymentScalarFieldEnum)[keyof typeof ComPaymentScalarFieldEnum]
+
+
+export const ComPaymentAllocationScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  invoiceId: 'invoiceId',
+  amount: 'amount',
+  createdAt: 'createdAt'
+} as const
+
+export type ComPaymentAllocationScalarFieldEnum = (typeof ComPaymentAllocationScalarFieldEnum)[keyof typeof ComPaymentAllocationScalarFieldEnum]
+
+
+export const ComClientEventScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  type: 'type',
+  summary: 'summary',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  metaJson: 'metaJson',
+  actorId: 'actorId',
+  createdAt: 'createdAt'
+} as const
+
+export type ComClientEventScalarFieldEnum = (typeof ComClientEventScalarFieldEnum)[keyof typeof ComClientEventScalarFieldEnum]
+
+
+export const ComInvoiceReminderScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  level: 'level',
+  channel: 'channel',
+  content: 'content',
+  result: 'result',
+  nextAction: 'nextAction',
+  sentAt: 'sentAt',
+  createdById: 'createdById'
+} as const
+
+export type ComInvoiceReminderScalarFieldEnum = (typeof ComInvoiceReminderScalarFieldEnum)[keyof typeof ComInvoiceReminderScalarFieldEnum]
+
+
+export const ComImportBatchScalarFieldEnum = {
+  id: 'id',
+  label: 'label',
+  status: 'status',
+  sourceName: 'sourceName',
+  reportJson: 'reportJson',
+  createdById: 'createdById',
+  committedAt: 'committedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ComImportBatchScalarFieldEnum = (typeof ComImportBatchScalarFieldEnum)[keyof typeof ComImportBatchScalarFieldEnum]
+
+
+export const ComImportAnomalyScalarFieldEnum = {
+  id: 'id',
+  batchId: 'batchId',
+  code: 'code',
+  severity: 'severity',
+  message: 'message',
+  entityRef: 'entityRef',
+  metaJson: 'metaJson',
+  resolved: 'resolved',
+  createdAt: 'createdAt'
+} as const
+
+export type ComImportAnomalyScalarFieldEnum = (typeof ComImportAnomalyScalarFieldEnum)[keyof typeof ComImportAnomalyScalarFieldEnum]
 
 
 export const CptAccountScalarFieldEnum = {

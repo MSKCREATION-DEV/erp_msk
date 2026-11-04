@@ -8,6 +8,7 @@ import {
   generateQuotePdfAction,
   updateQuoteStatusAction,
 } from "@/actions/commercial";
+import { createContractFromQuoteAction } from "@/actions/contracts";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import type { ComQuoteStatus } from "@/generated/prisma/client";
@@ -18,6 +19,7 @@ export function QuoteActions({
   canSend,
   canAccept,
   canInvoice,
+  canContract,
   canPdf,
   gedDocumentId,
 }: {
@@ -26,6 +28,7 @@ export function QuoteActions({
   canSend: boolean;
   canAccept: boolean;
   canInvoice: boolean;
+  canContract?: boolean;
   canPdf: boolean;
   gedDocumentId?: string | null;
 }) {
@@ -147,6 +150,22 @@ export function QuoteActions({
               Refuser
             </Button>
           </>
+        ) : null}
+        {canContract && status === "ACCEPTE" ? (
+          <Button
+            type="button"
+            size="sm"
+            disabled={pending}
+            onClick={() =>
+              act("Contrat créé", async () => {
+                const fd = new FormData();
+                fd.set("quoteId", quoteId);
+                return createContractFromQuoteAction(fd);
+              })
+            }
+          >
+            Créer contrat
+          </Button>
         ) : null}
         {canInvoice && (status === "ACCEPTE" || status === "ENVOYE") ? (
           <Button

@@ -3,6 +3,7 @@
 import { createHash } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { nanoid } from "nanoid";
 import { z } from "zod";
 import {
   ComDocRegime,
@@ -19,6 +20,7 @@ import { computeDocTotals } from "@/lib/commercial/totals";
 import { nextComNumber } from "@/lib/commercial/numbering";
 import { ensureClientDocFolder } from "@/lib/commercial/ged-client";
 import { buildClientGedFolderCode } from "@/lib/commercial/ged-folder-code";
+import { displayDocNumber } from "@/lib/commercial/doc-display";
 import { normalizeClientName } from "@/lib/commercial/labels";
 import { canAccessOwned } from "@/lib/commercial/scope";
 import { assertLinesAboveFloor } from "@/lib/commercial/floor-price";
@@ -600,10 +602,11 @@ export async function createQuoteAction(
   let quote: { id: string };
   try {
     quote = await prisma.$transaction(async (tx) => {
-      const number = await nextComNumber("DEVIS", new Date().getFullYear(), tx);
+      const draftCode = `DRF-DEV-${nanoid(8)}`;
       return tx.comQuote.create({
         data: {
-          number,
+          draftCode,
+          number: null,
           status: ComQuoteStatus.BROUILLON,
           regime: quoteRegime,
           currency,
@@ -701,15 +704,27 @@ export async function updateQuoteStatusAction(
     status: ComQuoteStatus;
     sentAt?: Date;
     acceptedAt?: Date | null;
+    number?: string;
+    issuedAt?: Date;
   } = { status };
 
-  if (status === "ENVOYE") data.sentAt = new Date();
+  if (status === "ENVOYE" || status === "EMISE") {
+    data.sentAt = status === "ENVOYE" ? new Date() : undefined;
+    if (!quote.issuedAt) data.issuedAt = new Date();
+  }
   if (status === "ACCEPTE") data.acceptedAt = new Date();
   if (status === "REFUSE" || status === "ANNULE") {
     data.acceptedAt = null;
   }
 
   await prisma.$transaction(async (tx) => {
+    // Numéro officiel à l’émission uniquement
+    if (
+      (status === "ENVOYE" || status === "EMISE") &&
+      !quote.number
+    ) {
+      data.number = await nextComNumber("DEVIS", new Date().getFullYear(), tx);
+    }
     await tx.comQuote.update({ where: { id: quoteId }, data });
 
     // Sync CRM : devis envoyé → statut Devis envoyé (si encore Intéressé / Négociation)
@@ -726,12 +741,13 @@ export async function updateQuoteStatusAction(
           where: { id: deal.id },
           data: { stage: CrmPipelineStage.DEVIS_ENVOYE },
         });
+        const displayNo = data.number ?? quote.number ?? quote.draftCode;
         await tx.crmActivity.create({
           data: {
             opportunityId: deal.id,
             organizationId: deal.organizationId,
             type: "NOTE",
-            summary: `Devis ${quote.number} marqué envoyé`,
+            summary: `Devis ${displayNo} marqué envoyé`,
             actorId: actor.id,
           },
         });
@@ -799,7 +815,7 @@ export async function generateQuotePdfAction(
   try {
     pdfBytes = await generateCommercialPdf({
       type: "DEVIS",
-      number: quote.number,
+      number: displayDocNumber(quote.number, quote.draftCode),
       clientName: quote.client.contactName || quote.client.name,
       clientCompany: quote.client.name,
       clientAddress: [quote.client.address, quote.client.city]
@@ -930,15 +946,17 @@ export async function createInvoiceFromQuoteAction(
   let invoiceId: string;
   try {
     const invoice = await prisma.$transaction(async (tx) => {
-      const existing = await tx.comInvoice.findUnique({
+      const existing = await tx.comInvoice.findFirst({
         where: { quoteId: quote.id },
       });
       if (existing) return { created: false as const, invoice: existing };
 
-      const number = await nextComNumber("FACTURE", new Date().getFullYear(), tx);
+      const draftCode = `DRF-FAC-${nanoid(8)}`;
       const created = await tx.comInvoice.create({
         data: {
-          number,
+          draftCode,
+          number: null,
+          source: "QUOTE",
           status: ComInvoiceStatus.BROUILLON,
           regime: quote.regime,
           currency: quote.currency,
@@ -982,7 +1000,7 @@ export async function createInvoiceFromQuoteAction(
       e instanceof Prisma.PrismaClientKnownRequestError &&
       e.code === "P2002"
     ) {
-      const existing = await prisma.comInvoice.findUnique({
+      const existing = await prisma.comInvoice.findFirst({
         where: { quoteId: quote.id },
       });
       if (existing) {
@@ -1020,17 +1038,23 @@ export async function issueInvoiceAction(
     return { ok: false, error: "Statut non modifiable" };
   }
 
-  await prisma.comInvoice.update({
-    where: { id: invoiceId },
-    data: {
-      status:
-        invoice.amountPaid > 0
-          ? invoice.amountPaid >= invoice.totalTtc
-            ? ComInvoiceStatus.PAYEE
-            : ComInvoiceStatus.PARTIELLEMENT_PAYEE
-          : ComInvoiceStatus.EMISE,
-      issuedAt: invoice.issuedAt ?? new Date(),
-    },
+  await prisma.$transaction(async (tx) => {
+    const number =
+      invoice.number ??
+      (await nextComNumber("FACTURE", new Date().getFullYear(), tx));
+    await tx.comInvoice.update({
+      where: { id: invoiceId },
+      data: {
+        number,
+        status:
+          invoice.amountPaid > 0
+            ? invoice.amountPaid >= invoice.totalTtc
+              ? ComInvoiceStatus.PAYEE
+              : ComInvoiceStatus.PARTIELLEMENT_PAYEE
+            : ComInvoiceStatus.EMISE,
+        issuedAt: invoice.issuedAt ?? new Date(),
+      },
+    });
   });
 
   await writeAudit({
@@ -1089,7 +1113,7 @@ export async function generateInvoicePdfAction(
   try {
     pdfBytes = await generateCommercialPdf({
       type: "FACTURE",
-      number: invoice.number,
+      number: displayDocNumber(invoice.number, invoice.draftCode),
       clientName: invoice.client.contactName || invoice.client.name,
       clientCompany: invoice.client.name,
       clientAddress: [invoice.client.address, invoice.client.city]
@@ -1220,13 +1244,14 @@ export async function recordPaymentAction(
       const rows = await tx.$queryRaw<
         Array<{
           id: string;
+          clientId: string;
           ownerId: string;
           status: ComInvoiceStatus;
           amountPaid: number;
           totalTtc: number;
         }>
       >`
-        SELECT id, "ownerId", status, "amountPaid", "totalTtc"
+        SELECT id, "clientId", "ownerId", status, "amountPaid", "totalTtc"
         FROM com_invoices
         WHERE id = ${invoiceId}
         FOR UPDATE
@@ -1257,14 +1282,22 @@ export async function recordPaymentAction(
           ? ComInvoiceStatus.PAYEE
           : ComInvoiceStatus.PARTIELLEMENT_PAYEE;
 
-      await tx.comPayment.create({
+      const payment = await tx.comPayment.create({
         data: {
+          clientId: invoice.clientId,
           invoiceId,
           amount: amountRaw,
           method,
           note,
           paidAt: paidAtFinal,
           recordedById: actor.id,
+        },
+      });
+      await tx.comPaymentAllocation.create({
+        data: {
+          paymentId: payment.id,
+          invoiceId,
+          amount: amountRaw,
         },
       });
       await tx.comInvoice.update({
