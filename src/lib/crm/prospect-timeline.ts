@@ -1,6 +1,6 @@
-import type { CrmActivityType } from "@prisma/client";
+import type { CrmActivityType } from "@/generated/prisma/client";
 import { ACTIVITY_LABELS } from "@/lib/crm/labels";
-import { isOutreachActivityType } from "@/lib/crm/follow-up-count";
+import { isOutreachActivityType } from "@/lib/crm/follow-up-meta";
 
 export type TimelineEntryKind = "outreach" | "rdv" | "system" | "creation";
 

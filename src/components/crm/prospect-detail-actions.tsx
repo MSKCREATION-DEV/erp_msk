@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { CrmPipelineStage } from "@prisma/client";
+import type { CrmPipelineStage } from "@/generated/prisma/client";
 import { ClipboardList, GitBranch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
@@ -12,7 +12,7 @@ import {
 } from "@/components/crm/prospect-quote-cta";
 import type { QuotePrefillLine } from "@/components/commercial/quote-form";
 import { COM_DOCS_GATED } from "@/lib/commercial/gates";
-import type { ProspectLinkedSummary } from "@/lib/crm/prospect-linked-entities";
+import type { ProspectLinkedSummary } from "@/lib/crm/prospect-linked-meta";
 
 type OfferOpt = {
   id: string;

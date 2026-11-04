@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CrmAppointmentStatus, type Prisma } from "@prisma/client";
+import { CrmAppointmentStatus, type Prisma } from "@/generated/prisma/client";
 import { Plus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";

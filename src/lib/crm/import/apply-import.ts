@@ -2,7 +2,7 @@ import {
   CrmActivityType,
   CrmLossReason,
   type PrismaClient,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { normalizeChannelValue } from "@/lib/crm/channels";
 import {
   resolveImportCreatedAt,

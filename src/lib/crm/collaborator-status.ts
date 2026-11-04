@@ -1,4 +1,4 @@
-import type { UserStatus } from "@prisma/client";
+import type { UserStatus } from "@/generated/prisma/client";
 import { USER_STATUS_LABEL } from "@/lib/users/status";
 
 /**

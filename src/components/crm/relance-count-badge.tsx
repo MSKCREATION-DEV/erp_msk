@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   formatRelanceCount,
   RELANCE_GUIDE_THRESHOLD,
-} from "@/lib/crm/follow-up-count";
+} from "@/lib/crm/follow-up-meta";
 import { cn } from "@/lib/utils";
 
 /**

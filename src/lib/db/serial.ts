@@ -16,11 +16,16 @@ export async function mapSeries<T, R>(
   return out;
 }
 
-/** Enchaîne des thunks async (ex. plusieurs count Prisma). */
-export async function runSeries<T>(fns: (() => Promise<T>)[]): Promise<T[]> {
-  const out: T[] = [];
+/**
+ * Enchaîne des thunks async (ex. plusieurs count Prisma).
+ * Inférence tuple : types de retour hétérogènes conservés.
+ */
+export async function runSeries<const T extends readonly unknown[]>(
+  fns: { readonly [K in keyof T]: () => Promise<T[K]> },
+): Promise<{ -readonly [K in keyof T]: T[K] }> {
+  const out: unknown[] = [];
   for (const fn of fns) {
     out.push(await fn());
   }
-  return out;
+  return out as { -readonly [K in keyof T]: T[K] };
 }

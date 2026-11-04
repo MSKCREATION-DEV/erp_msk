@@ -3,10 +3,10 @@
  *
  * Usage: npx tsx --env-file=.env.local scripts/crm-import/repair-contacts.ts
  */
-import { PrismaClient } from "@prisma/client";
+import { createPrisma } from "@/lib/create-prisma";
 import { isJunkPersonToken } from "../../src/lib/crm/contact-label";
 
-const prisma = new PrismaClient();
+const prisma = createPrisma({ max: 1 });
 
 async function main() {
   const contacts = await prisma.crmContact.findMany({

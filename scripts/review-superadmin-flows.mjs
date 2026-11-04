@@ -8,15 +8,15 @@ import { createServerClient } from "@supabase/ssr";
 import { chromium } from "playwright";
 import { mkdirSync } from "fs";
 import path from "path";
-import { PrismaClient } from "@prisma/client";
 
 config({ path: ".env.local" });
 config({ path: ".env" });
 
+import { prisma } from "./lib/prisma.mjs";
+
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const EMAIL = process.env.SMOKE_EMAIL ?? "a.guiro@mskcreation.net";
 const SHOT = path.join(process.cwd(), "tmp/review-superadmin");
-const prisma = new PrismaClient();
 
 const flows = [];
 function pass(flow, msg) {

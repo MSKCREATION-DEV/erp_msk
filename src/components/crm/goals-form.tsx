@@ -11,7 +11,7 @@ import {
   GOAL_LABELS,
   GOAL_METRICS,
   type GoalMetric,
-} from "@/lib/crm/goals";
+} from "@/lib/crm/goals-meta";
 import {
   type GoalPeriodGrain,
   GOAL_GRAIN_LABELS,

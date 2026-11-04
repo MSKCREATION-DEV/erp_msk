@@ -1,6 +1,6 @@
 import { normalizeOrgName } from "@/lib/crm/labels";
 import { normalizeChannelValue, phoneDigits } from "@/lib/crm/channels";
-import type { CrmContactChannelType } from "@prisma/client";
+import type { CrmContactChannelType } from "@/generated/prisma/client";
 
 /** Déclenchement live recherche org / e-mail (caractères exploitables). */
 export const MIN_LIVE_SEARCH_CHARS = 3;

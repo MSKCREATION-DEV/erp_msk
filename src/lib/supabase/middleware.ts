@@ -40,8 +40,10 @@ export async function updateSession(request: NextRequest) {
   const isPublic = PUBLIC_PREFIXES.some(
     (p) => path === p || path.startsWith(`${p}/`),
   );
+  // Cron : auth Bearer dans la route (pas de session cookie Vercel Cron).
+  const isCron = path === "/api/cron" || path.startsWith("/api/cron/");
 
-  if (!user && !isPublic) {
+  if (!user && !isPublic && !isCron) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", path);

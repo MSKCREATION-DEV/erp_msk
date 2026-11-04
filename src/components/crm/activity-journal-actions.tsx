@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { CrmActivityType } from "@prisma/client";
+import type { CrmActivityType } from "@/generated/prisma/client";
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import {
   deleteActivityAction,
@@ -16,7 +16,7 @@ import { ActionMenu, type ActionMenuItem } from "@/components/ui/action-menu";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { ACTIVITY_LABELS } from "@/lib/crm/labels";
-import { OUTREACH_ACTIVITY_TYPES } from "@/lib/crm/follow-up-count";
+import { OUTREACH_ACTIVITY_TYPES } from "@/lib/crm/follow-up-meta";
 import { cn } from "@/lib/utils";
 
 const TYPE_OPTIONS = [...OUTREACH_ACTIVITY_TYPES, "NOTE" as const].map(

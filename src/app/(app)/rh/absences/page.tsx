@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
-import type { RhAbsenceStatus } from "@prisma/client";
+import type { RhAbsenceStatus } from "@/generated/prisma/client";
 import { ABSENCE_STATUS_LABEL, absenceStatusTone } from "@/lib/rh/labels";
 import { AbsenceReviewButtons } from "@/components/rh/absence-review-buttons";
 

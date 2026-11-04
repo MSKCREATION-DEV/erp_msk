@@ -6,7 +6,7 @@ import { updateContractTypeRuleAction } from "@/actions/contract-rules";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { CONTRACT_TYPE_LABEL } from "@/lib/rh/labels";
-import type { RhContractType } from "@prisma/client";
+import type { RhContractType } from "@/generated/prisma/client";
 
 export type RuleRow = {
   contractType: RhContractType;

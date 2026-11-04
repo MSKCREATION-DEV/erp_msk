@@ -1,4 +1,4 @@
-import type { RhContractType } from "@prisma/client";
+import type { RhContractType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export type ContractTypeRuleDto = {

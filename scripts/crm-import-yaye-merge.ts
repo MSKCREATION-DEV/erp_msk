@@ -10,7 +10,8 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { PrismaClient, CrmActivityType } from "@prisma/client";
+import {CrmActivityType} from "@/generated/prisma/client";
+import { createPrisma } from "@/lib/create-prisma";
 import { parseImportFile } from "../src/lib/crm/import/parse-tabular";
 import { applyCrmImport } from "../src/lib/crm/import/apply-import";
 import {
@@ -18,7 +19,7 @@ import {
   resolveOwnerId,
 } from "../src/lib/crm/import/resolve-users";
 
-const prisma = new PrismaClient();
+const prisma = createPrisma({ max: 1 });
 const FILE = resolve("docs/CRM_Prospection_MSK Copier.xlsx");
 const dryRun = process.argv.includes("--dry-run");
 

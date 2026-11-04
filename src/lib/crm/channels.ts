@@ -1,4 +1,4 @@
-import type { CrmContactChannelType } from "@prisma/client";
+import type { CrmContactChannelType } from "@/generated/prisma/client";
 
 export const CHANNEL_TYPE_LABELS: Record<CrmContactChannelType, string> = {
   PHONE: "Téléphone",

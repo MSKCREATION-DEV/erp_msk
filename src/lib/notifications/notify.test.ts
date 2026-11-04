@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { usersWithPermissionWhere } from "./notify";
+import { usersWithPermissionWhere } from "./notify-where";
 
 const where = usersWithPermissionWhere("perm_cuid_crm_reassign");
 

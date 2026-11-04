@@ -1,9 +1,10 @@
-import { DocStatus } from "@prisma/client";
+import { DocStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { runSeries, mapSeries } from "@/lib/db/serial";
 import { collabFolderSlug, COLLAB_SUBFOLDERS } from "@/lib/ged/constants";
 import { RH_DOC, type LinkedRhDoc } from "@/lib/rh/docs";
 import { listEmployeeRhDocs } from "@/lib/rh/docs-query";
-import type { RhReglementStatus } from "@prisma/client";
+import type { RhReglementStatus } from "@/generated/prisma/client";
 import type { VaultDoc } from "@/lib/espace/documents-vault-types";
 
 export type {
@@ -210,25 +211,28 @@ export async function loadEmployeeDocumentVault(input: {
     });
   }
 
-  const [rhDocs, folderDocsNested, slips] = await Promise.all([
-    listEmployeeRhDocs(input.employeeId, input.contractIds),
-    Promise.all(
-      namePairs.map((n) =>
+  const [rhDocs, folderDocsNested, slips] = await runSeries([
+    () => listEmployeeRhDocs(input.employeeId, input.contractIds),
+    () =>
+      mapSeries(namePairs, (n) =>
         listCollaboratorFolderDocs({
           ...n,
           reglementStatus: input.reglementStatus,
         }),
       ),
-    ),
-    prisma.rhPayslip.findMany({
-      where: {
-        employeeId: input.employeeId,
-        status: { in: ["APPROVED", "PAID"] },
-        gedDocumentId: { not: null },
-      },
-      include: { period: true },
-      orderBy: [{ period: { year: "desc" } }, { period: { month: "desc" } }],
-    }),
+    () =>
+      prisma.rhPayslip.findMany({
+        where: {
+          employeeId: input.employeeId,
+          status: { in: ["APPROVED", "PAID"] },
+          gedDocumentId: { not: null },
+        },
+        include: { period: true },
+        orderBy: [
+          { period: { year: "desc" } },
+          { period: { month: "desc" } },
+        ],
+      }),
   ]);
 
   const folderDocs = folderDocsNested.flat();

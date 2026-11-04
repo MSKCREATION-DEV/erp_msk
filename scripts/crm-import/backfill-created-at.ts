@@ -11,11 +11,11 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { PrismaClient } from "@prisma/client";
+import { createPrisma } from "@/lib/create-prisma";
 import { parseImportFile } from "../../src/lib/crm/import/parse-tabular";
 import { resolveImportCreatedAt } from "../../src/lib/crm/import/map-row";
 
-const prisma = new PrismaClient();
+const prisma = createPrisma({ max: 1 });
 
 function parseArgs(argv: string[]) {
   let file = "docs/CRM_Prospection_MSK.xlsx";

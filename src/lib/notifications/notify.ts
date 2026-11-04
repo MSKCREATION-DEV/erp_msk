@@ -1,5 +1,6 @@
+import "server-only";
+
 import { revalidatePath } from "next/cache";
-import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email/resend";
 import {
@@ -7,8 +8,11 @@ import {
   notificationEmailText,
 } from "@/lib/email/templates";
 import { shouldEmailNotificationKind } from "@/lib/notifications/kinds";
+import { usersWithPermissionWhere } from "@/lib/notifications/notify-where";
 import { publicAppBaseUrl } from "@/lib/app-url";
 import { mapSeries } from "@/lib/db/serial";
+
+export { usersWithPermissionWhere } from "@/lib/notifications/notify-where";
 
 export type NotifyPayload = {
   userIds: string[];
@@ -18,50 +22,6 @@ export type NotifyPayload = {
   href?: string | null;
   channels?: Array<"in_app" | "email">;
 };
-
-/**
- * Filtre Prisma des utilisateurs ayant effectivement une permission.
- * Aligné sur `resolveUserPermissions` : packs directs + packs défaut de groupe
- * + GRANT, hors DENY. `permissionId` = FK cuid (jamais le code métier).
- */
-export function usersWithPermissionWhere(
-  permissionId: string,
-): Prisma.UserWhereInput {
-  const viaPack: Prisma.PermissionPackWhereInput = {
-    permissions: { some: { permissionId } },
-  };
-  return {
-    archivedAt: null,
-    status: { in: ["ACTIVE", "MUST_CHANGE_PASSWORD", "INVITE_PENDING"] },
-    NOT: {
-      overrides: {
-        some: { permissionId, effect: "DENY" },
-      },
-    },
-    OR: [
-      { isSuperAdmin: true },
-      {
-        userPacks: {
-          some: { pack: viaPack },
-        },
-      },
-      {
-        groupMembers: {
-          some: {
-            group: {
-              defaultPack: viaPack,
-            },
-          },
-        },
-      },
-      {
-        overrides: {
-          some: { permissionId, effect: "GRANT" },
-        },
-      },
-    ],
-  };
-}
 
 export async function notifyUsers(payload: NotifyPayload): Promise<number> {
   const ids = [...new Set(payload.userIds.filter(Boolean))];

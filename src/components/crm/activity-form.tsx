@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
-import type { CrmActivityType } from "@prisma/client";
+import type { CrmActivityType } from "@/generated/prisma/client";
 import { logActivityAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import { ACTIVITY_LABELS } from "@/lib/crm/labels";
 import {
   isOutreachActivityType,
   OUTREACH_ACTIVITY_TYPES,
-} from "@/lib/crm/follow-up-count";
+} from "@/lib/crm/follow-up-meta";
 
 /** Types proposés : canaux de suivi d’abord, Note en dernier. */
 const ACTIVITY_TYPE_ORDER: CrmActivityType[] = [

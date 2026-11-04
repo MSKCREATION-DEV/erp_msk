@@ -1,8 +1,8 @@
 import Link from "next/link";
-import type { UserStatus } from "@prisma/client";
+import type { UserStatus } from "@/generated/prisma/client";
 import { FileText, FolderOpen, History } from "lucide-react";
 import { STAGE_LABELS, STAGE_ORDER, formatXof } from "@/lib/crm/labels";
-import type { GoalProgressItem } from "@/lib/crm/goals";
+import type { GoalProgressItem } from "@/lib/crm/goals-meta";
 import {
   canHaveOperationalGoals,
   isOperationalCrmStatus,

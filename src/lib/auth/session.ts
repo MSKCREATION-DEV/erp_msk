@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { UserStatus } from "@prisma/client";
+import { UserStatus } from "@/generated/prisma/client";
 import { createClient } from "@/lib/supabase/server";
 import {
   hasPermission,

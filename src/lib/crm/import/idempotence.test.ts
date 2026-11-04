@@ -9,13 +9,13 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { PrismaClient } from "@prisma/client";
+import { createPrisma } from "@/lib/create-prisma";
 import { parseXlsxBuffer } from "@/lib/crm/import/parse-tabular";
 import { applyCrmImport } from "@/lib/crm/import/apply-import";
 import { ensureImportUsers } from "@/lib/crm/import/ensure-users";
 import { purgeCrmDomain } from "@/lib/crm/import/purge";
 
-const prisma = new PrismaClient();
+const prisma = createPrisma({ max: 1 });
 
 async function main() {
   if (!process.env.DATABASE_URL) {

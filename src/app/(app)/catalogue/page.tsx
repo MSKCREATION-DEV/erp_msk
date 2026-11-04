@@ -10,7 +10,7 @@ import {
   CATALOG_OFFERS_SEED,
 } from "@/lib/catalogue/offers-seed";
 import { formatXof, PILLAR_LABELS } from "@/lib/crm/labels";
-import type { CatalogPillar } from "@prisma/client";
+import type { CatalogPillar } from "@/generated/prisma/client";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";

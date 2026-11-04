@@ -1,5 +1,8 @@
-import type { UserStatus } from "@prisma/client";
+import "server-only";
+
+import type { UserStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import {
   CRM_ASSIGNABLE_STATUSES,
   CRM_FILTER_HISTORICAL_STATUSES,
@@ -23,18 +26,21 @@ export {
  * - tout owner d’au moins une opportunité (historique inclus)
  */
 export async function commercialTeamUserIds(): Promise<string[]> {
-  const [groupMembers, packUsers, dealOwners] = await Promise.all([
-    prisma.groupMember.findMany({
-      where: { group: { code: "commerciaux" } },
-      select: { userId: true },
-    }),
-    prisma.userPack.findMany({
-      where: { pack: { code: "commercial" } },
-      select: { userId: true },
-    }),
-    prisma.crmOpportunity.groupBy({
-      by: ["ownerId"],
-    }),
+  const [groupMembers, packUsers, dealOwners] = await runSeries([
+    () =>
+      prisma.groupMember.findMany({
+        where: { group: { code: "commerciaux" } },
+        select: { userId: true },
+      }),
+    () =>
+      prisma.userPack.findMany({
+        where: { pack: { code: "commercial" } },
+        select: { userId: true },
+      }),
+    () =>
+      prisma.crmOpportunity.groupBy({
+        by: ["ownerId"],
+      }),
   ]);
 
   return [

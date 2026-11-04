@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { RhEmployeeStatus } from "@prisma/client";
+import type { RhEmployeeStatus } from "@/generated/prisma/client";
 import { updateEmployeeStatusAction } from "@/actions/rh";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";

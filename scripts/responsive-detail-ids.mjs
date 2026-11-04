@@ -1,11 +1,11 @@
 /** Résout des IDs réels pour l’audit fiches détail. */
 import { config } from "dotenv";
-import { PrismaClient } from "@prisma/client";
 
 config({ path: ".env.local" });
 config({ path: ".env" });
 
-const prisma = new PrismaClient();
+import { prisma } from "./lib/prisma.mjs";
+
 
 async function main() {
   const [opp, client, devis, facture] = await Promise.all([

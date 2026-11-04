@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { CrmSource } from "@prisma/client";
+import type { CrmSource } from "@/generated/prisma/client";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   createProspectAction,

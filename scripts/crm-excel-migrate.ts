@@ -10,14 +10,14 @@
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { PrismaClient } from "@prisma/client";
+import { createPrisma } from "@/lib/create-prisma";
 import { buildInventory, formatInventory } from "../src/lib/crm/import/inventory";
 import { parseImportFile } from "../src/lib/crm/import/parse-tabular";
 import { purgeCrmDomain } from "../src/lib/crm/import/purge";
 import { ensureImportUsers } from "../src/lib/crm/import/ensure-users";
 import { applyCrmImport } from "../src/lib/crm/import/apply-import";
 
-const prisma = new PrismaClient();
+const prisma = createPrisma({ max: 1 });
 
 function parseArgs(argv: string[]) {
   const flags = new Set<string>();

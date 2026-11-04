@@ -4,7 +4,7 @@ import type {
   CrmLossReason,
   CrmPipelineStage,
   CrmSource,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 
 export const PILLAR_LABELS: Record<CatalogPillar, string> = {
   IMAGE_MARQUE: "Image de marque",

@@ -4,12 +4,12 @@
  */
 import { config } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-import { PrismaClient } from "@prisma/client";
 
 config({ path: ".env.local" });
 config({ path: ".env" });
 
-const prisma = new PrismaClient();
+import { prisma } from "./lib/prisma.mjs";
+
 const year = new Date().getFullYear();
 
 function ok(msg) {

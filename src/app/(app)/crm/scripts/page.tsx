@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import type { CrmSource } from "@prisma/client";
+import type { CrmSource } from "@/generated/prisma/client";
 import {
   AtSign,
   Camera,

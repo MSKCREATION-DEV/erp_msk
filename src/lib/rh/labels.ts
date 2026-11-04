@@ -8,7 +8,7 @@ import type {
   RhLeaveType,
   RhReglementStatus,
   RhTimesheetStatus,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 
 /** Tons compatibles avec `Badge` (@/components/ui/badge). */
 export type BadgeTone = "blue" | "ink" | "coral" | "muted" | "success";

@@ -14,6 +14,7 @@ import {
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { KpiGrid } from "@/components/ui/kpi-card";
@@ -31,12 +32,13 @@ export default async function RhHubPage() {
     declaredAbsences,
     submittedSheets,
     pendingProfileChanges,
-  ] = await Promise.all([
-    prisma.rhEmployee.count({ where: { status: "ACTIVE" } }),
-    prisma.rhLeaveRequest.count({ where: { status: "PENDING" } }),
-    prisma.rhAbsence.count({ where: { status: "DECLARED" } }),
-    prisma.rhTimesheet.count({ where: { status: "SUBMITTED" } }),
-    prisma.rhProfileChangeRequest.count({ where: { status: "PENDING" } }),
+  ] = await runSeries([
+    () => prisma.rhEmployee.count({ where: { status: "ACTIVE" } }),
+    () => prisma.rhLeaveRequest.count({ where: { status: "PENDING" } }),
+    () => prisma.rhAbsence.count({ where: { status: "DECLARED" } }),
+    () => prisma.rhTimesheet.count({ where: { status: "SUBMITTED" } }),
+    () =>
+      prisma.rhProfileChangeRequest.count({ where: { status: "PENDING" } }),
   ]);
 
   const canEmployees = hasAnyPermission(user, [

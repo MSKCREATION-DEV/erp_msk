@@ -56,7 +56,8 @@
     "postinstall": "prisma generate || exit 0"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.0",
+    "@prisma/adapter-pg": "^7.10.1",
+    "@prisma/client": "^7.10.1",
     "@radix-ui/react-avatar": "^1.2.7",
     "@radix-ui/react-dialog": "^1.2.0",
     "@radix-ui/react-separator": "^1.1.16",
@@ -76,6 +77,7 @@
     "react-dom": "^19.0.6",
     "recharts": "^2.15.4",
     "resend": "^6.32.1",
+    "server-only": "^0.0.1",
     "sharp": "^0.35.5",
     "tailwind-merge": "^3.7.0",
     "vaul": "^1.1.2",
@@ -96,14 +98,14 @@
     "eslint": "^9",
     "eslint-config-next": "^15.5.27",
     "playwright": "^1.55.0",
-    "prisma": "^6.19.0",
+    "prisma": "^7.10.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5"
   },
   "allowScripts": {
-    "@prisma/client@6.19.0": true,
-    "prisma@6.19.0": true,
-    "@prisma/engines@6.19.0": true
+    "prisma@7.10.1": true,
+    "@prisma/engines@7.10.1": true,
+    "@prisma/client@7.10.1": true
   }
 }

@@ -1,4 +1,4 @@
-import type { ComDocKind, PrismaClient } from "@prisma/client";
+import type { ComDocKind, PrismaClient } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 type Tx = Omit<

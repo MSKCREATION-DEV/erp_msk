@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { CrmPipelineStage } from "@prisma/client";
+import type { CrmPipelineStage } from "@/generated/prisma/client";
 import { Cell, Pie, PieChart } from "recharts";
 import {
   ChartContainer,

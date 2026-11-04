@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import {
   PROFILE_REQUESTABLE_FIELDS,
   PROFILE_REQUESTABLE_KEYS,

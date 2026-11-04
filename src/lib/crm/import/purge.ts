@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/generated/prisma/client";
 import { keepEmails } from "@/lib/crm/import/keep";
 import { loadUsersMap } from "@/lib/crm/import/users-map";
 

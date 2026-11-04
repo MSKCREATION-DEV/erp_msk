@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import type { CptAccountNature } from "@prisma/client";
+import type { CptAccountNature } from "@/generated/prisma/client";
+
+/** Plafond de lignes GL pour éviter un dump illimité (UI + mémoire). */
+const GL_LINE_CAP = 20_000;
 
 export type GlRow = {
   accountCode: string;
@@ -21,7 +24,26 @@ export type BalanceRow = {
   solde: number;
 };
 
-/** Grand livre : lignes validées, filtrées période / compte. */
+function entryWhere(opts: {
+  periodId?: string;
+  year?: number;
+}): {
+  status: "VALIDATED";
+  periodId?: string;
+  period?: { exercise: { year: number } };
+} {
+  // Sans filtre explicite → exercice civil courant (évite un full-scan historique).
+  const year =
+    opts.year ??
+    (opts.periodId ? undefined : new Date().getFullYear());
+  return {
+    status: "VALIDATED" as const,
+    ...(opts.periodId ? { periodId: opts.periodId } : {}),
+    ...(year != null ? { period: { exercise: { year } } } : {}),
+  };
+}
+
+/** Grand livre : lignes validées, filtrées période / compte, plafonnées. */
 export async function fetchGrandLivre(opts: {
   periodId?: string;
   accountId?: string;
@@ -29,13 +51,7 @@ export async function fetchGrandLivre(opts: {
 }): Promise<GlRow[]> {
   const lines = await prisma.cptEntryLine.findMany({
     where: {
-      entry: {
-        status: "VALIDATED",
-        ...(opts.periodId ? { periodId: opts.periodId } : {}),
-        ...(opts.year
-          ? { period: { exercise: { year: opts.year } } }
-          : {}),
-      },
+      entry: entryWhere(opts),
       ...(opts.accountId ? { accountId: opts.accountId } : {}),
     },
     include: {
@@ -43,6 +59,7 @@ export async function fetchGrandLivre(opts: {
       entry: { select: { number: true, entryDate: true, label: true } },
     },
     orderBy: [{ account: { code: "asc" } }, { entry: { entryDate: "asc" } }],
+    take: GL_LINE_CAP,
   });
 
   return lines.map((l) => ({
@@ -56,50 +73,45 @@ export async function fetchGrandLivre(opts: {
   }));
 }
 
+/** Balance : agrégats SQL par compte (pas de chargement de toutes les lignes). */
 export async function fetchTrialBalance(opts: {
   periodId?: string;
   year?: number;
 }): Promise<BalanceRow[]> {
-  const lines = await prisma.cptEntryLine.findMany({
+  const grouped = await prisma.cptEntryLine.groupBy({
+    by: ["accountId"],
     where: {
-      entry: {
-        status: "VALIDATED",
-        ...(opts.periodId ? { periodId: opts.periodId } : {}),
-        ...(opts.year
-          ? { period: { exercise: { year: opts.year } } }
-          : {}),
-      },
+      entry: entryWhere(opts),
     },
-    include: {
-      account: {
-        select: { code: true, label: true, classNum: true, nature: true },
-      },
-    },
+    _sum: { debit: true, credit: true },
   });
 
-  const map = new Map<string, BalanceRow>();
-  for (const l of lines) {
-    const key = l.account.code;
-    const row = map.get(key) ?? {
-      accountCode: l.account.code,
-      accountLabel: l.account.label,
-      classNum: l.account.classNum,
-      nature: l.account.nature,
-      debit: 0,
-      credit: 0,
-      solde: 0,
-    };
-    row.debit += l.debit;
-    row.credit += l.credit;
-    map.set(key, row);
+  if (grouped.length === 0) return [];
+
+  const accounts = await prisma.cptAccount.findMany({
+    where: { id: { in: grouped.map((g) => g.accountId) } },
+    select: { id: true, code: true, label: true, classNum: true, nature: true },
+  });
+  const byId = new Map(accounts.map((a) => [a.id, a]));
+
+  const rows: BalanceRow[] = [];
+  for (const g of grouped) {
+    const acc = byId.get(g.accountId);
+    if (!acc) continue;
+    const debit = g._sum.debit ?? 0;
+    const credit = g._sum.credit ?? 0;
+    rows.push({
+      accountCode: acc.code,
+      accountLabel: acc.label,
+      classNum: acc.classNum,
+      nature: acc.nature,
+      debit,
+      credit,
+      solde: debit - credit,
+    });
   }
 
-  return [...map.values()]
-    .map((r) => ({
-      ...r,
-      solde: r.debit - r.credit,
-    }))
-    .sort((a, b) => a.accountCode.localeCompare(b.accountCode));
+  return rows.sort((a, b) => a.accountCode.localeCompare(b.accountCode));
 }
 
 export type BilanCr = {
@@ -124,16 +136,36 @@ export function buildBilanCr(balance: BalanceRow[]): BilanCr {
   for (const r of balance) {
     if (r.nature === "ASSET") {
       const amount = r.debit - r.credit;
-      if (amount !== 0) actif.push({ code: r.accountCode, label: r.accountLabel, amount });
+      if (amount !== 0)
+        actif.push({
+          code: r.accountCode,
+          label: r.accountLabel,
+          amount,
+        });
     } else if (r.nature === "LIABILITY" || r.nature === "EQUITY") {
       const amount = r.credit - r.debit;
-      if (amount !== 0) passif.push({ code: r.accountCode, label: r.accountLabel, amount });
+      if (amount !== 0)
+        passif.push({
+          code: r.accountCode,
+          label: r.accountLabel,
+          amount,
+        });
     } else if (r.nature === "EXPENSE") {
       const amount = r.debit - r.credit;
-      if (amount !== 0) charges.push({ code: r.accountCode, label: r.accountLabel, amount });
+      if (amount !== 0)
+        charges.push({
+          code: r.accountCode,
+          label: r.accountLabel,
+          amount,
+        });
     } else if (r.nature === "INCOME") {
       const amount = r.credit - r.debit;
-      if (amount !== 0) produits.push({ code: r.accountCode, label: r.accountLabel, amount });
+      if (amount !== 0)
+        produits.push({
+          code: r.accountCode,
+          label: r.accountLabel,
+          amount,
+        });
     }
   }
 

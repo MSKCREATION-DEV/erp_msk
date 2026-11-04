@@ -1,5 +1,5 @@
 import sharp from "sharp";
-import { SignatureStatus } from "@prisma/client";
+import { SignatureStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   downloadGedObject,

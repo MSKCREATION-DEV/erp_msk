@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import type { CrmPipelineStage, CrmSource, Prisma } from "@prisma/client";
+import type { CrmPipelineStage, CrmSource, Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -39,7 +39,10 @@ import { OriginChip } from "@/components/crm/origin-chip";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
 import { ListTableScroll } from "@/components/ui/list-table-scroll";
-import { opportunityIdsWithMinOutreach, outreachCountByOpportunityIds } from "@/lib/crm/follow-up-count";
+import {
+  OUTREACH_ACTIVITY_TYPES,
+  outreachCountByOpportunityIds,
+} from "@/lib/crm/follow-up-count";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import {
   dateRangeFilter,
@@ -219,17 +222,24 @@ export async function ProspectsResults({
 
   const relancesMin = Number.parseInt(sp.relancesMin ?? "", 10);
   if (Number.isFinite(relancesMin) && relancesMin > 0) {
-    const scopedIds = (
-      await prisma.crmOpportunity.findMany({
-        where,
-        select: { id: true },
-        take: 2000,
-      })
-    ).map((d) => d.id);
-    const matching = await opportunityIdsWithMinOutreach(
-      scopedIds,
-      relancesMin,
-    );
+    const grouped = await prisma.crmActivity.groupBy({
+      by: ["opportunityId"],
+      where: {
+        type: { in: OUTREACH_ACTIVITY_TYPES },
+        opportunityId: { not: null },
+        opportunity: where,
+      },
+      _count: { _all: true },
+      // Prisma 6 : having sur le champ groupé (pas `_count._all`).
+      having: {
+        opportunityId: {
+          _count: { gte: relancesMin },
+        },
+      },
+    });
+    const matching = grouped
+      .map((r) => r.opportunityId)
+      .filter((id): id is string => Boolean(id));
     where = {
       ...where,
       id: { in: matching.length > 0 ? matching : ["__none__"] },

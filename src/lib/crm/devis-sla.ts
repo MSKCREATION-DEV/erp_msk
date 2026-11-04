@@ -1,4 +1,4 @@
-import type { CrmPipelineStage } from "@prisma/client";
+import type { CrmPipelineStage } from "@/generated/prisma/client";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 
 const DAY_MS = 24 * 60 * 60 * 1000;

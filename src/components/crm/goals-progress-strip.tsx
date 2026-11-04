@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Surface } from "@/components/ui/surface";
 import { RadialShape } from "@/components/ui/radial-shape";
 import { METRIC_NAV_TONE_CHART } from "@/components/ui/metric-nav-card";
-import type { GoalProgressItem } from "@/lib/crm/goals";
+import type { GoalProgressItem } from "@/lib/crm/goals-meta";
 import { cn } from "@/lib/utils";
 
 /** Bandeau minimal objectifs (dashboard) — lien détail optionnel. */

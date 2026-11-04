@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { FileUp, UserPlus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -16,10 +16,7 @@ import {
   listCommercialRoster,
   rosterToOwnerOptions,
 } from "@/lib/crm/team";
-import {
-  outreachCountByOpportunityIds,
-  sumOutreachCounts,
-} from "@/lib/crm/follow-up-count";
+import { OUTREACH_ACTIVITY_TYPES } from "@/lib/crm/follow-up-count";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -67,15 +64,7 @@ export default async function CrmProspectsPage({
     relancesFaites: number;
   } | null = null;
   if (showOwnKpis) {
-    const ownOpenIds = (
-      await prisma.crmOpportunity.findMany({
-        where: openOwn,
-        select: { id: true },
-        take: 2000,
-      })
-    ).map((d) => d.id);
-    const ownOutreachMap = await outreachCountByOpportunityIds(ownOpenIds);
-    const [prospects, interesses, retards] = await runSeries([
+    const [prospects, interesses, retards, relancesFaites] = await runSeries([
       () => prisma.crmOpportunity.count({ where: openOwn }),
       () =>
         prisma.crmOpportunity.count({
@@ -85,12 +74,19 @@ export default async function CrmProspectsPage({
         prisma.crmOpportunity.count({
           where: { ...openOwn, followUpAt: { lt: now } },
         }),
+      () =>
+        prisma.crmActivity.count({
+          where: {
+            type: { in: OUTREACH_ACTIVITY_TYPES },
+            opportunity: openOwn,
+          },
+        }),
     ]);
     ownKpis = {
       prospects,
       interesses,
       retards,
-      relancesFaites: sumOutreachCounts(ownOutreachMap),
+      relancesFaites,
     };
   }
 

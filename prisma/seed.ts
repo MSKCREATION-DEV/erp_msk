@@ -1,7 +1,8 @@
 import "dotenv/config";
 import { config } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-import { PrismaClient, UserStatus } from "@prisma/client";
+import { UserStatus } from "@/generated/prisma/client";
+import { createPrisma } from "@/lib/create-prisma";
 import {
   GROUPS,
   PACKS,
@@ -15,7 +16,12 @@ import { CRM_SCRIPTS_SEED } from "../src/lib/crm/scripts-seed";
 config({ path: ".env.local" });
 config({ path: ".env" });
 
-const prisma = new PrismaClient();
+// Seed CLI : DIRECT_URL préféré (session), sinon DATABASE_URL runtime.
+const prisma = createPrisma({
+  connectionString:
+    process.env.DIRECT_URL ?? process.env.DATABASE_URL,
+  max: 1,
+});
 
 const SUPER_ADMIN = {
   email: "a.guiro@mskcreation.net",

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { PILLAR_LABELS } from "@/lib/crm/labels";
-import type { CatalogBilling, CatalogPillar } from "@prisma/client";
+import type { CatalogBilling, CatalogPillar } from "@/generated/prisma/client";
 
 type Initial = {
   id?: string;

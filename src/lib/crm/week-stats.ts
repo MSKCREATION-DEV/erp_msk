@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { weekEndSunday } from "@/lib/crm/week";
-import { OUTREACH_ACTIVITY_TYPES } from "@/lib/crm/follow-up-count";
+import { OUTREACH_ACTIVITY_TYPES } from "@/lib/crm/follow-up-meta";
 import { mapSeries, runSeries } from "@/lib/db/serial";
 
 export type WeekStats = {
@@ -73,21 +73,23 @@ export async function computePeriodStats(
         },
       }),
     async () => {
-      const [legacyRdv, apptDone] = await Promise.all([
-        prisma.crmActivity.count({
-          where: {
-            ...oppOwner,
-            ...occurred,
-            type: "RDV",
-          },
-        }),
-        prisma.crmAppointment.count({
-          where: {
-            ...assigneeIn,
-            status: "DONE",
-            completedAt: { gte: from, lte: to },
-          },
-        }),
+      const [legacyRdv, apptDone] = await runSeries([
+        () =>
+          prisma.crmActivity.count({
+            where: {
+              ...oppOwner,
+              ...occurred,
+              type: "RDV",
+            },
+          }),
+        () =>
+          prisma.crmAppointment.count({
+            where: {
+              ...assigneeIn,
+              status: "DONE",
+              completedAt: { gte: from, lte: to },
+            },
+          }),
       ]);
       return legacyRdv + apptDone;
     },

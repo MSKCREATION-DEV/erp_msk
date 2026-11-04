@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import { fetchGrandLivre } from "@/lib/comptabilite/reports";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -26,13 +27,18 @@ export default async function ComptabiliteGrandLivrePage({
   const year = sp.year ? Number(sp.year) : new Date().getFullYear();
   const accountId = sp.accountId || undefined;
 
-  const [rows, accounts] = await Promise.all([
-    fetchGrandLivre({ year: Number.isFinite(year) ? year : undefined, accountId }),
-    prisma.cptAccount.findMany({
-      where: { active: true },
-      orderBy: { code: "asc" },
-      select: { id: true, code: true, label: true },
-    }),
+  const [rows, accounts] = await runSeries([
+    () =>
+      fetchGrandLivre({
+        year: Number.isFinite(year) ? year : undefined,
+        accountId,
+      }),
+    () =>
+      prisma.cptAccount.findMany({
+        where: { active: true },
+        orderBy: { code: "asc" },
+        select: { id: true, code: true, label: true },
+      }),
   ]);
 
   const totalDebit = rows.reduce((s, r) => s + r.debit, 0);

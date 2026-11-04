@@ -14,6 +14,7 @@ import {
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { KpiGrid } from "@/components/ui/kpi-card";
@@ -38,36 +39,37 @@ export default async function ComptabiliteHubPage() {
   const canManageEntries = hasPermission(user, "cpt.ecritures.manage");
 
   const [draftCount, validatedThisMonth, bankCount, budgetSum, toBookCount] =
-    await Promise.all([
-      prisma.cptEntry.count({ where: { status: "DRAFT" } }),
-      prisma.cptEntry.count({
-        where: {
-          status: "VALIDATED",
-          entryDate: { gte: monthStart, lt: monthEnd },
-        },
-      }),
-      prisma.cptBankAccount.count({ where: { active: true } }),
-      prisma.budLine.aggregate({
-        where: { exercise: { year } },
-        _sum: { planned: true },
-      }),
-      canManageEntries
-        ? (async () => {
-            const linked = await prisma.cptEntry.findMany({
-              where: { sourceType: "COM_INVOICE", sourceId: { not: null } },
-              select: { sourceId: true },
-            });
-            const linkedIds = linked
-              .map((e) => e.sourceId)
-              .filter((id): id is string => !!id);
-            return prisma.comInvoice.count({
-              where: {
-                status: { in: ["EMISE", "PARTIELLEMENT_PAYEE", "PAYEE"] },
-                id: { notIn: linkedIds.length ? linkedIds : ["__none__"] },
-              },
-            });
-          })()
-        : Promise.resolve(0),
+    await runSeries([
+      () => prisma.cptEntry.count({ where: { status: "DRAFT" } }),
+      () =>
+        prisma.cptEntry.count({
+          where: {
+            status: "VALIDATED",
+            entryDate: { gte: monthStart, lt: monthEnd },
+          },
+        }),
+      () => prisma.cptBankAccount.count({ where: { active: true } }),
+      () =>
+        prisma.budLine.aggregate({
+          where: { exercise: { year } },
+          _sum: { planned: true },
+        }),
+      async () => {
+        if (!canManageEntries) return 0;
+        const linked = await prisma.cptEntry.findMany({
+          where: { sourceType: "COM_INVOICE", sourceId: { not: null } },
+          select: { sourceId: true },
+        });
+        const linkedIds = linked
+          .map((e) => e.sourceId)
+          .filter((id): id is string => !!id);
+        return prisma.comInvoice.count({
+          where: {
+            status: { in: ["EMISE", "PARTIELLEMENT_PAYEE", "PAYEE"] },
+            id: { notIn: linkedIds.length ? linkedIds : ["__none__"] },
+          },
+        });
+      },
     ]);
 
   const canCpt = hasPermission(user, "cpt.access");

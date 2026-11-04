@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import type { CrmPipelineStage, Prisma } from "@prisma/client";
-import { CrmTaskStatus } from "@prisma/client";
+import type { CrmPipelineStage, Prisma } from "@/generated/prisma/client";
+import { CrmTaskStatus } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -20,11 +20,10 @@ import {
 import {
   classifyRelanceDue,
   dueAtWhereForBucket,
-  partitionRelanceDue,
   startOfLocalDay,
-  summarizeRelanceDueBuckets,
   type RelanceDueBucket,
 } from "@/lib/crm/relance-buckets";
+import { runSeries } from "@/lib/db/serial";
 import {
   buildRelanceActivitySearchWhere,
   buildRelanceTaskSearchWhere,
@@ -182,16 +181,55 @@ async function loadTasksPage(opts: {
   return { total, page, rows };
 }
 
-/** Due dates seules — KPI / chips globaux (payload minimal). */
-async function loadOpenDueAts(
+/** Compteurs KPI / chips par bucket — agrégats (pas de take:2000). */
+async function countOpenDueBuckets(
   assigneeFilter: string[] | null,
   searchWhere?: Prisma.CrmTaskWhereInput | null,
+  now: Date = new Date(),
 ) {
-  return prisma.crmTask.findMany({
-    where: taskWhere(assigneeFilter, searchWhere ?? null),
-    select: { dueAt: true },
-    take: 2000,
-  });
+  const search = searchWhere ?? null;
+  // Une seule ancre `now` pour les 4 buckets (cohérence exclusivité).
+  const [overdue, today, week, later] = await runSeries([
+    () =>
+      prisma.crmTask.count({
+        where: taskWhere(
+          assigneeFilter,
+          search,
+          dueAtWhereForBucket("overdue", now),
+        ),
+      }),
+    () =>
+      prisma.crmTask.count({
+        where: taskWhere(
+          assigneeFilter,
+          search,
+          dueAtWhereForBucket("today", now),
+        ),
+      }),
+    () =>
+      prisma.crmTask.count({
+        where: taskWhere(
+          assigneeFilter,
+          search,
+          dueAtWhereForBucket("week", now),
+        ),
+      }),
+    () =>
+      prisma.crmTask.count({
+        where: taskWhere(
+          assigneeFilter,
+          search,
+          dueAtWhereForBucket("later", now),
+        ),
+      }),
+  ]);
+  return {
+    overdue,
+    today,
+    week,
+    later,
+    open: overdue + today + week + later,
+  };
 }
 
 async function loadOutreachDonePage(opts: {
@@ -845,11 +883,11 @@ export async function RelancesResults({
     dir: "asc",
   });
 
-  // Séquentiel (pool connection_limit=1) — KPI légers puis page triée serveur.
-  const dueForKpis = await loadOpenDueAts(assigneeFilter);
-  const dueForChips = q
-    ? await loadOpenDueAts(assigneeFilter, taskSearchWhere)
-    : dueForKpis;
+  // Séquentiel (pool connection_limit=1) — KPI agrégés puis page triée serveur.
+  const dueSummary = await countOpenDueBuckets(assigneeFilter);
+  const chipSummary = q
+    ? await countOpenDueBuckets(assigneeFilter, taskSearchWhere)
+    : dueSummary;
   const listDueFilter =
     vueBucket !== "tous" ? dueAtWhereForBucket(vueBucket) : undefined;
   const {
@@ -884,10 +922,6 @@ export async function RelancesResults({
   });
 
   const now = new Date();
-  const kpiBuckets = partitionRelanceDue(dueForKpis, now);
-  const chipBuckets = partitionRelanceDue(dueForChips, now);
-  const dueSummary = summarizeRelanceDueBuckets(kpiBuckets);
-  const chipSummary = summarizeRelanceDueBuckets(chipBuckets);
   const pages = totalPages(listTotal, pageSize);
 
   const listTitleByVue: Record<VueFilter, string> = {
@@ -934,13 +968,13 @@ export async function RelancesResults({
   listParams.sort = taskSort.key;
   listParams.dir = taskSort.dir;
 
-  /** Chips : dueAts (portefeuille ou recherche) — pas la page courante. */
+  /** Chips : compteurs agrégés (portefeuille ou recherche) — pas la page courante. */
   const filters: { id: VueFilter; label: string; count: number }[] = [
     { id: "tous", label: "Toutes", count: chipSummary.open },
-    { id: "retard", label: "En retard", count: chipBuckets.overdue.length },
-    { id: "aujourdhui", label: "Aujourd’hui", count: chipBuckets.today.length },
-    { id: "semaine", label: "Sous 7 jours", count: chipBuckets.week.length },
-    { id: "plus-tard", label: "Plus tard", count: chipBuckets.later.length },
+    { id: "retard", label: "En retard", count: chipSummary.overdue },
+    { id: "aujourdhui", label: "Aujourd’hui", count: chipSummary.today },
+    { id: "semaine", label: "Sous 7 jours", count: chipSummary.week },
+    { id: "plus-tard", label: "Plus tard", count: chipSummary.later },
   ];
 
   const prospectsHref = buildPortfolioProspectsHref({

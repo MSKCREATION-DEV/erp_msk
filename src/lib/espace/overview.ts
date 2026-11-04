@@ -8,8 +8,9 @@ import type {
   RhPayslipStatus,
   RhReglementStatus,
   RhTimesheetStatus,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import { loadEmployeeDocumentVault } from "@/lib/espace/documents-vault";
 
 export type EspaceTimelineKind =
@@ -185,96 +186,106 @@ export async function loadEspaceOverview(
     recentTimesheets,
     recentPayslips,
     recentProfileChanges,
-  ] = await Promise.all([
-    prisma.rhLeaveRequest.count({
-      where: { employeeId: employee.id, status: "PENDING" },
-    }),
-    prisma.rhLeaveRequest.count({
-      where: {
-        employeeId: employee.id,
-        status: "APPROVED",
-        endDate: { gte: today },
-      },
-    }),
-    prisma.rhAbsence.count({
-      where: { employeeId: employee.id, status: "DECLARED" },
-    }),
-    prisma.rhTimesheet.count({
-      where: { employeeId: employee.id, status: "SUBMITTED" },
-    }),
-    prisma.rhPayslip.findFirst({
-      where: {
-        employeeId: employee.id,
-        status: { in: ["APPROVED", "PAID"] },
-      },
-      orderBy: [
-        { period: { year: "desc" } },
-        { period: { month: "desc" } },
-      ],
-      include: { period: { select: { year: true, month: true } } },
-    }),
-    prisma.rhLeaveRequest.findMany({
-      where: { employeeId: employee.id },
-      orderBy: { createdAt: "desc" },
-      take: 6,
-      select: {
-        id: true,
-        type: true,
-        status: true,
-        days: true,
-        startDate: true,
-        endDate: true,
-        createdAt: true,
-        validatedAt: true,
-      },
-    }),
-    prisma.rhAbsence.findMany({
-      where: { employeeId: employee.id },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      select: {
-        id: true,
-        status: true,
-        startDate: true,
-        endDate: true,
-        createdAt: true,
-        reviewedAt: true,
-      },
-    }),
-    prisma.rhTimesheet.findMany({
-      where: { employeeId: employee.id },
-      orderBy: { updatedAt: "desc" },
-      take: 4,
-      select: {
-        id: true,
-        status: true,
-        weekStart: true,
-        totalMinutes: true,
-        updatedAt: true,
-        validatedAt: true,
-      },
-    }),
-    prisma.rhPayslip.findMany({
-      where: {
-        employeeId: employee.id,
-        status: { in: ["APPROVED", "PAID"] },
-      },
-      orderBy: { updatedAt: "desc" },
-      take: 3,
-      include: { period: { select: { year: true, month: true } } },
-    }),
-    prisma.rhProfileChangeRequest.findMany({
-      where: { employeeId: employee.id },
-      orderBy: { createdAt: "desc" },
-      take: 6,
-      select: {
-        id: true,
-        status: true,
-        createdAt: true,
-        reviewedAt: true,
-        _count: { select: { lines: true } },
-      },
-    }),
+  ] = await runSeries([
+    () =>
+      prisma.rhLeaveRequest.count({
+        where: { employeeId: employee.id, status: "PENDING" },
+      }),
+    () =>
+      prisma.rhLeaveRequest.count({
+        where: {
+          employeeId: employee.id,
+          status: "APPROVED",
+          endDate: { gte: today },
+        },
+      }),
+    () =>
+      prisma.rhAbsence.count({
+        where: { employeeId: employee.id, status: "DECLARED" },
+      }),
+    () =>
+      prisma.rhTimesheet.count({
+        where: { employeeId: employee.id, status: "SUBMITTED" },
+      }),
+    () =>
+      prisma.rhPayslip.findFirst({
+        where: {
+          employeeId: employee.id,
+          status: { in: ["APPROVED", "PAID"] },
+        },
+        orderBy: [
+          { period: { year: "desc" } },
+          { period: { month: "desc" } },
+        ],
+        include: { period: { select: { year: true, month: true } } },
+      }),
+    () =>
+      prisma.rhLeaveRequest.findMany({
+        where: { employeeId: employee.id },
+        orderBy: { createdAt: "desc" },
+        take: 6,
+        select: {
+          id: true,
+          type: true,
+          status: true,
+          days: true,
+          startDate: true,
+          endDate: true,
+          createdAt: true,
+          validatedAt: true,
+        },
+      }),
+    () =>
+      prisma.rhAbsence.findMany({
+        where: { employeeId: employee.id },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          status: true,
+          startDate: true,
+          endDate: true,
+          createdAt: true,
+          reviewedAt: true,
+        },
+      }),
+    () =>
+      prisma.rhTimesheet.findMany({
+        where: { employeeId: employee.id },
+        orderBy: { updatedAt: "desc" },
+        take: 4,
+        select: {
+          id: true,
+          status: true,
+          weekStart: true,
+          totalMinutes: true,
+          updatedAt: true,
+          validatedAt: true,
+        },
+      }),
+    () =>
+      prisma.rhPayslip.findMany({
+        where: {
+          employeeId: employee.id,
+          status: { in: ["APPROVED", "PAID"] },
+        },
+        orderBy: { updatedAt: "desc" },
+        take: 3,
+        include: { period: { select: { year: true, month: true } } },
+      }),
+    () =>
+      prisma.rhProfileChangeRequest.findMany({
+        where: { employeeId: employee.id },
+        orderBy: { createdAt: "desc" },
+        take: 6,
+        select: {
+          id: true,
+          status: true,
+          createdAt: true,
+          reviewedAt: true,
+          _count: { select: { lines: true } },
+        },
+      }),
   ]);
 
   const vaultDocs = await loadEmployeeDocumentVault({

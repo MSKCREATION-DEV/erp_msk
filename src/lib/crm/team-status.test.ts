@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { isOperationalCrmStatus } from "./team";
+import { isOperationalCrmStatus } from "./collaborator-status";
 
 assert.equal(isOperationalCrmStatus("ACTIVE"), true);
 assert.equal(isOperationalCrmStatus("MUST_CHANGE_PASSWORD"), true);

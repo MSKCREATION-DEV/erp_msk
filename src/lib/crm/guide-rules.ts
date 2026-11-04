@@ -1,4 +1,4 @@
-import type { CrmActivityType, CrmPipelineStage } from "@prisma/client";
+import type { CrmActivityType, CrmPipelineStage } from "@/generated/prisma/client";
 
 /**
  * Seuil informatif « Relancé N× » (badge) — n’bloque plus le passage PERDU.

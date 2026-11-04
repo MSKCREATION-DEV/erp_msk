@@ -1,4 +1,4 @@
-import type { CrmSource } from "@prisma/client";
+import type { CrmSource } from "@/generated/prisma/client";
 
 /** Parité feuille Excel « SCRIPTS » — variables {{…}}. */
 export const CRM_SCRIPTS_SEED: {

@@ -1,4 +1,4 @@
-import type { SessionUser } from "@/lib/rbac/resolve";
+import type { SessionUser } from "@/lib/rbac/session-user";
 import { crmVisibility } from "@/lib/crm/scope";
 import { OPEN_PIPELINE_STAGES } from "@/lib/crm/labels";
 import {

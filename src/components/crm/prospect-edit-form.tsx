@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { CrmSource } from "@prisma/client";
+import type { CrmSource } from "@/generated/prisma/client";
 import { updateProspectAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

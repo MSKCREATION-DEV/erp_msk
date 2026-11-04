@@ -9,7 +9,7 @@ import {
 } from "@/actions/commercial";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
-import type { ComInvoiceStatus } from "@prisma/client";
+import type { ComInvoiceStatus } from "@/generated/prisma/client";
 
 export function InvoiceActions({
   invoiceId,

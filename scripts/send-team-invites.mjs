@@ -1,3 +1,4 @@
+import { prisma } from "./lib/prisma.mjs";
 /**
  * One-shot : renvoie les accès ERP à Mathieu + Andile (MUST_CHANGE_PASSWORD uniquement).
  * Usage : node --env-file=.env scripts/send-team-invites.mjs
@@ -5,7 +6,6 @@
  * Ne touche JAMAIS un compte ACTIVE.
  */
 import { createClient } from "@supabase/supabase-js";
-import { PrismaClient } from "@prisma/client";
 import { Resend } from "resend";
 
 const APP_URL =
@@ -79,8 +79,7 @@ async function main() {
   console.log(`App URL : ${APP_URL}`);
   console.log(`From    : ${from}`);
 
-  const prisma = new PrismaClient();
-  const admin = createClient(url, serviceKey, {
+    const admin = createClient(url, serviceKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
   const resend = new Resend(resendKey);

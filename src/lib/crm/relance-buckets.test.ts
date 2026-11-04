@@ -87,4 +87,48 @@ const now = new Date(2026, 9, 22, 15, 0, 0, 0);
   );
 }
 
+{
+  /** Chaque date tombe dans exactement un filtre SQL `dueAtWhereForBucket`. */
+  const samples = [
+    new Date(2026, 9, 10),
+    new Date(2026, 9, 22, 0, 0, 0, 0),
+    new Date(2026, 9, 22, 12),
+    new Date(2026, 9, 22, 23, 59, 59, 999),
+    new Date(2026, 9, 23),
+    new Date(2026, 9, 29, 23, 59),
+    new Date(2026, 9, 30),
+    new Date(2026, 11, 1),
+  ];
+  function matches(
+    dueAt: Date,
+    filter: ReturnType<typeof dueAtWhereForBucket>,
+  ): boolean {
+    if (!filter) return true;
+    if ("lt" in filter && !("gte" in filter) && !("gt" in filter)) {
+      return dueAt < filter.lt;
+    }
+    if ("gte" in filter && "lte" in filter) {
+      return dueAt >= filter.gte && dueAt <= filter.lte;
+    }
+    if ("gt" in filter && "lte" in filter) {
+      return dueAt > filter.gt && dueAt <= filter.lte;
+    }
+    if ("gt" in filter) {
+      return dueAt > filter.gt;
+    }
+    return false;
+  }
+  for (const dueAt of samples) {
+    const hits = (["overdue", "today", "week", "later"] as const).filter((b) =>
+      matches(dueAt, dueAtWhereForBucket(b, now)),
+    );
+    assert.equal(
+      hits.length,
+      1,
+      `${dueAt.toISOString()} → ${hits.join(",") || "aucun"}`,
+    );
+    assert.equal(hits[0], classifyRelanceDue(dueAt, now));
+  }
+}
+
 console.log("relance-buckets.test.ts OK");

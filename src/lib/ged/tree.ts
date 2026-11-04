@@ -1,4 +1,4 @@
-import { DocStatus } from "@prisma/client";
+import { DocStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   COLLAB_SUBFOLDERS,

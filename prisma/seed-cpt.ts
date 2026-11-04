@@ -1,7 +1,7 @@
 /**
  * Seed Phase 6 — plan SYSCOHADA minimal PME services digitaux + journaux + banques + FX.
  */
-import type { CptAccountNature, PrismaClient } from "@prisma/client";
+import type { CptAccountNature, PrismaClient } from "@/generated/prisma/client";
 
 type AccountSeed = {
   code: string;

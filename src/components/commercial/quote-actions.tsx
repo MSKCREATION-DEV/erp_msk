@@ -10,7 +10,7 @@ import {
 } from "@/actions/commercial";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
-import type { ComQuoteStatus } from "@prisma/client";
+import type { ComQuoteStatus } from "@/generated/prisma/client";
 
 export function QuoteActions({
   quoteId,

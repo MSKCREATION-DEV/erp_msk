@@ -21,7 +21,7 @@ import {
 } from "@/lib/list/pagination";
 import { firstParam } from "@/lib/list/search-params";
 import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";

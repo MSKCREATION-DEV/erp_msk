@@ -11,7 +11,7 @@ import { Surface } from "@/components/ui/surface";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { SOURCE_LABELS } from "@/lib/crm/labels";
 import { SCRIPT_VAR_KEYS } from "@/lib/crm/script-vars";
-import type { CrmSource } from "@prisma/client";
+import type { CrmSource } from "@/generated/prisma/client";
 
 const CHANNELS = (
   [

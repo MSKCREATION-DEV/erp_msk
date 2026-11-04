@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { CrmActivityType, CrmLossReason, CrmPipelineStage } from "@prisma/client";
+import type { CrmActivityType, CrmLossReason, CrmPipelineStage } from "@/generated/prisma/client";
 import { updateOpportunityStageAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,11 +15,11 @@ import {
   LOSS_NOTE_MIN_LEN,
   normalizeUiStage,
 } from "@/lib/crm/guide-rules";
-import { RELANCE_GUIDE_THRESHOLD } from "@/lib/crm/follow-up-count";
+import { RELANCE_GUIDE_THRESHOLD } from "@/lib/crm/follow-up-meta";
 import {
   linkedEntitiesLabels,
   type ProspectLinkedSummary,
-} from "@/lib/crm/prospect-linked-entities";
+} from "@/lib/crm/prospect-linked-meta";
 import {
   ACTIVITY_LABELS,
   LOSS_LABELS,

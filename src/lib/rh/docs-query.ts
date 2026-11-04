@@ -1,5 +1,6 @@
-import { DocStatus } from "@prisma/client";
+import { DocStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import {
   RH_DOC,
   RH_DOC_LABEL,
@@ -83,11 +84,11 @@ export async function listEmployeeRhDocs(
 }
 
 export async function mapEmployeeDocIds(employeeId: string) {
-  const [attestation, reglement, solde, fichePaie] = await Promise.all([
-    findLatestLinkedDoc(RH_DOC.ATTESTATION, employeeId),
-    findLatestLinkedDoc(RH_DOC.REGLEMENT, employeeId),
-    findLatestLinkedDoc(RH_DOC.SOLDE, employeeId),
-    findLatestLinkedDoc(RH_DOC.FICHE_PAIE, employeeId),
+  const [attestation, reglement, solde, fichePaie] = await runSeries([
+    () => findLatestLinkedDoc(RH_DOC.ATTESTATION, employeeId),
+    () => findLatestLinkedDoc(RH_DOC.REGLEMENT, employeeId),
+    () => findLatestLinkedDoc(RH_DOC.SOLDE, employeeId),
+    () => findLatestLinkedDoc(RH_DOC.FICHE_PAIE, employeeId),
   ]);
   return {
     attestationId: attestation?.id ?? null,

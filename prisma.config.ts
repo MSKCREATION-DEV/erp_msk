@@ -10,10 +10,10 @@ if (!process.env.VERCEL) {
 /**
  * CLI Prisma (migrate / db *) doit utiliser DIRECT_URL (Session pooler :5432).
  * Le runtime app utilise DATABASE_URL (Transaction :6543) via src/lib/prisma.ts
- * + schema `url = env("DATABASE_URL")`.
+ * + adapter-pg (Pool max=1).
  *
- * Si on pointe `datasource.url` sur DATABASE_URL (6543), `migrate deploy` hang
- * sur le pooler Transaction (build Vercel 45 min).
+ * Si on pointe la CLI sur DATABASE_URL (6543), `migrate deploy` hang
+ * sur le pooler Transaction (build Vercel).
  */
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -21,7 +21,6 @@ export default defineConfig({
     path: "prisma/migrations",
     seed: "tsx prisma/seed.ts",
   },
-  engine: "classic",
   datasource: {
     url: env("DIRECT_URL"),
   },

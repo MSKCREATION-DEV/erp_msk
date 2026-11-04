@@ -42,6 +42,8 @@ Avant le travail concerné, **lire le `SKILL.md`** listé, puis l’appliquer. P
 | Erreur, build cassé, régression | `debugging-and-error-recovery` |
 | Avant de déclarer « fini » / review / gate phase | `code-review-and-quality` |
 | Lib / framework (Next, Prisma, Supabase, Zod…) | `source-driven-development` (+ Context7 MCP si dispo) |
+| Prisma ORM (queries, schema, migrate, client) | `prisma-client-api` → `prisma-cli` (+ `prisma-database-setup` si setup) |
+| Upgrade Prisma 6→7 / adapter / generator | `prisma-upgrade-v7` **avant** tout code |
 
 **Minimum par livraison code :**  
 `incremental-implementation` + vérification (`test-driven-development` et/ou `browser-testing-with-devtools` / parcours manuel) + contrôle `code-review-and-quality` (axes utiles).
@@ -50,16 +52,21 @@ Avant le travail concerné, **lire le `SKILL.md`** listé, puis l’appliquer. P
 
 ## Skills à la demande (pas auto)
 
-`spec-driven-development`, `constraint-driven-development`, `context-engineering`, `doubt-driven-development`, `api-and-interface-design`, `code-simplification`, `performance-optimization`, `observability-and-instrumentation`, `documentation-and-adrs`, `deprecation-and-migration`, `git-workflow-and-versioning`, `ci-cd-and-automation`, `shipping-and-launch`, skills Prisma MSK.
+`spec-driven-development`, `constraint-driven-development`, `context-engineering`, `doubt-driven-development`, `api-and-interface-design`, `code-simplification`, `performance-optimization`, `observability-and-instrumentation`, `documentation-and-adrs`, `deprecation-and-migration`, `git-workflow-and-versioning`, `ci-cd-and-automation`, `shipping-and-launch`.
 
 Les charger quand la phase matche (voir `using-agent-skills`).
 
 ---
 
+## Prisma — trajectoire ERP MSK
+
+- **Runtime ERP** = Prisma ORM **v7** sur Vercel + Supabase (skills `prisma-upgrade-v7` / `prisma-client-api` / `prisma-cli` / `prisma-database-setup` dans `.agents/skills` et symlinks `.cursor/skills`).
+- **Ne pas** orienter le code ERP vers Prisma Composer / Compute / Platform sauf demande explicite.
+
 ## Customs MSK (ne pas écraser au resync)
 
-- `prisma-composer-core-concepts`
-- `prisma-platform-core-concepts`
+- `prisma-composer-core-concepts` — référence hors trajectoire runtime ERP
+- `prisma-platform-core-concepts` — référence hors trajectoire runtime ERP
 
 ---
 

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { UserStatus } from "@prisma/client";
+import { UserStatus } from "@/generated/prisma/client";
 import {
   buildRecoveryVerifyUrl,
   genTempPassword,

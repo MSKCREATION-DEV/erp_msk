@@ -1,4 +1,4 @@
-import type { CatalogBilling, CatalogPillar } from "@prisma/client";
+import type { CatalogBilling, CatalogPillar } from "@/generated/prisma/client";
 
 export type CatalogOfferSeed = {
   sku: string;

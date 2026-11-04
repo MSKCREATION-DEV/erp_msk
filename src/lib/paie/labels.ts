@@ -1,4 +1,4 @@
-import type { RhPayrollPeriodStatus, RhPayslipStatus } from "@prisma/client";
+import type { RhPayrollPeriodStatus, RhPayslipStatus } from "@/generated/prisma/client";
 import type { BadgeTone } from "@/lib/rh/labels";
 
 export const PERIOD_STATUS_LABEL: Record<RhPayrollPeriodStatus, string> = {

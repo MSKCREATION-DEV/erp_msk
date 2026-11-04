@@ -3,7 +3,7 @@ import {
   countLinkedEntities,
   linkedEntitiesLabels,
   type ProspectLinkedSummary,
-} from "./prospect-linked-entities";
+} from "./prospect-linked-meta";
 
 const empty: ProspectLinkedSummary = {
   openTasks: 0,

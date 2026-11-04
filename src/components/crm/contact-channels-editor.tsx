@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, Star, Trash2 } from "lucide-react";
-import type { CrmContactChannelType } from "@prisma/client";
+import type { CrmContactChannelType } from "@/generated/prisma/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FieldHint, FieldLabel } from "@/components/ui/field-label";

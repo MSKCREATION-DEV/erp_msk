@@ -1,7 +1,7 @@
 import { Surface } from "@/components/ui/surface";
 import { LEAVE_MOVEMENT_LABEL } from "@/lib/rh/leave-ledger";
 import { formatLeaveDays } from "@/lib/espace/overview";
-import type { RhLeaveMovementType } from "@prisma/client";
+import type { RhLeaveMovementType } from "@/generated/prisma/client";
 
 export type LeaveMovementRow = {
   id: string;

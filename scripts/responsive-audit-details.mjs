@@ -8,10 +8,11 @@ import { createServerClient } from "@supabase/ssr";
 import { chromium } from "playwright";
 import { mkdirSync, writeFileSync } from "fs";
 import path from "path";
-import { PrismaClient } from "@prisma/client";
 
 config({ path: ".env.local" });
 config({ path: ".env" });
+
+import { prisma } from "./lib/prisma.mjs";
 
 /** Aligné sur `src/lib/commercial/gates.ts` — devis/factures gelés. */
 const COM_DOCS_GATED = true;
@@ -72,8 +73,7 @@ async function getAuthCookies() {
 }
 
 async function loadIds() {
-  const prisma = new PrismaClient();
-  try {
+    try {
     const [opp, client, devis, facture] = await Promise.all([
       prisma.crmOpportunity.findFirst({
         orderBy: { updatedAt: "desc" },

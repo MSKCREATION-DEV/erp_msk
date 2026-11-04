@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
-import type { RhTimesheetStatus } from "@prisma/client";
+import type { RhTimesheetStatus } from "@/generated/prisma/client";
 import {
   TIMESHEET_STATUS_LABEL,
   formatMinutes,

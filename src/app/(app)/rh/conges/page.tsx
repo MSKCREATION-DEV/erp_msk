@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
-import type { RhLeaveStatus } from "@prisma/client";
+import type { RhLeaveStatus } from "@/generated/prisma/client";
 import { LEAVE_STATUS_LABEL, LEAVE_TYPE_LABEL, leaveStatusTone } from "@/lib/rh/labels";
 import { LeaveReviewButtons } from "@/components/rh/leave-review-buttons";
 

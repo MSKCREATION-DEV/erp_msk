@@ -41,7 +41,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/src/generated/prisma
+# Client Prisma 7 (output custom) : versionné pour que l’IDE / Cursor
+# résolve `@/generated/prisma/client` (sinon TS2307 + indexation ignorée).
+# Régénéré par `postinstall` / `prisma generate` — committer après changement de schema.
 
 # Skills Prisma auto-générés (doublons hors Cursor)
 .agents/

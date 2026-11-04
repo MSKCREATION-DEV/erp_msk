@@ -20,7 +20,7 @@ import type {
   CrmContactChannelType,
   CrmPipelineStage,
   Prisma,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 
 function personLabel(
   firstName: string | null | undefined,

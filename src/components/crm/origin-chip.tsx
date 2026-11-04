@@ -1,4 +1,4 @@
-import type { CrmSource } from "@prisma/client";
+import type { CrmSource } from "@/generated/prisma/client";
 import { SourceChannelIcon } from "@/components/brand/channel-icons";
 import { SOURCE_LABELS } from "@/lib/crm/labels";
 import { cn } from "@/lib/utils";

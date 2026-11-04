@@ -1,23 +1,11 @@
-import { OverrideEffect, type UserStatus } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import "server-only";
 
-export type SessionUser = {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  status: UserStatus;
-  isSuperAdmin: boolean;
-  mustChangePassword: boolean;
-  permissions: Set<string>;
-  groupCodes: string[];
-  /** Packs issus des groupes (pack défaut) + packs directs — union. */
-  packCodes: string[];
-  /** Packs assignés directement (user_packs), hors héritage groupe. */
-  directPackCodes: string[];
-  /** Packs défaut des groupes d’appartenance. */
-  groupPackCodes: string[];
-};
+import { OverrideEffect } from "@/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
+import type { SessionUser } from "@/lib/rbac/session-user";
+
+export type { SessionUser };
+export { hasPermission, hasAnyPermission } from "@/lib/rbac/session-user";
 
 /**
  * Résolution RBAC en **une seule query** Prisma.
@@ -167,15 +155,6 @@ export async function resolveUserPermissions(
     directPackCodes,
     groupPackCodes,
   };
-}
-
-export function hasPermission(user: SessionUser, code: string): boolean {
-  if (user.isSuperAdmin) return true;
-  return user.permissions.has(code);
-}
-
-export function hasAnyPermission(user: SessionUser, codes: string[]): boolean {
-  return codes.some((c) => hasPermission(user, c));
 }
 
 export type PermissionSource =

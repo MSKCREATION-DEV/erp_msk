@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import type { CrmSource } from "@prisma/client";
+import type { CrmSource } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
 
 /** Icônes de marque (SVG Simple Icons style) — origines & réseaux d’offre. */

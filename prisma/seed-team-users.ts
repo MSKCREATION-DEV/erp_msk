@@ -1,7 +1,7 @@
 /**
  * Seed comptes Mathieu + Andile — Auth safe (pas de reset MDP si ACTIVE).
  */
-import type { PrismaClient, UserStatus } from "@prisma/client";
+import type { PrismaClient, UserStatus } from "@/generated/prisma/client";
 import { createClient } from "@supabase/supabase-js";
 import { sendEmail } from "../src/lib/email/resend";
 import {

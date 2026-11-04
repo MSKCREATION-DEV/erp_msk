@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { ComQuoteStatus } from "@prisma/client";
+import { ComQuoteStatus } from "@/generated/prisma/client";
 import {
   canTransitionQuoteStatus,
   permissionForQuoteStatus,

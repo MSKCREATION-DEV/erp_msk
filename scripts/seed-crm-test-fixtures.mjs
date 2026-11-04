@@ -1,12 +1,11 @@
+import { CrmPipelineStage, CrmSource, prisma } from "./lib/prisma.mjs";
 /**
  * Fixtures CRM réalistes mais marquées [TEST] — jamais de vrais clients.
  * Usage: node --env-file=.env.local scripts/seed-crm-test-fixtures.mjs
  * Purge: PURGE=1 node --env-file=.env.local scripts/seed-crm-test-fixtures.mjs
  */
-import { PrismaClient, CrmPipelineStage, CrmSource } from "@prisma/client";
 import { createClient } from "@supabase/supabase-js";
 
-const prisma = new PrismaClient();
 const PREFIX = "[TEST]";
 
 const FIXTURES = [

@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import {
   resolveMetricTargetFromRows,
   sumEffectiveGoalTargets,
-  type GoalMetric,
-} from "./goals";
+} from "./goals-resolve";
+import type { GoalMetric } from "./goals-meta";
 import { buildCrmScopeHref, parseCrmPeriod } from "./scope-period";
 
 type Row = {

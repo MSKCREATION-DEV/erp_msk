@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { OverrideEffect, UserStatus } from "@prisma/client";
+import { OverrideEffect, UserStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -14,6 +14,7 @@ import {
   usersWithPermission,
 } from "@/lib/notifications/notify";
 import { hasPermission } from "@/lib/rbac/resolve";
+import { genTempPassword } from "@/lib/auth/password-recovery";
 import type { ActionResult } from "@/actions/auth";
 
 const inviteSchema = z.object({
@@ -24,10 +25,6 @@ const inviteSchema = z.object({
   groupIds: z.array(z.string()).default([]),
   packIds: z.array(z.string()).default([]),
 });
-
-function genTempPassword() {
-  return `Msk-${Math.random().toString(36).slice(2, 10)}!A1`;
-}
 
 export async function inviteUserAction(
   _prev: ActionResult | null,

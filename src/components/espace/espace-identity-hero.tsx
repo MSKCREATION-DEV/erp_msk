@@ -7,7 +7,7 @@ import {
   EMPLOYEE_STATUS_LABEL,
   employeeStatusTone,
 } from "@/lib/rh/labels";
-import type { RhContractType, RhEmployeeStatus } from "@prisma/client";
+import type { RhContractType, RhEmployeeStatus } from "@/generated/prisma/client";
 
 export function EspaceIdentityHero({
   greeting,

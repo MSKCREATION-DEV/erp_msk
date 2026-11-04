@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -30,13 +31,14 @@ export default async function RhHorairesPage() {
     redirect("/accueil");
   }
 
-  const [schedules, holidays] = await Promise.all([
-    prisma.rhWorkSchedule.findMany({ orderBy: { code: "asc" } }),
-    prisma.rhPublicHoliday.findMany({
-      where: { year: new Date().getFullYear() },
-      orderBy: { date: "asc" },
-      take: 40,
-    }),
+  const [schedules, holidays] = await runSeries([
+    () => prisma.rhWorkSchedule.findMany({ orderBy: { code: "asc" } }),
+    () =>
+      prisma.rhPublicHoliday.findMany({
+        where: { year: new Date().getFullYear() },
+        orderBy: { date: "asc" },
+        take: 40,
+      }),
   ]);
 
   return (

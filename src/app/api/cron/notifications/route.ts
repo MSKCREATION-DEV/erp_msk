@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { CrmTaskStatus } from "@prisma/client";
+import { CrmTaskStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   notifyUsers,

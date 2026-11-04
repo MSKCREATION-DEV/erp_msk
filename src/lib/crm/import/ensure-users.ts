@@ -1,5 +1,6 @@
-import type { PrismaClient, UserStatus } from "@prisma/client";
+import type { PrismaClient, UserStatus } from "@/generated/prisma/client";
 import { createClient } from "@supabase/supabase-js";
+import { genTempPassword } from "@/lib/auth/password-recovery";
 import {
   loadUsersMap,
   type ImportUserDef,
@@ -14,10 +15,6 @@ function isActivatedAccount(u: {
     u.status === "ACTIVE" ||
     (!u.mustChangePassword && u.activatedAt != null)
   );
-}
-
-function genTempPassword() {
-  return `Msk-${Math.random().toString(36).slice(2, 10)}!A1`;
 }
 
 export type EnsureUsersResult = {

@@ -3,12 +3,12 @@
  * Usage: NODE_TLS_REJECT_UNAUTHORIZED=0 node scripts/gate-phase7a.mjs
  */
 import { config } from "dotenv";
-import { PrismaClient, Prisma } from "@prisma/client";
 
 config({ path: ".env.local" });
 config({ path: ".env" });
 
-const prisma = new PrismaClient();
+import { Prisma, prisma } from "./lib/prisma.mjs";
+
 
 function ok(msg) {
   console.log(`✓ ${msg}`);

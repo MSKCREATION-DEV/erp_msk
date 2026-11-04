@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import { formatLeaveDays } from "@/lib/espace/overview";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -46,33 +47,40 @@ export default async function EspaceCongesPage() {
   });
 
   const [leaves, movements, holidays] = employee
-    ? await Promise.all([
-        prisma.rhLeaveRequest.findMany({
-          where: { employeeId: employee.id },
-          orderBy: { createdAt: "desc" },
-          take: 50,
-          include: {
-            validatedBy: {
-              select: { firstName: true, lastName: true },
+    ? await runSeries([
+        () =>
+          prisma.rhLeaveRequest.findMany({
+            where: { employeeId: employee.id },
+            orderBy: { createdAt: "desc" },
+            take: 50,
+            include: {
+              validatedBy: {
+                select: { firstName: true, lastName: true },
+              },
+              requester: {
+                select: { firstName: true, lastName: true },
+              },
             },
-            requester: {
-              select: { firstName: true, lastName: true },
+          }),
+        () =>
+          prisma.rhLeaveMovement.findMany({
+            where: { employeeId: employee.id },
+            orderBy: [{ effectiveDate: "desc" }, { createdAt: "desc" }],
+            take: 100,
+          }),
+        () =>
+          prisma.rhPublicHoliday.findMany({
+            where: {
+              year: {
+                in: [
+                  new Date().getFullYear() - 1,
+                  new Date().getFullYear(),
+                  new Date().getFullYear() + 1,
+                ],
+              },
             },
-          },
-        }),
-        prisma.rhLeaveMovement.findMany({
-          where: { employeeId: employee.id },
-          orderBy: [{ effectiveDate: "desc" }, { createdAt: "desc" }],
-          take: 100,
-        }),
-        prisma.rhPublicHoliday.findMany({
-          where: {
-            year: {
-              in: [new Date().getFullYear() - 1, new Date().getFullYear(), new Date().getFullYear() + 1],
-            },
-          },
-          select: { date: true, label: true },
-        }),
+            select: { date: true, label: true },
+          }),
       ])
     : [[], [], []];
 

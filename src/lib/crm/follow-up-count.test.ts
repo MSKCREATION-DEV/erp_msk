@@ -6,7 +6,7 @@ import {
   OUTREACH_ACTIVITY_TYPES,
   RELANCE_GUIDE_THRESHOLD,
   sumOutreachCounts,
-} from "./follow-up-count";
+} from "./follow-up-meta";
 import { MIN_ACTIVITIES_BEFORE_LOST } from "./guide-rules";
 
 assert.equal(RELANCE_GUIDE_THRESHOLD, MIN_ACTIVITIES_BEFORE_LOST);

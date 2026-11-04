@@ -1,4 +1,5 @@
-import { UserStatus } from "@prisma/client";
+import { randomBytes } from "crypto";
+import { UserStatus } from "@/generated/prisma/client";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/resend";
 import {
@@ -26,7 +27,8 @@ export function authPublicBaseUrl() {
 }
 
 export function genTempPassword() {
-  return `Msk-${Math.random().toString(36).slice(2, 10)}!A1`;
+  const part = randomBytes(8).toString("base64url").slice(0, 10);
+  return `Msk-${part}!A1`;
 }
 
 export function isPasswordResetEligible(status: UserStatus): boolean {

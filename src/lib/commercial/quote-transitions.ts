@@ -1,4 +1,4 @@
-import { ComQuoteStatus } from "@prisma/client";
+import { ComQuoteStatus } from "@/generated/prisma/client";
 
 /** Transitions autorisées serveur (indépendamment de l’UI). */
 const ALLOWED: Record<ComQuoteStatus, ReadonlySet<ComQuoteStatus>> = {

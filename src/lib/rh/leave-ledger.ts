@@ -1,4 +1,4 @@
-import type { Prisma, RhLeaveMovementType } from "@prisma/client";
+import type { Prisma, RhLeaveMovementType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   accrualForMonth,

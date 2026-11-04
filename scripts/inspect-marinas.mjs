@@ -1,12 +1,11 @@
+import { prisma } from "./lib/prisma.mjs";
 #!/usr/bin/env node
 /**
  * Lecture seule — inventaire « Marinas » (org / opp / ComClient / activités / audit).
  * Usage : node --env-file=.env.local scripts/inspect-marinas.mjs
  * N’écrit rien en base.
  */
-import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
 const NEEDLE = "marinas";
 
 function hit(s) {

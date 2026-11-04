@@ -1,4 +1,4 @@
-import type { CrmPipelineStage, CrmSource } from "@prisma/client";
+import type { CrmPipelineStage, CrmSource } from "@/generated/prisma/client";
 import {
   mapExcelSource,
   mapExcelStatus,

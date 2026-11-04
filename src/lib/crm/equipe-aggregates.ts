@@ -1,4 +1,4 @@
-import type { CrmPipelineStage, Prisma } from "@prisma/client";
+import type { CrmPipelineStage, Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { STAGE_ORDER } from "@/lib/crm/labels";

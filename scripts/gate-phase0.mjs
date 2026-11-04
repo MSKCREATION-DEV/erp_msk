@@ -4,11 +4,12 @@
  */
 import { config } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-import { PrismaClient, UserStatus } from "@prisma/client";
 import { existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 
 config({ path: ".env.local" });
+
+import { UserStatus, prisma } from "./lib/prisma.mjs";
 
 const results = [];
 const ok = (t, d = "") => {
@@ -26,7 +27,6 @@ for (const script of ["health:env", "test:nav"]) {
   else ko(script, (r.stderr || r.stdout || "").slice(0, 180));
 }
 
-const prisma = new PrismaClient();
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const service = process.env.SUPABASE_SERVICE_ROLE_KEY;

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { CrmPipelineStage } from "@prisma/client";
+import type { CrmPipelineStage } from "@/generated/prisma/client";
 import { FileSpreadsheet, GitBranch, UserCheck } from "lucide-react";
 import {
   convertOpportunityToClientAction,

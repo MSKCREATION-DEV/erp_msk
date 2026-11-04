@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { roleChips } from "@/lib/rbac/labels";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import { Badge } from "@/components/ui/badge";
 import { KpiGrid } from "@/components/ui/kpi-card";
 import { PageHeader } from "@/components/ui/page-header";
@@ -34,15 +35,19 @@ export default async function AccueilPage({
   if (canViewUsers) {
     try {
       [userCount, activeCount, pendingInvite, pendingResets] =
-        await Promise.all([
-          prisma.user.count(),
-          prisma.user.count({ where: { status: "ACTIVE" } }),
-          prisma.user.count({
-            where: {
-              status: { in: ["INVITE_PENDING", "MUST_CHANGE_PASSWORD"] },
-            },
-          }),
-          prisma.passwordResetRequest.count({ where: { status: "PENDING" } }),
+        await runSeries([
+          () => prisma.user.count(),
+          () => prisma.user.count({ where: { status: "ACTIVE" } }),
+          () =>
+            prisma.user.count({
+              where: {
+                status: { in: ["INVITE_PENDING", "MUST_CHANGE_PASSWORD"] },
+              },
+            }),
+          () =>
+            prisma.passwordResetRequest.count({
+              where: { status: "PENDING" },
+            }),
         ]);
     } catch (err) {
       // Ne pas faire planter toute la page (ex. pool DB saturé)

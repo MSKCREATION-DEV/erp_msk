@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { CrmTaskStatus } from "@prisma/client";
+import { CrmTaskStatus } from "@/generated/prisma/client";
 import {
   Bell,
   FileWarning,

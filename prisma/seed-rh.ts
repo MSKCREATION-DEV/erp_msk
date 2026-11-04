@@ -1,7 +1,7 @@
 /**
  * Seed Phase 4 — fiches RH pour users actifs connus (lien 1–1 User).
  */
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/generated/prisma/client";
 
 export async function seedPhase4Rh(prisma: PrismaClient) {
   const users = await prisma.user.findMany({

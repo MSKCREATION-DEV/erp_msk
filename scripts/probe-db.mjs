@@ -1,8 +1,9 @@
 import { config } from "dotenv";
-import { PrismaClient } from "@prisma/client";
 
 config({ path: ".env.local" });
 config({ path: ".env" });
+
+import { prisma as p } from "./lib/prisma.mjs";
 
 const u = process.env.DATABASE_URL ?? "";
 console.log("DATABASE_URL set:", Boolean(u));
@@ -15,7 +16,6 @@ try {
 console.log("DIRECT_URL set:", Boolean(process.env.DIRECT_URL));
 console.log("SUPABASE URL set:", Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL));
 
-const p = new PrismaClient();
 const t0 = Date.now();
 try {
   await Promise.race([

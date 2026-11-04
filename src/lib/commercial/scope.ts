@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import type { SessionUser } from "@/lib/rbac/resolve";
 import { hasPermission } from "@/lib/rbac/resolve";
 

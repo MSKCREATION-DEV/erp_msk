@@ -15,7 +15,7 @@ import {
   RhLeaveType,
   RhReglementStatus,
   RhTimesheetStatus,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -185,6 +185,12 @@ export async function updateEmployeeStatusAction(
 
 export async function signReglementAction(): Promise<ActionResult> {
   const user = await requireUser();
+  if (
+    !hasPermission(user, "self.documents.view") &&
+    !hasPermission(user, "self.profile.edit")
+  ) {
+    return { ok: false, error: "Permission refusée" };
+  }
   const emp = await requireEmployeeForUser(user.id);
   if (!emp) return { ok: false, error: "Aucune fiche RH liée à votre compte" };
 
@@ -1222,7 +1228,58 @@ export async function generateFichePaiePdfAction(
 }
 
 /**
- * URL signée d’un document RH — RH admin ou collab (son dossier / self.documents.view).
+ * Document lié au métier RH (pas Clients / Compta / modèles).
+ * Empêche un profil RH d’obtenir une URL signée pour un doc hors périmètre.
+ */
+async function isRhScopedDocument(
+  documentId: string,
+  folderPath: string,
+): Promise<boolean> {
+  if (folderPath.includes("/05_COLLABORATEURS/")) return true;
+
+  const link = await prisma.documentLink.findFirst({
+    where: {
+      documentId,
+      OR: [
+        { entityType: { startsWith: "Rh" } },
+        {
+          entityType: {
+            in: [
+              RH_DOC.CONTRACT,
+              RH_DOC.ATTESTATION,
+              RH_DOC.REGLEMENT,
+              RH_DOC.SOLDE,
+              RH_DOC.FICHE_PAIE,
+            ],
+          },
+        },
+      ],
+    },
+    select: { id: true },
+  });
+  if (link) return true;
+
+  const payslip = await prisma.rhPayslip.findFirst({
+    where: { gedDocumentId: documentId },
+    select: { id: true },
+  });
+  if (payslip) return true;
+
+  const absence = await prisma.rhAbsence.findFirst({
+    where: { gedDocumentId: documentId },
+    select: { id: true },
+  });
+  if (absence) return true;
+
+  const avatar = await prisma.rhEmployee.findFirst({
+    where: { avatarDocumentId: documentId },
+    select: { id: true },
+  });
+  return Boolean(avatar);
+}
+
+/**
+ * URL signée d’un document RH — RH admin ou collab (scope dossier / liens RH).
  */
 export async function getRhDocumentUrlAction(
   formData: FormData,
@@ -1245,14 +1302,31 @@ export async function getRhDocumentUrlAction(
     hasPermission(actor, "rh.contracts.manage");
   const canSelf =
     hasPermission(actor, "self.documents.view") ||
+    hasPermission(actor, "self.payslip.view") ||
     hasPermission(actor, "ged.view_scoped");
 
   if (!isRh && !canSelf) {
     return { ok: false, error: "Permission refusée" };
   }
 
-  if (!isRh && !(await canViewFolderPath(actor, doc.folder.path))) {
+  // Toujours appliquer le scope GED ; RH ne peut plus bypasser Clients/Compta.
+  if (await canViewFolderPath(actor, doc.folder.path)) {
+    // OK (browse full ou dossier collab / client autorisé)
+  } else if (isRh && (await isRhScopedDocument(doc.id, doc.folder.path))) {
+    // RH : uniquement arbo Collaborateurs ou docs liés RH
+  } else {
     return { ok: false, error: "Document hors de votre périmètre" };
+  }
+
+  // Self (non-RH) : fiche de paie = uniquement la sienne (défense en profondeur).
+  if (!isRh) {
+    const slip = await prisma.rhPayslip.findFirst({
+      where: { gedDocumentId: doc.id },
+      select: { employee: { select: { userId: true } } },
+    });
+    if (slip && slip.employee.userId !== actor.id) {
+      return { ok: false, error: "Document hors de votre périmètre" };
+    }
   }
 
   try {

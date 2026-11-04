@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import {
   comOwnerScopeWhere,
   comQuoteOwnerScopeWhere,
@@ -55,61 +56,69 @@ export default async function CommercialHubPage() {
         : { assigneeId: user.id };
 
   const [prospectsSuivis, prospectsTotal, overdue, openRelances, scripts, clients, openQuotes, unpaid] =
-    await Promise.all([
+    await runSeries([
       /** Toujours « suivis par moi » (pas le périmètre team/global). */
-      canCrm
-        ? prisma.crmOpportunity.count({
-            where: {
-              ownerId: user.id,
-              stage: { notIn: ["GAGNE", "PERDU"] },
-            },
-          })
-        : Promise.resolve(0),
+      () =>
+        canCrm
+          ? prisma.crmOpportunity.count({
+              where: {
+                ownerId: user.id,
+                stage: { notIn: ["GAGNE", "PERDU"] },
+              },
+            })
+          : Promise.resolve(0),
       /** Total liste partagée (anti-doublon). */
-      canCrm
-        ? prisma.crmOpportunity.count({
-            where: { stage: { notIn: ["GAGNE", "PERDU"] } },
-          })
-        : Promise.resolve(0),
-      canCrm
-        ? prisma.crmTask.count({
-            where: {
-              status: "OPEN",
-              dueAt: { lt: new Date() },
-              ...taskAssigneeWhere,
-            },
-          })
-        : Promise.resolve(0),
-      canCrm
-        ? prisma.crmTask.count({
-            where: {
-              status: "OPEN",
-              ...taskAssigneeWhere,
-            },
-          })
-        : Promise.resolve(0),
-      hasPermission(user, "crm.scripts.view")
-        ? prisma.crmScript.count({ where: { active: true } })
-        : Promise.resolve(0),
-      canCom
-        ? prisma.comClient.count({ where: clientWhere })
-        : Promise.resolve(0),
-      canCom
-        ? prisma.comQuote.count({
-            where: {
-              ...quoteWhere,
-              status: { in: ["BROUILLON", "ENVOYE"] },
-            },
-          })
-        : Promise.resolve(0),
-      canCom
-        ? prisma.comInvoice.count({
-            where: {
-              ...invoiceWhere,
-              status: { in: ["EMISE", "PARTIELLEMENT_PAYEE"] },
-            },
-          })
-        : Promise.resolve(0),
+      () =>
+        canCrm
+          ? prisma.crmOpportunity.count({
+              where: { stage: { notIn: ["GAGNE", "PERDU"] } },
+            })
+          : Promise.resolve(0),
+      () =>
+        canCrm
+          ? prisma.crmTask.count({
+              where: {
+                status: "OPEN",
+                dueAt: { lt: new Date() },
+                ...taskAssigneeWhere,
+              },
+            })
+          : Promise.resolve(0),
+      () =>
+        canCrm
+          ? prisma.crmTask.count({
+              where: {
+                status: "OPEN",
+                ...taskAssigneeWhere,
+              },
+            })
+          : Promise.resolve(0),
+      () =>
+        hasPermission(user, "crm.scripts.view")
+          ? prisma.crmScript.count({ where: { active: true } })
+          : Promise.resolve(0),
+      () =>
+        canCom
+          ? prisma.comClient.count({ where: clientWhere })
+          : Promise.resolve(0),
+      () =>
+        canCom
+          ? prisma.comQuote.count({
+              where: {
+                ...quoteWhere,
+                status: { in: ["BROUILLON", "ENVOYE"] },
+              },
+            })
+          : Promise.resolve(0),
+      () =>
+        canCom
+          ? prisma.comInvoice.count({
+              where: {
+                ...invoiceWhere,
+                status: { in: ["EMISE", "PARTIELLEMENT_PAYEE"] },
+              },
+            })
+          : Promise.resolve(0),
     ]);
 
   /**

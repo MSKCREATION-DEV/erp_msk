@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { CatalogBilling, CatalogPillar } from "@prisma/client";
+import { CatalogBilling, CatalogPillar } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
 import { writeAudit } from "@/lib/audit";

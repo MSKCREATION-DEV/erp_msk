@@ -11,7 +11,7 @@ import {
   CrmSource,
   CrmTaskStatus,
   Prisma,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission, type SessionUser } from "@/lib/rbac/resolve";

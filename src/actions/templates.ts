@@ -2,7 +2,7 @@
 
 import { createHash } from "crypto";
 import { revalidatePath } from "next/cache";
-import { TemplateType } from "@prisma/client";
+import { TemplateType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
 import { writeAudit } from "@/lib/audit";

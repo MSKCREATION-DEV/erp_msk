@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { UserStatus } from "@prisma/client";
+import type { UserStatus } from "@/generated/prisma/client";
 import { normalizePersonKey } from "@/lib/crm/import/keep";
 
 export type ImportUserDef = {

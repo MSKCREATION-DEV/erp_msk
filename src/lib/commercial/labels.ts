@@ -2,7 +2,7 @@ import type {
   ComInvoiceStatus,
   ComPaymentMethod,
   ComQuoteStatus,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 
 export const QUOTE_STATUS_LABELS: Record<ComQuoteStatus, string> = {
   BROUILLON: "Brouillon",

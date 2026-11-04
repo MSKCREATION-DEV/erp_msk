@@ -1,4 +1,4 @@
-import type { CptEntryStatus, CptPeriodStatus } from "@prisma/client";
+import type { CptEntryStatus, CptPeriodStatus } from "@/generated/prisma/client";
 
 export const ENTRY_STATUS_LABEL: Record<CptEntryStatus, string> = {
   DRAFT: "Brouillon",

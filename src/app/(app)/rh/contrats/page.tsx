@@ -10,7 +10,7 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { SortableTh } from "@/components/ui/sortable-th";
-import type { Prisma, RhContractStatus } from "@prisma/client";
+import type { Prisma, RhContractStatus } from "@/generated/prisma/client";
 import {
   CONTRACT_STATUS_LABEL,
   CONTRACT_TYPE_LABEL,

@@ -10,15 +10,15 @@ import { createServerClient } from "@supabase/ssr";
 import { chromium } from "playwright";
 import { mkdirSync, writeFileSync } from "fs";
 import path from "path";
-import { PrismaClient } from "@prisma/client";
 
 config({ path: ".env.local" });
 config({ path: ".env" });
 
+import { prisma } from "./lib/prisma.mjs";
+
 const BASE = (process.env.BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 const EMAIL = process.env.SMOKE_EMAIL ?? "a.guiro@mskcreation.net";
 const SHOT = path.join(process.cwd(), "tmp/smoke-commercial");
-const prisma = new PrismaClient();
 const isLocal = /localhost|127\.0\.0\.1/.test(BASE);
 const cookieDomain = isLocal
   ? "localhost"
