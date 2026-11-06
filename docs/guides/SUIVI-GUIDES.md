@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-06 (Phase 6 gate — synthèse filtres + rapport + clients, changelog consolidé) |
+| Dernière mise à jour | 2026-11-06 (P0 client/devis — convert explicite vs devis ; guides + manuels alignés) |
 
 ### Légende statuts documentaires
 
@@ -103,7 +103,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `ged-comprendre-acces` | Comprendre son accès GED | ged | `validated` | manuel 02 + permissions |
 | `crm-creer-prospect` | Créer un prospect | commercial | `to_validate` | live doublons 3 car. + ack contact — revalider UI |
 | `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `outdated` | CRUD relances + RDV + Perdu sans min 3× — à réécrire |
-| `crm-transformer-client` | Transformer un prospect en client | commercial | `validated` | manuel 05 (Intéressé → Client) |
+| `crm-transformer-client` | Transformer un prospect en client | commercial | `to_validate` | P0 nov. 2026 — distinct de « Créer un devis » ; revalidation terrain |
 | `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `outdated` | Rapport semaine : grille 4 KPI période + liens liste ; hub/cartes — revalider captures et libellés |
 | `com-clients-equipe-historique` | Clients COM : équipe, filtres, historique | commercial | `draft` | liste/fiche + URL `owners=` — parcours à valider humain |
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
@@ -188,6 +188,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-06 — P0 Client / Contrat (Q1) : devis sans convert CRM implicite · CTA « Transformer en client » · garde GAGNE
+
+- **Pourquoi** : bug B1 — `convertOpportunityToClientAction` (→ GAGNE) avant la modale devis cassait `createQuoteAction` (garde Intéressé) ; la doc et le centre de guides laissaient entendre une convert silencieuse via devis.
+- **Quoi** :
+  - `ensureProspectClientDraftForQuoteAction` : fiche `ComClient` liée (`crmOrganizationId` / `sourceOpportunityId`) pour ouvrir le devis **sans** passer le deal en GAGNE ; réutilisation si client déjà lié (pas de double création) ; journal CRM + événement client `CREATED`.
+  - UI `ProspectQuoteCta` : **Créer un devis** n’appelle plus la convert ; **Transformer en client** visible avec docs dégelés (`COM_DOCS_GATED=false`), confirmation + pending inchangés.
+  - `updateOpportunityStageAction` : passage manuel en **GAGNE** refusé sans fiche `ComClient` liée au prospect/org (réduit l’incohérence badge Client sans dossier).
+- **Fichiers** : `src/actions/commercial.ts`, `src/components/crm/prospect-quote-cta.tsx`, `src/actions/crm.ts`, `src/lib/guides/content/commercial.ts`, `docs/manuels/05-crm.md`, `docs/manuels/06-commercial.md`
+- **Statut doc** : `crm-transformer-client` → `to_validate` ; manuels 05/06 mis à jour ; ce fichier §4.
 
 ### 2026-11-06 — Lot CRM/COM : filtres Prospects multi · Rapport 4 KPI période · Clients équipe + traces (Phases 1–6)
 

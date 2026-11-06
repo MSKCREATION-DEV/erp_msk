@@ -313,7 +313,7 @@ export const commercialGuides: GuideInput[] = [
     id: "crm-transformer-client",
     title: "Transformer un prospect en client",
     summary:
-      "Dès le statut Intéressé : créer le client commercial et passer le CRM en Client.",
+      "Acte explicite (confirmation) : client commercial + CRM Client — distinct du devis (Q1).",
     moduleId: "commercial",
     categories: ["procedure"],
     taskIds: ["transformer", "creer"],
@@ -328,12 +328,12 @@ export const commercialGuides: GuideInput[] = [
       "ged-comprendre-acces",
       "com-hub-naviguer",
     ],
-    status: "validated",
-    updatedAt: "2026-10-22",
+    status: "to_validate",
+    updatedAt: "2026-11-06",
     difficulty: "intermediaire",
     viewPermission: "crm.access",
     objective:
-      "Convertir correctement le dossier : client COM créé, statut CRM Client, lien fiche client.",
+      "Convertir volontairement : client COM + statut CRM Client. Ne pas confondre avec « Créer un devis » (fiche client liée sans fermer le deal).",
     steps: [
       {
         title: "Vérifier le statut",
@@ -351,10 +351,10 @@ export const commercialGuides: GuideInput[] = [
       {
         title: "Poursuivre côté Commercial",
         instruction:
-          "Ouvrez Clients (`/commercial/clients`) pour la fiche. Devis : vérifier l’état du gate Direction avant d’annoncer un parcours devis ouvert.",
+          "Ouvrez Clients (`/commercial/clients`) pour la fiche. Devis : depuis Intéressé, **Créer un devis** ne remplace pas cette étape — c’est un parcours séparé qui lie une fiche client sans passer le CRM en Client tant que vous n’avez pas transformé.",
         href: "/commercial/clients",
         caution:
-          "Devis gelés temporairement (Direction 13/10) — ne pas documenter l’envoi devis comme disponible tant que le gate n’est pas levé.",
+          "À valider : droits `com.devis.create` / `com.clients.manage` sur votre profil.",
       },
     ],
     expectedResult:

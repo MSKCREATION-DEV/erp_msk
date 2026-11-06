@@ -10,6 +10,7 @@ import {
   ComInvoiceStatus,
   ComPaymentMethod,
   ComQuoteStatus,
+  CrmActivityType,
   CrmPipelineStage,
   Prisma,
 } from "@/generated/prisma/client";
@@ -388,6 +389,181 @@ export async function updateClientAction(
 
   revalidateCommercial([`/commercial/clients/${clientId}`]);
   return { ok: true, message: "Client mis à jour" };
+}
+
+/**
+ * Prépare un devis depuis la fiche prospect (statut Intéressé) sans convert CRM :
+ * crée ou réutilise une `ComClient` liée (`crmOrganizationId` / `sourceOpportunityId`)
+ * sans passer le deal en GAGNE (Q1).
+ */
+export async function ensureProspectClientDraftForQuoteAction(
+  formData: FormData,
+): Promise<ActionResult & { clientId?: string }> {
+  const actor = await requireUser({ permission: "com.clients.manage" });
+  const opportunityId = String(formData.get("opportunityId") ?? "").trim();
+  if (!opportunityId) return { ok: false, error: "Opportunité manquante" };
+
+  if (!cuidSchema.safeParse(opportunityId).success) {
+    return { ok: false, error: "Opportunité invalide" };
+  }
+
+  const deal = await prisma.crmOpportunity.findUnique({
+    where: { id: opportunityId },
+    include: {
+      organization: { include: { contacts: { where: { isPrimary: true }, take: 1 } } },
+    },
+  });
+  if (!deal) return { ok: false, error: "Opportunité introuvable" };
+
+  const stage =
+    deal.stage === CrmPipelineStage.NEGOCIATION
+      ? CrmPipelineStage.DEVIS_ENVOYE
+      : deal.stage;
+  if (stage !== CrmPipelineStage.INTERESSE) {
+    return {
+      ok: false,
+      error:
+        "Devis possible uniquement au statut Intéressé. Changez d’abord le statut du prospect.",
+    };
+  }
+
+  if (!assertCrmDealAccess(actor, deal.ownerId)) {
+    return { ok: false, error: "Opportunité hors périmètre CRM" };
+  }
+
+  const dealId = deal.id;
+  const dealOrgId = deal.organizationId;
+  const now = new Date();
+
+  const existing = await prisma.comClient.findFirst({
+    where: {
+      OR: [
+        { sourceOpportunityId: dealId },
+        { crmOrganizationId: dealOrgId },
+      ],
+    },
+  });
+
+  if (existing) {
+    if (
+      existing.sourceOpportunityId != null &&
+      existing.sourceOpportunityId !== dealId
+    ) {
+      return {
+        ok: false,
+        error:
+          "Un client commercial existe déjà pour cette organisation via un autre prospect. Ouvrez la fiche client liée.",
+      };
+    }
+    if (existing.crmOrganizationId && existing.crmOrganizationId !== dealOrgId) {
+      return { ok: false, error: "Client commercial incompatible avec ce prospect." };
+    }
+
+    const needsSourceLink =
+      existing.crmOrganizationId === dealOrgId &&
+      existing.sourceOpportunityId == null;
+
+    if (needsSourceLink) {
+      await prisma.comClient.update({
+        where: { id: existing.id },
+        data: { sourceOpportunityId: dealId },
+      });
+    }
+
+    await writeAudit({
+      actorId: actor.id,
+      action: "com.client.ensure_draft_reuse",
+      entityType: "com_client",
+      entityId: existing.id,
+      metadata: { opportunityId: dealId, backfilledSource: needsSourceLink },
+    });
+
+    revalidateCommercial([
+      `/commercial/clients/${existing.id}`,
+      `/crm/prospects/${dealId}`,
+    ]);
+    revalidatePath("/crm/prospects");
+    revalidatePath("/crm");
+    return { ok: true, message: "Client lié", clientId: existing.id };
+  }
+
+  const primary = deal.organization.contacts[0];
+  const contactName = primary
+    ? `${primary.firstName} ${primary.lastName}`.trim()
+    : null;
+
+  const client = await prisma.$transaction(async (tx) => {
+    const created = await tx.comClient.create({
+      data: {
+        name: deal.organization.name,
+        normalizedName: normalizeClientName(deal.organization.name),
+        gedFolderCode: `TMP_${Date.now()}`,
+        contactName,
+        email: primary?.email ?? null,
+        phone: primary?.phone ?? null,
+        city: deal.organization.city,
+        country: deal.organization.country,
+        notes: deal.organization.notes,
+        crmOrganizationId: dealOrgId,
+        sourceOpportunityId: dealId,
+        ownerId: deal.ownerId,
+        createdById: actor.id,
+      },
+    });
+    const withFolder = await tx.comClient.update({
+      where: { id: created.id },
+      data: {
+        gedFolderCode: buildClientGedFolderCode(
+          deal.organization.name,
+          created.id,
+        ),
+      },
+    });
+
+    await tx.crmActivity.create({
+      data: {
+        opportunityId: dealId,
+        organizationId: dealOrgId,
+        type: CrmActivityType.NOTE,
+        summary: "Fiche client commerciale liée (préparation devis)",
+        body:
+          "Une fiche client minimaliste a été créée pour établir un devis — le statut CRM du prospect n’a pas été modifié.",
+        actorId: actor.id,
+        occurredAt: now,
+      },
+    });
+
+    await logComClientEvent(
+      {
+        clientId: withFolder.id,
+        actorId: actor.id,
+        type: COM_CLIENT_EVENT.CREATED,
+        summary: `Fiche client créée pour devis — prospect « ${deal.organization.name} » (CRM inchangé).`,
+        entityType: "crm_opportunity",
+        entityId: dealId,
+      },
+      tx,
+    );
+
+    return withFolder;
+  });
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "com.client.ensure_draft_from_prospect",
+    entityType: "com_client",
+    entityId: client.id,
+    metadata: { opportunityId: dealId },
+  });
+
+  revalidateCommercial([`/commercial/clients/${client.id}`, `/crm/prospects/${dealId}`]);
+  revalidatePath("/crm/prospects");
+  revalidatePath("/crm");
+  return {
+    ok: true,
+    message: "Fiche client liée pour le devis",
+    clientId: client.id,
+  };
 }
 
 export async function convertOpportunityToClientAction(

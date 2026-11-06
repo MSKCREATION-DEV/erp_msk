@@ -5,8 +5,8 @@ import { useState } from "react";
 import type { CrmPipelineStage } from "@/generated/prisma/client";
 import { FileSpreadsheet, GitBranch, UserCheck } from "lucide-react";
 import {
-  convertOpportunityToClientAction,
   convertOpportunityToClientRedirectAction,
+  ensureProspectClientDraftForQuoteAction,
   generateQuotePdfAction,
 } from "@/actions/commercial";
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,7 @@ const CONVERTIBLE = new Set(["INTERESSE", "DEVIS_ENVOYE", "GAGNE"]);
 /**
  * CTA commercial sur fiche prospect :
  * - si devis gelés (Direction) → Transformer en client / Voir le client
- * - sinon → flux devis (Intéressé → modal création)
+ * - sinon → Transformer en client (confirm) + Créer un devis (sans convert silencieuse)
  */
 export function ProspectQuoteCta({
   opportunityId,
@@ -85,20 +85,34 @@ export function ProspectQuoteCta({
   }
 
   return (
-    <ProspectDevisCta
-      opportunityId={opportunityId}
-      stage={stage}
-      existingQuoteId={existingQuoteId}
-      existingClientId={existingClientId}
-      canCreateQuote={canCreateQuote}
-      canManageClients={canManageClients}
-      canOpenStage={canOpenStage}
-      onOpenStage={onOpenStage}
-      clients={clients}
-      offers={offers}
-      initialLines={initialLines}
-      defaultObject={defaultObject}
-    />
+    <div className="flex flex-wrap items-center gap-2">
+      {!existingQuoteId && canManageClients ? (
+        <ProspectConvertCta
+          opportunityId={opportunityId}
+          stage={stage}
+          existingClientId={existingClientId}
+          canManageClients={canManageClients}
+          canOpenStage={canOpenStage}
+          onOpenStage={onOpenStage}
+          variant="inline"
+        />
+      ) : null}
+      {canCreateQuote ? (
+        <ProspectDevisCta
+          opportunityId={opportunityId}
+          stage={stage}
+          existingQuoteId={existingQuoteId}
+          existingClientId={existingClientId}
+          canManageClients={canManageClients}
+          canOpenStage={canOpenStage}
+          onOpenStage={onOpenStage}
+          clients={clients}
+          offers={offers}
+          initialLines={initialLines}
+          defaultObject={defaultObject}
+        />
+      ) : null}
+    </div>
   );
 }
 
@@ -109,6 +123,7 @@ function ProspectConvertCta({
   canManageClients,
   canOpenStage,
   onOpenStage,
+  variant = "standalone",
 }: {
   opportunityId: string;
   stage: CrmPipelineStage;
@@ -116,6 +131,8 @@ function ProspectConvertCta({
   canManageClients: boolean;
   canOpenStage?: boolean;
   onOpenStage?: () => void;
+  /** Avec dévis ouvert : pas de wrapper externe — bouton seul dans la grille */
+  variant?: "standalone" | "inline";
 }) {
   const { pending, run } = usePendingAction();
   const [blockedOpen, setBlockedOpen] = useState(false);
@@ -126,7 +143,7 @@ function ProspectConvertCta({
   const canConvert = CONVERTIBLE.has(uiStage);
 
   if (existingClientId) {
-    return (
+    const link = (
       <ActionLink
         href={`/commercial/clients/${existingClientId}`}
         icon={UserCheck}
@@ -135,6 +152,7 @@ function ProspectConvertCta({
         Voir le client
       </ActionLink>
     );
+    return variant === "inline" ? link : <>{link}</>;
   }
 
   if (!canManageClients) return null;
@@ -153,7 +171,7 @@ function ProspectConvertCta({
     });
   }
 
-  return (
+  const button = (
     <>
       <Button
         type="button"
@@ -203,20 +221,28 @@ function ProspectConvertCta({
         }
       >
         <div className="space-y-3 p-5 text-sm text-msk-ink/75">
-          <p>
-            Cette action va :
-          </p>
+          <p>Cette action va :</p>
           <ul className="list-inside list-disc space-y-1.5 text-msk-ink/70">
-            <li>créer le <strong>client commercial</strong> (dossier GED) ;</li>
+            <li>
+              créer ou ouvrir le <strong>client commercial</strong> (dossier GED)
+              ;
+            </li>
             <li>
               passer le statut CRM à <strong>Client</strong> ;
             </li>
             <li>enregistrer une ligne dans le journal d’activités.</li>
           </ul>
-          <p className="text-xs text-msk-ink/45">
-            Les devis restent gelés pour l’instant — vous pourrez les rouvrir
-            plus tard depuis la fiche client.
-          </p>
+          {COM_DOCS_GATED ? (
+            <p className="text-xs text-msk-ink/45">
+              Les devis restent gelés pour l’instant — vous pourrez les rouvrir
+              plus tard depuis la fiche client.
+            </p>
+          ) : (
+            <p className="text-xs text-msk-ink/45">
+              Indépendant du devis : vous pouvez aussi créer un devis au statut
+              Intéressé sans transformer le prospect tout de suite.
+            </p>
+          )}
         </div>
       </Modal>
 
@@ -284,6 +310,8 @@ function ProspectConvertCta({
       </Modal>
     </>
   );
+
+  return variant === "inline" ? button : <>{button}</>;
 }
 
 function ProspectDevisCta({
@@ -291,7 +319,6 @@ function ProspectDevisCta({
   stage,
   existingQuoteId,
   existingClientId,
-  canCreateQuote,
   canManageClients,
   canOpenStage,
   onOpenStage,
@@ -304,7 +331,6 @@ function ProspectDevisCta({
   stage: CrmPipelineStage;
   existingQuoteId?: string | null;
   existingClientId?: string | null;
-  canCreateQuote: boolean;
   canManageClients: boolean;
   canOpenStage?: boolean;
   onOpenStage?: () => void;
@@ -322,8 +348,6 @@ function ProspectDevisCta({
 
   const uiStage = stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage;
   const isInteresse = uiStage === "INTERESSE";
-
-  if (!canCreateQuote) return null;
 
   if (existingQuoteId) {
     return (
@@ -355,9 +379,9 @@ function ProspectDevisCta({
         }
         const fd = new FormData();
         fd.set("opportunityId", opportunityId);
-        const res = await convertOpportunityToClientAction(fd);
+        const res = await ensureProspectClientDraftForQuoteAction(fd);
         if (!res.ok || !res.clientId) {
-          setPrepError(res.error ?? "Impossible de créer le client");
+          setPrepError(res.error ?? "Impossible de préparer la fiche client");
           setBlockedOpen(true);
           return;
         }

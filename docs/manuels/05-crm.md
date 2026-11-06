@@ -67,9 +67,9 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 2. Enrichir fiche (contacts, offres, journal, relance) — **Modifier** via `/crm/prospects/[id]/edit`  
 3. Relances + scripts  
 4. Passage en **Contacté** : **canal + commentaire obligatoires** (comment on a contacté + ce qui a été dit, ou « pas de réponse ») → ligne créée dans le journal  
-5. Dès **Intéressé** → **Transformer en client** (confirmation) → crée le client commercial **et** passe le statut CRM à **Client** ; bandeau + lien fiche client  
-6. Devis gelés temporairement (Direction 13/10) — réouverture ultérieure depuis la fiche client  
-7. Facturation côté Commercial quand devis/factures seront réouverts
+5. Dès **Intéressé** : soit **Créer un devis** (prépare une fiche client minimaliste **sans** passer le CRM en Client ni « conversion » implicite), soit **Transformer en client** (confirmation) → crée le client **et** passe le statut CRM à **Client** ; le passage en Client au picker exige une fiche client existante (devis préparé ou transformation confirmée).  
+6. Devis / factures : parcours ERP selon droits et gate Direction (voir manuel Commercial).  
+7. Facturation côté Commercial (devis accepté → facture, etc.)
 
 ## Collab sans Vue Équipe
 
@@ -86,6 +86,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
+| 2026-11-06 | P0 client/devis : devis Intéressé sans convert CRM implicite ; Transformer en client séparé ; garde GAGNE sans ComClient |
 | 2026-11-06 | Rapport semaine : 4 KPI période (Prospects créés, Premiers contacts, Relances faites, Clients gagnés) ; donut répartition live conservé |
 | 2026-11-06 | Filtres : anciens collabs (empreinte CRM) en optgroup « Anciens » ; assignation/objectifs opérationnels = actifs only |
 | 2026-10-26 | Relances : recherche texte serveur (`?q=`) combinée aux vues échéance / owner / période |

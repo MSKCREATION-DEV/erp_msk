@@ -1,6 +1,6 @@
 # Manuel — Commercial (clients, devis, factures, offres)
 
-**Version** : 2026-10-14 · LOT-A (devis/facture gelés)  
+**Version** : 2026-11-06 (P0 devis vs convert) · historique LOT-A  
 **Public** : Commerciaux, Comptabilité (factures), Direction
 
 ## À retenir
@@ -9,9 +9,11 @@ Chaîne **vente formalisée** sous l’entrée **Commercial** :
 
 Client → Devis → Facture → Paiements → (Compta VE).
 
-**Gel temporaire (Direction 13/10) :** les modules **Devis** et **Factures** sont grisés dans le Menu Commercial. Continuer le process devis hors plateforme tant que la numérotation et les règles comptables ne sont pas figées. Les **Clients**, le **CRM** et le **catalogue** restent ouverts.
+**Dégel devis/factures (COM-FACTU, nov. 2026) :** accès selon droits ; numérotation et règles comptables en place côté ERP.
 
-Depuis un prospect **Intéressé** (ou plus) : bouton **Transformer en client** (confirmation) → crée le client + passe le CRM en **Client** (sans ouvrir un devis).
+Sur fiche prospect **Intéressé** : **Créer un devis** prépare une fiche client liée au prospect **sans** transformer le dossier (le CRM reste Intéressé). **Transformer en client** (confirmation) = acte distinct : client + passage CRM **Client**.
+
+**Gel menu (Direction 13/10) — obsolète** : conservé ci-dessous à titre historique ; le hub Commercial réexpose désormais devis/factures quand les permissions le permettent.
 
 Numérotation séquentielle (quand réouvert). PDF rangés en GED client. Signature PDF = **responsable** du devis/facture (owner).
 
@@ -21,8 +23,8 @@ Numérotation séquentielle (quand réouvert). PDF rangés en GED client. Signat
 |---|---|---|
 | Menu hub | `/commercial` | Live |
 | Clients | `/commercial/clients` · `/nouveau` · `/[id]` | Live |
-| Devis | `/commercial/devis` · `/nouveau` · `/[id]` | **Gelé** (redirect Menu) |
-| Factures | `/commercial/factures` · `/[id]` | **Gelé** (redirect Menu) |
+| Devis | `/commercial/devis` · `/nouveau` · `/[id]` | Live (droits `com.devis.*`) |
+| Factures | `/commercial/factures` · `/[id]` | Live (droits facturation) |
 | Offres (catalogue) | `/catalogue` | Live |
 
 Liste et création = **pages séparées**. Tabs Commercial partagées avec le CRM (sans Devis/Factures tant que gel actif).
@@ -35,7 +37,7 @@ BROUILLON → ENVOYÉ → ACCEPTE | REFUSE | ANNULE
               Facture
 ```
 
-- Depuis un prospect **Intéressé** : bouton **Créer un devis** (quand le gel sera levé) → lignes préremplies si offres liées.  
+- Depuis un prospect **Intéressé** : bouton **Créer un devis** → prépare la fiche client si besoin **sans** passer le CRM en Client ; lignes préremplies si offres liées au prospect.  
 - **Plancher** catalogue (XOF) : le P.U. ne peut pas descendre sous le plancher.  
 - Marquer **Envoyé** → le prospect passe en **Devis envoyé** s’il était Intéressé.
 
@@ -68,6 +70,7 @@ Détail : [manuel 08](./08-comptabilite.md) §3.
 
 | Date | Note |
 |---|---|
+| 2026-11-06 | P0 : devis sans convert CRM implicite ; CTA Transformer en client séparé ; table routes devis/factures live |
 | 2026-10-14 | LOT-A : gel Devis/Factures (hub + nav + URL) ; CTA Transformer en client |
 | 2026-10-12 | Prefill devis CRM ; plancher ; bridge VE ; PDF owner ; colonne Compta |
 | 2026-10-10 | Phase 3 clients / devis / factures / PDF |

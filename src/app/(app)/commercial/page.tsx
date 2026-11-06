@@ -15,7 +15,6 @@ import { commercialTeamUserIds } from "@/lib/crm/team";
 import { COMMERCIAL_MODULES } from "@/lib/commercial/modules";
 import { canSeeCrmTeamView } from "@/lib/commercial/nav";
 import { COM_DOCS_GATED } from "@/lib/commercial/gates";
-import { buildPortfolioProspectsHref, parseCrmPeriod } from "@/lib/crm/scope-period";
 import { CommercialHubGrid } from "@/components/commercial/commercial-hub-cards";
 import { METRIC_NAV_TONE_CHART } from "@/components/ui/metric-nav-card";
 import { PageHeader } from "@/components/ui/page-header";
@@ -123,30 +122,14 @@ export default async function CommercialHubPage() {
     ]);
 
   /**
-   * Lien Prospects = mon portefeuille (`owner=moi` + stages ouverts) —
-   * aligne la jauge « suivis par moi ». Croix Focus → liste partagée.
+   * Menu → liste Prospects propre (`/crm/prospects`).
+   * Les liens filtrés (portefeuille / focus) restent sur TB, Équipe, KPI.
    */
-  const prospectsHref = canCrm
-    ? buildPortfolioProspectsHref({
-        period: parseCrmPeriod({}),
-        ownerId: user.id,
-        canFilterOwners: vis !== "own",
-      })
-    : "/crm/prospects";
-
   const modules = COMMERCIAL_MODULES.filter((m) => {
     if (m.id === "equipe" && !canSeeCrmTeamView(user)) return false;
     if (!m.permission) return true;
     return hasPermission(user, m.permission);
   }).map((m) => {
-    if (m.id === "prospects") {
-      return {
-        ...m,
-        href: prospectsHref,
-        description:
-          "Total visibles (liste partagée) vs prospects que je suis — clic = mes prospects.",
-      };
-    }
     if (m.id === "relances") {
       return {
         ...m,

@@ -1275,6 +1275,29 @@ export async function updateOpportunityStageAction(
 
   const stageChanged = normalizeUiStage(deal.stage) !== stage;
 
+  if (
+    stage === "GAGNE" &&
+    stageChanged &&
+    normalizeUiStage(deal.stage) !== "GAGNE"
+  ) {
+    const comClient = await prisma.comClient.findFirst({
+      where: {
+        OR: [
+          { sourceOpportunityId: id },
+          { crmOrganizationId: deal.organizationId },
+        ],
+      },
+      select: { id: true },
+    });
+    if (!comClient) {
+      return {
+        ok: false,
+        error:
+          "Créez d’abord la fiche client commercial (depuis « Transformer en client » ou en préparant un devis), puis passez le statut en Client.",
+      };
+    }
+  }
+
   await prisma.$transaction(async (tx) => {
     await tx.crmOpportunity.update({
       where: { id },
