@@ -94,7 +94,7 @@ export const MSK_TEAM: TeamMemberDef[] = [
   {
     key: "guiro",
     fullName: "Amadou Samba Guiro",
-    title: "Responsable Opérationnel – Mali · Développeur Full-Stack",
+    title: "Développeur Web & Mobile",
     email: mskEmail("Amadou Samba Guiro"),
     photoPath: "/team/amadou-samba-guiro.jpg",
     parentKey: "andile",
@@ -114,7 +114,7 @@ export const MSK_TEAM: TeamMemberDef[] = [
   {
     key: "madina",
     fullName: "Madina Tall",
-    title: "Assistante de direction",
+    title: "Assistante Marketing",
     email: mskEmail("Madina Tall"),
     photoPath: "/team/madina-tall.jpg",
     parentKey: "guiro",
@@ -124,7 +124,7 @@ export const MSK_TEAM: TeamMemberDef[] = [
   {
     key: "yaye",
     fullName: "Yaye Bah",
-    title: "Stagiaire commerciale",
+    title: "Stagiaire Commerciale",
     email: mskEmail("Yaye Bah"),
     photoPath: "/team/yaye-bah.jpg",
     parentKey: "issiaka",

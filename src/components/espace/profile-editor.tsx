@@ -33,10 +33,13 @@ const selectClassName =
 export function ProfileEditor({
   currentValues,
   pendingByField,
+  embedded = false,
 }: {
   currentValues: Record<string, string | null>;
   /** Valeurs proposées encore PENDING (affichage overlay). */
   pendingByField: Record<string, string>;
+  /** true = déjà dans une Section fiche (pas de titre doublon). */
+  embedded?: boolean;
 }) {
   const router = useRouter();
   const { pending, run } = usePendingAction();
@@ -109,36 +112,43 @@ export function ProfileEditor({
     });
   }
 
-  return (
-    <FormShell
-      footer={
-        editing ? (
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={pending}
-              onClick={cancel}
-            >
-              Annuler
-            </Button>
-            <Button type="button" disabled={pending} onClick={submit}>
-              {pending ? "Envoi…" : "Envoyer pour validation RH"}
-            </Button>
+  const footer = editing ? (
+    <div className="flex flex-wrap items-center justify-end gap-2">
+      <Button
+        type="button"
+        variant="secondary"
+        disabled={pending}
+        onClick={cancel}
+      >
+        Annuler
+      </Button>
+      <Button type="button" disabled={pending} onClick={submit}>
+        {pending ? "Envoi…" : "Envoyer pour validation RH"}
+      </Button>
+    </div>
+  ) : null;
+
+  const body = (
+    <>
+      <div
+        className={cn(
+          "mb-6 flex flex-wrap items-start justify-between gap-3",
+          !embedded && "border-b border-msk-ink/6 pb-5",
+        )}
+      >
+        {!embedded ? (
+          <div>
+            <h2 className="text-base font-semibold text-msk-ink">
+              Informations personnelles
+            </h2>
+            <p className="mt-1 max-w-2xl text-sm text-msk-ink/55">
+              Vos données officielles. Pour les modifier, utilisez « Modifier »
+              puis envoyez une demande aux RH.
+            </p>
           </div>
-        ) : undefined
-      }
-    >
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-3 border-b border-msk-ink/6 pb-5">
-        <div>
-          <h2 className="text-base font-semibold text-msk-ink">
-            Informations personnelles
-          </h2>
-          <p className="mt-1 max-w-2xl text-sm text-msk-ink/55">
-            Vos données officielles. Pour les modifier, utilisez « Modifier »
-            puis envoyez une demande aux RH.
-          </p>
-        </div>
+        ) : (
+          <div />
+        )}
         {!editing && !hasOpenPending ? (
           <Button type="button" size="sm" onClick={startEdit}>
             Modifier
@@ -260,6 +270,16 @@ export function ProfileEditor({
           {okMsg}
         </p>
       ) : null}
-    </FormShell>
+
+      {embedded && footer ? (
+        <div className="mt-6 flex flex-wrap items-center justify-end gap-2 border-t border-msk-ink/6 pt-4">
+          {footer}
+        </div>
+      ) : null}
+    </>
   );
+
+  if (embedded) return <div className="min-w-0">{body}</div>;
+
+  return <FormShell footer={footer}>{body}</FormShell>;
 }

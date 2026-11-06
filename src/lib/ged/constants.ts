@@ -56,10 +56,11 @@ export const COLLAB_SUBFOLDERS = [
 ] as const;
 
 export function collabFolderSlug(lastName: string, firstName: string) {
-  return `${lastName}_${firstName}`
+  return `${lastName.trim()}_${firstName.trim()}`
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-zA-Z0-9_-]+/g, "_")
+    .replace(/^_+|_+$/g, "")
     .replace(/_+/g, "_")
     .toUpperCase();
 }

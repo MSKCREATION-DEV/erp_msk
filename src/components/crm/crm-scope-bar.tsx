@@ -47,7 +47,12 @@ export function CrmScopeBar({
   to: string;
   weeks: WeekOption[];
   ownerId: string | null;
-  owners: { value: string; label: string }[];
+  owners: {
+    value: string;
+    label: string;
+    /** Ancien collab (archivé / suspendu) — optgroup dédié. */
+    historical?: boolean;
+  }[];
   canFilterOwners: boolean;
   periodLabel?: string;
   keepParams?: Record<string, string | undefined>;
@@ -256,11 +261,34 @@ export function CrmScopeBar({
             }
           >
             <option value="all">Toute l’équipe</option>
-            {owners.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
+            {owners.some((o) => o.historical) ? (
+              <>
+                <optgroup label="Actifs">
+                  {owners
+                    .filter((o) => !o.historical)
+                    .map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                </optgroup>
+                <optgroup label="Anciens collaborateurs">
+                  {owners
+                    .filter((o) => o.historical)
+                    .map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                </optgroup>
+              </>
+            ) : (
+              owners.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))
+            )}
           </select>
         </div>
       ) : null}

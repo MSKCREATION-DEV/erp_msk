@@ -3,6 +3,9 @@ import { CrmPipelineStage, CrmSource, prisma } from "./lib/prisma.mjs";
  * Fixtures CRM réalistes mais marquées [TEST] — jamais de vrais clients.
  * Usage: node --env-file=.env.local scripts/seed-crm-test-fixtures.mjs
  * Purge: PURGE=1 node --env-file=.env.local scripts/seed-crm-test-fixtures.mjs
+ *
+ * IMPORTANT — après tout test : purger users + Auth + data liées.
+ * Voir docs/ops/TEST-USERS.md
  */
 import { createClient } from "@supabase/supabase-js";
 

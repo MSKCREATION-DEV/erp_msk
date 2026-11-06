@@ -98,7 +98,7 @@ export default async function CrmDashboardPage({
   const showStocks = showStockWidgets(lens);
   const showGoals = goalsCompatibleWithPeriod(period);
 
-  /** URL : tout le roster historique ; select : opérationnels (+ inject si deep-link). */
+  /** URL + select : roster consultation (actifs + archivés empreinte CRM). */
   const ownerScope = parseCrmOwner(sp, user, memberIds);
   let owners = rosterToOwnerOptions(operationalRoster);
   owners = await injectOwnerIfMissing(owners, ownerScope.ownerId);

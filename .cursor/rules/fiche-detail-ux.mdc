@@ -1,29 +1,51 @@
-# Fiches détail — densité UX (absolu ERP MSK)
+# Fiches détail — design canon (absolu ERP MSK)
+
+Toute page **détail / fiche** (prospect, utilisateur, profil Mon espace, client, devis, collab RH, contrat…) **doit** suivre le même langage visuel. Références à cloner :
+
+| Canon | Route |
+|---|---|
+| Fiche prospect | `/crm/prospects/[id]` |
+| Fiche utilisateur | `/administration/utilisateurs/[id]` (`UserProfileCard`) |
+| Fiche perso (self) | `/espace/profil` |
+
+## Structure obligatoire
+
+1. **`PageHeader`** — titre = **nom de l’entité** (pas un libellé générique « Fiche… » seul) ; `backHref` + fil d’Ariane ; badges / actions compactes dans `actions`.
+2. **Bandeau identité** — une `Surface` / `Card` :
+   - barre `brand-gradient` (h-1.5) en tête **ou** grille 2 colonnes (méta + panneau latéral chalk) façon prospect ;
+   - avatar / marqueur + nom + badges + contacts en liste plate ;
+   - **stats** en pastilles chalk (3 max) à droite si pertinent.
+3. **Sections** — `Surface` avec titre `text-sm font-semibold` ; contenu en `MetaItem` / liste `flex gap-2.5` / `divide-y` — **plein largeur**, grille `lg:grid-cols-12` si 2 colonnes.
+4. **Historique / secondaires** — section dédiée sous le corps, pas de drawer improvisé.
 
 ## Interdit
 
-- **Card-dans-card** : sous-bloc bordé / fond chalk empilé dans une `Surface` / Section déjà cadrée
-- **Grappe de boutons** (≥ 3 actions secondaires côte à côte) sur une ligne d’item (relance, RDV, ticket…)
-- Lien « Fiche » redondant quand on est **déjà** sur la fiche concernée
+- Hero dégradé « landing » plein écran qui casse le shell ERP
+- **Card-dans-card** : sous-bloc bordé / fond chalk empilé dans une `Surface` déjà cadrée
+- Grappe de boutons (≥ 3 secondaires) sur une ligne d’item → `ActionMenu` (⋯)
+- Lien « Fiche » redondant quand on est déjà sur la fiche
+- Formulaire create inline sur une fiche détail (→ page `/…/edit` ou `/…/nouveau`)
+- Inventer un layout détail différent module par module
 
-## Obligatoire
+## Densité
 
 | Intention | Pattern |
 |---|---|
-| Données secondaires dans une section | Liste à plat / `divide-y` / séparateur léger — pas de mini-carte |
-| Action principale | 1 bouton primaire visible (ex. Traiter, Tenu) |
-| Actions secondaires | Menu `ActionMenu` (⋯) — Modifier, Reporter, Annuler… |
-| Retard / alerte | Libellé texte coral ou `Badge`, pas une autre carte |
+| Données secondaires | Liste à plat / `MetaItem` / séparateur léger |
+| Action principale | 1 primaire visible |
+| Actions secondaires | `ActionMenu` |
+| Retard / alerte | Texte coral ou `Badge`, pas une carte de plus |
 
 ## Composants
 
-- `ActionMenu` — `src/components/ui/action-menu.tsx`
-- `RelanceActions` / `AppointmentActions` — CTA + ⋯
+- `PageHeader` · `PageShell` · `Surface` · `Badge`
+- `UserProfileCard` (admin) comme modèle bandeau identité
+- `ActionMenu` · `RelanceActions` / `AppointmentActions`
 
 ## Test mental
 
-> Si j’enlève bordure + fond du sous-bloc, l’info reste-t-elle claire ?
-> Si non → le sous-bloc ne servait qu’à « faire carte » → **à aplatir**.
+> En retirant le nom du module dans le fil d’Ariane, la page pourrait-elle être une fiche prospect / user MSK ?
+> Si non → **dette design**, realigner avant gate.
 >
-> Y a-t-il plus d’un bouton secondaire visible sans ouvrir ⋯ ?
-> Si oui → **dette UX**, regrouper.
+> Si j’enlève bordure + fond du sous-bloc, l’info reste-t-elle claire ?
+> Si non → aplatir (pas de card-dans-card).

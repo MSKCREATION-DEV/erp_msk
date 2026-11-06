@@ -46,11 +46,14 @@ export const CRM_ASSIGNABLE_STATUSES: UserStatus[] = [
   "MUST_CHANGE_PASSWORD",
 ];
 
-/** Filtres opérationnels (défaut) = assignables. */
+/** Affectations / objectifs à écrire = assignables. */
 export const CRM_FILTER_OPERATIONAL_STATUSES: UserStatus[] =
   CRM_ASSIGNABLE_STATUSES;
 
-/** Consultation / Vue Équipe : + suspendus / archivés. */
+/**
+ * Consultation (filtres prospects / TB / rapports / Vue Équipe) :
+ * actifs + suspendus / archivés — libellé « (Archivé) ».
+ */
 export const CRM_FILTER_HISTORICAL_STATUSES: UserStatus[] = [
   "ACTIVE",
   "MUST_CHANGE_PASSWORD",

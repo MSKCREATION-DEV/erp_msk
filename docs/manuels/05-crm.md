@@ -7,7 +7,7 @@
 
 **Lecture partagée / écriture affectée :** tous les commerciaux voient tous les prospects (anti-doublon). Journaliser, changer le statut ou éditer = réservé au **suivi**. Direction / Admin CRM / habilités (`crm.reassign`) : **Affecter** un prospect à un commercial (fiche, liste, ou page **Affectations**). Commercial en lecture seule : **Demander le suivi**. Les **Clients** n’apparaissent jamais dans le listing Prospects.
 
-**Filtres communs** (Tableau de bord, Vue Équipe, Objectifs, Rapport) : barre **période** + **collaborateur** (si Direction / lead). Sélecteur de **semaine** unifié (`CrmWeekPicker` : ← → + panneau par mois).
+**Filtres communs** (Tableau de bord, Vue Équipe, Rapport, Prospects) : barre **période** + **collaborateur** (si Direction / lead). Sélecteur de **semaine** unifié (`CrmWeekPicker` : ← → + panneau par mois). Les **anciens collaborateurs** (archivés / suspendus) ayant une empreinte CRM apparaissent dans le filtre sous « Anciens collaborateurs » avec le libellé « (Archivé) » — consultation historique uniquement. **Affectation** et **objectifs opérationnels / Assignation** : actifs seulement ; page Objectifs liste les archivés à part pour l’historique.
 - Section **Activité** (relances faites, nouveaux, clients gagnés) : suit **toujours** la période (+ collab). Liens : `forcePeriod` + `event=nouveaux` | `focus=faites` | `event=gagnes`. Les listes filtrent `createdAt` / `wonAt` / activités.
 - CTA **Prospects** (Équipe / Rapport, bouton portefeuille) : `view=stock` + `owner` — **portefeuille à date** du collab (aligné sur le compteur « prospects actifs »), **sans** filtre `createdAt` période. Helper : `buildPortfolioProspectsHref`.
 - CTA **Nouveaux** (Tableau de bord, activité) : `event=nouveaux` + période forcée — flux créés sur la période. Helper : `buildNouveauxProspectsHref`. Ne pas confondre avec le CTA portefeuille.
@@ -85,6 +85,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
+| 2026-11-06 | Filtres : anciens collabs (empreinte CRM) en optgroup « Anciens » ; assignation/objectifs opérationnels = actifs only |
 | 2026-10-26 | Relances : recherche texte serveur (`?q=`) combinée aux vues échéance / owner / période |
 | 2026-10-24 | Fix Vue Équipe→Prospects : portefeuille (`view=stock`) au lieu de `event=nouveaux` ; hub own clarifie « suivis / visibles » ; buckets relances documentés/testés |
 | 2026-10-15 | Prospects : période CRM appliquée (Équipe→Prospects) ; stocks via `view=stock` |

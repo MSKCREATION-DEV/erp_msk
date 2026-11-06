@@ -200,6 +200,12 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - **Fichiers** : `documents-vault.tsx`, `documents-vault.ts`, `rh-avatar.ts`, `espace/documents`, `overview`
 - **Statut doc** : guide documents → `to_validate`
 
+### 2026-11-06 — Fiche `/espace/profil` alignée canon détail ERP
+- **Pourquoi** : profil Mon espace trop « hero landing » ; devait ressembler aux fiches utilisateur / prospect.
+- **Quoi** : PageHeader au nom ; bandeau identité `brand-gradient` + stats ; grille méta prospect ; sections Surface ; `ProfileEditor` embedded ; règle `fiche-detail-ux.mdc` renforcée (absolu toutes fiches détail).
+- **Fichiers** : `espace/profil/page.tsx`, `profile-editor.tsx`, `.cursor/rules/fiche-detail-ux.mdc`
+- **Statut doc** : profil → `to_validate`
+
 ### 2026-11-03 — GED ↔ Mes documents + shell scroll + RH = pattern Commercial
 - **Quoi** : coffre espace lit l’arborescence GED collaborateur (plus seulement DocumentLink) ; html/body + shell `h-dvh` — seul `<main>` scroll ; actions RH (congés/absences/profil/heures) en boutons + modal comme RDV Commercial ; règle `list-actions-commercial-ref.mdc`.
 - **Pourquoi** : Yaye Bah — docs GED visibles, espace à 0 ; double scroll désagréable ; listes RH avec textarea inline (mélange responsabilités).
@@ -391,6 +397,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - **Quoi** : `StageBarChart` mode `compact` (hauteur fixe ~128 px, total en synthèse) ; en historique largeur `max-w-xl` ; calculs 4 semaines inchangés ; empty sobre.
 - **Fichiers** : `stage-bar-chart.tsx`, `crm/rapport-semaine/page.tsx`.
 - **Statut doc** : guide rapport / com-hub → `to_validate` si parcours UI.
+
+### 2026-11-06 — Filtres CRM : anciens collabs (empreinte data)
+
+- **Pourquoi** : Madina / Bagayoko / Fatoumata archivés absents des filtres alors qu’ils ont créé/suivi des prospects ; roster ne regardait que owner + groupe/pack.
+- **Quoi** : `commercialTeamUserIds` + createdBy / activités / tâches ; filtres consultation (`mode: filter`) incluent archivés avec libellé « (Archivé) » + optgroup « Anciens » ; affectation / objectifs opérationnels restent actifs only ; Objectifs = bloc consultation anciens ; cartes Équipe inchangées (mode historique).
+- **Fichiers** : `src/lib/crm/team.ts`, `collaborator-status.ts`, `crm-scope-bar.tsx`, `crm/objectifs/page.tsx`, `crm/page.tsx`.
+- **Statut doc** : guide CRM filtres / équipe → `to_validate`.
 
 ### 2026-10-26 — Règles collab + nav + affectation (cohérence ERP)
 

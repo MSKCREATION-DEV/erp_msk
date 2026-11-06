@@ -7,9 +7,9 @@ import {
   Building2,
   CalendarDays,
   CreditCard,
-  FileText,
   Mail,
   MapPin,
+  Phone,
   UserRound,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
@@ -34,75 +34,65 @@ import { AvatarUpload } from "@/components/espace/avatar-upload";
 import { AvatarPhotoViewer } from "@/components/espace/avatar-photo-viewer";
 import { RequestHistoryCard } from "@/components/espace/request-history-card";
 import { signedGedUrl } from "@/lib/ged/storage";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Ma fiche personnelle" };
 
-function MetaStat({
+function MetaItem({
   label,
-  value,
-  icon: Icon,
+  children,
 }: {
   label: string;
-  value: string;
-  icon: typeof Briefcase;
+  children: ReactNode;
 }) {
   return (
-    <div className="flex min-w-0 items-start gap-3 rounded-xl border border-msk-ink/6 bg-white/80 px-3.5 py-3 backdrop-blur-sm">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-msk-blue/8 text-msk-blue">
-        <Icon className="h-4 w-4" aria-hidden />
-      </span>
-      <div className="min-w-0">
-        <p className="text-[10px] font-semibold uppercase tracking-caps text-msk-ink/40">
-          {label}
-        </p>
-        <p className="mt-0.5 truncate text-sm font-semibold text-msk-ink">
-          {value}
-        </p>
-      </div>
+    <div className="min-w-0">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+        {label}
+      </p>
+      <div className="mt-1 text-sm text-msk-ink">{children ?? "—"}</div>
     </div>
   );
 }
 
-function InfoTile({
-  label,
-  value,
-  icon: Icon,
-  href,
+function Section({
+  title,
+  description,
+  children,
+  action,
+  className,
 }: {
-  label: string;
-  value: ReactNode;
-  icon: typeof Mail;
-  href?: string;
+  title: string;
+  description?: string;
+  children: ReactNode;
+  action?: ReactNode;
+  className?: string;
 }) {
-  const body = (
-    <>
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-msk-chalk text-msk-ink/45">
-        <Icon className="h-3.5 w-3.5" aria-hidden />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-[10px] font-semibold uppercase tracking-caps text-msk-ink/40">
-          {label}
-        </p>
-        <div className="mt-0.5 text-sm font-medium text-msk-ink">
-          {value ?? "—"}
-        </div>
-      </div>
-    </>
-  );
-  if (href) {
-    return (
-      <Link
-        prefetch={false}
-        href={href}
-        className="flex items-start gap-3 rounded-xl border border-msk-ink/6 bg-msk-chalk/30 px-3.5 py-3 transition hover:border-msk-blue/25 hover:bg-msk-blue/4"
-      >
-        {body}
-      </Link>
-    );
-  }
   return (
-    <div className="flex items-start gap-3 rounded-xl border border-msk-ink/6 bg-msk-chalk/30 px-3.5 py-3">
-      {body}
+    <Surface className={cn("flex h-full flex-col p-5 sm:p-6", className)}>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-sm font-semibold tracking-tight text-msk-ink">
+            {title}
+          </h2>
+          {description ? (
+            <p className="mt-0.5 text-xs text-msk-ink/50">{description}</p>
+          ) : null}
+        </div>
+        {action}
+      </div>
+      {children}
+    </Surface>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl bg-msk-chalk/80 px-3 py-2.5 text-center">
+      <p className="text-lg font-semibold tabular-nums text-msk-ink">{value}</p>
+      <p className="text-[10px] font-medium uppercase tracking-wider text-msk-ink/40">
+        {label}
+      </p>
     </div>
   );
 }
@@ -177,6 +167,7 @@ export default async function EspaceProfilPage() {
   const age = ageFrom(employee.birthDate);
   const initials =
     `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`.toUpperCase();
+  const fullName = `${employee.firstName} ${employee.lastName}`;
 
   let avatarUrl: string | null = null;
   if (employee.avatarDocumentId) {
@@ -197,227 +188,274 @@ export default async function EspaceProfilPage() {
     ? employee.hireDate.toLocaleDateString("fr-FR")
     : null;
 
+  const subtitleParts = [
+    employee.jobTitle,
+    employee.department,
+    employee.employeeCode ? `N° ${employee.employeeCode}` : null,
+  ].filter(Boolean);
+
   return (
     <PageShell>
       <PageHeader
-        title="Ma fiche personnelle"
-        description="Identité, photo, coordonnées et situation professionnelle."
+        title={fullName}
+        description={
+          subtitleParts.length > 0
+            ? subtitleParts.join(" · ")
+            : "Fiche personnelle MSK"
+        }
         backHref="/espace"
         backLabel="Retour à Mon espace"
         breadcrumbs={[
           { label: "Mon espace", href: "/espace" },
-          { label: "Fiche personnelle" },
+          { label: fullName },
         ]}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge tone={employeeStatusTone(employee.status)}>
+              {EMPLOYEE_STATUS_LABEL[employee.status]}
+            </Badge>
+            <Badge tone="muted">
+              {EMPLOYEE_TYPE_LABEL[employee.employeeType]}
+            </Badge>
+            {active ? (
+              <Badge tone="blue">{CONTRACT_TYPE_LABEL[active.type]}</Badge>
+            ) : null}
+          </div>
+        }
       />
 
-      {/* Hero identité */}
+      {/* Bandeau identité — canon fiche utilisateur */}
       <Surface className="overflow-hidden p-0">
-        <div className="relative border-b border-msk-ink/6 bg-[linear-gradient(135deg,rgba(42,61,142,0.14)_0%,rgba(29,115,188,0.1)_45%,rgba(29,115,188,0.04)_100%)]">
-          <div className="relative px-5 py-7 sm:px-8 sm:py-8">
-            <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
-                {canEdit ? (
-                  <AvatarUpload
-                    avatarUrl={avatarUrl}
-                    initials={initials}
-                    size="lg"
-                  />
-                ) : (
-                  <AvatarPhotoViewer
-                    avatarUrl={avatarUrl}
-                    initials={initials}
-                    alt={`${employee.firstName} ${employee.lastName}`}
-                    sizeClassName="h-28 w-28 sm:h-32 sm:w-32"
-                    className="shadow-md ring-4 ring-white text-2xl"
-                  />
-                )}
-                <div className="min-w-0 space-y-2.5">
-                  <p className="text-[11px] font-semibold uppercase tracking-caps text-msk-blue">
-                    Collaborateur MSK
+        <div className="h-1.5 brand-gradient" />
+        <div className="p-5 sm:p-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex min-w-0 items-start gap-4">
+              {canEdit ? (
+                <AvatarUpload
+                  avatarUrl={avatarUrl}
+                  initials={initials}
+                  size="lg"
+                />
+              ) : (
+                <AvatarPhotoViewer
+                  avatarUrl={avatarUrl}
+                  initials={initials}
+                  alt={fullName}
+                  sizeClassName="h-20 w-20 sm:h-24 sm:w-24"
+                  className="shadow-md ring-2 ring-white text-xl"
+                />
+              )}
+              <div className="min-w-0">
+                <h2 className="text-xl font-semibold tracking-tight text-msk-ink">
+                  {employee.firstName}{" "}
+                  <span className="font-accent text-msk-blue">
+                    {employee.lastName}
+                  </span>
+                </h2>
+                {employee.jobTitle ? (
+                  <p className="mt-1 text-sm font-medium text-msk-ink/70">
+                    {employee.jobTitle}
                   </p>
-                  <h2 className="text-3xl font-semibold tracking-tight text-msk-ink sm:text-4xl">
-                    {employee.firstName}{" "}
-                    <span className="font-accent text-msk-blue">
-                      {employee.lastName}
-                    </span>
-                  </h2>
-                  <div className="flex flex-wrap items-center gap-2 text-sm text-msk-ink/65">
-                    {employee.jobTitle ? (
-                      <span className="font-medium text-msk-ink/85">
-                        {employee.jobTitle}
-                      </span>
-                    ) : null}
-                    {employee.department ? (
-                      <>
-                        <span aria-hidden className="text-msk-ink/25">
-                          ·
-                        </span>
-                        <span>{employee.department}</span>
-                      </>
-                    ) : null}
-                    {employee.employeeCode ? (
-                      <>
-                        <span aria-hidden className="text-msk-ink/25">
-                          ·
-                        </span>
-                        <span className="tabular-nums">
-                          N° {employee.employeeCode}
-                        </span>
-                      </>
-                    ) : null}
-                    <Badge tone={employeeStatusTone(employee.status)}>
-                      {EMPLOYEE_STATUS_LABEL[employee.status]}
-                    </Badge>
-                  </div>
-                  {employee.manager ? (
-                    <p className="text-sm text-msk-ink/50">
-                      N+1 · {employee.manager.firstName}{" "}
-                      {employee.manager.lastName}
-                      {employee.manager.jobTitle
-                        ? ` (${employee.manager.jobTitle})`
-                        : ""}
-                    </p>
+                ) : null}
+                <ul className="mt-3 space-y-1.5 text-sm text-msk-ink/55">
+                  {employee.email ? (
+                    <li className="flex items-center gap-2">
+                      <Mail className="h-3.5 w-3.5 shrink-0 text-msk-blue" />
+                      <a
+                        href={`mailto:${employee.email}`}
+                        className="truncate hover:text-msk-blue"
+                      >
+                        {employee.email}
+                      </a>
+                    </li>
                   ) : null}
-                </div>
+                  {employee.phone ? (
+                    <li className="flex items-center gap-2">
+                      <Phone className="h-3.5 w-3.5 shrink-0 text-msk-blue" />
+                      <a
+                        href={`tel:${employee.phone}`}
+                        className="hover:text-msk-blue"
+                      >
+                        {employee.phone}
+                      </a>
+                    </li>
+                  ) : null}
+                  {employee.manager ? (
+                    <li className="flex items-center gap-2">
+                      <UserRound className="h-3.5 w-3.5 shrink-0 text-msk-blue" />
+                      <span>
+                        N+1 · {employee.manager.firstName}{" "}
+                        {employee.manager.lastName}
+                        {employee.manager.jobTitle
+                          ? ` (${employee.manager.jobTitle})`
+                          : ""}
+                      </span>
+                    </li>
+                  ) : null}
+                </ul>
               </div>
             </div>
 
-            <div className="mt-7 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-              <MetaStat
-                icon={Briefcase}
-                label="Type"
-                value={EMPLOYEE_TYPE_LABEL[employee.employeeType]}
-              />
-              <MetaStat
-                icon={FileText}
+            <div className="grid grid-cols-3 gap-3 sm:min-w-70">
+              <Stat
                 label="Contrat"
                 value={
-                  active
-                    ? CONTRACT_TYPE_LABEL[active.type]
-                    : "Aucun actif"
+                  active ? CONTRACT_TYPE_LABEL[active.type] : "—"
                 }
               />
-              <MetaStat
-                icon={CalendarDays}
+              <Stat
                 label="Ancienneté"
                 value={
                   seniority
-                    ? seniority
+                    ? seniority.replace(/\s+/g, " ").slice(0, 18)
                     : hireLabel
-                      ? `Depuis ${hireLabel}`
+                      ? hireLabel
                       : "—"
                 }
               />
-              <MetaStat
-                icon={UserRound}
-                label="Âge"
-                value={age ?? "—"}
-              />
+              <Stat label="Âge" value={age ?? "—"} />
             </div>
           </div>
         </div>
       </Surface>
 
-      {/* Situation + admin */}
-      <div className="grid gap-4 lg:grid-cols-12">
-        <Surface className="p-5 sm:p-6 lg:col-span-7">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-base font-semibold text-msk-ink">
-                Situation professionnelle
-              </h3>
-              <p className="mt-0.5 text-sm text-msk-ink/50">
-                Poste, contrat et rattachement.
-              </p>
-            </div>
-          </div>
-          <div className="grid gap-2.5 sm:grid-cols-2">
-            <InfoTile
-              icon={Briefcase}
-              label="Contrat actuel"
-              value={
-                active ? (
-                  <span>
+      {/* Bandeau méta — canon fiche prospect */}
+      <Surface className="overflow-hidden p-0">
+        <div className="grid gap-0 lg:grid-cols-[1.4fr_1fr]">
+          <div className="space-y-4 border-b border-msk-ink/6 p-5 sm:p-6 lg:border-b-0 lg:border-r">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+              Situation professionnelle
+            </p>
+            <dl className="grid min-w-0 gap-4 sm:grid-cols-2">
+              <MetaItem label="Contrat actuel">
+                {active ? (
+                  <Link
+                    prefetch={false}
+                    href="/espace/documents?cat=pro"
+                    className="text-msk-blue hover:underline"
+                  >
                     {CONTRACT_TYPE_LABEL[active.type]} — {active.title}
-                  </span>
+                  </Link>
                 ) : (
-                  "—"
-                )
-              }
-              href={active ? "/espace/documents?cat=pro" : undefined}
-            />
-            <InfoTile
-              icon={CalendarDays}
-              label="Début contrat"
-              value={
-                active
+                  "Aucun contrat actif"
+                )}
+              </MetaItem>
+              <MetaItem label="Début contrat">
+                {active
                   ? active.startDate.toLocaleDateString("fr-FR")
-                  : "—"
-              }
-            />
-            <InfoTile
-              icon={CalendarDays}
-              label="Fin contrat"
-              value={
-                active?.endDate
+                  : "—"}
+              </MetaItem>
+              <MetaItem label="Fin contrat">
+                {active?.endDate
                   ? active.endDate.toLocaleDateString("fr-FR")
                   : active
                     ? "Indéterminée"
-                    : "—"
-              }
-            />
-            <InfoTile
-              icon={MapPin}
-              label="Lieu de travail"
-              value={employee.workLocation || "—"}
-            />
-            <InfoTile
-              icon={Building2}
-              label="Embauche"
-              value={
-                hireLabel
+                    : "—"}
+              </MetaItem>
+              <MetaItem label="Lieu de travail">
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5 text-msk-ink/35" aria-hidden />
+                  {employee.workLocation || "—"}
+                </span>
+              </MetaItem>
+              <MetaItem label="Embauche">
+                {hireLabel
                   ? `${hireLabel}${seniority ? ` · ${seniority}` : ""}`
-                  : "—"
-              }
-            />
-            <InfoTile
-              icon={UserRound}
-              label="Type collaborateur"
-              value={EMPLOYEE_TYPE_LABEL[employee.employeeType]}
-            />
+                  : "—"}
+              </MetaItem>
+              <MetaItem label="Type">
+                <span className="inline-flex items-center gap-1.5">
+                  <Briefcase
+                    className="h-3.5 w-3.5 text-msk-ink/35"
+                    aria-hidden
+                  />
+                  {EMPLOYEE_TYPE_LABEL[employee.employeeType]}
+                </span>
+              </MetaItem>
+            </dl>
           </div>
-        </Surface>
 
-        <Surface className="p-5 sm:p-6 lg:col-span-5">
-          <div className="mb-4">
-            <h3 className="text-base font-semibold text-msk-ink">
+          <div className="bg-msk-chalk/40 p-5 sm:p-6">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
               Administratif
-            </h3>
-            <p className="mt-0.5 text-sm text-msk-ink/50">
+            </p>
+            <p className="mt-1 text-xs text-msk-ink/45">
               Lecture seule — modification via demande RH.
             </p>
+            <ul className="mt-4 space-y-3.5 text-sm text-msk-ink">
+              <li className="flex gap-2.5">
+                <Mail
+                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                  aria-hidden
+                />
+                <span>
+                  <span className="block text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                    E-mail pro
+                  </span>
+                  {employee.email ? (
+                    <a
+                      href={`mailto:${employee.email}`}
+                      className="text-msk-blue hover:underline"
+                    >
+                      {employee.email}
+                    </a>
+                  ) : (
+                    <span className="text-msk-ink/40">—</span>
+                  )}
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <CreditCard
+                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                  aria-hidden
+                />
+                <span>
+                  <span className="block text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                    IBAN
+                  </span>
+                  {maskSensitive(employee.bankIban) || "—"}
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <Building2
+                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                  aria-hidden
+                />
+                <span>
+                  <span className="block text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                    Banque
+                  </span>
+                  {employee.bankName || "—"}
+                </span>
+              </li>
+              <li className="flex gap-2.5 border-t border-msk-ink/6 pt-3.5">
+                <CalendarDays
+                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                  aria-hidden
+                />
+                <span>
+                  <span className="block text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                    Département
+                  </span>
+                  {employee.department || "—"}
+                </span>
+              </li>
+            </ul>
           </div>
-          <div className="grid gap-2.5">
-            <InfoTile icon={Mail} label="E-mail pro" value={employee.email} />
-            <InfoTile
-              icon={CreditCard}
-              label="IBAN"
-              value={maskSensitive(employee.bankIban) || "—"}
-            />
-            <InfoTile
-              icon={Building2}
-              label="Banque"
-              value={employee.bankName || "—"}
-            />
-          </div>
-        </Surface>
-      </div>
+        </div>
+      </Surface>
 
       {canEdit ? (
-        <ProfileEditor
-          currentValues={currentValues}
-          pendingByField={pendingByField}
-        />
+        <Section
+          title="Informations personnelles"
+          description="Identité, coordonnées et données RH — toute modification passe par une validation."
+        >
+          <ProfileEditor
+            currentValues={currentValues}
+            pendingByField={pendingByField}
+            embedded
+          />
+        </Section>
       ) : (
         <Surface className="p-5 text-sm text-msk-ink/55">
           Consultation seule — demandez le droit de modification à
@@ -426,43 +464,46 @@ export default async function EspaceProfilPage() {
       )}
 
       {canEdit && changes.length > 0 ? (
-        <div className="space-y-3">
-          <h2 className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/35">
-            Historique des modifications
-          </h2>
-          {changes.map((c) => (
-            <RequestHistoryCard
-              key={c.id}
-              title={`${c.lines.length} champ(s)`}
-              subtitle={c.lines
-                .map(
-                  (l) =>
-                    PROFILE_REQUESTABLE_FIELDS.find((f) => f.key === l.fieldKey)
-                      ?.label ?? l.fieldKey,
-                )
-                .join(", ")}
-              statusLabel={STATUS_LABEL[c.status]}
-              statusTone={
-                c.status === "APPROVED"
-                  ? "success"
-                  : c.status === "REJECTED"
-                    ? "coral"
-                    : c.status === "PENDING"
-                      ? "blue"
-                      : "muted"
-              }
-              submittedAt={c.createdAt}
-              reviewedAt={c.reviewedAt}
-              reviewedBy={
-                c.reviewedBy
-                  ? `${c.reviewedBy.firstName} ${c.reviewedBy.lastName}`
-                  : null
-              }
-              reason={c.note}
-              reviewNote={c.reviewNote}
-            />
-          ))}
-        </div>
+        <Section
+          title="Historique des modifications"
+          description="Demandes envoyées aux RH."
+        >
+          <div className="space-y-3">
+            {changes.map((c) => (
+              <RequestHistoryCard
+                key={c.id}
+                title={`${c.lines.length} champ(s)`}
+                subtitle={c.lines
+                  .map(
+                    (l) =>
+                      PROFILE_REQUESTABLE_FIELDS.find(
+                        (f) => f.key === l.fieldKey,
+                      )?.label ?? l.fieldKey,
+                  )
+                  .join(", ")}
+                statusLabel={STATUS_LABEL[c.status]}
+                statusTone={
+                  c.status === "APPROVED"
+                    ? "success"
+                    : c.status === "REJECTED"
+                      ? "coral"
+                      : c.status === "PENDING"
+                        ? "blue"
+                        : "muted"
+                }
+                submittedAt={c.createdAt}
+                reviewedAt={c.reviewedAt}
+                reviewedBy={
+                  c.reviewedBy
+                    ? `${c.reviewedBy.firstName} ${c.reviewedBy.lastName}`
+                    : null
+                }
+                reason={c.note}
+                reviewNote={c.reviewNote}
+              />
+            ))}
+          </div>
+        </Section>
       ) : null}
     </PageShell>
   );

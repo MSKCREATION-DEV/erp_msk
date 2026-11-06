@@ -100,6 +100,7 @@ export async function ensureCollaboratorFolders(
     where: { path: `/${year}/05_COLLABORATEURS` },
   });
   const slug = collabFolderSlug(lastName, firstName);
+  const displayName = `${lastName.trim()} ${firstName.trim()}`.trim();
   const personPath = `${collabs.path}/${slug}`;
   const existing = await prisma.documentFolder.findUnique({
     where: { path: personPath },
@@ -110,7 +111,7 @@ export async function ensureCollaboratorFolders(
     collabs.id,
     collabs.path,
     slug,
-    `${lastName} ${firstName}`,
+    displayName,
     year,
     createdById,
   );

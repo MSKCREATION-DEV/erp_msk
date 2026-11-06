@@ -20,13 +20,23 @@ export {
 } from "@/lib/crm/collaborator-status";
 
 /**
- * IDs du roster CRM :
+ * IDs du roster CRM (actifs + anciens ayant laissé une empreinte) :
  * - groupe `commerciaux`
  * - pack `commercial`
- * - tout owner d’au moins une opportunité (historique inclus)
+ * - owner / créateur d’au moins une opportunité
+ * - acteur d’au moins une activité CRM
+ * - assignee / créateur d’au moins une tâche CRM
  */
 export async function commercialTeamUserIds(): Promise<string[]> {
-  const [groupMembers, packUsers, dealOwners] = await runSeries([
+  const [
+    groupMembers,
+    packUsers,
+    dealOwners,
+    dealCreators,
+    activityActors,
+    taskAssignees,
+    taskCreators,
+  ] = await runSeries([
     () =>
       prisma.groupMember.findMany({
         where: { group: { code: "commerciaux" } },
@@ -37,10 +47,11 @@ export async function commercialTeamUserIds(): Promise<string[]> {
         where: { pack: { code: "commercial" } },
         select: { userId: true },
       }),
-    () =>
-      prisma.crmOpportunity.groupBy({
-        by: ["ownerId"],
-      }),
+    () => prisma.crmOpportunity.groupBy({ by: ["ownerId"] }),
+    () => prisma.crmOpportunity.groupBy({ by: ["createdById"] }),
+    () => prisma.crmActivity.groupBy({ by: ["actorId"] }),
+    () => prisma.crmTask.groupBy({ by: ["assigneeId"] }),
+    () => prisma.crmTask.groupBy({ by: ["createdById"] }),
   ]);
 
   return [
@@ -48,6 +59,10 @@ export async function commercialTeamUserIds(): Promise<string[]> {
       ...groupMembers.map((m) => m.userId),
       ...packUsers.map((p) => p.userId),
       ...dealOwners.map((d) => d.ownerId),
+      ...dealCreators.map((d) => d.createdById),
+      ...activityActors.map((a) => a.actorId),
+      ...taskAssignees.map((t) => t.assigneeId),
+      ...taskCreators.map((t) => t.createdById),
     ]),
   ];
 }
@@ -60,9 +75,11 @@ export type CommercialRosterUser = {
 };
 
 /**
- * - filter : opérations courantes — actifs / MDP requis uniquement
- * - team : Vue Équipe — + suspendus / archivés (historique)
- * - assign : cibles d’affectation / objectifs à écrire
+ * - filter : consultation data (prospects, TB, rapports…) — actifs + archivés
+ *   ayant une empreinte CRM ; libellé « (Archivé) ». Passer
+ *   `includeInactive: false` pour un filtre opérationnel strict.
+ * - team : Vue Équipe — actifs + historiques (carte dédiée pour inactifs)
+ * - assign : cibles d’affectation / objectifs à écrire — actifs seulement
  */
 export type CommercialRosterMode = "filter" | "team" | "assign";
 
@@ -71,8 +88,9 @@ export async function listCommercialRoster(opts?: {
   /** Toujours inclus (ex. user courant), même hors statut du mode. */
   extraIds?: string[];
   /**
-   * Mode filter uniquement : inclure suspendus/archivés (consultation).
-   * Par défaut false — les filtres opérationnels restent propres.
+   * Mode filter uniquement.
+   * Défaut `true` : inclure suspendus/archivés pour filtrer l’historique.
+   * `false` : actifs / MDP requis seulement (ex. écrans purement opérationnels).
    */
   includeInactive?: boolean;
 }): Promise<CommercialRosterUser[]> {
@@ -87,9 +105,10 @@ export async function listCommercialRoster(opts?: {
   } else if (mode === "team") {
     statusIn = CRM_FILTER_HISTORICAL_STATUSES;
   } else {
-    statusIn = opts?.includeInactive
-      ? CRM_FILTER_HISTORICAL_STATUSES
-      : CRM_FILTER_OPERATIONAL_STATUSES;
+    statusIn =
+      opts?.includeInactive === false
+        ? CRM_FILTER_OPERATIONAL_STATUSES
+        : CRM_FILTER_HISTORICAL_STATUSES;
   }
 
   const users = await prisma.user.findMany({
@@ -110,16 +129,29 @@ export async function listCommercialRoster(opts?: {
   });
 }
 
+export type CommercialOwnerOption = {
+  value: string;
+  label: string;
+  /** true = suspendu / archivé (consultation historique). */
+  historical: boolean;
+  description?: string;
+};
+
 export function rosterToOwnerOptions(
   users: Pick<
     CommercialRosterUser,
     "id" | "firstName" | "lastName" | "status"
   >[],
-): { value: string; label: string }[] {
-  return users.map((u) => ({
-    value: u.id,
-    label: formatCollaboratorOptionLabel(u.firstName, u.lastName, u.status),
-  }));
+): CommercialOwnerOption[] {
+  return users.map((u) => {
+    const historical = !isOperationalCrmStatus(u.status);
+    return {
+      value: u.id,
+      label: formatCollaboratorOptionLabel(u.firstName, u.lastName, u.status),
+      historical,
+      description: historical ? "Ancien collaborateur — consultation" : undefined,
+    };
+  });
 }
 
 /**
@@ -127,19 +159,24 @@ export function rosterToOwnerOptions(
  * l’injecte pour que le select / bandeau restent cohérents.
  */
 export async function injectOwnerIfMissing(
-  options: { value: string; label: string }[],
+  options: CommercialOwnerOption[],
   ownerId: string | null | undefined,
-): Promise<{ value: string; label: string }[]> {
+): Promise<CommercialOwnerOption[]> {
   if (!ownerId || options.some((o) => o.value === ownerId)) return options;
   const u = await prisma.user.findUnique({
     where: { id: ownerId },
     select: { id: true, firstName: true, lastName: true, status: true },
   });
   if (!u) return options;
+  const historical = !isOperationalCrmStatus(u.status);
   return [
     {
       value: u.id,
       label: formatCollaboratorOptionLabel(u.firstName, u.lastName, u.status),
+      historical,
+      description: historical
+        ? "Ancien collaborateur — consultation"
+        : undefined,
     },
     ...options,
   ];

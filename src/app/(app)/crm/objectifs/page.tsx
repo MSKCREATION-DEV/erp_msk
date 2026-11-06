@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
-import { ClipboardList } from "lucide-react";
+import { ClipboardList, History } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { listCommercialRoster } from "@/lib/crm/team";
+import {
+  isOperationalCrmStatus,
+  listCommercialRoster,
+} from "@/lib/crm/team";
 import {
   buildGoalProgress,
   resolveGoalsForPeriod,
@@ -74,6 +77,11 @@ export default async function CrmObjectifsPage({
 
   const members = canManage
     ? await listCommercialRoster({ mode: "assign", extraIds: [user.id] })
+    : [];
+  const alumni = canManage
+    ? (
+        await listCommercialRoster({ mode: "team", extraIds: [user.id] })
+      ).filter((m) => !isOperationalCrmStatus(m.status))
     : [];
 
   const teamSnapshots = canManage
@@ -219,6 +227,34 @@ export default async function CrmObjectifsPage({
               </tbody>
             </table>
           </ListTableScroll>
+        </Surface>
+      ) : null}
+
+      {canManage && alumni.length > 0 ? (
+        <Surface className="p-5">
+          <div className="mb-3">
+            <h2 className="text-sm font-semibold text-msk-ink">
+              Anciens collaborateurs
+            </h2>
+            <p className="mt-1 text-xs text-msk-ink/45">
+              Consultation historique uniquement — pas d’objectifs
+              opérationnels ni d’assignation.
+            </p>
+          </div>
+          <ul className="flex flex-wrap gap-2">
+            {alumni.map((m) => (
+              <li key={m.id}>
+                <ActionLink
+                  href={detailHref(m.id)}
+                  icon={History}
+                  variant="secondary"
+                  size="sm"
+                >
+                  {m.firstName} {m.lastName} (Archivé)
+                </ActionLink>
+              </li>
+            ))}
+          </ul>
         </Surface>
       ) : null}
     </PageShell>
