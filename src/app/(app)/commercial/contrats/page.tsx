@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { comContractOwnerScopeWhere } from "@/lib/commercial/scope";
+import { comContractScopeWhere } from "@/lib/commercial/scope";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import { formatComMoney } from "@/lib/commercial/labels";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -31,7 +32,9 @@ export default async function ContratsPage() {
     redirect("/commercial");
   }
 
-  const scope = comContractOwnerScopeWhere(user);
+  const teamIds = await commercialTeamUserIds();
+  const memberIds = Array.from(new Set([user.id, ...teamIds]));
+  const scope = comContractScopeWhere(user, memberIds);
   const contracts = await prisma.comContract.findMany({
     where: scope,
     orderBy: { updatedAt: "desc" },

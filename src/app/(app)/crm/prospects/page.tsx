@@ -49,8 +49,18 @@ export default async function CrmProspectsPage({
   const ownScope = dealOwnerScopeWhere(user, teamIds);
   /** KPI « mon portefeuille » seulement si la liste n’est pas focusée sur un autre collab. */
   const filterOwner = sp.owner?.trim() || null;
+  const modalOwnerIds =
+    sp.owners
+      ?.split(",")
+      .map((o) => o.trim())
+      .filter(Boolean) ?? [];
+  const modalFiltersOthersPortfolio =
+    modalOwnerIds.length > 0 &&
+    modalOwnerIds.some((id) => id !== user.id);
   const showOwnKpis =
-    vis === "own" && (!filterOwner || filterOwner === user.id);
+    vis === "own" &&
+    (!filterOwner || filterOwner === user.id) &&
+    !modalFiltersOthersPortfolio;
   const openOwn: Prisma.CrmOpportunityWhereInput = {
     ...ownScope,
     stage: { notIn: ["GAGNE", "PERDU"] },

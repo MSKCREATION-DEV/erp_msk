@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import type { CrmPipelineStage, CrmSource, Prisma } from "@/generated/prisma/client";
+import type { CrmPipelineStage, Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -51,6 +51,10 @@ import {
   parseCrmPeriod,
   shouldFilterProspectsByCrmPeriod,
 } from "@/lib/crm/scope-period";
+import {
+  parseProspectFilterOwnerIds,
+  parseProspectFilterSources,
+} from "@/lib/crm/prospect-list-filters";
 
 const PROSPECT_SORT_COLUMNS = {
   org: (dir: SortDir) => ({ organization: { name: dir } }),
@@ -104,8 +108,20 @@ export function buildProspectWhere(
   } else {
     where.stage = { in: [...PROSPECT_LIST_STAGES, "NEGOCIATION"] };
   }
-  if (sp.source) where.source = sp.source as CrmSource;
-  if (sp.owner) where.ownerId = sp.owner;
+
+  const sourceList = parseProspectFilterSources(sp);
+  if (sourceList.length === 1) {
+    where.source = sourceList[0];
+  } else if (sourceList.length > 1) {
+    where.source = { in: sourceList };
+  }
+
+  const ownerFilterIds = parseProspectFilterOwnerIds(sp);
+  if (ownerFilterIds?.length === 1) {
+    where.ownerId = ownerFilterIds[0];
+  } else if (ownerFilterIds && ownerFilterIds.length > 1) {
+    where.ownerId = { in: ownerFilterIds };
+  }
 
   const isStockView = isCrmStockListParams(sp);
 
@@ -283,7 +299,13 @@ export async function ProspectsResults({
     extraIds: [user.id],
   });
   let owners = rosterToOwnerOptions(filterRoster);
-  owners = await injectOwnerIfMissing(owners, sp.owner);
+  const ownerIdsForPicker = parseProspectFilterOwnerIds(sp) ?? [];
+  const missingOwnerIds = ownerIdsForPicker.filter(
+    (id) => !owners.some((o) => o.value === id),
+  );
+  for (const oid of missingOwnerIds) {
+    owners = await injectOwnerIfMissing(owners, oid);
+  }
   const commercials = canReassign
     ? (
         await listCommercialRoster({ mode: "assign", extraIds: [user.id] })
@@ -302,18 +324,22 @@ export async function ProspectsResults({
     ? (owners.find((o) => o.value === sp.owner)?.label ?? "Collaborateur")
     : null;
 
+  const sourceFilterList = parseProspectFilterSources(sp);
+
   const clearOwnerHref = (() => {
     const p = new URLSearchParams(
       Object.entries(sp).filter(
         (e): e is [string, string] =>
-          typeof e[1] === "string" && e[0] !== "owner",
+          typeof e[1] === "string" &&
+          e[0] !== "owner" &&
+          e[0] !== "owners",
       ),
     );
     const s = p.toString();
     return s ? `/crm/prospects?${s}` : "/crm/prospects";
   })();
 
-  /** Effacer chips : garde owner + portefeuille ; retire stages/late/q/source/dates. */
+  /** Effacer chips : garde le focus collaborateur (`owner`) + portefeuille ; retire le reste. */
   const clearFiltersHref = (() => {
     const p = new URLSearchParams();
     if (sp.owner) p.set("owner", sp.owner);
@@ -333,12 +359,15 @@ export async function ProspectsResults({
     !hasCrmScopePeriodParams(sp) &&
     (Boolean(sp.on) || Boolean(sp.from) || Boolean(sp.to));
 
+  const hasModalOwnerFilter = Boolean(sp.owners?.trim());
+
   const hasActiveFilters =
     stageFilterRaw.length > 0 ||
     sp.late === "1" ||
     sp.devisRetard === "1" ||
     Boolean(qTrim) ||
-    Boolean(sp.source) ||
+    sourceFilterList.length > 0 ||
+    hasModalOwnerFilter ||
     applyPeriodFilter ||
     legacyDateFilter ||
     (Number.isFinite(relancesMin) && relancesMin > 0);
@@ -377,11 +406,25 @@ export async function ProspectsResults({
               {label}
             </Badge>
           ))}
-          {sp.source ? (
-            <Badge tone="blue">
-              {SOURCE_LABELS[sp.source as CrmSource] ?? sp.source}
+          {sourceFilterList.map((src) => (
+            <Badge key={src} tone="blue">
+              {SOURCE_LABELS[src] ?? src}
             </Badge>
-          ) : null}
+          ))}
+          {hasModalOwnerFilter && !sp.owner
+            ? sp.owners!
+                .split(",")
+                .map((o) => o.trim())
+                .filter(Boolean)
+                .map((id) => {
+                  const opt = owners.find((x) => x.value === id);
+                  return (
+                    <Badge key={`own-${id}`} tone="blue">
+                      Suivi · {opt?.label ?? id}
+                    </Badge>
+                  );
+                })
+            : null}
           {sp.late === "1" ? (
             <Badge tone="coral">Relances en retard</Badge>
           ) : null}

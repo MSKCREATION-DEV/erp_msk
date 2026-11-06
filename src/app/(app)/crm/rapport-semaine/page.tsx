@@ -37,7 +37,7 @@ import { StageDonutChart } from "@/components/crm/stage-donut-chart";
 import { StageBarChart } from "@/components/crm/stage-bar-chart";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { GoalsProgressStrip } from "@/components/crm/goals-progress-strip";
-import { gridKpi3, gridKpi5 } from "@/lib/ui/layout-grids";
+import { gridKpi4 } from "@/lib/ui/layout-grids";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { CrmScopeBar } from "@/components/crm/crm-scope-bar";
 import { ActionLink } from "@/components/ui/action-link";
@@ -45,6 +45,7 @@ import {
   buildCrmScopeHref,
   buildNouveauxProspectsHref,
   buildPortfolioProspectsHref,
+  dateRangeFilter,
   normalizeSearchParams,
   parseCrmOwner,
   parseCrmPeriod,
@@ -128,6 +129,19 @@ export default async function CrmRapportPage({
       ? await loadTeamGoalsForPeriod(period)
       : await resolveGoalsForPeriod(focusOwnerId!, period);
   const weekStats = await computeWeekStats(statsOwnerIds, weekStart);
+  const occurredBetween = dateRangeFilter(weekStart, weekSun);
+  const wonAgg = await prisma.crmOpportunity.aggregate({
+    where: {
+      ownerId: { in: statsOwnerIds },
+      stage: "GAGNE",
+      OR: [
+        { wonAt: occurredBetween },
+        { wonAt: null, updatedAt: occurredBetween },
+      ],
+    },
+    _count: { _all: true },
+  });
+  const clientsGagnesCount = wonAgg._count._all;
   const deals = showStocks
     ? await prisma.crmOpportunity.findMany({
         where: baseDealWhere,
@@ -166,13 +180,6 @@ export default async function CrmRapportPage({
   const weekBarsFirst = weekBars[0]?.statut ?? "";
   const weekBarsLast = weekBars[weekBars.length - 1]?.statut ?? "";
 
-  const qualifiedOpen = byStage
-    .filter((s) => s.stage === "INTERESSE" || s.stage === "DEVIS_ENVOYE")
-    .reduce((a, b) => a + b.count, 0);
-  const inExchange = byStage
-    .filter((s) => s.stage === "CONTACTE" || s.stage === "QUALIFICATION")
-    .reduce((a, b) => a + b.count, 0);
-
   const goalProgress = buildGoalProgress(goals, weekStats);
 
   const scopeLabel =
@@ -207,8 +214,16 @@ export default async function CrmRapportPage({
   const focusCollab = Boolean(
     canGlobal && scopeMode === "user" && focusOwnerId,
   );
+  const clientsGagnesHref = buildCrmScopeHref("/commercial/clients", {
+    period,
+    ownerId: focusOwnerId,
+    canFilterOwners: canGlobal,
+    forcePeriod: true,
+    keep: { event: "gagnes" },
+  });
+
   const kpiGrid = (
-    <div className={showStocks ? gridKpi5 : gridKpi3}>
+    <div className={gridKpi4}>
       <Link
         prefetch={false}
         href={buildNouveauxProspectsHref({
@@ -219,10 +234,9 @@ export default async function CrmRapportPage({
         className="block rounded-xl transition hover:ring-2 hover:ring-msk-blue/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40"
       >
         <KpiRadial
-          label="Nouveaux (semaine)"
+          label="Prospects créés"
           value={weekStats.newProspects}
           target={goals.NEW_PROSPECTS}
-          hint="clic = liste créés sur la période"
         />
       </Link>
       <KpiRadial
@@ -235,20 +249,13 @@ export default async function CrmRapportPage({
         value={weekStats.relancesJournalisees}
         hint="actions de suivi (hors notes)"
       />
-      {showStocks ? (
-        <>
-          <KpiRadial
-            label="En échange"
-            value={inExchange}
-            hint="Contacté + En discussion · à date"
-          />
-          <KpiRadial
-            label="Prêts à convertir"
-            value={qualifiedOpen}
-            hint="Intéressé + Devis envoyé · à date"
-          />
-        </>
-      ) : null}
+      <Link
+        prefetch={false}
+        href={clientsGagnesHref}
+        className="block rounded-xl transition hover:ring-2 hover:ring-msk-blue/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40"
+      >
+        <KpiRadial label="Clients gagnés" value={clientsGagnesCount} />
+      </Link>
     </div>
   );
 
@@ -319,7 +326,9 @@ export default async function CrmRapportPage({
 
       {totalDossiers === 0 &&
       weekStats.newProspects === 0 &&
-      weekStats.firstContacts === 0 ? (
+      weekStats.firstContacts === 0 &&
+      weekStats.relancesJournalisees === 0 &&
+      clientsGagnesCount === 0 ? (
         <Surface className="p-8 text-center text-sm text-msk-ink/45">
           Aucune activité pour {scopeLabel.toLowerCase()} sur cette semaine.
           Essayez une autre semaine

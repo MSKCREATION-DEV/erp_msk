@@ -17,7 +17,12 @@ import {
   periodAlreadyInvoiced,
 } from "@/lib/billing/invoice-engine";
 import { dueDateForBillingDay, monthPeriod } from "@/lib/billing/period";
-import { canAccessOwned } from "@/lib/commercial/scope";
+import {
+  canAccessComDocForClient,
+} from "@/lib/commercial/scope";
+import { COM_CLIENT_EVENT, logComClientEvent } from "@/lib/commercial/client-events";
+import { formatComMoney } from "@/lib/commercial/labels";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -28,6 +33,7 @@ export async function createInvoiceFromContractAction(
   formData: FormData,
 ): Promise<ActionResult & { invoiceId?: string }> {
   const actor = await requireUser({ permission: "com.factures.create" });
+  const teamIds = await commercialTeamUserIds();
   const contractId = String(formData.get("contractId") ?? "").trim();
   if (!contractId) return { ok: false, error: "Contrat manquant" };
 
@@ -35,11 +41,18 @@ export async function createInvoiceFromContractAction(
     where: { id: contractId },
     include: {
       lines: true,
-      client: { select: { id: true } },
+      client: { select: { id: true, ownerId: true } },
     },
   });
   if (!contract) return { ok: false, error: "Contrat introuvable" };
-  if (!canAccessOwned(actor, contract.ownerId)) {
+  if (
+    !canAccessComDocForClient(
+      actor,
+      contract.client.ownerId,
+      teamIds,
+      contract.ownerId,
+    )
+  ) {
     return { ok: false, error: "Hors périmètre" };
   }
   if (contract.status !== ComContractStatus.ACTIF) {
@@ -192,6 +205,23 @@ export async function createInvoiceFromContractAction(
         }
       }
 
+      await logComClientEvent(
+        {
+          clientId: contract.clientId,
+          actorId: actor.id,
+          type: COM_CLIENT_EVENT.INVOICE_DRAFT_FROM_CONTRACT,
+          summary: `Brouillon facture ${label} · ${formatComMoney(built.net.netPayable, contract.currency)} net à payer.`,
+          entityType: "com_invoice",
+          entityId: created.id,
+          metaJson: {
+            periodTtc: built.periodTtc,
+            arrearsPresented: built.net.arrearsPresented,
+            netPayable: built.net.netPayable,
+          },
+        },
+        tx,
+      );
+
       return created;
     });
     invoiceId = invoice.id;
@@ -201,22 +231,6 @@ export async function createInvoiceFromContractAction(
       error: e instanceof Error ? e.message : "Échec génération facture",
     };
   }
-
-  await prisma.comClientEvent.create({
-    data: {
-      clientId: contract.clientId,
-      type: "INVOICE_DRAFT_FROM_CONTRACT",
-      summary: `Brouillon facture période ${label} (${built.net.netPayable} FCFA net présenté)`,
-      entityType: "com_invoice",
-      entityId: invoiceId,
-      actorId: actor.id,
-      metaJson: {
-        periodTtc: built.periodTtc,
-        arrearsPresented: built.net.arrearsPresented,
-        netPayable: built.net.netPayable,
-      },
-    },
-  });
 
   await writeAudit({
     actorId: actor.id,

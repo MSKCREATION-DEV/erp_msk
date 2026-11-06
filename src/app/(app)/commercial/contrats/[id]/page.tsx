@@ -4,7 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { canAccessOwned } from "@/lib/commercial/scope";
+import { canAccessComDocForClient } from "@/lib/commercial/scope";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import { formatComMoney } from "@/lib/commercial/labels";
 import { displayDocNumber } from "@/lib/commercial/doc-display";
 import { PageHeader } from "@/components/ui/page-header";
@@ -37,10 +38,13 @@ export default async function ContratDetailPage({
   }
 
   const { id } = await params;
+  const teamIds = await commercialTeamUserIds();
+  const memberIds = Array.from(new Set([user.id, ...teamIds]));
+
   const contract = await prisma.comContract.findUnique({
     where: { id },
     include: {
-      client: { select: { id: true, name: true } },
+      client: { select: { id: true, name: true, ownerId: true } },
       quote: { select: { id: true, number: true, draftCode: true } },
       lines: { orderBy: { sortOrder: "asc" } },
       invoices: {
@@ -60,7 +64,14 @@ export default async function ContratDetailPage({
     },
   });
   if (!contract) notFound();
-  if (!canAccessOwned(user, contract.ownerId)) {
+  if (
+    !canAccessComDocForClient(
+      user,
+      contract.client.ownerId,
+      memberIds,
+      contract.ownerId,
+    )
+  ) {
     redirect("/commercial/contrats");
   }
 

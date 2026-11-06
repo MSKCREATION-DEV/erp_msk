@@ -6,7 +6,8 @@ import { FilePlus2 } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { comQuoteOwnerScopeWhere } from "@/lib/commercial/scope";
+import { comQuoteScopeWhere } from "@/lib/commercial/scope";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import {
   formatComMoney,
   quoteStatusTone,
@@ -112,6 +113,8 @@ async function DevisResults({
   canCreate: boolean;
 }) {
   const user = await requireUser();
+  const teamIds = await commercialTeamUserIds();
+  const memberIds = Array.from(new Set([user.id, ...teamIds]));
   const raw = await searchParams;
   const q = (firstParam(raw.q) ?? "").trim();
   const requestedPage = parsePage(firstParam(raw.page));
@@ -128,7 +131,7 @@ async function DevisResults({
 
   const where = {
     AND: [
-      comQuoteOwnerScopeWhere(user),
+      comQuoteScopeWhere(user, memberIds),
       ...(q
         ? [
             {

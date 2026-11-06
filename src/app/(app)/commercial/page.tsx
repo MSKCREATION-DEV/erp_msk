@@ -6,9 +6,9 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { runSeries } from "@/lib/db/serial";
 import {
-  comOwnerScopeWhere,
-  comQuoteOwnerScopeWhere,
-  comInvoiceOwnerScopeWhere,
+  comClientListScopeWhere,
+  comInvoiceScopeWhere,
+  comQuoteScopeWhere,
 } from "@/lib/commercial/scope";
 import { crmVisibility } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
@@ -38,9 +38,10 @@ export default async function CommercialHubPage() {
   }
 
   const teamIds = await commercialTeamUserIds();
-  const clientWhere = comOwnerScopeWhere(user);
-  const quoteWhere = comQuoteOwnerScopeWhere(user);
-  const invoiceWhere = comInvoiceOwnerScopeWhere(user);
+  const memberIds = Array.from(new Set([user.id, ...teamIds]));
+  const clientWhere = comClientListScopeWhere(user, memberIds);
+  const quoteWhere = comQuoteScopeWhere(user, memberIds);
+  const invoiceWhere = comInvoiceScopeWhere(user, memberIds);
   const vis = crmVisibility(user);
 
   const canCrm = hasPermission(user, "crm.access");

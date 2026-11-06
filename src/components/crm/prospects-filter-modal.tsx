@@ -1,28 +1,53 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import {
+  Check,
+  FileText,
+  MessageCircle,
+  Phone,
+  Search,
+  ThumbsUp,
+  UserPlus,
+  XCircle,
+} from "lucide-react";
+import type { CrmSource, CrmPipelineStage } from "@/generated/prisma/client";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  OptionPickerMulti,
-  OptionPickerSingle,
-} from "@/components/ui/option-picker-modal";
 import { STAGE_LABELS, STAGE_ORDER, SOURCE_LABELS } from "@/lib/crm/labels";
 import {
   copyCrmScopeParams,
   hasCrmScopePeriodParams,
 } from "@/lib/crm/scope-period";
 import { appendSortParams } from "@/lib/list/sort";
+import { parseProspectFilterSources } from "@/lib/crm/prospect-list-filters";
+import type { CommercialOwnerOption } from "@/lib/crm/team";
+import { USER_STATUS_LABEL, USER_STATUS_TONE } from "@/lib/users/status";
+import { SourceChannelIcon } from "@/components/brand/channel-icons";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-type OwnerOpt = { value: string; label: string };
 type DateMode = "none" | "exact" | "range";
 
 /** Statuts filtrables — Client exclu (fiche côté Clients). */
 const FILTER_STAGES = STAGE_ORDER.filter((s) => s !== "GAGNE");
+
+const STAGE_ICONS: Record<
+  CrmPipelineStage,
+  typeof UserPlus
+> = {
+  NOUVEAU: UserPlus,
+  CONTACTE: Phone,
+  QUALIFICATION: MessageCircle,
+  INTERESSE: ThumbsUp,
+  DEVIS_ENVOYE: FileText,
+  NEGOCIATION: FileText,
+  GAGNE: UserPlus,
+  PERDU: XCircle,
+};
 
 function spRecord(sp: URLSearchParams): Record<string, string | undefined> {
   const out: Record<string, string | undefined> = {};
@@ -40,7 +65,8 @@ function dateModeFromParams(sp: URLSearchParams): DateMode {
 
 /**
  * Compteur Filtrer — source de vérité = URL.
- * `owner` est exclu : géré par le bandeau Focus (sinon Filtrer (1) sticky après croix).
+ * `owner` (focus collaborateur) est exclu : géré par le bandeau Focus.
+ * Filtre modal « Suivi par » multi (`owners`) compte pour 1 lorsqu’il est actif.
  * Période CRM (barre dashboard) exclue — ce n’est pas un filtre modal.
  */
 function countActiveFilters(sp: URLSearchParams): number {
@@ -51,9 +77,13 @@ function countActiveFilters(sp: URLSearchParams): number {
       .filter((s) => s && s !== "GAGNE") ?? [];
   const mode = dateModeFromParams(sp);
   const crmPeriod = hasCrmScopePeriodParams(spRecord(sp));
+  const sources = parseProspectFilterSources(spRecord(sp));
+  const ownerModalActive =
+    Boolean(sp.get("owners")?.trim()) && !sp.get("owner")?.trim();
   return [
     stages.length > 0,
-    Boolean(sp.get("source")),
+    sources.length > 0,
+    ownerModalActive,
     !crmPeriod &&
       (mode === "exact"
         ? Boolean(sp.get("on"))
@@ -67,14 +97,24 @@ function countActiveFilters(sp: URLSearchParams): number {
 
 function stateFromSearchParams(sp: URLSearchParams) {
   const crmPeriod = hasCrmScopePeriodParams(spRecord(sp));
+  const sources = parseProspectFilterSources(spRecord(sp));
+  const focusOwner = sp.get("owner")?.trim() ?? null;
+  const ownerIds =
+    focusOwner || !sp.get("owners")?.trim()
+      ? []
+      : sp
+          .get("owners")!
+          .split(",")
+          .map((o) => o.trim())
+          .filter(Boolean);
   return {
     stages:
       sp
         .get("stages")
         ?.split(",")
         .filter((s) => s && s !== "GAGNE") ?? [],
-    source: sp.get("source") || null,
-    ownerId: sp.get("owner") || null,
+    sources,
+    ownerIds,
     dateMode: dateModeFromParams(sp),
     on: crmPeriod ? "" : (sp.get("on") ?? ""),
     from: crmPeriod ? "" : (sp.get("from") ?? ""),
@@ -85,21 +125,31 @@ function stateFromSearchParams(sp: URLSearchParams) {
   };
 }
 
+const SOURCE_KEYS = Object.keys(SOURCE_LABELS) as CrmSource[];
+
+function toggleInList<T extends string>(list: T[], value: T): T[] {
+  return list.includes(value)
+    ? list.filter((x) => x !== value)
+    : [...list, value];
+}
+
 /** Filtres structurés — la recherche texte reste dans `ListSearchForm` (`?q=`). */
 export function ProspectsFilterButton({
   owners,
 }: {
-  owners: OwnerOpt[];
+  owners: CommercialOwnerOption[];
 }) {
   const router = useRouter();
   const sp = useSearchParams();
   const [open, setOpen] = useState(false);
+  const [ownersPickerOpen, setOwnersPickerOpen] = useState(false);
+  const [ownerSearch, setOwnerSearch] = useState("");
   const [pending, start] = useTransition();
 
   const initial = stateFromSearchParams(sp);
   const [stages, setStages] = useState<string[]>(initial.stages);
-  const [source, setSource] = useState<string | null>(initial.source);
-  const [ownerId, setOwnerId] = useState<string | null>(initial.ownerId);
+  const [sources, setSources] = useState<CrmSource[]>(initial.sources);
+  const [ownerIds, setOwnerIds] = useState<string[]>(initial.ownerIds);
   const [dateMode, setDateMode] = useState<DateMode>(initial.dateMode);
   const [on, setOn] = useState(initial.on);
   const [from, setFrom] = useState(initial.from);
@@ -114,8 +164,8 @@ export function ProspectsFilterButton({
   useEffect(() => {
     const next = stateFromSearchParams(sp);
     setStages(next.stages);
-    setSource(next.source);
-    setOwnerId(next.ownerId);
+    setSources(next.sources);
+    setOwnerIds(next.ownerIds);
     setDateMode(next.dateMode);
     setOn(next.on);
     setFrom(next.from);
@@ -128,13 +178,30 @@ export function ProspectsFilterButton({
 
   const activeCount = countActiveFilters(sp);
 
+  const selectedOwnersDisplay = useMemo(() => {
+    return ownerIds
+      .map((id) => owners.find((o) => o.value === id))
+      .filter((o): o is CommercialOwnerOption => Boolean(o));
+  }, [ownerIds, owners]);
+
+  const filteredOwnersRows = useMemo(() => {
+    const q = ownerSearch.trim().toLowerCase();
+    if (!q) return owners;
+    return owners.filter((o) => o.label.toLowerCase().includes(q));
+  }, [owners, ownerSearch]);
+
   function apply() {
     const params = new URLSearchParams();
     const keepQ = sp.get("q")?.trim();
     if (keepQ) params.set("q", keepQ);
     if (stages.length) params.set("stages", stages.join(","));
-    if (source) params.set("source", source);
-    if (ownerId) params.set("owner", ownerId);
+    if (sources.length) params.set("sources", sources.join(","));
+    const urlFocus = sp.get("owner")?.trim();
+    if (ownerIds.length > 0) {
+      params.set("owners", [...new Set(ownerIds)].join(","));
+    } else if (urlFocus) {
+      params.set("owner", urlFocus);
+    }
     if (dateMode === "exact" && on) {
       params.set("on", on);
     } else if (dateMode === "range") {
@@ -171,8 +238,8 @@ export function ProspectsFilterButton({
 
   function reset() {
     setStages([]);
-    setSource(null);
-    setOwnerId(null);
+    setSources([]);
+    setOwnerIds([]);
     setDateMode("none");
     setOn("");
     setFrom("");
@@ -196,8 +263,8 @@ export function ProspectsFilterButton({
         open={open}
         onOpenChange={setOpen}
         title="Filtres prospects"
-        description="Statut, origine, date de création, collaborateur…"
-        size="md"
+        description="Statuts, origines, Suivi par, date de création…"
+        size="lg"
         footer={
           <div className="flex w-full flex-wrap justify-between gap-2">
             <Button type="button" variant="ghost" size="sm" onClick={reset}>
@@ -219,38 +286,262 @@ export function ProspectsFilterButton({
           </div>
         }
       >
-        <div className="space-y-4 p-4">
-          <OptionPickerMulti
-            label="Statuts"
-            options={FILTER_STAGES.map((s) => ({
-              value: s,
-              label: STAGE_LABELS[s],
-            }))}
-            value={stages}
-            onChange={setStages}
-          />
-          <OptionPickerSingle
-            label="Origine"
-            options={Object.entries(SOURCE_LABELS).map(([k, v]) => ({
-              value: k,
-              label: v,
-            }))}
-            value={source}
-            onChange={setSource}
-            placeholder="Toutes"
-          />
+        <div className="space-y-8 p-5 sm:p-6">
+          <section className="space-y-3">
+            <div>
+              <h3 className="text-sm font-semibold text-msk-ink">Statuts</h3>
+              <p className="mt-0.5 text-xs text-msk-ink/50">
+                Un ou plusieurs statuts — multi-sélection
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {FILTER_STAGES.map((stage) => {
+                const Icon = STAGE_ICONS[stage];
+                const onStage = stages.includes(stage);
+                return (
+                  <button
+                    key={stage}
+                    type="button"
+                    aria-pressed={onStage}
+                    onClick={() =>
+                      setStages((prev) =>
+                        toggleInList([...prev] as string[], stage) as string[],
+                      )
+                    }
+                    className={cn(
+                      "inline-flex min-h-10 items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm font-medium transition",
+                      onStage
+                        ? "border-msk-blue bg-msk-blue/8 text-msk-blue ring-1 ring-msk-blue/25"
+                        : "border-msk-ink/10 bg-white text-msk-ink/80 hover:border-msk-ink/15 hover:bg-msk-chalk",
+                    )}
+                  >
+                    <Icon
+                      className={cn(
+                        "h-4 w-4 shrink-0",
+                        onStage ? "text-msk-blue" : "text-msk-ink/45",
+                      )}
+                      aria-hidden
+                    />
+                    <span>{STAGE_LABELS[stage]}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="space-y-3">
+            <div>
+              <h3 className="text-sm font-semibold text-msk-ink">Origines</h3>
+              <p className="mt-0.5 text-xs text-msk-ink/50">
+                Canaux — multi-sélection
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {SOURCE_KEYS.map(                    (src) => {
+                const onSrc = sources.includes(src);
+                return (
+                  <button
+                    key={src}
+                    type="button"
+                    aria-pressed={onSrc}
+                    aria-label={SOURCE_LABELS[src]}
+                    onClick={() =>
+                      setSources((prev) => toggleInList(prev, src))
+                    }
+                    className={cn(
+                      "flex min-h-11 items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm font-medium transition",
+                      onSrc
+                        ? "border-msk-blue bg-msk-blue/8 text-msk-blue ring-1 ring-msk-blue/25"
+                        : "border-msk-ink/10 bg-white text-msk-ink/80 hover:border-msk-ink/15 hover:bg-msk-chalk",
+                    )}
+                  >
+                    <SourceChannelIcon
+                      source={src}
+                      className={cn(
+                        "h-4 w-4 shrink-0",
+                        onSrc ? "text-msk-blue" : "text-msk-ink/45",
+                      )}
+                    />
+                    <span className="min-w-0 truncate">{SOURCE_LABELS[src]}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
           {owners.length > 0 ? (
-            <OptionPickerSingle
-              label="Suivi par"
-              options={owners}
-              value={ownerId}
-              onChange={setOwnerId}
-              placeholder="Toute l’équipe"
-            />
+            <section className="space-y-3">
+              <div className="flex flex-wrap items-end justify-between gap-2">
+                <div>
+                  <h3 className="text-sm font-semibold text-msk-ink">
+                    Suivi par
+                  </h3>
+                  <p className="mt-0.5 text-xs text-msk-ink/50">
+                    Plusieurs collaborateurs — ignoré si un focus est actif (paramètre{" "}
+                    <span className="font-mono text-[11px]">owner</span> dans l’URL).
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  disabled={Boolean(sp.get("owner")?.trim())}
+                  title={
+                    sp.get("owner")?.trim()
+                      ? "Retirez le focus collaborateur pour filtrer plusieurs Suivi par"
+                      : undefined
+                  }
+                  onClick={() => {
+                    setOwnerSearch("");
+                    setOwnersPickerOpen(true);
+                  }}
+                >
+                  {ownerIds.length > 0
+                    ? `Modifier (${ownerIds.length})`
+                    : "Choisir…"}
+                </Button>
+              </div>
+              {sp.get("owner")?.trim() ? (
+                <p className="text-xs text-msk-coral/90">
+                  Un focus collaborateur est actif — utilisez la croix du bandeau
+                  pour revenir au filtre multi.
+                </p>
+              ) : selectedOwnersDisplay.length > 0 ? (
+                <ul className="flex flex-wrap gap-1.5" aria-label="Suivi par sélectionné">
+                  {selectedOwnersDisplay.map((o) => {
+                    const shortName = o.label.replace(/\s*\([^)]*\)\s*$/, "");
+                    return (
+                      <li key={o.value}>
+                        <Badge tone="blue" className="font-normal">
+                          {shortName}
+                        </Badge>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className="text-xs text-msk-ink/45">Toute l’équipe (portée)</p>
+              )}
+            </section>
           ) : null}
 
-          <div className="space-y-2">
-            <Label>Date de création</Label>
+          <Modal
+            open={ownersPickerOpen}
+            onOpenChange={(v) => {
+              setOwnersPickerOpen(v);
+              if (!v) setOwnerSearch("");
+            }}
+            title="Suivi par — sélection"
+            description="Recherche, colonnes Collaborateur et statut — multi-sélection"
+            size="xl"
+            className="z-[60]"
+            footer={
+              <div className="flex w-full justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setOwnersPickerOpen(false)}
+                >
+                  Fermer
+                </Button>
+              </div>
+            }
+          >
+            <div className="space-y-3 p-4 sm:p-5">
+              <div className="relative">
+                <Search
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-msk-ink/35"
+                  aria-hidden
+                />
+                <Input
+                  type="search"
+                  value={ownerSearch}
+                  onChange={(e) => setOwnerSearch(e.target.value)}
+                  placeholder="Rechercher un collaborateur…"
+                  className="pl-9"
+                  aria-label="Rechercher un collaborateur"
+                />
+              </div>
+              <div className="overflow-auto rounded-xl border border-msk-ink/8 bg-white">
+                <table className="w-full min-w-72 text-sm">
+                  <thead className="sticky top-0 z-[1] border-b border-msk-ink/8 bg-msk-chalk/80 text-[11px] uppercase tracking-wide text-msk-ink/45 backdrop-blur-sm">
+                    <tr>
+                      <th className="w-10 px-2 py-2 text-left" scope="col">
+                        <span className="sr-only">Sélection</span>
+                      </th>
+                      <th className="px-3 py-2 text-left font-semibold" scope="col">
+                        Collaborateur
+                      </th>
+                      <th className="px-3 py-2 text-left font-semibold" scope="col">
+                        Statut
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-msk-ink/6">
+                    {filteredOwnersRows.map((o) => {
+                      const selected = ownerIds.includes(o.value);
+                      const statusLabel = USER_STATUS_LABEL[o.status] ?? o.status;
+                      const tone = USER_STATUS_TONE[o.status] ?? "muted";
+                      const nameOnly = o.label.replace(/\s*\([^)]*\)\s*$/, "").trim();
+                      return (
+                        <tr
+                          key={o.value}
+                          className={cn(
+                            "transition hover:bg-msk-chalk/50",
+                            selected ? "bg-msk-blue/5" : "",
+                          )}
+                        >
+                          <td className="px-2 py-2.5 align-middle">
+                            <button
+                              type="button"
+                              aria-pressed={selected}
+                              onClick={() =>
+                                setOwnerIds((prev) =>
+                                  toggleInList(prev, o.value),
+                                )
+                              }
+                              className={cn(
+                                "flex h-9 w-9 items-center justify-center rounded-lg border transition",
+                                selected
+                                  ? "border-msk-blue bg-msk-blue text-white"
+                                  : "border-msk-ink/15 bg-white text-msk-ink/30 hover:border-msk-blue/40",
+                              )}
+                              aria-label={
+                                selected ? "Désélectionner" : "Sélectionner"
+                              }
+                            >
+                              {selected ? (
+                                <Check className="h-4 w-4" aria-hidden />
+                              ) : null}
+                            </button>
+                          </td>
+                          <td className="px-3 py-2.5 font-medium text-msk-ink">
+                            {nameOnly}
+                          </td>
+                          <td className="px-3 py-2.5">
+                            <Badge tone={tone} className="font-normal">
+                              {statusLabel}
+                            </Badge>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                {filteredOwnersRows.length === 0 ? (
+                  <p className="px-4 py-8 text-center text-sm text-msk-ink/45">
+                    Aucun collaborateur pour cette recherche.
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          </Modal>
+
+          <section className="space-y-3">
+            <h3 className="text-sm font-semibold text-msk-ink">
+              Date de création
+            </h3>
             <div className="flex flex-wrap gap-1.5">
               {(
                 [
@@ -284,7 +575,7 @@ export function ProspectsFilterButton({
                   type="date"
                   value={on}
                   onChange={(e) => setOn(e.target.value)}
-                  className="mt-1"
+                  className="mt-1 max-w-xs"
                 />
               </div>
             ) : null}
@@ -312,9 +603,10 @@ export function ProspectsFilterButton({
                 </div>
               </div>
             ) : null}
-          </div>
+          </section>
 
-          <div className="space-y-2">
+          <section className="space-y-2">
+            <h3 className="text-sm font-semibold text-msk-ink">Options</h3>
             <label className="flex items-center gap-2 text-sm text-msk-ink">
               <input
                 type="checkbox"
@@ -339,7 +631,7 @@ export function ProspectsFilterButton({
               />
               Nouveaux de la période CRM uniquement
             </label>
-          </div>
+          </section>
         </div>
       </Modal>
     </>

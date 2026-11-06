@@ -20,8 +20,8 @@ export const commercialGuides: GuideInput[] = [
       "crm-suivre-relancer",
       "crm-transformer-client",
     ],
-    status: "validated",
-    updatedAt: "2026-10-22",
+    status: "outdated",
+    updatedAt: "2026-11-06",
     difficulty: "debutant",
     viewPermission: "com.access",
     objective:
@@ -374,5 +374,49 @@ export const commercialGuides: GuideInput[] = [
       ],
     },
     sources: ["docs/manuels/05-crm.md", "docs/manuels/06-commercial.md"],
+  },
+  {
+    id: "com-clients-equipe-historique",
+    title: "Clients COM : équipe, filtres et historique",
+    summary:
+      "Liste et fiches clients partagées au sein de l’équipe commerciale — filtre « Suivi par », timeline des événements, réassignation tracée.",
+    moduleId: "commercial",
+    categories: ["prise-en-main"],
+    taskIds: ["consulter", "suivre"],
+    roleIds: ["commercial", "admin_crm", "direction"],
+    keywords: ["clients", "suivi", "équipe", "historique", "owners"],
+    prerequisites: [
+      "Permission `com.clients.view_own` ou `com.clients.manage`.",
+      "À valider : parcours filtre + réassignation + événements en conditions réelles.",
+    ],
+    relatedGuideIds: ["com-hub-naviguer", "crm-transformer-client"],
+    status: "draft",
+    updatedAt: "2026-11-06",
+    difficulty: "intermediaire",
+    viewPermission: "com.clients.view_own",
+    objective:
+      "Retrouver les clients de l’équipe, affiner par collaborateur responsable et consulter l’historique métier sur la fiche.",
+    steps: [
+      {
+        title: "Ouvrir la liste Clients",
+        instruction:
+          "Commercial → Clients (`/commercial/clients`) : la liste inclut les clients suivis par les membres de l’équipe commerciale (hors vue globale COM).",
+        href: "/commercial/clients",
+      },
+      {
+        title: "Filtrer par Suivi par (multi)",
+        instruction:
+          "Bouton « Filtrer » : cocher un ou plusieurs collaborateurs puis Appliquer (paramètre URL `owners=` en CSV). Le focus `owner=` (drill-down) reste prioritaire et ignore ce filtre.",
+        uiTarget: "Filtrer",
+      },
+      {
+        title: "Fiche client — historique et réassignation",
+        instruction:
+          "Section « Historique » (événements : création, mise à jour, conversion CRM, devis, facture, paiement, changement de suivi…). Avec `com.clients.manage`, formulaire « Nouveau suivi » pour réattribuer le responsable (traces dans l’historique + audit).",
+        caution:
+          "À valider : libellés exacts et droits sur documents (devis/factures) liés au client.",
+      },
+    ],
+    sources: ["docs/manuels/06-commercial.md"],
   },
 ];

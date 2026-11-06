@@ -7,8 +7,14 @@ import { UserPlus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { comVisibility } from "@/lib/commercial/scope";
-import { commercialTeamUserIds } from "@/lib/crm/team";
+import { comClientListScopeWhere, comVisibility } from "@/lib/commercial/scope";
+import { parseComClientOwnersCsv } from "@/lib/commercial/client-filters";
+import {
+  commercialTeamUserIds,
+  formatCollaboratorOptionLabel,
+  listCommercialRoster,
+} from "@/lib/crm/team";
+import { USER_STATUS_LABEL, USER_STATUS_TONE } from "@/lib/users/status";
 import {
   buildCrmScopeHref,
   canFilterCrmOwners,
@@ -30,7 +36,7 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { ActionLink } from "@/components/ui/action-link";
 import { ClickableRowLink } from "@/components/ui/clickable-row-link";
-import { ListSearchForm } from "@/components/ui/list-search-form";
+import { ClientsToolbar } from "@/components/commercial/clients-toolbar";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { SortableTh } from "@/components/ui/sortable-th";
@@ -74,6 +80,17 @@ export default async function CommercialClientsPage({
   }
 
   const canCreate = hasPermission(user, "com.clients.manage");
+  const readTeam =
+    comVisibility(user) === "global" || canFilterCrmOwners(user);
+  const roster = readTeam ? await listCommercialRoster({ mode: "filter" }) : [];
+  const rosterForModal = roster.map((u) => ({
+    id: u.id,
+    label: formatCollaboratorOptionLabel(
+      u.firstName,
+      u.lastName,
+      u.status,
+    ),
+  }));
 
   return (
     <PageShell>
@@ -96,16 +113,13 @@ export default async function CommercialClientsPage({
       />
 
       <Surface className="overflow-hidden p-0">
-        <div className="flex flex-wrap items-center gap-3 border-b border-msk-ink/6 px-4 py-3">
+        <div className="border-b border-msk-ink/6 px-4 py-3">
           <Suspense
             fallback={
-              <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+              <div className="h-10 w-full max-w-md animate-pulse rounded-xl bg-msk-chalk" />
             }
           >
-            <ListSearchForm
-              placeholder="Rechercher entreprise, contact, ville, téléphone…"
-              className="sm:max-w-md"
-            />
+            <ClientsToolbar roster={rosterForModal} readTeam={readTeam} />
           </Suspense>
         </div>
 
@@ -153,6 +167,10 @@ async function ClientsResults({
   const teamIds = readTeam ? await commercialTeamUserIds() : [];
   const memberIds = Array.from(new Set([user.id, ...teamIds]));
   const ownerScope = parseCrmOwner(sp, user, memberIds);
+  const allowedOwnerSet = new Set(memberIds);
+  const ownersCsv = ownerScope.ownerId
+    ? { ownerIds: [] as string[], hadInvalidToken: false }
+    : parseComClientOwnersCsv(sp, allowedOwnerSet);
 
   const focusOwnerUser = ownerScope.ownerId
     ? await prisma.user.findUnique({
@@ -166,9 +184,12 @@ async function ClientsResults({
 
   const baseScope: Prisma.ComClientWhereInput = ownerScope.ownerId
     ? { ownerId: ownerScope.ownerId }
-    : readTeam
-      ? { ownerId: { in: memberIds } }
-      : { ownerId: user.id };
+    : comClientListScopeWhere(user, memberIds);
+
+  const ownersScope: Prisma.ComClientWhereInput | null =
+    ownerScope.ownerId || ownersCsv.ownerIds.length === 0
+      ? null
+      : { ownerId: { in: ownersCsv.ownerIds } };
 
   const gagnesFilter: Prisma.ComClientWhereInput | null =
     isGagnesEvent && occurredBetween
@@ -186,6 +207,7 @@ async function ClientsResults({
   const where: Prisma.ComClientWhereInput = {
     AND: [
       baseScope,
+      ...(ownersScope ? [ownersScope] : []),
       ...(gagnesFilter ? [gagnesFilter] : []),
       ...(q
         ? [
@@ -219,7 +241,7 @@ async function ClientsResults({
     take: pageSize,
     include: {
       _count: { select: { quotes: true, invoices: true } },
-      owner: { select: { firstName: true, lastName: true } },
+      owner: { select: { firstName: true, lastName: true, status: true } },
       sourceOpportunity: { select: { wonAt: true } },
     },
   });
@@ -240,12 +262,14 @@ async function ClientsResults({
           keep: {
             event: isGagnesEvent ? "gagnes" : undefined,
             q: q || undefined,
+            owners: sp.owners?.trim() || undefined,
           },
         })
       : (() => {
           const p = new URLSearchParams();
           if (q) p.set("q", q);
           if (isGagnesEvent) p.set("event", "gagnes");
+          if (sp.owners?.trim()) p.set("owners", sp.owners.trim());
           const s = p.toString();
           return s ? `/commercial/clients?${s}` : "/commercial/clients";
         })();
@@ -256,13 +280,26 @@ async function ClientsResults({
           period,
           ownerId: ownerScope.ownerId,
           canFilterOwners: ownerScope.canFilterOwners,
-          keep: { q: q || undefined },
+          keep: {
+            q: q || undefined,
+            owners: sp.owners?.trim() || undefined,
+          },
         })
       : ownerScope.ownerId
-        ? `/commercial/clients?owner=${ownerScope.ownerId}${q ? `&q=${encodeURIComponent(q)}` : ""}`
-        : q
-          ? `/commercial/clients?q=${encodeURIComponent(q)}`
-          : "/commercial/clients";
+        ? (() => {
+            const p = new URLSearchParams();
+            p.set("owner", ownerScope.ownerId);
+            if (q) p.set("q", q);
+            if (sp.owners?.trim()) p.set("owners", sp.owners.trim());
+            return `/commercial/clients?${p.toString()}`;
+          })()
+        : (() => {
+            const p = new URLSearchParams();
+            if (q) p.set("q", q);
+            if (sp.owners?.trim()) p.set("owners", sp.owners.trim());
+            const s = p.toString();
+            return s ? `/commercial/clients?${s}` : "/commercial/clients";
+          })();
 
   return (
     <>
@@ -414,8 +451,20 @@ async function ClientsResults({
                   <td className="px-4 py-3 text-msk-ink/75">
                     {c.city ?? "—"}
                   </td>
-                  <td className="px-4 py-3 text-xs text-msk-ink/60">
-                    {c.owner.firstName} {c.owner.lastName}
+                  <td className="px-4 py-3 align-top text-xs text-msk-ink/60">
+                    <div className="flex flex-col gap-1.5">
+                      <span className="font-medium text-msk-ink/75">
+                        {c.owner.firstName} {c.owner.lastName}
+                      </span>
+                      <Badge
+                        tone={
+                          USER_STATUS_TONE[c.owner.status] ?? "muted"
+                        }
+                        className="w-fit text-[10px]"
+                      >
+                        {USER_STATUS_LABEL[c.owner.status] ?? c.owner.status}
+                      </Badge>
+                    </div>
                   </td>
                   <td className="px-4 py-3 tabular-nums">{c._count.quotes}</td>
                   <td className="px-4 py-3 tabular-nums">

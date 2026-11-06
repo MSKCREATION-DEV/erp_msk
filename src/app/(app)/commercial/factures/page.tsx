@@ -4,7 +4,8 @@ import { Suspense } from "react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { comInvoiceOwnerScopeWhere } from "@/lib/commercial/scope";
+import { comInvoiceScopeWhere } from "@/lib/commercial/scope";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import {
   formatComMoney,
   invoiceStatusTone,
@@ -92,6 +93,8 @@ async function FacturesResults({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await requireUser();
+  const teamIds = await commercialTeamUserIds();
+  const memberIds = Array.from(new Set([user.id, ...teamIds]));
   const raw = await searchParams;
   const q = (firstParam(raw.q) ?? "").trim();
   const requestedPage = parsePage(firstParam(raw.page));
@@ -108,7 +111,7 @@ async function FacturesResults({
 
   const where = {
     AND: [
-      comInvoiceOwnerScopeWhere(user),
+      comInvoiceScopeWhere(user, memberIds),
       ...(q
         ? [
             {

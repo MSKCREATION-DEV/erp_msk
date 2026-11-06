@@ -4,7 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { canAccessOwned } from "@/lib/commercial/scope";
+import { canAccessComDocForClient } from "@/lib/commercial/scope";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import { displayDocNumber } from "@/lib/commercial/doc-display";
 import {
   formatComMoney,
@@ -46,6 +47,8 @@ export default async function CommercialDevisDetailPage({
   const user = await requireUser();
   if (!hasPermission(user, "com.access")) redirect("/accueil");
   const { id } = await params;
+  const teamIds = await commercialTeamUserIds();
+  const memberIds = Array.from(new Set([user.id, ...teamIds]));
 
   const quote = await prisma.comQuote.findUnique({
     where: { id },
@@ -59,7 +62,16 @@ export default async function CommercialDevisDetailPage({
     },
   });
   if (!quote) notFound();
-  if (!canAccessOwned(user, quote.ownerId)) redirect("/commercial/devis");
+  if (
+    !canAccessComDocForClient(
+      user,
+      quote.client.ownerId,
+      memberIds,
+      quote.ownerId,
+    )
+  ) {
+    redirect("/commercial/devis");
+  }
 
   const pdfDoc = quote.gedDocumentId
     ? await prisma.document.findUnique({

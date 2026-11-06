@@ -1,6 +1,6 @@
 # Manuel — CRM / Suivi commercial (prospects, relances, scripts)
 
-**Version** : 2026-10-14 · LOT-G (compteur relances)  
+**Version** : 2026-11-06 · Rapport semaine KPI période  
 **Public** : Commerciaux, Admin CRM, Direction
 
 ## À retenir
@@ -11,6 +11,7 @@
 - Section **Activité** (relances faites, nouveaux, clients gagnés) : suit **toujours** la période (+ collab). Liens : `forcePeriod` + `event=nouveaux` | `focus=faites` | `event=gagnes`. Les listes filtrent `createdAt` / `wonAt` / activités.
 - CTA **Prospects** (Équipe / Rapport, bouton portefeuille) : `view=stock` + `owner` — **portefeuille à date** du collab (aligné sur le compteur « prospects actifs »), **sans** filtre `createdAt` période. Helper : `buildPortfolioProspectsHref`.
 - CTA **Nouveaux** (Tableau de bord, activité) : `event=nouveaux` + période forcée — flux créés sur la période. Helper : `buildNouveauxProspectsHref`. Ne pas confondre avec le CTA portefeuille.
+- **Rapport** (`/crm/rapport-semaine`) : **quatre** jauges **période** (semaine sélectionnée) — **Prospects créés** (lien `event=nouveaux`) · **Premiers contacts** · **Relances faites** · **Clients gagnés** (lien `event=gagnes`). En **semaine courante** (lentille live), le **donut** reste la **répartition à date** du portefeuille (stocks).
 - Section **Portefeuille à date** (prospects actifs, Intéressés, retards, priorités, répartition, badges stages) : `view=stock` ou `stages=` — suit le **collab**, ignore la période pour les données (période gardée pour le retour).
 - **Visibilité own** : raccourcis hub/TB écrivent toujours `owner=<moi>` (compteur « suivis par moi » = liste filtrée). Dual jauges : **total** (partagé) / **suivis par moi**.
 - **Portefeuille** (`buildPortfolioProspectsHref`) : `view=stock` + `stages=OPEN_PIPELINE` (hors Client/Perdu) par défaut.
@@ -39,7 +40,7 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 | Relances | `/crm/relances` | Recherche `?q=` (entreprise, contact, tél., e-mail, commercial, action) · vues aujourd’hui / retard / semaine · badge N× · vue faites |
 | Scripts | `/crm/scripts` | Copier messages |
 | Vue Équipe | `/crm/equipe` | Prospects + objectifs période (si `view_team` / lead — pas « own only ») |
-| Rapport | `/crm/rapport-semaine` | Par **semaine** (lundi–vendredi) · Direction : toute l’équipe ou un collaborateur |
+| Rapport | `/crm/rapport-semaine` | Par **semaine** (lundi–vendredi) · 4 KPI période + donut répartition (live) · Direction : toute l’équipe ou un collaborateur |
 | Objectifs | `/crm/objectifs` | Vue d’ensemble + barre période · CTA **Assignation** |
 | Fiche collab | `/crm/objectifs/[id]` | Détail lecture · **Modifier** → assignation individuelle |
 | Assignation | `/crm/objectifs/assigner` · `/assigner/[id]` | Globale / par collab (onglets) · sélecteur semaine ← → |
@@ -85,6 +86,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
+| 2026-11-06 | Rapport semaine : 4 KPI période (Prospects créés, Premiers contacts, Relances faites, Clients gagnés) ; donut répartition live conservé |
 | 2026-11-06 | Filtres : anciens collabs (empreinte CRM) en optgroup « Anciens » ; assignation/objectifs opérationnels = actifs only |
 | 2026-10-26 | Relances : recherche texte serveur (`?q=`) combinée aux vues échéance / owner / période |
 | 2026-10-24 | Fix Vue Équipe→Prospects : portefeuille (`view=stock`) au lieu de `event=nouveaux` ; hub own clarifie « suivis / visibles » ; buckets relances documentés/testés |

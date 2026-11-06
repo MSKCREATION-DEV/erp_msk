@@ -4,7 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { canAccessOwned } from "@/lib/commercial/scope";
+import { canAccessComDocForClient } from "@/lib/commercial/scope";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import { displayDocNumber } from "@/lib/commercial/doc-display";
 import {
   formatComMoney,
@@ -49,6 +50,8 @@ export default async function CommercialFactureDetailPage({
   const canCptPropose = hasPermission(user, "cpt.ecritures.manage");
   if (!canCom && !canCptPropose) redirect("/accueil");
   const { id } = await params;
+  const teamIds = await commercialTeamUserIds();
+  const memberIds = Array.from(new Set([user.id, ...teamIds]));
 
   const invoice = await prisma.comInvoice.findUnique({
     where: { id },
@@ -65,7 +68,15 @@ export default async function CommercialFactureDetailPage({
     },
   });
   if (!invoice) notFound();
-  if (canCom && !canAccessOwned(user, invoice.ownerId)) {
+  if (
+    canCom &&
+    !canAccessComDocForClient(
+      user,
+      invoice.client.ownerId ?? "",
+      memberIds,
+      invoice.ownerId,
+    )
+  ) {
     redirect("/commercial/factures");
   }
 

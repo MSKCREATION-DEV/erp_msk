@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { comOwnerScopeWhere } from "@/lib/commercial/scope";
+import { comClientListScopeWhere } from "@/lib/commercial/scope";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import { STAGE_LABELS } from "@/lib/crm/labels";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -23,10 +24,12 @@ export default async function CommercialDevisNouveauPage({
     redirect("/commercial/devis");
   }
   const sp = await searchParams;
+  const teamIds = await commercialTeamUserIds();
+  const memberIds = Array.from(new Set([user.id, ...teamIds]));
 
   const [clients, offers, opportunity] = await Promise.all([
     prisma.comClient.findMany({
-      where: comOwnerScopeWhere(user),
+      where: comClientListScopeWhere(user, memberIds),
       orderBy: { name: "asc" },
       select: { id: true, name: true, includeTravelDefault: true },
     }),

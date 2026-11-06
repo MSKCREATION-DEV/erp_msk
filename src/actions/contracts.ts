@@ -10,7 +10,11 @@ import {
   buildContractLinesFromQuote,
   nextContractReference,
 } from "@/lib/commercial/contract-from-quote";
-import { canAccessOwned } from "@/lib/commercial/scope";
+import {
+  canAccessComDocForClient,
+} from "@/lib/commercial/scope";
+import { COM_CLIENT_EVENT, logComClientEvent } from "@/lib/commercial/client-events";
+import { commercialTeamUserIds } from "@/lib/crm/team";
 import { prisma } from "@/lib/prisma";
 
 function revalidateContractPaths(paths: string[]) {
@@ -26,6 +30,7 @@ export async function createContractFromQuoteAction(
   formData: FormData,
 ): Promise<ActionResult & { contractId?: string }> {
   const actor = await requireUser({ permission: "com.contrats.manage" });
+  const teamIds = await commercialTeamUserIds();
   const quoteId = String(formData.get("quoteId") ?? "").trim();
   const startRaw = String(formData.get("startDate") ?? "").trim();
   const billingDayRaw = Number.parseInt(
@@ -38,10 +43,20 @@ export async function createContractFromQuoteAction(
 
   const quote = await prisma.comQuote.findUnique({
     where: { id: quoteId },
-    include: { lines: { orderBy: { sortOrder: "asc" } } },
+    include: {
+      lines: { orderBy: { sortOrder: "asc" } },
+      client: { select: { ownerId: true } },
+    },
   });
   if (!quote) return { ok: false, error: "Devis introuvable" };
-  if (!canAccessOwned(actor, quote.ownerId)) {
+  if (
+    !canAccessComDocForClient(
+      actor,
+      quote.client.ownerId,
+      teamIds,
+      quote.ownerId,
+    )
+  ) {
     return { ok: false, error: "Hors périmètre" };
   }
   if (quote.status !== ComQuoteStatus.ACCEPTE) {
@@ -109,15 +124,13 @@ export async function createContractFromQuoteAction(
     };
   }
 
-  await prisma.comClientEvent.create({
-    data: {
-      clientId: quote.clientId,
-      type: "CONTRACT_SIGNED",
-      summary: `Contrat créé depuis devis ${quote.number ?? quote.draftCode}`,
-      entityType: "com_contract",
-      entityId: contractId,
-      actorId: actor.id,
-    },
+  await logComClientEvent({
+    clientId: quote.clientId,
+    actorId: actor.id,
+    type: COM_CLIENT_EVENT.CONTRACT_SIGNED,
+    summary: `Contrat créé depuis le devis ${quote.number ?? quote.draftCode}.`,
+    entityType: "com_contract",
+    entityId: contractId,
   });
 
   await writeAudit({

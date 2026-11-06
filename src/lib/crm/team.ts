@@ -132,6 +132,7 @@ export async function listCommercialRoster(opts?: {
 export type CommercialOwnerOption = {
   value: string;
   label: string;
+  status: UserStatus;
   /** true = suspendu / archivé (consultation historique). */
   historical: boolean;
   description?: string;
@@ -148,6 +149,7 @@ export function rosterToOwnerOptions(
     return {
       value: u.id,
       label: formatCollaboratorOptionLabel(u.firstName, u.lastName, u.status),
+      status: u.status,
       historical,
       description: historical ? "Ancien collaborateur — consultation" : undefined,
     };
@@ -173,6 +175,7 @@ export async function injectOwnerIfMissing(
     {
       value: u.id,
       label: formatCollaboratorOptionLabel(u.firstName, u.lastName, u.status),
+      status: u.status,
       historical,
       description: historical
         ? "Ancien collaborateur — consultation"

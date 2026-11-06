@@ -14,7 +14,12 @@ import {
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { canAccessOwned } from "@/lib/commercial/scope";
+import { canAccessClient } from "@/lib/commercial/scope";
+import {
+  commercialTeamUserIds,
+  formatCollaboratorOptionLabel,
+  listCommercialRoster,
+} from "@/lib/crm/team";
 import { computeClientFinancials } from "@/lib/billing/client-financials";
 import { displayDocNumber } from "@/lib/commercial/doc-display";
 import {
@@ -31,6 +36,7 @@ import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 import { ClientDetailActions } from "@/components/commercial/client-detail-actions";
+import { ClientReassignForm } from "@/components/commercial/client-reassign-form";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { SocialNetworkBadges } from "@/components/crm/social-network-badges";
 import {
@@ -42,6 +48,7 @@ import {
   COM_DOCS_GATED,
   COM_DOCS_GATED_HINT,
 } from "@/lib/commercial/gates";
+import { USER_STATUS_LABEL, USER_STATUS_TONE } from "@/lib/users/status";
 
 export const metadata: Metadata = { title: "Fiche client" };
 
@@ -97,6 +104,8 @@ export default async function CommercialClientDetailPage({
     redirect("/commercial");
   }
   const { id } = await params;
+  const teamIds = await commercialTeamUserIds();
+  const memberIds = Array.from(new Set([user.id, ...teamIds]));
 
   const client = await prisma.comClient.findUnique({
     where: { id },
@@ -156,7 +165,9 @@ export default async function CommercialClientDetailPage({
           title: true,
         },
       },
-      owner: { select: { id: true, firstName: true, lastName: true } },
+      owner: {
+        select: { id: true, firstName: true, lastName: true, status: true },
+      },
       createdBy: { select: { id: true, firstName: true, lastName: true } },
       sourceOpportunity: {
         select: { id: true, source: true },
@@ -199,10 +210,38 @@ export default async function CommercialClientDetailPage({
     },
   });
   if (!client) notFound();
-  if (!canAccessOwned(user, client.ownerId)) redirect("/commercial/clients");
+  if (!canAccessClient(user, client.ownerId, memberIds)) {
+    redirect("/commercial/clients");
+  }
 
   const canEdit = hasPermission(user, "com.clients.manage");
   const canCreateQuote = hasPermission(user, "com.devis.create");
+  const canReassignOwner = canEdit;
+
+  const [assignRoster, events] = await Promise.all([
+    canReassignOwner
+      ? listCommercialRoster({ mode: "assign", extraIds: [client.ownerId] })
+      : Promise.resolve([] as Awaited<ReturnType<typeof listCommercialRoster>>),
+    prisma.comClientEvent.findMany({
+      where: { clientId: client.id },
+      orderBy: { createdAt: "desc" },
+      take: 80,
+      include: {
+        actor: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
+    }),
+  ]);
+
+  const assignOptions = assignRoster.map((u) => ({
+    value: u.id,
+    label: formatCollaboratorOptionLabel(
+      u.firstName,
+      u.lastName,
+      u.status,
+    ),
+  }));
 
   const location = [client.city, client.country].filter(Boolean).join(" · ");
   const org = client.crmOrganization;
@@ -363,7 +402,29 @@ export default async function CommercialClientDetailPage({
             </div>
             <dl className="grid min-w-0 gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr))]">
               <MetaItem label="Suivi par">
-                {client.owner.firstName} {client.owner.lastName}
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-medium">
+                      {client.owner.firstName} {client.owner.lastName}
+                    </span>
+                    <Badge
+                      tone={
+                        USER_STATUS_TONE[client.owner.status] ?? "muted"
+                      }
+                      className="text-[10px]"
+                    >
+                      {USER_STATUS_LABEL[client.owner.status] ??
+                        client.owner.status}
+                    </Badge>
+                  </div>
+                  {canReassignOwner ? (
+                    <ClientReassignForm
+                      clientId={client.id}
+                      currentOwnerId={client.ownerId}
+                      assignOptions={assignOptions}
+                    />
+                  ) : null}
+                </div>
               </MetaItem>
               <MetaItem label="Créé">
                 {client.createdAt.toLocaleDateString("fr-FR")}
@@ -752,6 +813,35 @@ export default async function CommercialClientDetailPage({
           </Section>
         </div>
       </div>
+
+      <Section title="Historique">
+        {events.length === 0 ? (
+          <p className="text-sm text-msk-ink/45">Aucun événement enregistré.</p>
+        ) : (
+          <ol className="relative space-y-4 border-l border-msk-ink/8 pl-5">
+            {events.map((ev) => (
+              <li key={ev.id} className="relative">
+                <span className="absolute -left-[21px] top-1.5 size-2.5 rounded-full border-2 border-msk-blue bg-white" />
+                <p className="text-xs text-msk-ink/45">
+                  {ev.createdAt.toLocaleString("fr-FR", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })}
+                  {ev.actor ? (
+                    <span className="text-msk-ink/55">
+                      {" "}
+                      · {ev.actor.firstName} {ev.actor.lastName}
+                    </span>
+                  ) : (
+                    <span className="text-msk-ink/55"> · (acteur inconnu)</span>
+                  )}
+                </p>
+                <p className="mt-1 text-sm text-msk-ink">{ev.summary}</p>
+              </li>
+            ))}
+          </ol>
+        )}
+      </Section>
     </PageShell>
   );
 }

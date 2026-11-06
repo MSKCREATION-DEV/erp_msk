@@ -9,11 +9,11 @@ Branche de travail : `dev`.
 
 | Champ | Valeur |
 |---|---|
-| Statut incrément | **Fondations livrées** (P1 + P2 partielles) |
+| Statut incrément | **Fondations livrées** — lot CRM Nov-2026 (filtres Prospects multi + Rapport 4 KPI + Clients équipe/historique) à valider terrain |
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-04 (COM-FACTU : contrats, créances, dégel devis/factures) |
+| Dernière mise à jour | 2026-11-06 (Phase 6 gate — synthèse filtres + rapport + clients, changelog consolidé) |
 
 ### Légende statuts documentaires
 
@@ -104,7 +104,8 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `crm-creer-prospect` | Créer un prospect | commercial | `to_validate` | live doublons 3 car. + ack contact — revalider UI |
 | `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `outdated` | CRUD relances + RDV + Perdu sans min 3× — à réécrire |
 | `crm-transformer-client` | Transformer un prospect en client | commercial | `validated` | manuel 05 (Intéressé → Client) |
-| `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `to_validate` | dual total/suivis + owner URL own — à revalider UI |
+| `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `outdated` | Rapport semaine : grille 4 KPI période + liens liste ; hub/cartes — revalider captures et libellés |
+| `com-clients-equipe-historique` | Clients COM : équipe, filtres, historique | commercial | `draft` | liste/fiche + URL `owners=` — parcours à valider humain |
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
 | `faq-acces-refuse` | Accès refusé / module absent | accueil | `validated` | redirect `acces_refuse` |
 | `faq-mot-de-passe` | Mot de passe / reset | accueil | `validated` | parcours auth connus |
@@ -187,6 +188,31 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-06 — Lot CRM/COM : filtres Prospects multi · Rapport 4 KPI période · Clients équipe + traces (Phases 1–6)
+
+Synthèse unique des trois développements parallèles (évite les doublons partiels dans ce fichier).
+
+- **Filtres Prospects (modal + données)**  
+  - **Pourquoi** : multi-sélection origines (« sources ») et « Suivi par » (`owners` CSV), roster incluant anciens collabs en consultation ; UI lisible (modal `lg`, badges, mini-tableau owners).  
+  - **Quoi** : URL `sources=` / `owners=` (CSV) ; focus `owner=` prioritaire ; `buildProspectWhere` avec `in` ; chips / compteur Filtrer ; parsing + where testés (`prospect-list-filters`).  
+  - **Fichiers** : `src/components/crm/prospects-filter-modal.tsx`, `prospects-results.tsx`, `src/lib/crm/prospect-list-filters.ts`, tests associés.
+
+- **Rapport semaine**  
+  - **Pourquoi** : indicateurs **période** uniquement ; suppression des stocks « En échange / Prêts à convertir » source de confusion.  
+  - **Quoi** : grille fixe **Prospects créés** · **Premiers contacts** · **Relances faites** · **Clients gagnés** (lien clients `event=gagnes` + période) ; hint « clic = liste… » retiré sur le premier KPI ; donut répartition live inchangé.  
+  - **Fichiers** : `src/app/(app)/crm/rapport-semaine/page.tsx`, `docs/manuels/05-crm.md` si aligné.
+
+- **Clients Commercial (scope équipe + journal)**  
+  - **Pourquoi** : lecture **et** écriture partagées équipe (`com.clients.manage`) avec traçabilité obligatoire ; filtres liste cohérents avec Prospects.  
+  - **Quoi** : `comClientListScopeWhere` / `canAccessClient` / `canMutateClient` / `canAccessComDocForClient` ; `ComClientEvent` (création, CRM, MAJ, OWNER_CHANGED, devis, facture, paiement, contrat…) ; fiche : timeline + réassignation ; liste : modal filtre multi `owners=` + badge statut collaborateur ; `reassignClientOwnerAction`.  
+  - **Fichiers** : `src/lib/commercial/scope.ts`, `client-events.ts`, `client-filters.ts`, `src/actions/commercial.ts`, `commercial/clients/**`, `clients-filter-modal`, `client-reassign-form`, écosystème devis/factures/contrats sur client parent.
+
+- **Guides**  
+  - `com-hub-naviguer` → **`outdated`** (hub + Rapport 4 KPI : ressaisir étapes / captures).  
+  - `com-clients-equipe-historique` → **`draft`** (parcours filtre multi + historique + réassign à valider humain).  
+  - Filtres liste Prospects : pas de guide dédié §4 — reprise sous parcours CRM / `com-hub-naviguer` après validation UI.  
+  - Roster « anciens collabs » (empreinte data / optgroup Anciens) : `src/lib/crm/team.ts`, `collaborator-status.ts`, `crm-scope-bar.tsx`, objectifs — inchangé côté doc sauf reprendre captures une fois le lot validé.
 
 ### 2026-11-04 — COM-FACTU fondations + dégel devis/factures
 - **Quoi** : ADR facturation ; moteurs billing (ECOSOL/Prosperity) ; numérotation `FAC|DEV-YYYYMMDD-XXXX` à l’émission ; contrats + facture depuis contrat ; créances `/comptabilite/creances` ; fiche client KPI financiers ; import Excel suivi (dry-run anomalies) ; `COM_DOCS_GATED=false`.
@@ -397,13 +423,6 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - **Quoi** : `StageBarChart` mode `compact` (hauteur fixe ~128 px, total en synthèse) ; en historique largeur `max-w-xl` ; calculs 4 semaines inchangés ; empty sobre.
 - **Fichiers** : `stage-bar-chart.tsx`, `crm/rapport-semaine/page.tsx`.
 - **Statut doc** : guide rapport / com-hub → `to_validate` si parcours UI.
-
-### 2026-11-06 — Filtres CRM : anciens collabs (empreinte data)
-
-- **Pourquoi** : Madina / Bagayoko / Fatoumata archivés absents des filtres alors qu’ils ont créé/suivi des prospects ; roster ne regardait que owner + groupe/pack.
-- **Quoi** : `commercialTeamUserIds` + createdBy / activités / tâches ; filtres consultation (`mode: filter`) incluent archivés avec libellé « (Archivé) » + optgroup « Anciens » ; affectation / objectifs opérationnels restent actifs only ; Objectifs = bloc consultation anciens ; cartes Équipe inchangées (mode historique).
-- **Fichiers** : `src/lib/crm/team.ts`, `collaborator-status.ts`, `crm-scope-bar.tsx`, `crm/objectifs/page.tsx`, `crm/page.tsx`.
-- **Statut doc** : guide CRM filtres / équipe → `to_validate`.
 
 ### 2026-10-26 — Règles collab + nav + affectation (cohérence ERP)
 
