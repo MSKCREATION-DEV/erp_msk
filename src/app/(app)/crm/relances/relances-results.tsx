@@ -6,7 +6,7 @@ import { CrmTaskStatus } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { crmVisibility } from "@/lib/crm/scope";
+import { crmVisibility, openProspectTaskWhere } from "@/lib/crm/scope";
 import {
   commercialTeamUserIds,
   formatCollaboratorOptionLabel,
@@ -150,6 +150,9 @@ function taskWhere(
 ): Prisma.CrmTaskWhereInput {
   return {
     status: CrmTaskStatus.OPEN,
+    // Un deal devenu Client (GAGNE) n’est plus un prospect à relancer —
+    // exclut aussi les orphelins historiques liés à un ComClient (B).
+    ...openProspectTaskWhere(),
     ...(assigneeFilter ? { assigneeId: { in: assigneeFilter } } : {}),
     ...(dueAtFilter ? { dueAt: dueAtFilter } : {}),
     ...(searchWhere ? { AND: [searchWhere] } : {}),

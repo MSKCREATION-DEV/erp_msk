@@ -29,6 +29,7 @@ import {
   STAGE_ORDER,
   prospectsStagesHref,
 } from "@/lib/crm/labels";
+import { openProspectTaskWhere } from "@/lib/crm/scope";
 import {
   buildGoalProgress,
   loadSummedOperationalGoalsForPeriod,
@@ -171,7 +172,11 @@ export default async function CrmDashboardPage({
     : [];
   const openTasks = showStocks
     ? await prisma.crmTask.count({
-        where: { status: CrmTaskStatus.OPEN, ...assigneeWhere },
+        where: {
+          status: CrmTaskStatus.OPEN,
+          ...openProspectTaskWhere(),
+          ...assigneeWhere,
+        },
       })
     : 0;
   const overdue = showStocks
@@ -179,6 +184,7 @@ export default async function CrmDashboardPage({
         where: {
           status: CrmTaskStatus.OPEN,
           dueAt: { lt: new Date() },
+          ...openProspectTaskWhere(),
           ...assigneeWhere,
         },
       })

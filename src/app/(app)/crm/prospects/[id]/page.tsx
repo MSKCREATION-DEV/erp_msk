@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   Building2,
+  CalendarPlus,
   Globe2,
   Mail,
   MapPin,
@@ -39,6 +40,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { ActionLink } from "@/components/ui/action-link";
 import { ProspectDetailActions } from "@/components/crm/prospect-detail-actions";
 import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
 import { AssignmentRequestForm } from "@/components/crm/assignment-request-form";
@@ -380,6 +382,13 @@ export default async function CrmProspectDetailPage({
 
   const canLog =
     canMutate && hasPermission(user, "crm.activity.log");
+  const showActionToolbar =
+    canEdit ||
+    canReassign ||
+    canLog ||
+    hasPermission(user, "crm.scripts.view") ||
+    canCreateQuote ||
+    canManageClients;
   const requireFollowUp =
     deal.followUpAt == null &&
     uiStage !== "NOUVEAU" &&
@@ -457,15 +466,23 @@ export default async function CrmProspectDetailPage({
               <Badge tone="coral">TEST</Badge>
             ) : null}
             {overdue ? <Badge tone="coral">Relance en retard</Badge> : null}
+          </div>
+        }
+      />
+
+      {/* Barre d’actions — (1) chips ci-dessus (2) secondaire méta/nav à gauche
+          (3) pipeline + conversion commerciale à droite, séparés visuellement. */}
+      {showActionToolbar ? (
+        <Surface className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+          <div className="flex flex-wrap items-center gap-2">
             {canEdit ? (
-              <Link
-                prefetch={false}
+              <ActionLink
                 href={`/crm/prospects/${deal.id}/edit`}
-                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-msk-ink/15 bg-white px-3 text-sm font-medium text-msk-ink transition hover:bg-msk-chalk"
+                icon={Pencil}
+                variant="secondary"
               >
-                <Pencil className="h-3.5 w-3.5" aria-hidden />
                 Modifier
-              </Link>
+              </ActionLink>
             ) : null}
             {canReassign ? (
               <AssignProspectForm
@@ -484,8 +501,7 @@ export default async function CrmProspectDetailPage({
               />
             ) : null}
             {hasPermission(user, "crm.scripts.view") ? (
-              <Link
-                prefetch={false}
+              <ActionLink
                 href={buildScriptsHref({
                   source: deal.source,
                   prenom: formatContactLabel(
@@ -500,43 +516,45 @@ export default async function CrmProspectDetailPage({
                   secteur: deal.organization.sector,
                   ville: deal.organization.city,
                 })}
-                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-msk-ink/15 bg-white px-3 text-sm font-medium text-msk-ink transition hover:bg-msk-chalk"
+                icon={MessageSquareText}
+                variant="secondary"
               >
-                <MessageSquareText className="h-3.5 w-3.5" aria-hidden />
                 Scripts
-              </Link>
+              </ActionLink>
             ) : null}
             {canLog ? (
-              <Link
+              <ActionLink
                 href={`/crm/rdv/nouveau?opportunityId=${deal.id}`}
-                className="inline-flex h-9 items-center justify-center rounded-lg border border-msk-ink/10 bg-white px-3 text-sm font-medium text-msk-ink transition hover:bg-msk-chalk"
+                icon={CalendarPlus}
+                variant="secondary"
               >
                 Planifier un RDV
-              </Link>
+              </ActionLink>
             ) : null}
-            <ProspectDetailActions
-              opportunityId={deal.id}
-              stage={deal.stage}
-              activityCount={outreachCount}
-              hasFollowUp={deal.followUpAt != null}
-              linked={linkedEntities}
-              canEditStage={canEdit}
-              canLogActivity={canLog}
-              requireFollowUp={requireFollowUp}
-              quote={{
-                existingQuoteId: deal.comQuotes[0]?.id ?? null,
-                existingClientId: linkedClient?.id,
-                canCreateQuote,
-                canManageClients,
-                clients: quoteClients,
-                offers: catalogOffers,
-                initialLines: quotePrefill,
-                defaultObject: `Proposition — ${deal.organization.name}`,
-              }}
-            />
           </div>
-        }
-      />
+
+          <ProspectDetailActions
+            opportunityId={deal.id}
+            stage={deal.stage}
+            activityCount={outreachCount}
+            hasFollowUp={deal.followUpAt != null}
+            linked={linkedEntities}
+            canEditStage={canEdit}
+            canLogActivity={canLog}
+            requireFollowUp={requireFollowUp}
+            quote={{
+              existingQuoteId: deal.comQuotes[0]?.id ?? null,
+              existingClientId: linkedClient?.id,
+              canCreateQuote,
+              canManageClients,
+              clients: quoteClients,
+              offers: catalogOffers,
+              initialLines: quotePrefill,
+              defaultObject: `Proposition — ${deal.organization.name}`,
+            }}
+          />
+        </Surface>
+      ) : null}
 
       {uiStage === "QUALIFICATION" && STAGE_HINTS.QUALIFICATION ? (
         <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/4 px-4 py-2.5 text-sm text-msk-ink/65">

@@ -324,6 +324,7 @@ function ProspectDevisCta({
     <>
       <Button
         type="button"
+        variant="secondary"
         size="sm"
         disabled={pending}
         onClick={() => {

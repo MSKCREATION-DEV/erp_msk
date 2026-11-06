@@ -23,6 +23,7 @@ import {
   CrmActivityType,
   CrmPipelineStage,
   CrmSource,
+  CrmTaskStatus,
   type Prisma,
 } from "@/generated/prisma/client";
 import type { ActionResult } from "@/actions/auth";
@@ -31,6 +32,7 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/session-user";
 import { prisma } from "@/lib/prisma";
 import { findClientDuplicateCandidates } from "@/lib/commercial/client-duplicates";
+import { searchOrgDuplicates } from "@/lib/crm/duplicate-search";
 import { buildContractLinesFromQuote } from "@/lib/commercial/contract-from-quote";
 import { ensureClientDocFolder } from "@/lib/commercial/ged-client";
 import { buildClientGedFolderCode } from "@/lib/commercial/ged-folder-code";
@@ -105,9 +107,31 @@ export type ClientWizardScope = {
   outOfScope: string[];
 };
 
+/**
+ * Recherche live anti-doublon pour l’étape Identité du wizard client
+ * (création directe uniquement — pas de sens quand `?opportunityId=` préremplit
+ * déjà le nom depuis le prospect transformé). Couvre clients **et** prospects
+ * CRM (même infra que la création de prospect) pour avertir avant la fin du
+ * parcours en 6 étapes plutôt qu’au submit final.
+ */
+export async function findClientWizardDuplicatesAction(
+  formData: FormData,
+): Promise<
+  | { ok: true; candidates: Awaited<ReturnType<typeof searchOrgDuplicates>> }
+  | { ok: false; error: string }
+> {
+  await requireUser({ permission: "com.clients.manage" });
+  const name = String(formData.get("name") ?? "").trim();
+  if (!name) return { ok: false, error: "Indiquez la raison sociale." };
+  const candidates = await searchOrgDuplicates(name);
+  return { ok: true, candidates };
+}
+
 export async function createClientWizardAction(
   formData: FormData,
-): Promise<ActionResult & { contractId?: string; clientId?: string }> {
+): Promise<
+  ActionResult & { contractId?: string; clientId?: string; duplicateHref?: string }
+> {
   const actor = await requireUser({ permission: "com.clients.manage" });
   if (!hasPermission(actor, "com.contrats.manage")) {
     return {
@@ -225,6 +249,8 @@ export async function createClientWizardAction(
       };
     }
   } else {
+    // ---- Anti-doublon création directe (P1.3 + extension prospects) ----
+    // 1) Même client commercial déjà en base (match tested, normalisation ComClient).
     const duplicates = await findClientDuplicateCandidates(data.name);
     if (duplicates.length > 0) {
       const first = duplicates[0]!;
@@ -235,6 +261,26 @@ export async function createClientWizardAction(
             ? `Un client « ${first.name} » existe déjà. Ouvrez sa fiche plutôt que d’en recréer une.`
             : `Un client proche existe déjà : « ${first.name} ». Vérifiez avant de continuer.`,
         clientId: first.id,
+        duplicateHref: `/commercial/clients/${first.id}`,
+      };
+    }
+    // 2) Un prospect CRM (CrmOrganization sans ComClient lié, quel que soit son
+    // statut pipeline) porte déjà ce nom : on bloque la création directe pour
+    // ne pas scinder l’historique — il faut passer par « Transformer en client »
+    // depuis la fiche prospect existante.
+    const orgMatches = await searchOrgDuplicates(data.name);
+    const prospectMatch = orgMatches.find((m) => m.entity === "prospect");
+    if (prospectMatch) {
+      const statusLabel = prospectMatch.stageLabel
+        ? ` (statut CRM : ${prospectMatch.stageLabel})`
+        : "";
+      return {
+        ok: false,
+        error:
+          prospectMatch.kind === "exact"
+            ? `Un prospect « ${prospectMatch.name} » existe déjà${statusLabel}. Ouvrez sa fiche CRM et utilisez « Transformer en client » pour ne pas scinder l’historique.`
+            : `Un prospect proche existe déjà : « ${prospectMatch.name} »${statusLabel}. Vérifiez avant de créer un client séparé.`,
+        duplicateHref: prospectMatch.href,
       };
     }
   }
@@ -321,6 +367,12 @@ export async function createClientWizardAction(
               lossNote: null,
               lastActivityAt: now,
             },
+          });
+          // Plus un prospect à relancer une fois Client — clôture les tâches
+          // ouvertes (même logique que `updateOpportunityStageAction`, fix B).
+          await tx.crmTask.updateMany({
+            where: { opportunityId: deal.id, status: CrmTaskStatus.OPEN },
+            data: { status: CrmTaskStatus.CANCELLED, completedAt: now },
           });
           await tx.crmActivity.create({
             data: {

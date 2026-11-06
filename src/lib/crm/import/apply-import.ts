@@ -73,6 +73,21 @@ async function createOneRowNested(
   const occurredAt =
     row.lastActionAt ?? row.firstContactAt ?? createdAt ?? new Date();
 
+  // Garde-fou (fix C) : « Client » (GAGNE) ne doit jamais être posé en dehors
+  // du parcours « Transformer en client » (contrat + composition requis) —
+  // un import en masse ne peut pas créer ce couple. Une ligne Excel marquée
+  // Client est donc plafonnée à Devis envoyé, avec une note + une relance
+  // explicite pour que le commercial confirme via le vrai parcours.
+  const sourceWasGagne = row.stage === "GAGNE";
+  const stage = sourceWasGagne ? "DEVIS_ENVOYE" : row.stage;
+  const nextAction = sourceWasGagne
+    ? row.nextAction
+      ? `${row.nextAction} (import : statut source Client — confirmer via « Transformer en client »)`
+      : "Confirmer le client (import Excel) via « Transformer en client »"
+    : row.nextAction;
+  const followUpAt =
+    row.followUpAt ?? (sourceWasGagne ? new Date(Date.now() + 3 * 86_400_000) : null);
+
   const org = await prisma.crmOrganization.create({
     data: {
       name: row.orgName,
@@ -96,20 +111,21 @@ async function createOneRowNested(
       opportunities: {
         create: {
           title: row.orgName,
-          stage: row.stage,
+          stage,
           source: row.source,
           offerLabel: row.offerLabel,
           budgetXof: row.budgetXof,
           probability: row.probability,
-          nextAction: row.nextAction,
-          followUpAt: row.followUpAt,
+          nextAction,
+          followUpAt,
           lastActivityAt: row.lastAction
             ? occurredAt
             : (createdAt ?? row.firstContactAt),
-          interestedAt: row.stage === "INTERESSE" ? new Date() : null,
-          wonAt: row.stage === "GAGNE" ? new Date() : null,
-          lostAt: row.stage === "PERDU" ? new Date() : null,
-          lossReason: row.stage === "PERDU" ? CrmLossReason.AUTRE : null,
+          interestedAt:
+            stage === "INTERESSE" || sourceWasGagne ? new Date() : null,
+          wonAt: null,
+          lostAt: stage === "PERDU" ? new Date() : null,
+          lossReason: stage === "PERDU" ? CrmLossReason.AUTRE : null,
           ownerId,
           createdById,
           ...(createdAt ? { createdAt } : {}),
@@ -141,14 +157,31 @@ async function createOneRowNested(
       }),
     );
   }
-  if (row.followUpAt && row.stage !== "GAGNE" && row.stage !== "PERDU") {
+  if (sourceWasGagne) {
+    extras.push(
+      prisma.crmActivity.create({
+        data: {
+          organizationId: org.id,
+          opportunityId: dealId,
+          type: CrmActivityType.NOTE,
+          summary: "Import Excel : statut source « Client »",
+          body:
+            "Plafonné à Devis envoyé à l’import — aucune fiche client n’a été créée automatiquement. " +
+            "Confirmez via « Transformer en client » depuis cette fiche pour générer le client + contrat.",
+          actorId: createdById,
+          occurredAt,
+        },
+      }),
+    );
+  }
+  if (followUpAt && stage !== "PERDU") {
     extras.push(
       prisma.crmTask.create({
         data: {
           organizationId: org.id,
           opportunityId: dealId,
-          title: row.nextAction || `Relance ${row.orgName}`,
-          dueAt: row.followUpAt,
+          title: nextAction || `Relance ${row.orgName}`,
+          dueAt: followUpAt,
           assigneeId: ownerId,
           createdById,
         },

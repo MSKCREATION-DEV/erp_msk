@@ -130,6 +130,44 @@ Six étapes **FormSteps** : Identité → Contact → Origine → **Composition*
 
 ---
 
+## 7bis. Complément 2026-11-06 — Anti-doublon prospect↔client, Relances sans Gagné, toolbar fiche
+
+### G. Anti-doublon à la création client directe — doit aussi bloquer sur un prospect proche
+
+1. `/commercial/clients` → **Nouveau client** (pas de `?opportunityId=`).
+2. Étape **Identité** : saisir le nom d’un **prospect CRM existant** (≥ 3 caractères).
+3. **Contrôles :** une correspondance apparaît sous le champ (carte prospect), le bouton **Continuer** est bloqué ; si on force le submit, le serveur refuse avec un lien vers la fiche prospect existante (`/crm/prospects/[id]`) en suggérant **Transformer en client** plutôt qu’une fiche séparée.
+4. Refaire avec le nom d’un **client déjà existant** : comportement inchangé (bloquant, inchangé depuis P1).
+
+### H. Un deal Gagné ne doit plus apparaître en Relances ni dans les compteurs
+
+1. Repérer un prospect avec une relance ouverte, puis le faire passer en **Gagné** via **Transformer en client** (stepper complet jusqu’au récap).
+2. **Contrôles :** la tâche de relance associée disparaît de `/crm/relances` (file ouverte) ; les compteurs « relances en retard / ouvertes » sur `/crm` et `/commercial` ne la comptent plus ; le digest cron (`/api/cron/notifications`) ne la remonte plus.
+
+### I. Garde Gagné manuel (non-régression P0)
+
+1. Sur un prospect **sans** fiche client liée, ouvrir **Changer le statut** → sélectionner **Client**.
+2. **Contrôles :** refusé par le serveur avec message invitant à créer d’abord la fiche client (via **Transformer en client** ou un devis) — comportement déjà en place, à revérifier après ce lot.
+
+### J. Toolbar fiche prospect réorganisée
+
+1. Ouvrir une fiche `/crm/prospects/[id]`.
+2. **Contrôles :** badges de statut (Statut, Relances, TEST, En retard…) regroupés en haut à côté du titre ; en dessous, une barre distincte avec à **gauche** les actions secondaires (Modifier, Affecter, Scripts, Planifier un RDV) et à **droite** les actions pipeline (Changer le statut / Enregistrer une action) séparées par un trait vertical des actions de conversion commerciale (Transformer en client en bleu primaire, Créer un devis en gris secondaire). Aucune perte de fonctionnalité par rapport à l’ancienne barre (mêmes libellés, mêmes permissions).
+3. Vérifier aussi `/commercial/clients/[id]` : déjà conforme (Modifier + Nouveau devis), inchangée.
+
+### K. Orphelins Gagné connus (diagnostic lecture seule — à traiter manuellement)
+
+Deux deals `GAGNE` sans fiche client commercial existent en base au 2026-11-06 (antérieurs à la garde P0, non corrigés automatiquement) :
+
+| Prospect | Owner | `wonAt` | Action recommandée |
+|---|---|---|---|
+| `Text 1 yaye` | Yaye Bah | 2026-11-06 11:47 | Probablement un test — vérifier puis archiver/supprimer si confirmé |
+| `ELVI Creation` | Mathieu Diarra | 2026-10-19 | Vérifier si prospect réel — si oui, ouvrir la fiche et **Transformer en client** pour compléter la conversion sans perdre l’historique |
+
+Ouvrir `/crm/prospects/[id]` (id interne, via recherche org CRM) pour chacun ; le CTA **Transformer en client** reste disponible et ne recrée pas de doublon (deal déjà Gagné réutilisé tel quel).
+
+---
+
 ## 7. Post-déploiement technique (rappel)
 
 - Le build applique les migrations (`npm run build` inclut `prisma migrate deploy`). Vérifier que la migration `20261106140000_com_contract_family_composition` est bien passée en prod.

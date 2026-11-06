@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CrmSource } from "@/generated/prisma/client";
-import { createClientWizardAction } from "@/actions/client-wizard";
+import {
+  createClientWizardAction,
+  findClientWizardDuplicatesAction,
+} from "@/actions/client-wizard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +15,9 @@ import { FormShell } from "@/components/ui/form-shell";
 import { FormSteps } from "@/components/ui/form-steps";
 import { ChoiceCards } from "@/components/ui/choice-cards";
 import { usePendingAction } from "@/hooks/use-pending-action";
+import { useDuplicateLiveSearch } from "@/hooks/use-duplicate-live-search";
+import { OrgDuplicateMatchCard } from "@/components/crm/duplicate-match-card";
+import { DuplicateSearchStatus } from "@/components/crm/duplicate-search-status";
 import {
   CONTRACT_FAMILY_LABELS,
   SERVICE_KIND_DEFAULT_FAMILY,
@@ -19,6 +25,11 @@ import {
   formatComMoney,
 } from "@/lib/commercial/labels";
 import { SOURCE_LABELS } from "@/lib/crm/labels";
+import {
+  hasBlockingOrgMatch,
+  orgLiveSearchReady,
+  type OrgDuplicateCandidate,
+} from "@/lib/crm/duplicates";
 import { cn } from "@/lib/utils";
 
 const STEPS = [
@@ -101,9 +112,7 @@ export function ClientWizardForm({
   const { pending, run } = usePendingAction();
   const [step, setStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [duplicateClientId, setDuplicateClientId] = useState<string | null>(
-    null,
-  );
+  const [duplicateHref, setDuplicateHref] = useState<string | null>(null);
   const lastIndex = STEPS.length - 1;
 
   // ---- Identité ----
@@ -112,6 +121,39 @@ export function ClientWizardForm({
   const [city, setCity] = useState(initial?.city ?? "");
   const [country, setCountry] = useState(initial?.country ?? "ML");
   const [website, setWebsite] = useState(initial?.website ?? "");
+
+  /**
+   * Anti-doublon live (identité) — création directe uniquement : avec
+   * `opportunityId`, le nom vient déjà du prospect transformé (match
+   * attendu sur lui-même, pas un doublon à signaler).
+   */
+  const [orgDupes, setOrgDupes] = useState<OrgDuplicateCandidate[]>([]);
+  const orgLiveEnabled = !opportunityId && orgLiveSearchReady(name);
+  const orgQueryKey = orgLiveEnabled ? name.trim() : "";
+  const orgSearchFn = useCallback(async () => {
+    const checkFd = new FormData();
+    checkFd.set("name", name.trim());
+    const res = await findClientWizardDuplicatesAction(checkFd);
+    if (!res.ok) return { ok: false as const, error: res.error };
+    return { ok: true as const, data: res.candidates };
+  }, [name]);
+  const orgLive = useDuplicateLiveSearch<OrgDuplicateCandidate[]>({
+    queryKey: orgQueryKey,
+    enabled: orgLiveEnabled,
+    search: orgSearchFn,
+  });
+  useEffect(() => {
+    if (!orgLiveEnabled) {
+      setOrgDupes([]);
+      return;
+    }
+    if (orgLive.status === "ok" && orgLive.data) {
+      setOrgDupes(orgLive.data);
+      return;
+    }
+    setOrgDupes([]);
+  }, [orgLive.status, orgLive.data, orgLiveEnabled]);
+  const orgMatchBlock = orgLiveEnabled && hasBlockingOrgMatch(orgDupes);
 
   // ---- Contact ----
   const [contactName, setContactName] = useState(initial?.contactName ?? "");
@@ -212,6 +254,9 @@ export function ClientWizardForm({
     if (index === 0) {
       if (!name.trim()) return "Indiquez la raison sociale";
       if (!country.trim()) return "Indiquez le pays";
+      if (orgMatchBlock) {
+        return "Une correspondance existe déjà — ouvrez la fiche existante plutôt que de continuer.";
+      }
     }
     if (index === 1) {
       if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) {
@@ -233,7 +278,7 @@ export function ClientWizardForm({
   }
 
   function goTo(index: number) {
-    setDuplicateClientId(null);
+    setDuplicateHref(null);
     if (index < step) {
       setError(null);
       setStep(index);
@@ -270,7 +315,7 @@ export function ClientWizardForm({
       }
     }
     setError(null);
-    setDuplicateClientId(null);
+    setDuplicateHref(null);
 
     const payloadLines = lines
       .filter((l) => l.label.trim() && l.qty > 0)
@@ -317,7 +362,10 @@ export function ClientWizardForm({
       const res = await createClientWizardAction(fd);
       if (res && !res.ok) {
         setError(res.error ?? "Échec de la création");
-        setDuplicateClientId(res.clientId ?? null);
+        setDuplicateHref(
+          res.duplicateHref ??
+            (res.clientId ? `/commercial/clients/${res.clientId}` : null),
+        );
       }
     });
   }
@@ -387,7 +435,22 @@ export function ClientWizardForm({
                   onChange={(e) => setName(e.target.value)}
                   disabled={pending}
                   placeholder="Ex. Marinas SARL"
+                  aria-invalid={orgMatchBlock || undefined}
+                  className={orgMatchBlock ? "border-msk-coral/50" : undefined}
                 />
+                {!opportunityId ? (
+                  <DuplicateSearchStatus
+                    status={orgLiveEnabled ? orgLive.status : "idle"}
+                    error={orgLive.error}
+                    onRetry={orgLive.refresh}
+                    idleHint="À partir de 3 caractères, on vérifie les clients et prospects CRM déjà enregistrés."
+                    okEmptyHint={
+                      orgDupes.length === 0
+                        ? "Aucune correspondance — nom disponible."
+                        : null
+                    }
+                  />
+                ) : null}
               </div>
               <div>
                 <FieldLabel htmlFor="wz-sector">Secteur</FieldLabel>
@@ -433,6 +496,17 @@ export function ClientWizardForm({
                 />
               </div>
             </div>
+
+            {orgDupes.length > 0 ? (
+              <div className="space-y-3" aria-live="polite">
+                <h3 className="text-sm font-semibold text-msk-ink">
+                  Correspondance détectée — création bloquée
+                </h3>
+                {orgDupes.map((c) => (
+                  <OrgDuplicateMatchCard key={`${c.entity}-${c.id}`} candidate={c} />
+                ))}
+              </div>
+            ) : null}
           </section>
         ) : null}
 
@@ -915,10 +989,10 @@ export function ClientWizardForm({
             className="rounded-xl border border-msk-coral/25 bg-msk-coral/5 px-4 py-3 text-sm font-medium text-msk-coral"
           >
             <p>{error}</p>
-            {duplicateClientId ? (
+            {duplicateHref ? (
               <Link
                 prefetch={false}
-                href={`/commercial/clients/${duplicateClientId}`}
+                href={duplicateHref}
                 className="mt-1 inline-block underline"
               >
                 Ouvrir la fiche existante

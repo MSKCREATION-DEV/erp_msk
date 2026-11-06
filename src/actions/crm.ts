@@ -1338,6 +1338,16 @@ export async function updateOpportunityStageAction(
       });
     }
 
+    // Deal devenu Client (GAGNE) : plus un prospect à relancer — clôture les
+    // tâches ouvertes pour ne pas laisser d’orphelins dans Relances (fix B,
+    // même logique que le passage Perdu ci-dessus).
+    if (stage === "GAGNE" && stageChanged) {
+      await tx.crmTask.updateMany({
+        where: { opportunityId: id, status: CrmTaskStatus.OPEN },
+        data: { status: CrmTaskStatus.CANCELLED, completedAt: now },
+      });
+    }
+
     if (enteringContacte && contactChannel) {
       const channelLabel = ACTIVITY_LABELS[contactChannel];
       await tx.crmActivity.create({

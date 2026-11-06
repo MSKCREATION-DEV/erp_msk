@@ -73,45 +73,61 @@ export function ProspectDetailActions({
 
   if (!canEditStage && !canLogActivity && !showQuoteCta) return null;
 
+  const hasPipelineActions = canEditStage || canLogActivity;
+
   return (
     <>
-      <div className="flex flex-wrap items-center gap-2">
-        {canEditStage ? (
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={() => setStageOpen(true)}
-          >
-            <GitBranch className="h-4 w-4" aria-hidden />
-            Changer le statut
-          </Button>
+      <div className="flex flex-wrap items-center gap-3">
+        {hasPipelineActions ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {canEditStage ? (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => setStageOpen(true)}
+              >
+                <GitBranch className="h-4 w-4" aria-hidden />
+                Changer le statut
+              </Button>
+            ) : null}
+            {canLogActivity ? (
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => setActivityOpen(true)}
+              >
+                <ClipboardList className="h-4 w-4" aria-hidden />
+                Enregistrer une action
+              </Button>
+            ) : null}
+          </div>
         ) : null}
-        {canLogActivity ? (
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => setActivityOpen(true)}
-          >
-            <ClipboardList className="h-4 w-4" aria-hidden />
-            Enregistrer une action
-          </Button>
-        ) : null}
-        {showQuoteCta && quote ? (
-          <ProspectQuoteCta
-            opportunityId={opportunityId}
-            stage={stage}
-            existingQuoteId={quote.existingQuoteId}
-            existingClientId={quote.existingClientId}
-            canCreateQuote={quote.canCreateQuote}
-            canManageClients={quote.canManageClients}
-            canOpenStage={canEditStage}
-            onOpenStage={() => setStageOpen(true)}
-            clients={quote.clients}
-            offers={quote.offers}
-            initialLines={quote.initialLines}
-            defaultObject={quote.defaultObject}
+
+        {hasPipelineActions && showQuoteCta ? (
+          <div
+            className="hidden h-8 w-px shrink-0 bg-msk-ink/10 sm:block"
+            aria-hidden
           />
+        ) : null}
+
+        {showQuoteCta && quote ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <ProspectQuoteCta
+              opportunityId={opportunityId}
+              stage={stage}
+              existingQuoteId={quote.existingQuoteId}
+              existingClientId={quote.existingClientId}
+              canCreateQuote={quote.canCreateQuote}
+              canManageClients={quote.canManageClients}
+              canOpenStage={canEditStage}
+              onOpenStage={() => setStageOpen(true)}
+              clients={quote.clients}
+              offers={quote.offers}
+              initialLines={quote.initialLines}
+              defaultObject={quote.defaultObject}
+            />
+          </div>
         ) : null}
       </div>
 

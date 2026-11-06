@@ -92,3 +92,30 @@ export function canReassignCrmDeal(actor: SessionUser): boolean {
     actor.isSuperAdmin || hasPermission(actor, "crm.reassign")
   );
 }
+
+/**
+ * Un deal devenu Client (GAGNE) — ou orphelin lié à un `ComClient` existant —
+ * n’est plus un prospect à relancer : les listes/compteurs CRM « prospect »
+ * doivent l’exclure, même sur des données historiques où le stage GAGNE a pu
+ * être posé sans fiche client (bug pré-garde-fou). À composer dans un filtre
+ * `opportunity: { ...OPEN_PROSPECT_OPPORTUNITY_FILTER }` sur `CrmTask` /
+ * `CrmActivity`, ou directement sur `CrmOpportunityWhereInput`.
+ */
+export const OPEN_PROSPECT_OPPORTUNITY_FILTER: Prisma.CrmOpportunityWhereInput = {
+  stage: { not: "GAGNE" },
+  comClients: { none: {} },
+};
+
+/**
+ * Même filtre, posé sur `CrmTask` (relation `opportunity` optionnelle) :
+ * garde les tâches sans deal lié (rares, sécurité) et exclut celles dont le
+ * deal est devenu Client.
+ */
+export function openProspectTaskWhere(): Prisma.CrmTaskWhereInput {
+  return {
+    OR: [
+      { opportunityId: null },
+      { opportunity: OPEN_PROSPECT_OPPORTUNITY_FILTER },
+    ],
+  };
+}

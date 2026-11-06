@@ -5,6 +5,7 @@ import {
   notifyUsers,
   usersWithPermission,
 } from "@/lib/notifications/notify";
+import { openProspectTaskWhere } from "@/lib/crm/scope";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,8 @@ async function run(req: Request) {
     where: {
       status: CrmTaskStatus.OPEN,
       dueAt: { lt: now },
+      // Pas de notif « relance en retard » sur un deal déjà Client (B).
+      ...openProspectTaskWhere(),
     },
     include: {
       opportunity: {

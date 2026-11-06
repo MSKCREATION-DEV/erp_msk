@@ -10,7 +10,7 @@ import {
   comInvoiceScopeWhere,
   comQuoteScopeWhere,
 } from "@/lib/commercial/scope";
-import { crmVisibility } from "@/lib/crm/scope";
+import { crmVisibility, openProspectTaskWhere } from "@/lib/crm/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
 import { COMMERCIAL_MODULES } from "@/lib/commercial/modules";
 import { canSeeCrmTeamView } from "@/lib/commercial/nav";
@@ -80,6 +80,7 @@ export default async function CommercialHubPage() {
               where: {
                 status: "OPEN",
                 dueAt: { lt: new Date() },
+                ...openProspectTaskWhere(),
                 ...taskAssigneeWhere,
               },
             })
@@ -89,6 +90,7 @@ export default async function CommercialHubPage() {
           ? prisma.crmTask.count({
               where: {
                 status: "OPEN",
+                ...openProspectTaskWhere(),
                 ...taskAssigneeWhere,
               },
             })
