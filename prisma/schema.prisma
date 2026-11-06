@@ -181,6 +181,7 @@ enum ComDocKind {
   FACTURE
   AVOIR
   BDC
+  CONTRAT
 }
 
 enum ComQuoteStatus {
@@ -260,6 +261,28 @@ enum ComContractLineStatus {
   SUSPENDU
   RESILIE
   TERMINE
+}
+
+/// Famille document contrat (analyse §6.1) — pilote le template PDF (P4).
+enum ComContractFamily {
+  PRESTATION_ABONNEMENT
+  ENGAGEMENT_CDC
+}
+
+/// Nature de prestation — sélectionne les blocs conditionnels du template.
+enum ComServiceKind {
+  RESEAUX_SOCIAUX
+  APPLICATION_WEB
+  SITE_VITRINE
+  CHARTE_GRAPHIQUE
+  AUTRE
+  BUNDLE
+}
+
+/// Origine de la composition commerciale consommée par le contrat (Q3).
+enum ComCompositionSource {
+  QUOTE
+  INLINE
 }
 
 enum ComImportBatchStatus {
@@ -1170,6 +1193,10 @@ model ComContract {
   reference       String            @unique
   status          ComContractStatus @default(BROUILLON)
   title           String?
+  /// Famille document (analyse contrats §6.1) — pilote le template PDF.
+  family          ComContractFamily?
+  /// Nature de prestation — sélectionne les blocs de template (§6.1/§6.2).
+  serviceKind     ComServiceKind?
   regime          ComDocRegime      @default(ML)
   currency        String            @default("XOF")
   vatEnabled      Boolean           @default(true)
@@ -1181,11 +1208,17 @@ model ComContract {
   renewalTerms    String?
   terminationTerms String?
   notes           String?
+  /// Origine de la composition commerciale (devis accepté vs saisie libre — Q3).
+  compositionSource ComCompositionSource @default(INLINE)
+  /// Périmètre famille B (contexte / objectifs / livrables / hors-périmètre…) — JSON libre (analyse §6.3 `scope`).
+  scopeJson       Json?
   clientId        String
   quoteId         String?
   ownerId         String            @db.Uuid
   createdById     String            @db.Uuid
   signedAt        DateTime?
+  /// PDF contrat généré et classé en GED (P4).
+  gedDocumentId   String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 

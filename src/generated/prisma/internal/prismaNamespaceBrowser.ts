@@ -791,6 +791,8 @@ export const ComContractScalarFieldEnum = {
   reference: 'reference',
   status: 'status',
   title: 'title',
+  family: 'family',
+  serviceKind: 'serviceKind',
   regime: 'regime',
   currency: 'currency',
   vatEnabled: 'vatEnabled',
@@ -802,11 +804,14 @@ export const ComContractScalarFieldEnum = {
   renewalTerms: 'renewalTerms',
   terminationTerms: 'terminationTerms',
   notes: 'notes',
+  compositionSource: 'compositionSource',
+  scopeJson: 'scopeJson',
   clientId: 'clientId',
   quoteId: 'quoteId',
   ownerId: 'ownerId',
   createdById: 'createdById',
   signedAt: 'signedAt',
+  gedDocumentId: 'gedDocumentId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

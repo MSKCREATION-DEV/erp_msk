@@ -6,13 +6,20 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { canAccessComDocForClient } from "@/lib/commercial/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
-import { formatComMoney } from "@/lib/commercial/labels";
+import {
+  CONTRACT_FAMILY_LABELS,
+  formatComMoney,
+  SERVICE_KIND_LABELS,
+} from "@/lib/commercial/labels";
 import { displayDocNumber } from "@/lib/commercial/doc-display";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ContractInvoiceActions } from "@/components/commercial/contract-invoice-actions";
+import { ContractPdfAction } from "@/components/commercial/contract-pdf-action";
+import { ContractStatusActions } from "@/components/commercial/contract-status-actions";
+import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 
 export const metadata: Metadata = { title: "Contrat" };
 
@@ -76,6 +83,7 @@ export default async function ContratDetailPage({
   }
 
   const canInvoice = hasPermission(user, "com.factures.create");
+  const canManageContract = hasPermission(user, "com.contrats.manage");
 
   return (
     <PageShell>
@@ -110,6 +118,16 @@ export default async function ContratDetailPage({
               {contract.client.name}
             </Link>
           </div>
+          {contract.family || contract.serviceKind ? (
+            <div className="flex flex-wrap gap-1.5">
+              {contract.family ? (
+                <Badge tone="muted">{CONTRACT_FAMILY_LABELS[contract.family]}</Badge>
+              ) : null}
+              {contract.serviceKind ? (
+                <Badge tone="muted">{SERVICE_KIND_LABELS[contract.serviceKind]}</Badge>
+              ) : null}
+            </div>
+          ) : null}
           {contract.quote ? (
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
@@ -155,8 +173,32 @@ export default async function ContratDetailPage({
               </p>
             </div>
           </div>
+          {canManageContract ? (
+            <ContractStatusActions
+              contractId={contract.id}
+              status={contract.status}
+              alreadySigned={Boolean(contract.signedAt)}
+            />
+          ) : null}
           {canInvoice && contract.status === "ACTIF" ? (
             <ContractInvoiceActions contractId={contract.id} />
+          ) : null}
+          {canManageContract ? (
+            <div>
+              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                Document contrat
+              </p>
+              {contract.gedDocumentId ? (
+                <DocPdfThumb
+                  documentId={contract.gedDocumentId}
+                  title={contract.reference}
+                  subtitle="Contrat PDF — charte MSK"
+                  className="max-w-full"
+                />
+              ) : (
+                <ContractPdfAction contractId={contract.id} />
+              )}
+            </div>
           ) : null}
         </Surface>
 
@@ -193,6 +235,12 @@ export default async function ContratDetailPage({
           </table>
         </Surface>
 
+        {contract.scopeJson ? (
+          <ContractScopeSummary
+            scopeJson={contract.scopeJson as Record<string, unknown>}
+          />
+        ) : null}
+
         <Surface className="p-5 sm:p-6 @lg:col-span-12">
           <h2 className="mb-3 text-sm font-semibold">Factures liées</h2>
           {contract.invoices.length === 0 ? (
@@ -219,5 +267,50 @@ export default async function ContratDetailPage({
         </Surface>
       </div>
     </PageShell>
+  );
+}
+
+const SCOPE_SECTIONS: { key: string; label: string }[] = [
+  { key: "contextProblems", label: "Contexte / problèmes" },
+  { key: "objectives", label: "Objectifs" },
+  { key: "deliverables", label: "Livrables" },
+  { key: "outOfScope", label: "Hors périmètre" },
+];
+
+/** Famille B (engagement/CDC) — périmètre saisi au parcours unifié (analyse §6.3 `scope`). */
+function ContractScopeSummary({
+  scopeJson,
+}: {
+  scopeJson: Record<string, unknown>;
+}) {
+  const sections = SCOPE_SECTIONS.map((s) => ({
+    ...s,
+    items: Array.isArray(scopeJson[s.key])
+      ? (scopeJson[s.key] as unknown[]).filter(
+          (v): v is string => typeof v === "string" && v.length > 0,
+        )
+      : [],
+  })).filter((s) => s.items.length > 0);
+
+  if (sections.length === 0) return null;
+
+  return (
+    <Surface className="space-y-4 p-5 sm:p-6 @lg:col-span-12">
+      <h2 className="text-sm font-semibold">Périmètre (cahier des charges)</h2>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {sections.map((s) => (
+          <div key={s.key}>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+              {s.label}
+            </p>
+            <ul className="mt-1.5 list-inside list-disc space-y-1 text-sm text-msk-ink/75">
+              {s.items.map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </Surface>
   );
 }

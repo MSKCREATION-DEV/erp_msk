@@ -790,3 +790,443 @@ function drawFactureBody(
 
   return Math.min(y, ty) - 30;
 }
+
+/**
+ * P4 — fondation génération contrat (plan docs/commercial/PLAN-CLIENT-CONTRAT.md
+ * §Phase P4, analyse docs/commercial/ANALYSE-MODELES-CONTRATS.md §6.2/§6.3).
+ * Couvre les sections socle communes (A+B) + blocs famille B (périmètre CDC) —
+ * pas l’intégralité des articles juridiques sources (fondation honnête, pas un
+ * copier-coller des 4 PDF analysés).
+ */
+export type ContractPdfLine = {
+  label: string;
+  qty: number;
+  unitPrice: number;
+};
+
+export type ContractPdfScope = {
+  contextProblems: string[];
+  objectives: string[];
+  deliverables: string[];
+  outOfScope: string[];
+};
+
+export type ContractPdfInput = {
+  number: string;
+  family: "PRESTATION_ABONNEMENT" | "ENGAGEMENT_CDC";
+  familyLabel: string;
+  serviceKindLabel: string;
+  title?: string;
+  clientName: string;
+  clientCompany?: string;
+  clientAddress?: string;
+  clientPhone?: string;
+  clientEmail?: string;
+  contactName?: string;
+  issueDate?: string;
+  startDate?: string;
+  billingDay?: number;
+  currency?: string;
+  vatRate?: number;
+  lines: ContractPdfLine[];
+  paymentTerms?: string;
+  renewalTerms?: string;
+  terminationTerms?: string;
+  scope?: ContractPdfScope;
+  /** P4.4 — signature MVP : tampon MSK + date saisie (pas d’e-sign). */
+  signedAt?: string;
+  signaturePng?: Uint8Array | Buffer;
+  signatureLabel?: string;
+};
+
+export async function generateContractPdf(
+  input: ContractPdfInput,
+): Promise<Uint8Array> {
+  const pdf = await PDFDocument.create();
+  const font = await pdf.embedFont(StandardFonts.Helvetica);
+  const fontBold = await pdf.embedFont(StandardFonts.HelveticaBold);
+  const fontOblique = await pdf.embedFont(StandardFonts.HelveticaOblique);
+  const logo = await embedLogo(pdf);
+
+  const PAGE_W = 595.28;
+  const PAGE_H = 841.89;
+  const margin = 42;
+  const contentW = PAGE_W - margin * 2;
+  const FOOTER_SAFE = 70;
+
+  const currency = input.currency ?? "FCFA";
+  const vatRate = input.vatRate ?? 18;
+  const issued = input.issueDate ?? formatDateFr();
+
+  let page = pdf.addPage([PAGE_W, PAGE_H]);
+  let y = PAGE_H - 60;
+
+  function newPage() {
+    page = pdf.addPage([PAGE_W, PAGE_H]);
+    y = PAGE_H - 60;
+  }
+
+  function ensureSpace(h: number) {
+    if (y - h < FOOTER_SAFE) newPage();
+  }
+
+  function sectionTitle(text: string) {
+    ensureSpace(32);
+    draw(page, text, { x: margin, y, size: 11, font: fontBold, color: INK });
+    y -= 8;
+    page.drawRectangle({
+      x: margin,
+      y: y - 4,
+      width: contentW,
+      height: 1,
+      color: BLUE,
+    });
+    y -= 18;
+  }
+
+  function paragraph(text: string, size = 9, color = MUTED) {
+    const lines = wrapParagraph(text, font, size, contentW);
+    for (const l of lines) {
+      ensureSpace(14);
+      draw(page, l, { x: margin, y, size, font, color });
+      y -= 13;
+    }
+  }
+
+  function bulletList(items: string[], size = 9) {
+    for (const item of items) {
+      const lines = wrapParagraph(`- ${item}`, font, size, contentW - 10);
+      for (const [i, l] of lines.entries()) {
+        ensureSpace(14);
+        draw(page, l, {
+          x: margin + (i === 0 ? 0 : 10),
+          y,
+          size,
+          font,
+          color: INK,
+        });
+        y -= 13;
+      }
+    }
+    if (items.length === 0) {
+      ensureSpace(14);
+      draw(page, "- (a preciser)", { x: margin, y, size, font, color: MUTED });
+      y -= 13;
+    }
+  }
+
+  // ---- Couverture / en-tête ----
+  if (logo) {
+    const maxW = 130;
+    const scale = maxW / logo.width;
+    const h = logo.height * scale;
+    page.drawImage(logo, { x: margin, y: y - h + 20, width: maxW, height: h });
+  } else {
+    draw(page, company.legalName, {
+      x: margin,
+      y,
+      size: 14,
+      font: fontBold,
+      color: INK,
+    });
+  }
+  const title = `| CONTRAT - ${input.number}`;
+  drawRight(page, title, {
+    right: PAGE_W - margin,
+    y,
+    size: 16,
+    font: fontBold,
+    color: INK,
+  });
+  y -= 24;
+  drawRight(page, `${input.familyLabel} - ${input.serviceKindLabel}`, {
+    right: PAGE_W - margin,
+    y,
+    size: 9,
+    font,
+    color: MUTED,
+  });
+  y -= 14;
+  drawRight(page, `Date d'etablissement : ${issued}`, {
+    right: PAGE_W - margin,
+    y,
+    size: 9,
+    font,
+    color: MUTED,
+  });
+  y -= 36;
+
+  if (input.title) {
+    draw(page, input.title, { x: margin, y, size: 13, font: fontBold, color: BLUE });
+    y -= 26;
+  }
+
+  // ---- Parties ----
+  sectionTitle("ENTRE LES SOUSSIGNES");
+  const partyColW = contentW / 2 - 10;
+  const partyTopY = y;
+  draw(page, `${company.legalName} (${company.legalForm.split(" - ")[1] ?? "SARL"})`, {
+    x: margin,
+    y,
+    size: 9.5,
+    font: fontBold,
+    color: INK,
+    maxWidth: partyColW,
+  });
+  y -= 13;
+  for (const line of company.addressLines) {
+    draw(page, line, { x: margin, y, size: 8.5, font, color: MUTED, maxWidth: partyColW });
+    y -= 11;
+  }
+  draw(page, `NIF : ${company.fiscalId}`, { x: margin, y, size: 8.5, font, color: MUTED });
+  y -= 11;
+  draw(page, `Represente par ${company.managerName}, ${company.managerTitle}`, {
+    x: margin,
+    y,
+    size: 8.5,
+    font,
+    color: MUTED,
+    maxWidth: partyColW,
+  });
+  y -= 11;
+  draw(page, `${company.email} - ${company.phones}`, {
+    x: margin,
+    y,
+    size: 8,
+    font,
+    color: MUTED,
+    maxWidth: partyColW,
+  });
+  const providerBottom = y;
+
+  let cy = partyTopY;
+  const clientX = margin + partyColW + 20;
+  draw(page, input.clientCompany ?? input.clientName, {
+    x: clientX,
+    y: cy,
+    size: 9.5,
+    font: fontBold,
+    color: INK,
+    maxWidth: partyColW,
+  });
+  cy -= 13;
+  if (input.clientAddress) {
+    draw(page, input.clientAddress, { x: clientX, y: cy, size: 8.5, font, color: MUTED, maxWidth: partyColW });
+    cy -= 11;
+  }
+  if (input.contactName) {
+    draw(page, `Represente par ${input.contactName}`, {
+      x: clientX,
+      y: cy,
+      size: 8.5,
+      font,
+      color: MUTED,
+      maxWidth: partyColW,
+    });
+    cy -= 11;
+  }
+  const contactLine = [input.clientEmail, input.clientPhone].filter(Boolean).join(" - ");
+  if (contactLine) {
+    draw(page, contactLine, { x: clientX, y: cy, size: 8, font, color: MUTED, maxWidth: partyColW });
+    cy -= 11;
+  }
+
+  y = Math.min(providerBottom, cy) - 20;
+
+  // ---- Objet / periode ----
+  sectionTitle("ARTICLE 1 - OBJET ET DUREE");
+  paragraph(
+    `Le present contrat a pour objet la prestation « ${input.serviceKindLabel} » decrite a l'article 2, selon la composition commerciale convenue entre les parties.`,
+    9,
+    INK,
+  );
+  if (input.startDate) paragraph(`Date d'effet : ${input.startDate}.`);
+  if (input.billingDay) paragraph(`Facturation periodique le jour ${input.billingDay} de chaque mois (si applicable).`);
+  y -= 6;
+
+  // ---- Composition commerciale ----
+  sectionTitle("ARTICLE 2 - COMPOSITION COMMERCIALE");
+  ensureSpace(24);
+  page.drawRectangle({ x: margin, y: y - 4, width: contentW, height: 18, color: BLUE });
+  draw(page, "PRESTATION", { x: margin + 8, y: y + 1, size: 8, font: fontBold, color: rgb(1, 1, 1) });
+  draw(page, "QTE", { x: margin + 340, y: y + 1, size: 8, font: fontBold, color: rgb(1, 1, 1) });
+  drawRight(page, "MONTANT", { right: margin + contentW - 8, y: y + 1, size: 8, font: fontBold, color: rgb(1, 1, 1) });
+  y -= 22;
+  let totalHt = 0;
+  input.lines.forEach((l, i) => {
+    ensureSpace(18);
+    const lineTotal = l.qty * l.unitPrice;
+    totalHt += lineTotal;
+    if (i % 2 === 1) {
+      page.drawRectangle({ x: margin, y: y - 4, width: contentW, height: 16, color: ROW_ALT });
+    }
+    draw(page, l.label, { x: margin + 8, y, size: 8.5, font, color: INK, maxWidth: 320 });
+    draw(page, String(l.qty), { x: margin + 340, y, size: 8.5, font, color: INK });
+    drawRight(page, `${formatMoneyFr(lineTotal)} ${currency}`, {
+      right: margin + contentW - 8,
+      y,
+      size: 8.5,
+      font: fontBold,
+      color: INK,
+    });
+    y -= 16;
+  });
+  y -= 6;
+  const vat = Math.round(totalHt * (vatRate / 100));
+  ensureSpace(32);
+  drawRight(page, `Total HT : ${formatMoneyFr(totalHt)} ${currency}`, {
+    right: margin + contentW,
+    y,
+    size: 9,
+    font,
+    color: INK,
+  });
+  y -= 13;
+  drawRight(page, `TTC (TVA ${vatRate}%) : ${formatMoneyFr(totalHt + vat)} ${currency}`, {
+    right: margin + contentW,
+    y,
+    size: 10,
+    font: fontBold,
+    color: BLUE,
+  });
+  y -= 24;
+
+  // ---- Conditions (paiement / reconduction / resiliation) ----
+  sectionTitle("ARTICLE 3 - CONDITIONS CONTRACTUELLES");
+  if (input.paymentTerms) {
+    draw(page, "Paiement :", { x: margin, y, size: 9, font: fontBold, color: INK });
+    y -= 13;
+    paragraph(input.paymentTerms);
+    y -= 4;
+  }
+  if (input.renewalTerms) {
+    ensureSpace(14);
+    draw(page, "Reconduction :", { x: margin, y, size: 9, font: fontBold, color: INK });
+    y -= 13;
+    paragraph(input.renewalTerms);
+    y -= 4;
+  }
+  if (input.terminationTerms) {
+    ensureSpace(14);
+    draw(page, "Resiliation :", { x: margin, y, size: 9, font: fontBold, color: INK });
+    y -= 13;
+    paragraph(input.terminationTerms);
+    y -= 4;
+  }
+  y -= 10;
+
+  // ---- Perimetre projet (famille B uniquement) ----
+  if (input.family === "ENGAGEMENT_CDC" && input.scope) {
+    sectionTitle("ARTICLE 4 - PERIMETRE DU PROJET (CAHIER DES CHARGES)");
+    ensureSpace(14);
+    draw(page, "Contexte / problemes identifies :", { x: margin, y, size: 9, font: fontBold, color: INK });
+    y -= 13;
+    bulletList(input.scope.contextProblems);
+    y -= 6;
+    ensureSpace(14);
+    draw(page, "Objectifs :", { x: margin, y, size: 9, font: fontBold, color: INK });
+    y -= 13;
+    bulletList(input.scope.objectives);
+    y -= 6;
+    ensureSpace(14);
+    draw(page, "Livrables :", { x: margin, y, size: 9, font: fontBold, color: INK });
+    y -= 13;
+    bulletList(input.scope.deliverables);
+    y -= 6;
+    ensureSpace(14);
+    draw(page, "Hors perimetre :", { x: margin, y, size: 9, font: fontBold, color: INK });
+    y -= 13;
+    bulletList(input.scope.outOfScope);
+    y -= 10;
+    paragraph(
+      "Les Conditions Generales de Vente MSK CREATION (CGV) s'appliquent et prevalent en cas de contradiction avec le present cahier des charges.",
+      8.5,
+    );
+    y -= 10;
+  }
+
+  // ---- Clauses socle (droit applicable) ----
+  sectionTitle("ARTICLE 5 - DROIT APPLICABLE ET LITIGES");
+  paragraph(
+    "Le present contrat est soumis au droit malien. En cas de litige, les parties s'efforcent de trouver une solution amiable sous 30 jours avant saisine des juridictions competentes de Bamako. Traitement des donnees personnelles conforme a la loi n. 2013-015 du 21 mai 2013 (APDP).",
+  );
+  y -= 16;
+
+  // ---- Signatures (P4.4 MVP : tampon + date saisie) ----
+  sectionTitle("SIGNATURES");
+  ensureSpace(90);
+  draw(page, "Pour le Prestataire,", { x: margin, y, size: 9, font: fontBold, color: INK });
+  draw(page, "Pour le Client,", { x: clientX, y, size: 9, font: fontBold, color: INK });
+  y -= 13;
+  draw(page, `${company.managerName} (${company.managerTitle})`, {
+    x: margin,
+    y,
+    size: 8.5,
+    font,
+    color: MUTED,
+  });
+  draw(page, input.contactName ?? input.clientName, {
+    x: clientX,
+    y,
+    size: 8.5,
+    font,
+    color: MUTED,
+    maxWidth: partyColW,
+  });
+  y -= 50;
+
+  if (input.signaturePng) {
+    try {
+      const sig = await pdf.embedPng(input.signaturePng);
+      const maxW = 120;
+      const maxH = 48;
+      const scale = Math.min(maxW / sig.width, maxH / sig.height);
+      page.drawImage(sig, { x: margin, y: y + 10, width: sig.width * scale, height: sig.height * scale });
+    } catch (e) {
+      console.error("[pdf] signature contrat embed echoue", e);
+    }
+  } else {
+    draw(page, "[ Tampon MSK CREATION ]", { x: margin, y: y + 20, size: 9, font: fontOblique, color: MUTED });
+  }
+  draw(page, "[ Signature client ]", { x: clientX, y: y + 20, size: 9, font: fontOblique, color: MUTED });
+  draw(page, "Lu et approuve", { x: margin, y, size: 8, font: fontOblique, color: MUTED });
+  draw(page, "Lu et approuve", { x: clientX, y, size: 8, font: fontOblique, color: MUTED });
+  y -= 14;
+  draw(page, `Fait a Bamako, le ${input.signedAt ?? "____________"}`, {
+    x: margin,
+    y,
+    size: 8,
+    font,
+    color: MUTED,
+  });
+
+  // ---- Pied de page + pagination (post-traitement, toutes les pages) ----
+  const pages = pdf.getPages();
+  pages.forEach((p, idx) => {
+    const footer1 = company.legalForm;
+    const footer2 = `${company.addressOneLine}. NIF : ${company.fiscalId}`;
+    draw(p, footer1, {
+      x: (PAGE_W - fontOblique.widthOfTextAtSize(toWinAnsi(footer1), 8)) / 2,
+      y: 36,
+      size: 8,
+      font: fontOblique,
+      color: MUTED,
+    });
+    draw(p, footer2, {
+      x: (PAGE_W - fontOblique.widthOfTextAtSize(toWinAnsi(footer2), 7.5)) / 2,
+      y: 24,
+      size: 7.5,
+      font: fontOblique,
+      color: MUTED,
+    });
+    drawRight(p, `Page ${idx + 1}/${pages.length}`, {
+      right: PAGE_W - margin,
+      y: 24,
+      size: 7.5,
+      font: fontOblique,
+      color: MUTED,
+    });
+  });
+
+  return pdf.save();
+}

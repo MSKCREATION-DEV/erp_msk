@@ -1,8 +1,39 @@
 import type {
+  ComContractFamily,
   ComInvoiceStatus,
   ComPaymentMethod,
   ComQuoteStatus,
+  ComServiceKind,
 } from "@/generated/prisma/client";
+
+/** Analyse contrats §6.1 — libellés famille document. */
+export const CONTRACT_FAMILY_LABELS: Record<ComContractFamily, string> = {
+  PRESTATION_ABONNEMENT: "Prestation / abonnement",
+  ENGAGEMENT_CDC: "Engagement / cahier des charges",
+};
+
+/** Analyse contrats §6.1 — libellés nature de prestation. */
+export const SERVICE_KIND_LABELS: Record<ComServiceKind, string> = {
+  RESEAUX_SOCIAUX: "Réseaux sociaux",
+  APPLICATION_WEB: "Application web",
+  SITE_VITRINE: "Site vitrine",
+  CHARTE_GRAPHIQUE: "Charte graphique",
+  AUTRE: "Autre",
+  BUNDLE: "Multi-prestations (bundle)",
+};
+
+/** Famille document attendue par défaut pour une nature de prestation. */
+export const SERVICE_KIND_DEFAULT_FAMILY: Record<
+  ComServiceKind,
+  ComContractFamily
+> = {
+  RESEAUX_SOCIAUX: "PRESTATION_ABONNEMENT",
+  APPLICATION_WEB: "ENGAGEMENT_CDC",
+  SITE_VITRINE: "ENGAGEMENT_CDC",
+  CHARTE_GRAPHIQUE: "ENGAGEMENT_CDC",
+  AUTRE: "PRESTATION_ABONNEMENT",
+  BUNDLE: "ENGAGEMENT_CDC",
+};
 
 export const QUOTE_STATUS_LABELS: Record<ComQuoteStatus, string> = {
   BROUILLON: "Brouillon",

@@ -5,7 +5,6 @@ import { useState } from "react";
 import type { CrmPipelineStage } from "@/generated/prisma/client";
 import { FileSpreadsheet, GitBranch, UserCheck } from "lucide-react";
 import {
-  convertOpportunityToClientRedirectAction,
   ensureProspectClientDraftForQuoteAction,
   generateQuotePdfAction,
 } from "@/actions/commercial";
@@ -134,10 +133,8 @@ function ProspectConvertCta({
   /** Avec dévis ouvert : pas de wrapper externe — bouton seul dans la grille */
   variant?: "standalone" | "inline";
 }) {
-  const { pending, run } = usePendingAction();
+  const router = useRouter();
   const [blockedOpen, setBlockedOpen] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const uiStage = stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage;
   const canConvert = CONVERTIBLE.has(uiStage);
@@ -157,94 +154,30 @@ function ProspectConvertCta({
 
   if (!canManageClients) return null;
 
-  function runConvert() {
-    setError(null);
-    void run(async () => {
-      const fd = new FormData();
-      fd.set("opportunityId", opportunityId);
-      const res = await convertOpportunityToClientRedirectAction(fd);
-      if (res && !res.ok) {
-        setConfirmOpen(false);
-        setError(res.error ?? "Impossible de créer le client");
-        setBlockedOpen(true);
-      }
-    });
-  }
-
+  /**
+   * P2 — parcours unifié (plan docs/commercial/PLAN-CLIENT-CONTRAT.md §4) :
+   * « Transformer en client » ouvre le même stepper que la création directe
+   * (identité → contact → origine → composition → conditions → récap).
+   * L’acte délibéré (Q1) est le submit final du stepper, pas un simple clic.
+   */
   const button = (
     <>
       <Button
         type="button"
         size="sm"
-        disabled={pending}
         onClick={() => {
           if (!canConvert) {
             setBlockedOpen(true);
             return;
           }
-          setConfirmOpen(true);
+          router.push(
+            `/commercial/clients/nouveau?opportunityId=${opportunityId}`,
+          );
         }}
       >
         <UserCheck className="h-4 w-4" aria-hidden />
-        {pending ? "Conversion…" : "Transformer en client"}
+        Transformer en client
       </Button>
-
-      <Modal
-        open={confirmOpen}
-        onOpenChange={(open) => {
-          if (!pending) setConfirmOpen(open);
-        }}
-        title="Transformer en client ?"
-        description="Fermeture du parcours commercial CRM."
-        size="md"
-        footer={
-          <div className="flex flex-wrap justify-end gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              disabled={pending}
-              onClick={() => setConfirmOpen(false)}
-            >
-              Annuler
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              disabled={pending}
-              onClick={() => runConvert()}
-            >
-              <UserCheck className="h-4 w-4" aria-hidden />
-              {pending ? "Conversion…" : "Confirmer"}
-            </Button>
-          </div>
-        }
-      >
-        <div className="space-y-3 p-5 text-sm text-msk-ink/75">
-          <p>Cette action va :</p>
-          <ul className="list-inside list-disc space-y-1.5 text-msk-ink/70">
-            <li>
-              créer ou ouvrir le <strong>client commercial</strong> (dossier GED)
-              ;
-            </li>
-            <li>
-              passer le statut CRM à <strong>Client</strong> ;
-            </li>
-            <li>enregistrer une ligne dans le journal d’activités.</li>
-          </ul>
-          {COM_DOCS_GATED ? (
-            <p className="text-xs text-msk-ink/45">
-              Les devis restent gelés pour l’instant — vous pourrez les rouvrir
-              plus tard depuis la fiche client.
-            </p>
-          ) : (
-            <p className="text-xs text-msk-ink/45">
-              Indépendant du devis : vous pouvez aussi créer un devis au statut
-              Intéressé sans transformer le prospect tout de suite.
-            </p>
-          )}
-        </div>
-      </Modal>
 
       <Modal
         open={blockedOpen}
@@ -300,11 +233,6 @@ function ProspectConvertCta({
               </p>
               <p className="text-xs text-msk-ink/45">{COM_DOCS_GATED_HINT}</p>
             </>
-          ) : null}
-          {error ? (
-            <p className="rounded-lg border border-msk-coral/25 bg-msk-coral/5 px-3 py-2 text-msk-coral">
-              {error}
-            </p>
           ) : null}
         </div>
       </Modal>

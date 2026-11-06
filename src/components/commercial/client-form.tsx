@@ -48,11 +48,15 @@ export function ClientForm({
 }) {
   const { pending, run } = usePendingAction();
   const [error, setError] = useState<string | null>(null);
+  const [duplicateClientId, setDuplicateClientId] = useState<string | null>(
+    null,
+  );
   const isEdit = mode === "edit";
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    setDuplicateClientId(null);
     const fd = new FormData(e.currentTarget);
     if (isEdit && clientId) fd.set("clientId", clientId);
 
@@ -70,6 +74,7 @@ export function ClientForm({
       const res = await createClientAction(fd);
       if (res && !res.ok) {
         setError(res.error ?? "Échec de la création");
+        setDuplicateClientId(res.duplicateClientId ?? null);
       }
     });
   }
@@ -196,12 +201,21 @@ export function ClientForm({
       </section>
 
       {error ? (
-        <p
+        <div
           role="alert"
           className="rounded-xl border border-msk-coral/25 bg-msk-coral/5 px-4 py-3 text-sm font-medium text-msk-coral"
         >
-          {error}
-        </p>
+          <p>{error}</p>
+          {duplicateClientId ? (
+            <Link
+              prefetch={false}
+              href={`/commercial/clients/${duplicateClientId}`}
+              className="mt-1 inline-block underline"
+            >
+              Ouvrir la fiche existante
+            </Link>
+          ) : null}
+        </div>
       ) : null}
     </form>
   );

@@ -7763,6 +7763,8 @@ export const ComContractScalarFieldEnum = {
   reference: 'reference',
   status: 'status',
   title: 'title',
+  family: 'family',
+  serviceKind: 'serviceKind',
   regime: 'regime',
   currency: 'currency',
   vatEnabled: 'vatEnabled',
@@ -7774,11 +7776,14 @@ export const ComContractScalarFieldEnum = {
   renewalTerms: 'renewalTerms',
   terminationTerms: 'terminationTerms',
   notes: 'notes',
+  compositionSource: 'compositionSource',
+  scopeJson: 'scopeJson',
   clientId: 'clientId',
   quoteId: 'quoteId',
   ownerId: 'ownerId',
   createdById: 'createdById',
   signedAt: 'signedAt',
+  gedDocumentId: 'gedDocumentId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -9156,6 +9161,48 @@ export type EnumComContractStatusFieldRefInput<$PrismaModel> = FieldRefInputType
  * Reference to a field of type 'ComContractStatus[]'
  */
 export type ListEnumComContractStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ComContractStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ComContractFamily'
+ */
+export type EnumComContractFamilyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ComContractFamily'>
+    
+
+
+/**
+ * Reference to a field of type 'ComContractFamily[]'
+ */
+export type ListEnumComContractFamilyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ComContractFamily[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ComServiceKind'
+ */
+export type EnumComServiceKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ComServiceKind'>
+    
+
+
+/**
+ * Reference to a field of type 'ComServiceKind[]'
+ */
+export type ListEnumComServiceKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ComServiceKind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ComCompositionSource'
+ */
+export type EnumComCompositionSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ComCompositionSource'>
+    
+
+
+/**
+ * Reference to a field of type 'ComCompositionSource[]'
+ */
+export type ListEnumComCompositionSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ComCompositionSource[]'>
     
 
 

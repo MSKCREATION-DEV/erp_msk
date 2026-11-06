@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-06 (P0 client/devis — convert explicite vs devis ; guides + manuels alignés) |
+| Dernière mise à jour | 2026-11-06 (Client/Contrat P1→P4 fondation — stepper unifié, anti-doublon, contrat honnête, PDF contrat A/B + GED ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -103,7 +103,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `ged-comprendre-acces` | Comprendre son accès GED | ged | `validated` | manuel 02 + permissions |
 | `crm-creer-prospect` | Créer un prospect | commercial | `to_validate` | live doublons 3 car. + ack contact — revalider UI |
 | `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `outdated` | CRUD relances + RDV + Perdu sans min 3× — à réécrire |
-| `crm-transformer-client` | Transformer un prospect en client | commercial | `to_validate` | P0 nov. 2026 — distinct de « Créer un devis » ; revalidation terrain |
+| `crm-transformer-client` | Transformer un prospect en client | commercial | `to_validate` | P2 nov. 2026 — même stepper que `/commercial/clients/nouveau` (identité→conditions) ; se termine par contrat brouillon ; revalidation terrain |
 | `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `outdated` | Rapport semaine : grille 4 KPI période + liens liste ; hub/cartes — revalider captures et libellés |
 | `com-clients-equipe-historique` | Clients COM : équipe, filtres, historique | commercial | `draft` | liste/fiche + URL `owners=` — parcours à valider humain |
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
@@ -162,6 +162,9 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - [ ] Comptabilité : VE depuis facture (manuel 08) → premier guide `to_validate`.
 - [ ] Page contrôle qualité auto (liens cassés) — script optionnel.
 - [ ] Synchroniser automatiquement manuels MD ↔ guides TS (hors scope P1).
+- [ ] **Client/Contrat P4** (plan `PLAN-CLIENT-CONTRAT.md`) : génération PDF + classement GED (`gedDocumentId`) codés, build/lint/tests OK, rendu visuel du PDF (familles A et B, rasterisé et relu) conforme charte MSK et pagination correcte ; **mais le parcours complet `generateContractPdfAction` (upload Storage + `Document` + `gedDocumentId`) n'a pas été rejoué contre un contrat réel en base** (prudence — pas d'écriture de test sur la DB dev/prod partagée sans aller explicite) ; annexes devis/CGV toujours absentes du PDF ; pas encore de doc utilisateur pour le bouton « Générer PDF ».
+- [ ] **Client/Contrat P2 résiduel** : composition sans picker catalogue avancé ; pas de guide dédié « Créer un client direct » (même stepper que transform, jamais documenté seul).
+- [ ] Guide `crm-transformer-client` : revalider terrain le nouveau stepper (6 étapes) + l’activation séparée du contrat sur la fiche `/commercial/contrats/[id]`.
 
 ---
 
@@ -188,6 +191,21 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-06 — Client/Contrat P1 + P2 + P3 (partiel) : stepper unifié, anti-doublon, contrat honnête
+
+- **Pourquoi** : reprise du plan `docs/commercial/PLAN-CLIENT-CONTRAT.md` après P0 — fermer B4 (orphelins create direct), B5 (copie convert incomplète), B6 (contrat sans vraie signature) et livrer le parcours unique Q2/Q3 (stepper identité→conditions).
+- **Quoi** :
+  - **Migration P3.1** (`20261106140000_com_contract_family_composition`, appliquée) : enums `ComContractFamily` / `ComServiceKind` / `ComCompositionSource` ; `com_contracts.family|serviceKind|compositionSource|scopeJson|gedDocumentId` ; `ComDocKind.CONTRAT` ; dossier GED client `Contrats`.
+  - **P1** : `findClientDuplicateCandidates` (anti-doublon create direct, exact + fuzzy, bloquant) ; convert CRM copie désormais `sector` / `website` / `contactRole` ; fiche client fusionne timeline `ComClientEvent` **+** `CrmActivity` du trail prospect (badges Client/CRM) ; note multi-deals si client déjà rattaché à une autre opportunité.
+  - **P2** : parcours unique `createClientWizardAction` (`src/actions/client-wizard.ts`) + UI `ClientWizardForm` (`FormSteps` 6 étapes : Identité → Contact → Origine → Composition → Conditions → Récap). `/commercial/clients/nouveau` accepte `?opportunityId=` (préremplissage identité/contact/devis accepté) ; le CTA « Transformer en client » navigue désormais vers ce même stepper au lieu d’un confirm direct — l’acte délibéré (Q1) est le submit final du récap.
+  - **P3.3** : `setContractStatusAction` + `ContractStatusActions` — 1ʳᵉ activation BROUILLON→ACTIF pose `signedAt` (signature explicite, jamais à la création) ; suspendre/reprendre/résilier avec confirmation ; retour à BROUILLON interdit après signature.
+  - **P4.3 (anticipé)** : numérotation contrats `MSK-CONTRAT-YYYY-NNN` (séquence annuelle) branchée sur `nextComNumber`.
+  - **P4.1/P4.2/P4.4 (foundation génération PDF contrat)** : `generateContractPdf` (`src/lib/pdf/commercial.ts`) — gabarit socle A+B (parties, objet, composition/totaux, conditions, périmètre CDC si famille B, droit applicable, signatures) ; `generateContractPdfAction` (`src/actions/contracts.ts`) génère, uploade en Storage GED (dossier client « Contrats »), crée le `Document` + lien, et pose `gedDocumentId` (idempotent, anti-course via `updateMany` conditionnel) ; bouton `ContractPdfAction` + miniature `DocPdfThumb` câblés sur `/commercial/contrats/[id]`. Signature = tampon/visuel MVP (PNG signature existante si dispo) + date, pas d’e-signature.
+- **Fichiers** : `prisma/schema.prisma`, `prisma/migrations/20261106140000_com_contract_family_composition/`, `src/actions/client-wizard.ts`, `src/actions/contracts.ts`, `src/actions/commercial.ts`, `src/components/commercial/client-wizard-form.tsx`, `src/components/commercial/contract-status-actions.tsx`, `src/components/commercial/contract-pdf-action.tsx`, `src/lib/pdf/commercial.ts`, `src/lib/commercial/client-duplicates.ts`, `src/lib/commercial/labels.ts`, `src/lib/commercial/ged-client.ts`, `src/lib/document-numbering/**`, `src/app/(app)/commercial/clients/nouveau/page.tsx`, `src/app/(app)/commercial/contrats/[id]/page.tsx`, `src/app/(app)/commercial/clients/[id]/page.tsx`, `src/components/crm/prospect-quote-cta.tsx`, `src/lib/guides/content/commercial.ts`.
+- **Recap test terrain** : [`docs/commercial/RECAP-TEST-CLIENT-CONTRAT.md`](../commercial/RECAP-TEST-CLIENT-CONTRAT.md) — checklist manuelle post-déploiement (P0→P4, routes, invariants, dette).
+- **Non fait (reste à faire)** : composition sans picker catalogue avancé (lignes libres + ajout simple depuis offre) ; pas d’annexes CGV/devis jointes au PDF contrat ; rendu `generateContractPdf` vérifié visuellement (PDF rasterisé famille A 1 page / famille B 2 pages, charte + pagination conformes) mais le parcours complet de l’action (`generateContractPdfAction` → Storage + `Document` + `gedDocumentId`) n’a **pas** été rejoué contre un contrat réel en base (prudence DB dev/prod partagée) ni dans le navigateur ; `convertOpportunityToClientAction` reste en code (utilisé par la relance `ensureProspectClientDraftForQuoteAction` / garde GAGNE) mais n’est plus le chemin du CTA transform.
+- **Statut doc** : `crm-transformer-client` reste `to_validate` (étapes réécrites pour le stepper, terrain à refaire — y compris le nouveau bouton « Générer PDF » sur la fiche contrat) ; pas encore de guide dédié « Nouveau client direct » (dette, à créer avec le même contenu stepper).
 
 ### 2026-11-06 — P0 Client / Contrat (Q1) : devis sans convert CRM implicite · CTA « Transformer en client » · garde GAGNE
 

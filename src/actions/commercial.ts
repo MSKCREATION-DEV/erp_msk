@@ -21,6 +21,7 @@ import { computeDocTotals } from "@/lib/commercial/totals";
 import { nextComNumber } from "@/lib/commercial/numbering";
 import { ensureClientDocFolder } from "@/lib/commercial/ged-client";
 import { buildClientGedFolderCode } from "@/lib/commercial/ged-folder-code";
+import { findClientDuplicateCandidates } from "@/lib/commercial/client-duplicates";
 import { displayDocNumber } from "@/lib/commercial/doc-display";
 import {
   formatComMoney,
@@ -220,7 +221,7 @@ export async function reassignClientOwnerAction(
 
 export async function createClientAction(
   formData: FormData,
-): Promise<ActionResult> {
+): Promise<ActionResult & { duplicateClientId?: string }> {
   const actor = await requireUser({ permission: "com.clients.manage" });
 
   const parsed = createClientSchema.safeParse({
@@ -238,6 +239,20 @@ export async function createClientAction(
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Données invalides" };
   }
   const data = parsed.data;
+
+  /** P1.3 — anti-doublon : toute correspondance (identique/proche) bloque. */
+  const duplicates = await findClientDuplicateCandidates(data.name);
+  if (duplicates.length > 0) {
+    const first = duplicates[0]!;
+    return {
+      ok: false,
+      error:
+        first.kind === "exact"
+          ? `Un client « ${first.name} » existe déjà. Ouvrez sa fiche plutôt que d’en recréer une.`
+          : `Un client proche existe déjà : « ${first.name} ». Vérifiez avant de continuer.`,
+      duplicateClientId: first.id,
+    };
+  }
 
   const client = await prisma.$transaction(async (tx) => {
     const created = await tx.comClient.create({
@@ -499,8 +514,11 @@ export async function ensureProspectClientDraftForQuoteAction(
         normalizedName: normalizeClientName(deal.organization.name),
         gedFolderCode: `TMP_${Date.now()}`,
         contactName,
+        contactRole: primary?.jobTitle ?? null,
         email: primary?.email ?? null,
         phone: primary?.phone ?? null,
+        sector: deal.organization.sector,
+        website: deal.organization.website,
         city: deal.organization.city,
         country: deal.organization.country,
         notes: deal.organization.notes,
@@ -640,6 +658,13 @@ export async function convertOpportunityToClientAction(
 
   if (existing) {
     const alreadyWon = deal.stage === CrmPipelineStage.GAGNE;
+    /** P1.4 — multi-deals même org : rattachement explicite (Q7 non tranché, non bloquant). */
+    const isMultiDeal =
+      existing.sourceOpportunityId != null &&
+      existing.sourceOpportunityId !== dealId;
+    const multiDealNote = isMultiDeal
+      ? ` Dossier multi-deals : client déjà rattaché à un autre prospect (${existing.sourceOpportunityId}).`
+      : "";
     if (!alreadyWon || !previousWonAt) {
       await prisma.$transaction(async (tx) => {
         await markDealAsWon(tx, { alreadyWon });
@@ -650,7 +675,7 @@ export async function convertOpportunityToClientAction(
               organizationId: dealOrgId,
               type: "NOTE",
               summary: "Dossier passé en Client (lié au client commercial)",
-              body: `Client commercial déjà existant : ${existing.name}`,
+              body: `Client commercial déjà existant : ${existing.name}.${multiDealNote}`,
               actorId: actor.id,
               occurredAt: now,
             },
@@ -662,15 +687,20 @@ export async function convertOpportunityToClientAction(
         action: "com.client.convert_crm_sync_stage",
         entityType: "com_client",
         entityId: existing.id,
-        metadata: { opportunityId: dealId, syncedStage: "GAGNE" },
+        metadata: {
+          opportunityId: dealId,
+          syncedStage: "GAGNE",
+          multiDeal: isMultiDeal,
+        },
       });
       if (canMutateClient(actor, existing.ownerId, teamIds)) {
         await logComClientEvent({
           clientId: existing.id,
           actorId: actor.id,
           type: COM_CLIENT_EVENT.CRM_CONVERTED,
-          summary:
-            "Prospect passé en Client (CRM) — dossier déjà lié à cette fiche.",
+          summary: isMultiDeal
+            ? `Deuxième dossier CRM rattaché à ce client (multi-deals) — prospect « ${deal.organization.name} » passé en Client.`
+            : "Prospect passé en Client (CRM) — dossier déjà lié à cette fiche.",
           entityType: "crm_opportunity",
           entityId: dealId,
         });
@@ -684,7 +714,9 @@ export async function convertOpportunityToClientAction(
     revalidatePath("/crm");
     return {
       ok: true,
-      message: "Client déjà lié",
+      message: isMultiDeal
+        ? `Client « ${existing.name} » déjà existant — ce dossier y est rattaché (multi-deals)`
+        : "Client déjà lié",
       clientId: existing.id,
     };
   }
@@ -701,8 +733,11 @@ export async function convertOpportunityToClientAction(
         normalizedName: normalizeClientName(deal.organization.name),
         gedFolderCode: `TMP_${Date.now()}`,
         contactName,
+        contactRole: primary?.jobTitle ?? null,
         email: primary?.email ?? null,
         phone: primary?.phone ?? null,
+        sector: deal.organization.sector,
+        website: deal.organization.website,
         city: deal.organization.city,
         country: deal.organization.country,
         notes: deal.organization.notes,

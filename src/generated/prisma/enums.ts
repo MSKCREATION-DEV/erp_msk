@@ -241,7 +241,8 @@ export const ComDocKind = {
   DEVIS: 'DEVIS',
   FACTURE: 'FACTURE',
   AVOIR: 'AVOIR',
-  BDC: 'BDC'
+  BDC: 'BDC',
+  CONTRAT: 'CONTRAT'
 } as const
 
 export type ComDocKind = (typeof ComDocKind)[keyof typeof ComDocKind]
@@ -354,6 +355,34 @@ export const ComContractLineStatus = {
 } as const
 
 export type ComContractLineStatus = (typeof ComContractLineStatus)[keyof typeof ComContractLineStatus]
+
+
+export const ComContractFamily = {
+  PRESTATION_ABONNEMENT: 'PRESTATION_ABONNEMENT',
+  ENGAGEMENT_CDC: 'ENGAGEMENT_CDC'
+} as const
+
+export type ComContractFamily = (typeof ComContractFamily)[keyof typeof ComContractFamily]
+
+
+export const ComServiceKind = {
+  RESEAUX_SOCIAUX: 'RESEAUX_SOCIAUX',
+  APPLICATION_WEB: 'APPLICATION_WEB',
+  SITE_VITRINE: 'SITE_VITRINE',
+  CHARTE_GRAPHIQUE: 'CHARTE_GRAPHIQUE',
+  AUTRE: 'AUTRE',
+  BUNDLE: 'BUNDLE'
+} as const
+
+export type ComServiceKind = (typeof ComServiceKind)[keyof typeof ComServiceKind]
+
+
+export const ComCompositionSource = {
+  QUOTE: 'QUOTE',
+  INLINE: 'INLINE'
+} as const
+
+export type ComCompositionSource = (typeof ComCompositionSource)[keyof typeof ComCompositionSource]
 
 
 export const ComImportBatchStatus = {

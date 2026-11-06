@@ -4,6 +4,7 @@ import {
   formatOfficialNumber,
   parseOfficialNumber,
   periodKeyFromDate,
+  yearPeriodKeyFromDate,
 } from "./format";
 import { MemoryDocSequence } from "./memory-sequence";
 
@@ -42,6 +43,23 @@ assert.deepEqual(parseOfficialNumber("FAC-20261104-0001"), {
   kind: "FACTURE",
   periodKey: "20261104",
   sequence: 1,
+});
+
+// P4.3 — contrats : `MSK-CONTRAT-YYYY-NNN` (séquence annuelle, pad 3).
+assert.equal(yearPeriodKeyFromDate(new Date(2026, 10, 4)), "2026");
+assert.equal(
+  formatOfficialNumber({
+    kind: "CONTRAT",
+    periodKey: "2026",
+    sequence: 7,
+    pad: 3,
+  }),
+  "MSK-CONTRAT-2026-007",
+);
+assert.deepEqual(parseOfficialNumber("MSK-CONTRAT-2026-114"), {
+  kind: "CONTRAT",
+  periodKey: "2026",
+  sequence: 114,
 });
 
 async function concurrency() {

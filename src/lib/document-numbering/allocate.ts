@@ -1,8 +1,12 @@
 import type { PrismaClient } from "@/generated/prisma/client";
 import { createId } from "@/lib/document-numbering/id";
-import { formatOfficialNumber, periodKeyFromDate } from "./format";
+import {
+  formatOfficialNumber,
+  periodKeyFromDate,
+  yearPeriodKeyFromDate,
+} from "./format";
 import type { DocNumberKind } from "./kinds";
-import { DOC_NUMBER_PREFIX } from "./kinds";
+import { DOC_NUMBER_PREFIX, YEARLY_DOC_NUMBER_KINDS } from "./kinds";
 
 type Tx = Omit<
   PrismaClient,
@@ -14,6 +18,7 @@ const KIND_TO_ENUM: Record<DocNumberKind, string> = {
   FACTURE: "FACTURE",
   AVOIR: "AVOIR",
   BDC: "BDC",
+  CONTRAT: "CONTRAT",
 };
 
 /**
@@ -26,7 +31,8 @@ export async function allocateOfficialNumber(params: {
   db: Tx;
 }): Promise<string> {
   const at = params.at ?? new Date();
-  const periodKey = periodKeyFromDate(at);
+  const yearly = YEARLY_DOC_NUMBER_KINDS.has(params.kind);
+  const periodKey = yearly ? yearPeriodKeyFromDate(at) : periodKeyFromDate(at);
   const kind = KIND_TO_ENUM[params.kind];
   const id = createId();
 
@@ -50,6 +56,7 @@ export async function allocateOfficialNumber(params: {
     kind: params.kind,
     periodKey,
     sequence: lastValue,
+    pad: yearly ? 3 : undefined,
   });
 }
 

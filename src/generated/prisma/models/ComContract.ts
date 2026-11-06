@@ -41,6 +41,8 @@ export type ComContractMinAggregateOutputType = {
   reference: string | null
   status: $Enums.ComContractStatus | null
   title: string | null
+  family: $Enums.ComContractFamily | null
+  serviceKind: $Enums.ComServiceKind | null
   regime: $Enums.ComDocRegime | null
   currency: string | null
   vatEnabled: boolean | null
@@ -52,11 +54,13 @@ export type ComContractMinAggregateOutputType = {
   renewalTerms: string | null
   terminationTerms: string | null
   notes: string | null
+  compositionSource: $Enums.ComCompositionSource | null
   clientId: string | null
   quoteId: string | null
   ownerId: string | null
   createdById: string | null
   signedAt: Date | null
+  gedDocumentId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +70,8 @@ export type ComContractMaxAggregateOutputType = {
   reference: string | null
   status: $Enums.ComContractStatus | null
   title: string | null
+  family: $Enums.ComContractFamily | null
+  serviceKind: $Enums.ComServiceKind | null
   regime: $Enums.ComDocRegime | null
   currency: string | null
   vatEnabled: boolean | null
@@ -77,11 +83,13 @@ export type ComContractMaxAggregateOutputType = {
   renewalTerms: string | null
   terminationTerms: string | null
   notes: string | null
+  compositionSource: $Enums.ComCompositionSource | null
   clientId: string | null
   quoteId: string | null
   ownerId: string | null
   createdById: string | null
   signedAt: Date | null
+  gedDocumentId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -91,6 +99,8 @@ export type ComContractCountAggregateOutputType = {
   reference: number
   status: number
   title: number
+  family: number
+  serviceKind: number
   regime: number
   currency: number
   vatEnabled: number
@@ -102,11 +112,14 @@ export type ComContractCountAggregateOutputType = {
   renewalTerms: number
   terminationTerms: number
   notes: number
+  compositionSource: number
+  scopeJson: number
   clientId: number
   quoteId: number
   ownerId: number
   createdById: number
   signedAt: number
+  gedDocumentId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -128,6 +141,8 @@ export type ComContractMinAggregateInputType = {
   reference?: true
   status?: true
   title?: true
+  family?: true
+  serviceKind?: true
   regime?: true
   currency?: true
   vatEnabled?: true
@@ -139,11 +154,13 @@ export type ComContractMinAggregateInputType = {
   renewalTerms?: true
   terminationTerms?: true
   notes?: true
+  compositionSource?: true
   clientId?: true
   quoteId?: true
   ownerId?: true
   createdById?: true
   signedAt?: true
+  gedDocumentId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -153,6 +170,8 @@ export type ComContractMaxAggregateInputType = {
   reference?: true
   status?: true
   title?: true
+  family?: true
+  serviceKind?: true
   regime?: true
   currency?: true
   vatEnabled?: true
@@ -164,11 +183,13 @@ export type ComContractMaxAggregateInputType = {
   renewalTerms?: true
   terminationTerms?: true
   notes?: true
+  compositionSource?: true
   clientId?: true
   quoteId?: true
   ownerId?: true
   createdById?: true
   signedAt?: true
+  gedDocumentId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -178,6 +199,8 @@ export type ComContractCountAggregateInputType = {
   reference?: true
   status?: true
   title?: true
+  family?: true
+  serviceKind?: true
   regime?: true
   currency?: true
   vatEnabled?: true
@@ -189,11 +212,14 @@ export type ComContractCountAggregateInputType = {
   renewalTerms?: true
   terminationTerms?: true
   notes?: true
+  compositionSource?: true
+  scopeJson?: true
   clientId?: true
   quoteId?: true
   ownerId?: true
   createdById?: true
   signedAt?: true
+  gedDocumentId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -290,6 +316,8 @@ export type ComContractGroupByOutputType = {
   reference: string
   status: $Enums.ComContractStatus
   title: string | null
+  family: $Enums.ComContractFamily | null
+  serviceKind: $Enums.ComServiceKind | null
   regime: $Enums.ComDocRegime
   currency: string
   vatEnabled: boolean
@@ -301,11 +329,14 @@ export type ComContractGroupByOutputType = {
   renewalTerms: string | null
   terminationTerms: string | null
   notes: string | null
+  compositionSource: $Enums.ComCompositionSource
+  scopeJson: runtime.JsonValue | null
   clientId: string
   quoteId: string | null
   ownerId: string
   createdById: string
   signedAt: Date | null
+  gedDocumentId: string | null
   createdAt: Date
   updatedAt: Date
   _count: ComContractCountAggregateOutputType | null
@@ -338,6 +369,8 @@ export type ComContractWhereInput = {
   reference?: Prisma.StringFilter<"ComContract"> | string
   status?: Prisma.EnumComContractStatusFilter<"ComContract"> | $Enums.ComContractStatus
   title?: Prisma.StringNullableFilter<"ComContract"> | string | null
+  family?: Prisma.EnumComContractFamilyNullableFilter<"ComContract"> | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.EnumComServiceKindNullableFilter<"ComContract"> | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFilter<"ComContract"> | $Enums.ComDocRegime
   currency?: Prisma.StringFilter<"ComContract"> | string
   vatEnabled?: Prisma.BoolFilter<"ComContract"> | boolean
@@ -349,11 +382,14 @@ export type ComContractWhereInput = {
   renewalTerms?: Prisma.StringNullableFilter<"ComContract"> | string | null
   terminationTerms?: Prisma.StringNullableFilter<"ComContract"> | string | null
   notes?: Prisma.StringNullableFilter<"ComContract"> | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFilter<"ComContract"> | $Enums.ComCompositionSource
+  scopeJson?: Prisma.JsonNullableFilter<"ComContract">
   clientId?: Prisma.StringFilter<"ComContract"> | string
   quoteId?: Prisma.StringNullableFilter<"ComContract"> | string | null
   ownerId?: Prisma.UuidFilter<"ComContract"> | string
   createdById?: Prisma.UuidFilter<"ComContract"> | string
   signedAt?: Prisma.DateTimeNullableFilter<"ComContract"> | Date | string | null
+  gedDocumentId?: Prisma.StringNullableFilter<"ComContract"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ComContract"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ComContract"> | Date | string
   client?: Prisma.XOR<Prisma.ComClientScalarRelationFilter, Prisma.ComClientWhereInput>
@@ -369,6 +405,8 @@ export type ComContractOrderByWithRelationInput = {
   reference?: Prisma.SortOrder
   status?: Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
+  family?: Prisma.SortOrderInput | Prisma.SortOrder
+  serviceKind?: Prisma.SortOrderInput | Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
@@ -380,11 +418,14 @@ export type ComContractOrderByWithRelationInput = {
   renewalTerms?: Prisma.SortOrderInput | Prisma.SortOrder
   terminationTerms?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  compositionSource?: Prisma.SortOrder
+  scopeJson?: Prisma.SortOrderInput | Prisma.SortOrder
   clientId?: Prisma.SortOrder
   quoteId?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   signedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  gedDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   client?: Prisma.ComClientOrderByWithRelationInput
@@ -403,6 +444,8 @@ export type ComContractWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ComContractWhereInput | Prisma.ComContractWhereInput[]
   status?: Prisma.EnumComContractStatusFilter<"ComContract"> | $Enums.ComContractStatus
   title?: Prisma.StringNullableFilter<"ComContract"> | string | null
+  family?: Prisma.EnumComContractFamilyNullableFilter<"ComContract"> | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.EnumComServiceKindNullableFilter<"ComContract"> | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFilter<"ComContract"> | $Enums.ComDocRegime
   currency?: Prisma.StringFilter<"ComContract"> | string
   vatEnabled?: Prisma.BoolFilter<"ComContract"> | boolean
@@ -414,11 +457,14 @@ export type ComContractWhereUniqueInput = Prisma.AtLeast<{
   renewalTerms?: Prisma.StringNullableFilter<"ComContract"> | string | null
   terminationTerms?: Prisma.StringNullableFilter<"ComContract"> | string | null
   notes?: Prisma.StringNullableFilter<"ComContract"> | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFilter<"ComContract"> | $Enums.ComCompositionSource
+  scopeJson?: Prisma.JsonNullableFilter<"ComContract">
   clientId?: Prisma.StringFilter<"ComContract"> | string
   quoteId?: Prisma.StringNullableFilter<"ComContract"> | string | null
   ownerId?: Prisma.UuidFilter<"ComContract"> | string
   createdById?: Prisma.UuidFilter<"ComContract"> | string
   signedAt?: Prisma.DateTimeNullableFilter<"ComContract"> | Date | string | null
+  gedDocumentId?: Prisma.StringNullableFilter<"ComContract"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ComContract"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ComContract"> | Date | string
   client?: Prisma.XOR<Prisma.ComClientScalarRelationFilter, Prisma.ComClientWhereInput>
@@ -434,6 +480,8 @@ export type ComContractOrderByWithAggregationInput = {
   reference?: Prisma.SortOrder
   status?: Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
+  family?: Prisma.SortOrderInput | Prisma.SortOrder
+  serviceKind?: Prisma.SortOrderInput | Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
@@ -445,11 +493,14 @@ export type ComContractOrderByWithAggregationInput = {
   renewalTerms?: Prisma.SortOrderInput | Prisma.SortOrder
   terminationTerms?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  compositionSource?: Prisma.SortOrder
+  scopeJson?: Prisma.SortOrderInput | Prisma.SortOrder
   clientId?: Prisma.SortOrder
   quoteId?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   signedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  gedDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ComContractCountOrderByAggregateInput
@@ -467,6 +518,8 @@ export type ComContractScalarWhereWithAggregatesInput = {
   reference?: Prisma.StringWithAggregatesFilter<"ComContract"> | string
   status?: Prisma.EnumComContractStatusWithAggregatesFilter<"ComContract"> | $Enums.ComContractStatus
   title?: Prisma.StringNullableWithAggregatesFilter<"ComContract"> | string | null
+  family?: Prisma.EnumComContractFamilyNullableWithAggregatesFilter<"ComContract"> | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.EnumComServiceKindNullableWithAggregatesFilter<"ComContract"> | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeWithAggregatesFilter<"ComContract"> | $Enums.ComDocRegime
   currency?: Prisma.StringWithAggregatesFilter<"ComContract"> | string
   vatEnabled?: Prisma.BoolWithAggregatesFilter<"ComContract"> | boolean
@@ -478,11 +531,14 @@ export type ComContractScalarWhereWithAggregatesInput = {
   renewalTerms?: Prisma.StringNullableWithAggregatesFilter<"ComContract"> | string | null
   terminationTerms?: Prisma.StringNullableWithAggregatesFilter<"ComContract"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"ComContract"> | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceWithAggregatesFilter<"ComContract"> | $Enums.ComCompositionSource
+  scopeJson?: Prisma.JsonNullableWithAggregatesFilter<"ComContract">
   clientId?: Prisma.StringWithAggregatesFilter<"ComContract"> | string
   quoteId?: Prisma.StringNullableWithAggregatesFilter<"ComContract"> | string | null
   ownerId?: Prisma.UuidWithAggregatesFilter<"ComContract"> | string
   createdById?: Prisma.UuidWithAggregatesFilter<"ComContract"> | string
   signedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ComContract"> | Date | string | null
+  gedDocumentId?: Prisma.StringNullableWithAggregatesFilter<"ComContract"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ComContract"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ComContract"> | Date | string
 }
@@ -492,6 +548,8 @@ export type ComContractCreateInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -503,7 +561,10 @@ export type ComContractCreateInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutContractsInput
@@ -519,6 +580,8 @@ export type ComContractUncheckedCreateInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -530,11 +593,14 @@ export type ComContractUncheckedCreateInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId: string
   quoteId?: string | null
   ownerId: string
   createdById: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutContractInput
@@ -546,6 +612,8 @@ export type ComContractUpdateInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -557,7 +625,10 @@ export type ComContractUpdateInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutContractsNestedInput
@@ -573,6 +644,8 @@ export type ComContractUncheckedUpdateInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -584,11 +657,14 @@ export type ComContractUncheckedUpdateInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComContractLineUncheckedUpdateManyWithoutContractNestedInput
@@ -600,6 +676,8 @@ export type ComContractCreateManyInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -611,11 +689,14 @@ export type ComContractCreateManyInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId: string
   quoteId?: string | null
   ownerId: string
   createdById: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -625,6 +706,8 @@ export type ComContractUpdateManyMutationInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -636,7 +719,10 @@ export type ComContractUpdateManyMutationInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -646,6 +732,8 @@ export type ComContractUncheckedUpdateManyInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -657,11 +745,14 @@ export type ComContractUncheckedUpdateManyInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -681,6 +772,8 @@ export type ComContractCountOrderByAggregateInput = {
   reference?: Prisma.SortOrder
   status?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  family?: Prisma.SortOrder
+  serviceKind?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
@@ -692,11 +785,14 @@ export type ComContractCountOrderByAggregateInput = {
   renewalTerms?: Prisma.SortOrder
   terminationTerms?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  compositionSource?: Prisma.SortOrder
+  scopeJson?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   quoteId?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   signedAt?: Prisma.SortOrder
+  gedDocumentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -711,6 +807,8 @@ export type ComContractMaxOrderByAggregateInput = {
   reference?: Prisma.SortOrder
   status?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  family?: Prisma.SortOrder
+  serviceKind?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
@@ -722,11 +820,13 @@ export type ComContractMaxOrderByAggregateInput = {
   renewalTerms?: Prisma.SortOrder
   terminationTerms?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  compositionSource?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   quoteId?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   signedAt?: Prisma.SortOrder
+  gedDocumentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -736,6 +836,8 @@ export type ComContractMinOrderByAggregateInput = {
   reference?: Prisma.SortOrder
   status?: Prisma.SortOrder
   title?: Prisma.SortOrder
+  family?: Prisma.SortOrder
+  serviceKind?: Prisma.SortOrder
   regime?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   vatEnabled?: Prisma.SortOrder
@@ -747,11 +849,13 @@ export type ComContractMinOrderByAggregateInput = {
   renewalTerms?: Prisma.SortOrder
   terminationTerms?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  compositionSource?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   quoteId?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   signedAt?: Prisma.SortOrder
+  gedDocumentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -943,6 +1047,18 @@ export type EnumComContractStatusFieldUpdateOperationsInput = {
   set?: $Enums.ComContractStatus
 }
 
+export type NullableEnumComContractFamilyFieldUpdateOperationsInput = {
+  set?: $Enums.ComContractFamily | null
+}
+
+export type NullableEnumComServiceKindFieldUpdateOperationsInput = {
+  set?: $Enums.ComServiceKind | null
+}
+
+export type EnumComCompositionSourceFieldUpdateOperationsInput = {
+  set?: $Enums.ComCompositionSource
+}
+
 export type ComContractCreateNestedOneWithoutLinesInput = {
   create?: Prisma.XOR<Prisma.ComContractCreateWithoutLinesInput, Prisma.ComContractUncheckedCreateWithoutLinesInput>
   connectOrCreate?: Prisma.ComContractCreateOrConnectWithoutLinesInput
@@ -978,6 +1094,8 @@ export type ComContractCreateWithoutOwnerInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -989,7 +1107,10 @@ export type ComContractCreateWithoutOwnerInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutContractsInput
@@ -1004,6 +1125,8 @@ export type ComContractUncheckedCreateWithoutOwnerInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1015,10 +1138,13 @@ export type ComContractUncheckedCreateWithoutOwnerInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId: string
   quoteId?: string | null
   createdById: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutContractInput
@@ -1040,6 +1166,8 @@ export type ComContractCreateWithoutCreatedByInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1051,7 +1179,10 @@ export type ComContractCreateWithoutCreatedByInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutContractsInput
@@ -1066,6 +1197,8 @@ export type ComContractUncheckedCreateWithoutCreatedByInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1077,10 +1210,13 @@ export type ComContractUncheckedCreateWithoutCreatedByInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId: string
   quoteId?: string | null
   ownerId: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutContractInput
@@ -1121,6 +1257,8 @@ export type ComContractScalarWhereInput = {
   reference?: Prisma.StringFilter<"ComContract"> | string
   status?: Prisma.EnumComContractStatusFilter<"ComContract"> | $Enums.ComContractStatus
   title?: Prisma.StringNullableFilter<"ComContract"> | string | null
+  family?: Prisma.EnumComContractFamilyNullableFilter<"ComContract"> | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.EnumComServiceKindNullableFilter<"ComContract"> | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFilter<"ComContract"> | $Enums.ComDocRegime
   currency?: Prisma.StringFilter<"ComContract"> | string
   vatEnabled?: Prisma.BoolFilter<"ComContract"> | boolean
@@ -1132,11 +1270,14 @@ export type ComContractScalarWhereInput = {
   renewalTerms?: Prisma.StringNullableFilter<"ComContract"> | string | null
   terminationTerms?: Prisma.StringNullableFilter<"ComContract"> | string | null
   notes?: Prisma.StringNullableFilter<"ComContract"> | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFilter<"ComContract"> | $Enums.ComCompositionSource
+  scopeJson?: Prisma.JsonNullableFilter<"ComContract">
   clientId?: Prisma.StringFilter<"ComContract"> | string
   quoteId?: Prisma.StringNullableFilter<"ComContract"> | string | null
   ownerId?: Prisma.UuidFilter<"ComContract"> | string
   createdById?: Prisma.UuidFilter<"ComContract"> | string
   signedAt?: Prisma.DateTimeNullableFilter<"ComContract"> | Date | string | null
+  gedDocumentId?: Prisma.StringNullableFilter<"ComContract"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ComContract"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ComContract"> | Date | string
 }
@@ -1162,6 +1303,8 @@ export type ComContractCreateWithoutClientInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1173,7 +1316,10 @@ export type ComContractCreateWithoutClientInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   quote?: Prisma.ComQuoteCreateNestedOneWithoutContractsInput
@@ -1188,6 +1334,8 @@ export type ComContractUncheckedCreateWithoutClientInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1199,10 +1347,13 @@ export type ComContractUncheckedCreateWithoutClientInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   quoteId?: string | null
   ownerId: string
   createdById: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutContractInput
@@ -1240,6 +1391,8 @@ export type ComContractCreateWithoutQuoteInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1251,7 +1404,10 @@ export type ComContractCreateWithoutQuoteInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutContractsInput
@@ -1266,6 +1422,8 @@ export type ComContractUncheckedCreateWithoutQuoteInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1277,10 +1435,13 @@ export type ComContractUncheckedCreateWithoutQuoteInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId: string
   ownerId: string
   createdById: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutContractInput
@@ -1318,6 +1479,8 @@ export type ComContractCreateWithoutLinesInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1329,7 +1492,10 @@ export type ComContractCreateWithoutLinesInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutContractsInput
@@ -1344,6 +1510,8 @@ export type ComContractUncheckedCreateWithoutLinesInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1355,11 +1523,14 @@ export type ComContractUncheckedCreateWithoutLinesInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId: string
   quoteId?: string | null
   ownerId: string
   createdById: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invoices?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutContractInput
@@ -1386,6 +1557,8 @@ export type ComContractUpdateWithoutLinesInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1397,7 +1570,10 @@ export type ComContractUpdateWithoutLinesInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutContractsNestedInput
@@ -1412,6 +1588,8 @@ export type ComContractUncheckedUpdateWithoutLinesInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1423,11 +1601,14 @@ export type ComContractUncheckedUpdateWithoutLinesInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoices?: Prisma.ComInvoiceUncheckedUpdateManyWithoutContractNestedInput
@@ -1438,6 +1619,8 @@ export type ComContractCreateWithoutInvoicesInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1449,7 +1632,10 @@ export type ComContractCreateWithoutInvoicesInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   client: Prisma.ComClientCreateNestedOneWithoutContractsInput
@@ -1464,6 +1650,8 @@ export type ComContractUncheckedCreateWithoutInvoicesInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1475,11 +1663,14 @@ export type ComContractUncheckedCreateWithoutInvoicesInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId: string
   quoteId?: string | null
   ownerId: string
   createdById: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lines?: Prisma.ComContractLineUncheckedCreateNestedManyWithoutContractInput
@@ -1506,6 +1697,8 @@ export type ComContractUpdateWithoutInvoicesInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1517,7 +1710,10 @@ export type ComContractUpdateWithoutInvoicesInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutContractsNestedInput
@@ -1532,6 +1728,8 @@ export type ComContractUncheckedUpdateWithoutInvoicesInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1543,11 +1741,14 @@ export type ComContractUncheckedUpdateWithoutInvoicesInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComContractLineUncheckedUpdateManyWithoutContractNestedInput
@@ -1558,6 +1759,8 @@ export type ComContractCreateManyOwnerInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1569,10 +1772,13 @@ export type ComContractCreateManyOwnerInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId: string
   quoteId?: string | null
   createdById: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1582,6 +1788,8 @@ export type ComContractCreateManyCreatedByInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1593,10 +1801,13 @@ export type ComContractCreateManyCreatedByInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId: string
   quoteId?: string | null
   ownerId: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1606,6 +1817,8 @@ export type ComContractUpdateWithoutOwnerInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1617,7 +1830,10 @@ export type ComContractUpdateWithoutOwnerInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutContractsNestedInput
@@ -1632,6 +1848,8 @@ export type ComContractUncheckedUpdateWithoutOwnerInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1643,10 +1861,13 @@ export type ComContractUncheckedUpdateWithoutOwnerInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComContractLineUncheckedUpdateManyWithoutContractNestedInput
@@ -1658,6 +1879,8 @@ export type ComContractUncheckedUpdateManyWithoutOwnerInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1669,10 +1892,13 @@ export type ComContractUncheckedUpdateManyWithoutOwnerInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1682,6 +1908,8 @@ export type ComContractUpdateWithoutCreatedByInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1693,7 +1921,10 @@ export type ComContractUpdateWithoutCreatedByInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutContractsNestedInput
@@ -1708,6 +1939,8 @@ export type ComContractUncheckedUpdateWithoutCreatedByInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1719,10 +1952,13 @@ export type ComContractUncheckedUpdateWithoutCreatedByInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComContractLineUncheckedUpdateManyWithoutContractNestedInput
@@ -1734,6 +1970,8 @@ export type ComContractUncheckedUpdateManyWithoutCreatedByInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1745,10 +1983,13 @@ export type ComContractUncheckedUpdateManyWithoutCreatedByInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1758,6 +1999,8 @@ export type ComContractCreateManyClientInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1769,10 +2012,13 @@ export type ComContractCreateManyClientInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   quoteId?: string | null
   ownerId: string
   createdById: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1782,6 +2028,8 @@ export type ComContractUpdateWithoutClientInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1793,7 +2041,10 @@ export type ComContractUpdateWithoutClientInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   quote?: Prisma.ComQuoteUpdateOneWithoutContractsNestedInput
@@ -1808,6 +2059,8 @@ export type ComContractUncheckedUpdateWithoutClientInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1819,10 +2072,13 @@ export type ComContractUncheckedUpdateWithoutClientInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComContractLineUncheckedUpdateManyWithoutContractNestedInput
@@ -1834,6 +2090,8 @@ export type ComContractUncheckedUpdateManyWithoutClientInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1845,10 +2103,13 @@ export type ComContractUncheckedUpdateManyWithoutClientInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   quoteId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1858,6 +2119,8 @@ export type ComContractCreateManyQuoteInput = {
   reference: string
   status?: $Enums.ComContractStatus
   title?: string | null
+  family?: $Enums.ComContractFamily | null
+  serviceKind?: $Enums.ComServiceKind | null
   regime?: $Enums.ComDocRegime
   currency?: string
   vatEnabled?: boolean
@@ -1869,10 +2132,13 @@ export type ComContractCreateManyQuoteInput = {
   renewalTerms?: string | null
   terminationTerms?: string | null
   notes?: string | null
+  compositionSource?: $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId: string
   ownerId: string
   createdById: string
   signedAt?: Date | string | null
+  gedDocumentId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1882,6 +2148,8 @@ export type ComContractUpdateWithoutQuoteInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1893,7 +2161,10 @@ export type ComContractUpdateWithoutQuoteInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ComClientUpdateOneRequiredWithoutContractsNestedInput
@@ -1908,6 +2179,8 @@ export type ComContractUncheckedUpdateWithoutQuoteInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1919,10 +2192,13 @@ export type ComContractUncheckedUpdateWithoutQuoteInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lines?: Prisma.ComContractLineUncheckedUpdateManyWithoutContractNestedInput
@@ -1934,6 +2210,8 @@ export type ComContractUncheckedUpdateManyWithoutQuoteInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumComContractStatusFieldUpdateOperationsInput | $Enums.ComContractStatus
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  family?: Prisma.NullableEnumComContractFamilyFieldUpdateOperationsInput | $Enums.ComContractFamily | null
+  serviceKind?: Prisma.NullableEnumComServiceKindFieldUpdateOperationsInput | $Enums.ComServiceKind | null
   regime?: Prisma.EnumComDocRegimeFieldUpdateOperationsInput | $Enums.ComDocRegime
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   vatEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1945,10 +2223,13 @@ export type ComContractUncheckedUpdateManyWithoutQuoteInput = {
   renewalTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   terminationTerms?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  compositionSource?: Prisma.EnumComCompositionSourceFieldUpdateOperationsInput | $Enums.ComCompositionSource
+  scopeJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   signedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1998,6 +2279,8 @@ export type ComContractSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   reference?: boolean
   status?: boolean
   title?: boolean
+  family?: boolean
+  serviceKind?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
@@ -2009,11 +2292,14 @@ export type ComContractSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   renewalTerms?: boolean
   terminationTerms?: boolean
   notes?: boolean
+  compositionSource?: boolean
+  scopeJson?: boolean
   clientId?: boolean
   quoteId?: boolean
   ownerId?: boolean
   createdById?: boolean
   signedAt?: boolean
+  gedDocumentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
@@ -2030,6 +2316,8 @@ export type ComContractSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   reference?: boolean
   status?: boolean
   title?: boolean
+  family?: boolean
+  serviceKind?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
@@ -2041,11 +2329,14 @@ export type ComContractSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   renewalTerms?: boolean
   terminationTerms?: boolean
   notes?: boolean
+  compositionSource?: boolean
+  scopeJson?: boolean
   clientId?: boolean
   quoteId?: boolean
   ownerId?: boolean
   createdById?: boolean
   signedAt?: boolean
+  gedDocumentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
@@ -2059,6 +2350,8 @@ export type ComContractSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   reference?: boolean
   status?: boolean
   title?: boolean
+  family?: boolean
+  serviceKind?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
@@ -2070,11 +2363,14 @@ export type ComContractSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   renewalTerms?: boolean
   terminationTerms?: boolean
   notes?: boolean
+  compositionSource?: boolean
+  scopeJson?: boolean
   clientId?: boolean
   quoteId?: boolean
   ownerId?: boolean
   createdById?: boolean
   signedAt?: boolean
+  gedDocumentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
@@ -2088,6 +2384,8 @@ export type ComContractSelectScalar = {
   reference?: boolean
   status?: boolean
   title?: boolean
+  family?: boolean
+  serviceKind?: boolean
   regime?: boolean
   currency?: boolean
   vatEnabled?: boolean
@@ -2099,16 +2397,19 @@ export type ComContractSelectScalar = {
   renewalTerms?: boolean
   terminationTerms?: boolean
   notes?: boolean
+  compositionSource?: boolean
+  scopeJson?: boolean
   clientId?: boolean
   quoteId?: boolean
   ownerId?: boolean
   createdById?: boolean
   signedAt?: boolean
+  gedDocumentId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ComContractOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reference" | "status" | "title" | "regime" | "currency" | "vatEnabled" | "vatRate" | "billingDay" | "startDate" | "endDate" | "paymentTerms" | "renewalTerms" | "terminationTerms" | "notes" | "clientId" | "quoteId" | "ownerId" | "createdById" | "signedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["comContract"]>
+export type ComContractOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reference" | "status" | "title" | "family" | "serviceKind" | "regime" | "currency" | "vatEnabled" | "vatRate" | "billingDay" | "startDate" | "endDate" | "paymentTerms" | "renewalTerms" | "terminationTerms" | "notes" | "compositionSource" | "scopeJson" | "clientId" | "quoteId" | "ownerId" | "createdById" | "signedAt" | "gedDocumentId" | "createdAt" | "updatedAt", ExtArgs["result"]["comContract"]>
 export type ComContractInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ComClientDefaultArgs<ExtArgs>
   quote?: boolean | Prisma.ComContract$quoteArgs<ExtArgs>
@@ -2146,6 +2447,14 @@ export type $ComContractPayload<ExtArgs extends runtime.Types.Extensions.Interna
     reference: string
     status: $Enums.ComContractStatus
     title: string | null
+    /**
+     * Famille document (analyse contrats §6.1) — pilote le template PDF.
+     */
+    family: $Enums.ComContractFamily | null
+    /**
+     * Nature de prestation — sélectionne les blocs de template (§6.1/§6.2).
+     */
+    serviceKind: $Enums.ComServiceKind | null
     regime: $Enums.ComDocRegime
     currency: string
     vatEnabled: boolean
@@ -2157,11 +2466,23 @@ export type $ComContractPayload<ExtArgs extends runtime.Types.Extensions.Interna
     renewalTerms: string | null
     terminationTerms: string | null
     notes: string | null
+    /**
+     * Origine de la composition commerciale (devis accepté vs saisie libre — Q3).
+     */
+    compositionSource: $Enums.ComCompositionSource
+    /**
+     * Périmètre famille B (contexte / objectifs / livrables / hors-périmètre…) — JSON libre (analyse §6.3 `scope`).
+     */
+    scopeJson: runtime.JsonValue | null
     clientId: string
     quoteId: string | null
     ownerId: string
     createdById: string
     signedAt: Date | null
+    /**
+     * PDF contrat généré et classé en GED (P4).
+     */
+    gedDocumentId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["comContract"]>
@@ -2597,6 +2918,8 @@ export interface ComContractFieldRefs {
   readonly reference: Prisma.FieldRef<"ComContract", 'String'>
   readonly status: Prisma.FieldRef<"ComContract", 'ComContractStatus'>
   readonly title: Prisma.FieldRef<"ComContract", 'String'>
+  readonly family: Prisma.FieldRef<"ComContract", 'ComContractFamily'>
+  readonly serviceKind: Prisma.FieldRef<"ComContract", 'ComServiceKind'>
   readonly regime: Prisma.FieldRef<"ComContract", 'ComDocRegime'>
   readonly currency: Prisma.FieldRef<"ComContract", 'String'>
   readonly vatEnabled: Prisma.FieldRef<"ComContract", 'Boolean'>
@@ -2608,11 +2931,14 @@ export interface ComContractFieldRefs {
   readonly renewalTerms: Prisma.FieldRef<"ComContract", 'String'>
   readonly terminationTerms: Prisma.FieldRef<"ComContract", 'String'>
   readonly notes: Prisma.FieldRef<"ComContract", 'String'>
+  readonly compositionSource: Prisma.FieldRef<"ComContract", 'ComCompositionSource'>
+  readonly scopeJson: Prisma.FieldRef<"ComContract", 'Json'>
   readonly clientId: Prisma.FieldRef<"ComContract", 'String'>
   readonly quoteId: Prisma.FieldRef<"ComContract", 'String'>
   readonly ownerId: Prisma.FieldRef<"ComContract", 'String'>
   readonly createdById: Prisma.FieldRef<"ComContract", 'String'>
   readonly signedAt: Prisma.FieldRef<"ComContract", 'DateTime'>
+  readonly gedDocumentId: Prisma.FieldRef<"ComContract", 'String'>
   readonly createdAt: Prisma.FieldRef<"ComContract", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ComContract", 'DateTime'>
 }

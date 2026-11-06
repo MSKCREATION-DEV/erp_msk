@@ -8,6 +8,11 @@ export function periodKeyFromDate(date: Date): string {
   return `${y}${m}${d}`;
 }
 
+/** Clé de période annuelle YYYY — contrats (`MSK-CONTRAT-YYYY-NNN`). */
+export function yearPeriodKeyFromDate(date: Date): string {
+  return String(date.getFullYear());
+}
+
 export function formatOfficialNumber(params: {
   kind: DocNumberKind;
   periodKey: string;
@@ -41,6 +46,15 @@ export function parseOfficialNumber(number: string): {
   periodKey: string;
   sequence: number;
 } | null {
+  // Contrats : préfixe composé `MSK-CONTRAT-YYYY-NNN`.
+  const contratMatch = /^MSK-CONTRAT-(\d{4})-(\d+)$/.exec(number);
+  if (contratMatch) {
+    return {
+      kind: "CONTRAT",
+      periodKey: contratMatch[1]!,
+      sequence: Number.parseInt(contratMatch[2]!, 10),
+    };
+  }
   const m = /^(DEV|FAC|AVO|BDC)-(\d{4}|\d{8})-(\d+)$/.exec(number);
   if (!m) return null;
   const prefix = m[1]!;

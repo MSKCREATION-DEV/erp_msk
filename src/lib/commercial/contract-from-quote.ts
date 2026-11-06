@@ -67,6 +67,10 @@ export function buildContractLinesFromQuote(
   });
 }
 
+/**
+ * @deprecated Remplacé par `nextComNumber(ComDocKind.CONTRAT, …)` (séquence
+ * atomique `MSK-CONTRAT-YYYY-NNN`, P3/P4). Conservé pour compat historique.
+ */
 export function nextContractReference(seq: number, at = new Date()): string {
   const y = at.getFullYear();
   const m = String(at.getMonth() + 1).padStart(2, "0");

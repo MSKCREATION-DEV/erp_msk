@@ -13,6 +13,7 @@ function toDocKind(kind: ComDocKind): DocNumberKind {
   if (kind === "FACTURE") return "FACTURE";
   if (kind === "AVOIR") return "AVOIR";
   if (kind === "BDC") return "BDC";
+  if (kind === "CONTRAT") return "CONTRAT";
   throw new Error(`Unsupported ComDocKind: ${kind}`);
 }
 

@@ -49,6 +49,7 @@ import {
   COM_DOCS_GATED_HINT,
 } from "@/lib/commercial/gates";
 import { USER_STATUS_LABEL, USER_STATUS_TONE } from "@/lib/users/status";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Fiche client" };
 
@@ -218,7 +219,21 @@ export default async function CommercialClientDetailPage({
   const canCreateQuote = hasPermission(user, "com.devis.create");
   const canReassignOwner = canEdit;
 
-  const [assignRoster, events] = await Promise.all([
+  const crmTrailWhere =
+    client.crmOrganizationId || client.sourceOpportunityId
+      ? {
+          OR: [
+            ...(client.crmOrganizationId
+              ? [{ organizationId: client.crmOrganizationId }]
+              : []),
+            ...(client.sourceOpportunityId
+              ? [{ opportunityId: client.sourceOpportunityId }]
+              : []),
+          ],
+        }
+      : null;
+
+  const [assignRoster, events, crmActivities] = await Promise.all([
     canReassignOwner
       ? listCommercialRoster({ mode: "assign", extraIds: [client.ownerId] })
       : Promise.resolve([] as Awaited<ReturnType<typeof listCommercialRoster>>),
@@ -232,7 +247,54 @@ export default async function CommercialClientDetailPage({
         },
       },
     }),
+    crmTrailWhere
+      ? prisma.crmActivity.findMany({
+          where: crmTrailWhere,
+          orderBy: { occurredAt: "desc" },
+          take: 60,
+          include: {
+            actor: { select: { id: true, firstName: true, lastName: true } },
+          },
+        })
+      : Promise.resolve(
+          [] as {
+            id: string;
+            occurredAt: Date;
+            summary: string;
+            body: string | null;
+            actor: { id: string; firstName: string; lastName: string };
+          }[],
+        ),
   ]);
+
+  /** P1.2 — trail CRM fusionné à l’historique client (pas de perte d’historique à la convert). */
+  type TimelineItem = {
+    id: string;
+    at: Date;
+    summary: string;
+    body?: string | null;
+    actorName: string;
+    source: "crm" | "client";
+  };
+  const timeline: TimelineItem[] = [
+    ...events.map((ev): TimelineItem => ({
+      id: `client-${ev.id}`,
+      at: ev.createdAt,
+      summary: ev.summary,
+      actorName: ev.actor
+        ? `${ev.actor.firstName} ${ev.actor.lastName}`
+        : "(acteur inconnu)",
+      source: "client",
+    })),
+    ...crmActivities.map((a): TimelineItem => ({
+      id: `crm-${a.id}`,
+      at: a.occurredAt,
+      summary: a.summary,
+      body: a.body,
+      actorName: `${a.actor.firstName} ${a.actor.lastName}`,
+      source: "crm",
+    })),
+  ].sort((a, b) => b.at.getTime() - a.at.getTime());
 
   const assignOptions = assignRoster.map((u) => ({
     value: u.id,
@@ -814,29 +876,44 @@ export default async function CommercialClientDetailPage({
         </div>
       </div>
 
-      <Section title="Historique">
-        {events.length === 0 ? (
+      <Section
+        title="Historique"
+        action={
+          client.sourceOpportunityId ? (
+            <p className="text-xs text-msk-ink/40">
+              Fusion commercial + trail CRM
+            </p>
+          ) : undefined
+        }
+      >
+        {timeline.length === 0 ? (
           <p className="text-sm text-msk-ink/45">Aucun événement enregistré.</p>
         ) : (
           <ol className="relative space-y-4 border-l border-msk-ink/8 pl-5">
-            {events.map((ev) => (
+            {timeline.map((ev) => (
               <li key={ev.id} className="relative">
-                <span className="absolute -left-[21px] top-1.5 size-2.5 rounded-full border-2 border-msk-blue bg-white" />
-                <p className="text-xs text-msk-ink/45">
-                  {ev.createdAt.toLocaleString("fr-FR", {
-                    dateStyle: "short",
-                    timeStyle: "short",
-                  })}
-                  {ev.actor ? (
-                    <span className="text-msk-ink/55">
-                      {" "}
-                      · {ev.actor.firstName} {ev.actor.lastName}
-                    </span>
-                  ) : (
-                    <span className="text-msk-ink/55"> · (acteur inconnu)</span>
+                <span
+                  className={cn(
+                    "absolute -left-[21px] top-1.5 size-2.5 rounded-full border-2 bg-white",
+                    ev.source === "crm" ? "border-msk-coral" : "border-msk-blue",
                   )}
-                </p>
+                />
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge tone={ev.source === "crm" ? "coral" : "blue"}>
+                    {ev.source === "crm" ? "CRM" : "Client"}
+                  </Badge>
+                  <p className="text-xs text-msk-ink/45">
+                    {ev.at.toLocaleString("fr-FR", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    })}{" "}
+                    · {ev.actorName}
+                  </p>
+                </div>
                 <p className="mt-1 text-sm text-msk-ink">{ev.summary}</p>
+                {ev.body ? (
+                  <p className="mt-0.5 text-xs text-msk-ink/55">{ev.body}</p>
+                ) : null}
               </li>
             ))}
           </ol>

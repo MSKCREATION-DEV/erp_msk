@@ -5,6 +5,8 @@ import { ensureChild, ensureYearTree } from "@/lib/ged/tree";
 const CLIENT_SUB = [
   { code: "Devis", name: "Devis" },
   { code: "Factures", name: "Factures" },
+  /** P4 — contrats générés (plan docs/commercial/PLAN-CLIENT-CONTRAT.md). */
+  { code: "Contrats", name: "Contrats" },
 ] as const;
 
 type FolderRef = {
@@ -69,11 +71,11 @@ export async function ensureClientRootFolder(opts: {
 }
 
 /**
- * Assure `/{year}/03_CLIENTS/{gedFolderCode}/Devis|Factures`.
+ * Assure `/{year}/03_CLIENTS/{gedFolderCode}/Devis|Factures|Contrats`.
  */
 export async function ensureClientDocFolder(opts: {
   clientId: string;
-  type: "Devis" | "Factures";
+  type: "Devis" | "Factures" | "Contrats";
   year?: number;
   createdById?: string;
 }) {

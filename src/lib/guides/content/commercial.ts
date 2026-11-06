@@ -313,15 +313,15 @@ export const commercialGuides: GuideInput[] = [
     id: "crm-transformer-client",
     title: "Transformer un prospect en client",
     summary:
-      "Acte explicite (confirmation) : client commercial + CRM Client — distinct du devis (Q1).",
+      "Parcours unique (plan Client/Contrat P2) : identité → contact → origine → composition → conditions → récap. Se termine toujours par un contrat brouillon.",
     moduleId: "commercial",
     categories: ["procedure"],
     taskIds: ["transformer", "creer"],
     roleIds: ["commercial", "admin_crm", "direction"],
-    keywords: ["intéressé", "client", "transformer", "COM"],
+    keywords: ["intéressé", "client", "transformer", "COM", "contrat", "stepper"],
     prerequisites: [
       "Prospect au statut Intéressé (ou éligible selon règles UI).",
-      "Droits CRM + commercial pour créer le client.",
+      "Droits CRM + `com.clients.manage` + `com.contrats.manage`.",
     ],
     relatedGuideIds: [
       "crm-suivre-relancer",
@@ -333,39 +333,39 @@ export const commercialGuides: GuideInput[] = [
     difficulty: "intermediaire",
     viewPermission: "crm.access",
     objective:
-      "Convertir volontairement : client COM + statut CRM Client. Ne pas confondre avec « Créer un devis » (fiche client liée sans fermer le deal).",
+      "Convertir volontairement via le même stepper que la création directe Commercial : client COM + composition commerciale + contrat brouillon (jamais de client sans contrat, jamais de signature automatique).",
     steps: [
       {
         title: "Vérifier le statut",
         instruction:
-          "Sur la fiche prospect, le statut doit permettre « Transformer en client » (dès Intéressé selon manuel).",
+          "Sur la fiche prospect, le statut doit permettre « Transformer en client » (Intéressé, Devis envoyé ou Gagné).",
         href: "/crm/prospects",
       },
       {
-        title: "Lancer la transformation",
+        title: "Parcourir le stepper",
         instruction:
-          "Utilisez l’action Transformer en client et confirmez. Le système crée le client commercial et passe le statut CRM à Client.",
+          "Cliquez « Transformer en client » : vous arrivez sur le même parcours que `/commercial/clients/nouveau`, avec identité/contact préremplis depuis le prospect. Complétez Origine, Composition (lignes offres/devis accepté) et Conditions (famille/nature de prestation).",
         expected:
-          "Bandeau / lien vers la fiche client ; le dossier disparaît du listing Prospects (clients exclus).",
+          "Étape Récap : client + composition + contrat **brouillon** résumés avant engagement.",
       },
       {
-        title: "Poursuivre côté Commercial",
+        title: "Valider puis activer le contrat",
         instruction:
-          "Ouvrez Clients (`/commercial/clients`) pour la fiche. Devis : depuis Intéressé, **Créer un devis** ne remplace pas cette étape — c’est un parcours séparé qui lie une fiche client sans passer le CRM en Client tant que vous n’avez pas transformé.",
-        href: "/commercial/clients",
+          "« Créer le client et le contrat » crée tout en une transaction et ouvre la fiche contrat. Le contrat reste **brouillon** : l’activation/signature est une action séparée et explicite sur la fiche contrat (« Signer et activer »).",
+        href: "/commercial/contrats",
         caution:
-          "À valider : droits `com.devis.create` / `com.clients.manage` sur votre profil.",
+          "À valider terrain : enchaînement complet prospect → stepper → contrat brouillon → activation.",
       },
     ],
     expectedResult:
-      "Client COM existant, statut CRM Client, dossiers GED client créés si le flux l’automatise.",
+      "Client COM existant, statut CRM Client, composition commerciale enregistrée, contrat brouillon créé (dossier GED Contrats prêt) — activation/signature restant un acte séparé.",
     workflow: {
       title: "Conversion",
       nodes: [
         { id: "s", label: "Intéressé", kind: "start" },
-        { id: "a", label: "Transformer", kind: "action" },
-        { id: "b", label: "Client COM + CRM Client", kind: "action" },
-        { id: "e", label: "Fiche client", kind: "end" },
+        { id: "a", label: "Stepper (identité→conditions)", kind: "action" },
+        { id: "b", label: "Client + composition + contrat brouillon", kind: "action" },
+        { id: "e", label: "Fiche contrat", kind: "end" },
       ],
       edges: [
         { from: "s", to: "a" },

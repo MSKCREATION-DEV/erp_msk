@@ -851,6 +851,27 @@ export type EnumComContractStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumComContractStatusFilter<$PrismaModel> | $Enums.ComContractStatus
 }
 
+export type EnumComContractFamilyNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComContractFamily | Prisma.EnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ComContractFamily[] | Prisma.ListEnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ComContractFamily[] | Prisma.ListEnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumComContractFamilyNullableFilter<$PrismaModel> | $Enums.ComContractFamily | null
+}
+
+export type EnumComServiceKindNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComServiceKind | Prisma.EnumComServiceKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ComServiceKind[] | Prisma.ListEnumComServiceKindFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ComServiceKind[] | Prisma.ListEnumComServiceKindFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumComServiceKindNullableFilter<$PrismaModel> | $Enums.ComServiceKind | null
+}
+
+export type EnumComCompositionSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComCompositionSource | Prisma.EnumComCompositionSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.ComCompositionSource[] | Prisma.ListEnumComCompositionSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ComCompositionSource[] | Prisma.ListEnumComCompositionSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumComCompositionSourceFilter<$PrismaModel> | $Enums.ComCompositionSource
+}
+
 export type EnumComContractStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ComContractStatus | Prisma.EnumComContractStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ComContractStatus[] | Prisma.ListEnumComContractStatusFieldRefInput<$PrismaModel>
@@ -859,6 +880,36 @@ export type EnumComContractStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumComContractStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumComContractStatusFilter<$PrismaModel>
+}
+
+export type EnumComContractFamilyNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComContractFamily | Prisma.EnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ComContractFamily[] | Prisma.ListEnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ComContractFamily[] | Prisma.ListEnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumComContractFamilyNullableWithAggregatesFilter<$PrismaModel> | $Enums.ComContractFamily | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumComContractFamilyNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumComContractFamilyNullableFilter<$PrismaModel>
+}
+
+export type EnumComServiceKindNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComServiceKind | Prisma.EnumComServiceKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ComServiceKind[] | Prisma.ListEnumComServiceKindFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ComServiceKind[] | Prisma.ListEnumComServiceKindFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumComServiceKindNullableWithAggregatesFilter<$PrismaModel> | $Enums.ComServiceKind | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumComServiceKindNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumComServiceKindNullableFilter<$PrismaModel>
+}
+
+export type EnumComCompositionSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComCompositionSource | Prisma.EnumComCompositionSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.ComCompositionSource[] | Prisma.ListEnumComCompositionSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ComCompositionSource[] | Prisma.ListEnumComCompositionSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumComCompositionSourceWithAggregatesFilter<$PrismaModel> | $Enums.ComCompositionSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumComCompositionSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumComCompositionSourceFilter<$PrismaModel>
 }
 
 export type EnumComContractLineStatusFilter<$PrismaModel = never> = {
@@ -2258,6 +2309,27 @@ export type NestedEnumComContractStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumComContractStatusFilter<$PrismaModel> | $Enums.ComContractStatus
 }
 
+export type NestedEnumComContractFamilyNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComContractFamily | Prisma.EnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ComContractFamily[] | Prisma.ListEnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ComContractFamily[] | Prisma.ListEnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumComContractFamilyNullableFilter<$PrismaModel> | $Enums.ComContractFamily | null
+}
+
+export type NestedEnumComServiceKindNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComServiceKind | Prisma.EnumComServiceKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ComServiceKind[] | Prisma.ListEnumComServiceKindFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ComServiceKind[] | Prisma.ListEnumComServiceKindFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumComServiceKindNullableFilter<$PrismaModel> | $Enums.ComServiceKind | null
+}
+
+export type NestedEnumComCompositionSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComCompositionSource | Prisma.EnumComCompositionSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.ComCompositionSource[] | Prisma.ListEnumComCompositionSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ComCompositionSource[] | Prisma.ListEnumComCompositionSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumComCompositionSourceFilter<$PrismaModel> | $Enums.ComCompositionSource
+}
+
 export type NestedEnumComContractStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ComContractStatus | Prisma.EnumComContractStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ComContractStatus[] | Prisma.ListEnumComContractStatusFieldRefInput<$PrismaModel>
@@ -2266,6 +2338,36 @@ export type NestedEnumComContractStatusWithAggregatesFilter<$PrismaModel = never
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumComContractStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumComContractStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumComContractFamilyNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComContractFamily | Prisma.EnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ComContractFamily[] | Prisma.ListEnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ComContractFamily[] | Prisma.ListEnumComContractFamilyFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumComContractFamilyNullableWithAggregatesFilter<$PrismaModel> | $Enums.ComContractFamily | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumComContractFamilyNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumComContractFamilyNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumComServiceKindNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComServiceKind | Prisma.EnumComServiceKindFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ComServiceKind[] | Prisma.ListEnumComServiceKindFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ComServiceKind[] | Prisma.ListEnumComServiceKindFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumComServiceKindNullableWithAggregatesFilter<$PrismaModel> | $Enums.ComServiceKind | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumComServiceKindNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumComServiceKindNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumComCompositionSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ComCompositionSource | Prisma.EnumComCompositionSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.ComCompositionSource[] | Prisma.ListEnumComCompositionSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ComCompositionSource[] | Prisma.ListEnumComCompositionSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumComCompositionSourceWithAggregatesFilter<$PrismaModel> | $Enums.ComCompositionSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumComCompositionSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumComCompositionSourceFilter<$PrismaModel>
 }
 
 export type NestedEnumComContractLineStatusFilter<$PrismaModel = never> = {
