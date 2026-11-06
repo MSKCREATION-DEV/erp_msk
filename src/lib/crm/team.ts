@@ -72,6 +72,8 @@ export type CommercialRosterUser = {
   firstName: string;
   lastName: string;
   status: UserStatus;
+  /** Poste RH (fiche collab), si renseigné. */
+  jobTitle: string | null;
 };
 
 /**
@@ -113,26 +115,41 @@ export async function listCommercialRoster(opts?: {
 
   const users = await prisma.user.findMany({
     where: { id: { in: ids }, status: { in: statusIn } },
-    select: { id: true, firstName: true, lastName: true, status: true },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      status: true,
+      rhEmployee: { select: { jobTitle: true } },
+    },
     orderBy: [{ firstName: "asc" }, { lastName: "asc" }],
   });
 
   // Opérationnels d’abord, puis historiques
-  return users.sort((a, b) => {
-    const ao = isOperationalCrmStatus(a.status) ? 0 : 1;
-    const bo = isOperationalCrmStatus(b.status) ? 0 : 1;
-    if (ao !== bo) return ao - bo;
-    return `${a.firstName} ${a.lastName}`.localeCompare(
-      `${b.firstName} ${b.lastName}`,
-      "fr",
-    );
-  });
+  return users
+    .map((u) => ({
+      id: u.id,
+      firstName: u.firstName,
+      lastName: u.lastName,
+      status: u.status,
+      jobTitle: u.rhEmployee?.jobTitle?.trim() || null,
+    }))
+    .sort((a, b) => {
+      const ao = isOperationalCrmStatus(a.status) ? 0 : 1;
+      const bo = isOperationalCrmStatus(b.status) ? 0 : 1;
+      if (ao !== bo) return ao - bo;
+      return `${a.firstName} ${a.lastName}`.localeCompare(
+        `${b.firstName} ${b.lastName}`,
+        "fr",
+      );
+    });
 }
 
 export type CommercialOwnerOption = {
   value: string;
   label: string;
   status: UserStatus;
+  jobTitle: string | null;
   /** true = suspendu / archivé (consultation historique). */
   historical: boolean;
   description?: string;
@@ -141,7 +158,7 @@ export type CommercialOwnerOption = {
 export function rosterToOwnerOptions(
   users: Pick<
     CommercialRosterUser,
-    "id" | "firstName" | "lastName" | "status"
+    "id" | "firstName" | "lastName" | "status" | "jobTitle"
   >[],
 ): CommercialOwnerOption[] {
   return users.map((u) => {
@@ -150,6 +167,7 @@ export function rosterToOwnerOptions(
       value: u.id,
       label: formatCollaboratorOptionLabel(u.firstName, u.lastName, u.status),
       status: u.status,
+      jobTitle: u.jobTitle ?? null,
       historical,
       description: historical ? "Ancien collaborateur — consultation" : undefined,
     };
@@ -167,7 +185,13 @@ export async function injectOwnerIfMissing(
   if (!ownerId || options.some((o) => o.value === ownerId)) return options;
   const u = await prisma.user.findUnique({
     where: { id: ownerId },
-    select: { id: true, firstName: true, lastName: true, status: true },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      status: true,
+      rhEmployee: { select: { jobTitle: true } },
+    },
   });
   if (!u) return options;
   const historical = !isOperationalCrmStatus(u.status);
@@ -176,6 +200,7 @@ export async function injectOwnerIfMissing(
       value: u.id,
       label: formatCollaboratorOptionLabel(u.firstName, u.lastName, u.status),
       status: u.status,
+      jobTitle: u.rhEmployee?.jobTitle?.trim() || null,
       historical,
       description: historical
         ? "Ancien collaborateur — consultation"

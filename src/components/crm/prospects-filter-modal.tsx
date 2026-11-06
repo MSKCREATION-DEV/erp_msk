@@ -187,7 +187,11 @@ export function ProspectsFilterButton({
   const filteredOwnersRows = useMemo(() => {
     const q = ownerSearch.trim().toLowerCase();
     if (!q) return owners;
-    return owners.filter((o) => o.label.toLowerCase().includes(q));
+    return owners.filter(
+      (o) =>
+        o.label.toLowerCase().includes(q) ||
+        (o.jobTitle ?? "").toLowerCase().includes(q),
+    );
   }, [owners, ownerSearch]);
 
   function apply() {
@@ -336,8 +340,8 @@ export function ProspectsFilterButton({
                 Canaux — multi-sélection
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {SOURCE_KEYS.map(                    (src) => {
+            <div className="flex flex-wrap gap-2">
+              {SOURCE_KEYS.map((src) => {
                 const onSrc = sources.includes(src);
                 return (
                   <button
@@ -349,20 +353,20 @@ export function ProspectsFilterButton({
                       setSources((prev) => toggleInList(prev, src))
                     }
                     className={cn(
-                      "flex min-h-11 items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm font-medium transition",
+                      "inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium text-msk-ink shadow-sm transition",
                       onSrc
-                        ? "border-msk-blue bg-msk-blue/8 text-msk-blue ring-1 ring-msk-blue/25"
-                        : "border-msk-ink/10 bg-white text-msk-ink/80 hover:border-msk-ink/15 hover:bg-msk-chalk",
+                        ? "border-msk-blue bg-msk-blue/4 ring-1 ring-msk-blue/25"
+                        : "border-msk-ink/10 bg-white hover:border-msk-ink/15 hover:bg-msk-chalk",
                     )}
                   >
+                    {/* Couleurs marque natives — ne pas forcer text-msk-blue */}
                     <SourceChannelIcon
                       source={src}
-                      className={cn(
-                        "h-4 w-4 shrink-0",
-                        onSrc ? "text-msk-blue" : "text-msk-ink/45",
-                      )}
+                      className="h-3.5 w-3.5 shrink-0"
                     />
-                    <span className="min-w-0 truncate">{SOURCE_LABELS[src]}</span>
+                    <span className="min-w-0 truncate">
+                      {SOURCE_LABELS[src]}
+                    </span>
                   </button>
                 );
               })}
@@ -432,7 +436,7 @@ export function ProspectsFilterButton({
               if (!v) setOwnerSearch("");
             }}
             title="Suivi par — sélection"
-            description="Recherche, colonnes Collaborateur et statut — multi-sélection"
+            description="Recherche, colonnes Collaborateur, poste et statut — multi-sélection"
             size="xl"
             className="z-[60]"
             footer={
@@ -458,20 +462,23 @@ export function ProspectsFilterButton({
                   type="search"
                   value={ownerSearch}
                   onChange={(e) => setOwnerSearch(e.target.value)}
-                  placeholder="Rechercher un collaborateur…"
+                  placeholder="Rechercher un collaborateur ou un poste…"
                   className="pl-9"
                   aria-label="Rechercher un collaborateur"
                 />
               </div>
               <div className="overflow-auto rounded-xl border border-msk-ink/8 bg-white">
-                <table className="w-full min-w-72 text-sm">
+                <table className="w-full min-w-80 text-sm">
                   <thead className="sticky top-0 z-[1] border-b border-msk-ink/8 bg-msk-chalk/80 text-[11px] uppercase tracking-wide text-msk-ink/45 backdrop-blur-sm">
                     <tr>
-                      <th className="w-10 px-2 py-2 text-left" scope="col">
+                      <th className="w-8 px-2 py-2 text-left" scope="col">
                         <span className="sr-only">Sélection</span>
                       </th>
                       <th className="px-3 py-2 text-left font-semibold" scope="col">
                         Collaborateur
+                      </th>
+                      <th className="px-3 py-2 text-left font-semibold" scope="col">
+                        Poste
                       </th>
                       <th className="px-3 py-2 text-left font-semibold" scope="col">
                         Statut
@@ -484,40 +491,49 @@ export function ProspectsFilterButton({
                       const statusLabel = USER_STATUS_LABEL[o.status] ?? o.status;
                       const tone = USER_STATUS_TONE[o.status] ?? "muted";
                       const nameOnly = o.label.replace(/\s*\([^)]*\)\s*$/, "").trim();
+                      function toggleOwner() {
+                        setOwnerIds((prev) => toggleInList(prev, o.value));
+                      }
                       return (
                         <tr
                           key={o.value}
+                          role="button"
+                          tabIndex={0}
+                          aria-pressed={selected}
+                          onClick={toggleOwner}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              toggleOwner();
+                            }
+                          }}
                           className={cn(
-                            "transition hover:bg-msk-chalk/50",
+                            "cursor-pointer transition hover:bg-msk-chalk/50 focus-visible:bg-msk-blue/5 focus-visible:outline-none",
                             selected ? "bg-msk-blue/5" : "",
                           )}
                         >
                           <td className="px-2 py-2.5 align-middle">
-                            <button
-                              type="button"
-                              aria-pressed={selected}
-                              onClick={() =>
-                                setOwnerIds((prev) =>
-                                  toggleInList(prev, o.value),
-                                )
-                              }
+                            <span
                               className={cn(
-                                "flex h-9 w-9 items-center justify-center rounded-lg border transition",
+                                "flex h-4 w-4 items-center justify-center rounded border transition",
                                 selected
                                   ? "border-msk-blue bg-msk-blue text-white"
-                                  : "border-msk-ink/15 bg-white text-msk-ink/30 hover:border-msk-blue/40",
+                                  : "border-msk-ink/20 bg-white text-transparent",
                               )}
-                              aria-label={
-                                selected ? "Désélectionner" : "Sélectionner"
-                              }
+                              aria-hidden
                             >
                               {selected ? (
-                                <Check className="h-4 w-4" aria-hidden />
+                                <Check className="h-2.5 w-2.5" strokeWidth={3} />
                               ) : null}
-                            </button>
+                            </span>
                           </td>
                           <td className="px-3 py-2.5 font-medium text-msk-ink">
                             {nameOnly}
+                          </td>
+                          <td className="px-3 py-2.5 text-msk-ink/70">
+                            {o.jobTitle?.trim() || (
+                              <span className="text-msk-ink/35">—</span>
+                            )}
                           </td>
                           <td className="px-3 py-2.5">
                             <Badge tone={tone} className="font-normal">
