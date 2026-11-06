@@ -22,6 +22,9 @@ const prisma = createPrisma({
     process.env.DIRECT_URL ?? process.env.DATABASE_URL,
   max: 1,
 });
+// Même instance que `@/lib/prisma` (ged/tree, etc.) — évite double pool + crash server-only.
+(globalThis as typeof globalThis & { __erp_msk_prisma__?: typeof prisma }).__erp_msk_prisma__ =
+  prisma;
 
 const SUPER_ADMIN = {
   email: "a.guiro@mskcreation.net",
@@ -418,10 +421,30 @@ async function seedPhase1Ged() {
       code: "contrat_presta_msk",
       type: "CONTRAT_PRESTA" as const,
       name: "Contrat de prestation MSK",
+      // v2 — corps complet aligné docs/CONTRAT DE PRESTATION DE SERVICES.pdf +
+      // docs/MODELE CONTRAT GESTION DES RESEAUX SOCIAUX (ANALYSE-MODELES-CONTRATS.md
+      // §5.1/§5.2) : 11 articles (objet, durée/résiliation, rémunération, PI,
+      // confidentialité, données personnelles, responsabilité/FM, droit
+      // applicable/litiges, signatures) — v1 ne couvrait que 6 articles courts.
+      version: 2,
       structureJson: {
         layout: "msk_rh_v1",
-        slots: ["header", "parties", "articles", "signatures", "footer"],
-        ref: "docs/CONTRAT DE PRESTATION",
+        slots: [
+          "header",
+          "parties",
+          "article_objet",
+          "duree_resiliation",
+          "remuneration",
+          "independance",
+          "propriete_intellectuelle",
+          "confidentialite",
+          "donnees_personnelles",
+          "responsabilite_fm",
+          "droit_litiges",
+          "signatures",
+          "footer",
+        ],
+        ref: "docs/CONTRAT DE PRESTATION DE SERVICES.pdf",
       },
     },
     {
@@ -467,16 +490,18 @@ async function seedPhase1Ged() {
     },
   ];
   for (const t of templates) {
+    const version = "version" in t && typeof t.version === "number" ? t.version : 1;
     await prisma.documentTemplate.upsert({
       where: { code: t.code },
       create: {
         code: t.code,
         type: t.type,
         name: t.name,
+        version,
         structureJson: t.structureJson,
         active: true,
       },
-      update: { name: t.name, active: true, structureJson: t.structureJson },
+      update: { name: t.name, active: true, version, structureJson: t.structureJson },
     });
   }
   console.log("✓ Gabarits devis / facture / RH");

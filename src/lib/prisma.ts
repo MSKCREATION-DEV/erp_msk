@@ -1,10 +1,13 @@
-import "server-only";
-
+/**
+ * Client Prisma serveur uniquement (RLS côté app).
+ * Pas de `server-only` ici : `prisma/seed.ts` et scripts Node importent des modules
+ * métier (`ged/tree`…) qui réutilisent ce singleton — sinon le seed crashe sous tsx.
+ */
 import type { PrismaClient } from "@/generated/prisma/client";
 import { createPrisma } from "@/lib/create-prisma";
 
-const globalForPrisma = globalThis as unknown as {
-  prisma?: PrismaClient;
+const G = globalThis as typeof globalThis & {
+  __erp_msk_prisma__?: PrismaClient;
 };
 
 /**
@@ -17,10 +20,10 @@ const globalForPrisma = globalThis as unknown as {
  * CLI migrate : `DIRECT_URL` via `prisma.config.ts` (pas ce module).
  */
 function getPrisma(): PrismaClient {
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = createPrisma({ max: 1 });
+  if (!G.__erp_msk_prisma__) {
+    G.__erp_msk_prisma__ = createPrisma({ max: 1 });
   }
-  return globalForPrisma.prisma;
+  return G.__erp_msk_prisma__;
 }
 
 export const prisma: PrismaClient = new Proxy({} as PrismaClient, {

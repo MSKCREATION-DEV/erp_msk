@@ -792,11 +792,16 @@ function drawFactureBody(
 }
 
 /**
- * P4 — fondation génération contrat (plan docs/commercial/PLAN-CLIENT-CONTRAT.md
- * §Phase P4, analyse docs/commercial/ANALYSE-MODELES-CONTRATS.md §6.2/§6.3).
- * Couvre les sections socle communes (A+B) + blocs famille B (périmètre CDC) —
- * pas l’intégralité des articles juridiques sources (fondation honnête, pas un
- * copier-coller des 4 PDF analysés).
+ * Génération contrat — familles A (prestation / abonnement, Articles 1–13) et
+ * B (engagement / cahier des charges). Corps aligné sur les modèles réels MSK
+ * (docs/CONTRAT DE PRESTATION DE SERVICES.pdf, docs/MODELE CONTRAT GESTION DES
+ * RESEAUX SOCIAUX.pdf, docs/02_Contrat d'engagement Application Web.pdf,
+ * docs/CONTRAT D'ENGAGEMENT.pdf — voir docs/commercial/ANALYSE-MODELES-CONTRATS.md).
+ * Variables non fournies par le dossier ERP → place-holder "---" (jamais une
+ * clause silencieusement omise). Articles juridiques socle (PI, confidentialité,
+ * données personnelles, responsabilité/force majeure, droit applicable) : texte
+ * fixe conforme aux modèles, avec délais/plafonds paramétrables (défauts = valeurs
+ * du modèle de référence).
  */
 export type ContractPdfLine = {
   label: string;
@@ -804,25 +809,84 @@ export type ContractPdfLine = {
   unitPrice: number;
 };
 
+export type ContractPdfModule = { name: string; features: string[] };
+export type ContractPdfSitePage = { order?: number; name: string; description: string };
+export type ContractPdfFeatureGroup = { group: string; items: string[] };
+export type ContractPdfRole = { role: string; access: string; description: string };
+export type ContractPdfPhase = {
+  number?: string;
+  name: string;
+  content: string;
+  duration: string;
+};
+export type ContractPdfResource = {
+  resource: string;
+  description: string;
+  due: string;
+};
+export type ContractPdfComplementary = {
+  type: string;
+  tariff?: string;
+  status?: string;
+};
+
 export type ContractPdfScope = {
+  /** 01 — Contexte (famille B). */
+  interlocutorName?: string;
+  interlocutorTitle?: string;
+  location?: string;
+  currentTools?: string;
   contextProblems: string[];
+  visionTarget?: string;
+  /** 02 — Objectifs fonctionnels (famille B). */
   objectives: string[];
+  /** 03 — Périmètre : modules (app) OU pages (site vitrine). */
+  modules?: ContractPdfModule[];
+  pages?: ContractPdfSitePage[];
+  /** 04 — Fonctionnalités incluses, groupées. */
+  includedFeatures?: ContractPdfFeatureGroup[];
+  /** 05 — Rôles & accès (application uniquement). */
+  roles?: ContractPdfRole[];
+  /** Livrables (toujours présents, famille B). */
   deliverables: string[];
+  /** 06 — Planning d'exécution. */
+  planningPhases?: ContractPdfPhase[];
+  totalDurationLabel?: string;
+  delayRule?: string;
+  /** 07 — Ressources à fournir par le client. */
+  clientResources?: ContractPdfResource[];
+  /** 08 — Critères de recette et validation. */
+  acceptanceDays?: number;
+  acceptanceChannel?: string;
+  /** 09 — Hors périmètre. */
   outOfScope: string[];
+  /** Mention contrat de maintenance (optionnelle). */
+  maintenanceMention?: string;
 };
 
 export type ContractPdfInput = {
   number: string;
   family: "PRESTATION_ABONNEMENT" | "ENGAGEMENT_CDC";
   familyLabel: string;
+  serviceKind?:
+    | "RESEAUX_SOCIAUX"
+    | "APPLICATION_WEB"
+    | "SITE_VITRINE"
+    | "CHARTE_GRAPHIQUE"
+    | "AUTRE"
+    | "BUNDLE";
   serviceKindLabel: string;
   title?: string;
   clientName: string;
   clientCompany?: string;
+  clientLegalForm?: string;
+  /** NINA / RCCM client. */
+  clientRegistryId?: string;
   clientAddress?: string;
   clientPhone?: string;
   clientEmail?: string;
   contactName?: string;
+  contactTitle?: string;
   issueDate?: string;
   startDate?: string;
   billingDay?: number;
@@ -832,12 +896,67 @@ export type ContractPdfInput = {
   paymentTerms?: string;
   renewalTerms?: string;
   terminationTerms?: string;
+  /** Famille A — offre packagée réseaux sociaux (Article 2). */
+  offerTier?: "STANDARD" | "PRO" | "PREMIUM" | "CUSTOM";
+  complementaryServices?: ContractPdfComplementary[];
+  /** Délais / plafonds contractuels — défauts = modèle MSK de référence. */
+  validationHours?: number;
+  adminAccessHours?: number;
+  depositPercent?: number;
+  latePenaltyPercentPerWeek?: number;
+  noticeDays?: number;
+  cureDays?: number;
+  accessReturnHours?: number;
+  confidentialityYears?: number;
+  liabilityCapMonths?: number;
+  amicableDays?: number;
   scope?: ContractPdfScope;
-  /** P4.4 — signature MVP : tampon MSK + date saisie (pas d’e-sign). */
+  /** Signature MVP : tampon MSK + date saisie (pas d'e-sign). */
   signedAt?: string;
   signaturePng?: Uint8Array | Buffer;
   signatureLabel?: string;
 };
+
+/** Grille d'offres packagées — Article 2 (modèle réseaux sociaux, valeurs fixes du gabarit MSK). */
+const RS_OFFER_MATRIX: { label: string; standard: string; pro: string; premium: string }[] = [
+  { label: "Publications / mois", standard: "8", pro: "12", premium: "16" },
+  {
+    label: "Reseaux couverts",
+    standard: "Facebook + TikTok",
+    pro: "FB + Insta + TikTok",
+    premium: "Tous + YouTube",
+  },
+  {
+    label: "Visuels / videos",
+    standard: "7 visuels / 1 video",
+    pro: "9 visuels / 3 videos",
+    premium: "10 visuels / 6 videos",
+  },
+  {
+    label: "Community management",
+    standard: "2x / semaine",
+    pro: "3x / semaine",
+    premium: "4x / semaine",
+  },
+  {
+    label: "Rapport mensuel",
+    standard: "Simple",
+    pro: "Detaille",
+    premium: "Detaille + recommandations",
+  },
+  {
+    label: "Audit + appel strategique",
+    standard: "Non inclus",
+    pro: "Audit M1 + 1 appel/mois",
+    premium: "Audit M1 + 2 appels/mois",
+  },
+  {
+    label: "Gestion Ads (budget separe)",
+    standard: "Non inclus",
+    pro: "Non inclus",
+    premium: "Inclus",
+  },
+];
 
 export async function generateContractPdf(
   input: ContractPdfInput,
@@ -853,10 +972,25 @@ export async function generateContractPdf(
   const margin = 42;
   const contentW = PAGE_W - margin * 2;
   const FOOTER_SAFE = 70;
+  const WHITE = rgb(1, 1, 1);
 
   const currency = input.currency ?? "FCFA";
   const vatRate = input.vatRate ?? 18;
   const issued = input.issueDate ?? formatDateFr();
+  const isFamilyA = input.family === "PRESTATION_ABONNEMENT";
+  const scope = input.scope;
+
+  // Defauts alignes sur le modele MSK de reference (ANALYSE §1.3 / §6.3).
+  const validationHours = input.validationHours ?? 48;
+  const adminAccessHours = input.adminAccessHours ?? 48;
+  const depositPercent = input.depositPercent ?? 50;
+  const latePenaltyPercentPerWeek = input.latePenaltyPercentPerWeek ?? 1;
+  const noticeDays = input.noticeDays ?? 30;
+  const cureDays = input.cureDays ?? 15;
+  const accessReturnHours = input.accessReturnHours ?? 48;
+  const confidentialityYears = input.confidentialityYears ?? 5;
+  const liabilityCapMonths = input.liabilityCapMonths ?? 3;
+  const amicableDays = input.amicableDays ?? 30;
 
   let page = pdf.addPage([PAGE_W, PAGE_H]);
   let y = PAGE_H - 60;
@@ -882,6 +1016,12 @@ export async function generateContractPdf(
       color: BLUE,
     });
     y -= 18;
+  }
+
+  function subTitle(text: string) {
+    ensureSpace(16);
+    draw(page, text, { x: margin, y, size: 9, font: fontBold, color: INK });
+    y -= 13;
   }
 
   function paragraph(text: string, size = 9, color = MUTED) {
@@ -910,9 +1050,47 @@ export async function generateContractPdf(
     }
     if (items.length === 0) {
       ensureSpace(14);
-      draw(page, "- (a preciser)", { x: margin, y, size, font, color: MUTED });
+      draw(page, "- ---", { x: margin, y, size, font, color: MUTED });
       y -= 13;
     }
+  }
+
+  /** Table generique multi-colonnes (pagination + alternance de fond). */
+  function table(headers: string[], widths: number[], rows: string[][]) {
+    ensureSpace(22);
+    page.drawRectangle({ x: margin, y: y - 4, width: contentW, height: 18, color: BLUE });
+    let hx = margin;
+    headers.forEach((h, i) => {
+      draw(page, h, { x: hx + 6, y: y + 1, size: 7.5, font: fontBold, color: WHITE });
+      hx += widths[i];
+    });
+    y -= 20;
+    rows.forEach((row, ri) => {
+      const cellLines = row.map((text, i) =>
+        wrapParagraph(text?.trim() ? text : "---", font, 8, widths[i] - 10),
+      );
+      const nLines = Math.max(...cellLines.map((l) => l.length), 1);
+      const rowH = nLines * 10 + 6;
+      ensureSpace(rowH + 2);
+      if (ri % 2 === 1) {
+        page.drawRectangle({
+          x: margin,
+          y: y - rowH + 8,
+          width: contentW,
+          height: rowH,
+          color: ROW_ALT,
+        });
+      }
+      let cx = margin;
+      cellLines.forEach((lines, i) => {
+        lines.forEach((line, li) => {
+          draw(page, line, { x: cx + 6, y: y - li * 10, size: 8, font, color: INK });
+        });
+        cx += widths[i];
+      });
+      y -= rowH;
+    });
+    y -= 10;
   }
 
   // ---- Couverture / en-tête ----
@@ -954,7 +1132,23 @@ export async function generateContractPdf(
     font,
     color: MUTED,
   });
-  y -= 36;
+  if (isFamilyA) {
+    y -= 14;
+    drawRight(
+      page,
+      `Duree initiale : ${input.renewalTerms ? "cf. Article 4" : "3 mois - renouvelable par mois (preavis " + noticeDays + " jours)"}`,
+      { right: PAGE_W - margin, y, size: 8, font, color: MUTED },
+    );
+  }
+  y -= 14;
+  drawRight(page, "Droit applicable : Droit malien - Juridictions de Bamako", {
+    right: PAGE_W - margin,
+    y,
+    size: 8,
+    font,
+    color: MUTED,
+  });
+  y -= 30;
 
   if (input.title) {
     draw(page, input.title, { x: margin, y, size: 13, font: fontBold, color: BLUE });
@@ -965,6 +1159,8 @@ export async function generateContractPdf(
   sectionTitle("ENTRE LES SOUSSIGNES");
   const partyColW = contentW / 2 - 10;
   const partyTopY = y;
+  draw(page, "LE PRESTATAIRE", { x: margin, y, size: 8, font: fontBold, color: BLUE });
+  y -= 12;
   draw(page, `${company.legalName} (${company.legalForm.split(" - ")[1] ?? "SARL"})`, {
     x: margin,
     y,
@@ -1001,6 +1197,8 @@ export async function generateContractPdf(
 
   let cy = partyTopY;
   const clientX = margin + partyColW + 20;
+  draw(page, "LE CLIENT", { x: clientX, y: cy, size: 8, font: fontBold, color: BLUE });
+  cy -= 12;
   draw(page, input.clientCompany ?? input.clientName, {
     x: clientX,
     y: cy,
@@ -1010,150 +1208,105 @@ export async function generateContractPdf(
     maxWidth: partyColW,
   });
   cy -= 13;
-  if (input.clientAddress) {
-    draw(page, input.clientAddress, { x: clientX, y: cy, size: 8.5, font, color: MUTED, maxWidth: partyColW });
-    cy -= 11;
-  }
-  if (input.contactName) {
-    draw(page, `Represente par ${input.contactName}`, {
-      x: clientX,
-      y: cy,
-      size: 8.5,
-      font,
-      color: MUTED,
-      maxWidth: partyColW,
-    });
-    cy -= 11;
-  }
-  const contactLine = [input.clientEmail, input.clientPhone].filter(Boolean).join(" - ");
-  if (contactLine) {
-    draw(page, contactLine, { x: clientX, y: cy, size: 8, font, color: MUTED, maxWidth: partyColW });
-    cy -= 11;
-  }
-
-  y = Math.min(providerBottom, cy) - 20;
-
-  // ---- Objet / periode ----
-  sectionTitle("ARTICLE 1 - OBJET ET DUREE");
-  paragraph(
-    `Le present contrat a pour objet la prestation « ${input.serviceKindLabel} » decrite a l'article 2, selon la composition commerciale convenue entre les parties.`,
-    9,
-    INK,
-  );
-  if (input.startDate) paragraph(`Date d'effet : ${input.startDate}.`);
-  if (input.billingDay) paragraph(`Facturation periodique le jour ${input.billingDay} de chaque mois (si applicable).`);
-  y -= 6;
-
-  // ---- Composition commerciale ----
-  sectionTitle("ARTICLE 2 - COMPOSITION COMMERCIALE");
-  ensureSpace(24);
-  page.drawRectangle({ x: margin, y: y - 4, width: contentW, height: 18, color: BLUE });
-  draw(page, "PRESTATION", { x: margin + 8, y: y + 1, size: 8, font: fontBold, color: rgb(1, 1, 1) });
-  draw(page, "QTE", { x: margin + 340, y: y + 1, size: 8, font: fontBold, color: rgb(1, 1, 1) });
-  drawRight(page, "MONTANT", { right: margin + contentW - 8, y: y + 1, size: 8, font: fontBold, color: rgb(1, 1, 1) });
-  y -= 22;
-  let totalHt = 0;
-  input.lines.forEach((l, i) => {
-    ensureSpace(18);
-    const lineTotal = l.qty * l.unitPrice;
-    totalHt += lineTotal;
-    if (i % 2 === 1) {
-      page.drawRectangle({ x: margin, y: y - 4, width: contentW, height: 16, color: ROW_ALT });
-    }
-    draw(page, l.label, { x: margin + 8, y, size: 8.5, font, color: INK, maxWidth: 320 });
-    draw(page, String(l.qty), { x: margin + 340, y, size: 8.5, font, color: INK });
-    drawRight(page, `${formatMoneyFr(lineTotal)} ${currency}`, {
-      right: margin + contentW - 8,
-      y,
-      size: 8.5,
-      font: fontBold,
-      color: INK,
-    });
-    y -= 16;
-  });
-  y -= 6;
-  const vat = Math.round(totalHt * (vatRate / 100));
-  ensureSpace(32);
-  drawRight(page, `Total HT : ${formatMoneyFr(totalHt)} ${currency}`, {
-    right: margin + contentW,
-    y,
-    size: 9,
+  draw(page, `Forme juridique : ${input.clientLegalForm ?? "---"}`, {
+    x: clientX,
+    y: cy,
+    size: 8,
     font,
-    color: INK,
+    color: MUTED,
+    maxWidth: partyColW,
   });
-  y -= 13;
-  drawRight(page, `TTC (TVA ${vatRate}%) : ${formatMoneyFr(totalHt + vat)} ${currency}`, {
-    right: margin + contentW,
-    y,
-    size: 10,
-    font: fontBold,
-    color: BLUE,
+  cy -= 11;
+  draw(page, `NINA / RCCM : ${input.clientRegistryId ?? "---"}`, {
+    x: clientX,
+    y: cy,
+    size: 8,
+    font,
+    color: MUTED,
+    maxWidth: partyColW,
   });
-  y -= 24;
+  cy -= 11;
+  draw(page, input.clientAddress ?? "---", {
+    x: clientX,
+    y: cy,
+    size: 8.5,
+    font,
+    color: MUTED,
+    maxWidth: partyColW,
+  });
+  cy -= 11;
+  draw(page, `Represente par ${input.contactName ?? "---"}${input.contactTitle ? ` (${input.contactTitle})` : ""}`, {
+    x: clientX,
+    y: cy,
+    size: 8.5,
+    font,
+    color: MUTED,
+    maxWidth: partyColW,
+  });
+  cy -= 11;
+  const contactLine = [input.clientEmail, input.clientPhone].filter(Boolean).join(" - ") || "---";
+  draw(page, contactLine, { x: clientX, y: cy, size: 8, font, color: MUTED, maxWidth: partyColW });
+  cy -= 11;
 
-  // ---- Conditions (paiement / reconduction / resiliation) ----
-  sectionTitle("ARTICLE 3 - CONDITIONS CONTRACTUELLES");
-  if (input.paymentTerms) {
-    draw(page, "Paiement :", { x: margin, y, size: 9, font: fontBold, color: INK });
-    y -= 13;
-    paragraph(input.paymentTerms);
-    y -= 4;
-  }
-  if (input.renewalTerms) {
-    ensureSpace(14);
-    draw(page, "Reconduction :", { x: margin, y, size: 9, font: fontBold, color: INK });
-    y -= 13;
-    paragraph(input.renewalTerms);
-    y -= 4;
-  }
-  if (input.terminationTerms) {
-    ensureSpace(14);
-    draw(page, "Resiliation :", { x: margin, y, size: 9, font: fontBold, color: INK });
-    y -= 13;
-    paragraph(input.terminationTerms);
-    y -= 4;
-  }
-  y -= 10;
+  y = Math.min(providerBottom, cy) - 16;
+  paragraph(
+    'Ci-apres designes ensemble "les Parties" et individuellement "la Partie". Il a ete convenu et arrete ce qui suit :',
+    8.5,
+  );
+  y -= 8;
 
-  // ---- Perimetre projet (famille B uniquement) ----
-  if (input.family === "ENGAGEMENT_CDC" && input.scope) {
-    sectionTitle("ARTICLE 4 - PERIMETRE DU PROJET (CAHIER DES CHARGES)");
-    ensureSpace(14);
-    draw(page, "Contexte / problemes identifies :", { x: margin, y, size: 9, font: fontBold, color: INK });
-    y -= 13;
-    bulletList(input.scope.contextProblems);
-    y -= 6;
-    ensureSpace(14);
-    draw(page, "Objectifs :", { x: margin, y, size: 9, font: fontBold, color: INK });
-    y -= 13;
-    bulletList(input.scope.objectives);
-    y -= 6;
-    ensureSpace(14);
-    draw(page, "Livrables :", { x: margin, y, size: 9, font: fontBold, color: INK });
-    y -= 13;
-    bulletList(input.scope.deliverables);
-    y -= 6;
-    ensureSpace(14);
-    draw(page, "Hors perimetre :", { x: margin, y, size: 9, font: fontBold, color: INK });
-    y -= 13;
-    bulletList(input.scope.outOfScope);
-    y -= 10;
+  if (isFamilyA) {
+    y = renderFamilyAArticles();
+  } else {
+    y = renderFamilyBSections();
+  }
+
+  // ---- Droit applicable et litiges (socle commun) ----
+  if (isFamilyA) {
+    sectionTitle("ARTICLE 12 - DROIT APPLICABLE ET REGLEMENT DES LITIGES");
     paragraph(
-      "Les Conditions Generales de Vente MSK CREATION (CGV) s'appliquent et prevalent en cas de contradiction avec le present cahier des charges.",
+      `Le present contrat est soumis exclusivement au droit malien. En cas de litige, les Parties recherchent en priorite une solution amiable dans un delai de ${amicableDays} jours. A defaut, tout litige sera porte devant les juridictions competentes de Bamako, Republique du Mali.`,
+    );
+    y -= 4;
+    paragraph(
+      "Toute modification du present contrat doit faire l'objet d'un avenant ecrit signe par les deux Parties. La nullite d'une clause n'entraine pas la nullite du reste du contrat.",
       8.5,
+    );
+    y -= 10;
+    sectionTitle("ARTICLE 13 - SIGNATURES");
+    paragraph(
+      "Les soussignes declarent avoir pris connaissance de l'ensemble des stipulations du present contrat et les accepter sans reserve. Le present contrat est conclu avec l'Annexe 1 (devis signe), dont il est inseparable.",
+    );
+    y -= 10;
+  } else {
+    sectionTitle("CONDITIONS CONTRACTUELLES");
+    paragraph(
+      "La presente prestation est regie par les Conditions Generales de Vente (CGV) de MSK CREATION SARL, qui definissent notamment les modalites de paiement, les conditions de realisation de la prestation, les responsabilites des parties ainsi que les conditions de resiliation et de maintenance.",
+    );
+    y -= 4;
+    paragraph(
+      "Le client reconnait avoir pris connaissance des CGV et les accepter sans reserve. En cas de contradiction entre le present cahier des charges et les CGV, les CGV prevaudront.",
+    );
+    y -= 4;
+    paragraph(
+      scope?.maintenanceMention ??
+        "Un contrat de maintenance sera propose pour assurer les mises a jour mineures. Toute evolution, modification ou developpement de nouveaux modules fera l'objet d'un devis complementaire.",
+      8.5,
+    );
+    y -= 4;
+    paragraph(
+      `Le present document est etabli dans le cadre du contrat ${input.number}. Le droit malien s'applique a titre supplementaire ; les juridictions de Bamako sont competentes pour tout litige non resolu par voie amiable.`,
+      8.5,
+    );
+    y -= 10;
+    sectionTitle("VALIDATION ET APPROBATION DU CAHIER DES CHARGES");
+    paragraph(
+      "En signant ce document, les deux parties s'engagent a respecter les specifications definies ci-dessus.",
     );
     y -= 10;
   }
 
-  // ---- Clauses socle (droit applicable) ----
-  sectionTitle("ARTICLE 5 - DROIT APPLICABLE ET LITIGES");
-  paragraph(
-    "Le present contrat est soumis au droit malien. En cas de litige, les parties s'efforcent de trouver une solution amiable sous 30 jours avant saisine des juridictions competentes de Bamako. Traitement des donnees personnelles conforme a la loi n. 2013-015 du 21 mai 2013 (APDP).",
-  );
-  y -= 16;
-
-  // ---- Signatures (P4.4 MVP : tampon + date saisie) ----
-  sectionTitle("SIGNATURES");
+  // ---- Signatures (tampon MSK + date saisie — pas d'e-sign) ----
   ensureSpace(90);
   draw(page, "Pour le Prestataire,", { x: margin, y, size: 9, font: fontBold, color: INK });
   draw(page, "Pour le Client,", { x: clientX, y, size: 9, font: fontBold, color: INK });
@@ -1165,7 +1318,7 @@ export async function generateContractPdf(
     font,
     color: MUTED,
   });
-  draw(page, input.contactName ?? input.clientName, {
+  draw(page, `${input.contactName ?? input.clientName}${input.contactTitle ? ` (${input.contactTitle})` : ""}`, {
     x: clientX,
     y,
     size: 8.5,
@@ -1192,12 +1345,13 @@ export async function generateContractPdf(
   draw(page, "Lu et approuve", { x: margin, y, size: 8, font: fontOblique, color: MUTED });
   draw(page, "Lu et approuve", { x: clientX, y, size: 8, font: fontOblique, color: MUTED });
   y -= 14;
-  draw(page, `Fait a Bamako, le ${input.signedAt ?? "____________"}`, {
+  draw(page, `Fait a Bamako, le ${input.signedAt ?? "____________"}, en deux (2) exemplaires originaux.`, {
     x: margin,
     y,
     size: 8,
     font,
     color: MUTED,
+    maxWidth: contentW,
   });
 
   // ---- Pied de page + pagination (post-traitement, toutes les pages) ----
@@ -1227,6 +1381,372 @@ export async function generateContractPdf(
       color: MUTED,
     });
   });
+
+  // ============================================================
+  // Famille A — Articles 1 a 11 (prestation / abonnement)
+  // ============================================================
+  function renderFamilyAArticles(): number {
+    sectionTitle("ARTICLE 1 - OBJET");
+    const objet =
+      input.serviceKind === "RESEAUX_SOCIAUX"
+        ? "la gestion professionnelle des reseaux sociaux du Client par MSK CREATION"
+        : `la realisation, pour le compte du Client, de la prestation « ${input.serviceKindLabel} » par MSK CREATION`;
+    paragraph(
+      `Le present contrat a pour objet ${objet}, conformement a l'offre souscrite definie a l'Article 2. Il encadre les conditions d'execution, de validation des contenus, de remuneration et de responsabilite des Parties.`,
+      9,
+      INK,
+    );
+    y -= 6;
+
+    sectionTitle("ARTICLE 2 - OFFRE SOUSCRITE ET PRESTATIONS");
+    paragraph(
+      "Le Client a selectionne l'offre ci-dessous parmi les offres proposees par MSK CREATION. Le detail complet des prestations figure dans le devis joint en Annexe 1 ; en cas de contradiction entre le present article et le devis, le devis prevaut.",
+    );
+    y -= 4;
+
+    if (input.serviceKind === "RESEAUX_SOCIAUX") {
+      const tierCol = (tier: "STANDARD" | "PRO" | "PREMIUM") =>
+        input.offerTier === tier ? "OUI (retenue)" : "";
+      table(
+        ["", "STANDARD", "PRO", "PREMIUM"],
+        [150, (contentW - 150) / 3, (contentW - 150) / 3, (contentW - 150) / 3],
+        [
+          ["Offre souscrite", tierCol("STANDARD"), tierCol("PRO"), tierCol("PREMIUM")],
+          ...RS_OFFER_MATRIX.map((r) => [r.label, r.standard, r.pro, r.premium]),
+        ],
+      );
+    }
+
+    subTitle("Composition commerciale retenue :");
+    ensureSpace(24);
+    page.drawRectangle({ x: margin, y: y - 4, width: contentW, height: 18, color: BLUE });
+    draw(page, "PRESTATION", { x: margin + 8, y: y + 1, size: 8, font: fontBold, color: WHITE });
+    draw(page, "QTE", { x: margin + 340, y: y + 1, size: 8, font: fontBold, color: WHITE });
+    drawRight(page, "MONTANT", {
+      right: margin + contentW - 8,
+      y: y + 1,
+      size: 8,
+      font: fontBold,
+      color: WHITE,
+    });
+    y -= 22;
+    let totalHt = 0;
+    input.lines.forEach((l, i) => {
+      ensureSpace(18);
+      const lineTotal = l.qty * l.unitPrice;
+      totalHt += lineTotal;
+      if (i % 2 === 1) {
+        page.drawRectangle({ x: margin, y: y - 4, width: contentW, height: 16, color: ROW_ALT });
+      }
+      draw(page, l.label, { x: margin + 8, y, size: 8.5, font, color: INK, maxWidth: 320 });
+      draw(page, String(l.qty), { x: margin + 340, y, size: 8.5, font, color: INK });
+      drawRight(page, `${formatMoneyFr(lineTotal)} ${currency}`, {
+        right: margin + contentW - 8,
+        y,
+        size: 8.5,
+        font: fontBold,
+        color: INK,
+      });
+      y -= 16;
+    });
+    y -= 6;
+    const vat = Math.round(totalHt * (vatRate / 100));
+    ensureSpace(32);
+    drawRight(page, `Total HT : ${formatMoneyFr(totalHt)} ${currency}`, {
+      right: margin + contentW,
+      y,
+      size: 9,
+      font,
+      color: INK,
+    });
+    y -= 13;
+    drawRight(page, `TTC (TVA ${vatRate}%) : ${formatMoneyFr(totalHt + vat)} ${currency}`, {
+      right: margin + contentW,
+      y,
+      size: 10,
+      font: fontBold,
+      color: BLUE,
+    });
+    y -= 22;
+
+    subTitle("2.1 Prestations complementaires");
+    paragraph(
+      "Les tournages, captations photo/video et deplacements sur site ne sont pas inclus dans l'abonnement. Ils sont factures separement sur presentation d'un bon de commande valide par ecrit par le Client avant toute execution.",
+      8.5,
+    );
+    if (input.complementaryServices?.length) {
+      y -= 2;
+      table(
+        ["TYPE DE PRESTATION", "TARIF", "STATUT"],
+        [contentW - 260, 130, 130],
+        input.complementaryServices.map((c) => [
+          c.type,
+          c.tariff ?? "---",
+          c.status ?? "Sur bon de commande",
+        ]),
+      );
+    }
+    y -= 4;
+
+    sectionTitle("ARTICLE 3 - PROCESSUS DE VALIDATION ET ACCES");
+    paragraph(
+      "Chaque livrable est soumis a une validation finale par le Client via un dossier dedie sur l'infrastructure cloud de MSK CREATION. Le Client dispose d'un acces permanent a ce dossier.",
+    );
+    y -= 4;
+    paragraph(
+      `Le Client peut, par ecrit, deleguer la responsabilite de validation des contenus a MSK CREATION. A defaut, le Client s'engage a valider les contenus sous ${validationHours} heures ouvrees ; passe ce delai, les contenus seront reputes valides.`,
+    );
+    y -= 4;
+    paragraph(
+      `Le Client fournit les acces administrateurs aux comptes concernes dans les ${adminAccessHours} heures suivant la signature.`,
+    );
+    y -= 10;
+
+    sectionTitle("ARTICLE 4 - DUREE ET RESILIATION");
+    subTitle("4.1 Duree");
+    paragraph(
+      input.renewalTerms ??
+        `Le contrat est conclu pour une duree initiale de trois (3) mois a compter du ${input.startDate ?? "---"}. A l'issue, il est renouvele automatiquement par periodes d'un (1) mois, sauf denonciation par l'une des Parties.`,
+    );
+    y -= 4;
+    subTitle("4.2 Resiliation ordinaire");
+    paragraph(
+      `Chaque Partie peut resilier le contrat, a l'issue de la periode initiale, par preavis ecrit de ${noticeDays} jours. Le mois de preavis en cours reste integralement du.`,
+    );
+    y -= 4;
+    subTitle("4.3 Resiliation pour manquement grave");
+    paragraph(
+      `En cas de manquement grave (non-paiement, publication non autorisee, donnees frauduleuses), la Partie lesee peut resilier sans indemnite, apres mise en demeure restee sans effet pendant ${cureDays} jours.`,
+    );
+    y -= 4;
+    subTitle("4.4 Effets de la resiliation");
+    paragraph(
+      input.terminationTerms ??
+        `A la resiliation : MSK CREATION restitue les acces sous ${accessReturnHours} heures ; les sommes dues jusqu'a la date effective restent exigibles ; les contenus produits et regles restent acquis au Client.`,
+    );
+    y -= 10;
+
+    sectionTitle("ARTICLE 5 - REMUNERATION ET MODALITES DE PAIEMENT");
+    table(
+      ["", ""],
+      [160, contentW - 160],
+      [
+        ["Montant mensuel", "Selon offre souscrite (cf. Article 2)"],
+        ["Facturation", `Mensuelle - avant le ${input.billingDay ?? 5} de chaque mois`],
+        [
+          "Acompte au demarrage",
+          `${depositPercent} % du premier mois - exige avant tout demarrage`,
+        ],
+        ["Modes de paiement", input.paymentTerms ?? "Virement bancaire | Orange Money | Wave | Cheque"],
+        [
+          "Retard de paiement",
+          `Penalite de ${latePenaltyPercentPerWeek} % par semaine - suspension possible des prestations`,
+        ],
+        ["Resiliation anticipee", "Le mois de preavis en cours reste integralement du"],
+      ],
+    );
+
+    sectionTitle("ARTICLE 6 - OBLIGATIONS DU PRESTATAIRE");
+    paragraph("MSK CREATION s'engage a :", 9, INK);
+    bulletList([
+      "Executer les prestations avec diligence et professionnalisme",
+      "Respecter l'identite visuelle et la ligne editoriale du Client",
+      "Soumettre les contenus a validation prealable avant publication",
+      "Informer le Client de toute difficulte affectant l'execution du contrat",
+      "Maintenir la confidentialite des informations obtenues dans le cadre de la mission",
+    ]);
+    y -= 4;
+    paragraph(
+      "MSK CREATION est soumise a une obligation de moyens et non de resultat en ce qui concerne les performances commerciales.",
+      8.5,
+    );
+    y -= 10;
+
+    sectionTitle("ARTICLE 7 - OBLIGATIONS DU CLIENT");
+    paragraph("Le Client s'engage a :", 9, INK);
+    bulletList([
+      "Fournir les visuels, informations, acces et elements necessaires dans des delais raisonnables",
+      "Valider ou refuser les contenus dans un delai de 48 heures ouvrees",
+      "Regler les sommes dues dans les delais convenus",
+      "Ne pas modifier unilateralement la strategie definie sans en informer MSK CREATION",
+    ]);
+    y -= 10;
+
+    sectionTitle("ARTICLE 8 - PROPRIETE INTELLECTUELLE");
+    paragraph(
+      "Les contenus crees par MSK CREATION restent sa propriete jusqu'au reglement integral des sommes dues. Apres paiement complet, le Client beneficie d'un droit d'utilisation pour ses besoins de communication. Les elements fournis par le Client (visuels, marques, textes) demeurent sa propriete exclusive.",
+    );
+    y -= 8;
+
+    sectionTitle("ARTICLE 9 - CONFIDENTIALITE");
+    paragraph(
+      `Chaque Partie s'engage a garder strictement confidentielles toutes les informations commerciales, financieres et strategiques obtenues dans le cadre du present contrat, pendant sa duree et pendant ${confidentialityYears} ans apres sa cessation.`,
+    );
+    y -= 8;
+
+    sectionTitle("ARTICLE 10 - PROTECTION DES DONNEES PERSONNELLES");
+    paragraph(
+      "Le traitement des donnees personnelles est soumis a la loi n. 2013-015 du 21 mai 2013 relative a la protection des donnees a caractere personnel au Mali (APDP). Le Client agit en qualite de Responsable du traitement ; MSK CREATION en qualite de Sous-traitant, traitant les donnees uniquement sur instruction du Client.",
+    );
+    y -= 4;
+    paragraph(
+      "MSK CREATION s'engage a mettre en oeuvre des mesures de securite appropriees et a notifier le Client sans delai en cas d'incident de securite affectant des donnees personnelles.",
+      8.5,
+    );
+    y -= 8;
+
+    sectionTitle("ARTICLE 11 - RESPONSABILITE ET FORCE MAJEURE");
+    paragraph(
+      `La responsabilite de MSK CREATION est limitee aux sommes percues au cours des ${liabilityCapMonths} derniers mois precedant le fait generateur. MSK CREATION ne saurait etre tenue responsable des resultats commerciaux du Client, des changements d'algorithmes des plateformes ou de cas de force majeure.`,
+    );
+    y -= 4;
+    paragraph(
+      "En cas de force majeure, la Partie concernee en informe l'autre sous 48 heures. Si l'evenement persiste au-dela de 30 jours, chaque Partie peut resilier sans indemnite.",
+      8.5,
+    );
+    y -= 10;
+    return y;
+  }
+
+  // ============================================================
+  // Famille B — Cahier des charges (engagement)
+  // ============================================================
+  function renderFamilyBSections(): number {
+    const ctx = scope ?? {
+      contextProblems: [],
+      objectives: [],
+      deliverables: [],
+      outOfScope: [],
+    };
+
+    sectionTitle("01 - CONTEXTE DU PROJET");
+    table(
+      ["", ""],
+      [140, contentW - 140],
+      [
+        ["Client", input.clientCompany ?? input.clientName],
+        [
+          "Interlocuteur",
+          [ctx.interlocutorName, ctx.interlocutorTitle].filter(Boolean).join(" - ") || "---",
+        ],
+        ["Localisation", ctx.location ?? "---"],
+        ["Outils actuels", ctx.currentTools ?? "---"],
+        ["Prestataire", `${company.legalName} SARL`],
+      ],
+    );
+    subTitle("Problemes identifies avec l'outil actuel :");
+    bulletList(ctx.contextProblems);
+    y -= 4;
+    subTitle("Vision cible :");
+    paragraph(ctx.visionTarget ?? "---");
+    y -= 10;
+
+    sectionTitle("02 - OBJECTIFS FONCTIONNELS");
+    bulletList(ctx.objectives);
+    y -= 10;
+
+    if (ctx.modules?.length) {
+      sectionTitle("03 - MODULES FONCTIONNELS");
+      paragraph(
+        "L'application couvre les modules essentiels suivants, livres en une seule phase. Toute fonctionnalite supplementaire fera l'objet d'un devis complementaire.",
+        8.5,
+      );
+      y -= 4;
+      ctx.modules.forEach((m, idx) => {
+        subTitle(`MODULE ${idx + 1} - ${m.name}`);
+        bulletList(m.features);
+        y -= 4;
+      });
+    } else if (ctx.pages?.length) {
+      sectionTitle("03 - STRUCTURE DU SITE");
+      table(
+        ["N", "PAGE", "CONTENU"],
+        [30, 110, contentW - 140],
+        ctx.pages.map((p, idx) => [String(p.order ?? idx + 1), p.name, p.description]),
+      );
+    } else {
+      sectionTitle("03 - PERIMETRE DU PROJET");
+      paragraph("Perimetre detaille en Annexe 1 / devis — à préciser.", 8.5);
+      y -= 4;
+    }
+
+    sectionTitle("04 - FONCTIONNALITES INCLUSES");
+    if (ctx.includedFeatures?.length) {
+      ctx.includedFeatures.forEach((g) => {
+        subTitle(g.group);
+        bulletList(g.items);
+        y -= 4;
+      });
+    } else {
+      paragraph("--- (fonctionnalites a preciser en Annexe 1 / devis) ---", 8.5);
+      y -= 4;
+    }
+
+    if (ctx.roles?.length) {
+      sectionTitle("05 - GESTION DES ACCES ET ROLES UTILISATEURS");
+      table(
+        ["ROLE", "ACCES", "DESCRIPTION"],
+        [100, 100, contentW - 200],
+        ctx.roles.map((r) => [r.role, r.access, r.description]),
+      );
+    }
+
+    sectionTitle("LIVRABLES");
+    bulletList(ctx.deliverables);
+    y -= 10;
+
+    sectionTitle("06 - PLANNING D'EXECUTION");
+    if (ctx.planningPhases?.length) {
+      table(
+        ["N", "ETAPE", "CONTENU", "DUREE"],
+        [25, 90, contentW - 115 - 70, 70],
+        ctx.planningPhases.map((p, idx) => [
+          p.number ?? String(idx + 1).padStart(2, "0"),
+          p.name,
+          p.content,
+          p.duration,
+        ]),
+      );
+    } else {
+      paragraph("Planning detaille en Annexe 1 / devis — à préciser.", 8.5);
+      y -= 4;
+    }
+    paragraph(
+      `Duree totale estimee : ${ctx.totalDurationLabel ?? "---"}. ${
+        ctx.delayRule ??
+        "Tout retard dans les validations ou la fourniture des ressources decalera automatiquement le planning."
+      }`,
+      8.5,
+    );
+    y -= 10;
+
+    sectionTitle("07 - RESSOURCES A FOURNIR PAR LE CLIENT");
+    if (ctx.clientResources?.length) {
+      table(
+        ["RESSOURCE", "DESCRIPTION", "DELAI"],
+        [140, contentW - 140 - 110, 110],
+        ctx.clientResources.map((r) => [r.resource, r.description, r.due]),
+      );
+    } else {
+      paragraph("Ressources requises precisees en Annexe 1 / devis — à préciser.", 8.5);
+      y -= 4;
+    }
+
+    sectionTitle("08 - CRITERES DE RECETTE ET VALIDATION");
+    paragraph(
+      `Une recette formelle est realisee en fin de developpement, avant la mise en production. Le Client dispose de ${ctx.acceptanceDays ?? 7} jours ouvres pour valider ou transmettre ses reserves motivees. Sans retour dans ce delai, la prestation est reputee validee et acceptee sans reserve.`,
+    );
+    y -= 4;
+    paragraph(
+      `Les echanges de recette s'effectuent via ${ctx.acceptanceChannel ?? "le dossier partage MSK CREATION"}. Toute demande de fonctionnalite supplementaire hors perimetre fera l'objet d'un devis complementaire specifique.`,
+      8.5,
+    );
+    y -= 10;
+
+    sectionTitle("09 - HORS PERIMETRE - NON INCLUS");
+    bulletList(ctx.outOfScope);
+    return y - 10;
+  }
 
   return pdf.save();
 }

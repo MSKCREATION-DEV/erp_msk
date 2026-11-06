@@ -1,4 +1,8 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import {
   generateAttestationStagePdf,
   generateContractPrestaPdf,
@@ -9,6 +13,22 @@ import {
   generateSoldeToutComptePdf,
 } from "./rh";
 import { generateCommercialPdf } from "./commercial";
+
+/** Texte PDF via pdftotext (poppler) si disponible — sinon `null` (CI sans poppler). */
+function extractText(bytes: Uint8Array): string | null {
+  try {
+    const dir = mkdtempSync(path.join(tmpdir(), "msk-rh-"));
+    const file = path.join(dir, "doc.pdf");
+    writeFileSync(file, bytes);
+    const text = execFileSync("pdftotext", ["-layout", file, "-"], {
+      encoding: "utf8",
+    });
+    rmSync(dir, { recursive: true, force: true });
+    return text;
+  } catch {
+    return null;
+  }
+}
 
 async function main() {
   // Régression WinAnsi : objet avec CR (bug DEV-2026-0010)
@@ -53,10 +73,33 @@ async function main() {
     kind: "PRESTA",
     title: "Prestation digitale",
     startDate: "01/10/2026",
+    endDate: "31/12/2026",
     salaryXof: 250_000,
-    employee: { firstName: "Fatou", lastName: "Diallo" },
+    employee: { firstName: "Fatou", lastName: "Diallo", jobTitle: "Consultante content" },
   });
   assert.ok(presta.length > 1000);
+  const prestaText = extractText(presta);
+  if (prestaText) {
+    for (const article of [
+      "Article 1 : Objet",
+      "Article 2 : Duree et resiliation",
+      "Article 3 : Remuneration et modalites de paiement",
+      "Article 4 : Independance",
+      "Article 5 : Propriete intellectuelle",
+      "Article 6 : Confidentialite",
+      "Article 7 : Protection des donnees personnelles",
+      "Article 8 : Responsabilite et force majeure",
+      "Article 9 : Droit applicable et reglement des litiges",
+      "Article 11 : Signatures",
+    ]) {
+      assert.ok(
+        prestaText.includes(article),
+        `contrat presta RH — article manquant : "${article}"`,
+      );
+    }
+  } else {
+    console.warn("⚠ pdftotext indisponible — assertions de contenu presta RH ignorées");
+  }
 
   const att = await generateAttestationStagePdf({
     employee: { firstName: "Assetou", lastName: "Mangara" },

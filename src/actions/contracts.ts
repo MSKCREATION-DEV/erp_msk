@@ -25,7 +25,11 @@ import {
 } from "@/lib/commercial/scope";
 import { COM_CLIENT_EVENT, logComClientEvent } from "@/lib/commercial/client-events";
 import { commercialTeamUserIds } from "@/lib/crm/team";
-import { generateContractPdf } from "@/lib/pdf/commercial";
+import {
+  generateContractPdf,
+  type ContractPdfInput,
+  type ContractPdfScope,
+} from "@/lib/pdf/commercial";
 import { formatDateFr } from "@/lib/pdf/winansi";
 import { getSignaturePngBytes } from "@/lib/signatures/resolve";
 import { uploadGedObject } from "@/lib/ged/storage";
@@ -322,11 +326,17 @@ export async function generateContractPdfAction(
     ownerUserId: contract.ownerId,
   }).catch(() => null);
 
-  const scopeJson = contract.scopeJson as {
-    contextProblems?: string[];
-    objectives?: string[];
-    deliverables?: string[];
-    outOfScope?: string[];
+  /**
+   * Perimetre famille B / parametres famille A — JSON libre (analyse §6.3).
+   * Superset de ce que le wizard capture aujourd'hui (contexte/objectifs/
+   * livrables/hors-perimetre) : les champs CDC avances (modules, pages,
+   * fonctionnalites, roles, planning, ressources client, offre packagee…)
+   * sont optionnels et retombent sur des placeholders "---" / "à préciser"
+   * dans le PDF tant que le wizard ne les collecte pas (gap résiduel).
+   */
+  const scopeJson = contract.scopeJson as Partial<ContractPdfScope> & {
+    offerTier?: "STANDARD" | "PRO" | "PREMIUM" | "CUSTOM";
+    complementaryServices?: ContractPdfInput["complementaryServices"];
   } | null;
 
   let pdfBytes: Uint8Array;
@@ -334,17 +344,20 @@ export async function generateContractPdfAction(
     pdfBytes = await generateContractPdf({
       number: contract.reference,
       family: contract.family,
+      serviceKind: contract.serviceKind,
       familyLabel: CONTRACT_FAMILY_LABELS[contract.family],
       serviceKindLabel: SERVICE_KIND_LABELS[contract.serviceKind],
       title: contract.title ?? undefined,
       clientName: contract.client.contactName || contract.client.name,
       clientCompany: contract.client.name,
+      clientRegistryId: contract.client.taxId ?? undefined,
       clientAddress: [contract.client.address, contract.client.city]
         .filter(Boolean)
         .join(", "),
       clientPhone: contract.client.phone ?? undefined,
       clientEmail: contract.client.email ?? undefined,
       contactName: contract.client.contactName ?? undefined,
+      contactTitle: contract.client.contactRole ?? undefined,
       issueDate: formatDateFr(contract.createdAt),
       startDate: contract.startDate ? formatDateFr(contract.startDate) : undefined,
       billingDay: contract.billingDay,
@@ -358,12 +371,30 @@ export async function generateContractPdfAction(
       paymentTerms: contract.paymentTerms ?? undefined,
       renewalTerms: contract.renewalTerms ?? undefined,
       terminationTerms: contract.terminationTerms ?? undefined,
+      offerTier: scopeJson?.offerTier,
+      complementaryServices: scopeJson?.complementaryServices,
       scope: scopeJson
         ? {
+            interlocutorName: scopeJson.interlocutorName,
+            interlocutorTitle: scopeJson.interlocutorTitle,
+            location: scopeJson.location,
+            currentTools: scopeJson.currentTools,
             contextProblems: scopeJson.contextProblems ?? [],
+            visionTarget: scopeJson.visionTarget,
             objectives: scopeJson.objectives ?? [],
+            modules: scopeJson.modules,
+            pages: scopeJson.pages,
+            includedFeatures: scopeJson.includedFeatures,
+            roles: scopeJson.roles,
             deliverables: scopeJson.deliverables ?? [],
+            planningPhases: scopeJson.planningPhases,
+            totalDurationLabel: scopeJson.totalDurationLabel,
+            delayRule: scopeJson.delayRule,
+            clientResources: scopeJson.clientResources,
+            acceptanceDays: scopeJson.acceptanceDays,
+            acceptanceChannel: scopeJson.acceptanceChannel,
             outOfScope: scopeJson.outOfScope ?? [],
+            maintenanceMention: scopeJson.maintenanceMention,
           }
         : undefined,
       signedAt: contract.signedAt ? formatDateFr(contract.signedAt) : undefined,

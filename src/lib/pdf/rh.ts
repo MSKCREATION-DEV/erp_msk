@@ -548,7 +548,17 @@ export async function generateContractStagePdf(
   return ctx.pdf.save();
 }
 
-/** Contrat de prestation de services. */
+/**
+ * Contrat de prestation de services — prestataire independant travaillant
+ * pour MSK (relation inversee vs les contrats clients Commercial : MSK est ici
+ * "le Client", la personne est "le Prestataire"). Articles socle alignes sur
+ * les clauses communes aux modeles MSK reels (voir
+ * docs/commercial/ANALYSE-MODELES-CONTRATS.md §5.1/§5.2 — PI, confidentialite,
+ * donnees personnelles, responsabilite/force majeure, droit applicable),
+ * adaptees a ce sens de relation. Delais / plafonds = valeurs du modele de
+ * reference MSK (preavis 30 j, mise en demeure 15 j, confidentialite 5 ans,
+ * penalite retard 1 %/semaine, conciliation amiable 30 j puis Bamako).
+ */
 export async function generateContractPrestaPdf(
   input: RhContractPdfInput,
 ): Promise<Uint8Array> {
@@ -561,52 +571,100 @@ export async function generateContractPrestaPdf(
   drawParagraph(
     ctx,
     `${personFullName(input.employee)}, intervenant en qualite de prestataire independant` +
-      `${input.employee.jobTitle ? ` (${input.employee.jobTitle})` : ""}.` +
+      `${input.employee.jobTitle ? ` (${input.employee.jobTitle})` : ""}` +
+      `${input.employee.address ? `, demeurant a ${input.employee.address}` : ""}.` +
       ` Ci-apres denomme(e) "le Prestataire", d'autre part.`,
   );
   ctx.y -= 6;
-  drawParagraph(ctx, "Il est convenu ce qui suit :");
+  drawParagraph(
+    ctx,
+    'Ci-apres designes ensemble "les Parties". Il a ete convenu et arrete ce qui suit :',
+  );
   ctx.y -= 8;
 
   drawTitle(ctx, "Article 1 : Objet");
   drawParagraph(
     ctx,
-    `Le Prestataire s'engage a realiser pour ${company.legalName} les prestations decrites : ${input.title}.`,
+    `Le Prestataire s'engage a realiser pour ${company.legalName} la prestation suivante : ${input.title}. Le present contrat encadre les conditions d'execution, de remuneration et de responsabilite des Parties.`,
   );
 
-  drawTitle(ctx, "Article 2 : Duree");
+  drawTitle(ctx, "Article 2 : Duree et resiliation");
   drawParagraph(
     ctx,
-    `Prestation a compter du ${input.startDate}` +
-      (input.endDate ? ` jusqu'au ${input.endDate}.` : `.`),
+    `La prestation prend effet le ${input.startDate}` +
+      (input.endDate
+        ? ` et s'acheve le ${input.endDate}, sauf reconduction expresse par avenant ecrit.`
+        : ` pour une duree indeterminee, sauf accord contraire precise par avenant.`),
+  );
+  drawParagraph(
+    ctx,
+    `Chaque Partie peut resilier le present contrat par preavis ecrit de trente (30) jours. En cas de manquement grave (non-execution, non-paiement, divulgation non autorisee), la Partie lesee peut resilier sans indemnite apres mise en demeure restee sans effet pendant quinze (15) jours.`,
+    8.5,
   );
 
-  drawTitle(ctx, "Article 3 : Remuneration");
+  drawTitle(ctx, "Article 3 : Remuneration et modalites de paiement");
   drawParagraph(
     ctx,
     input.salaryXof
-      ? `Honoraires : ${formatMoneyFr(input.salaryXof)} ${company.currency} (hors taxes le cas echeant), selon modalites convenues.`
-      : `Les honoraires sont precises en annexe.`,
+      ? `Honoraires : ${formatMoneyFr(input.salaryXof)} ${company.currency} (hors taxes le cas echeant), regles par virement bancaire, Orange Money, Wave ou cheque, a reception de facture, selon les modalites convenues entre les Parties.`
+      : `Les honoraires sont precises en annexe ou avenant, regles selon les modalites convenues entre les Parties.`,
+  );
+  drawParagraph(
+    ctx,
+    `Tout retard de paiement imputable au Client peut donner lieu a une penalite de 1 % par semaine de retard, sans mise en demeure prealable.`,
+    8.5,
   );
 
   drawTitle(ctx, "Article 4 : Independance");
   drawParagraph(
     ctx,
-    `Le Prestataire reste independant ; le present contrat ne constitue ni un contrat de travail ni un lien de subordination.`,
+    `Le Prestataire reste independant dans l'organisation de son travail ; le present contrat ne constitue ni un contrat de travail ni un lien de subordination avec ${company.legalName}.`,
   );
 
-  drawTitle(ctx, "Article 5 : Confidentialite & PI");
+  drawTitle(ctx, "Article 5 : Propriete intellectuelle");
   drawParagraph(
     ctx,
-    `Confidentialite stricte. Les livrables realises pour MSK sont cedes a la Societe sauf accord contraire ecrit.`,
+    `Les livrables realises par le Prestataire dans le cadre de la mission sont cedes a ${company.legalName} a compter du reglement integral des honoraires dus, sauf accord contraire ecrit. Les elements, outils, marques et methodes fournis par ${company.legalName} demeurent sa propriete exclusive.`,
+  );
+
+  drawTitle(ctx, "Article 6 : Confidentialite");
+  drawParagraph(
+    ctx,
+    `Le Prestataire s'engage a garder strictement confidentielles toutes les informations commerciales, financieres, strategiques ou techniques dont il aurait connaissance dans le cadre de la mission, pendant sa duree et pendant cinq (5) ans apres sa cessation.`,
+  );
+
+  drawTitle(ctx, "Article 7 : Protection des donnees personnelles");
+  drawParagraph(
+    ctx,
+    `Si la mission implique un traitement de donnees a caractere personnel, celui-ci est soumis a la loi n. 2013-015 du 21 mai 2013 relative a la protection des donnees personnelles au Mali (APDP). ${company.legalName} agit en qualite de Responsable du traitement ; le Prestataire traite les donnees uniquement sur instruction ecrite et met en oeuvre des mesures de securite appropriees.`,
+    8.5,
+  );
+
+  drawTitle(ctx, "Article 8 : Responsabilite et force majeure");
+  drawParagraph(
+    ctx,
+    `La responsabilite du Prestataire est limitee au montant des honoraires percus au titre de la presente mission. Aucune Partie n'est responsable d'un manquement du a un cas de force majeure ; la Partie concernee en informe l'autre sous 48 heures, et si l'evenement persiste au-dela de 30 jours, chaque Partie peut resilier sans indemnite.`,
+    8.5,
+  );
+
+  drawTitle(ctx, "Article 9 : Droit applicable et reglement des litiges");
+  drawParagraph(
+    ctx,
+    `Le present contrat est soumis au droit malien. En cas de litige, les Parties recherchent en priorite une solution amiable dans un delai de trente (30) jours ; a defaut, tout litige sera porte devant les juridictions competentes de Bamako, Republique du Mali.`,
+    8.5,
   );
 
   if (input.notes) {
-    drawTitle(ctx, "Article 6 : Dispositions particulieres");
+    drawTitle(ctx, "Article 10 : Dispositions particulieres");
     drawParagraph(ctx, input.notes);
   }
 
-  drawParagraph(ctx, `Fait a Bamako, le ${formatDateFr()}.`);
+  drawTitle(ctx, "Article 11 : Signatures");
+  drawParagraph(
+    ctx,
+    `Les soussignes declarent avoir pris connaissance de l'ensemble des stipulations du present contrat et les accepter sans reserve.`,
+  );
+  drawParagraph(ctx, `Fait a Bamako, le ${formatDateFr()}, en deux (2) exemplaires originaux.`);
   await drawSignatureBlock(
     ctx,
     `Pour ${company.legalName}`,

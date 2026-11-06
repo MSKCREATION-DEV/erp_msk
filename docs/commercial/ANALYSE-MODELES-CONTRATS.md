@@ -515,4 +515,6 @@ Sans implémenter ici — pistes pour la phase génération docs.
 
 ---
 
-*Fichier destiné à être cité par le planning Commercial / génération documentaire. Extraction seule — pas de changement code.*
+*Fichier destiné à être cité par le planning Commercial / génération documentaire. Extraction seule — pas de changement code (à la rédaction initiale).*
+
+> **Suite (2026-11-06, même jour)** : cette analyse a servi de base à l'implémentation — `generateContractPdf` (`src/lib/pdf/commercial.ts`) et `generateContractPrestaPdf` (`src/lib/pdf/rh.ts`) rendent désormais les 13 articles / sections CDC complets décrits ci-dessus (texte exact des 2 PDF extractibles via `pdftotext -layout`, et confirmation OCR des 2 PDF scannés). Voir `docs/guides/SUIVI-GUIDES.md` §8 et `RECAP-TEST-CLIENT-CONTRAT.md` §6 pour le détail et la dette résiduelle (champs CDC avancés pas encore saisissables en UI).

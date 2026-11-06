@@ -122,6 +122,7 @@ Six étapes **FormSteps** : Identité → Contact → Origine → **Composition*
 
 ## 6. Dette connue / ne pas attendre encore
 
+- **2026-11-06 — mise à jour** : `generateContractPdf` rend désormais les 13 articles complets (famille A) / les sections CDC complètes (famille B), alignés sur les 4 PDF sources réels (voir `SUIVI-GUIDES.md` §8 et `ANALYSE-MODELES-CONTRATS.md`). Le gap « PDF incomplet » ci-dessous est donc **fermé au niveau du corps du document** ; seul le **picker catalogue avancé** dans l'étape Composition reste limité (voir point suivant), et les champs CDC avancés (modules/pages/rôles/planning détaillé/ressources client/offre packagée) ne sont **pas encore saisissables** dans le wizard (le PDF les affiche en placeholder `---` tant qu'ils ne sont pas alimentés via `scopeJson`).
 - **Annexes automatiques** (devis / CGV) dans le PDF contrat : pas garanties dans cette livraison.
 - **E-signature** tierce : non — **MVP** = tampon / date sur PDF + activation métier dans l’ERP.
 - **Picker catalogue** avancé dans l’étape Composition : UX encore rudimentaire (lignes + offres possibles, pas un module catalogue complet).

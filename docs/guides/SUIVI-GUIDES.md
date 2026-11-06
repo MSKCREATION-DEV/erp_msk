@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-06 (Fiabilisation Prospects/Clients — anti-doublon prospect↔client, relances/compteurs excluent les Gagné, toolbar fiche prospect réorganisée ; voir §8) |
+| Dernière mise à jour | 2026-11-06 (Contrats PDF complets Articles 1–13 famille A / CDC famille B + gabarit admin `contrat_presta_msk` v2 ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -191,6 +191,21 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-06 — Contrats PDF complets (Articles 1–13 famille A, CDC famille B) + gabarit admin `contrat_presta_msk` v2
+
+- **Pourquoi** : le gabarit admin « Contrat de prestation MSK » (`contrat_presta_msk` · v1, `/administration/gabarits`) générait un PDF démo à 6 articles courts (contrat prestataire indépendant RH), visiblement incomplet au regard des vrais contrats MSK (`docs/CONTRAT DE PRESTATION DE SERVICES.pdf`, `docs/MODELE CONTRAT GESTION DES RESEAUX SOCIAUX (1).pdf`, `docs/02_Contrat d'engagement Application Web.pdf`, `docs/CONTRAT D'ENGAGEMENT.pdf`). Le générateur Commercial `generateContractPdf` (familles A/B, `/commercial/contrats/[id]`) était lui aussi une « fondation » assumée non exhaustive (voir commentaire d'origine, lot P4 ci-dessous) — pas les 13 articles juridiques des modèles réels.
+- **Quoi** :
+  - **OCR/extraction intégrale** des 4 PDF sources (`pdftotext -layout` pour les 2 extractibles, `pdftoppm` + `tesseract -l fra` pour les 2 scans) pour obtenir le texte exact des articles (pas seulement la structure déjà décrite dans `docs/commercial/ANALYSE-MODELES-CONTRATS.md`).
+  - **`generateContractPdf`** (`src/lib/pdf/commercial.ts`) réécrit : famille A (`PRESTATION_ABONNEMENT`) rend désormais les **13 articles** du modèle réseaux sociaux (Objet, Offre souscrite + grille STANDARD/PRO/PREMIUM + prestations complémentaires, Processus de validation et accès, Durée et résiliation 4.1–4.4, Rémunération, Obligations Prestataire, Obligations Client, Propriété intellectuelle, Confidentialité, Données personnelles APDP, Responsabilité/force majeure, Droit applicable et litiges, Signatures) ; famille B (`ENGAGEMENT_CDC`) rend les sections CDC complètes (Contexte, Objectifs, Modules **ou** Structure du site selon `serviceKind`, Fonctionnalités incluses, Rôles & accès si application, Livrables, Planning, Ressources client, Recette, Hors périmètre, Conditions/CGV, Validation). Délais/plafonds (validation 48 h, accès admin 48 h, acompte 50 %, pénalité 1 %/semaine, préavis 30 j, mise en demeure 15 j, confidentialité 5 ans, plafond responsabilité 3 mois, amiable 30 j) = valeurs par défaut du modèle MSK, paramétrables. Variables non alimentées par le dossier ERP → place-holder `---` (jamais une clause silencieusement omise).
+  - **`generateContractPrestaPdf`** (`src/lib/pdf/rh.ts`, utilisé par le gabarit admin `contrat_presta_msk`) étendu de 6 à **11 articles** (objet, durée/résiliation, rémunération + pénalité retard, indépendance, propriété intellectuelle, confidentialité 5 ans, données personnelles APDP, responsabilité/force majeure, droit applicable/litiges Bamako, dispositions particulières, signatures) — même socle juridique que les contrats clients, adapté au sens de relation inversé (MSK = Client, personne = Prestataire indépendant).
+  - **Gabarit `contrat_presta_msk`** (`prisma/seed.ts`) passé en **v2** (`version: 2`, `structureJson.slots` complet, `ref` pointant le PDF source exact) — le prochain `npx prisma db seed` affichera « v2 » sur `/administration/gabarits` au lieu de « v1 ».
+  - **`src/actions/contracts.ts`** : passe désormais `serviceKind`, `contactTitle` (`contactRole` client), `clientRegistryId` (`taxId` client) et un `scope` étendu (superset rétrocompatible : contexte/objectifs/livrables/hors-périmètre existants **+** modules/pages/fonctionnalités/rôles/planning/ressources client/offre packagée optionnels, lus depuis `scopeJson` s'ils existent).
+- **Résiduel / dette (gap connu)** : le wizard `ClientWizardForm` (étape Conditions contrat) ne capture encore que contexte/objectifs/livrables/hors-périmètre dans `scopeJson` — les nouveaux champs CDC avancés (modules, pages, rôles, planning détaillé, ressources client, grille d'offre packagée famille A) sont supportés par le générateur PDF (fallback propre en `---` / « à préciser ») mais **pas encore saisissables en UI**. À outiller dans un prochain lot si le besoin se confirme côté commercial.
+- **Fichiers** : `src/lib/pdf/commercial.ts`, `src/lib/pdf/rh.ts`, `src/lib/pdf/contract.test.ts`, `src/lib/pdf/rh.test.ts`, `src/actions/contracts.ts`, `prisma/seed.ts`.
+- **Tests** : `npm run test:pdf-contract` et `npm run test:pdf-rh` étendus avec extraction de texte (`pdftotext`, dégradation silencieuse si poppler absent) vérifiant la présence de chaque article/section attendu ; `npm run test:com-docs` (gates/totals/quote-transitions/floor-price/billing/pdf-contract) OK ; `npx tsc --noEmit` OK ; `npm run lint` OK (aucun nouveau warning) ; `npx next build` OK.
+- **Prudence données** : aucune migration Prisma, aucune réécriture de PDF déjà généré/stocké en GED (`generateContractPdfAction` reste idempotent sur `gedDocumentId`) — seules les **nouvelles** générations bénéficient du corps complet.
+- **Statut doc** : pas de guide centre `/guides` dédié au contenu détaillé des contrats PDF à ce jour ; rien à repasser en `outdated` (aucune route/bouton/droit changé, uniquement le corps du document généré).
 
 ### 2026-11-06 — Anti-doublon prospect↔client · Relances/compteurs sans « Gagné » · Toolbar fiche prospect
 
