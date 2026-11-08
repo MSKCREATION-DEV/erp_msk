@@ -190,6 +190,8 @@ export default async function ContratDetailPage({
               contractId={contract.id}
               reference={contract.reference}
               gedDocumentId={contract.gedDocumentId}
+              family={contract.family}
+              serviceKind={contract.serviceKind}
               canManage={canManageContract}
             />
           </div>

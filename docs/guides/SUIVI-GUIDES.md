@@ -193,6 +193,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-08 — Contrats legacy : famille / nature avant génération PDF
+
+- **Pourquoi** : fiche client — contrat `ACTIF` (ex. CTR-202611-0001) sans `family` / `serviceKind` en base (création depuis devis avant champs P4) → échec « Famille / nature de prestation manquante » au clic « Générer le contrat » ; auto-PDF à l’activation silencieux pour les mêmes lignes.
+- **Quoi** : inférence catalogue + libellés (`resolveContractPrestation`), persistance à la génération ; `createContractFromQuoteAction` renseigne désormais famille/nature ; sélecteur compact sur `ContractDocActions` si absent ; action `setContractPrestationAction`.
+- **Fichiers** : `src/lib/commercial/contract-prestation.ts`, `src/actions/contracts.ts`, `src/components/commercial/contract-doc-actions.tsx`, fiches client/contrat.
+- **Statut doc** : guide commercial contrats/PDF — dette §6 inchangée (`draft`), comportement UI à valider terrain.
+
 ### 2026-11-08 — Alignement gabarits/générateurs PDF vs références `docs/` (contrat_presta_msk v3 + RH)
 
 - **Pourquoi** : mandat « aligner tout document généré par la plateforme avec les fichiers de référence `docs/` ». Inventaire croisé **références `docs/` ↔ `DocumentTemplate` (seed) ↔ `generate*Pdf`** (voir §9 pour la matrice complète) : `contrat_presta_msk` (RH) accusait le plus grand écart documenté (`docs/commercial/COMPARAISON-CONTRAT-PRESTA-MSK-v2.md`, 2026-11-08 matin) ; les PDF RH (contrat travail/stage, attestation, solde, règlement, fiche de paie) avaient perdu leurs accents français au fil des itérations successives alors que les documents de référence réels (`docs/Contrat de Travail Guiro...pdf`, `docs/Solde de tout compte...pdf`, etc. — ce sont d'anciennes générations de la plateforme elle-même) les ont bien.

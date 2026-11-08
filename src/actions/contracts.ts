@@ -5,16 +5,20 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import {
+  CatalogPillar,
   ComCompositionSource,
+  ComContractFamily,
   ComContractStatus,
   ComDocKind,
   ComQuoteStatus,
+  ComServiceKind,
 } from "@/generated/prisma/client";
 import type { ActionResult } from "@/actions/auth";
 import { writeAudit } from "@/lib/audit";
 import { requireUser } from "@/lib/auth/session";
 import type { SessionUser } from "@/lib/rbac/resolve";
 import { buildContractLinesFromQuote } from "@/lib/commercial/contract-from-quote";
+import { resolveContractPrestation } from "@/lib/commercial/contract-prestation";
 import { ensureClientDocFolder } from "@/lib/commercial/ged-client";
 import {
   CONTRACT_FAMILY_LABELS,
@@ -63,7 +67,12 @@ export async function createContractFromQuoteAction(
   const quote = await prisma.comQuote.findUnique({
     where: { id: quoteId },
     include: {
-      lines: { orderBy: { sortOrder: "asc" } },
+      lines: {
+        orderBy: { sortOrder: "asc" },
+        include: {
+          catalogOffer: { select: { sku: true, name: true, pillar: true } },
+        },
+      },
       client: { select: { ownerId: true } },
     },
   });
@@ -110,6 +119,18 @@ export async function createContractFromQuoteAction(
     startOk,
   );
 
+  const prestationLines = quote.lines.map((l) => ({
+    label: l.label,
+    isTravel: l.isTravel,
+    catalogOffer: l.catalogOffer,
+  }));
+  const prestation = resolveContractPrestation({
+    family: null,
+    serviceKind: null,
+    scopeJson: null,
+    lines: prestationLines,
+  });
+
   let contractId: string;
   try {
     const contract = await prisma.$transaction(async (tx) => {
@@ -119,6 +140,8 @@ export async function createContractFromQuoteAction(
           reference,
           /** P3.3 — brouillon honnête : pas d’activation/signature auto. */
           status: ComContractStatus.BROUILLON,
+          family: prestation?.family ?? undefined,
+          serviceKind: prestation?.serviceKind ?? undefined,
           compositionSource: ComCompositionSource.QUOTE,
           title: title ?? quote.object,
           regime: quote.regime,
@@ -296,6 +319,116 @@ export async function setContractStatusAction(
   };
 }
 
+const setContractPrestationSchema = z.object({
+  contractId: z.string().min(1),
+  family: z.nativeEnum(ComContractFamily),
+  serviceKind: z.nativeEnum(ComServiceKind),
+});
+
+/** Enregistre famille + nature avant génération PDF (contrats legacy). */
+export async function setContractPrestationAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "com.contrats.manage" });
+  const teamIds = await commercialTeamUserIds();
+  const parsed = setContractPrestationSchema.safeParse({
+    contractId: String(formData.get("contractId") ?? "").trim(),
+    family: String(formData.get("family") ?? "").trim(),
+    serviceKind: String(formData.get("serviceKind") ?? "").trim(),
+  });
+  if (!parsed.success) {
+    return { ok: false, error: "Famille ou nature invalide" };
+  }
+  const { contractId, family, serviceKind } = parsed.data;
+
+  const contract = await prisma.comContract.findUnique({
+    where: { id: contractId },
+    select: {
+      id: true,
+      clientId: true,
+      ownerId: true,
+      client: { select: { ownerId: true } },
+    },
+  });
+  if (!contract) return { ok: false, error: "Contrat introuvable" };
+  if (
+    !canAccessComDocForClient(
+      actor,
+      contract.client.ownerId,
+      teamIds,
+      contract.ownerId,
+    )
+  ) {
+    return { ok: false, error: "Hors périmètre" };
+  }
+
+  await prisma.comContract.update({
+    where: { id: contractId },
+    data: { family, serviceKind },
+  });
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "com.contract.prestation",
+    entityType: "com_contract",
+    entityId: contractId,
+    metadata: { family, serviceKind },
+  });
+
+  revalidateContractPaths([
+    `/commercial/contrats/${contractId}`,
+    `/commercial/clients/${contract.clientId}`,
+  ]);
+
+  return { ok: true, message: "Nature de prestation enregistrée" };
+}
+
+async function ensureContractPrestationForPdf(
+  contract: {
+    id: string;
+    family: ComContractFamily | null;
+    serviceKind: ComServiceKind | null;
+    scopeJson: unknown;
+    lines: Array<{
+      label: string;
+      billing: string;
+      catalogOffer: {
+        sku: string;
+        name: string;
+        pillar: CatalogPillar;
+      } | null;
+    }>;
+  },
+  explicit?: { family?: ComContractFamily; serviceKind?: ComServiceKind },
+): Promise<{ family: ComContractFamily; serviceKind: ComServiceKind } | null> {
+  const resolved = resolveContractPrestation({
+    family: explicit?.family ?? contract.family,
+    serviceKind: explicit?.serviceKind ?? contract.serviceKind,
+    scopeJson: contract.scopeJson,
+    lines: contract.lines.map((l) => ({
+      label: l.label,
+      isTravel: l.billing === "COMPLEMENTAIRE",
+      catalogOffer: l.catalogOffer,
+    })),
+  });
+  if (!resolved) return null;
+
+  const family = contract.family ?? resolved.family;
+  const serviceKind = contract.serviceKind ?? resolved.serviceKind;
+
+  if (!contract.family || !contract.serviceKind) {
+    await prisma.comContract.update({
+      where: { id: contract.id },
+      data: {
+        ...(contract.family ? {} : { family }),
+        ...(contract.serviceKind ? {} : { serviceKind }),
+      },
+    });
+  }
+
+  return { family, serviceKind };
+}
+
 /**
  * P4 — fondation génération PDF contrat (charte MSK, familles A/B, classement
  * GED « Contrats », `gedDocumentId`). Signature MVP (P4.4) : tampon + date
@@ -310,12 +443,18 @@ async function generateContractPdfCore(
   actor: SessionUser,
   teamIds: string[],
   contractId: string,
+  prestationOverride?: { family?: ComContractFamily; serviceKind?: ComServiceKind },
 ): Promise<ActionResult & { documentId?: string }> {
   const contract = await prisma.comContract.findUnique({
     where: { id: contractId },
     include: {
       client: true,
-      lines: { orderBy: { sortOrder: "asc" } },
+      lines: {
+        orderBy: { sortOrder: "asc" },
+        include: {
+          catalogOffer: { select: { sku: true, name: true, pillar: true } },
+        },
+      },
       owner: { select: { id: true, firstName: true, lastName: true } },
     },
   });
@@ -337,12 +476,17 @@ async function generateContractPdfCore(
       documentId: contract.gedDocumentId,
     };
   }
-  if (!contract.family || !contract.serviceKind) {
+  const prestation = await ensureContractPrestationForPdf(
+    contract,
+    prestationOverride,
+  );
+  if (!prestation) {
     return {
       ok: false,
       error: "Famille / nature de prestation manquante sur ce contrat",
     };
   }
+  const { family, serviceKind } = prestation;
 
   const signature = await getSignaturePngBytes({
     ownerUserId: contract.ownerId,
@@ -365,10 +509,10 @@ async function generateContractPdfCore(
   try {
     pdfBytes = await generateContractPdf({
       number: contract.reference,
-      family: contract.family,
-      serviceKind: contract.serviceKind,
-      familyLabel: CONTRACT_FAMILY_LABELS[contract.family],
-      serviceKindLabel: SERVICE_KIND_LABELS[contract.serviceKind],
+      family,
+      serviceKind,
+      familyLabel: CONTRACT_FAMILY_LABELS[family],
+      serviceKindLabel: SERVICE_KIND_LABELS[serviceKind],
       title: contract.title ?? undefined,
       clientName: contract.client.contactName || contract.client.name,
       clientCompany: contract.client.name,
@@ -517,5 +661,16 @@ export async function generateContractPdfAction(
   const teamIds = await commercialTeamUserIds();
   const contractId = String(formData.get("contractId") ?? "").trim();
   if (!contractId) return { ok: false, error: "Contrat manquant" };
-  return generateContractPdfCore(actor, teamIds, contractId);
+
+  const familyRaw = String(formData.get("family") ?? "").trim();
+  const serviceKindRaw = String(formData.get("serviceKind") ?? "").trim();
+  const prestationOverride =
+    familyRaw && serviceKindRaw
+      ? {
+          family: familyRaw as ComContractFamily,
+          serviceKind: serviceKindRaw as ComServiceKind,
+        }
+      : undefined;
+
+  return generateContractPdfCore(actor, teamIds, contractId, prestationOverride);
 }

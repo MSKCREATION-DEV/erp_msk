@@ -165,6 +165,8 @@ export default async function CommercialClientDetailPage({
           reference: true,
           status: true,
           title: true,
+          family: true,
+          serviceKind: true,
           gedDocumentId: true,
         },
       },
@@ -465,6 +467,8 @@ export default async function CommercialClientDetailPage({
                   contractId={c.id}
                   reference={c.reference}
                   gedDocumentId={c.gedDocumentId}
+                  family={c.family}
+                  serviceKind={c.serviceKind}
                   canManage={canManageContracts}
                 />
               </li>
