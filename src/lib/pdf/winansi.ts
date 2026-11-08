@@ -17,6 +17,10 @@ export function toWinAnsi(input: string): string {
     .replace(/[\u2018\u2019\u201A]/g, "'")
     .replace(/[\u201C\u201D\u201E]/g, '"')
     .replace(/\u2026/g, "...")
+    // Ligatures françaises (œ/Œ sont en 0x9C/0x8C WinAnsi — hors plage
+    // \xA0-\xFF autorisée ci-dessous) → décomposition sûre.
+    .replace(/œ/g, "oe")
+    .replace(/Œ/g, "OE")
     // Compacte espaces multiples
     .replace(/ {2,}/g, " ")
     .trim()

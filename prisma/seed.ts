@@ -421,21 +421,30 @@ async function seedPhase1Ged() {
       code: "contrat_presta_msk",
       type: "CONTRAT_PRESTA" as const,
       name: "Contrat de prestation MSK",
-      // v2 — corps complet aligné docs/CONTRAT DE PRESTATION DE SERVICES.pdf +
-      // docs/MODELE CONTRAT GESTION DES RESEAUX SOCIAUX (ANALYSE-MODELES-CONTRATS.md
-      // §5.1/§5.2) : 11 articles (objet, durée/résiliation, rémunération, PI,
-      // confidentialité, données personnelles, responsabilité/FM, droit
-      // applicable/litiges, signatures) — v1 ne couvrait que 6 articles courts.
-      version: 2,
+      // v3 (2026-11-08) — clôt les écarts recensés dans
+      // docs/commercial/COMPARAISON-CONTRAT-PRESTA-MSK-v2.md face au PDF réel
+      // docs/CONTRAT DE PRESTATION DE SERVICES.pdf : tableau méta (date
+      // d'effet/durée/droit applicable), tableaux Parties (Client/Prestataire
+      // avec e-mail/téléphone), obligations Prestataire ET Client,
+      // confidentialité réciproque, clause "effets de la résiliation",
+      // notification d'incident (données personnelles), exclusions de
+      // responsabilité, avenant écrit + divisibilité, mention
+      // "Lu et approuvé" imprimée. 13 articles + tableaux (v2 : 9 articles,
+      // pas de tableaux). Voir le doc de comparaison pour le détail et les
+      // adaptations documentées (rôles inversés : MSK = Client).
+      version: 3,
       structureJson: {
         layout: "msk_rh_v1",
         slots: [
           "header",
+          "meta_header",
           "parties",
           "article_objet",
           "duree_resiliation",
           "remuneration",
           "independance",
+          "obligations_prestataire",
+          "obligations_client",
           "propriete_intellectuelle",
           "confidentialite",
           "donnees_personnelles",

@@ -1,18 +1,25 @@
-/** Coordonnées légales MSK — alignées contrats / devis / factures. */
+/**
+ * Coordonnées légales MSK — alignées contrats / devis / factures.
+ * Accents restaurés (2026-11-08) pour coller aux documents de référence
+ * réels (`docs/Contrat de Travail Guiro...pdf`, `docs/Solde de tout
+ * compte...pdf`, etc.) — WinAnsi (`toWinAnsi`) supporte le Latin-1 accentué
+ * sans problème, aucune contrainte technique ne justifiait l'absence
+ * d'accents.
+ */
 export const company = {
   legalName: "MSK CREATION",
   legalForm: "MSK CREATION - SARL",
-  tagline: "Agence de communication et de creation digitale",
+  tagline: "Agence de communication et de création digitale",
   capital: "1.000.000 Francs CFA",
   rccm: "MA.BKO.2025 B 01",
   managerName: "Mathieu Diarra",
-  managerTitle: "gerant",
+  managerTitle: "gérant",
   addressLines: [
-    "ACI 2000, 2e etage, Porte B4",
+    "ACI 2000, 2e étage, Porte B4",
     "Immeuble Gamby Lah, Bamako",
   ],
   addressOneLine:
-    "ACI 2000, 2e etage, Porte B4, Immeuble Gamby Lah, Bamako",
+    "ACI 2000, 2e étage, Porte B4, Immeuble Gamby Lah, Bamako",
   fiscalId: "085156924A",
   iban: "ML1810 1001 0043 9122 4101 57",
   email: "contact@mskcreation.net",

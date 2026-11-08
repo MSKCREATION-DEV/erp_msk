@@ -58,6 +58,32 @@ async function main() {
     },
   });
   assert.ok(travail.length > 1000);
+  const travailText = extractText(travail);
+  if (travailText) {
+    for (const article of [
+      "Article 7 : Congés payés",
+      "Article 8 : Sécurité sociale, retraite et prévoyance",
+      "Article 9 : Confidentialité",
+      "Article 10 : Matériel et outils de travail",
+      "Article 11 : Propriété intellectuelle",
+      "Article 12 : Discipline et sanctions",
+      "Article 13 : Achats de logiciels, licences et ressources",
+      "Article 14 : Résiliation du contrat",
+      "Article 15 : Dispositions générales",
+    ]) {
+      assert.ok(
+        travailText.includes(article),
+        `contrat travail — article manquant : "${article}"`,
+      );
+    }
+    // Pas de trou de numérotation (ex. "Article 16" sans "Article 15" avant)
+    assert.ok(
+      !travailText.includes("Article 16"),
+      "contrat travail — numérotation d'article incohérente (trou détecté)",
+    );
+  } else {
+    console.warn("⚠ pdftotext indisponible — assertions de contenu travail ignorées");
+  }
 
   const stage = await generateContractStagePdf({
     kind: "STAGE",
@@ -68,6 +94,24 @@ async function main() {
     employee: { firstName: "Yaye", lastName: "Bah", jobTitle: "Stagiaire" },
   });
   assert.ok(stage.length > 1000);
+  const stageText = extractText(stage);
+  if (stageText) {
+    for (const article of [
+      "Article 7 : Matériel et outils de travail",
+      "Article 8 : Propriété intellectuelle",
+      "Article 9 : Discipline et sanctions",
+      "Article 10 : Achats de logiciels, licences et ressources",
+      "Article 11 : Résiliation du contrat",
+      "Article 12 : Dispositions générales",
+    ]) {
+      assert.ok(
+        stageText.includes(article),
+        `contrat stage — article manquant : "${article}"`,
+      );
+    }
+  } else {
+    console.warn("⚠ pdftotext indisponible — assertions de contenu stage ignorées");
+  }
 
   const presta = await generateContractPrestaPdf({
     kind: "PRESTA",
@@ -75,28 +119,48 @@ async function main() {
     startDate: "01/10/2026",
     endDate: "31/12/2026",
     salaryXof: 250_000,
-    employee: { firstName: "Fatou", lastName: "Diallo", jobTitle: "Consultante content" },
+    employee: {
+      firstName: "Fatou",
+      lastName: "Diallo",
+      jobTitle: "Consultante content",
+      email: "fatou.diallo@example.com",
+      phone: "+223 70 00 00 00",
+      address: "Hamdallaye ACI 2000, Bamako",
+    },
   });
   assert.ok(presta.length > 1000);
   const prestaText = extractText(presta);
   if (prestaText) {
     for (const article of [
+      "INFORMATIONS CLES",
+      "ENTRE LES SOUSSIGNÉS",
+      "LE CLIENT",
+      "LE PRESTATAIRE",
       "Article 1 : Objet",
-      "Article 2 : Duree et resiliation",
-      "Article 3 : Remuneration et modalites de paiement",
-      "Article 4 : Independance",
-      "Article 5 : Propriete intellectuelle",
-      "Article 6 : Confidentialite",
-      "Article 7 : Protection des donnees personnelles",
-      "Article 8 : Responsabilite et force majeure",
-      "Article 9 : Droit applicable et reglement des litiges",
-      "Article 11 : Signatures",
+      "Article 2 : Durée et résiliation",
+      "Article 3 : Rémunération et modalités de paiement",
+      "Article 4 : Indépendance",
+      "Article 5 : Obligations du Prestataire",
+      "Article 6 : Obligations du Client",
+      "Article 7 : Propriété intellectuelle",
+      "Article 8 : Confidentialité",
+      "Article 9 : Protection des données personnelles",
+      "Article 10 : Responsabilité et force majeure",
+      "Article 11 : Droit applicable et règlement des litiges",
+      "Article 13 : Signatures",
+      "Lu et approuvé",
     ]) {
       assert.ok(
         prestaText.includes(article),
-        `contrat presta RH — article manquant : "${article}"`,
+        `contrat presta RH — section manquante : "${article}"`,
       );
     }
+    // Confidentialité doit être réciproque (v3) — pas "Le Prestataire s'engage"
+    assert.ok(
+      prestaText.includes("Chaque Partie s'engage") &&
+        prestaText.includes("garder strictement confidentielles"),
+      "contrat presta RH — confidentialité doit être réciproque (Chaque Partie)",
+    );
   } else {
     console.warn("⚠ pdftotext indisponible — assertions de contenu presta RH ignorées");
   }
@@ -134,6 +198,18 @@ async function main() {
     leaveBalanceDays: 4,
   });
   assert.ok(paie.length > 1000);
+  const paieText = extractText(paie);
+  if (paieText) {
+    // Régression fidélité vs docs/Fiche de Paie de Guiro...pdf (net 165 000 → brut 224 673, cotisations 59 673)
+    for (const amount of ["224 673", "59 673", "165 000", "1 296", "952"]) {
+      assert.ok(
+        paieText.includes(amount),
+        `fiche de paie — montant attendu manquant (gross-up 26,56 %) : "${amount}"`,
+      );
+    }
+  } else {
+    console.warn("⚠ pdftotext indisponible — assertions de contenu fiche de paie ignorées");
+  }
 
   console.log("✓ rh.test.ts — 8 PDF OK");
 }
