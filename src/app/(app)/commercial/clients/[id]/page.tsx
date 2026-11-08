@@ -35,6 +35,7 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
+import { ContractDocActions } from "@/components/commercial/contract-doc-actions";
 import { ClientDetailActions } from "@/components/commercial/client-detail-actions";
 import { ClientReassignForm } from "@/components/commercial/client-reassign-form";
 import { OriginChip } from "@/components/crm/origin-chip";
@@ -164,6 +165,7 @@ export default async function CommercialClientDetailPage({
           reference: true,
           status: true,
           title: true,
+          gedDocumentId: true,
         },
       },
       owner: {
@@ -218,6 +220,7 @@ export default async function CommercialClientDetailPage({
   const canEdit = hasPermission(user, "com.clients.manage");
   const canCreateQuote = hasPermission(user, "com.devis.create");
   const canReassignOwner = canEdit;
+  const canManageContracts = hasPermission(user, "com.contrats.manage");
 
   const crmTrailWhere =
     client.crmOrganizationId || client.sourceOpportunityId
@@ -434,25 +437,40 @@ export default async function CommercialClientDetailPage({
       </div>
 
       {client.contracts.length > 0 ? (
-        <Surface className="p-4 sm:p-5">
-          <h2 className="mb-3 text-sm font-semibold">Contrats</h2>
-          <ul className="flex flex-wrap gap-2">
+        <Section title="Contrats">
+          <ul className="space-y-2">
             {client.contracts.map((c) => (
-              <li key={c.id}>
-                <Link
-                  prefetch={false}
-                  href={`/commercial/contrats/${c.id}`}
-                  className="inline-flex items-center gap-2 rounded-full border border-msk-ink/10 bg-white px-3 py-1 text-sm text-msk-blue hover:bg-msk-blue/4"
-                >
-                  {c.reference}
+              <li
+                key={c.id}
+                className="flex flex-col gap-2.5 rounded-xl border border-msk-ink/8 p-3.5 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                  <Link
+                    prefetch={false}
+                    href={`/commercial/contrats/${c.id}`}
+                    className="font-medium text-msk-blue hover:underline"
+                  >
+                    {c.reference}
+                  </Link>
                   <Badge tone={c.status === "ACTIF" ? "success" : "muted"}>
                     {c.status}
                   </Badge>
-                </Link>
+                  {c.title ? (
+                    <span className="truncate text-sm text-msk-ink/50">
+                      {c.title}
+                    </span>
+                  ) : null}
+                </div>
+                <ContractDocActions
+                  contractId={c.id}
+                  reference={c.reference}
+                  gedDocumentId={c.gedDocumentId}
+                  canManage={canManageContracts}
+                />
               </li>
             ))}
           </ul>
-        </Surface>
+        </Section>
       ) : null}
 
       {/* Bandeau identité — même structure que fiche prospect */}

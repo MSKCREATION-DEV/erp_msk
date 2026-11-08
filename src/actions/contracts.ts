@@ -13,6 +13,7 @@ import {
 import type { ActionResult } from "@/actions/auth";
 import { writeAudit } from "@/lib/audit";
 import { requireUser } from "@/lib/auth/session";
+import type { SessionUser } from "@/lib/rbac/resolve";
 import { buildContractLinesFromQuote } from "@/lib/commercial/contract-from-quote";
 import { ensureClientDocFolder } from "@/lib/commercial/ged-client";
 import {
@@ -263,6 +264,24 @@ export async function setContractStatusAction(
     metadata: { from: contract.status, to: next, signed: isFirstActivation },
   });
 
+  /**
+   * Auto-génération PDF+GED à la 1ʳᵉ activation (acte de signature) si pas
+   * déjà fait — best-effort : une famille/prestation manquante ne doit pas
+   * faire échouer l’activation, l’utilisateur garde la génération manuelle
+   * sur la fiche contrat (idempotent via `gedDocumentId`).
+   */
+  let autoPdfSuffix = "";
+  if (isFirstActivation) {
+    try {
+      const pdfRes = await generateContractPdfCore(actor, teamIds, contractId);
+      if (pdfRes.ok && pdfRes.documentId) {
+        autoPdfSuffix = " — document PDF généré automatiquement";
+      }
+    } catch {
+      // Génération manuelle restera possible depuis la fiche contrat.
+    }
+  }
+
   revalidateContractPaths([
     `/commercial/contrats/${contractId}`,
     `/commercial/clients/${contract.clientId}`,
@@ -270,9 +289,10 @@ export async function setContractStatusAction(
 
   return {
     ok: true,
-    message: isFirstActivation
-      ? "Contrat signé et activé"
-      : "Statut du contrat mis à jour",
+    message:
+      (isFirstActivation
+        ? "Contrat signé et activé"
+        : "Statut du contrat mis à jour") + autoPdfSuffix,
   };
 }
 
@@ -280,15 +300,17 @@ export async function setContractStatusAction(
  * P4 — fondation génération PDF contrat (charte MSK, familles A/B, classement
  * GED « Contrats », `gedDocumentId`). Signature MVP (P4.4) : tampon + date
  * saisie — pas d’e-signature. Idempotent (ne régénère pas si déjà présent).
+ *
+ * Cœur partagé par l’action manuelle (`generateContractPdfAction`, bouton
+ * fiche contrat) et l’auto-déclenchement à la 1ʳᵉ activation
+ * (`setContractStatusAction`) — un seul chemin de génération, même
+ * idempotence `gedDocumentId`.
  */
-export async function generateContractPdfAction(
-  formData: FormData,
+async function generateContractPdfCore(
+  actor: SessionUser,
+  teamIds: string[],
+  contractId: string,
 ): Promise<ActionResult & { documentId?: string }> {
-  const actor = await requireUser({ permission: "com.contrats.manage" });
-  const teamIds = await commercialTeamUserIds();
-  const contractId = String(formData.get("contractId") ?? "").trim();
-  if (!contractId) return { ok: false, error: "Contrat manquant" };
-
   const contract = await prisma.comContract.findUnique({
     where: { id: contractId },
     include: {
@@ -485,4 +507,15 @@ export async function generateContractPdfAction(
   revalidateContractPaths([`/commercial/contrats/${contract.id}`]);
 
   return { ok: true, message: "PDF généré", documentId: doc.id };
+}
+
+/** Action serveur — déclenchement manuel (bouton « Générer le contrat »). */
+export async function generateContractPdfAction(
+  formData: FormData,
+): Promise<ActionResult & { documentId?: string }> {
+  const actor = await requireUser({ permission: "com.contrats.manage" });
+  const teamIds = await commercialTeamUserIds();
+  const contractId = String(formData.get("contractId") ?? "").trim();
+  if (!contractId) return { ok: false, error: "Contrat manquant" };
+  return generateContractPdfCore(actor, teamIds, contractId);
 }

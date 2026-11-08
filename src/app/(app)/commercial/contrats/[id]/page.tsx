@@ -16,10 +16,9 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { ContractDocActions } from "@/components/commercial/contract-doc-actions";
 import { ContractInvoiceActions } from "@/components/commercial/contract-invoice-actions";
-import { ContractPdfAction } from "@/components/commercial/contract-pdf-action";
 import { ContractStatusActions } from "@/components/commercial/contract-status-actions";
-import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 
 export const metadata: Metadata = { title: "Contrat" };
 
@@ -183,23 +182,17 @@ export default async function ContratDetailPage({
           {canInvoice && contract.status === "ACTIF" ? (
             <ContractInvoiceActions contractId={contract.id} />
           ) : null}
-          {canManageContract ? (
-            <div>
-              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
-                Document contrat
-              </p>
-              {contract.gedDocumentId ? (
-                <DocPdfThumb
-                  documentId={contract.gedDocumentId}
-                  title={contract.reference}
-                  subtitle="Contrat PDF — charte MSK"
-                  className="max-w-full"
-                />
-              ) : (
-                <ContractPdfAction contractId={contract.id} />
-              )}
-            </div>
-          ) : null}
+          <div>
+            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+              Document contrat
+            </p>
+            <ContractDocActions
+              contractId={contract.id}
+              reference={contract.reference}
+              gedDocumentId={contract.gedDocumentId}
+              canManage={canManageContract}
+            />
+          </div>
         </Surface>
 
         <Surface className="overflow-hidden p-0 @lg:col-span-8">
