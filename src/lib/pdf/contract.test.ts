@@ -104,7 +104,20 @@ async function main() {
   if (textA) {
     assertContainsAll(textA, FAMILY_A_ARTICLES, "Famille A");
     // Grille d'offres packagées (Article 2) + offre retenue.
-    assertContainsAll(textA, ["STANDARD", "PRO", "PREMIUM", "OUI (retenue)"], "Famille A — grille offres");
+    assertContainsAll(
+      textA,
+      ["STANDARD", "PRO", "PREMIUM", "retenue", "ENTRE LES SOUSSIGN"],
+      "Famille A — grille offres / en-tête",
+    );
+    assert.ok(
+      textA.includes("CONTRAT DE PRESTATION DE SERVICES") ||
+        textA.includes("CONTRAT DE PRESTATION"),
+      "Famille A — titre principal centré manquant",
+    );
+    assert.ok(
+      textA.includes("LE PRESTATAIRE") && textA.includes("LE CLIENT"),
+      "Famille A — blocs parties manquants",
+    );
   } else {
     console.warn("⚠ pdftotext indisponible — assertions de contenu Famille A ignorées");
   }

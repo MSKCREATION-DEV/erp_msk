@@ -971,7 +971,7 @@ export async function generateContractPdf(
   const PAGE_H = 841.89;
   const margin = 42;
   const contentW = PAGE_W - margin * 2;
-  const FOOTER_SAFE = 70;
+  const FOOTER_SAFE = 78;
   const WHITE = rgb(1, 1, 1);
 
   const currency = input.currency ?? "FCFA";
@@ -993,11 +993,48 @@ export async function generateContractPdf(
   const amicableDays = input.amicableDays ?? 30;
 
   let page = pdf.addPage([PAGE_W, PAGE_H]);
-  let y = PAGE_H - 60;
+  let y = PAGE_H - 48;
+
+  function drawDashedHLine(atY: number, x0 = margin, x1 = PAGE_W - margin) {
+    const dash = 4;
+    const gap = 3;
+    let x = x0;
+    while (x < x1) {
+      const end = Math.min(x + dash, x1);
+      page.drawLine({
+        start: { x, y: atY },
+        end: { x: end, y: atY },
+        thickness: 0.8,
+        color: BLUE,
+      });
+      x = end + gap;
+    }
+  }
+
+  function drawCentered(text: string, size: number, f: PDFFont, color: ReturnType<typeof rgb>) {
+    const t = toWinAnsi(text);
+    const tw = f.widthOfTextAtSize(t, size);
+    page.drawText(t, {
+      x: (PAGE_W - tw) / 2,
+      y,
+      size,
+      font: f,
+      color,
+    });
+  }
+
+  /** En-tête compact des pages suivantes (tagline + filet). */
+  function drawContinuationHeader() {
+    drawCentered(company.tagline, 8, fontOblique, MUTED);
+    y -= 12;
+    drawDashedHLine(y);
+    y -= 22;
+  }
 
   function newPage() {
     page = pdf.addPage([PAGE_W, PAGE_H]);
-    y = PAGE_H - 60;
+    y = PAGE_H - 48;
+    drawContinuationHeader();
   }
 
   function ensureSpace(h: number) {
@@ -1006,16 +1043,93 @@ export async function generateContractPdf(
 
   function sectionTitle(text: string) {
     ensureSpace(32);
-    draw(page, text, { x: margin, y, size: 11, font: fontBold, color: INK });
-    y -= 8;
+    draw(page, text, { x: margin, y, size: 10.5, font: fontBold, color: INK });
+    y -= 6;
+    page.drawRectangle({
+      x: margin,
+      y: y - 2,
+      width: contentW,
+      height: 1.2,
+      color: BLUE,
+    });
+    y -= 16;
+  }
+
+  /**
+   * Tableau titre + lignes libellé | valeur (réf. modèle réseaux sociaux).
+   * Colonne libellé fond bleu clair, valeurs fond blanc.
+   */
+  function keyValueTable(
+    title: string,
+    rows: Array<[string, string]>,
+    opts?: { labelW?: number },
+  ) {
+    const labelW = opts?.labelW ?? 130;
+    const valueW = contentW - labelW;
+    const rowSize = 8.5;
+    ensureSpace(28 + rows.length * 16);
+    // Titre de bloc
     page.drawRectangle({
       x: margin,
       y: y - 4,
       width: contentW,
-      height: 1,
+      height: 16,
       color: BLUE,
     });
+    draw(page, title, {
+      x: margin + 8,
+      y: y + 1,
+      size: 8,
+      font: fontBold,
+      color: WHITE,
+    });
     y -= 18;
+    for (const [label, value] of rows) {
+      const valueLines = wrapParagraph(
+        value?.trim() ? value : "—",
+        font,
+        rowSize,
+        valueW - 12,
+      );
+      const n = Math.max(valueLines.length, 1);
+      const rowH = n * 11 + 6;
+      ensureSpace(rowH + 2);
+      page.drawRectangle({
+        x: margin,
+        y: y - rowH + 8,
+        width: labelW,
+        height: rowH,
+        color: LIGHT_BLUE,
+      });
+      page.drawRectangle({
+        x: margin + labelW,
+        y: y - rowH + 8,
+        width: valueW,
+        height: rowH,
+        borderColor: rgb(0.85, 0.88, 0.92),
+        borderWidth: 0.4,
+        color: WHITE,
+      });
+      draw(page, label, {
+        x: margin + 6,
+        y: y - 2,
+        size: 7.5,
+        font: fontBold,
+        color: BLUE,
+        maxWidth: labelW - 10,
+      });
+      valueLines.forEach((line, li) => {
+        draw(page, line, {
+          x: margin + labelW + 6,
+          y: y - 2 - li * 11,
+          size: rowSize,
+          font,
+          color: INK,
+        });
+      });
+      y -= rowH;
+    }
+    y -= 10;
   }
 
   function subTitle(text: string) {
@@ -1093,167 +1207,94 @@ export async function generateContractPdf(
     y -= 10;
   }
 
-  // ---- Couverture / en-tête ----
+  // ---- Couverture / en-tête (aligné modèle MSK réseaux sociaux) ----
   if (logo) {
-    const maxW = 130;
+    const maxW = 150;
     const scale = maxW / logo.width;
     const h = logo.height * scale;
-    page.drawImage(logo, { x: margin, y: y - h + 20, width: maxW, height: h });
-  } else {
-    draw(page, company.legalName, {
-      x: margin,
-      y,
-      size: 14,
-      font: fontBold,
-      color: INK,
+    page.drawImage(logo, {
+      x: (PAGE_W - maxW) / 2,
+      y: y - h,
+      width: maxW,
+      height: h,
     });
+    y -= h + 8;
+  } else {
+    drawCentered(company.legalName, 16, fontBold, BLUE);
+    y -= 18;
   }
-  const title = `| CONTRAT - ${input.number}`;
-  drawRight(page, title, {
-    right: PAGE_W - margin,
-    y,
-    size: 16,
-    font: fontBold,
-    color: INK,
-  });
-  y -= 24;
-  drawRight(page, `${input.familyLabel} - ${input.serviceKindLabel}`, {
-    right: PAGE_W - margin,
-    y,
-    size: 9,
-    font,
-    color: MUTED,
-  });
+  drawCentered(company.tagline, 9, fontOblique, MUTED);
   y -= 14;
-  drawRight(page, `Date d'etablissement : ${issued}`, {
-    right: PAGE_W - margin,
-    y,
-    size: 9,
-    font,
-    color: MUTED,
-  });
-  if (isFamilyA) {
-    y -= 14;
-    drawRight(
-      page,
-      `Duree initiale : ${input.renewalTerms ? "cf. Article 4" : "3 mois - renouvelable par mois (preavis " + noticeDays + " jours)"}`,
-      { right: PAGE_W - margin, y, size: 8, font, color: MUTED },
-    );
-  }
-  y -= 14;
-  drawRight(page, "Droit applicable : Droit malien - Juridictions de Bamako", {
-    right: PAGE_W - margin,
-    y,
-    size: 8,
-    font,
-    color: MUTED,
-  });
-  y -= 30;
+  drawDashedHLine(y);
+  y -= 28;
 
-  if (input.title) {
-    draw(page, input.title, { x: margin, y, size: 13, font: fontBold, color: BLUE });
-    y -= 26;
-  }
-
-  // ---- Parties ----
-  sectionTitle("ENTRE LES SOUSSIGNES");
-  const partyColW = contentW / 2 - 10;
-  const partyTopY = y;
-  draw(page, "LE PRESTATAIRE", { x: margin, y, size: 8, font: fontBold, color: BLUE });
+  const mainTitle = isFamilyA
+    ? "CONTRAT DE PRESTATION DE SERVICES"
+    : "CONTRAT D'ENGAGEMENT";
+  const subTitleText =
+    input.title?.trim() ||
+    input.serviceKindLabel ||
+    input.familyLabel;
+  drawCentered(mainTitle, 14, fontBold, INK);
+  y -= 16;
+  drawCentered(subTitleText, 11, fontBold, BLUE);
   y -= 12;
-  draw(page, `${company.legalName} (${company.legalForm.split(" - ")[1] ?? "SARL"})`, {
-    x: margin,
-    y,
-    size: 9.5,
-    font: fontBold,
-    color: INK,
-    maxWidth: partyColW,
-  });
-  y -= 13;
-  for (const line of company.addressLines) {
-    draw(page, line, { x: margin, y, size: 8.5, font, color: MUTED, maxWidth: partyColW });
-    y -= 11;
-  }
-  draw(page, `NIF : ${company.fiscalId}`, { x: margin, y, size: 8.5, font, color: MUTED });
-  y -= 11;
-  draw(page, `Represente par ${company.managerName}, ${company.managerTitle}`, {
-    x: margin,
-    y,
-    size: 8.5,
-    font,
-    color: MUTED,
-    maxWidth: partyColW,
-  });
-  y -= 11;
-  draw(page, `${company.email} - ${company.phones}`, {
-    x: margin,
-    y,
-    size: 8,
-    font,
-    color: MUTED,
-    maxWidth: partyColW,
-  });
-  const providerBottom = y;
+  drawCentered(`Réf. ${input.number}`, 8.5, font, MUTED);
+  y -= 22;
 
-  let cy = partyTopY;
-  const clientX = margin + partyColW + 20;
-  draw(page, "LE CLIENT", { x: clientX, y: cy, size: 8, font: fontBold, color: BLUE });
-  cy -= 12;
-  draw(page, input.clientCompany ?? input.clientName, {
-    x: clientX,
-    y: cy,
-    size: 9.5,
-    font: fontBold,
-    color: INK,
-    maxWidth: partyColW,
-  });
-  cy -= 13;
-  draw(page, `Forme juridique : ${input.clientLegalForm ?? "---"}`, {
-    x: clientX,
-    y: cy,
-    size: 8,
-    font,
-    color: MUTED,
-    maxWidth: partyColW,
-  });
-  cy -= 11;
-  draw(page, `NINA / RCCM : ${input.clientRegistryId ?? "---"}`, {
-    x: clientX,
-    y: cy,
-    size: 8,
-    font,
-    color: MUTED,
-    maxWidth: partyColW,
-  });
-  cy -= 11;
-  draw(page, input.clientAddress ?? "---", {
-    x: clientX,
-    y: cy,
-    size: 8.5,
-    font,
-    color: MUTED,
-    maxWidth: partyColW,
-  });
-  cy -= 11;
-  draw(page, `Represente par ${input.contactName ?? "---"}${input.contactTitle ? ` (${input.contactTitle})` : ""}`, {
-    x: clientX,
-    y: cy,
-    size: 8.5,
-    font,
-    color: MUTED,
-    maxWidth: partyColW,
-  });
-  cy -= 11;
-  const contactLine = [input.clientEmail, input.clientPhone].filter(Boolean).join(" - ") || "---";
-  draw(page, contactLine, { x: clientX, y: cy, size: 8, font, color: MUTED, maxWidth: partyColW });
-  cy -= 11;
+  const durationLabel = isFamilyA
+    ? `3 mois — renouvelable par mois (préavis ${noticeDays} jours)`
+    : input.renewalTerms?.trim()
+      ? input.renewalTerms.trim().slice(0, 90)
+      : "Selon cahier des charges";
+  keyValueTable("MÉTA-DONNÉES DU CONTRAT", [
+    ["Date d'effet", input.startDate?.trim() || issued],
+    ["Durée initiale", durationLabel],
+    ["Droit applicable", "Droit malien — Juridictions de Bamako"],
+  ]);
 
-  y = Math.min(providerBottom, cy) - 16;
+  // ---- Parties (tableaux libellé / valeur, comme la référence) ----
+  drawCentered("ENTRE LES SOUSSIGNÉS", 11, fontBold, INK);
+  y -= 18;
+
+  keyValueTable("LE PRESTATAIRE", [
+    ["Raison sociale", company.legalName],
+    ["Forme juridique", company.legalForm.split(" - ")[1] ?? "SARL"],
+    ["NIF / SIRET", company.fiscalId],
+    ["Siège social", company.addressOneLine],
+    [
+      "Représentant légal",
+      `${company.managerName} — ${company.managerTitle}`,
+    ],
+    ["E-mail", company.email],
+    ["Téléphone", company.phones],
+  ]);
+
+  keyValueTable("LE CLIENT", [
+    ["Nom / Raison sociale", input.clientCompany ?? input.clientName],
+    ["Forme juridique", input.clientLegalForm?.trim() || "—"],
+    ["NINA / RCCM", input.clientRegistryId?.trim() || "—"],
+    ["Adresse", input.clientAddress?.trim() || "—"],
+    [
+      "Représentant légal",
+      input.contactName
+        ? `${input.contactName}${input.contactTitle ? ` — ${input.contactTitle}` : ""}`
+        : "—",
+    ],
+    ["E-mail", input.clientEmail?.trim() || "—"],
+    ["Téléphone", input.clientPhone?.trim() || "—"],
+  ]);
+
   paragraph(
-    'Ci-apres designes ensemble "les Parties" et individuellement "la Partie". Il a ete convenu et arrete ce qui suit :',
+    "Ci-après désignés ensemble « les Parties » et individuellement « la Partie ». Il a été convenu et arrêté ce qui suit :",
     8.5,
+    INK,
   );
-  y -= 8;
+  y -= 10;
+
+  // Largeur utile pour les signatures (2 colonnes)
+  const partyColW = contentW / 2 - 10;
+  const clientX = margin + partyColW + 20;
 
   if (isFamilyA) {
     y = renderFamilyAArticles();
@@ -1357,26 +1398,41 @@ export async function generateContractPdf(
   // ---- Pied de page + pagination (post-traitement, toutes les pages) ----
   const pages = pdf.getPages();
   pages.forEach((p, idx) => {
-    const footer1 = company.legalForm;
-    const footer2 = `${company.addressOneLine}. NIF : ${company.fiscalId}`;
-    draw(p, footer1, {
-      x: (PAGE_W - fontOblique.widthOfTextAtSize(toWinAnsi(footer1), 8)) / 2,
-      y: 36,
-      size: 8,
-      font: fontOblique,
-      color: MUTED,
-    });
-    draw(p, footer2, {
-      x: (PAGE_W - fontOblique.widthOfTextAtSize(toWinAnsi(footer2), 7.5)) / 2,
-      y: 24,
-      size: 7.5,
-      font: fontOblique,
-      color: MUTED,
-    });
+    // Filet pointillé au-dessus du pied (charte référence)
+    const dashY = 52;
+    const dash = 4;
+    const gap = 3;
+    let dx = margin;
+    while (dx < PAGE_W - margin) {
+      const end = Math.min(dx + dash, PAGE_W - margin);
+      p.drawLine({
+        start: { x: dx, y: dashY },
+        end: { x: end, y: dashY },
+        thickness: 0.7,
+        color: BLUE,
+      });
+      dx = end + gap;
+    }
+    const footer1 = `Adresse : ${company.addressOneLine}`;
+    const footer2 = `Numéro d'identifiant fiscal : ${company.fiscalId}  ·  E-mail : ${company.email}`;
+    const footer3 = `Tél : ${company.phones}`;
+    const center = (text: string, atY: number, size: number) => {
+      const t = toWinAnsi(text);
+      p.drawText(t, {
+        x: (PAGE_W - font.widthOfTextAtSize(t, size)) / 2,
+        y: atY,
+        size,
+        font,
+        color: MUTED,
+      });
+    };
+    center(footer1, 40, 6.5);
+    center(footer2, 28, 6.5);
+    center(footer3, 16, 6.5);
     drawRight(p, `Page ${idx + 1}/${pages.length}`, {
       right: PAGE_W - margin,
-      y: 24,
-      size: 7.5,
+      y: 16,
+      size: 7,
       font: fontOblique,
       color: MUTED,
     });
@@ -1405,13 +1461,18 @@ export async function generateContractPdf(
     y -= 4;
 
     if (input.serviceKind === "RESEAUX_SOCIAUX") {
-      const tierCol = (tier: "STANDARD" | "PRO" | "PREMIUM") =>
-        input.offerTier === tier ? "OUI (retenue)" : "";
+      const tierMark = (tier: "STANDARD" | "PRO" | "PREMIUM") =>
+        input.offerTier === tier ? "OUI (retenue)" : "—";
       table(
         ["", "STANDARD", "PRO", "PREMIUM"],
-        [150, (contentW - 150) / 3, (contentW - 150) / 3, (contentW - 150) / 3],
+        [148, (contentW - 148) / 3, (contentW - 148) / 3, (contentW - 148) / 3],
         [
-          ["Offre souscrite", tierCol("STANDARD"), tierCol("PRO"), tierCol("PREMIUM")],
+          [
+            "Offre souscrite",
+            tierMark("STANDARD"),
+            tierMark("PRO"),
+            tierMark("PREMIUM"),
+          ],
           ...RS_OFFER_MATRIX.map((r) => [r.label, r.standard, r.pro, r.premium]),
         ],
       );

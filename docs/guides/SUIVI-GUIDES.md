@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-09 (Wizard client UX : identité figée, composition picker, récap crayons ; voir §8) |
+| Dernière mise à jour | 2026-11-09 (PDF contrat : en-tête / parties alignés modèle MSK ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -192,6 +192,14 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-09 — PDF contrat commercial : en-tête / parties / pied alignés référence MSK
+
+- **Pourquoi** : `MSK-CONTRAT-2026-001` repris du layout devis (`| CONTRAT - N°` à droite) — logo non centré, pas de tagline, méta flottantes, parties en colonnes libres, écart fort vs `docs/MODELE CONTRAT GESTION DES RESEAUX SOCIAUX`.
+- **Quoi** : `generateContractPdf` — logo + tagline centrés, filet pointillé bleu, titre « CONTRAT DE PRESTATION… » / « CONTRAT D'ENGAGEMENT », tableau méta (date / durée / droit), tableaux LE PRESTATAIRE / LE CLIENT (libellé | valeur), pied pointillé + bloc adresse/NIF/tél, en-tête de continuation page 2+.
+- **Fichiers** : `src/lib/pdf/commercial.ts`, `src/lib/pdf/contract.test.ts`.
+- **Tests** : `npm run test:pdf-contract` (via `contract.test.ts`) OK.
+- **Statut doc** : pas de guide parcours UI changé ; dette « accents articles corps » partiellement ouverte (en-tête/parties accentués ; articles 1–13 encore ASCII historiques).
 
 ### 2026-11-09 — Wizard « Transformer en client » UX (identité figée, composition, récap)
 
