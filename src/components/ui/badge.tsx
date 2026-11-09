@@ -8,6 +8,8 @@ const tones = {
   success: "bg-emerald-500/10 text-emerald-700",
 } as const;
 
+export type BadgeTone = keyof typeof tones;
+
 export function Badge({
   children,
   tone = "ink",

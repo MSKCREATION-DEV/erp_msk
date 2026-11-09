@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-09 (PDF contrat : en-tête / parties alignés modèle MSK ; voir §8) |
+| Dernière mise à jour | 2026-11-09 (Comptabilité : liste + compte « Clients » remplace « Créances clients » ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -193,12 +193,19 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
-### 2026-11-09 — Docs sensibles hors dépôt
+### 2026-11-09 — Comptabilité : « Clients » remplace « Créances clients »
 
-- **Pourquoi** : contrats nominatifs, paie, CRM Excel, devis/factures clients, CDC et CR Direction ne doivent plus être versionnés.
-- **Quoi** : retrait tracking + disque des fichiers listés ; `.gitignore` élargi ; libellés `templateRef` / inventaires commerciaux / phases pointent « hors dépôt / locale » ; scripts CRM acceptent `CRM_XLSX_PATH`.
+- **Pourquoi** : aligner la vue comptable sur la complétude Commercial/Prospects (recherche, filtres, tri, pagination) et donner à chaque client un vrai **compte client comptable**, distinct de la fiche commerciale, au lieu d’un simple état de créances.
+- **Quoi** : nouvelle route `/comptabilite/clients` (liste : nom, suivi par, facturé, payé, solde, retard, statut, échéance — recherche + filtre statut Ouvert/Soldé/En retard + tri colonnes + pagination, ligne entièrement cliquable) ; `/comptabilite/clients/[id]` = compte client (KPI soldes, balance âgée 0-30/31-60/61-90/90+, factures avec filtre payé/non payé/en attente, paiements, historique mouvements factures+paiements+avoirs) avec lien secondaire vers la fiche commerciale `/commercial/clients/[id]` (inchangée) ; retour intelligent (`PageHeader backHref` avec `?from=list` + `q`/`statut`/`sort`/`dir`/`page` préservés) ; nav hub Comptabilité mis à jour (libellé « Clients ») ; `/comptabilite/creances` conservée en redirection vers `?statut=OUVERT,RETARD` — pas de 404 sur les liens/favoris existants.
+- **Fichiers** : `src/app/(app)/comptabilite/clients/**`, `src/app/(app)/comptabilite/creances/page.tsx`, `src/app/(app)/comptabilite/page.tsx`, `src/lib/comptabilite/client-accounts.ts` (+ test), `src/lib/comptabilite/load-client-accounts.ts`, `src/components/comptabilite/clients-filter-modal.tsx`, `src/components/ui/badge.tsx` (export `BadgeTone`).
+- **Statut doc** : module `comptabilite` reste `stub` (aucun guide publié) — rien à repasser `outdated` ; à prioriser lors du prochain lot Comptabilité : guide « Comprendre un compte client ».
+
+### 2026-11-09 — Docs sensibles hors GitHub (locaux conservés)
+
+- **Pourquoi** : contrats nominatifs, paie, CRM Excel, devis/factures clients, CDC et CR Direction ne doivent **jamais** être sur GitHub — mais restent des **références métier locales** utiles.
+- **Quoi** : **untrack** (`git rm` / retrait du tracking) + `.gitignore` élargi — **pas** de suppression volontaire du working tree ; libellés `templateRef` / inventaires / phases = « hors dépôt Git / local only » ; scripts CRM acceptent `CRM_XLSX_PATH`.
 - **Fichiers** : `.gitignore`, `prisma/seed.ts`, `docs/commercial/*`, `docs/phases/*`, `README.md`, scripts CRM, ce suivi.
-- **Statut doc** : chemins `docs/*.pdf|xlsx` ne sont plus des liens repo — copies locales uniquement.
+- **Statut doc** : chemins PDF/XLSX listés = copies **locales** (gitignorées), pas des liens repo.
 
 ### 2026-11-09 — Gabarits : crash P2023, composition PDF, fiches détail
 

@@ -109,10 +109,10 @@ export default async function ComptabiliteHubPage() {
           : "Factures COM → proposition VE",
     },
     (canEtats || canCpt) && {
-      href: "/comptabilite/creances",
-      label: "Créances clients",
+      href: "/comptabilite/clients",
+      label: "Clients",
       icon: Wallet,
-      desc: "Soldes, retards, aging — facturé ≠ encaissé",
+      desc: "Comptes clients — soldes, créances, factures, mouvements",
     },
     canEtats && {
       href: "/comptabilite/grand-livre",
