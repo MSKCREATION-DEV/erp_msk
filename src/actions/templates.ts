@@ -6,7 +6,10 @@ import { TemplateType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
 import { writeAudit } from "@/lib/audit";
-import { generateCommercialPdf } from "@/lib/pdf/commercial";
+import {
+  generateCommercialPdf,
+  generateContractPdf,
+} from "@/lib/pdf/commercial";
 import {
   generateAttestationStagePdf,
   generateContractPrestaPdf,
@@ -28,6 +31,7 @@ function modelesFolderFor(type: TemplateType): "Devis" | "Factures" | "Contrats"
       return "Devis";
     case TemplateType.FACTURE:
       return "Factures";
+    case TemplateType.CONTRAT_COMMERCIAL:
     case TemplateType.CONTRAT_TRAVAIL:
     case TemplateType.CONTRAT_STAGE:
     case TemplateType.CONTRAT_PRESTA:
@@ -138,6 +142,54 @@ export async function generateDemoPdfAction(
           ],
           currency: "FCFA",
           vatRate: 18,
+          ...sig,
+        });
+        break;
+      }
+      case TemplateType.CONTRAT_COMMERCIAL: {
+        // Même layout que /commercial/contrats — données démo uniquement.
+        number = `MSK-CONTRAT-DEMO-${stamp}`;
+        pdfBytes = await generateContractPdf({
+          number,
+          family: "PRESTATION_ABONNEMENT",
+          familyLabel: "Prestation / abonnement",
+          serviceKind: "RESEAUX_SOCIAUX",
+          serviceKindLabel: "Réseaux sociaux",
+          clientName: "Awa Traoré",
+          clientCompany: "Boutique Awa",
+          clientAddress: "Hamdallaye ACI, Bamako",
+          clientPhone: "+223 70 00 00 00",
+          clientEmail: "awa@boutique-awa.ml",
+          contactName: "Awa Traoré",
+          offerTier: "PRO",
+          startDate: formatDateFr(),
+          billingDay: 5,
+          currency: "FCFA",
+          vatRate: 18,
+          lines: [
+            {
+              label: "CNT-RS-PRO - Réseaux sociaux — Pro",
+              qty: 1,
+              unitPrice: 150_000,
+            },
+            {
+              label: "OPS-DEPL-1M - Déplacement / captation — 1 mois",
+              qty: 1,
+              unitPrice: 25_000,
+            },
+          ],
+          complementaryServices: [
+            {
+              type: "Déplacement / captation — 1 mois",
+              tariff: "25 000 FCFA",
+              status: "Inclus au contrat",
+            },
+          ],
+          paymentTerms: "Virement bancaire | Orange Money | Wave | Chèque",
+          renewalTerms:
+            "Le contrat est conclu pour une durée initiale de trois (3) mois. À l'issue, il est renouvelé automatiquement par périodes d'un (1) mois, sauf dénonciation par l'une des Parties.",
+          terminationTerms:
+            "À la résiliation : MSK CREATION restitue les accès sous 48 heures ; les sommes dues jusqu'à la date effective restent exigibles.",
           ...sig,
         });
         break;

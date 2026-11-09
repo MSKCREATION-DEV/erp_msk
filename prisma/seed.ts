@@ -398,6 +398,32 @@ async function seedPhase1Ged() {
       },
     },
     {
+      code: "contrat_commercial_msk",
+      type: "CONTRAT_COMMERCIAL" as const,
+      name: "Contrat client commercial MSK",
+      // Même générateur que /commercial/contrats/[id] (`generateContractPdf`).
+      // Démo = données fictives ; layout = source de vérité commerciale (famille A).
+      version: 1,
+      structureJson: {
+        layout: "msk_commercial_v1",
+        slots: [
+          "logo_header_centered",
+          "tagline",
+          "dashed_rule",
+          "main_title",
+          "meta_table",
+          "parties",
+          "articles_1_13",
+          "offer_matrix",
+          "composition",
+          "signatures",
+          "footer",
+        ],
+        ref: "docs/MODELE CONTRAT GESTION DES RESEAUX SOCIAUX (1).pdf",
+        generator: "generateContractPdf",
+      },
+    },
+    {
       code: "contrat_travail_msk",
       type: "CONTRAT_TRAVAIL" as const,
       name: "Contrat de travail MSK",

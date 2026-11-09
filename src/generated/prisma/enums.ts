@@ -87,6 +87,7 @@ export type SignatureStatus = (typeof SignatureStatus)[keyof typeof SignatureSta
 export const TemplateType = {
   DEVIS: 'DEVIS',
   FACTURE: 'FACTURE',
+  CONTRAT_COMMERCIAL: 'CONTRAT_COMMERCIAL',
   CONTRAT_TRAVAIL: 'CONTRAT_TRAVAIL',
   CONTRAT_STAGE: 'CONTRAT_STAGE',
   CONTRAT_PRESTA: 'CONTRAT_PRESTA',

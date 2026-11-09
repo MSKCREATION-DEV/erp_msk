@@ -64,6 +64,8 @@ enum SignatureStatus {
 enum TemplateType {
   DEVIS
   FACTURE
+  /// Contrat client commercial (familles A/B) — `generateContractPdf`.
+  CONTRAT_COMMERCIAL
   CONTRAT_TRAVAIL
   CONTRAT_STAGE
   CONTRAT_PRESTA

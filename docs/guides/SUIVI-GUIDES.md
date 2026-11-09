@@ -193,6 +193,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-09 — Gabarit démo contrat client commercial (= `generateContractPdf`)
+
+- **Pourquoi** : le PDF métier `/commercial/contrats` et le mode démo Gabarits doivent partager le **même** layout ; seul `contrat_presta_msk` (RH, rôles inversés) existait en admin.
+- **Quoi** : `TemplateType.CONTRAT_COMMERCIAL` + seed `contrat_commercial_msk` ; `generateDemoPdfAction` appelle `generateContractPdf` avec datas démo (Boutique Awa / RS Pro + déplacement).
+- **Fichiers** : `prisma/schema.prisma`, migration `20261109140000_…`, `prisma/seed.ts`, `src/actions/templates.ts`, `administration/gabarits/page.tsx`.
+- **Statut doc** : gabarit admin — à valider via « Générer PDF démo » après seed.
+
 ### 2026-11-09 — PDF contrat commercial : en-tête / parties / pied alignés référence MSK
 
 - **Pourquoi** : `MSK-CONTRAT-2026-001` repris du layout devis (`| CONTRAT - N°` à droite) — logo non centré, pas de tagline, méta flottantes, parties en colonnes libres, écart fort vs `docs/MODELE CONTRAT GESTION DES RESEAUX SOCIAUX`.
