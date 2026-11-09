@@ -316,6 +316,7 @@ export default async function CrmProspectDetailPage({
             sku: true,
             priceXof: true,
             floorPriceXof: true,
+            billing: true,
           },
         })
       : Promise.resolve([]),

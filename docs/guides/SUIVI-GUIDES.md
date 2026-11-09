@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-09 (Transformer en client dès tout statut ouvert hors Perdu ; voir §8) |
+| Dernière mise à jour | 2026-11-09 (Wizard client UX : identité figée, composition picker, récap crayons ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -103,7 +103,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `ged-comprendre-acces` | Comprendre son accès GED | ged | `validated` | manuel 02 + permissions |
 | `crm-creer-prospect` | Créer un prospect | commercial | `to_validate` | live doublons 3 car. + ack contact — revalider UI |
 | `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `outdated` | CRUD relances + RDV + Perdu sans min 3× — à réécrire |
-| `crm-transformer-client` | Transformer un prospect en client | commercial | `to_validate` | Dès tout statut ouvert (hors Perdu) ; stepper = `/commercial/clients/nouveau` ; contrat brouillon ; revalidation terrain 2026-11-09 |
+| `crm-transformer-client` | Transformer un prospect en client | commercial | `to_validate` | UX 2026-11-09 : identité figée CRM, source préremplie, composition picker + déplacement tarifé, récap crayons ; hors Perdu |
 | `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `outdated` | Rapport semaine : grille 4 KPI période + liens liste ; hub/cartes — revalider captures et libellés |
 | `com-clients-equipe-historique` | Clients COM : équipe, filtres, historique | commercial | `draft` | liste/fiche + URL `owners=` — parcours à valider humain |
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
@@ -192,6 +192,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-09 — Wizard « Transformer en client » UX (identité figée, composition, récap)
+
+- **Pourquoi** : conversion terrain trop fragile — nom/contact éditables hors CRM, source non reprise, `<select>` natif catalogue, checkbox déplacement sans prix, récap pauvre, lien « Annuler et revenir » redondant.
+- **Quoi** :
+  - Depuis prospect : identité + contact **lecture seule** + lien édition fiche CRM ; source / notes préremplies (`deal.source`).
+  - Composition : `OptionPickerSingle` (source, devis, catalogue) ; **+ Déplacement** = ligne `OPS-DEPL*` tarifée (`travel-offer.ts`) ; badge déplacement ; plus de checkbox.
+  - Devis : même picker catalogue + ligne déplacement catalogue (plus de 15 000 hardcodé).
+  - Récap fiche + crayons ; `returnToRecap` → Continuer/Retour reviennent au récap ; suppression « Annuler et revenir ».
+- **Fichiers** : `client-wizard-form.tsx`, `clients/nouveau/page.tsx`, `quote-form.tsx`, `travel-offer.ts` (+ test), devis/prospects loaders, guide `crm-transformer-client`, manuels / SUIVI.
+- **Statut doc** : `crm-transformer-client` → `to_validate` (revalider terrain).
 
 ### 2026-11-09 — Transformer en client sans passage forcé par Intéressé
 

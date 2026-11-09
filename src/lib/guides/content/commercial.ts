@@ -313,14 +313,14 @@ export const commercialGuides: GuideInput[] = [
     id: "crm-transformer-client",
     title: "Transformer un prospect en client",
     summary:
-      "Parcours unique (plan Client/Contrat P2) : identité → contact → origine → composition → conditions → récap. Se termine toujours par un contrat brouillon.",
+      "Parcours unique : identité → contact → origine → composition → conditions → récap fiche. Depuis un prospect, identité/contact sont figés (CRM) ; le déplacement est une ligne catalogue tarifée.",
     moduleId: "commercial",
     categories: ["procedure"],
     taskIds: ["transformer", "creer"],
     roleIds: ["commercial", "admin_crm", "direction"],
     keywords: ["intéressé", "client", "transformer", "COM", "contrat", "stepper"],
     prerequisites: [
-      "Prospect au statut Intéressé (ou éligible selon règles UI).",
+      "Prospect ouvert (hors Perdu).",
       "Droits CRM + `com.clients.manage` + `com.contrats.manage`.",
     ],
     relatedGuideIds: [
@@ -329,7 +329,7 @@ export const commercialGuides: GuideInput[] = [
       "com-hub-naviguer",
     ],
     status: "to_validate",
-    updatedAt: "2026-11-06",
+    updatedAt: "2026-11-09",
     difficulty: "intermediaire",
     viewPermission: "crm.access",
     objective:
@@ -344,9 +344,9 @@ export const commercialGuides: GuideInput[] = [
       {
         title: "Parcourir le stepper",
         instruction:
-          "Cliquez « Transformer en client » : vous arrivez sur le même parcours que `/commercial/clients/nouveau`, avec identité/contact préremplis depuis le prospect. Complétez Origine, Composition (lignes offres/devis accepté) et Conditions (famille/nature de prestation).",
+          "Identité et contact sont repris du CRM (lecture seule — corrigez-les sur la fiche prospect si besoin). Source d’origine préremplie. Composition : picker catalogue MSK ; « + Déplacement » ajoute une ligne OPS-DEPL tarifée. Au récap, les crayons renvoient à l’étape concernée puis « Continuer » revient au récap.",
         expected:
-          "Étape Récap : client + composition + contrat **brouillon** résumés avant engagement.",
+          "Récap fiche : client, contact, origine, composition détaillée (lignes + total), conditions — puis engagement.",
       },
       {
         title: "Valider puis activer le contrat",
@@ -362,8 +362,8 @@ export const commercialGuides: GuideInput[] = [
     workflow: {
       title: "Conversion",
       nodes: [
-        { id: "s", label: "Intéressé", kind: "start" },
-        { id: "a", label: "Stepper (identité→conditions)", kind: "action" },
+        { id: "s", label: "Prospect ouvert", kind: "start" },
+        { id: "a", label: "Stepper (identité→récap)", kind: "action" },
         { id: "b", label: "Client + composition + contrat brouillon", kind: "action" },
         { id: "e", label: "Fiche contrat", kind: "end" },
       ],

@@ -67,7 +67,7 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 2. Enrichir fiche (contacts, offres, journal, relance) — **Modifier** via `/crm/prospects/[id]/edit`  
 3. Relances + scripts  
 4. Passage en **Contacté** : **canal + commentaire obligatoires** (comment on a contacté + ce qui a été dit, ou « pas de réponse ») → ligne créée dans le journal  
-5. **Transformer en client** (stepper) est possible **dès n’importe quel statut ouvert** (y compris À contacter — cas connaissance / recommandation qui décide de signer). Seul **Perdu** est bloqué. Le CTA crée le client **et** passe le CRM à **Client**. **Créer un devis** reste réservé au statut **Intéressé** (prépare une fiche client minimaliste sans conversion implicite). Le modal **Changer le statut** n’offre **plus** l’option Client.  
+5. **Transformer en client** (stepper) est possible **dès n’importe quel statut ouvert** (y compris À contacter). Seul **Perdu** est bloqué. Identité / contact sont **figés** depuis le CRM (à corriger sur la fiche prospect). Source préremplie. Composition via picker MSK ; déplacement = ligne catalogue tarifée (`OPS-DEPL*`). Récap fiche avec crayons (retour intelligent à l’étape). **Créer un devis** reste réservé à **Intéressé**. Le modal **Changer le statut** n’offre **plus** l’option Client.  
 6. Devis / factures : parcours ERP selon droits et gate Direction (voir manuel Commercial).  
 7. Facturation côté Commercial (devis accepté → facture, etc.)
 
@@ -86,6 +86,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
+| 2026-11-09 | Wizard client UX : identité/contact figés depuis prospect, source préremplie, composition picker + déplacement tarifé, récap crayons |
 | 2026-11-09 | Transformer en client dès tout statut ouvert (hors Perdu) — plus besoin d’Intéressé / relance pour convertir |
 | 2026-11-09 | Changer le statut : option Client retirée du picker ; passage GAGNE refusé hors « Transformer en client » |
 | 2026-11-06 | P0 client/devis : devis Intéressé sans convert CRM implicite ; Transformer en client séparé ; garde GAGNE sans ComClient |

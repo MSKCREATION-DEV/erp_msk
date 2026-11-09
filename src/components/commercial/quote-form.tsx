@@ -12,10 +12,15 @@ import {
   FieldLabel,
 } from "@/components/ui/field-label";
 import { FormShell } from "@/components/ui/form-shell";
+import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { computeDocTotals } from "@/lib/commercial/totals";
 import { formatComMoney } from "@/lib/commercial/labels";
 import { assertLinesAboveFloor } from "@/lib/commercial/floor-price";
+import {
+  buildTravelLineFromOffers,
+  isCatalogTravelOffer,
+} from "@/lib/commercial/travel-offer";
 import { formatXof } from "@/lib/crm/labels";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +30,7 @@ type Offer = {
   sku: string;
   priceXof: number | null;
   floorPriceXof: number | null;
+  billing?: string | null;
 };
 
 type Line = {
@@ -128,6 +134,23 @@ export function QuoteCreateForm({
         qty: 1,
         unitPrice: currency === "EUR" ? 0 : (o.priceXof ?? 0),
         catalogOfferId: o.id,
+        isTravel: isCatalogTravelOffer(o),
+      },
+    ]);
+  }
+
+  function addTravelLine() {
+    const travel = buildTravelLineFromOffers(offers);
+    setLines((prev) => [
+      ...prev,
+      {
+        key: `${Date.now()}`,
+        label: travel.label,
+        qty: travel.qty,
+        unitPrice:
+          currency === "EUR" ? 0 : travel.unitPrice,
+        catalogOfferId: travel.catalogOfferId ?? undefined,
+        isTravel: true,
       },
     ]);
   }
@@ -380,28 +403,31 @@ export function QuoteCreateForm({
               Catalogue MSK ou lignes libres — plancher respecté.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <select
-              className="h-9 rounded-lg border border-msk-ink/15 bg-white px-2 text-sm"
-              defaultValue=""
-              disabled={pending}
-              onChange={(e) => {
-                if (e.target.value) {
-                  addLineFromOffer(e.target.value);
-                  e.target.value = "";
-                }
-              }}
-            >
-              <option value="">+ Offre catalogue</option>
-              {offers.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.sku} · {o.name}
-                  {o.floorPriceXof != null
-                    ? ` (min ${o.floorPriceXof.toLocaleString("fr-FR")})`
-                    : ""}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-wrap items-end gap-2">
+            {offers.length > 0 ? (
+              <div className="min-w-52 flex-1">
+                <OptionPickerSingle
+                  label="Offre catalogue"
+                  options={offers.map((o) => ({
+                    value: o.id,
+                    label: `${o.sku} · ${o.name}`,
+                    description:
+                      o.floorPriceXof != null
+                        ? `Min. ${o.floorPriceXof.toLocaleString("fr-FR")} XOF`
+                        : o.priceXof != null
+                          ? formatComMoney(o.priceXof, "XOF")
+                          : undefined,
+                  }))}
+                  value={null}
+                  onChange={(v) => {
+                    if (v) addLineFromOffer(v);
+                  }}
+                  disabled={pending}
+                  placeholder="+ Offre catalogue"
+                  modalTitle="Offre catalogue"
+                />
+              </div>
+            ) : null}
             <Button
               type="button"
               variant="secondary"
@@ -421,18 +447,7 @@ export function QuoteCreateForm({
               variant="secondary"
               size="sm"
               disabled={pending}
-              onClick={() =>
-                setLines((p) => [
-                  ...p,
-                  {
-                    key: `${Date.now()}`,
-                    label: "Frais de déplacement",
-                    qty: 1,
-                    unitPrice: 15000,
-                    isTravel: true,
-                  },
-                ])
-              }
+              onClick={addTravelLine}
             >
               + Déplacement
             </Button>

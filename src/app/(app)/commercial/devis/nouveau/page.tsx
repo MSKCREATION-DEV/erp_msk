@@ -42,6 +42,7 @@ export default async function CommercialDevisNouveauPage({
         sku: true,
         priceXof: true,
         floorPriceXof: true,
+        billing: true,
       },
     }),
     sp.opportunityId

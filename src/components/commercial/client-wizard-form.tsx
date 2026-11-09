@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { CrmSource } from "@/generated/prisma/client";
+import { Pencil } from "lucide-react";
+import type { CatalogBilling, CrmSource } from "@/generated/prisma/client";
 import {
   createClientWizardAction,
   findClientWizardDuplicatesAction,
@@ -14,6 +15,8 @@ import { FieldHint, FieldLabel } from "@/components/ui/field-label";
 import { FormShell } from "@/components/ui/form-shell";
 import { FormSteps } from "@/components/ui/form-steps";
 import { ChoiceCards } from "@/components/ui/choice-cards";
+import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
+import { Surface } from "@/components/ui/surface";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { useDuplicateLiveSearch } from "@/hooks/use-duplicate-live-search";
 import { OrgDuplicateMatchCard } from "@/components/crm/duplicate-match-card";
@@ -24,6 +27,10 @@ import {
   SERVICE_KIND_LABELS,
   formatComMoney,
 } from "@/lib/commercial/labels";
+import {
+  buildTravelLineFromOffers,
+  isCatalogTravelOffer,
+} from "@/lib/commercial/travel-offer";
 import { SOURCE_LABELS } from "@/lib/crm/labels";
 import {
   hasBlockingOrgMatch,
@@ -41,12 +48,21 @@ const STEPS = [
   { id: "recap", label: "Récap", hint: "Engagement + docs" },
 ] as const;
 
-const SOURCE_OPTIONS = Object.entries(SOURCE_LABELS) as [CrmSource, string][];
+const SOURCE_OPTIONS = Object.entries(SOURCE_LABELS).map(([value, label]) => ({
+  value,
+  label,
+}));
 const FAMILY_OPTIONS = Object.entries(CONTRACT_FAMILY_LABELS).map(
-  ([value, label]) => ({ value: value as keyof typeof CONTRACT_FAMILY_LABELS, label }),
+  ([value, label]) => ({
+    value: value as keyof typeof CONTRACT_FAMILY_LABELS,
+    label,
+  }),
 );
 const SERVICE_KIND_OPTIONS = Object.entries(SERVICE_KIND_LABELS).map(
-  ([value, label]) => ({ value: value as keyof typeof SERVICE_KIND_LABELS, label }),
+  ([value, label]) => ({
+    value: value as keyof typeof SERVICE_KIND_LABELS,
+    label,
+  }),
 );
 
 export type OfferOpt = {
@@ -54,6 +70,7 @@ export type OfferOpt = {
   name: string;
   sku: string;
   priceXof: number | null;
+  billing?: CatalogBilling | null;
 };
 
 export type AcceptedQuoteOpt = {
@@ -78,22 +95,22 @@ type Line = {
 };
 
 /**
- * Parcours unifié Client ↔ Contrat (plan `docs/commercial/PLAN-CLIENT-CONTRAT.md`
- * §4 — stepper verrouillé). Une seule UI pour les deux portes : création
- * directe (`/commercial/clients/nouveau`) et transformation prospect
- * (`?opportunityId=`). Le contexte prospect préremplit identité/contact —
- * jamais de skip : tout reste visible et éditable.
+ * Parcours unifié Client ↔ Contrat.
+ * Depuis un prospect : identité / contact figés (CRM) ; composition / conditions
+ * éditables ; récap avec crayons et retour intelligent.
  */
 export function ClientWizardForm({
   opportunityId,
   orgName,
+  prospectEditHref,
   initial,
   acceptedQuotes = [],
   offers = [],
-  cancelHref,
 }: {
   opportunityId?: string;
   orgName?: string;
+  /** Lien édition fiche prospect (identité / contact). */
+  prospectEditHref?: string;
   initial?: {
     name?: string;
     sector?: string;
@@ -104,16 +121,19 @@ export function ClientWizardForm({
     contactRole?: string;
     email?: string;
     phone?: string;
+    source?: CrmSource;
+    originNotes?: string;
   };
   acceptedQuotes?: AcceptedQuoteOpt[];
   offers?: OfferOpt[];
-  cancelHref: string;
 }) {
   const { pending, run } = usePendingAction();
   const [step, setStep] = useState(0);
+  const [returnToRecap, setReturnToRecap] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [duplicateHref, setDuplicateHref] = useState<string | null>(null);
   const lastIndex = STEPS.length - 1;
+  const fromProspect = Boolean(opportunityId);
 
   // ---- Identité ----
   const [name, setName] = useState(initial?.name ?? "");
@@ -122,11 +142,6 @@ export function ClientWizardForm({
   const [country, setCountry] = useState(initial?.country ?? "ML");
   const [website, setWebsite] = useState(initial?.website ?? "");
 
-  /**
-   * Anti-doublon live (identité) — création directe uniquement : avec
-   * `opportunityId`, le nom vient déjà du prospect transformé (match
-   * attendu sur lui-même, pas un doublon à signaler).
-   */
   const [orgDupes, setOrgDupes] = useState<OrgDuplicateCandidate[]>([]);
   const orgLiveEnabled = !opportunityId && orgLiveSearchReady(name);
   const orgQueryKey = orgLiveEnabled ? name.trim() : "";
@@ -162,8 +177,8 @@ export function ClientWizardForm({
   const [phone, setPhone] = useState(initial?.phone ?? "");
 
   // ---- Origine ----
-  const [source, setSource] = useState<CrmSource | "">("");
-  const [originNotes, setOriginNotes] = useState("");
+  const [source, setSource] = useState<CrmSource | "">(initial?.source ?? "");
+  const [originNotes, setOriginNotes] = useState(initial?.originNotes ?? "");
 
   // ---- Composition ----
   const [quoteId, setQuoteId] = useState<string>("");
@@ -192,12 +207,45 @@ export function ClientWizardForm({
 
   const isCdc = family === "ENGAGEMENT_CDC";
 
+  const offerPickerOptions = useMemo(
+    () =>
+      offers.map((o) => ({
+        value: o.id,
+        label: `${o.sku} · ${o.name}`,
+        description:
+          o.priceXof != null
+            ? formatComMoney(o.priceXof, "XOF")
+            : "Prix à préciser",
+      })),
+    [offers],
+  );
+
+  const quotePickerOptions = useMemo(
+    () => [
+      {
+        value: "",
+        label: "Composition libre (saisie manuelle)",
+      },
+      ...acceptedQuotes.map((q) => ({
+        value: q.id,
+        label: q.label,
+      })),
+    ],
+    [acceptedQuotes],
+  );
+
   const totalHt = useMemo(
     () =>
       lines.reduce(
-        (sum, l) => sum + Math.max(0, Math.trunc(l.qty)) * Math.trunc(l.unitPrice),
+        (sum, l) =>
+          sum + Math.max(0, Math.trunc(l.qty)) * Math.trunc(l.unitPrice),
         0,
       ),
+    [lines],
+  );
+
+  const compositionLines = useMemo(
+    () => lines.filter((l) => l.label.trim() && l.qty > 0),
     [lines],
   );
 
@@ -238,16 +286,32 @@ export function ClientWizardForm({
         qty: 1,
         unitPrice: o.priceXof ?? 0,
         catalogOfferId: o.id,
+        isTravel: isCatalogTravelOffer(o),
+      },
+    ]);
+  }
+
+  function addTravelLine() {
+    const travel = buildTravelLineFromOffers(offers);
+    setLines((prev) => [
+      ...prev,
+      {
+        key: `${Date.now()}`,
+        ...travel,
       },
     ]);
   }
 
   function updateLine(key: string, patch: Partial<Line>) {
-    setLines((prev) => prev.map((l) => (l.key === key ? { ...l, ...patch } : l)));
+    setLines((prev) =>
+      prev.map((l) => (l.key === key ? { ...l, ...patch } : l)),
+    );
   }
 
   function removeLine(key: string) {
-    setLines((prev) => (prev.length > 1 ? prev.filter((l) => l.key !== key) : prev));
+    setLines((prev) =>
+      prev.length > 1 ? prev.filter((l) => l.key !== key) : prev,
+    );
   }
 
   function validateStep(index: number): string | null {
@@ -264,8 +328,7 @@ export function ClientWizardForm({
       }
     }
     if (index === 3) {
-      const valid = lines.filter((l) => l.label.trim() && l.qty > 0);
-      if (valid.length === 0) {
+      if (compositionLines.length === 0) {
         return "Ajoutez au moins une ligne de composition (libellé + quantité)";
       }
     }
@@ -281,6 +344,7 @@ export function ClientWizardForm({
     setDuplicateHref(null);
     if (index < step) {
       setError(null);
+      setReturnToRecap(false);
       setStep(index);
       return;
     }
@@ -292,10 +356,38 @@ export function ClientWizardForm({
       }
     }
     setError(null);
+    setReturnToRecap(false);
     setStep(index);
   }
 
-  function next() {
+  function editSection(stepIndex: number) {
+    setError(null);
+    setDuplicateHref(null);
+    setReturnToRecap(true);
+    setStep(stepIndex);
+  }
+
+  function leaveEditOrStep(direction: "back" | "next") {
+    if (returnToRecap) {
+      const err = direction === "next" ? validateStep(step) : null;
+      if (err) {
+        setError(err);
+        return;
+      }
+      setError(null);
+      setReturnToRecap(false);
+      setStep(lastIndex);
+      return;
+    }
+    if (direction === "back") {
+      setError(null);
+      if (step === 0) {
+        window.history.back();
+        return;
+      }
+      setStep(step - 1);
+      return;
+    }
     const err = validateStep(step);
     if (err) {
       setError(err);
@@ -310,6 +402,7 @@ export function ClientWizardForm({
       const err = validateStep(i);
       if (err) {
         setError(err);
+        setReturnToRecap(false);
         setStep(i);
         return;
       }
@@ -317,15 +410,13 @@ export function ClientWizardForm({
     setError(null);
     setDuplicateHref(null);
 
-    const payloadLines = lines
-      .filter((l) => l.label.trim() && l.qty > 0)
-      .map((l) => ({
-        label: l.label.trim(),
-        qty: l.qty,
-        unitPrice: l.unitPrice,
-        catalogOfferId: l.catalogOfferId ?? null,
-        isTravel: Boolean(l.isTravel),
-      }));
+    const payloadLines = compositionLines.map((l) => ({
+      label: l.label.trim(),
+      qty: l.qty,
+      unitPrice: l.unitPrice,
+      catalogOfferId: l.catalogOfferId ?? null,
+      isTravel: Boolean(l.isTravel),
+    }));
 
     const fd = new FormData();
     if (opportunityId) fd.set("opportunityId", opportunityId);
@@ -341,7 +432,8 @@ export function ClientWizardForm({
     if (source) fd.set("source", source);
     if (originNotes.trim()) fd.set("originNotes", originNotes.trim());
     if (quoteId) fd.set("quoteId", quoteId);
-    if (compositionNotes.trim()) fd.set("compositionNotes", compositionNotes.trim());
+    if (compositionNotes.trim())
+      fd.set("compositionNotes", compositionNotes.trim());
     fd.set("linesJson", JSON.stringify(payloadLines));
     fd.set("family", family);
     fd.set("serviceKind", serviceKind);
@@ -349,7 +441,8 @@ export function ClientWizardForm({
     fd.set("billingDay", String(billingDay));
     if (paymentTerms.trim()) fd.set("paymentTerms", paymentTerms.trim());
     if (renewalTerms.trim()) fd.set("renewalTerms", renewalTerms.trim());
-    if (terminationTerms.trim()) fd.set("terminationTerms", terminationTerms.trim());
+    if (terminationTerms.trim())
+      fd.set("terminationTerms", terminationTerms.trim());
     if (contractNotes.trim()) fd.set("contractNotes", contractNotes.trim());
     if (isCdc) {
       fd.set("scopeContext", scopeContext);
@@ -378,19 +471,21 @@ export function ClientWizardForm({
             type="button"
             variant="secondary"
             disabled={pending}
-            onClick={() => {
-              if (step === 0) window.history.back();
-              else {
-                setError(null);
-                setStep(step - 1);
-              }
-            }}
+            onClick={() => leaveEditOrStep("back")}
           >
-            {step === 0 ? "Annuler" : "Retour"}
+            {returnToRecap
+              ? "Retour au récap"
+              : step === 0
+                ? "Annuler"
+                : "Retour"}
           </Button>
           {step < lastIndex ? (
-            <Button type="button" disabled={pending} onClick={next}>
-              Continuer
+            <Button
+              type="button"
+              disabled={pending}
+              onClick={() => leaveEditOrStep("next")}
+            >
+              {returnToRecap ? "Enregistrer et revenir au récap" : "Continuer"}
             </Button>
           ) : (
             <Button
@@ -409,10 +504,26 @@ export function ClientWizardForm({
         {orgName ? (
           <p className="rounded-lg bg-msk-blue/6 px-3 py-2 text-xs font-medium text-msk-blue">
             Depuis le prospect « {orgName} » — historique CRM conservé.
+            {returnToRecap ? (
+              <span className="ml-1 font-normal text-msk-ink/55">
+                Modification depuis le récap.
+              </span>
+            ) : null}
           </p>
         ) : null}
 
-        <FormSteps steps={STEPS} currentIndex={step} onGoTo={goTo} />
+        <FormSteps
+          steps={STEPS}
+          currentIndex={step}
+          onGoTo={(i) => {
+            if (returnToRecap && i === lastIndex) {
+              setReturnToRecap(false);
+              setStep(lastIndex);
+              return;
+            }
+            goTo(i);
+          }}
+        />
 
         {step === 0 ? (
           <section className="space-y-4">
@@ -421,9 +532,14 @@ export function ClientWizardForm({
                 Identité de l’entreprise
               </h2>
               <p className="mt-1 text-sm text-msk-ink/50">
-                Qui est le client — anti-doublon automatique sur le nom.
+                {fromProspect
+                  ? "Raison sociale issue du prospect — modifiez-la sur la fiche CRM si besoin."
+                  : "Qui est le client — anti-doublon automatique sur le nom."}
               </p>
             </div>
+            {fromProspect && prospectEditHref ? (
+              <CrmLockBanner href={prospectEditHref} />
+            ) : null}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div className="sm:col-span-2 lg:col-span-3">
                 <FieldLabel htmlFor="wz-name" required>
@@ -433,7 +549,8 @@ export function ClientWizardForm({
                   id="wz-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  disabled={pending}
+                  disabled={pending || fromProspect}
+                  readOnly={fromProspect}
                   placeholder="Ex. Marinas SARL"
                   aria-invalid={orgMatchBlock || undefined}
                   className={orgMatchBlock ? "border-msk-coral/50" : undefined}
@@ -450,7 +567,11 @@ export function ClientWizardForm({
                         : null
                     }
                   />
-                ) : null}
+                ) : (
+                  <FieldHint>
+                    Figé depuis le CRM — source de vérité du trail commercial.
+                  </FieldHint>
+                )}
               </div>
               <div>
                 <FieldLabel htmlFor="wz-sector">Secteur</FieldLabel>
@@ -503,7 +624,10 @@ export function ClientWizardForm({
                   Correspondance détectée — création bloquée
                 </h3>
                 {orgDupes.map((c) => (
-                  <OrgDuplicateMatchCard key={`${c.entity}-${c.id}`} candidate={c} />
+                  <OrgDuplicateMatchCard
+                    key={`${c.entity}-${c.id}`}
+                    candidate={c}
+                  />
                 ))}
               </div>
             ) : null}
@@ -517,9 +641,14 @@ export function ClientWizardForm({
                 Contact principal
               </h2>
               <p className="mt-1 text-sm text-msk-ink/50">
-                Qui parle côté client.
+                {fromProspect
+                  ? "Contact issu du prospect — à corriger sur la fiche CRM."
+                  : "Qui parle côté client."}
               </p>
             </div>
+            {fromProspect && prospectEditHref ? (
+              <CrmLockBanner href={prospectEditHref} />
+            ) : null}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div>
                 <FieldLabel htmlFor="wz-contact-name">Nom</FieldLabel>
@@ -527,7 +656,8 @@ export function ClientWizardForm({
                   id="wz-contact-name"
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
-                  disabled={pending}
+                  disabled={pending || fromProspect}
+                  readOnly={fromProspect}
                   placeholder="Ex. Hassan Diallo"
                 />
               </div>
@@ -537,7 +667,8 @@ export function ClientWizardForm({
                   id="wz-contact-role"
                   value={contactRole}
                   onChange={(e) => setContactRole(e.target.value)}
-                  disabled={pending}
+                  disabled={pending || fromProspect}
+                  readOnly={fromProspect}
                   placeholder="Ex. Gérant"
                 />
               </div>
@@ -548,7 +679,8 @@ export function ClientWizardForm({
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={pending}
+                  disabled={pending || fromProspect}
+                  readOnly={fromProspect}
                   placeholder="Ex. contact@entreprise.ml"
                 />
               </div>
@@ -558,7 +690,8 @@ export function ClientWizardForm({
                   id="wz-phone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  disabled={pending}
+                  disabled={pending || fromProspect}
+                  readOnly={fromProspect}
                   placeholder="Ex. 70 12 34 56"
                 />
               </div>
@@ -574,28 +707,20 @@ export function ClientWizardForm({
               </h2>
               <p className="mt-1 text-sm text-msk-ink/50">
                 {opportunityId
-                  ? "Trail commercial existant — complétez si besoin."
+                  ? "Trail commercial repris du prospect — ajustez si besoin."
                   : "D’où vient ce client (pas d’opportunité CRM obligatoire)."}
               </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <FieldLabel htmlFor="wz-source">Source</FieldLabel>
-                <select
-                  id="wz-source"
-                  value={source}
-                  disabled={pending}
-                  onChange={(e) => setSource(e.target.value as CrmSource | "")}
-                  className="mt-1.5 flex h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm outline-none focus:border-msk-blue focus:ring-2 focus:ring-msk-blue/15"
-                >
-                  <option value="">—</option>
-                  {SOURCE_OPTIONS.map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <OptionPickerSingle
+                label="Source"
+                options={SOURCE_OPTIONS}
+                value={source || null}
+                onChange={(v) => setSource((v as CrmSource | null) ?? "")}
+                disabled={pending}
+                placeholder="Choisir la source"
+                modalTitle="Source du client"
+              />
               <div className="sm:col-span-2">
                 <FieldLabel htmlFor="wz-origin-notes">Notes</FieldLabel>
                 <Textarea
@@ -618,55 +743,59 @@ export function ClientWizardForm({
                 Composition commerciale
               </h2>
               <p className="mt-1 text-sm text-msk-ink/50">
-                Offres / lignes qui alimentent le contrat — visibles et
-                modifiables même si reprises d’un devis.
+                Offres / lignes qui alimentent le contrat. Le déplacement est
+                une ligne tarifée du catalogue — pas une case à cocher.
               </p>
             </div>
 
             {acceptedQuotes.length > 0 ? (
-              <div>
-                <FieldLabel htmlFor="wz-quote">
-                  Reprendre un devis accepté (optionnel)
-                </FieldLabel>
-                <select
-                  id="wz-quote"
-                  value={quoteId}
-                  disabled={pending}
-                  onChange={(e) => applyQuote(e.target.value)}
-                  className="mt-1.5 flex h-11 w-full max-w-md rounded-lg border border-msk-ink/15 bg-white px-3 text-sm outline-none focus:border-msk-blue focus:ring-2 focus:ring-msk-blue/15"
-                >
-                  <option value="">Composition libre (saisie manuelle)</option>
-                  {acceptedQuotes.map((q) => (
-                    <option key={q.id} value={q.id}>
-                      {q.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <OptionPickerSingle
+                label="Reprendre un devis accepté (optionnel)"
+                options={quotePickerOptions}
+                value={quoteId}
+                onChange={(v) => applyQuote(v ?? "")}
+                disabled={pending}
+                placeholder="Composition libre"
+                modalTitle="Devis accepté"
+              />
             ) : null}
 
             {offers.length > 0 ? (
-              <div>
-                <FieldLabel htmlFor="wz-offer">Ajouter depuis le catalogue</FieldLabel>
-                <select
-                  id="wz-offer"
-                  defaultValue=""
+              <div className="flex flex-wrap items-end gap-3">
+                <div className="min-w-56 flex-1">
+                  <OptionPickerSingle
+                    label="Ajouter depuis le catalogue"
+                    options={offerPickerOptions}
+                    value={null}
+                    onChange={(v) => {
+                      if (v) addLineFromOffer(v);
+                    }}
+                    disabled={pending}
+                    placeholder="Choisir une offre…"
+                    modalTitle="Offre catalogue"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
                   disabled={pending}
-                  onChange={(e) => {
-                    if (e.target.value) addLineFromOffer(e.target.value);
-                    e.target.value = "";
-                  }}
-                  className="mt-1.5 flex h-11 w-full max-w-md rounded-lg border border-msk-ink/15 bg-white px-3 text-sm outline-none focus:border-msk-blue focus:ring-2 focus:ring-msk-blue/15"
+                  onClick={addTravelLine}
                 >
-                  <option value="">Choisir une offre…</option>
-                  {offers.map((o) => (
-                    <option key={o.id} value={o.id}>
-                      {o.sku} · {o.name}
-                    </option>
-                  ))}
-                </select>
+                  + Déplacement
+                </Button>
               </div>
-            ) : null}
+            ) : (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={pending}
+                onClick={addTravelLine}
+              >
+                + Déplacement
+              </Button>
+            )}
 
             <div className="overflow-x-auto rounded-xl border border-msk-ink/8">
               <table className="w-full min-w-150 text-left text-sm">
@@ -675,74 +804,82 @@ export function ClientWizardForm({
                     <th className="px-3 py-2 font-medium">Libellé</th>
                     <th className="px-3 py-2 font-medium">Qté</th>
                     <th className="px-3 py-2 font-medium">P.U. (XOF)</th>
-                    <th className="px-3 py-2 font-medium">Déplacement</th>
+                    <th className="px-3 py-2 font-medium">Sous-total</th>
                     <th className="px-3 py-2" />
                   </tr>
                 </thead>
                 <tbody>
-                  {lines.map((l) => (
-                    <tr key={l.key} className="border-b border-msk-ink/5">
-                      <td className="px-3 py-2">
-                        <Input
-                          value={l.label}
-                          disabled={pending}
-                          onChange={(e) =>
-                            updateLine(l.key, { label: e.target.value })
-                          }
-                          placeholder="Ex. Pack réseaux sociaux STANDARD"
-                        />
-                      </td>
-                      <td className="px-3 py-2">
-                        <Input
-                          type="number"
-                          min={1}
-                          value={l.qty}
-                          disabled={pending}
-                          onChange={(e) =>
-                            updateLine(l.key, {
-                              qty: Math.max(1, Number.parseInt(e.target.value, 10) || 1),
-                            })
-                          }
-                          className="w-20"
-                        />
-                      </td>
-                      <td className="px-3 py-2">
-                        <Input
-                          type="number"
-                          min={0}
-                          value={l.unitPrice}
-                          disabled={pending}
-                          onChange={(e) =>
-                            updateLine(l.key, {
-                              unitPrice: Math.max(0, Number.parseInt(e.target.value, 10) || 0),
-                            })
-                          }
-                          className="w-28"
-                        />
-                      </td>
-                      <td className="px-3 py-2">
-                        <input
-                          type="checkbox"
-                          checked={Boolean(l.isTravel)}
-                          disabled={pending}
-                          onChange={(e) =>
-                            updateLine(l.key, { isTravel: e.target.checked })
-                          }
-                          className="h-4 w-4 rounded border-msk-ink/20 text-msk-blue focus:ring-msk-blue/30"
-                        />
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          disabled={pending || lines.length <= 1}
-                          onClick={() => removeLine(l.key)}
-                          className="text-xs text-msk-coral underline disabled:opacity-40"
-                        >
-                          Retirer
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {lines.map((l) => {
+                    const sub =
+                      Math.max(0, Math.trunc(l.qty)) *
+                      Math.trunc(l.unitPrice);
+                    return (
+                      <tr key={l.key} className="border-b border-msk-ink/5">
+                        <td className="px-3 py-2">
+                          <Input
+                            value={l.label}
+                            disabled={pending}
+                            onChange={(e) =>
+                              updateLine(l.key, { label: e.target.value })
+                            }
+                            placeholder="Ex. Pack réseaux sociaux STANDARD"
+                          />
+                          {l.isTravel ? (
+                            <span className="mt-1 inline-flex rounded-md bg-msk-blue/8 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-msk-blue">
+                              Déplacement
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="px-3 py-2">
+                          <Input
+                            type="number"
+                            min={1}
+                            value={l.qty}
+                            disabled={pending}
+                            onChange={(e) =>
+                              updateLine(l.key, {
+                                qty: Math.max(
+                                  1,
+                                  Number.parseInt(e.target.value, 10) || 1,
+                                ),
+                              })
+                            }
+                            className="w-20"
+                          />
+                        </td>
+                        <td className="px-3 py-2">
+                          <Input
+                            type="number"
+                            min={0}
+                            value={l.unitPrice}
+                            disabled={pending}
+                            onChange={(e) =>
+                              updateLine(l.key, {
+                                unitPrice: Math.max(
+                                  0,
+                                  Number.parseInt(e.target.value, 10) || 0,
+                                ),
+                              })
+                            }
+                            className="w-28"
+                          />
+                        </td>
+                        <td className="px-3 py-2 tabular-nums text-msk-ink/70">
+                          {formatComMoney(sub, "XOF")}
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          <button
+                            type="button"
+                            disabled={pending || lines.length <= 1}
+                            onClick={() => removeLine(l.key)}
+                            className="text-xs text-msk-coral underline disabled:opacity-40"
+                          >
+                            Retirer
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -754,7 +891,7 @@ export function ClientWizardForm({
                 onClick={addLine}
                 className="text-sm font-medium text-msk-blue hover:underline"
               >
-                + Ajouter une ligne
+                + Ajouter une ligne libre
               </button>
               <p className="text-sm font-medium text-msk-ink">
                 Total HT estimé : {formatComMoney(totalHt, "XOF")}
@@ -798,32 +935,32 @@ export function ClientWizardForm({
                 disabled={pending}
                 options={SERVICE_KIND_OPTIONS}
                 onChange={(v) => {
-                  setServiceKind(v);
-                  setFamily(SERVICE_KIND_DEFAULT_FAMILY[v]);
+                  const next = v as keyof typeof SERVICE_KIND_LABELS;
+                  setServiceKind(next);
+                  setFamily(SERVICE_KIND_DEFAULT_FAMILY[next]);
                 }}
               />
             </div>
 
             <div>
-              <FieldLabel>Famille document</FieldLabel>
+              <FieldLabel>Famille de document</FieldLabel>
               <ChoiceCards
                 name="familyChoice"
                 columns={2}
                 value={family}
                 disabled={pending}
                 options={FAMILY_OPTIONS}
-                onChange={setFamily}
+                onChange={(v) =>
+                  setFamily(v as keyof typeof CONTRACT_FAMILY_LABELS)
+                }
               />
-              <FieldHint>
-                Préremplie selon la prestation — ajustable (ex. bundle).
-              </FieldHint>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div>
-                <FieldLabel htmlFor="wz-start-date">Début</FieldLabel>
+                <FieldLabel htmlFor="wz-start">Date de démarrage</FieldLabel>
                 <Input
-                  id="wz-start-date"
+                  id="wz-start"
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
@@ -842,17 +979,23 @@ export function ClientWizardForm({
                   value={billingDay}
                   onChange={(e) =>
                     setBillingDay(
-                      Math.min(28, Math.max(1, Number.parseInt(e.target.value, 10) || 5)),
+                      Math.min(
+                        28,
+                        Math.max(1, Number.parseInt(e.target.value, 10) || 5),
+                      ),
                     )
                   }
                   disabled={pending}
                 />
+                <FieldHint>Entre le 1 et le 28 de chaque mois.</FieldHint>
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div>
-                <FieldLabel htmlFor="wz-payment-terms">Modalités de paiement</FieldLabel>
+                <FieldLabel htmlFor="wz-payment-terms">
+                  Modalités de paiement
+                </FieldLabel>
                 <Textarea
                   id="wz-payment-terms"
                   rows={2}
@@ -874,7 +1017,9 @@ export function ClientWizardForm({
                 />
               </div>
               <div>
-                <FieldLabel htmlFor="wz-termination-terms">Résiliation</FieldLabel>
+                <FieldLabel htmlFor="wz-termination-terms">
+                  Résiliation
+                </FieldLabel>
                 <Textarea
                   id="wz-termination-terms"
                   rows={2}
@@ -893,7 +1038,9 @@ export function ClientWizardForm({
                 </p>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <FieldLabel htmlFor="wz-scope-context">Contexte / problème</FieldLabel>
+                    <FieldLabel htmlFor="wz-scope-context">
+                      Contexte / problème
+                    </FieldLabel>
                     <Textarea
                       id="wz-scope-context"
                       rows={3}
@@ -903,7 +1050,9 @@ export function ClientWizardForm({
                     />
                   </div>
                   <div>
-                    <FieldLabel htmlFor="wz-scope-objectives">Objectifs</FieldLabel>
+                    <FieldLabel htmlFor="wz-scope-objectives">
+                      Objectifs
+                    </FieldLabel>
                     <Textarea
                       id="wz-scope-objectives"
                       rows={3}
@@ -913,7 +1062,9 @@ export function ClientWizardForm({
                     />
                   </div>
                   <div>
-                    <FieldLabel htmlFor="wz-scope-deliverables">Livrables</FieldLabel>
+                    <FieldLabel htmlFor="wz-scope-deliverables">
+                      Livrables
+                    </FieldLabel>
                     <Textarea
                       id="wz-scope-deliverables"
                       rows={3}
@@ -923,7 +1074,9 @@ export function ClientWizardForm({
                     />
                   </div>
                   <div>
-                    <FieldLabel htmlFor="wz-scope-out">Hors périmètre</FieldLabel>
+                    <FieldLabel htmlFor="wz-scope-out">
+                      Hors périmètre
+                    </FieldLabel>
                     <Textarea
                       id="wz-scope-out"
                       rows={3}
@@ -961,25 +1114,164 @@ export function ClientWizardForm({
                 contrat.
               </p>
             </div>
-            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <Recap label="Client">
-                {name.trim() || "—"}
-                {city.trim() ? ` · ${city.trim()}` : ""}
-              </Recap>
-              <Recap label="Contact">
-                {contactName.trim() || "—"}
-                {contactRole.trim() ? ` (${contactRole.trim()})` : ""}
-              </Recap>
-              <Recap label="Origine">{source ? SOURCE_LABELS[source] : "—"}</Recap>
-              <Recap label="Composition" full>
-                {lines.filter((l) => l.label.trim()).length} ligne(s) — total
-                HT estimé {formatComMoney(totalHt, "XOF")}
-                {quoteId ? " (reprise devis accepté)" : ""}
-              </Recap>
-              <Recap label="Nature">{SERVICE_KIND_LABELS[serviceKind]}</Recap>
-              <Recap label="Famille document">{CONTRACT_FAMILY_LABELS[family]}</Recap>
-              <Recap label="Jour de facturation">Jour {billingDay}</Recap>
-            </dl>
+
+            <div className="grid gap-3 lg:grid-cols-2">
+              <RecapCard
+                title="Client"
+                onEdit={
+                  fromProspect
+                    ? undefined
+                    : () => editSection(0)
+                }
+                editLabel={fromProspect ? undefined : "Modifier l’identité"}
+                footer={
+                  fromProspect && prospectEditHref ? (
+                    <Link
+                      prefetch={false}
+                      href={prospectEditHref}
+                      className="text-xs font-medium text-msk-blue hover:underline"
+                    >
+                      Modifier sur la fiche prospect
+                    </Link>
+                  ) : null
+                }
+              >
+                <p className="font-semibold text-msk-ink">
+                  {name.trim() || "—"}
+                </p>
+                <p className="mt-1 text-sm text-msk-ink/60">
+                  {[city.trim(), country.trim()].filter(Boolean).join(" · ") ||
+                    "—"}
+                </p>
+                {sector.trim() ? (
+                  <p className="mt-1 text-xs text-msk-ink/45">{sector.trim()}</p>
+                ) : null}
+              </RecapCard>
+
+              <RecapCard
+                title="Contact"
+                onEdit={fromProspect ? undefined : () => editSection(1)}
+                editLabel={fromProspect ? undefined : "Modifier le contact"}
+                footer={
+                  fromProspect && prospectEditHref ? (
+                    <Link
+                      prefetch={false}
+                      href={prospectEditHref}
+                      className="text-xs font-medium text-msk-blue hover:underline"
+                    >
+                      Modifier sur la fiche prospect
+                    </Link>
+                  ) : null
+                }
+              >
+                <p className="font-semibold text-msk-ink">
+                  {contactName.trim() || "—"}
+                  {contactRole.trim() ? (
+                    <span className="font-normal text-msk-ink/55">
+                      {" "}
+                      · {contactRole.trim()}
+                    </span>
+                  ) : null}
+                </p>
+                <p className="mt-1 text-sm text-msk-ink/60">
+                  {[phone.trim(), email.trim()].filter(Boolean).join(" · ") ||
+                    "Aucun coordonnée"}
+                </p>
+              </RecapCard>
+
+              <RecapCard
+                title="Origine"
+                onEdit={() => editSection(2)}
+                editLabel="Modifier l’origine"
+              >
+                <p className="font-semibold text-msk-ink">
+                  {source ? SOURCE_LABELS[source] : "—"}
+                </p>
+                {originNotes.trim() ? (
+                  <p className="mt-2 whitespace-pre-wrap text-sm text-msk-ink/60">
+                    {originNotes.trim()}
+                  </p>
+                ) : null}
+              </RecapCard>
+
+              <RecapCard
+                title="Conditions"
+                onEdit={() => editSection(4)}
+                editLabel="Modifier les conditions"
+              >
+                <ul className="space-y-1 text-sm text-msk-ink/75">
+                  <li>
+                    <span className="text-msk-ink/45">Nature · </span>
+                    {SERVICE_KIND_LABELS[serviceKind]}
+                  </li>
+                  <li>
+                    <span className="text-msk-ink/45">Famille · </span>
+                    {CONTRACT_FAMILY_LABELS[family]}
+                  </li>
+                  <li>
+                    <span className="text-msk-ink/45">Facturation · </span>
+                    Jour {billingDay}
+                  </li>
+                  {startDate ? (
+                    <li>
+                      <span className="text-msk-ink/45">Démarrage · </span>
+                      {startDate}
+                    </li>
+                  ) : null}
+                </ul>
+              </RecapCard>
+
+              <RecapCard
+                title="Composition"
+                className="lg:col-span-2"
+                onEdit={() => editSection(3)}
+                editLabel="Modifier la composition"
+              >
+                {compositionLines.length === 0 ? (
+                  <p className="text-sm text-msk-ink/50">Aucune ligne.</p>
+                ) : (
+                  <ul className="divide-y divide-msk-ink/6">
+                    {compositionLines.map((l) => {
+                      const sub =
+                        Math.max(0, Math.trunc(l.qty)) *
+                        Math.trunc(l.unitPrice);
+                      return (
+                        <li
+                          key={l.key}
+                          className="flex flex-wrap items-baseline justify-between gap-2 py-2 first:pt-0 last:pb-0"
+                        >
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-msk-ink">
+                              {l.label.trim()}
+                              {l.isTravel ? (
+                                <span className="ml-2 inline-flex rounded-md bg-msk-blue/8 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-msk-blue">
+                                  Déplacement
+                                </span>
+                              ) : null}
+                            </p>
+                            <p className="text-xs text-msk-ink/45">
+                              {l.qty} × {formatComMoney(l.unitPrice, "XOF")}
+                            </p>
+                          </div>
+                          <p className="tabular-nums text-sm font-semibold text-msk-ink">
+                            {formatComMoney(sub, "XOF")}
+                          </p>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/8 pt-3">
+                  <p className="text-xs text-msk-ink/45">
+                    {compositionLines.length} ligne(s)
+                    {quoteId ? " · reprise devis accepté" : ""}
+                  </p>
+                  <p className="text-sm font-semibold text-msk-ink">
+                    Total HT estimé {formatComMoney(totalHt, "XOF")}
+                  </p>
+                </div>
+              </RecapCard>
+            </div>
           </section>
         ) : null}
 
@@ -1000,44 +1292,62 @@ export function ClientWizardForm({
             ) : null}
           </div>
         ) : null}
-
-        <div className="flex justify-end">
-          <Link
-            prefetch={false}
-            href={cancelHref}
-            className={cn(
-              "text-sm text-msk-ink/45 hover:text-msk-ink/70",
-              pending && "pointer-events-none opacity-50",
-            )}
-          >
-            Annuler et revenir
-          </Link>
-        </div>
       </div>
     </FormShell>
   );
 }
 
-function Recap({
-  label,
+function CrmLockBanner({ href }: { href: string }) {
+  return (
+    <p className="rounded-xl border border-msk-ink/8 bg-msk-chalk/50 px-3 py-2 text-xs text-msk-ink/60">
+      Ces informations viennent du prospect. Pour les changer :{" "}
+      <Link
+        prefetch={false}
+        href={href}
+        className="font-medium text-msk-blue hover:underline"
+      >
+        Modifier sur la fiche prospect
+      </Link>
+      .
+    </p>
+  );
+}
+
+function RecapCard({
+  title,
   children,
-  full,
+  onEdit,
+  editLabel,
+  footer,
+  className,
 }: {
-  label: string;
+  title: string;
   children: React.ReactNode;
-  full?: boolean;
+  onEdit?: () => void;
+  editLabel?: string;
+  footer?: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        "rounded-xl bg-msk-chalk/60 px-4 py-3",
-        full && "sm:col-span-2 lg:col-span-3",
-      )}
-    >
-      <dt className="text-xs font-semibold tracking-caps uppercase text-msk-ink/40">
-        {label}
-      </dt>
-      <dd className="mt-1 text-sm font-medium text-msk-ink">{children}</dd>
-    </div>
+    <Surface className={cn("p-4", className)}>
+      <div className="mb-3 flex items-start justify-between gap-2">
+        <h3 className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/40">
+          {title}
+        </h3>
+        {onEdit ? (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-msk-ink/10 bg-white text-msk-ink/55 transition hover:border-msk-blue/30 hover:text-msk-blue"
+            aria-label={editLabel ?? `Modifier ${title}`}
+            title={editLabel ?? `Modifier ${title}`}
+          >
+            <Pencil className="h-3.5 w-3.5" aria-hidden />
+          </button>
+        ) : null}
+      </div>
+      <div>{children}</div>
+      {footer ? <div className="mt-3">{footer}</div> : null}
+    </Surface>
   );
 }

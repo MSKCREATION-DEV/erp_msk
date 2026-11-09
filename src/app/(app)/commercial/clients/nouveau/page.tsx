@@ -5,7 +5,7 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { canTransformProspectToClient } from "@/lib/crm/guide-rules";
 import { canMutateCrmDeal } from "@/lib/crm/scope";
-import { ComQuoteStatus } from "@/generated/prisma/client";
+import { ComQuoteStatus, type CrmSource } from "@/generated/prisma/client";
 import { displayDocNumber } from "@/lib/commercial/doc-display";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -33,17 +33,21 @@ export default async function CommercialClientNouveauPage({
   const sp = await searchParams;
   const opportunityId = sp.opportunityId?.trim() || undefined;
 
-  let initial: {
-    name?: string;
-    sector?: string;
-    city?: string;
-    country?: string;
-    website?: string;
-    contactName?: string;
-    contactRole?: string;
-    email?: string;
-    phone?: string;
-  } | undefined;
+  let initial:
+    | {
+        name?: string;
+        sector?: string;
+        city?: string;
+        country?: string;
+        website?: string;
+        contactName?: string;
+        contactRole?: string;
+        email?: string;
+        phone?: string;
+        source?: CrmSource;
+        originNotes?: string;
+      }
+    | undefined;
   let orgName: string | undefined;
   let acceptedQuotes: AcceptedQuoteOpt[] = [];
 
@@ -58,6 +62,8 @@ export default async function CommercialClientNouveauPage({
             city: true,
             country: true,
             website: true,
+            source: true,
+            notes: true,
             contacts: {
               orderBy: [
                 { isPrimary: "desc" as const },
@@ -85,16 +91,26 @@ export default async function CommercialClientNouveauPage({
 
     const contact = deal.organization.contacts[0];
     orgName = deal.organization.name;
+    const source = deal.source ?? deal.organization.source ?? undefined;
+    const originNotes =
+      [deal.nextAction, deal.organization.notes]
+        .map((s) => s?.trim())
+        .filter(Boolean)
+        .join("\n") || undefined;
     initial = {
       name: deal.organization.name,
       sector: deal.organization.sector ?? undefined,
       city: deal.organization.city ?? undefined,
       country: deal.organization.country ?? undefined,
       website: deal.organization.website ?? undefined,
-      contactName: contact ? `${contact.firstName} ${contact.lastName}`.trim() : undefined,
+      contactName: contact
+        ? `${contact.firstName} ${contact.lastName}`.trim()
+        : undefined,
       contactRole: contact?.jobTitle ?? undefined,
       email: contact?.email ?? undefined,
       phone: contact?.phone ?? undefined,
+      source,
+      originNotes,
     };
 
     const quote = await prisma.comQuote.findUnique({
@@ -132,7 +148,13 @@ export default async function CommercialClientNouveauPage({
     ? await prisma.catalogOffer.findMany({
         where: { active: true },
         orderBy: { sortOrder: "asc" },
-        select: { id: true, name: true, sku: true, priceXof: true },
+        select: {
+          id: true,
+          name: true,
+          sku: true,
+          priceXof: true,
+          billing: true,
+        },
       })
     : [];
   const offers: OfferOpt[] = offerRows;
@@ -147,9 +169,13 @@ export default async function CommercialClientNouveauPage({
             : "Client + composition + contrat — parcours unique Commercial."
         }
         backHref={
-          opportunityId ? `/crm/prospects/${opportunityId}` : "/commercial/clients"
+          opportunityId
+            ? `/crm/prospects/${opportunityId}`
+            : "/commercial/clients"
         }
-        backLabel={opportunityId ? "Retour au prospect" : "Retour aux clients"}
+        backLabel={
+          opportunityId ? "Retour au prospect" : "Retour aux clients"
+        }
         breadcrumbs={[
           { label: "Commercial", href: "/commercial" },
           { label: "Clients", href: "/commercial/clients" },
@@ -159,12 +185,12 @@ export default async function CommercialClientNouveauPage({
       <ClientWizardForm
         opportunityId={opportunityId}
         orgName={orgName}
+        prospectEditHref={
+          opportunityId ? `/crm/prospects/${opportunityId}/edit` : undefined
+        }
         initial={initial}
         acceptedQuotes={acceptedQuotes}
         offers={offers}
-        cancelHref={
-          opportunityId ? `/crm/prospects/${opportunityId}` : "/commercial/clients"
-        }
       />
     </PageShell>
   );
