@@ -193,6 +193,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-09 — Gabarits : crash P2023, composition PDF, fiches détail
+
+- **Pourquoi** : prod Réf. `3177752238` = `P2023` `CONTRAT_COMMERCIAL` (migrate preview/seed avant client Prisma prod) ; table « Composition commerciale retenue » mal alignée / filet parasite ; module sans fiche dédiée.
+- **Quoi** :
+  - Crash résolu dès déploiement `3772129` (enum + client) ; seed `contrat_commercial_msk` requis si ligne absente.
+  - `generateContractPdf` : bloc composition atomique (wrap libellés, QTE/MONTANT à droite) ; `table()` anti en-tête orphelin.
+  - Admin : sections Commercial/RH + **fiche** `/administration/gabarits/[id]` (slots, réf. docs/, PDF démo, historique GED) ; bouton démo pending/aperçu.
+- **Fichiers** : `commercial.ts`, `contract.test.ts`, `gabarits/**`, `generate-demo-pdf.tsx`, `lib/templates/labels.ts`, ce suivi.
+- **Statut doc** : à revalider — liste → fiche → PDF démo → aperçu composition.
+
 ### 2026-11-09 — Gabarits admin : sections Commercial / RH + libellés contrats distincts
 
 - **Pourquoi** : grille / liste plate mélangeait devis, facture et contrats RH — « Contrat de prestation » vs « Contrat client commercial » se lisaient comme un doublon.

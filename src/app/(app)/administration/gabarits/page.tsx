@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { TemplateType } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
@@ -100,7 +101,15 @@ export default async function GabaritsPage() {
                       <CardHeader>
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <CardTitle>{t.name}</CardTitle>
+                            <CardTitle>
+                              <Link
+                                prefetch={false}
+                                href={`/administration/gabarits/${t.id}`}
+                                className="text-msk-blue hover:underline"
+                              >
+                                {t.name}
+                              </Link>
+                            </CardTitle>
                             <CardDescription className="font-mono text-xs">
                               {t.code} · v{t.version}
                             </CardDescription>
@@ -111,13 +120,22 @@ export default async function GabaritsPage() {
                         </div>
                       </CardHeader>
                       <CardContent className="flex items-center justify-between gap-3">
-                        <p className="text-xs leading-relaxed text-msk-ink/55">
-                          {t.active
-                            ? TEMPLATE_PURPOSE[t.type]
-                            : "Inactif — non proposé en génération démo."}
-                        </p>
+                        <div className="min-w-0 space-y-2">
+                          <p className="text-xs leading-relaxed text-msk-ink/55">
+                            {t.active
+                              ? TEMPLATE_PURPOSE[t.type]
+                              : "Inactif — non proposé en génération démo."}
+                          </p>
+                          <Link
+                            prefetch={false}
+                            href={`/administration/gabarits/${t.id}`}
+                            className="text-xs font-medium text-msk-blue hover:underline"
+                          >
+                            Voir la fiche →
+                          </Link>
+                        </div>
                         {t.active ? (
-                          <GenerateDemoButton templateId={t.id} />
+                          <GenerateDemoButton templateId={t.id} compact />
                         ) : null}
                       </CardContent>
                     </Card>

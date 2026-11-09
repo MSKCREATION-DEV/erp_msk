@@ -93,3 +93,22 @@ export function sortTemplatesByFamilyOrder<T extends { type: TemplateType }>(
     return 0;
   });
 }
+
+export function templateSlots(structureJson: unknown): string[] {
+  if (!structureJson || typeof structureJson !== "object") return [];
+  const slots = (structureJson as { slots?: unknown }).slots;
+  if (!Array.isArray(slots)) return [];
+  return slots.filter((s): s is string => typeof s === "string");
+}
+
+export function templateRef(structureJson: unknown): string | null {
+  if (!structureJson || typeof structureJson !== "object") return null;
+  const ref = (structureJson as { ref?: unknown }).ref;
+  return typeof ref === "string" && ref.trim() ? ref.trim() : null;
+}
+
+export function templateGenerator(structureJson: unknown): string | null {
+  if (!structureJson || typeof structureJson !== "object") return null;
+  const g = (structureJson as { generator?: unknown }).generator;
+  return typeof g === "string" && g.trim() ? g.trim() : null;
+}
