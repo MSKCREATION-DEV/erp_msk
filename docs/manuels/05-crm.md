@@ -67,7 +67,7 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 2. Enrichir fiche (contacts, offres, journal, relance) — **Modifier** via `/crm/prospects/[id]/edit`  
 3. Relances + scripts  
 4. Passage en **Contacté** : **canal + commentaire obligatoires** (comment on a contacté + ce qui a été dit, ou « pas de réponse ») → ligne créée dans le journal  
-5. **Transformer en client** (stepper) est possible **dès n’importe quel statut ouvert** (y compris À contacter). Seul **Perdu** est bloqué. Identité / contact sont **figés** depuis le CRM (à corriger sur la fiche prospect). Source préremplie. Composition via picker MSK ; déplacement = ligne catalogue tarifée (`OPS-DEPL*`). Récap fiche avec crayons (retour intelligent à l’étape). **Créer un devis** reste réservé à **Intéressé**. Le modal **Changer le statut** n’offre **plus** l’option Client.  
+5. **Transformer en client** (stepper) est possible **dès n’importe quel statut ouvert** (y compris À contacter). Seul **Perdu** est bloqué. Identité / contact sont **figés** depuis le CRM (à corriger sur la fiche prospect). Source préremplie. Composition via picker MSK ; déplacement = ligne catalogue tarifée (`OPS-DEPL*`). Récap fiche avec crayons (retour intelligent à l’étape). **Créer un devis** reste réservé à **Intéressé** et ouvre la **page** `/commercial/devis/nouveau` (stepper dédié — plus de modal create). Le modal **Changer le statut** n’offre **plus** l’option Client.  
 6. Devis / factures : parcours ERP selon droits et gate Direction (voir manuel Commercial).  
 7. Facturation côté Commercial (devis accepté → facture, etc.)
 

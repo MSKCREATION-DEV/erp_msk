@@ -4,24 +4,15 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { CrmPipelineStage } from "@/generated/prisma/client";
 import { FileSpreadsheet, GitBranch, UserCheck } from "lucide-react";
-import {
-  ensureProspectClientDraftForQuoteAction,
-  generateQuotePdfAction,
-} from "@/actions/commercial";
+import { ensureProspectClientDraftForQuoteAction } from "@/actions/commercial";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { ActionLink } from "@/components/ui/action-link";
-import {
-  QuoteCreateForm,
-  type QuotePrefillLine,
-} from "@/components/commercial/quote-form";
+import type { QuotePrefillLine } from "@/components/commercial/quote-form";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { canTransformProspectToClient } from "@/lib/crm/guide-rules";
 import { STAGE_LABELS } from "@/lib/crm/labels";
-import {
-  COM_DOCS_GATED,
-  COM_DOCS_GATED_HINT,
-} from "@/lib/commercial/gates";
+import { COM_DOCS_GATED } from "@/lib/commercial/gates";
 
 type OfferOpt = {
   id: string;
@@ -40,7 +31,7 @@ type ClientOpt = {
 /**
  * CTA commercial sur fiche prospect :
  * - si devis gelés (Direction) → Transformer en client / Voir le client
- * - sinon → Transformer en client (confirm) + Créer un devis (sans convert silencieuse)
+ * - sinon → Transformer en client + Créer un devis (page `/commercial/devis/nouveau`)
  */
 export function ProspectQuoteCta({
   opportunityId,
@@ -51,10 +42,6 @@ export function ProspectQuoteCta({
   canManageClients,
   canOpenStage,
   onOpenStage,
-  clients,
-  offers,
-  initialLines,
-  defaultObject,
 }: {
   opportunityId: string;
   stage: CrmPipelineStage;
@@ -64,8 +51,9 @@ export function ProspectQuoteCta({
   canManageClients: boolean;
   canOpenStage?: boolean;
   onOpenStage?: () => void;
-  clients: ClientOpt[];
-  offers: OfferOpt[];
+  /** Conservés pour compat appelants — préremplissage via page `/nouveau`. */
+  clients?: ClientOpt[];
+  offers?: OfferOpt[];
   initialLines?: QuotePrefillLine[];
   defaultObject?: string;
 }) {
@@ -104,10 +92,6 @@ export function ProspectQuoteCta({
           canManageClients={canManageClients}
           canOpenStage={canOpenStage}
           onOpenStage={onOpenStage}
-          clients={clients}
-          offers={offers}
-          initialLines={initialLines}
-          defaultObject={defaultObject}
         />
       ) : null}
     </div>
@@ -129,7 +113,6 @@ function ProspectConvertCta({
   canManageClients: boolean;
   canOpenStage?: boolean;
   onOpenStage?: () => void;
-  /** Avec dévis ouvert : pas de wrapper externe — bouton seul dans la grille */
   variant?: "standalone" | "inline";
 }) {
   const router = useRouter();
@@ -152,12 +135,6 @@ function ProspectConvertCta({
 
   if (!canManageClients) return null;
 
-  /**
-   * P2 — parcours unifié (plan docs/commercial/PLAN-CLIENT-CONTRAT.md §4) :
-   * « Transformer en client » ouvre le même stepper que la création directe
-   * (identité → contact → origine → composition → conditions → récap).
-   * L’acte délibéré (Q1) est le submit final du stepper, pas un simple clic.
-   */
   const button = (
     <>
       <Button
@@ -229,6 +206,10 @@ function ProspectConvertCta({
   return variant === "inline" ? button : <>{button}</>;
 }
 
+/**
+ * Prépare le client draft si besoin, puis ouvre la page dédiée
+ * `/commercial/devis/nouveau` (stepper) — plus de modal create riche.
+ */
 function ProspectDevisCta({
   opportunityId,
   stage,
@@ -237,10 +218,6 @@ function ProspectDevisCta({
   canManageClients,
   canOpenStage,
   onOpenStage,
-  clients,
-  offers,
-  initialLines,
-  defaultObject,
 }: {
   opportunityId: string;
   stage: CrmPipelineStage;
@@ -249,17 +226,11 @@ function ProspectDevisCta({
   canManageClients: boolean;
   canOpenStage?: boolean;
   onOpenStage?: () => void;
-  clients: ClientOpt[];
-  offers: OfferOpt[];
-  initialLines?: QuotePrefillLine[];
-  defaultObject?: string;
 }) {
   const router = useRouter();
   const { pending, run } = usePendingAction();
   const [blockedOpen, setBlockedOpen] = useState(false);
-  const [createOpen, setCreateOpen] = useState(false);
   const [prepError, setPrepError] = useState<string | null>(null);
-  const [clientId, setClientId] = useState(existingClientId ?? "");
 
   const uiStage = stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage;
   const isInteresse = uiStage === "INTERESSE";
@@ -276,14 +247,10 @@ function ProspectDevisCta({
     );
   }
 
-  function openBlocked() {
-    setBlockedOpen(true);
-  }
-
-  function openCreate() {
+  function openCreatePage() {
     setPrepError(null);
     void run(async () => {
-      let cid = existingClientId ?? clientId;
+      let cid = existingClientId ?? "";
       if (!cid) {
         if (!canManageClients) {
           setPrepError(
@@ -301,9 +268,10 @@ function ProspectDevisCta({
           return;
         }
         cid = res.clientId;
-        setClientId(cid);
       }
-      setCreateOpen(true);
+      router.push(
+        `/commercial/devis/nouveau?opportunityId=${opportunityId}&clientId=${cid}`,
+      );
     });
   }
 
@@ -315,8 +283,12 @@ function ProspectDevisCta({
         size="sm"
         disabled={pending}
         onClick={() => {
-          if (!isInteresse) openBlocked();
-          else openCreate();
+          if (!isInteresse) {
+            setPrepError(null);
+            setBlockedOpen(true);
+            return;
+          }
+          openCreatePage();
         }}
       >
         <FileSpreadsheet className="h-4 w-4" aria-hidden />
@@ -326,8 +298,14 @@ function ProspectDevisCta({
       <Modal
         open={blockedOpen}
         onOpenChange={setBlockedOpen}
-        title="Statut Intéressé requis"
-        description="Le devis commercial n’est possible qu’à ce stade du parcours."
+        title={
+          prepError ? "Préparation impossible" : "Statut Intéressé requis"
+        }
+        description={
+          prepError
+            ? undefined
+            : "Le devis commercial n’est possible qu’à ce stade du parcours."
+        }
         size="md"
         footer={
           <div className="flex flex-wrap justify-end gap-2">
@@ -339,7 +317,7 @@ function ProspectDevisCta({
             >
               Fermer
             </Button>
-            {canOpenStage && onOpenStage ? (
+            {!prepError && canOpenStage && onOpenStage ? (
               <Button
                 type="button"
                 size="sm"
@@ -356,68 +334,24 @@ function ProspectDevisCta({
         }
       >
         <div className="space-y-3 p-5 text-sm text-msk-ink/75">
-          <p>
-            Statut actuel :{" "}
-            <span className="font-semibold text-msk-ink">
-              {STAGE_LABELS[stage]}
-            </span>
-            .
-          </p>
-          <p>
-            Passez le prospect en <strong>Intéressé</strong>, puis créez le
-            devis depuis cette fiche. Le document apparaîtra dans « Devis &amp;
-            factures ».
-          </p>
           {prepError ? (
             <p className="rounded-lg border border-msk-coral/25 bg-msk-coral/5 px-3 py-2 text-msk-coral">
               {prepError}
             </p>
-          ) : null}
-        </div>
-      </Modal>
-
-      <Modal
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        title="Créer un devis"
-        description="Proposition commerciale liée à ce prospect."
-        size="xl"
-      >
-        <div className="p-5">
-          {clientId || existingClientId ? (
-            <QuoteCreateForm
-              embedded
-              fromProspect
-              clients={
-                clients.length
-                  ? clients
-                  : [
-                      {
-                        id: clientId || existingClientId!,
-                        name: "Client prospect",
-                        includeTravelDefault: false,
-                      },
-                    ]
-              }
-              offers={offers}
-              defaultClientId={clientId || existingClientId || undefined}
-              defaultOpportunityId={opportunityId}
-              initialLines={initialLines}
-              defaultObject={defaultObject}
-              onCancel={() => setCreateOpen(false)}
-              onSuccess={async (quoteId) => {
-                setCreateOpen(false);
-                const fd = new FormData();
-                fd.set("quoteId", quoteId);
-                const pdf = await generateQuotePdfAction(fd);
-                router.refresh();
-                if (!pdf.ok) {
-                  router.push(`/commercial/devis/${quoteId}`);
-                }
-              }}
-            />
           ) : (
-            <p className="text-sm text-msk-coral">Client manquant.</p>
+            <>
+              <p>
+                Statut actuel :{" "}
+                <span className="font-semibold text-msk-ink">
+                  {STAGE_LABELS[stage]}
+                </span>
+                .
+              </p>
+              <p>
+                Passez le prospect en <strong>Intéressé</strong>, puis créez le
+                devis. Vous serez conduit vers le formulaire dédié (stepper).
+              </p>
+            </>
           )}
         </div>
       </Modal>

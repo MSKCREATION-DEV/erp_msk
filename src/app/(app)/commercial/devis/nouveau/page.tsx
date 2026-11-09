@@ -180,6 +180,7 @@ export default async function CommercialDevisNouveauPage({
           defaultClientId={sp.clientId}
           defaultOpportunityId={sp.opportunityId}
           defaultIncludeTravel={defaultClient?.includeTravelDefault}
+          fromProspect={Boolean(sp.opportunityId)}
           initialLines={prefillFromOffers}
           defaultObject={
             opportunity

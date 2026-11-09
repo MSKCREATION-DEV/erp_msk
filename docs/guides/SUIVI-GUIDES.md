@@ -193,6 +193,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-09 — Création devis : stepper plateforme + porte page (plus de modal)
+
+- **Pourquoi** : formulaire devis mono-écran + checkbox déplacement + modal XL prospect — écart vs règles `forms-stepper` / wizard client / list-create.
+- **Quoi** :
+  - `QuoteCreateForm` : `FormSteps` Client → Cadre → Composition → Récap (crayons) ; client via `OptionPickerSingle` ; **+ Déplacement** = ligne `OPS-DEPL*` (plus de checkbox) ; totaux = toutes les lignes présentes.
+  - CTA prospect **Créer un devis** : draft client puis `router.push` `/commercial/devis/nouveau?opportunityId=&clientId=` — PDF sur la fiche devis.
+  - `createQuoteAction` : `includeTravel` dérivé des lignes ; plus de `stayOnPage` modal.
+- **Fichiers** : `quote-form.tsx`, `prospect-quote-cta.tsx`, `devis/nouveau/page.tsx`, `commercial.ts`, `totals.ts`, manuels 05/06, `RECAP-TEST-CLIENT-CONTRAT.md`.
+- **Statut doc** : manuels commercial/CRM mis à jour ; guide devis gel Direction inchangé.
+
 ### 2026-11-09 — Gabarit démo contrat client commercial (= `generateContractPdf`)
 
 - **Pourquoi** : le PDF métier `/commercial/contrats` et le mode démo Gabarits doivent partager le **même** layout ; seul `contrat_presta_msk` (RH, rôles inversés) existait en admin.

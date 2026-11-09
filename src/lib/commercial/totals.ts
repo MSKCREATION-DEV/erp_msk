@@ -10,6 +10,10 @@ export type TotalsInput = {
   vatRate: number;
   promoEnabled: boolean;
   promoPercent?: number | null;
+  /**
+   * Si false, ignore les lignes `isTravel` (legacy devis avec flag décoché).
+   * Création actuelle : flag dérivé de la présence d’une ligne déplacement → true.
+   */
   includeTravel: boolean;
 };
 

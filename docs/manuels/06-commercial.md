@@ -37,7 +37,7 @@ BROUILLON → ENVOYÉ → ACCEPTE | REFUSE | ANNULE
               Facture
 ```
 
-- Depuis un prospect **Intéressé** : bouton **Créer un devis** → prépare la fiche client si besoin **sans** passer le CRM en Client ; lignes préremplies si offres liées au prospect.  
+- Depuis un prospect **Intéressé** : bouton **Créer un devis** → prépare la fiche client si besoin **sans** passer le CRM en Client, puis ouvre la page **`/commercial/devis/nouveau`** (stepper Client → Cadre → Composition → Récap). Lignes préremplies si offres liées au prospect. Déplacement = ligne catalogue (**+ Déplacement**), pas une case à cocher.  
 - **Plancher** catalogue (XOF) : le P.U. ne peut pas descendre sous le plancher.  
 - Marquer **Envoyé** → le prospect passe en **Devis envoyé** s’il était Intéressé.
 

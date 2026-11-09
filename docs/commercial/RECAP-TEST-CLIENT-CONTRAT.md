@@ -83,7 +83,7 @@ Six étapes **FormSteps** : Identité → Contact → Origine → **Composition*
 ### A. Prospect **Intéressé** → devis (sans transformation client complète)
 
 1. Créer ou ouvrir un prospect au stade **Intéressé**.
-2. Cliquer **Créer un devis** → la modale s’ouvre après **Préparation…** (pending visible).
+2. Cliquer **Créer un devis** → **Préparation…** (pending) puis navigation vers `/commercial/devis/nouveau` (stepper — pas de modal create).
 3. Valider la création du devis.
 4. **Contrôles :** le deal **n’est pas** passé **Gagné** seul à cause du devis ; le devis est lié ; une fiche client **brouillon** peut exister pour la compta du devis — c’est attendu (P0).
 

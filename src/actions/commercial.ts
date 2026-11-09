@@ -818,9 +818,6 @@ export async function createQuoteAction(
   const actor = await requireUser({ permission: "com.devis.create" });
   const teamIds = await loadComTeamIds();
 
-  /** Modal fiche prospect : retour JSON (pas de redirect App Router). */
-  const stayOnPage = formData.get("stayOnPage") === "1";
-
   const regimeRaw = String(formData.get("regime") ?? "ML");
   const regime = regimeSchema.safeParse(regimeRaw).success
     ? (regimeRaw as ComDocRegime)
@@ -838,6 +835,16 @@ export async function createQuoteAction(
   const validUntilDate = validUntilRaw ? new Date(validUntilRaw) : null;
   const opportunityRaw =
     String(formData.get("opportunityId") ?? "").trim() || null;
+
+  const lines = parseLinesJson(String(formData.get("lines") ?? "[]"));
+  if (!lines || lines.length === 0) {
+    return { ok: false, error: "Au moins une ligne obligatoire" };
+  }
+
+  // Déplacement = ligne présente (plus de checkbox UI) — flag dérivé.
+  const includeTravel =
+    formData.get("includeTravel") === "on" ||
+    lines.some((l) => Boolean(l.isTravel));
 
   const meta = createQuoteMetaSchema.safeParse({
     clientId: String(formData.get("clientId") ?? "").trim(),
@@ -857,7 +864,7 @@ export async function createQuoteAction(
     promoEnabled,
     promoPercent:
       promoEnabled && Number.isFinite(promoPercentRaw) ? promoPercentRaw : null,
-    includeTravel: formData.get("includeTravel") === "on",
+    includeTravel,
     validUntil:
       validUntilDate && !Number.isNaN(validUntilDate.getTime())
         ? validUntilDate
@@ -880,15 +887,10 @@ export async function createQuoteAction(
     vatEnabled,
     vatRate,
     promoEnabled: quotePromo,
-    includeTravel,
+    includeTravel: quoteIncludeTravel,
     promoPercent,
     validUntil,
   } = meta.data;
-  const lines = parseLinesJson(String(formData.get("lines") ?? "[]"));
-
-  if (!lines || lines.length === 0) {
-    return { ok: false, error: "Au moins une ligne obligatoire" };
-  }
 
   const client = await prisma.comClient.findUnique({ where: { id: clientId } });
   if (!client) return { ok: false, error: "Client introuvable" };
@@ -972,7 +974,7 @@ export async function createQuoteAction(
     vatRate,
     promoEnabled: quotePromo,
     promoPercent,
-    includeTravel,
+    includeTravel: quoteIncludeTravel,
   });
 
   let quote: { id: string; draftCode: string; clientId: string };
@@ -990,7 +992,7 @@ export async function createQuoteAction(
           vatRate,
           promoEnabled: quotePromo,
           promoPercent,
-          includeTravel,
+          includeTravel: quoteIncludeTravel,
           object,
           missionNote,
           validUntil:
@@ -1053,9 +1055,6 @@ export async function createQuoteAction(
     ...(opportunityId ? [`/crm/prospects/${opportunityId}`] : []),
   ]);
 
-  if (stayOnPage) {
-    return { ok: true, message: "Devis créé", quoteId: quote.id };
-  }
   // https://nextjs.org/docs/app/guides/redirecting
   redirect(`/commercial/devis/${quote.id}`);
 }

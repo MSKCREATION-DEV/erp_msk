@@ -1171,7 +1171,9 @@ export async function generateContractPdf(
 
   /** Table generique multi-colonnes (pagination + alternance de fond). */
   function table(headers: string[], widths: number[], rows: string[][]) {
-    ensureSpace(22);
+    // Réserver en-tête + 1ʳᵉ ligne pour éviter une barre bleue orpheline
+    // (filet parasite en bas de page avant saut).
+    ensureSpace(22 + 18);
     page.drawRectangle({ x: margin, y: y - 4, width: contentW, height: 18, color: BLUE });
     let hx = margin;
     headers.forEach((h, i) => {
@@ -1478,57 +1480,128 @@ export async function generateContractPdf(
       );
     }
 
-    subTitle("Composition commerciale retenue :");
-    ensureSpace(24);
-    page.drawRectangle({ x: margin, y: y - 4, width: contentW, height: 18, color: BLUE });
-    draw(page, "PRESTATION", { x: margin + 8, y: y + 1, size: 8, font: fontBold, color: WHITE });
-    draw(page, "QTE", { x: margin + 340, y: y + 1, size: 8, font: fontBold, color: WHITE });
-    drawRight(page, "MONTANT", {
-      right: margin + contentW - 8,
-      y: y + 1,
-      size: 8,
-      font: fontBold,
-      color: WHITE,
-    });
-    y -= 22;
-    let totalHt = 0;
-    input.lines.forEach((l, i) => {
-      ensureSpace(18);
-      const lineTotal = l.qty * l.unitPrice;
-      totalHt += lineTotal;
-      if (i % 2 === 1) {
-        page.drawRectangle({ x: margin, y: y - 4, width: contentW, height: 16, color: ROW_ALT });
-      }
-      draw(page, l.label, { x: margin + 8, y, size: 8.5, font, color: INK, maxWidth: 320 });
-      draw(page, String(l.qty), { x: margin + 340, y, size: 8.5, font, color: INK });
-      drawRight(page, `${formatMoneyFr(lineTotal)} ${currency}`, {
-        right: margin + contentW - 8,
+    // Composition commerciale — bloc atomique (titre + thead + lignes) pour
+    // éviter filet parasite / en-tête orphelin après saut de page, et colonnes
+    // QTE/MONTANT alignées à droite avec libellés multi-lignes.
+    {
+      const qtyW = 48;
+      const amountW = 122;
+      const labelW = contentW - qtyW - amountW;
+      const headerH = 18;
+      ensureSpace(16 + headerH + 36);
+      draw(page, "Composition commerciale retenue", {
+        x: margin,
         y,
-        size: 8.5,
+        size: 9,
         font: fontBold,
         color: INK,
       });
-      y -= 16;
-    });
-    y -= 6;
-    const vat = Math.round(totalHt * (vatRate / 100));
-    ensureSpace(32);
-    drawRight(page, `Total HT : ${formatMoneyFr(totalHt)} ${currency}`, {
-      right: margin + contentW,
-      y,
-      size: 9,
-      font,
-      color: INK,
-    });
-    y -= 13;
-    drawRight(page, `TTC (TVA ${vatRate}%) : ${formatMoneyFr(totalHt + vat)} ${currency}`, {
-      right: margin + contentW,
-      y,
-      size: 10,
-      font: fontBold,
-      color: BLUE,
-    });
-    y -= 22;
+      y -= 14;
+
+      page.drawRectangle({
+        x: margin,
+        y: y - 4,
+        width: contentW,
+        height: headerH,
+        color: BLUE,
+      });
+      draw(page, "PRESTATION", {
+        x: margin + 8,
+        y: y + 1,
+        size: 8,
+        font: fontBold,
+        color: WHITE,
+      });
+      drawRight(page, "QTE", {
+        right: margin + labelW + qtyW - 8,
+        y: y + 1,
+        size: 8,
+        font: fontBold,
+        color: WHITE,
+      });
+      drawRight(page, "MONTANT", {
+        right: margin + contentW - 8,
+        y: y + 1,
+        size: 8,
+        font: fontBold,
+        color: WHITE,
+      });
+      y -= 20;
+
+      let totalHt = 0;
+      input.lines.forEach((l, i) => {
+        const lineTotal = l.qty * l.unitPrice;
+        totalHt += lineTotal;
+        const labelLines = wrapParagraph(l.label, font, 8.5, labelW - 14);
+        const n = Math.max(labelLines.length, 1);
+        const rowH = n * 11 + 6;
+        ensureSpace(rowH + 4);
+        const rowBottom = y - rowH + 8;
+        if (i % 2 === 1) {
+          page.drawRectangle({
+            x: margin,
+            y: rowBottom,
+            width: contentW,
+            height: rowH,
+            color: ROW_ALT,
+          });
+        }
+        page.drawLine({
+          start: { x: margin, y: rowBottom },
+          end: { x: margin + contentW, y: rowBottom },
+          thickness: 0.35,
+          color: rgb(0.82, 0.86, 0.9),
+        });
+        labelLines.forEach((line, li) => {
+          draw(page, line, {
+            x: margin + 8,
+            y: y - li * 11,
+            size: 8.5,
+            font,
+            color: INK,
+          });
+        });
+        drawRight(page, String(l.qty), {
+          right: margin + labelW + qtyW - 8,
+          y,
+          size: 8.5,
+          font,
+          color: INK,
+        });
+        drawRight(page, `${formatMoneyFr(lineTotal)} ${currency}`, {
+          right: margin + contentW - 8,
+          y,
+          size: 8.5,
+          font: fontBold,
+          color: INK,
+        });
+        y -= rowH;
+      });
+
+      y -= 8;
+      const vat = Math.round(totalHt * (vatRate / 100));
+      ensureSpace(36);
+      drawRight(page, `Total HT : ${formatMoneyFr(totalHt)} ${currency}`, {
+        right: margin + contentW,
+        y,
+        size: 9,
+        font,
+        color: INK,
+      });
+      y -= 13;
+      drawRight(
+        page,
+        `TTC (TVA ${vatRate}%) : ${formatMoneyFr(totalHt + vat)} ${currency}`,
+        {
+          right: margin + contentW,
+          y,
+          size: 10,
+          font: fontBold,
+          color: BLUE,
+        },
+      );
+      y -= 22;
+    }
 
     subTitle("2.1 Prestations complementaires");
     paragraph(
