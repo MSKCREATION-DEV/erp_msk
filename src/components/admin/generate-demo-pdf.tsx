@@ -1,16 +1,24 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { Eye } from "lucide-react";
+import { Eye, FileDown } from "lucide-react";
 import { generateDemoPdfAction } from "@/actions/templates";
 import { getDocumentDownloadUrlAction } from "@/actions/ged";
 import type { ActionResult } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { cn } from "@/lib/utils";
 
 type DemoState = (ActionResult & { documentId?: string }) | null;
 
-export function GenerateDemoButton({ templateId }: { templateId: string }) {
+export function GenerateDemoButton({
+  templateId,
+  compact = false,
+}: {
+  templateId: string;
+  /** Version condensée pour cellules de liste. */
+  compact?: boolean;
+}) {
   const [state, action, pending] = useActionState<DemoState, FormData>(
     generateDemoPdfAction,
     null,
@@ -42,7 +50,13 @@ export function GenerateDemoButton({ templateId }: { templateId: string }) {
 
   return (
     <>
-      <form action={action} className="flex flex-col items-end gap-1">
+      <form
+        action={action}
+        className={cn(
+          "flex flex-col gap-1",
+          compact ? "items-end" : "items-stretch sm:items-end",
+        )}
+      >
         <input type="hidden" name="templateId" value={templateId} />
         <div className="flex flex-wrap justify-end gap-2">
           {state?.ok && state.documentId ? (
@@ -50,23 +64,30 @@ export function GenerateDemoButton({ templateId }: { templateId: string }) {
               type="button"
               variant="secondary"
               size="sm"
+              disabled={loadingPreview}
               onClick={() => void openPreview(state.documentId!)}
             >
-              <Eye className="h-3.5 w-3.5" />
-              Voir PDF
+              <Eye className="h-3.5 w-3.5" aria-hidden />
+              {loadingPreview ? "Ouverture…" : "Voir PDF"}
             </Button>
           ) : null}
           <Button type="submit" size="sm" disabled={pending}>
-            {pending ? "Génération…" : "PDF démo"}
+            <FileDown className="h-3.5 w-3.5" aria-hidden />
+            {pending ? "Génération…" : compact ? "PDF démo" : "Générer PDF démo"}
           </Button>
         </div>
         {state?.error ? (
-          <span className="text-xs text-msk-coral">{state.error}</span>
+          <span className="max-w-72 text-right text-xs text-msk-coral">
+            {state.error}
+          </span>
         ) : null}
-        {state?.ok && state.message ? (
-          <span className="max-w-60 text-right text-xs text-msk-blue">
+        {state?.ok && state.message && !compact ? (
+          <span className="max-w-72 text-right text-xs text-msk-blue">
             {state.message}
           </span>
+        ) : null}
+        {state?.ok && compact ? (
+          <span className="text-xs text-msk-blue">Généré ✓</span>
         ) : null}
       </form>
 
@@ -74,7 +95,7 @@ export function GenerateDemoButton({ templateId }: { templateId: string }) {
         open={previewOpen}
         onOpenChange={setPreviewOpen}
         title="Aperçu PDF démo"
-        description="Contrôlez la mise en page avant utilisation."
+        description="Contrôlez la mise en page avant utilisation métier."
         size="full"
         footer={
           previewUrl ? (
@@ -93,7 +114,7 @@ export function GenerateDemoButton({ templateId }: { templateId: string }) {
       >
         <div className="flex min-h-[60vh] items-center justify-center p-4">
           {loadingPreview ? (
-            <p className="text-sm text-msk-ink/45">Chargement…</p>
+            <p className="text-sm text-msk-ink/45">Chargement de l’aperçu…</p>
           ) : null}
           {previewError ? (
             <p className="text-sm text-msk-coral">{previewError}</p>

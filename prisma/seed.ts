@@ -400,9 +400,10 @@ async function seedPhase1Ged() {
     {
       code: "contrat_commercial_msk",
       type: "CONTRAT_COMMERCIAL" as const,
-      name: "Contrat client commercial MSK",
+      name: "Contrat client (commercial) MSK",
       // Même générateur que /commercial/contrats/[id] (`generateContractPdf`).
       // Démo = données fictives ; layout = source de vérité commerciale (famille A).
+      // Distinct du gabarit RH `contrat_presta_msk` (prestataire → MSK).
       version: 1,
       structureJson: {
         layout: "msk_commercial_v1",
@@ -446,7 +447,7 @@ async function seedPhase1Ged() {
     {
       code: "contrat_presta_msk",
       type: "CONTRAT_PRESTA" as const,
-      name: "Contrat de prestation MSK",
+      name: "Contrat prestataire (RH) MSK",
       // v3 (2026-11-08) — clôt les écarts recensés dans
       // docs/commercial/COMPARAISON-CONTRAT-PRESTA-MSK-v2.md face au PDF réel
       // docs/CONTRAT DE PRESTATION DE SERVICES.pdf : tableau méta (date
@@ -458,6 +459,7 @@ async function seedPhase1Ged() {
       // "Lu et approuvé" imprimée. 13 articles + tableaux (v2 : 9 articles,
       // pas de tableaux). Voir le doc de comparaison pour le détail et les
       // adaptations documentées (rôles inversés : MSK = Client).
+      // Distinct du gabarit commercial `contrat_commercial_msk` (agence→client).
       version: 3,
       structureJson: {
         layout: "msk_rh_v1",

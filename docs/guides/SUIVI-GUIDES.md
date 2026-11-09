@@ -193,6 +193,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-09 — Gabarits admin : sections Commercial / RH + libellés contrats distincts
+
+- **Pourquoi** : grille / liste plate mélangeait devis, facture et contrats RH — « Contrat de prestation » vs « Contrat client commercial » se lisaient comme un doublon.
+- **Quoi** :
+  - `/administration/gabarits` : sections **Commercial** puis **RH** (cartes) ; ordre Devis → Facture → Contrat client ; RH Travail → Stage → Prestataire → Attestation → Règlement → Solde → Paie.
+  - Seed `name` : « Contrat client (commercial) MSK » / « Contrat prestataire (RH) MSK » ; description carte = but du générateur (`generateContractPdf` vs `generateContractPrestaPdf`).
+  - Badges Commercial blue / RH ink ; helpers `src/lib/templates/labels.ts` ; `loading.tsx` segment.
+- **Fichiers** : `administration/gabarits/page.tsx`, `loading.tsx`, `lib/templates/labels.ts`, `prisma/seed.ts`, ce suivi.
+- **Statut doc** : UX admin clarifiée — `npm run db:seed` pour propager les `name` (upsert). Les deux gabarits restent (générateurs distincts).
+
 ### 2026-11-09 — Création devis : stepper plateforme + porte page (plus de modal)
 
 - **Pourquoi** : formulaire devis mono-écran + checkbox déplacement + modal XL prospect — écart vs règles `forms-stepper` / wizard client / list-create.
