@@ -109,6 +109,18 @@ async function main() {
       ["STANDARD", "PRO", "PREMIUM", "retenue", "ENTRE LES SOUSSIGN"],
       "Famille A — grille offres / en-tête",
     );
+    assertContainsAll(
+      textA,
+      [
+        "Composition commerciale retenue",
+        "PRESTATION",
+        "QTE",
+        "MONTANT",
+        "Total HT",
+        "TTC (TVA",
+      ],
+      "Famille A — composition commerciale",
+    );
     assert.ok(
       textA.includes("CONTRAT DE PRESTATION DE SERVICES") ||
         textA.includes("CONTRAT DE PRESTATION"),
