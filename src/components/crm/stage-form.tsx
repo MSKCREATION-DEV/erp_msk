@@ -23,9 +23,9 @@ import {
 import {
   ACTIVITY_LABELS,
   LOSS_LABELS,
+  STAGE_CHANGE_ORDER,
   STAGE_HINTS,
   STAGE_LABELS,
-  STAGE_ORDER,
 } from "@/lib/crm/labels";
 
 export function StageForm({
@@ -66,6 +66,13 @@ export function StageForm({
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+    if (current === "GAGNE") {
+      setError(
+        "Le statut Client ne se choisit pas ici — utilisez « Transformer en client », ou sélectionnez un autre statut.",
+      );
+      return;
+    }
 
     if (enteringContacte) {
       if (!contactChannel) {
@@ -132,12 +139,14 @@ export function StageForm({
       <OptionPickerSingle
         label="Nouveau statut"
         required
-        options={STAGE_ORDER.map((s) => ({
+        options={STAGE_CHANGE_ORDER.map((s) => ({
           value: s,
           label: STAGE_LABELS[s],
           description: STAGE_HINTS[s],
         }))}
-        value={current}
+        value={
+          current === "GAGNE" ? null : current
+        }
         onChange={(v) => {
           if (!v) return;
           setCurrent(v as CrmPipelineStage);
@@ -148,9 +157,22 @@ export function StageForm({
         placeholder="Choisir le statut"
         modalTitle="Statut du prospect"
       />
-      {STAGE_HINTS[current] ? (
+      <p className="rounded-xl border border-msk-ink/8 bg-msk-chalk/50 px-3 py-2 text-xs text-msk-ink/60">
+        Pour passer en <span className="font-medium text-msk-ink">Client</span>,
+        utilisez le bouton{" "}
+        <span className="font-medium text-msk-blue">Transformer en client</span>{" "}
+        sur la fiche — pas ce sélecteur.
+      </p>
+      {current !== "GAGNE" && STAGE_HINTS[current] ? (
         <p className="rounded-xl border border-msk-blue/15 bg-msk-blue/4 px-3 py-2 text-xs text-msk-ink/65">
           {STAGE_HINTS[current]}
+        </p>
+      ) : null}
+      {normalizeUiStage(stage) === "GAGNE" && current === "GAGNE" ? (
+        <p className="rounded-xl border border-msk-ink/10 bg-white px-3 py-2 text-xs text-msk-ink/65">
+          Statut actuel : <span className="font-medium">{STAGE_LABELS.GAGNE}</span>.
+          Choisissez un autre statut ci-dessus si vous devez le modifier (ex.
+          Perdu).
         </p>
       ) : null}
       {!hasFollowUp &&

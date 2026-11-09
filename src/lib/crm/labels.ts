@@ -55,6 +55,14 @@ export const STAGE_ORDER: CrmPipelineStage[] = [
 ];
 
 /**
+ * Stages du modal « Changer le statut ».
+ * Client (GAGNE) est exclu : conversion uniquement via « Transformer en client ».
+ */
+export const STAGE_CHANGE_ORDER: CrmPipelineStage[] = STAGE_ORDER.filter(
+  (s) => s !== "GAGNE",
+);
+
+/**
  * Couleurs distinctes par statut (1 teinte = 1 stage — pas de bleus quasi-identiques).
  * Aligné charte MSK + accents data-viz lisibles.
  */

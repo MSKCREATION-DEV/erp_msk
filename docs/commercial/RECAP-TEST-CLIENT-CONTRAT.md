@@ -145,10 +145,11 @@ Six étapes **FormSteps** : Identité → Contact → Origine → **Composition*
 1. Repérer un prospect avec une relance ouverte, puis le faire passer en **Gagné** via **Transformer en client** (stepper complet jusqu’au récap).
 2. **Contrôles :** la tâche de relance associée disparaît de `/crm/relances` (file ouverte) ; les compteurs « relances en retard / ouvertes » sur `/crm` et `/commercial` ne la comptent plus ; le digest cron (`/api/cron/notifications`) ne la remonte plus.
 
-### I. Garde Gagné manuel (non-régression P0)
+### I. Garde Gagné manuel — Client hors du picker (2026-11-09)
 
-1. Sur un prospect **sans** fiche client liée, ouvrir **Changer le statut** → sélectionner **Client**.
-2. **Contrôles :** refusé par le serveur avec message invitant à créer d’abord la fiche client (via **Transformer en client** ou un devis) — comportement déjà en place, à revérifier après ce lot.
+1. Sur une fiche prospect, ouvrir **Changer le statut**.
+2. **Contrôles :** l’option **Client** n’apparaît **plus** dans la liste ; un bandeau renvoie vers **Transformer en client**.
+3. Si un client force `stage=GAGNE` (requête) : refus serveur — « uniquement via Transformer en client ».
 
 ### J. Toolbar fiche prospect réorganisée
 

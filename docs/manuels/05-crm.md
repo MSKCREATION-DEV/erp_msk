@@ -67,7 +67,7 @@ Le suivi commercial vit sous l’entrée sidebar **Commercial** :
 2. Enrichir fiche (contacts, offres, journal, relance) — **Modifier** via `/crm/prospects/[id]/edit`  
 3. Relances + scripts  
 4. Passage en **Contacté** : **canal + commentaire obligatoires** (comment on a contacté + ce qui a été dit, ou « pas de réponse ») → ligne créée dans le journal  
-5. Dès **Intéressé** : soit **Créer un devis** (prépare une fiche client minimaliste **sans** passer le CRM en Client ni « conversion » implicite), soit **Transformer en client** (confirmation) → crée le client **et** passe le statut CRM à **Client** ; le passage en Client au picker exige une fiche client existante (devis préparé ou transformation confirmée).  
+5. Dès **Intéressé** : soit **Créer un devis** (prépare une fiche client minimaliste **sans** passer le CRM en Client ni « conversion » implicite), soit **Transformer en client** (stepper) → crée le client **et** passe le statut CRM à **Client**. Le modal **Changer le statut** n’offre **plus** l’option Client : ce statut se pose uniquement via le CTA « Transformer en client » (garde serveur également).  
 6. Devis / factures : parcours ERP selon droits et gate Direction (voir manuel Commercial).  
 7. Facturation côté Commercial (devis accepté → facture, etc.)
 
@@ -86,6 +86,7 @@ En haut de Prospects : **Prospects** · **Intéressés** · **Retards** (radiaux
 
 | Date | Note |
 |---|---|
+| 2026-11-09 | Changer le statut : option Client retirée du picker ; passage GAGNE refusé hors « Transformer en client » |
 | 2026-11-06 | P0 client/devis : devis Intéressé sans convert CRM implicite ; Transformer en client séparé ; garde GAGNE sans ComClient |
 | 2026-11-06 | Rapport semaine : 4 KPI période (Prospects créés, Premiers contacts, Relances faites, Clients gagnés) ; donut répartition live conservé |
 | 2026-11-06 | Filtres : anciens collabs (empreinte CRM) en optgroup « Anciens » ; assignation/objectifs opérationnels = actifs only |

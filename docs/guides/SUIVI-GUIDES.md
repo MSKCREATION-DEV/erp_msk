@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-09 (Anti-doublon org : scoring moins agressif — faux positifs mots partagés ; voir §8) |
+| Dernière mise à jour | 2026-11-09 (Changer le statut : option Client retirée — conversion via « Transformer en client » uniquement ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -193,6 +193,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-09 — Changer le statut : option Client retirée (Q1)
+
+- **Pourquoi** : le modal « Changer le statut » proposait encore **Client** alors que la conversion est l’acte délibéré du CTA **Transformer en client** (stepper) — double porte confuse pour le terrain.
+- **Quoi** :
+  - UI `StageForm` : liste = `STAGE_CHANGE_ORDER` (sans `GAGNE`) + bandeau renvoyant vers « Transformer en client » ; submit bloqué si le statut courant reste Client sans autre choix.
+  - Serveur `updateOpportunityStageAction` : passage **vers** `GAGNE` toujours refusé (plus seulement « sans ComClient ») — message explicite.
+  - Constant `STAGE_CHANGE_ORDER` dans `src/lib/crm/labels.ts` ; manuel `05-crm.md` + checklist `RECAP-TEST-CLIENT-CONTRAT.md` scénario I mis à jour.
+- **Fichiers** : `src/lib/crm/labels.ts`, `src/components/crm/stage-form.tsx`, `src/actions/crm.ts`, `docs/manuels/05-crm.md`, `docs/commercial/RECAP-TEST-CLIENT-CONTRAT.md`.
+- **Statut doc** : `crm-transformer-client` reste `to_validate` ; dette « guidage inline picker Gagné » du 2026-11-06 **fermée** (option retirée + bandeau, plus fort que le simple message d’erreur).
+
 ### 2026-11-08 — Contrats legacy : famille / nature avant génération PDF
 
 - **Pourquoi** : fiche client — contrat `ACTIF` (ex. CTR-202611-0001) sans `family` / `serviceKind` en base (création depuis devis avant champs P4) → échec « Famille / nature de prestation manquante » au clic « Générer le contrat » ; auto-PDF à l’activation silencieux pour les mêmes lignes.
@@ -262,7 +272,7 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
   - **D — toolbar fiche prospect réorganisée** (`/crm/prospects/[id]`) : les 5 badges de statut restent dans `PageHeader.actions` ; une nouvelle barre `Surface` dédiée sépare visuellement (gauche) les actions secondaires outline — Modifier, Affecter, Scripts, Planifier un RDV (`ActionLink variant="secondary"`) — de (droite) `ProspectDetailActions`, elle-même scindée par un séparateur vertical en **pipeline** (Changer le statut / Enregistrer une action) et **conversion commerciale** (Transformer en client = seul CTA primaire restant ; Créer un devis repassé en `variant="secondary"`). Toolbar masquée si l’utilisateur n’a aucune action applicable. Fiche client (`/commercial/clients/[id]`) vérifiée déjà conforme (Modifier secondaire + Nouveau devis primaire) — aucun changement nécessaire, utilisée comme référence.
 - **Fichiers** : `src/actions/crm.ts`, `src/actions/client-wizard.ts`, `src/components/commercial/client-wizard-form.tsx`, `src/lib/crm/scope.ts` (+ test), `src/lib/crm/import/apply-import.ts`, `src/app/(app)/crm/relances/relances-results.tsx`, `src/app/(app)/crm/page.tsx`, `src/app/(app)/commercial/page.tsx`, `src/app/api/cron/notifications/route.ts`, `src/app/(app)/crm/prospects/[id]/page.tsx`, `src/components/crm/prospect-detail-actions.tsx`, `src/components/crm/prospect-quote-cta.tsx`.
 - **Tests** : `npm run test:crm` (dont `scope.test.ts` étendu) ; `npx tsc --noEmit` ; `npm run build` — tous OK.
-- **Non fait / dette** : guidage inline sur le picker « Changer le statut » (si on tente Gagné, rediriger visuellement vers « Transformer en client » au lieu du message d’erreur générique actuel) — pas encore implémenté, à faire dans un prochain lot. Pas de guide dédié « Créer un client direct » (dette déjà connue §6) — l’anti-doublon prospect y sera à documenter le jour où ce guide existera.
+- **Non fait / dette** : ~~guidage inline picker Gagné~~ → **fermé le 2026-11-09** (option Client retirée du picker + garde serveur stricte). Reste : pas de guide dédié « Créer un client direct » (dette déjà connue §6) — l’anti-doublon prospect y sera à documenter le jour où ce guide existera.
 - **Statut doc** : `crm-transformer-client` reste `to_validate` (CTA toujours au même endroit fonctionnel, layout seul a changé) ; pas de nouveau guide requis pour la toolbar (pas de nouvelle route/permission).
 
 ### 2026-11-06 — Client/Contrat P1 + P2 + P3 (partiel) : stepper unifié, anti-doublon, contrat honnête
