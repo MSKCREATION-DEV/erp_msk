@@ -874,7 +874,7 @@ export default async function CommercialClientDetailPage({
                       <div className="flex flex-wrap items-center gap-2">
                         <Link
                           prefetch={false}
-                          href={`/commercial/factures/${inv.id}`}
+                          href={`/comptabilite/factures/${inv.id}`}
                           className="font-medium text-msk-blue hover:underline"
                         >
                           {displayDocNumber(inv.number, inv.draftCode)}

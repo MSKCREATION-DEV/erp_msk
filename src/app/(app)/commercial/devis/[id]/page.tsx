@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
-import { hasPermission } from "@/lib/rbac/resolve";
+import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { canAccessComDocForClient } from "@/lib/commercial/scope";
 import { commercialTeamUserIds } from "@/lib/crm/team";
@@ -45,7 +45,18 @@ export default async function CommercialDevisDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const user = await requireUser();
-  if (!hasPermission(user, "com.access")) redirect("/accueil");
+  // Devis géré en dual-ownership : Commercial (com.access) + Comptabilité
+  // (com.devis.* via pack comptable, sans com.access).
+  if (
+    !hasAnyPermission(user, [
+      "com.access",
+      "com.devis.create",
+      "com.devis.edit_own",
+      "cpt.access",
+    ])
+  ) {
+    redirect("/accueil");
+  }
   const { id } = await params;
   const teamIds = await commercialTeamUserIds();
   const memberIds = Array.from(new Set([user.id, ...teamIds]));
@@ -186,7 +197,7 @@ export default async function CommercialDevisDetailPage({
                   <li key={inv.id}>
                     <Link
                       prefetch={false}
-                      href={`/commercial/factures/${inv.id}`}
+                      href={`/comptabilite/factures/${inv.id}`}
                       className="text-sm font-medium text-msk-blue hover:underline"
                     >
                       {displayDocNumber(inv.number, inv.draftCode)}

@@ -95,7 +95,7 @@ export default async function ComptabiliteEcritureDetailPage({
           {entry.sourceType === "COM_INVOICE" && entry.sourceId ? (
             <p>
               <Link prefetch={false}
-                href={`/commercial/factures/${entry.sourceId}`}
+                href={`/comptabilite/factures/${entry.sourceId}`}
                 className="text-msk-blue hover:underline"
               >
                 Voir la facture source

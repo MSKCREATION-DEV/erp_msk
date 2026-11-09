@@ -246,7 +246,7 @@ export default async function ContratDetailPage({
                 <li key={inv.id} className="flex flex-wrap items-center gap-3 text-sm">
                   <Link
                     prefetch={false}
-                    href={`/commercial/factures/${inv.id}`}
+                    href={`/comptabilite/factures/${inv.id}`}
                     className="font-medium text-msk-blue hover:underline"
                   >
                     {displayDocNumber(inv.number, inv.draftCode)}

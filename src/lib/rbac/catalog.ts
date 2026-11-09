@@ -145,6 +145,9 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
   /**
    * Commercial terrain (groupe Commerciaux) — périmètre own.
    * Vue Équipe / réassignation / import / scripts manage → pack admin_crm (direct).
+   * Ownership facturation/paiements/créances = Comptabilité (cf. pack `comptable`) —
+   * Commercial garde devis (création/édition/envoi, limité) + contrats, pas de
+   * facturation/encaissement (voir .cursor/rules + docs/guides/SUIVI-GUIDES.md).
    */
   commercial: [
     "home.view",
@@ -171,13 +174,14 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
     "com.devis.send",
     "com.devis.accept_reject",
     "com.contrats.manage",
-    "com.factures.create",
-    "com.factures.issue",
-    "com.paiements.record",
     "ged.upload",
     "ged.view_scoped",
     "orgchart.view",
   ],
+  /**
+   * Admin CRM (lead commercial) — même ownership que `commercial` : pas de
+   * facturation/paiements (Comptabilité), devis limité conservé.
+   */
   admin_crm: [
     "home.view",
     "self.profile.edit",
@@ -206,9 +210,6 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
     "com.devis.send",
     "com.devis.accept_reject",
     "com.contrats.manage",
-    "com.factures.create",
-    "com.factures.issue",
-    "com.paiements.record",
     "com.reports.view",
     "ged.upload",
     "ged.view_scoped",
@@ -242,6 +243,11 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
     "ged.upload",
     "orgchart.view",
   ],
+  /**
+   * Comptabilité — ownership facturation/paiements/créances + gestion devis
+   * (cf. mandat ownership Compta). Visibilité globale clients COM via
+   * `comVisibility()` (cpt.access ⇒ global, pas périmètre équipe commerciale).
+   */
   comptable: [
     "home.view",
     "self.profile.edit",
@@ -255,6 +261,16 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
     "cpt.etats.view",
     "cpt.fiscalite.manage",
     "bud.view",
+    "com.clients.view_own",
+    "com.clients.manage",
+    "com.catalogue.view",
+    "com.devis.create",
+    "com.devis.edit_own",
+    "com.devis.send",
+    "com.devis.accept_reject",
+    "com.factures.create",
+    "com.factures.issue",
+    "com.paiements.record",
     "ged.view_scoped",
     "ged.browse",
     "ged.upload",
@@ -277,6 +293,16 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
     "cpt.plan.configure",
     "bud.view",
     "bud.manage",
+    "com.clients.view_own",
+    "com.clients.manage",
+    "com.catalogue.view",
+    "com.devis.create",
+    "com.devis.edit_own",
+    "com.devis.send",
+    "com.devis.accept_reject",
+    "com.factures.create",
+    "com.factures.issue",
+    "com.paiements.record",
     "ged.view_scoped",
     "ged.browse",
     "ged.upload",
@@ -443,7 +469,8 @@ export const PACKS = [
   {
     code: "commercial",
     name: "Commercial",
-    description: "CRM + devis / factures (dossiers suivis — sans Vue Équipe)",
+    description:
+      "CRM + devis limité (dossiers suivis — sans Vue Équipe) · factures/paiements = Comptabilité",
   },
   {
     code: "admin_crm",
@@ -451,7 +478,11 @@ export const PACKS = [
     description: "CRM équipe, import, scripts, objectifs, catalogue",
   },
   { code: "admin_rh", name: "Admin RH", description: "RH + validations" },
-  { code: "comptable", name: "Comptable", description: "Compta SYSCOHADA opérationnelle" },
+  {
+    code: "comptable",
+    name: "Comptable",
+    description: "Compta SYSCOHADA + devis, factures, paiements clients",
+  },
   { code: "admin_compta", name: "Admin Compta", description: "Clôture, plan, fiscalité, budget" },
   { code: "projets", name: "Projets", description: "Projets & ops" },
   { code: "stock", name: "Stock", description: "Stocks / patrimoine (vue)" },

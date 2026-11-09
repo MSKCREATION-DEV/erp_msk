@@ -4,7 +4,9 @@ import { redirect } from "next/navigation";
 import {
   BookOpen,
   Building2,
+  FilePlus2,
   FileSpreadsheet,
+  FileText,
   Landmark,
   LineChart,
   ListOrdered,
@@ -113,6 +115,18 @@ export default async function ComptabiliteHubPage() {
       label: "Clients",
       icon: Wallet,
       desc: "Comptes clients — soldes, créances, factures, mouvements",
+    },
+    canCpt && {
+      href: "/comptabilite/factures",
+      label: "Factures",
+      icon: FilePlus2,
+      desc: "Émission, paiements et solde à encaisser",
+    },
+    canCpt && {
+      href: "/commercial/devis",
+      label: "Devis",
+      icon: FileText,
+      desc: "Propositions, envoi PDF et suivi d’acceptation",
     },
     canEtats && {
       href: "/comptabilite/grand-livre",

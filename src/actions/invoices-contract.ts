@@ -241,7 +241,8 @@ export async function createInvoiceFromContractAction(
   });
 
   revalidatePath(`/commercial/contrats/${contractId}`);
-  revalidatePath("/commercial/factures");
+  // Ownership facturation = Comptabilité.
+  revalidatePath("/comptabilite/factures");
   revalidatePath(`/commercial/clients/${contract.clientId}`);
-  redirect(`/commercial/factures/${invoiceId}`);
+  redirect(`/comptabilite/factures/${invoiceId}`);
 }

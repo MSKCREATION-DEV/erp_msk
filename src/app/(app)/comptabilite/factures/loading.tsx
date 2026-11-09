@@ -1,5 +1,5 @@
 import { PageSkeleton } from "@/components/ui/skeleton";
 
-export default function FacturesLoading() {
+export default function ComptabiliteFacturesLoading() {
   return <PageSkeleton cards={1} />;
 }

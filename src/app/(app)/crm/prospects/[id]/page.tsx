@@ -1052,7 +1052,7 @@ export default async function CrmProspectDetailPage({
                               >
                                 <Link
                                   prefetch={false}
-                                  href={`/commercial/factures/${inv.id}`}
+                                  href={`/comptabilite/factures/${inv.id}`}
                                   className="text-msk-blue hover:underline"
                                 >
                                   Facture {inv.number}

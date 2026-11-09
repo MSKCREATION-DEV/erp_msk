@@ -320,7 +320,7 @@ export async function proposeInvoiceEntryAction(
   });
 
   revalidateCpt();
-  revalidatePath(`/commercial/factures/${invoice.id}`);
+  revalidatePath(`/comptabilite/factures/${invoice.id}`);
   return { ok: true, entryId: entry.id, message: "Proposition VE créée (brouillon)" };
 }
 

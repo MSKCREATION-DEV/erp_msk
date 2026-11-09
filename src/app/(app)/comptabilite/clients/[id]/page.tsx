@@ -14,6 +14,8 @@ import {
   invoiceStatusTone,
   INVOICE_STATUS_LABELS,
   PAYMENT_METHOD_LABELS,
+  quoteStatusTone,
+  QUOTE_STATUS_LABELS,
 } from "@/lib/commercial/labels";
 import {
   CLIENT_ACCOUNT_STATUT_LABELS,
@@ -150,6 +152,19 @@ export default async function ComptabiliteClientCompteDetailPage({
       country: true,
       createdAt: true,
       owner: { select: { firstName: true, lastName: true } },
+      quotes: {
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        select: {
+          id: true,
+          number: true,
+          draftCode: true,
+          status: true,
+          totalTtc: true,
+          currency: true,
+          createdAt: true,
+        },
+      },
       invoices: {
         orderBy: { createdAt: "desc" },
         take: 200,
@@ -457,6 +472,35 @@ export default async function ComptabiliteClientCompteDetailPage({
               </li>
             </ul>
           </Section>
+
+          <Section title="Devis">
+            {client.quotes.length === 0 ? (
+              <p className="text-sm text-msk-ink/45">Aucun devis.</p>
+            ) : (
+              <ul className="space-y-2">
+                {client.quotes.map((q) => (
+                  <li
+                    key={q.id}
+                    className="flex flex-wrap items-center justify-between gap-2"
+                  >
+                    <Link
+                      prefetch={false}
+                      href={`/commercial/devis/${q.id}`}
+                      className="text-sm font-medium text-msk-blue hover:underline"
+                    >
+                      {displayDocNumber(q.number, q.draftCode)}
+                    </Link>
+                    <span className="flex items-center gap-2 text-xs text-msk-ink/50">
+                      {formatComMoney(q.totalTtc, q.currency)}
+                      <Badge tone={quoteStatusTone(q.status)}>
+                        {QUOTE_STATUS_LABELS[q.status]}
+                      </Badge>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
         </div>
 
         <div className="@lg:col-span-8">
@@ -515,7 +559,7 @@ export default async function ComptabiliteClientCompteDetailPage({
                         <td className="py-2.5 pr-3">
                           <Link
                             prefetch={false}
-                            href={`/commercial/factures/${inv.id}`}
+                            href={`/comptabilite/factures/${inv.id}`}
                             className="font-medium text-msk-blue hover:underline"
                           >
                             {displayDocNumber(inv.number, inv.draftCode)}

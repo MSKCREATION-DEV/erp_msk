@@ -4,10 +4,16 @@ import { hasPermission } from "@/lib/rbac/resolve";
 
 export type ComVisibility = "own" | "global";
 
+/**
+ * Comptabilité = source de vérité facturation/paiements/devis : accès
+ * **global** (tous clients, pas périmètre équipe commerciale), au même titre
+ * que Direction / reports globaux. Cf. ownership Compta (devis/factures/paiements).
+ */
 export function comVisibility(user: SessionUser): ComVisibility {
   if (
     user.isSuperAdmin ||
-    hasPermission(user, "com.reports.view")
+    hasPermission(user, "com.reports.view") ||
+    hasPermission(user, "cpt.access")
   ) {
     return "global";
   }

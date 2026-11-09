@@ -145,7 +145,7 @@ export default async function AComptabiliserPage({
                   <td className="px-4 py-3">
                     <Link
                       prefetch={false}
-                      href={`/commercial/factures/${inv.id}`}
+                      href={`/comptabilite/factures/${inv.id}`}
                       className="font-medium text-msk-blue hover:underline"
                     >
                       {inv.number}
@@ -185,7 +185,7 @@ export default async function AComptabiliserPage({
                 >
                   <Link
                     prefetch={false}
-                    href={`/commercial/factures/${inv.id}`}
+                    href={`/comptabilite/factures/${inv.id}`}
                     className="font-medium text-msk-blue hover:underline"
                   >
                     {inv.number}

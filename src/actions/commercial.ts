@@ -123,7 +123,8 @@ function revalidateCommercial(paths: string[] = []) {
   revalidatePath("/commercial");
   revalidatePath("/commercial/clients");
   revalidatePath("/commercial/devis");
-  revalidatePath("/commercial/factures");
+  // Ownership facturation/paiements = Comptabilité (ancienne route en redirect).
+  revalidatePath("/comptabilite/factures");
   for (const p of paths) revalidatePath(p);
 }
 
@@ -1460,10 +1461,10 @@ export async function createInvoiceFromQuoteAction(
   }
 
   revalidateCommercial([
-    `/commercial/factures/${invoiceId}`,
+    `/comptabilite/factures/${invoiceId}`,
     `/commercial/devis/${quoteId}`,
   ]);
-  redirect(`/commercial/factures/${invoiceId}`);
+  redirect(`/comptabilite/factures/${invoiceId}`);
 }
 
 export async function issueInvoiceAction(
@@ -1532,7 +1533,7 @@ export async function issueInvoiceAction(
     entityId: invoiceId,
   });
 
-  revalidateCommercial([`/commercial/factures/${invoiceId}`]);
+  revalidateCommercial([`/comptabilite/factures/${invoiceId}`]);
   revalidateComptaBridge();
   return { ok: true, message: "Facture émise" };
 }
@@ -1684,7 +1685,7 @@ export async function generateInvoicePdfAction(
   });
 
   revalidateCommercial([
-    `/commercial/factures/${invoice.id}`,
+    `/comptabilite/factures/${invoice.id}`,
     `/commercial/clients/${invoice.clientId}`,
     "/ged",
   ]);
@@ -1823,8 +1824,8 @@ export async function recordPaymentAction(
 
   revalidateCommercial(
     logClientId
-      ? [`/commercial/factures/${invoiceId}`, `/commercial/clients/${logClientId}`]
-      : [`/commercial/factures/${invoiceId}`],
+      ? [`/comptabilite/factures/${invoiceId}`, `/commercial/clients/${logClientId}`]
+      : [`/comptabilite/factures/${invoiceId}`],
   );
   revalidateComptaBridge();
   return { ok: true, message: "Paiement enregistré" };
