@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  canTransformProspectToClient,
   CONTACT_COMMENT_MIN_LEN,
   CONTACT_STAGE_CHANNELS,
   followUpRequiredForStage,
@@ -29,5 +30,14 @@ assert.equal(followUpRequiredForStage("QUALIFICATION"), true);
 assert.equal(followUpRequiredForStage("NOUVEAU"), false);
 assert.equal(followUpRequiredForStage("GAGNE"), false);
 assert.equal(followUpRequiredForStage("PERDU"), false);
+
+assert.equal(canTransformProspectToClient("NOUVEAU"), true);
+assert.equal(canTransformProspectToClient("CONTACTE"), true);
+assert.equal(canTransformProspectToClient("QUALIFICATION"), true);
+assert.equal(canTransformProspectToClient("INTERESSE"), true);
+assert.equal(canTransformProspectToClient("DEVIS_ENVOYE"), true);
+assert.equal(canTransformProspectToClient("NEGOCIATION"), true);
+assert.equal(canTransformProspectToClient("GAGNE"), true);
+assert.equal(canTransformProspectToClient("PERDU"), false);
 
 console.log("guide-rules.test.ts OK");

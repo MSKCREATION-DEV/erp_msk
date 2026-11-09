@@ -3,8 +3,9 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { canTransformProspectToClient } from "@/lib/crm/guide-rules";
 import { canMutateCrmDeal } from "@/lib/crm/scope";
-import { CrmPipelineStage, ComQuoteStatus } from "@/generated/prisma/client";
+import { ComQuoteStatus } from "@/generated/prisma/client";
 import { displayDocNumber } from "@/lib/commercial/doc-display";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -15,13 +16,6 @@ import {
 } from "@/components/commercial/client-wizard-form";
 
 export const metadata: Metadata = { title: "Nouveau client" };
-
-const CONVERTIBLE: CrmPipelineStage[] = [
-  CrmPipelineStage.INTERESSE,
-  CrmPipelineStage.DEVIS_ENVOYE,
-  CrmPipelineStage.NEGOCIATION,
-  CrmPipelineStage.GAGNE,
-];
 
 export default async function CommercialClientNouveauPage({
   searchParams,
@@ -85,11 +79,7 @@ export default async function CommercialClientNouveauPage({
     if (!deal || !canMutateCrmDeal(user, deal.ownerId)) {
       redirect("/crm/prospects");
     }
-    const uiStage =
-      deal.stage === CrmPipelineStage.NEGOCIATION
-        ? CrmPipelineStage.DEVIS_ENVOYE
-        : deal.stage;
-    if (!CONVERTIBLE.includes(uiStage)) {
+    if (!canTransformProspectToClient(deal.stage)) {
       redirect(`/crm/prospects/${opportunityId}`);
     }
 

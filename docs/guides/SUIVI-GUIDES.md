@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-09 (Changer le statut : option Client retirée — conversion via « Transformer en client » uniquement ; voir §8) |
+| Dernière mise à jour | 2026-11-09 (Transformer en client dès tout statut ouvert hors Perdu ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -103,7 +103,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `ged-comprendre-acces` | Comprendre son accès GED | ged | `validated` | manuel 02 + permissions |
 | `crm-creer-prospect` | Créer un prospect | commercial | `to_validate` | live doublons 3 car. + ack contact — revalider UI |
 | `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `outdated` | CRUD relances + RDV + Perdu sans min 3× — à réécrire |
-| `crm-transformer-client` | Transformer un prospect en client | commercial | `to_validate` | P2 nov. 2026 — même stepper que `/commercial/clients/nouveau` (identité→conditions) ; se termine par contrat brouillon ; revalidation terrain |
+| `crm-transformer-client` | Transformer un prospect en client | commercial | `to_validate` | Dès tout statut ouvert (hors Perdu) ; stepper = `/commercial/clients/nouveau` ; contrat brouillon ; revalidation terrain 2026-11-09 |
 | `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `outdated` | Rapport semaine : grille 4 KPI période + liens liste ; hub/cartes — revalider captures et libellés |
 | `com-clients-equipe-historique` | Clients COM : équipe, filtres, historique | commercial | `draft` | liste/fiche + URL `owners=` — parcours à valider humain |
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
@@ -192,6 +192,13 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-09 — Transformer en client sans passage forcé par Intéressé
+
+- **Pourquoi** : cas terrain fréquent (connaissance / recommandation qui décide de signer) — obliger À contacter → relance → Intéressé → Transformer bloquait inutilement la conversion.
+- **Quoi** : `canTransformProspectToClient` (hors **Perdu** uniquement) partagé UI + serveur (`prospect-quote-cta`, `createClientWizardAction`, `convertOpportunityToClientAction`, page `/commercial/clients/nouveau?opportunityId=`). **Créer un devis** reste gated sur **Intéressé**. Guide `crm-transformer-client` + manuel CRM mis à jour.
+- **Fichiers** : `src/lib/crm/guide-rules.ts` (+ test), `src/components/crm/prospect-quote-cta.tsx`, `src/actions/client-wizard.ts`, `src/actions/commercial.ts`, `src/app/(app)/commercial/clients/nouveau/page.tsx`, `src/app/(app)/crm/prospects/[id]/page.tsx`, `src/lib/guides/content/commercial.ts`, `docs/manuels/05-crm.md`.
+- **Statut doc** : `crm-transformer-client` → `to_validate` (assouplissement à revalider terrain).
 
 ### 2026-11-09 — Changer le statut : option Client retirée (Q1)
 

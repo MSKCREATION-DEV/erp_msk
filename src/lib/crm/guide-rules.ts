@@ -33,6 +33,17 @@ export function normalizeUiStage(stage: CrmPipelineStage): CrmPipelineStage {
   return stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage;
 }
 
+/**
+ * « Transformer en client » — accessible dès n’importe quel statut ouvert.
+ * Cas terrain : connaissance / recommandation qui décide de signer sans passer
+ * par Intéressé ni relance. Seul Perdu est exclu (dossier clos).
+ */
+export function canTransformProspectToClient(
+  stage: CrmPipelineStage,
+): boolean {
+  return normalizeUiStage(stage) !== "PERDU";
+}
+
 /** Transition *vers* Contacté (pas si déjà Contacté). */
 export function isEnteringContacte(
   from: CrmPipelineStage,

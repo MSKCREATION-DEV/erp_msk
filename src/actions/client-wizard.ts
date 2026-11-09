@@ -43,6 +43,7 @@ import {
   SERVICE_KIND_LABELS,
 } from "@/lib/commercial/labels";
 import { nextComNumber } from "@/lib/commercial/numbering";
+import { canTransformProspectToClient } from "@/lib/crm/guide-rules";
 import { canMutateCrmDeal } from "@/lib/crm/scope";
 
 const cuid = z.string().min(8).max(40);
@@ -232,20 +233,11 @@ export async function createClientWizardAction(
     if (!canMutateCrmDeal(actor, deal.ownerId)) {
       return { ok: false, error: "Opportunité hors périmètre CRM" };
     }
-    const stage =
-      deal.stage === CrmPipelineStage.NEGOCIATION
-        ? CrmPipelineStage.DEVIS_ENVOYE
-        : deal.stage;
-    const convertible: CrmPipelineStage[] = [
-      CrmPipelineStage.INTERESSE,
-      CrmPipelineStage.DEVIS_ENVOYE,
-      CrmPipelineStage.GAGNE,
-    ];
-    if (!convertible.includes(stage)) {
+    if (!canTransformProspectToClient(deal.stage)) {
       return {
         ok: false,
         error:
-          "Passez d’abord le prospect en Intéressé (ou Devis envoyé / Client) avant de transformer.",
+          "Ce prospect est Perdu — rouvrez le statut ou créez un nouveau prospect avant de transformer en client.",
       };
     }
   } else {

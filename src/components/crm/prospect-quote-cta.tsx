@@ -16,6 +16,7 @@ import {
   type QuotePrefillLine,
 } from "@/components/commercial/quote-form";
 import { usePendingAction } from "@/hooks/use-pending-action";
+import { canTransformProspectToClient } from "@/lib/crm/guide-rules";
 import { STAGE_LABELS } from "@/lib/crm/labels";
 import {
   COM_DOCS_GATED,
@@ -35,8 +36,6 @@ type ClientOpt = {
   name: string;
   includeTravelDefault: boolean;
 };
-
-const CONVERTIBLE = new Set(["INTERESSE", "DEVIS_ENVOYE", "GAGNE"]);
 
 /**
  * CTA commercial sur fiche prospect :
@@ -136,8 +135,7 @@ function ProspectConvertCta({
   const router = useRouter();
   const [blockedOpen, setBlockedOpen] = useState(false);
 
-  const uiStage = stage === "NEGOCIATION" ? "DEVIS_ENVOYE" : stage;
-  const canConvert = CONVERTIBLE.has(uiStage);
+  const canConvert = canTransformProspectToClient(stage);
 
   if (existingClientId) {
     const link = (
@@ -182,14 +180,8 @@ function ProspectConvertCta({
       <Modal
         open={blockedOpen}
         onOpenChange={setBlockedOpen}
-        title={
-          canConvert ? "Conversion impossible" : "Statut Intéressé requis"
-        }
-        description={
-          canConvert
-            ? undefined
-            : "La conversion client démarre au statut Intéressé."
-        }
+        title="Prospect déjà clos"
+        description="Un prospect Perdu ne peut pas être transformé en client."
         size="md"
         footer={
           <div className="flex flex-wrap justify-end gap-2">
@@ -201,7 +193,7 @@ function ProspectConvertCta({
             >
               Fermer
             </Button>
-            {!canConvert && canOpenStage && onOpenStage ? (
+            {canOpenStage && onOpenStage ? (
               <Button
                 type="button"
                 size="sm"
@@ -218,22 +210,17 @@ function ProspectConvertCta({
         }
       >
         <div className="space-y-3 p-5 text-sm text-msk-ink/75">
-          {!canConvert ? (
-            <>
-              <p>
-                Statut actuel :{" "}
-                <span className="font-semibold text-msk-ink">
-                  {STAGE_LABELS[stage]}
-                </span>
-                .
-              </p>
-              <p>
-                Passez le prospect en <strong>Intéressé</strong>, puis
-                transformez-le en client depuis cette fiche.
-              </p>
-              <p className="text-xs text-msk-ink/45">{COM_DOCS_GATED_HINT}</p>
-            </>
-          ) : null}
+          <p>
+            Statut actuel :{" "}
+            <span className="font-semibold text-msk-ink">
+              {STAGE_LABELS[stage]}
+            </span>
+            .
+          </p>
+          <p>
+            Rouvrez le dossier (hors Perdu) si vous devez créer la fiche
+            client, ou créez un nouveau prospect si c’est un autre contact.
+          </p>
         </div>
       </Modal>
     </>

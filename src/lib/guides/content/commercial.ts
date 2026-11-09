@@ -338,7 +338,7 @@ export const commercialGuides: GuideInput[] = [
       {
         title: "Vérifier le statut",
         instruction:
-          "Sur la fiche prospect, le statut doit permettre « Transformer en client » (Intéressé, Devis envoyé ou Gagné).",
+          "Sur la fiche prospect, cliquez « Transformer en client » dès que le contact veut signer — y compris depuis À contacter (ex. connaissance / recommandation). Seul un prospect Perdu est bloqué.",
         href: "/crm/prospects",
       },
       {

@@ -89,8 +89,8 @@ Six étapes **FormSteps** : Identité → Contact → Origine → **Composition*
 
 ### B. **Transformer en client** via stepper (depuis prospect)
 
-1. Prospect **Intéressé** (ou **Devis envoyé** / **Négociation** mappée UI selon les règles du CTA).
-2. **Transformer en client** → arriver sur le stepper avec titre **Transformer en client**.
+1. Prospect à **n’importe quel statut ouvert** (ex. **À contacter** — cas connaissance) ; **Perdu** doit rester bloqué.
+2. **Transformer en client** → arriver sur le stepper avec titre **Transformer en client** (sans devoir passer par Intéressé ni poser une relance).
 3. Parcourir les 6 étapes ; vérifier préremplissage identité/contact ; soumettre au **Récap**.
 4. **Contrôles :** redirection vers fiche client ou contrat selon implémentation ; au moins un **contrat en Brouillon** ; journal CRM conservé ; **l’opportunité passe en Gagné** avec `wonAt` si ce n’était pas déjà le cas (effet attendu du **submit** final du stepper).
 

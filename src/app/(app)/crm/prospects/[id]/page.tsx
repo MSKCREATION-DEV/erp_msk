@@ -981,8 +981,8 @@ export default async function CrmProspectDetailPage({
                 </p>
                 <p className="mt-1 text-xs text-msk-ink/40">{COM_DOCS_GATED_HINT}</p>
                 <p className="mt-2 text-xs text-msk-ink/45">
-                  Utilisez « Transformer en client » dès le statut{" "}
-                  <strong>Intéressé</strong>.
+                  Utilisez « Transformer en client » dès que le prospect est
+                  prêt à signer (même depuis À contacter).
                 </p>
               </div>
             ) : deal.comQuotes.length === 0 ? (
