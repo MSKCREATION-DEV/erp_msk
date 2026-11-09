@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-09 (Comptabilité : liste + compte « Clients » remplace « Créances clients » ; voir §8) |
+| Dernière mise à jour | 2026-11-09 (Ownership Comptabilité : factures/paiements + gestion devis — voir §8) |
 
 ### Légende statuts documentaires
 
@@ -166,6 +166,7 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - [ ] **Partager un document contrat** (`ContractDocActions`, 2026-11-08) : implémenté comme copie de l'URL signée GED dans le presse-papiers (pas de lien public dédié / OAuth — la plateforme n'a pas de fonctionnalité de partage externe à ce jour) ; à confirmer que ce comportement correspond à l'attente métier (sinon prévoir un vrai lien de partage avec expiration visible).
 - [ ] **Client/Contrat P2 résiduel** : composition sans picker catalogue avancé ; pas de guide dédié « Créer un client direct » (même stepper que transform, jamais documenté seul).
 - [ ] Guide `crm-transformer-client` : revalider terrain le nouveau stepper (6 étapes) + l’activation séparée du contrat sur la fiche `/commercial/contrats/[id]`.
+- [ ] **Ownership Comptabilité factures/paiements/devis (2026-11-09)** : `npm run db:seed` à exécuter pour propager les nouveaux droits packs (comptable/admin_compta gagnent devis+factures+paiements ; commercial/admin_crm perdent factures/paiements) — tant que non exécuté en prod, le comportement runtime reste l’ancien RBAC. `docs/manuels/06-commercial.md` (section Devis/Factures) et un futur `docs/manuels/08-comptabilite.md` à mettre à jour avec `/comptabilite/factures`. Pas de test navigateur réel avec un compte comptable doté des nouveaux droits (prudence — pas d’écriture sur la DB dev/prod partagée sans aval explicite).
 
 ---
 
@@ -192,6 +193,23 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-09 — Ownership Comptabilité : factures/paiements + gestion devis (mandat ownership)
+
+- **Pourquoi** : facturation, paiements et encaissements devaient être possédés par **Comptabilité** (UX + droits), pas par Commercial ; les devis restent une création **Commercial limitée** mais doivent aussi être **gérables par la Comptabilité** (accept/refuser, convertir en facture).
+- **Quoi** :
+  - **Routes** : nouvelle maison `/comptabilite/factures` (liste) + `/comptabilite/factures/[id]` (détail, mêmes actions Émettre/PDF/Paiement/Proposer VE) — reprise à l’identique du contenu `/commercial/factures/**` (déplacé, pas dupliqué). Anciennes URLs `/commercial/factures` et `/commercial/factures/[id]` deviennent des **redirects** (`redirect()`) vers les nouvelles — aucun 404 sur liens/favoris existants, actions serveur (`commercial.ts`, `invoices-contract.ts`, `comptabilite.ts`) et tous les liens internes (fiche client commercial/compta, fiche contrat, fiche prospect, fiche devis, à comptabiliser, écriture liée) repointés vers `/comptabilite/factures/[id]`.
+  - **Devis** : reste à `/commercial/devis` (dual-ownership, pas de fork d’URL — un seul composant, pas de twin UI) ; gate d’accès à la fiche devis élargi (`com.access` **OU** `com.devis.*` **OU** `cpt.access`) pour que la Comptabilité y accède sans `com.access`. Entrée dédiée **« Devis »** ajoutée au hub `/comptabilite` (lien direct). Nouvelle section **« Devis »** sur le compte client comptable (`/comptabilite/clients/[id]`) avec lien direct vers chaque devis.
+  - **RBAC** (`src/lib/rbac/catalog.ts`) :
+    - Packs **`comptable`** et **`admin_compta`** gagnent : `com.clients.view_own`, `com.clients.manage`, `com.catalogue.view`, `com.devis.create`, `com.devis.edit_own`, `com.devis.send`, `com.devis.accept_reject`, `com.factures.create`, `com.factures.issue`, `com.paiements.record`.
+    - Packs **`commercial`** et **`admin_crm`** **perdent** `com.factures.create` / `com.factures.issue` / `com.paiements.record` (ownership Comptabilité) — conservent devis limité (create/edit_own/send/accept_reject) + contrats.
+    - **Direction** et **Admin plateforme** : **aucun changement** (gardent tout, pas de lock-out).
+  - **Scope** (`src/lib/commercial/scope.ts`) : `comVisibility()` renvoie désormais `"global"` aussi pour `cpt.access` (comme Direction/`com.reports.view`) — la Comptabilité voit/gère **tous** les clients COM, devis, factures (pas le périmètre équipe commerciale). Ce fix central fait fonctionner sans autre changement toutes les actions existantes (`createQuoteAction`, `updateQuoteStatusAction`, `createInvoiceFromQuoteAction`, `issueInvoiceAction`, `recordPaymentAction`, génération PDF).
+  - **Nav/IA** : sous-nav Commercial (`lib/commercial/nav.ts`) retire l’entrée **Factures** (garde Devis) ; carte **Factures** retirée du hub Commercial (`lib/commercial/modules.ts`) ; hub Comptabilité (`comptabilite/page.tsx`) gagne les cartes **Factures** et **Devis**.
+- **Fichiers** : `src/lib/rbac/catalog.ts`, `src/lib/commercial/scope.ts`, `src/app/(app)/comptabilite/factures/**` (nouveau), `src/app/(app)/commercial/factures/**` (redirects), `src/app/(app)/commercial/devis/[id]/page.tsx`, `src/app/(app)/comptabilite/page.tsx`, `src/app/(app)/comptabilite/clients/[id]/page.tsx`, `src/app/(app)/comptabilite/a-comptabiliser/page.tsx`, `src/app/(app)/comptabilite/ecritures/[id]/page.tsx`, `src/app/(app)/commercial/clients/[id]/page.tsx`, `src/app/(app)/commercial/contrats/[id]/page.tsx`, `src/app/(app)/crm/prospects/[id]/page.tsx`, `src/actions/commercial.ts`, `src/actions/invoices-contract.ts`, `src/actions/comptabilite.ts`, `src/lib/commercial/nav.ts`, `src/lib/commercial/modules.ts`, `src/lib/commercial/gates.test.ts`.
+- **Déployer** : les permissions de packs sont **seedées en base** (`permission_pack` / `pack_permission`) — `PACK_PERMISSIONS` seul (code) ne suffit pas. **`npm run db:seed` doit être exécuté** après ce lot pour propager les nouveaux droits comptable/admin_compta/commercial/admin_crm (idempotent, ne touche **jamais** les mots de passe Auth de comptes `ACTIVE` — `auth-password-safety.mdc`). Non exécuté dans cette session (accès DB/Supabase non confirmé en sandbox) — à lancer par un humain ou en CI avant mise en prod effective des droits.
+- **Tests** : `npx tsc --noEmit` ✓ ; `npm run test:rbac-labels` ✓ ; `npm run test:nav` ✓ ; `npm run test:com-docs` (gates/totals/quote-transitions/floor-price/billing/pdf-contract) ✓.
+- **Statut doc** : `com-hub-naviguer` reste `outdated` (hub Commercial a perdu la carte Factures — à reprendre avec les captures) ; `com-clients-equipe-historique` reste `draft` ; pas de guide publié dédié devis/factures à ce jour (dette déjà ouverte §6) — rien à repasser `validated` prématurément. `docs/manuels/06-commercial.md` et `docs/manuels/08-comptabilite.md`(si présent) à mettre à jour avec les nouvelles routes (voir dette §6).
 
 ### 2026-11-09 — Comptabilité : « Clients » remplace « Créances clients »
 
