@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-08 (Alignement gabarits/générateurs PDF vs références `docs/` — contrat_presta_msk v3 + RH + vérif Commercial/devis/factures ; voir §8) |
+| Dernière mise à jour | 2026-11-09 (Anti-doublon org : scoring moins agressif — faux positifs mots partagés ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -242,6 +242,14 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 - **Tests** : `npm run test:pdf-contract` et `npm run test:pdf-rh` étendus avec extraction de texte (`pdftotext`, dégradation silencieuse si poppler absent) vérifiant la présence de chaque article/section attendu ; `npm run test:com-docs` (gates/totals/quote-transitions/floor-price/billing/pdf-contract) OK ; `npx tsc --noEmit` OK ; `npm run lint` OK (aucun nouveau warning) ; `npx next build` OK.
 - **Prudence données** : aucune migration Prisma, aucune réécriture de PDF déjà généré/stocké en GED (`generateContractPdfAction` reste idempotent sur `gedDocumentId`) — seules les **nouvelles** générations bénéficient du corps complet.
 - **Statut doc** : pas de guide centre `/guides` dédié au contenu détaillé des contrats PDF à ce jour ; rien à repasser en `outdated` (aucune route/bouton/droit changé, uniquement le corps du document généré).
+
+### 2026-11-09 — Anti-doublon org : moins de faux positifs (scoring)
+
+- **Pourquoi** : saisie « creation client test 1 » bloquait à tort sur « test client Guiro » (~59 %) et « Mali Création S.A » (~54 %) — le Dice à 50 % sur la chaîne brute sur-pondérait des mots génériques / formes juridiques partagés.
+- **Quoi** : `scoreOrgNames` ignore formes juridiques & mots vides ; seuil Dice cœur distinctif **0,72** ; Jaccard tokens pour réordonnancement ; sous-ensemble fort (≥ 2 tokens) pour « X Y » ⊂ « X Y Z ». Même moteur côté création client directe.
+- **Fichiers** : `src/lib/crm/duplicates.ts`, `src/lib/crm/duplicates.test.ts`, `src/lib/commercial/client-duplicates.ts`, `src/lib/commercial/client-duplicates.test.ts`, `docs/manuels/05-crm.md`.
+- **Tests** : `tsx src/lib/crm/duplicates.test.ts` + `client-duplicates.test.ts` OK (cas faux positifs + vrais positifs).
+- **Statut doc** : `crm-creer-prospect` reste `to_validate` (comportement anti-doublon affiné, revalider UI) ; manuel CRM aligné.
 
 ### 2026-11-06 — Anti-doublon prospect↔client · Relances/compteurs sans « Gagné » · Toolbar fiche prospect
 

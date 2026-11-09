@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { diceCoefficient, FUZZY_THRESHOLD } from "@/lib/crm/duplicates";
+import { scoreOrgNames } from "@/lib/crm/duplicates";
 import { normalizeClientName } from "@/lib/commercial/labels";
 
 /** Seuil minimal de caractères utiles pour lancer la recherche (aligné CRM). */
@@ -42,13 +42,13 @@ export async function findClientDuplicateCandidates(
 
   const out: ClientDuplicateCandidate[] = [];
   for (const c of pool) {
-    if (c.normalizedName === normalized) {
+    const { kind } = scoreOrgNames(name, c.name);
+    if (!kind) continue;
+    if (kind === "exact") {
       out.unshift({ id: c.id, name: c.name, kind: "exact" });
       continue;
     }
-    if (diceCoefficient(normalized, c.normalizedName) >= FUZZY_THRESHOLD) {
-      out.push({ id: c.id, name: c.name, kind: "fuzzy" });
-    }
+    out.push({ id: c.id, name: c.name, kind: "fuzzy" });
   }
   return out.slice(0, 5);
 }

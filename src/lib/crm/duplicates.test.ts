@@ -29,11 +29,31 @@ assert.equal(
   "fuzzy",
 );
 assert.equal(scoreOrgNames("Alpha", "Omega").kind, null);
-// Préfixe live ≥ 3 car.
-assert.equal(scoreOrgNames("smdf", "SMDF sa").kind, "fuzzy");
+// Même cœur hors forme juridique → exact ; préfixe live ≥ 3 car. → fuzzy.
+assert.equal(scoreOrgNames("smdf", "SMDF sa").kind, "exact");
 assert.equal(scoreOrgNames("mar", "Marinas").kind, "fuzzy");
 assert.equal(scoreOrgNames("marin", "Marinas").kind, "fuzzy");
 assert.equal(scoreOrgNames("marinas", "Marinas").kind, "exact");
+
+// Faux positifs : mots génériques partagés ≠ doublon (seuil Dice 50 % trop bas).
+assert.equal(
+  scoreOrgNames("creation client test 1", "test client Guiro").kind,
+  null,
+);
+assert.equal(
+  scoreOrgNames("creation client test 1", "Mali Création S.A").kind,
+  null,
+);
+assert.equal(scoreOrgNames("Alpha SARL", "Beta SARL").kind, null);
+
+// Vrais positifs à conserver : réordonnancement, forme juridique, sous-ensemble.
+assert.equal(scoreOrgNames("Client Test", "Test Client").kind, "fuzzy");
+assert.equal(scoreOrgNames("Diallo Services", "Services Diallo").kind, "fuzzy");
+assert.equal(scoreOrgNames("Marinas", "Marinas SARL").kind, "exact");
+assert.equal(
+  scoreOrgNames("Boulangerie Diallo", "Boulangerie Diallo Bamako").kind,
+  "fuzzy",
+);
 
 // Pool SQL : le norm lui-même doit rester un token « contains » (pas skip égalité seule)
 {

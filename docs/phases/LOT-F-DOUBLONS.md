@@ -8,7 +8,7 @@
 
 | Zone | Détail |
 |------|--------|
-| Doublons org | Exact **ou** fuzzy ≥ 50 % Dice → Continuer bloqué (dès 3 car. live) — prospect **et** client |
+| Doublons org | Exact **ou** fuzzy sur cœur distinctif (Dice ≥ 72 %, Jaccard tokens, hors SA/SARL) → Continuer bloqué (dès 3 car. live) — prospect **et** client |
 | Doublons contact | Match tél / e-mail / canaux → cards + Continuer quand même (ack serveur identité) |
 | Live search | Org dès 3 caractères ; tél ≥ 6 chiffres / e-mail ≥ 3 — debounce + anti-course |
 | Requêtes | Pool indexé `normalizedName` (plus de scan 400) ; exact org = `findFirst` |

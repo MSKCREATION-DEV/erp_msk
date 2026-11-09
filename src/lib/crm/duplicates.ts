@@ -6,10 +6,56 @@ import type { CrmContactChannelType } from "@/generated/prisma/client";
 export const MIN_LIVE_SEARCH_CHARS = 3;
 /** Tél / WhatsApp : seuil de pertinence (évite faux positifs trop tôt). */
 export const MIN_PHONE_SEARCH_DIGITS = 6;
-export const FUZZY_THRESHOLD = 0.5;
+/**
+ * Seuil Dice sur le cœur distinctif (hors forme juridique / mots vides).
+ * 0.5 laissait passer des faux positifs (~54–59 %) sur mots partagés
+ * (« client », « test », « création », « SARL »).
+ */
+export const FUZZY_THRESHOLD = 0.72;
+/** Même jeu de tokens distinctifs (réordonnancement : « Client Test » ↔ « Test Client »). */
+export const TOKEN_JACCARD_THRESHOLD = 0.8;
 export const MAX_DUPLICATE_CANDIDATES = 5;
 /** Candidats DB avant scoring fuzzy (index `normalizedName`). */
 export const ORG_CANDIDATE_POOL = 80;
+
+/** Formes juridiques / mots vides — n’entrent pas dans le score fuzzy. */
+const ORG_NAME_STOPWORDS = new Set([
+  "sa",
+  "sarl",
+  "sas",
+  "snc",
+  "sca",
+  "sci",
+  "eurl",
+  "sasu",
+  "suarl",
+  "ltd",
+  "llc",
+  "inc",
+  "corp",
+  "plc",
+  "gmbh",
+  "ste",
+  "societe",
+  "entreprise",
+  "etablissement",
+  "ets",
+  "groupe",
+  "group",
+  "holding",
+  "international",
+  "intl",
+  "de",
+  "du",
+  "des",
+  "la",
+  "le",
+  "les",
+  "et",
+  "and",
+  "the",
+  "of",
+]);
 
 export type DuplicateKind = "exact" | "fuzzy";
 export type DuplicateEntity = "prospect" | "client";
@@ -93,6 +139,38 @@ export function diceCoefficient(a: string, b: string): number {
   return (2 * intersection) / (x.length - 1 + (y.length - 1));
 }
 
+/** Tokens distinctifs pour scoring / préfiltre (hors forme juridique, chiffres seuls). */
+export function orgSignificantTokens(normalizedName: string): string[] {
+  return normalizedName
+    .split(/\s+/)
+    .filter(
+      (t) =>
+        t.length >= 2 &&
+        !ORG_NAME_STOPWORDS.has(t) &&
+        !/^\d+$/.test(t),
+    );
+}
+
+function tokenJaccard(a: string[], b: string[]): number {
+  if (a.length === 0 || b.length === 0) return 0;
+  const setA = new Set(a);
+  const setB = new Set(b);
+  let inter = 0;
+  for (const t of setA) {
+    if (setB.has(t)) inter += 1;
+  }
+  return inter / (setA.size + setB.size - inter);
+}
+
+function sharedTokenCount(a: string[], b: string[]): number {
+  const setB = new Set(b);
+  const seen = new Set<string>();
+  for (const t of a) {
+    if (setB.has(t)) seen.add(t);
+  }
+  return seen.size;
+}
+
 export function scoreOrgNames(
   inputName: string,
   candidateName: string,
@@ -105,9 +183,16 @@ export function scoreOrgNames(
   if (!a || !b) return { kind: null, score: 0 };
   if (a === b) return { kind: "exact", score: 1 };
 
+  const tokensA = orgSignificantTokens(a);
+  const tokensB = orgSignificantTokens(b);
+  const coreA = tokensA.join(" ") || a;
+  const coreB = tokensB.join(" ") || b;
+  // « Marinas » ↔ « Marinas SARL » : même cœur après retrait forme juridique
+  if (coreA === coreB) return { kind: "exact", score: 1 };
+
   // Préfixe dès 3 car. : « smdf » → « smdf sa », « mar » → « marinas »
-  const aCompact = a.replace(/\s+/g, "");
-  const bCompact = b.replace(/\s+/g, "");
+  const aCompact = (tokensA.join("") || a).replace(/\s+/g, "");
+  const bCompact = (tokensB.join("") || b).replace(/\s+/g, "");
   if (
     aCompact.length >= MIN_LIVE_SEARCH_CHARS &&
     (bCompact.startsWith(aCompact) || aCompact.startsWith(bCompact))
@@ -121,9 +206,29 @@ export function scoreOrgNames(
     };
   }
 
-  const score = diceCoefficient(a, b);
-  if (score >= FUZZY_THRESHOLD) return { kind: "fuzzy", score };
-  return { kind: null, score };
+  const dice = diceCoefficient(coreA, coreB);
+  const jaccard = tokenJaccard(tokensA, tokensB);
+  const shared = sharedTokenCount(tokensA, tokensB);
+  const minTokens = Math.min(
+    new Set(tokensA).size,
+    new Set(tokensB).size,
+  );
+  const coverage = minTokens > 0 ? shared / minTokens : 0;
+
+  // Typo / quasi-identique sur le cœur distinctif
+  if (dice >= FUZZY_THRESHOLD) return { kind: "fuzzy", score: dice };
+
+  // Même tokens, ordre différent
+  if (jaccard >= TOKEN_JACCARD_THRESHOLD) {
+    return { kind: "fuzzy", score: Math.max(dice, jaccard) };
+  }
+
+  // Sous-ensemble fort : « Boulangerie Diallo » ⊂ « Boulangerie Diallo Bamako »
+  if (minTokens >= 2 && shared >= 2 && coverage === 1) {
+    return { kind: "fuzzy", score: Math.max(dice, coverage * 0.9) };
+  }
+
+  return { kind: null, score: dice };
 }
 
 export function channelMatchKeys(
@@ -143,13 +248,13 @@ export function channelMatchKeys(
 export function orgSearchTokens(orgName: string): string[] {
   const norm = normalizeOrgName(orgName);
   if (!norm) return [];
-  const parts = norm.split(/\s+/).filter((t) => t.length >= 2);
+  const parts = orgSignificantTokens(norm);
   const out: string[] = [];
   if (norm.length >= 2) out.push(norm);
   for (const p of parts.slice(0, 4)) {
     if (!out.includes(p)) out.push(p);
   }
-  const compact = norm.replace(/\s+/g, "");
+  const compact = parts.join("") || norm.replace(/\s+/g, "");
   if (compact.length >= MIN_LIVE_SEARCH_CHARS) {
     const prefix = compact.slice(0, Math.min(compact.length, 6));
     if (!out.includes(prefix)) out.push(prefix);
