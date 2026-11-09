@@ -1,15 +1,16 @@
 # Analyse des modèles de contrats MSK CREATION
 
 **Date :** 2026-11-06  
+**MàJ :** 2026-11-09 — PDF sources **hors dépôt Git** (gitignorés) ; cette analyse reste la synthèse product/tech.
 **Source :** extraction texte (pdftotext + OCR Tesseract `fra`) — **aucune modification applicative**.  
 **Objectif :** paramétrer la génération de documents / templates Commercial dans l’ERP MSK.
 
-| Fichier | Méthode | Pages |
+| Fichier (réf. locale hors dépôt) | Méthode | Pages |
 |---|---|---|
-| `docs/CONTRAT DE PRESTATION DE SERVICES.pdf` | OCR (scan) | 5 |
-| `docs/MODELE CONTRAT GESTION DES RESEAUX SOCIAUX (1).pdf` | pdftotext | 5 |
-| `docs/02_Contrat d'engagement Application Web.pdf` | pdftotext | 7 |
-| `docs/CONTRAT D'ENGAGEMENT.pdf` | OCR (scan) | 5 |
+| `CONTRAT DE PRESTATION DE SERVICES.pdf` | OCR (scan) | 5 |
+| `MODELE CONTRAT GESTION DES RESEAUX SOCIAUX (1).pdf` | pdftotext | 5 |
+| `02_Contrat d'engagement Application Web.pdf` | pdftotext | 7 |
+| `CONTRAT D'ENGAGEMENT.pdf` | OCR (scan) | 5 |
 
 > **Note OCR :** le scan « Prestation » / « Engagement » peut contenir des artefacts (caractères manquants sur tableaux). Les titres d’articles et clauses juridiques ont été recoupés avec le modèle texte extractible (réseaux sociaux) et le CDC Application Web.
 

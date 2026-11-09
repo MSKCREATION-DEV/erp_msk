@@ -4,7 +4,7 @@
 > (prospect → client → catalogue → devis → facture → paiement). Voir [`PLAN-2-PHASES-COM-RH.md`](./PLAN-2-PHASES-COM-RH.md) §2.  
 > On ne livre pas un « CRM isolé » : on livre **toute la partie commerciale** bout en bout ; ici on approfondit d’abord le suivi (Excel MSK).
 
-> Référentiels : `docs/CRM_Prospection_MSK.xlsx` · PDF · captures.  
+> Référentiels : Excel / PDF / captures CRM MSK (**hors dépôt** — copies locales uniquement).  
 > Principe : aligner + améliorer (pas cloner bêtement).  
 > **Évolution technique :** [`REGLES-EVOLUTION-CRM.md`](./REGLES-EVOLUTION-CRM.md) — keep / change / **break avec remontée décision** / wipe / tests.
 

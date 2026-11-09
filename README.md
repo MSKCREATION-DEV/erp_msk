@@ -2,8 +2,8 @@
 
 Logiciel métier **interne** MSK CREATION.
 
-- Cahier des charges : [`docs/CAHIER-DES-CHARGES-ERP-MSK.md`](docs/CAHIER-DES-CHARGES-ERP-MSK.md)
 - Priorités : [`docs/phases/PRIORITES.md`](docs/phases/PRIORITES.md) — **Commercial / Finance / Compta = URGENT**
+- Cahier des charges & contrats nominatifs : **hors dépôt** (références locales uniquement — voir `.gitignore`)
 - Phase -1 : OK · Phase 0 (IAM) : [`docs/phases/PHASE-00-IAM-ACCUEIL.md`](docs/phases/PHASE-00-IAM-ACCUEIL.md)
 - Repo : `git@asg-msk:MSKCREATION-DEV/erp_msk.git`
 - Super Admin : `a.guiro@mskcreation.net`

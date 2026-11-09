@@ -794,9 +794,8 @@ function drawFactureBody(
 /**
  * Génération contrat — familles A (prestation / abonnement, Articles 1–13) et
  * B (engagement / cahier des charges). Corps aligné sur les modèles réels MSK
- * (docs/CONTRAT DE PRESTATION DE SERVICES.pdf, docs/MODELE CONTRAT GESTION DES
- * RESEAUX SOCIAUX.pdf, docs/02_Contrat d'engagement Application Web.pdf,
- * docs/CONTRAT D'ENGAGEMENT.pdf — voir docs/commercial/ANALYSE-MODELES-CONTRATS.md).
+ * (PDF hors dépôt : CONTRAT DE PRESTATION, MODELE RS, Contrat d'engagement
+ * Application Web / Engagement — analyse : docs/commercial/ANALYSE-MODELES-CONTRATS.md).
  * Variables non fournies par le dossier ERP → place-holder "---" (jamais une
  * clause silencieusement omise). Articles juridiques socle (PI, confidentialité,
  * données personnelles, responsabilité/force majeure, droit applicable) : texte

@@ -23,7 +23,7 @@ export default async function CrmProspectImportPage() {
     <PageShell>
       <PageHeader
         title="Importer des prospects"
-        description="Excel CRM_Prospection_MSK (.xlsx) ou CSV « ; » — max 500, doublons ignorés, responsables résolus."
+        description="Excel CRM type MSK (.xlsx) ou CSV « ; » — max 500, doublons ignorés, responsables résolus."
         backHref="/crm/prospects"
         backLabel="Retour aux prospects"
         breadcrumbs={[

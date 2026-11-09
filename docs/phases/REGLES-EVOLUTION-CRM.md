@@ -130,7 +130,7 @@ Ordre type :
 1. Export CSV backup optionnel.  
 2. `DELETE` / truncate ordonné : activities → tasks → opportunities → contacts → organizations (garder scripts ou re-seed).  
 3. Re-seed scripts si besoin.  
-4. Import fichier `CRM_Prospection_MSK` (lot CRM-3).  
+4. Import fichier `CRM_Prospection_MSK` local hors dépôt (lot CRM-3 ; `CRM_XLSX_PATH`).  
 5. Smoke §6.
 
 **Interdit** : `migrate reset` global en prod ; reset qui recrée users et touche MDP Auth.

@@ -20,7 +20,10 @@ import {
 } from "../src/lib/crm/import/resolve-users";
 
 const prisma = createPrisma({ max: 1 });
-const FILE = resolve("docs/CRM_Prospection_MSK Copier.xlsx");
+/** Excel hors dépôt — surcharger via CRM_XLSX_PATH. */
+const FILE = resolve(
+  process.env.CRM_XLSX_PATH ?? "docs/CRM_Prospection_MSK Copier.xlsx",
+);
 const dryRun = process.argv.includes("--dry-run");
 
 async function purgeTestOrgsOnly() {

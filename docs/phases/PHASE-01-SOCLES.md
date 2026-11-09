@@ -27,7 +27,7 @@ Préparer l’environnement : dépôt `erp_msk`, nouveau Supabase, Resend (dev),
 ## Checklist tests (gate)
 
 - [x] `git ls-remote` / push OK sur `erp_msk` (`main` → `MSKCREATION-DEV/erp_msk`)
-- [x] CDC présent (`docs/CAHIER-DES-CHARGES-ERP-MSK.md`)
+- [x] CDC historique (retirée du dépôt 2026-11-09 — référence locale hors Git)
 - [x] `docs/msk` favicons + team présents
 - [x] Projet Supabase connecté ; `npm run health:env` OK
 - [x] `.env.example` complet ; secrets absents du git (`.env.local` gitignoré)

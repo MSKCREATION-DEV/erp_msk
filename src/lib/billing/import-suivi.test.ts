@@ -6,11 +6,14 @@ import { parseSuiviFromParts } from "./import-suivi";
 
 const xlsxPath = join(
   process.cwd(),
-  "docs/Tableau de Suivi des Devis & Factures Clients.xlsx",
+  process.env.SUIVI_XLSX_PATH ??
+    "docs/Tableau de Suivi des Devis & Factures Clients.xlsx",
 );
 
 if (!existsSync(xlsxPath)) {
-  console.log("import-suivi.test.ts SKIP (fichier Excel absent)");
+  console.log(
+    "import-suivi.test.ts SKIP (Excel hors dépôt — SUIVI_XLSX_PATH)",
+  );
   process.exit(0);
 }
 

@@ -40,7 +40,7 @@ Pôles **URGENTS** pour MSK :
 | [`LOT-C-EDITION-PROSPECT.md`](./LOT-C-EDITION-PROSPECT.md) | LOT-C édition prospect |
 | [`LOT-D-TRANSFORMER-CLIENT.md`](./LOT-D-TRANSFORMER-CLIENT.md) | LOT-D transform + auto Client |
 | [`LOT-G-COMPTEUR-RELANCES.md`](./LOT-G-COMPTEUR-RELANCES.md) | LOT-G compteur historique relances |
-| [`rapport-reunion-direction-demo-erp-2026-10-13.md`](../rapport-reunion-direction-demo-erp-2026-10-13.md) | Rapport démo Direction |
+| Rapport démo Direction (13/10) | **Hors dépôt** — synthèse conservée dans `ANALYSE-POST-DEMO-DIRECTION-2026-10-13.md` |
 | [`PLAN-2-PHASES-COM-RH.md`](./PLAN-2-PHASES-COM-RH.md) | Cadrage COM/RH Direction |
 | [`FLOW-COMMERCIAL-E2E.md`](./FLOW-COMMERCIAL-E2E.md) | Parcours Commercial |
 | [`SPEC-CRM-MSK-COMPLET.md`](./SPEC-CRM-MSK-COMPLET.md) | Spec suivi CRM |

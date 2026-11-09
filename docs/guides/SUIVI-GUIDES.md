@@ -193,13 +193,20 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-09 — Docs sensibles hors dépôt
+
+- **Pourquoi** : contrats nominatifs, paie, CRM Excel, devis/factures clients, CDC et CR Direction ne doivent plus être versionnés.
+- **Quoi** : retrait tracking + disque des fichiers listés ; `.gitignore` élargi ; libellés `templateRef` / inventaires commerciaux / phases pointent « hors dépôt / locale » ; scripts CRM acceptent `CRM_XLSX_PATH`.
+- **Fichiers** : `.gitignore`, `prisma/seed.ts`, `docs/commercial/*`, `docs/phases/*`, `README.md`, scripts CRM, ce suivi.
+- **Statut doc** : chemins `docs/*.pdf|xlsx` ne sont plus des liens repo — copies locales uniquement.
+
 ### 2026-11-09 — Gabarits : crash P2023, composition PDF, fiches détail
 
 - **Pourquoi** : prod Réf. `3177752238` = `P2023` `CONTRAT_COMMERCIAL` (migrate preview/seed avant client Prisma prod) ; table « Composition commerciale retenue » mal alignée / filet parasite ; module sans fiche dédiée.
 - **Quoi** :
   - Crash résolu dès déploiement `3772129` (enum + client) ; seed `contrat_commercial_msk` requis si ligne absente.
   - `generateContractPdf` : bloc composition atomique (wrap libellés, QTE/MONTANT à droite) ; `table()` anti en-tête orphelin.
-  - Admin : sections Commercial/RH + **fiche** `/administration/gabarits/[id]` (slots, réf. docs/, PDF démo, historique GED) ; bouton démo pending/aperçu.
+  - Admin : sections Commercial/RH + **fiche** `/administration/gabarits/[id]` (slots, réf. métier hors dépôt, PDF démo, historique GED) ; bouton démo pending/aperçu.
 - **Fichiers** : `commercial.ts`, `contract.test.ts`, `gabarits/**`, `generate-demo-pdf.tsx`, `lib/templates/labels.ts`, ce suivi.
 - **Statut doc** : à revalider — liste → fiche → PDF démo → aperçu composition.
 

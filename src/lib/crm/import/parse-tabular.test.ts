@@ -33,7 +33,10 @@ const csv = `MSK CREATION
 }
 
 {
-  const path = resolve(process.cwd(), "docs/CRM_Prospection_MSK.xlsx");
+  const path = resolve(
+    process.cwd(),
+    process.env.CRM_XLSX_PATH ?? "docs/CRM_Prospection_MSK.xlsx",
+  );
   try {
     const buf = readFileSync(path);
     const { rows, sheetName, colMap } = parseXlsxBuffer(buf);

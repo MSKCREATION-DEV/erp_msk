@@ -14,7 +14,7 @@
 
 Reporter dans un lot UX ultérieur (ex. polish P2 / LOT-I) — **pas** dans LOT-B.
 
-Réf. métier : [`rapport-reunion-direction-demo-erp-2026-10-13.md`](../rapport-reunion-direction-demo-erp-2026-10-13.md) §3.8  
+Réf. métier : rapport démo Direction 13/10 (§3.8) — **hors dépôt** ; voir aussi `ANALYSE-POST-DEMO-DIRECTION-2026-10-13.md`  
 Réf. analyse : [`ANALYSE-POST-DEMO-DIRECTION-2026-10-13.md`](./ANALYSE-POST-DEMO-DIRECTION-2026-10-13.md) §2.2
 
 ---

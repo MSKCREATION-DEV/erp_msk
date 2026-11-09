@@ -51,12 +51,29 @@ next-env.d.ts
 .devin/
 tmp/
 
-# Docs RH / contrats personnels (ne jamais versionner)
+# Références métier / données sensibles — hors dépôt (ne jamais versionner)
+# Contrats, paie, attestations, règlements nominatifs
+docs/02_Contrat*
 docs/ATTESTATION*
-docs/CONTRAT DE*
+docs/CONTRAT*
 docs/Contrat*
 docs/Document*
 docs/Fiche de Paie*
+docs/MODELE CONTRAT*
 docs/Solde de tout compte*
+# CRM Excel / PDF / captures opérationnelles
+docs/CRM_Prospection_MSK*
+docs/listes.png
+docs/lists_prospect.png
+docs/rapport_hebdo.png
+docs/tableau_de_bord.png
+# Devis / factures / suivi clients (instances réelles)
+docs/DEVIS*
+docs/FACTURE*
+docs/Tableau de Suivi des Devis*
+# Cahier des charges & comptes-rendus Direction (hors dépôt)
+docs/CAHIER-DES-CHARGES-ERP-MSK.md
+docs/rapport-reunion-direction-demo-erp-*.md
+docs/synthese-reunion-direction-*.md
 Réunion*.vtt
 *.vtt

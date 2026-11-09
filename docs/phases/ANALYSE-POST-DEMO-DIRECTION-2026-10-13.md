@@ -1,7 +1,8 @@
 # Analyse post-démo Direction — CRM commercial
 
 **Date analyse :** 14 octobre 2026  
-**Source métier :** [`docs/rapport-reunion-direction-demo-erp-2026-10-13.md`](../rapport-reunion-direction-demo-erp-2026-10-13.md)  
+**Source métier :** rapport démo Direction 13/10 (**hors dépôt** depuis 2026-11-09 — cette analyse en conserve les écarts Keep/Change/Break)  
+
 **Discipline technique :** [`REGLES-EVOLUTION-CRM.md`](./REGLES-EVOLUTION-CRM.md) · [`FLOW-COMMERCIAL-E2E.md`](./FLOW-COMMERCIAL-E2E.md)  
 **Branche :** `dev`  
 **Nature :** analyse Keep / Change / Break — **aucune implémentation dans ce document**

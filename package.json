@@ -51,8 +51,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:setup": "prisma migrate deploy && tsx prisma/seed.ts",
-    "crm:import:dry": "tsx --env-file=.env.local scripts/crm-excel-migrate.ts --dry-run --file=docs/CRM_Prospection_MSK.xlsx",
-    "crm:import:run": "CONFIRM_PURGE=YES tsx --env-file=.env.local scripts/crm-excel-migrate.ts --purge --ensure-users --import --file=docs/CRM_Prospection_MSK.xlsx",
+    "crm:import:dry": "tsx --env-file=.env.local scripts/crm-excel-migrate.ts --dry-run --file=\"${CRM_XLSX_PATH:-docs/CRM_Prospection_MSK.xlsx}\"",
+    "crm:import:run": "CONFIRM_PURGE=YES tsx --env-file=.env.local scripts/crm-excel-migrate.ts --purge --ensure-users --import --file=\"${CRM_XLSX_PATH:-docs/CRM_Prospection_MSK.xlsx}\"",
     "test:crm-import": "tsx src/lib/crm/import/parse-tabular.test.ts",
     "test:crm-import:idempotence": "tsx --env-file=.env.local src/lib/crm/import/idempotence.test.ts",
     "postinstall": "prisma generate || exit 0"

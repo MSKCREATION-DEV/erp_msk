@@ -110,10 +110,20 @@ export default async function GabaritDetailPage({
             </div>
             <div className="sm:col-span-2">
               <dt className="text-xs font-medium uppercase tracking-caps text-msk-ink/40">
-                Référence docs/
+                Référence métier
               </dt>
               <dd className="mt-1 text-sm text-msk-ink/80">
-                {ref ?? "— non renseignée dans structureJson"}
+                {ref ? (
+                  <>
+                    <span className="font-mono text-xs">{ref}</span>
+                    <p className="mt-1 text-xs text-msk-ink/45">
+                      Fichier hors dépôt Git — conserver une copie locale sécurisée
+                      si besoin de relecture.
+                    </p>
+                  </>
+                ) : (
+                  "— non renseignée dans structureJson"
+                )}
               </dd>
             </div>
           </dl>

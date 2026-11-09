@@ -334,7 +334,7 @@ function drawCenteredTitle(ctx: Ctx, text: string, size = 10.5) {
 /**
  * Tableau clé/valeur type fiche "méta contrat" ou "Partie" (bordure fine,
  * libellé gras à gauche, valeur à droite) — reproduit les tableaux à cellules
- * du PDF de référence `docs/CONTRAT DE PRESTATION DE SERVICES.pdf`.
+ * du PDF de référence « CONTRAT DE PRESTATION DE SERVICES » (hors dépôt).
  */
 function drawKeyValueTable(
   ctx: Ctx,
@@ -492,7 +492,7 @@ function workScheduleArticle(): string {
 }
 
 // Clauses légales communes (invariantes) — texte identique au modèle MSK de
-// référence (docs/Contrat de Travail Guiro...pdf, docs/Contrat de Stage de
+// référence hors dépôt (Contrat de Travail…, Contrat de Stage…
 // Yaye Bah.docx) pour les points non spécifiques au contrat (confidentialité,
 // matériel, PI, discipline, achats, résiliation, dispositions générales).
 function confidentialityArticle(personLabel: string): string {
@@ -558,7 +558,7 @@ function dispositionsGeneralesArticle(): string {
 
 /**
  * Contrat de travail (CDI/CDD) — structure alignée sur le modèle MSK de
- * référence (`docs/Contrat de Travail Guiro Amadou Samba.pdf`). v2
+ * référence hors dépôt (« Contrat de Travail… »). v2
  * (2026-11-08) : accents restaurés + articles Congés payés, Sécurité sociale
  * (INPS/CANAM), Matériel, Discipline, Achats logiciels, Résiliation et
  * Dispositions générales ajoutés (clauses légales invariantes, texte repris
@@ -697,7 +697,7 @@ export async function generateContractTravailPdf(
 
 /**
  * Contrat de stage professionnel — structure alignée sur le modèle MSK de
- * référence (`docs/Contrat de Stage de Yaye Bah.docx`). v2 (2026-11-08) :
+ * référence hors dépôt (« Contrat de Stage… »). v2 (2026-11-08) :
  * accents restaurés + articles Matériel, Discipline, Achats logiciels,
  * Résiliation et Dispositions générales ajoutés (clauses invariantes du
  * socle contrat travail/stage). Congés payés et Sécurité sociale (INPS)
@@ -804,7 +804,7 @@ export async function generateContractStagePdf(
  * « le Client », la personne est « le Prestataire »). v3 (2026-11-08) — clôt
  * les écarts recensés dans
  * `docs/commercial/COMPARAISON-CONTRAT-PRESTA-MSK-v2.md` face au PDF réel
- * `docs/CONTRAT DE PRESTATION DE SERVICES.pdf` : tableau méta (date d'effet /
+ * PDF hors dépôt « CONTRAT DE PRESTATION DE SERVICES » : tableau méta (date d'effet /
  * durée / droit applicable), tableaux Parties (avec e-mail/téléphone),
  * confidentialité réciproque, obligations Prestataire ET Client, clause
  * « effets de la résiliation », notification d'incident (données
@@ -987,7 +987,7 @@ export async function generateContractPrestaPdf(
 
 /**
  * Attestation de stage — structure alignée sur
- * `docs/ATTESTATION DE STAGE DE MANGARA ASSETOU.pdf` (v2, 2026-11-08) :
+ * attestation hors dépôt (v2, 2026-11-08) :
  * accents restaurés, phrase "pour servir et valoir" placée en tête (comme la
  * référence), ajout des deux phrases de qualification (assiduité /
  * professionnalisme) présentes dans le modèle réel.
@@ -1072,7 +1072,7 @@ export async function generateAttestationStagePdf(
 
 /**
  * Solde de tout compte — structure alignée sur
- * `docs/Solde de tout compte Mangara Assetou.pdf` (v2, 2026-11-08 : accents
+ * solde hors dépôt (v2, 2026-11-08 : accents
  * restaurés).
  */
 export async function generateSoldeToutComptePdf(
@@ -1149,7 +1149,7 @@ export async function generateSoldeToutComptePdf(
 /**
  * Accusé / résumé règlement intérieur (signature collab.). v2 (2026-11-08) :
  * accents restaurés + résumé aligné sur les 6 chapitres du document source
- * réel (`docs/Document – Règlement intérieur – Fatoumata.pdf`, Version
+ * réel (règlement intérieur hors dépôt, Version
  * 1.0 — 2025, Code du travail malien Loi N°92-020 + OHADA). Le règlement
  * intérieur complet (22 articles, 6 chapitres, ~10 pages) reste un document
  * source géré en GED / annexé séparément — ce gabarit ne reproduit pas
@@ -1271,7 +1271,7 @@ const TOTAL_CONTRIBUTION_RATE = SOCIAL_CONTRIBUTIONS.reduce(
  * Fiche de paie simplifiée (aperçu — cotisations indicatives Mali). v2
  * (2026-11-08) : accents restaurés + calcul du salaire brut par application
  * inversée du taux de cotisations (26,56 %) au salaire net contractuel,
- * aligné sur `docs/Fiche de Paie de Guiro...pdf` (224 673 F brut / 165 000 F
+ * aligné sur fiche de paie hors dépôt (224 673 F brut / 165 000 F
  * net / 59 673 F de cotisations pour un contractuel à 165 000 F net — mêmes
  * montants). Le détail "Département / État civil" du bulletin officiel
  * n'est pas repris (champs non présents dans `RhPersonInput` — nécessiterait

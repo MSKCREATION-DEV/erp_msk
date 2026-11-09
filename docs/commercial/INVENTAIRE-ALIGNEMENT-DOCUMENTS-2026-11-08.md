@@ -1,29 +1,30 @@
-# Inventaire d'alignement — documents générés par la plateforme vs références `docs/`
+# Inventaire d'alignement — documents générés par la plateforme vs références métier
 
-**Date :** 2026-11-08
-**Mandat :** aligner chaque document généré par l'ERP (gabarit `DocumentTemplate` + fonction `generate*Pdf`) sur son fichier de référence dans `docs/` (structure, sections, paragraphes), en adaptant explicitement les cas à rôles inversés (ex. RH presta).
+**Date :** 2026-11-08  
+**MàJ :** 2026-11-09 — les PDF/DOCX nominatifs et instances clients sont **hors dépôt Git** (gitignorés). Les noms ci-dessous restent des **libellés de référence locale** ; ne pas les re-committer.
+**Mandat :** aligner chaque document généré par l'ERP (gabarit `DocumentTemplate` + fonction `generate*Pdf`) sur son fichier de référence (structure, sections, paragraphes), en adaptant explicitement les cas à rôles inversés (ex. RH presta).
 **Méthode :** `pdftotext -layout` pour les PDF/DOCX extractibles ; `pdftoppm -r 200/300` + `tesseract -l fra` (OCR) pour les scans ; lecture du code générateur réel (pas seulement `structureJson`, qui n'est que la métadonnée — le texte juridique est codé en dur dans `src/lib/pdf/*.ts`).
 
 ---
 
-## 1. Inventaire des références `docs/`
+## 1. Inventaire des références (hors dépôt)
 
-| Fichier référence | Nature | Type de document ERP concerné |
+| Fichier référence (locale) | Nature | Type de document ERP concerné |
 |---|---|---|
-| `docs/CONTRAT DE PRESTATION DE SERVICES.pdf` (OCR, scan) | Instance réelle ECOSOL — contrat agence→client RS | `generateContractPdf` (famille A) **et** `generateContractPrestaPdf` (RH, rôles inversés) |
-| `docs/MODELE CONTRAT GESTION DES RESEAUX SOCIAUX (1).pdf` | Modèle vierge RS (texte extractible) | `generateContractPdf` (famille A) |
-| `docs/02_Contrat d'engagement Application Web.pdf` (OCR, scan) | CDC projet app web (KOUNDJI) | `generateContractPdf` (famille B) |
-| `docs/CONTRAT D'ENGAGEMENT.pdf` (OCR, scan) | CDC site vitrine + charte (KOUNDJI) | `generateContractPdf` (famille B) |
-| `docs/DEVIS HOTEL RESIDENCE LES COLONNES.docx` | Devis réel (offre RS + grille packs) | `generateCommercialPdf` (type DEVIS) |
-| `docs/DEVIS-2 PROSPERITY MANAGEMENT (Logo).docx` | Devis réel (branding, acompte 30/70) | `generateCommercialPdf` (type DEVIS) |
-| `docs/DEVIS CHARTRES GRAPHIQUE HOTEL COLONNES.docx` | Devis réel (charte graphique) | `generateCommercialPdf` (type DEVIS) |
-| `docs/FACTURE  ECOSOL 29-10-2026.docx` | Facture réelle (avec solde reporté mois précédent) | `generateCommercialPdf` (type FACTURE) |
-| `docs/Contrat de Travail Guiro Amadou Samba.pdf` | **Génération antérieure de la plateforme elle-même** (CDI réel, 14 articles) | `generateContractTravailPdf` |
-| `docs/Contrat de Stage de Yaye Bah.docx` | **Génération antérieure de la plateforme** (stage réel, 11 articles) | `generateContractStagePdf` |
-| `docs/ATTESTATION DE STAGE DE MANGARA ASSETOU.pdf` (OCR, scan) | **Génération antérieure de la plateforme** | `generateAttestationStagePdf` |
-| `docs/Solde de tout compte Mangara Assetou.pdf` | **Génération antérieure de la plateforme** | `generateSoldeToutComptePdf` |
-| `docs/Fiche de Paie de Guiro Amadou Samba du 01-09-2026 au 31-09-2026.pdf` | **Génération antérieure de la plateforme** (bulletin détaillé) | `generateFichePaiePdf` |
-| `docs/Document – Règlement intérieur – Fatoumata.pdf` (OCR, scan, ~10 p.) | Document source RH officiel (22 articles, 6 chapitres) | `generateReglementInterieurPdf` (résumé + accusé, pas reproduction intégrale) |
+| `CONTRAT DE PRESTATION DE SERVICES.pdf` (OCR, scan) | Instance réelle ECOSOL — contrat agence→client RS | `generateContractPdf` (famille A) **et** `generateContractPrestaPdf` (RH, rôles inversés) |
+| `MODELE CONTRAT GESTION DES RESEAUX SOCIAUX (1).pdf` | Modèle vierge RS (texte extractible) | `generateContractPdf` (famille A) |
+| `02_Contrat d'engagement Application Web.pdf` (OCR, scan) | CDC projet app web (KOUNDJI) | `generateContractPdf` (famille B) |
+| `CONTRAT D'ENGAGEMENT.pdf` (OCR, scan) | CDC site vitrine + charte (KOUNDJI) | `generateContractPdf` (famille B) |
+| `DEVIS HOTEL RESIDENCE LES COLONNES.docx` | Devis réel (offre RS + grille packs) | `generateCommercialPdf` (type DEVIS) |
+| `DEVIS-2 PROSPERITY MANAGEMENT (Logo).docx` | Devis réel (branding, acompte 30/70) | `generateCommercialPdf` (type DEVIS) |
+| `DEVIS CHARTRES GRAPHIQUE HOTEL COLONNES.docx` | Devis réel (charte graphique) | `generateCommercialPdf` (type DEVIS) |
+| `FACTURE  ECOSOL 29-10-2026.docx` | Facture réelle (avec solde reporté mois précédent) | `generateCommercialPdf` (type FACTURE) |
+| `Contrat de Travail Guiro Amadou Samba.pdf` | **Génération antérieure de la plateforme elle-même** (CDI réel, 14 articles) | `generateContractTravailPdf` |
+| `Contrat de Stage de Yaye Bah.docx` | **Génération antérieure de la plateforme** (stage réel, 11 articles) | `generateContractStagePdf` |
+| `ATTESTATION DE STAGE DE MANGARA ASSETOU.pdf` (OCR, scan) | **Génération antérieure de la plateforme** | `generateAttestationStagePdf` |
+| `Solde de tout compte Mangara Assetou.pdf` | **Génération antérieure de la plateforme** | `generateSoldeToutComptePdf` |
+| `Fiche de Paie de Guiro Amadou Samba du 01-09-2026 au 31-09-2026.pdf` | **Génération antérieure de la plateforme** (bulletin détaillé) | `generateFichePaiePdf` |
+| `Document – Règlement intérieur – Fatoumata.pdf` (OCR, scan, ~10 p.) | Document source RH officiel (22 articles, 6 chapitres) | `generateReglementInterieurPdf` (résumé + accusé, pas reproduction intégrale) |
 
 > **Point clé** : les 6 références RH (`Contrat de Travail Guiro`, `Contrat de Stage Yaye Bah`, `Attestation Mangara`, `Solde Mangara`, `Fiche de Paie Guiro`, `Règlement Fatoumata`) sont elles-mêmes d'**anciennes sorties du générateur de la plateforme**, à une version antérieure du code où le texte comportait encore les accents français et une structure plus riche (14/11 articles). Une régression progressive (accents perdus, articles simplifiés) s'était introduite au fil des itérations — ce lot la corrige.
 

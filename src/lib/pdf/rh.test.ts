@@ -200,7 +200,7 @@ async function main() {
   assert.ok(paie.length > 1000);
   const paieText = extractText(paie);
   if (paieText) {
-    // Régression fidélité vs docs/Fiche de Paie de Guiro...pdf (net 165 000 → brut 224 673, cotisations 59 673)
+    // Régression fidélité vs fiche de paie hors dépôt (net 165 000 → brut 224 673, cotisations 59 673)
     for (const amount of ["224 673", "59 673", "165 000", "1 296", "952"]) {
       assert.ok(
         paieText.includes(amount),

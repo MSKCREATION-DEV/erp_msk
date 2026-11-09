@@ -7,7 +7,7 @@
  * Sans CONFIRM_PURGE=YES : vérifie seulement l’état actuel + 2e passe (non destructif).
  */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createPrisma } from "@/lib/create-prisma";
 import { parseXlsxBuffer } from "@/lib/crm/import/parse-tabular";
@@ -23,9 +23,16 @@ async function main() {
     return;
   }
 
-  const buf = readFileSync(
-    resolve(process.cwd(), "docs/CRM_Prospection_MSK.xlsx"),
+  const xlsxPath = resolve(
+    process.cwd(),
+    process.env.CRM_XLSX_PATH ?? "docs/CRM_Prospection_MSK.xlsx",
   );
+  if (!existsSync(xlsxPath)) {
+    console.log("⏭ skip — Excel CRM absent (hors dépôt ; CRM_XLSX_PATH)");
+    return;
+  }
+
+  const buf = readFileSync(xlsxPath);
   const { rows } = parseXlsxBuffer(buf);
   assert.ok(rows.length >= 300, `rows=${rows.length}`);
 

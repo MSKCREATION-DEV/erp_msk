@@ -7,7 +7,8 @@
  *   npx tsx --env-file=.env.local scripts/crm-import/backfill-created-at.ts
  *   npx tsx --env-file=.env.local scripts/crm-import/backfill-created-at.ts --dry-run
  *   npx tsx --env-file=.env.local scripts/crm-import/backfill-created-at.ts \
- *     --file=docs/CRM_Prospection_MSK.xlsx --day=2026-10-19
+ *     --file=/chemin/local/CRM_Prospection_MSK.xlsx --day=2026-10-19
+ * (Excel CRM hors dépôt Git — fournir un chemin local.)
  */
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";

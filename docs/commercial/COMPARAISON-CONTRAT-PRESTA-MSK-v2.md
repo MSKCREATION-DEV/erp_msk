@@ -65,7 +65,7 @@ structureJson: {
     "responsabilite_fm", "droit_litiges",
     "signatures", "footer",
   ],
-  ref: "docs/CONTRAT DE PRESTATION DE SERVICES.pdf",
+  ref: "hors dépôt · CONTRAT DE PRESTATION DE SERVICES.pdf",
 }
 ```
 

@@ -1,10 +1,11 @@
 /**
  * Migration CRM Excel MSK — inventaire / purge / ensure-users / import.
  *
- * Usage:
- *   npx tsx --env-file=.env.local scripts/crm-excel-migrate.ts --dry-run --file=docs/CRM_Prospection_MSK.xlsx
+ * Le fichier Excel CRM est **hors dépôt** (gitignoré). Fournir un chemin local :
+ *   npx tsx --env-file=.env.local scripts/crm-excel-migrate.ts --dry-run --file=/chemin/local/CRM_Prospection_MSK.xlsx
  *   CONFIRM_PURGE=YES npx tsx --env-file=.env.local scripts/crm-excel-migrate.ts \
- *     --purge --ensure-users --import --file=docs/CRM_Prospection_MSK.xlsx
+ *     --purge --ensure-users --import --file=/chemin/local/CRM_Prospection_MSK.xlsx
+ * Ou via env : CRM_XLSX_PATH=… npm run crm:import:dry
  *
  * Flags: --dry-run --purge --ensure-users --import --file=PATH --no-archive-users
  */

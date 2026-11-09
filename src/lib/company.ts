@@ -1,10 +1,9 @@
 /**
  * Coordonnées légales MSK — alignées contrats / devis / factures.
  * Accents restaurés (2026-11-08) pour coller aux documents de référence
- * réels (`docs/Contrat de Travail Guiro...pdf`, `docs/Solde de tout
- * compte...pdf`, etc.) — WinAnsi (`toWinAnsi`) supporte le Latin-1 accentué
- * sans problème, aucune contrainte technique ne justifiait l'absence
- * d'accents.
+ * réels (contrats / soldes hors dépôt Git) — WinAnsi (`toWinAnsi`)
+ * supporte le Latin-1 accentué sans problème, aucune contrainte technique
+ * ne justifiait l'absence d'accents.
  */
 export const company = {
   legalName: "MSK CREATION",

@@ -420,7 +420,8 @@ async function seedPhase1Ged() {
           "signatures",
           "footer",
         ],
-        ref: "docs/MODELE CONTRAT GESTION DES RESEAUX SOCIAUX (1).pdf",
+        // Réf. locale hors dépôt (gitignorée) — ne pas re-committer le PDF.
+        ref: "hors dépôt · MODELE CONTRAT GESTION DES RESEAUX SOCIAUX (1).pdf",
         generator: "generateContractPdf",
       },
     },
@@ -431,7 +432,7 @@ async function seedPhase1Ged() {
       structureJson: {
         layout: "msk_rh_v1",
         slots: ["header", "parties", "articles", "signatures", "footer"],
-        ref: "docs/Contrat de Travail",
+        ref: "hors dépôt · Contrat de Travail (réf. locale)",
       },
     },
     {
@@ -441,7 +442,7 @@ async function seedPhase1Ged() {
       structureJson: {
         layout: "msk_rh_v1",
         slots: ["header", "parties", "articles", "signatures", "footer"],
-        ref: "docs/Contrat de Stage",
+        ref: "hors dépôt · Contrat de Stage (réf. locale)",
       },
     },
     {
@@ -450,12 +451,12 @@ async function seedPhase1Ged() {
       name: "Contrat prestataire (RH) MSK",
       // v3 (2026-11-08) — clôt les écarts recensés dans
       // docs/commercial/COMPARAISON-CONTRAT-PRESTA-MSK-v2.md face au PDF réel
-      // docs/CONTRAT DE PRESTATION DE SERVICES.pdf : tableau méta (date
-      // d'effet/durée/droit applicable), tableaux Parties (Client/Prestataire
-      // avec e-mail/téléphone), obligations Prestataire ET Client,
-      // confidentialité réciproque, clause "effets de la résiliation",
-      // notification d'incident (données personnelles), exclusions de
-      // responsabilité, avenant écrit + divisibilité, mention
+      // « CONTRAT DE PRESTATION DE SERVICES » (hors dépôt) : tableau méta
+      // (date d'effet/durée/droit applicable), tableaux Parties
+      // (Client/Prestataire avec e-mail/téléphone), obligations Prestataire
+      // ET Client, confidentialité réciproque, clause "effets de la
+      // résiliation", notification d'incident (données personnelles),
+      // exclusions de responsabilité, avenant écrit + divisibilité, mention
       // "Lu et approuvé" imprimée. 13 articles + tableaux (v2 : 9 articles,
       // pas de tableaux). Voir le doc de comparaison pour le détail et les
       // adaptations documentées (rôles inversés : MSK = Client).
@@ -481,7 +482,7 @@ async function seedPhase1Ged() {
           "signatures",
           "footer",
         ],
-        ref: "docs/CONTRAT DE PRESTATION DE SERVICES.pdf",
+        ref: "hors dépôt · CONTRAT DE PRESTATION DE SERVICES.pdf",
       },
     },
     {
@@ -491,7 +492,7 @@ async function seedPhase1Ged() {
       structureJson: {
         layout: "msk_rh_v1",
         slots: ["header", "certificat", "signatures", "footer"],
-        ref: "docs/ATTESTATION DE STAGE",
+        ref: "hors dépôt · ATTESTATION DE STAGE (réf. locale)",
       },
     },
     {
@@ -501,7 +502,7 @@ async function seedPhase1Ged() {
       structureJson: {
         layout: "msk_rh_v1",
         slots: ["header", "articles", "accuse", "signatures", "footer"],
-        ref: "docs/Règlement intérieur",
+        ref: "hors dépôt · Règlement intérieur (réf. locale)",
       },
     },
     {
@@ -511,7 +512,7 @@ async function seedPhase1Ged() {
       structureJson: {
         layout: "msk_rh_v1",
         slots: ["header", "recu", "signatures", "footer"],
-        ref: "docs/Solde de tout compte",
+        ref: "hors dépôt · Solde de tout compte (réf. locale)",
       },
     },
     {
@@ -521,7 +522,7 @@ async function seedPhase1Ged() {
       structureJson: {
         layout: "msk_rh_v1",
         slots: ["header", "infos", "cotisations", "net", "footer"],
-        ref: "docs/Fiche de Paie",
+        ref: "hors dépôt · Fiche de Paie (réf. locale)",
         note: "Phase 5 finalisera INPS officiel",
       },
     },
