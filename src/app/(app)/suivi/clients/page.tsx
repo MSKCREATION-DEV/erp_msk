@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { UserPlus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { requireSvPermission } from "@/lib/suivi/access";
@@ -11,6 +11,8 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { ListTableScroll } from "@/components/ui/list-table-scroll";
+import { ActionLink } from "@/components/ui/action-link";
+import { SvClientListActions } from "@/components/suivi/client-list-actions";
 
 export const metadata: Metadata = { title: "Clients · Suivi" };
 
@@ -19,6 +21,8 @@ export default async function SuiviClientsPage() {
   requireSvPermission(user, "sv.clients.view");
   const canManage =
     hasPermission(user, "sv.clients.manage") || user.isSuperAdmin;
+  const canInvoice =
+    hasPermission(user, "sv.invoices.manage") || user.isSuperAdmin;
 
   const clients = await prisma.svClient.findMany({
     orderBy: { name: "asc" },
@@ -33,7 +37,7 @@ export default async function SuiviClientsPage() {
           issuedAt: true,
         },
       },
-      _count: { select: { invoices: true } },
+      _count: { select: { invoices: true, contracts: true } },
     },
   });
 
@@ -41,16 +45,13 @@ export default async function SuiviClientsPage() {
     <PageShell>
       <PageHeader
         title="Clients"
-        description="Soldes, restants et factures — tampon Suivi."
+        description="Soldes, restants, factures et contrats — tampon Suivi."
         backHref="/suivi"
         actions={
           canManage ? (
-            <Link
-              href="/suivi/clients/nouveau"
-              className="inline-flex h-9 items-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
-            >
-              Nouveau
-            </Link>
+            <ActionLink href="/suivi/clients/nouveau" icon={UserPlus}>
+              Nouveau client
+            </ActionLink>
           ) : null
         }
       />
@@ -69,7 +70,11 @@ export default async function SuiviClientsPage() {
                   <th className="px-4 py-3 font-medium text-right">Totale</th>
                   <th className="px-4 py-3 font-medium text-right">Payé</th>
                   <th className="px-4 py-3 font-medium text-right">Restant</th>
+                  <th className="px-4 py-3 font-medium text-right">À venir</th>
                   <th className="px-4 py-3 font-medium text-right">Factures</th>
+                  <th className="px-4 py-3 font-medium">
+                    <span className="sr-only">Actions</span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-msk-ink/6">
@@ -80,11 +85,21 @@ export default async function SuiviClientsPage() {
                       key={c.id}
                       href={`/suivi/clients/${c.id}`}
                     >
-                      <td className="px-4 py-3 font-medium text-msk-ink">
-                        {c.name}
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-msk-ink">{c.name}</p>
+                        <p className="text-xs text-msk-ink/45">
+                          {[c.city, c.country].filter(Boolean).join(" · ") ||
+                            "—"}
+                          {c._count.contracts > 0
+                            ? ` · ${c._count.contracts} contrat${c._count.contracts > 1 ? "s" : ""}`
+                            : ""}
+                        </p>
                       </td>
                       <td className="px-4 py-3 text-msk-ink/60">
-                        {c.contactName ?? "—"}
+                        <p>{c.contactName ?? "—"}</p>
+                        {c.phone ? (
+                          <p className="text-xs text-msk-ink/40">{c.phone}</p>
+                        ) : null}
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums">
                         {formatSvXof(bal.totale)}
@@ -100,7 +115,18 @@ export default async function SuiviClientsPage() {
                         {formatSvXof(bal.restant)}
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums text-msk-ink/60">
+                        {formatSvXof(bal.aVenir)}
+                      </td>
+                      <td className="px-4 py-3 text-right tabular-nums text-msk-ink/60">
                         {c._count.invoices}
+                      </td>
+                      <td className="px-2 py-3">
+                        <SvClientListActions
+                          clientId={c.id}
+                          canEdit={canManage}
+                          canInvoice={canInvoice}
+                          hasUnpaid={bal.restant > 0}
+                        />
                       </td>
                     </ClickableRowLink>
                   );
