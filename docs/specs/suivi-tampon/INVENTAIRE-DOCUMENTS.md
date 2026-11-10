@@ -17,7 +17,7 @@ Méthodes : `pdftotext`, `tesseract` (contrats scannés), `openpyxl` / parse OOX
 | Factures / docs facture (fichiers + lignes Excel) | **~12–15** refs | Conflits analysés → [`DECISIONS-SEED.md`](./DECISIONS-SEED.md) ; n° Ecosol 29-10 = **22910263** |
 | Mouvements (dépenses) — pas « caisse métier » | **34** lignes (MSK-…-0001 → 0034) | Pas d’entrées IN dans ce fichier (décision C) |
 | Lignes achats 09/09/2026 | **19** lignes détail | Totaux 21 300 / 28 050 = **formules cassées** ; somme lignes = **29 850** |
-| Articles stock | **32** codes | Beaucoup à stock 0 ; mapping achats↔codes incomplet |
+| Articles stock | **33** codes (Excel) | Inventaire texte disait 32 — recompte fichier = 33 ; beaucoup à stock 0 ; mapping achats↔codes incomplet |
 | Contrats PDF | **2** (ECOSOL + KOUNDJI) | ECOSOL montant mensuel = **200 000** (re-OCR) ; case offre encore ambiguë |
 
 **Décisions seed :** voir [`DECISIONS-SEED.md`](./DECISIONS-SEED.md) (priorité fichier facture · devis exclus · mouvements ≠ caisse · Prosperity 122 seul).
@@ -393,7 +393,7 @@ Date unique **09/09/2026**. Lignes détail (Ticket #014523, China Mali, Facture 
 | INF-001–003 | Informatique | Toner, Cartouche, Piles AA | | 0 | |
 | DIV-002 | Divers | Étiquettes | Paquet | 0 | |
 
-**Articles avec stock > 0 :** 14 codes · **stock 0 :** 18 codes.
+**Articles (Excel) :** **33** codes. Stock &gt; 0 : PAP-001/006/007, ECR-001/002/003, BUR-001/002/007, HYI-004/005/008, NET-001 (13) · **stock 0 :** 20.
 
 **Gap :** achats du 09/09 (ex. Piles AA, stylos, sacs poubelle, sucre) **non rapprochés automatiquement** aux codes INF-003 / ECR-* / HYI-008 / ALI-001 — seed stocks = snapshot fichier ; mouvements achat = saisie séparée ou mapping manuel **À valider**.
 
