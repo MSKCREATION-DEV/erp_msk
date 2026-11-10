@@ -1534,6 +1534,23 @@ export type EnumSvInvoiceStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumSvInvoiceStatusFilter<$PrismaModel>
 }
 
+export type EnumSvAccountKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAccountKind | Prisma.EnumSvAccountKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAccountKindFilter<$PrismaModel> | $Enums.SvAccountKind
+}
+
+export type EnumSvAccountKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAccountKind | Prisma.EnumSvAccountKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAccountKindWithAggregatesFilter<$PrismaModel> | $Enums.SvAccountKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvAccountKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvAccountKindFilter<$PrismaModel>
+}
+
 export type EnumSvCashDirectionFilter<$PrismaModel = never> = {
   equals?: $Enums.SvCashDirection | Prisma.EnumSvCashDirectionFieldRefInput<$PrismaModel>
   in?: $Enums.SvCashDirection[] | Prisma.ListEnumSvCashDirectionFieldRefInput<$PrismaModel>
@@ -3041,6 +3058,23 @@ export type NestedEnumSvInvoiceStatusWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSvInvoiceStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSvInvoiceStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumSvAccountKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAccountKind | Prisma.EnumSvAccountKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAccountKindFilter<$PrismaModel> | $Enums.SvAccountKind
+}
+
+export type NestedEnumSvAccountKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAccountKind | Prisma.EnumSvAccountKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAccountKindWithAggregatesFilter<$PrismaModel> | $Enums.SvAccountKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvAccountKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvAccountKindFilter<$PrismaModel>
 }
 
 export type NestedEnumSvCashDirectionFilter<$PrismaModel = never> = {

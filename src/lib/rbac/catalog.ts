@@ -133,6 +133,8 @@ export const PERMISSIONS: PermissionDef[] = [
   { code: "sv.invoices.manage", domain: "sv", description: "Gérer factures / paiements Suivi" },
   { code: "sv.movements.view", domain: "sv", description: "Voir mouvements trésorerie tampon" },
   { code: "sv.movements.manage", domain: "sv", description: "Saisir mouvements IN/OUT" },
+  { code: "sv.accounts.view", domain: "sv", description: "Voir comptes physique / banque Suivi" },
+  { code: "sv.accounts.manage", domain: "sv", description: "Créditer / débiter / transfert comptes Suivi" },
   { code: "sv.stock.view", domain: "sv", description: "Voir stocks Suivi" },
   { code: "sv.stock.manage", domain: "sv", description: "Ajuster / mouvements stock Suivi" },
 ];
@@ -146,6 +148,8 @@ export const SV_PERMISSIONS = [
   "sv.invoices.manage",
   "sv.movements.view",
   "sv.movements.manage",
+  "sv.accounts.view",
+  "sv.accounts.manage",
   "sv.stock.view",
   "sv.stock.manage",
 ] as const;

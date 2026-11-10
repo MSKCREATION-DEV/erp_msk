@@ -20,6 +20,8 @@ export default async function SuiviHubPage() {
     hasPermission(user, "sv.invoices.view") || user.isSuperAdmin;
   const canMovements =
     hasPermission(user, "sv.movements.view") || user.isSuperAdmin;
+  const canAccounts =
+    hasPermission(user, "sv.accounts.view") || user.isSuperAdmin;
   const canStock = hasPermission(user, "sv.stock.view") || user.isSuperAdmin;
 
   const allowed = new Set(
@@ -27,37 +29,46 @@ export default async function SuiviHubPage() {
       "sv.access",
       "sv.clients.view",
       "sv.invoices.view",
+      "sv.accounts.view",
       "sv.movements.view",
       "sv.stock.view",
     ].filter((c) => hasPermission(user, c) || user.isSuperAdmin),
   );
 
-  const [clients, unpaidInvoices, stockZero, inAgg, outAgg, movementsCount] =
-    await Promise.all([
-      canClients ? prisma.svClient.count() : Promise.resolve(0),
-      canInvoices
-        ? prisma.svInvoice.findMany({
-            where: { status: { in: ["EMISE", "PARTIELLE"] } },
-            select: { totalTtc: true, amountPaid: true },
-          })
-        : Promise.resolve([] as { totalTtc: number; amountPaid: number }[]),
-      canStock
-        ? prisma.svStockItem.count({ where: { quantity: 0 } })
-        : Promise.resolve(0),
-      canMovements
-        ? prisma.svCashMovement.aggregate({
-            where: { direction: "IN" },
-            _sum: { amount: true },
-          })
-        : Promise.resolve({ _sum: { amount: 0 } }),
-      canMovements
-        ? prisma.svCashMovement.aggregate({
-            where: { direction: "OUT" },
-            _sum: { amount: true },
-          })
-        : Promise.resolve({ _sum: { amount: 0 } }),
-      canMovements ? prisma.svCashMovement.count() : Promise.resolve(0),
-    ]);
+  const [
+    clients,
+    unpaidInvoices,
+    stockZero,
+    inAgg,
+    outAgg,
+    movementsCount,
+    accountsCount,
+  ] = await Promise.all([
+    canClients ? prisma.svClient.count() : Promise.resolve(0),
+    canInvoices
+      ? prisma.svInvoice.findMany({
+          where: { status: { in: ["EMISE", "PARTIELLE"] } },
+          select: { totalTtc: true, amountPaid: true },
+        })
+      : Promise.resolve([] as { totalTtc: number; amountPaid: number }[]),
+    canStock
+      ? prisma.svStockItem.count({ where: { quantity: 0 } })
+      : Promise.resolve(0),
+    canMovements
+      ? prisma.svCashMovement.aggregate({
+          where: { direction: "IN" },
+          _sum: { amount: true },
+        })
+      : Promise.resolve({ _sum: { amount: 0 } }),
+    canMovements
+      ? prisma.svCashMovement.aggregate({
+          where: { direction: "OUT" },
+          _sum: { amount: true },
+        })
+      : Promise.resolve({ _sum: { amount: 0 } }),
+    canMovements ? prisma.svCashMovement.count() : Promise.resolve(0),
+    canAccounts ? prisma.svAccount.count() : Promise.resolve(0),
+  ]);
 
   const unpaid = unpaidInvoices.filter((i) => i.amountPaid < i.totalTtc).length;
   const solde = (inAgg._sum.amount ?? 0) - (outAgg._sum.amount ?? 0);
@@ -95,6 +106,7 @@ export default async function SuiviHubPage() {
         counts={{
           clients,
           factures: { value: unpaid, hint: "à encaisser" },
+          comptes: accountsCount || 2,
           mouvements: movementsCount,
           stocks: { value: stockZero, hint: "à zéro" },
         }}

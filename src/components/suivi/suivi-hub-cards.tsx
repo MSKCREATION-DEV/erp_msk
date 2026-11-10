@@ -3,6 +3,7 @@ import {
   Receipt,
   ArrowLeftRight,
   Users,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { SUIVI_MODULES, type SuiviModule } from "@/lib/suivi/modules";
@@ -17,6 +18,7 @@ import { cn } from "@/lib/utils";
 const ICONS: Record<string, LucideIcon> = {
   clients: Users,
   factures: Receipt,
+  comptes: Wallet,
   mouvements: ArrowLeftRight,
   stocks: Package,
 };
@@ -41,6 +43,8 @@ function moduleKpi(
       };
     case "factures":
       return { value: String(count), hint: "à encaisser" };
+    case "comptes":
+      return { value: String(count), hint: "comptes" };
     case "mouvements":
       return { value: String(count), hint: "ops" };
     case "stocks":

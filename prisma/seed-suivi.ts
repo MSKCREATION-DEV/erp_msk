@@ -10,6 +10,10 @@ import {
   SV_SEED_STOCK,
 } from "../src/lib/suivi/seed-data";
 import { seedSuiviGed } from "../src/lib/suivi/seed-ged";
+import {
+  ensureSvAccounts,
+  getSvAccountByKind,
+} from "../src/lib/suivi/accounts";
 
 export async function seedSuiviTampon(prisma: PrismaClient) {
   const actor =
@@ -126,12 +130,26 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
   }
   console.log(`✓ Sv contrats ${contractCount}`);
 
+  // Comptes physique / banque (soldes initiaux 0 — pas d’ouverture inventée)
+  await ensureSvAccounts(prisma);
+  const physical = await getSvAccountByKind("PHYSICAL", prisma);
+  console.log("✓ Sv comptes PHYSICAL + BANK (ouverture 0)");
+
   let moveCount = 0;
   for (const m of SV_SEED_MOVEMENTS) {
     const existing = await prisma.svCashMovement.findFirst({
       where: { reference: m.reference },
     });
-    if (existing) continue;
+    if (existing) {
+      // Rattache les OUT seed Espèces au compte physique si pas encore lié
+      if (!existing.accountId) {
+        await prisma.svCashMovement.update({
+          where: { id: existing.id },
+          data: { accountId: physical.id },
+        });
+      }
+      continue;
+    }
     await prisma.svCashMovement.create({
       data: {
         movedAt: new Date(m.movedAt),
@@ -143,12 +161,15 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
         paidBy: m.paidBy,
         paymentMethod: m.paymentMethod ?? "Espèces",
         reference: m.reference,
+        accountId: physical.id,
         createdById: actor.id,
       },
     });
     moveCount += 1;
   }
-  console.log(`✓ Sv mouvements OUT ${moveCount}`);
+  console.log(
+    `✓ Sv mouvements OUT ${moveCount} (rattachés compte physique — solde peut être négatif sans ouverture)`,
+  );
 
   let stockCount = 0;
   for (const s of SV_SEED_STOCK) {

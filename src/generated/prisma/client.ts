@@ -512,6 +512,12 @@ export type SvPayment = Prisma.SvPaymentModel
  */
 export type SvContractMeta = Prisma.SvContractMetaModel
 /**
+ * Model SvAccount
+ * Compte trésorerie tampon (caisse physique ou banque).
+ * Solde = Σ IN − Σ OUT des mouvements liés (`sv_cash_movements.accountId`).
+ */
+export type SvAccount = Prisma.SvAccountModel
+/**
  * Model SvCashMovement
  * 
  */

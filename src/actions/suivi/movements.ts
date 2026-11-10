@@ -6,6 +6,10 @@ import { z } from "zod";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import {
+  getSvAccountByKind,
+  inferAccountKindFromPaymentMethod,
+} from "@/lib/suivi/accounts";
 
 const movementSchema = z.object({
   direction: z.enum(["IN", "OUT"]),
@@ -18,6 +22,7 @@ const movementSchema = z.object({
   paymentMethod: z.string().trim().max(80).optional().or(z.literal("")),
   paidBy: z.string().trim().max(120).optional().or(z.literal("")),
   reference: z.string().trim().max(80).optional().or(z.literal("")),
+  accountKind: z.enum(["PHYSICAL", "BANK", ""]).optional(),
 });
 
 export type SvMovementActionState = { ok: false; error: string } | null;
@@ -46,6 +51,7 @@ export async function createSvCashMovement(
     paymentMethod: formData.get("paymentMethod") ?? "",
     paidBy: formData.get("paidBy") ?? "",
     reference: formData.get("reference") ?? "",
+    accountKind: formData.get("accountKind") ?? "",
   });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Données invalides." };
@@ -56,7 +62,14 @@ export async function createSvCashMovement(
     return { ok: false, error: "Date invalide." };
   }
 
+  const kind =
+    parsed.data.accountKind === "PHYSICAL" ||
+    parsed.data.accountKind === "BANK"
+      ? parsed.data.accountKind
+      : inferAccountKindFromPaymentMethod(parsed.data.paymentMethod);
+
   try {
+    const account = await getSvAccountByKind(kind, prisma);
     await prisma.svCashMovement.create({
       data: {
         direction: parsed.data.direction,
@@ -69,6 +82,7 @@ export async function createSvCashMovement(
         paymentMethod: emptyToNull(parsed.data.paymentMethod),
         paidBy: emptyToNull(parsed.data.paidBy),
         reference: emptyToNull(parsed.data.reference),
+        accountId: account.id,
         createdById: user.id,
       },
     });
@@ -77,6 +91,7 @@ export async function createSvCashMovement(
   }
 
   revalidatePath("/suivi/mouvements");
+  revalidatePath("/suivi/comptes");
   revalidatePath("/suivi");
   redirect("/suivi/mouvements");
 }

@@ -145,6 +145,7 @@ export const ModelName = {
   SvInvoiceLine: 'SvInvoiceLine',
   SvPayment: 'SvPayment',
   SvContractMeta: 'SvContractMeta',
+  SvAccount: 'SvAccount',
   SvCashMovement: 'SvCashMovement',
   SvStockItem: 'SvStockItem',
   SvStockMovement: 'SvStockMovement'
@@ -1780,6 +1781,18 @@ export const SvContractMetaScalarFieldEnum = {
 export type SvContractMetaScalarFieldEnum = (typeof SvContractMetaScalarFieldEnum)[keyof typeof SvContractMetaScalarFieldEnum]
 
 
+export const SvAccountScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  label: 'label',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvAccountScalarFieldEnum = (typeof SvAccountScalarFieldEnum)[keyof typeof SvAccountScalarFieldEnum]
+
+
 export const SvCashMovementScalarFieldEnum = {
   id: 'id',
   movedAt: 'movedAt',
@@ -1792,6 +1805,8 @@ export const SvCashMovementScalarFieldEnum = {
   paymentMethod: 'paymentMethod',
   paidBy: 'paidBy',
   reference: 'reference',
+  accountId: 'accountId',
+  transferId: 'transferId',
   linkedClientId: 'linkedClientId',
   linkedInvoiceId: 'linkedInvoiceId',
   linkedPaymentId: 'linkedPaymentId',

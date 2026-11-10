@@ -2534,6 +2534,11 @@ enum SvCashDirection {
   OUT
 }
 
+enum SvAccountKind {
+  PHYSICAL
+  BANK
+}
+
 enum SvStockMoveKind {
   IN
   OUT
@@ -2650,6 +2655,21 @@ model SvContractMeta {
   @@map("sv_contracts")
 }
 
+/// Compte trésorerie tampon (caisse physique ou banque).
+/// Solde = Σ IN − Σ OUT des mouvements liés (`sv_cash_movements.accountId`).
+model SvAccount {
+  id        String        @id @default(cuid())
+  kind      SvAccountKind @unique
+  label     String
+  notes     String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  movements SvCashMovement[]
+
+  @@map("sv_accounts")
+}
+
 model SvCashMovement {
   id              String          @id @default(cuid())
   movedAt         DateTime
@@ -2662,12 +2682,17 @@ model SvCashMovement {
   paymentMethod   String?
   paidBy          String?
   reference       String?
+  /// Compte impacté (physique ou banque). Null = legacy hors compte.
+  accountId       String?
+  /// Même id sur les 2 jambes d’un transfert banque ↔ physique.
+  transferId      String?
   linkedClientId  String?
   linkedInvoiceId String?
   linkedPaymentId String?
   createdById     String          @db.Uuid
   createdAt       DateTime        @default(now())
 
+  account       SvAccount? @relation(fields: [accountId], references: [id], onDelete: Restrict)
   linkedClient  SvClient?  @relation(fields: [linkedClientId], references: [id], onDelete: SetNull)
   linkedInvoice SvInvoice? @relation(fields: [linkedInvoiceId], references: [id], onDelete: SetNull)
   linkedPayment SvPayment? @relation(fields: [linkedPaymentId], references: [id], onDelete: SetNull)
@@ -2676,6 +2701,8 @@ model SvCashMovement {
   @@index([movedAt])
   @@index([direction, movedAt])
   @@index([reference])
+  @@index([accountId, movedAt])
+  @@index([transferId])
   @@map("sv_cash_movements")
 }
 

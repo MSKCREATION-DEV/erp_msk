@@ -7,6 +7,10 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { deriveInvoiceStatus } from "@/lib/suivi/balances";
+import {
+  getSvAccountByKind,
+  inferAccountKindFromPaymentMethod,
+} from "@/lib/suivi/accounts";
 
 export type SvInvoiceActionState = { ok: false; error: string } | null;
 
@@ -202,6 +206,10 @@ export async function recordSvPayment(
         if (!hasPermission(user, "sv.movements.manage") && !user.isSuperAdmin) {
           return;
         }
+        const account = await getSvAccountByKind(
+          inferAccountKindFromPaymentMethod(parsed.data.method),
+          prisma,
+        );
         await tx.svCashMovement.create({
           data: {
             movedAt: paidAt,
@@ -211,6 +219,7 @@ export async function recordSvPayment(
             description: `Paiement facture ${invoice.number ?? invoice.id}`,
             paymentMethod: parsed.data.method || null,
             reference: parsed.data.reference || null,
+            accountId: account.id,
             linkedClientId: invoice.clientId,
             linkedInvoiceId: invoice.id,
             linkedPaymentId: payment.id,
@@ -227,6 +236,7 @@ export async function recordSvPayment(
   revalidatePath(`/suivi/clients/${invoice.clientId}`);
   revalidatePath("/suivi/factures");
   revalidatePath("/suivi/mouvements");
+  revalidatePath("/suivi/comptes");
   revalidatePath("/suivi");
   redirect(`/suivi/factures/${invoice.id}`);
 }

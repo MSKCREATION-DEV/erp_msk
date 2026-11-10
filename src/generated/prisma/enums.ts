@@ -690,6 +690,14 @@ export const SvCashDirection = {
 export type SvCashDirection = (typeof SvCashDirection)[keyof typeof SvCashDirection]
 
 
+export const SvAccountKind = {
+  PHYSICAL: 'PHYSICAL',
+  BANK: 'BANK'
+} as const
+
+export type SvAccountKind = (typeof SvAccountKind)[keyof typeof SvAccountKind]
+
+
 export const SvStockMoveKind = {
   IN: 'IN',
   OUT: 'OUT',

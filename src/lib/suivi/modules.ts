@@ -31,11 +31,19 @@ export const SUIVI_MODULES: SuiviModule[] = [
     permission: "sv.invoices.view",
   },
   {
+    id: "comptes",
+    href: "/suivi/comptes",
+    title: "Comptes",
+    description: "Caisse physique et banque — soldes et historique.",
+    tone: "ink",
+    permission: "sv.accounts.view",
+  },
+  {
     id: "mouvements",
     href: "/suivi/mouvements",
     title: "Mouvements",
-    description: "Entrées / sorties et historique (trésorerie tampon).",
-    tone: "ink",
+    description: "Registre transversal entrées / sorties.",
+    tone: "cyan",
     permission: "sv.movements.view",
   },
   {
@@ -52,6 +60,11 @@ export const SUIVI_SUBNAV = [
   { href: "/suivi", label: "Menu", exact: true },
   { href: "/suivi/clients", label: "Clients", permission: "sv.clients.view" },
   { href: "/suivi/factures", label: "Factures", permission: "sv.invoices.view" },
+  {
+    href: "/suivi/comptes",
+    label: "Comptes",
+    permission: "sv.accounts.view",
+  },
   {
     href: "/suivi/mouvements",
     label: "Mouvements",
