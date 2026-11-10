@@ -704,6 +704,9 @@ async function main() {
   console.log("→ Stocks…");
   const { seedPhase7aStocks } = await import("./seed-stocks");
   await seedPhase7aStocks(prisma);
+  console.log("→ Suivi tampon…");
+  const { seedSuiviTampon } = await import("./seed-suivi");
+  await seedSuiviTampon(prisma);
   console.log("✅ Seed terminé");
 }
 

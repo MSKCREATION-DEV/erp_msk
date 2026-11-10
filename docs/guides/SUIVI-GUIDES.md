@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-09 (Ownership Comptabilité : factures/paiements + gestion devis — voir §8) |
+| Dernière mise à jour | 2026-11-10 (Module Suivi tampon `/suivi` — draft ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -53,6 +53,7 @@ Branche de travail : `dev`.
 | patrimoine | `/patrimoine` | `pat.access` | stub module |
 | projets | `/projets` | `prj.access` | stub module |
 | anomalies | `/ops/anomalies` | `ops.access` | stub module |
+| suivi | `/suivi` | `sv.access` | draft (2026-11-10) |
 
 ### Groupes / packs (libellés UI)
 
@@ -109,6 +110,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
 | `faq-acces-refuse` | Accès refusé / module absent | accueil | `validated` | redirect `acces_refuse` |
 | `faq-mot-de-passe` | Mot de passe / reset | accueil | `validated` | parcours auth connus |
+| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `draft` | hub + clients/factures/mouvements/stocks — à rédiger dans `src/lib/guides` |
 
 *Les modules sans guide `validated` apparaissent en fiche « stub » (objectif + liens manuels, sans fausse procédure).*
 
@@ -132,6 +134,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | patrimoine | stub | 0 | |
 | projets | stub | 0 | |
 | anomalies | stub | 0 | |
+| suivi | stub / draft | 0 (`sv-hub-naviguer` draft) | valider parcours UI hub→clients→remix→mouvements→stocks |
 | catalogue | via commercial | 0 | offres / planchers |
 
 ### Rôles documentés (packs / groupes)
@@ -193,6 +196,15 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-10 — Module Suivi (tampon) `/suivi` — fondations + piliers V1
+
+| | |
+|---|---|
+| Quoi | Module isolé Clients / Factures (remix) / Mouvements / Stocks ; seed inventaire ; permissions `sv.*` (Direction / Admin plateforme) |
+| Pourquoi | Remplacer Excel manuels le temps des modules métier « vrais » |
+| Fichiers | `src/app/(app)/suivi/**`, `src/components/suivi/**`, `src/actions/suivi/**`, `src/lib/suivi/**`, `prisma/seed-suivi.ts`, `docs/specs/suivi-tampon/**` |
+| Statut doc | Guide parcours **`draft`** — chemins UI à valider terrain ; pas de boutons inventés au-delà du code livré |
 
 ### 2026-11-09 — Ownership Comptabilité : factures/paiements + gestion devis (mandat ownership)
 

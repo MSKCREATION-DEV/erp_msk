@@ -1,0 +1,10 @@
+import { PageShell } from "@/components/ui/page-shell";
+
+export default function Loading() {
+  return (
+    <PageShell>
+      <div className="h-8 w-48 animate-pulse rounded bg-msk-ink/6" />
+      <div className="mt-4 h-56 animate-pulse rounded-xl border border-msk-ink/6 bg-white" />
+    </PageShell>
+  );
+}

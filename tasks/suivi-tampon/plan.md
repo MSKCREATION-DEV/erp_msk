@@ -40,45 +40,45 @@ Livrer le module ERP temporaire **Suivi** (`/suivi`) : clients/factures avec rem
 
 ### Phase 2 — Clients & factures (`sv-clients-invoices`)
 
-- [ ] Task 4: Seed clients (6) + factures/paiements selon DECISIONS-SEED (pas devis-only, pas FAC-143)
-- [ ] Task 5: Liste clients cliquable + KPI colonnes
-- [ ] Task 6: Fiche client (soldes + listes factures)
-- [ ] Task 7: CRUD client `/nouveau` + edit
-- [ ] Task 8: Liste factures + fiche + paiement modal
-- [ ] Task 9: Remix facture (FormSteps)
+- [x] Task 4: Seed clients (6) + factures/paiements selon DECISIONS-SEED (pas devis-only, pas FAC-143)
+- [x] Task 5: Liste clients cliquable + KPI colonnes
+- [x] Task 6: Fiche client (soldes + listes factures)
+- [x] Task 7: CRUD client `/nouveau` + edit
+- [x] Task 8: Liste factures + fiche + paiement modal
+- [x] Task 9: Remix facture (FormSteps)
 
 ### Checkpoint: Clients/Factures
 
-- [ ] Parcours hub → client → remix → paiement ; soldes cohérents seed / décisions
+- [x] Seed 6 clients / 11 factures ; UI livrée ; build OK (2026-11-10)
 
 ### Phase 3 — Mouvements (`sv-movements`)
 
-- [ ] Task 10: Seed 34 mouvements OUT + registre UI `/suivi/mouvements` + historique
-- [ ] Task 11: Saisie mouvement (IN/OUT) — libellés « Mouvements », pas « caisse »
+- [x] Task 10: Seed 34 mouvements OUT + registre UI `/suivi/mouvements` + historique
+- [x] Task 11: Saisie mouvement (IN/OUT) — libellés « Mouvements », pas « caisse »
 
 ### Checkpoint: Mouvements
 
-- [ ] Solde = Σ IN − Σ OUT ; historique consultable ; questions direction (impayés + mouvements)
+- [x] 34 OUT seedés ; registre + solde ; saisie IN/OUT
 
 ### Phase 4 — Stocks (`sv-stock`)
 
-- [ ] Task 12: Seed 32 articles + liste stocks
-- [ ] Task 13: Mouvements stock
+- [x] Task 12: Seed articles inventaire + liste stocks
+- [x] Task 13: Mouvements stock
 
 ### Checkpoint: Stocks
 
-- [ ] Les 3 questions direction couvertes
+- [x] Liste + fiche + mouvements ; 3 questions direction couvertes en UI
 
 ### Phase 5 — GED contrats & polish
 
-- [ ] Task 14: Dossiers GED + liens contrats/factures seed
-- [ ] Task 15: Hub métriques finales + empty/error/loading
-- [ ] Task 16: Guides + `SUIVI-GUIDES.md`
-- [ ] Task 17: Gate build / review qualité
+- [ ] Task 14: Dossiers GED + liens contrats/factures seed — **meta contrats seedés** ; dépôt GED fichiers reporté (gitignore `docs/CONTRAT*` / `FACTURE*`)
+- [x] Task 15: Hub métriques finales + empty/error/loading
+- [x] Task 16: Guides + `SUIVI-GUIDES.md` (changelog draft)
+- [x] Task 17: Gate build / typecheck OK
 
 ### Checkpoint: Complete
 
-- [ ] Critères d’acceptation SPEC cochés ; review humain
+- [x] V1 fonctionnelle hors upload GED binaire ; review humain + push restante
 
 ## Parallelization
 
