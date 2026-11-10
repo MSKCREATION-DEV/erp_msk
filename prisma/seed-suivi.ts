@@ -55,16 +55,45 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
   console.log(`✓ Sv clients ${clientIds.size}`);
 
   let invCount = 0;
+  let invSynced = 0;
   for (const inv of SV_SEED_INVOICES) {
     const clientId = clientIds.get(inv.clientKey);
     if (!clientId) continue;
 
     const existing = await prisma.svInvoice.findFirst({
       where: { number: inv.number, clientId },
+      include: { payments: true },
     });
-    if (existing) continue;
+    if (existing) {
+      // Sync soldes / paiements (décision G) — sans toucher Auth
+      await prisma.svPayment.deleteMany({ where: { invoiceId: existing.id } });
+      await prisma.svInvoice.update({
+        where: { id: existing.id },
+        data: {
+          status: inv.status,
+          totalHt: inv.totalHt,
+          totalVat: inv.totalVat,
+          totalTtc: inv.totalTtc,
+          amountPaid: inv.amountPaid,
+          object: inv.object,
+          notes: inv.notes,
+          sourceDocument: inv.sourceDocument,
+          payments: {
+            create: inv.payments.map((p) => ({
+              amount: p.amount,
+              paidAt: new Date(p.paidAt),
+              method: p.method,
+              reference: p.reference,
+              note: p.note,
+            })),
+          },
+        },
+      });
+      invSynced += 1;
+      continue;
+    }
 
-    const created = await prisma.svInvoice.create({
+    await prisma.svInvoice.create({
       data: {
         number: inv.number,
         legacyNumber: inv.legacyNumber,
@@ -101,10 +130,11 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
         },
       },
     });
-    void created;
     invCount += 1;
   }
-  console.log(`✓ Sv factures créées ${invCount} (idempotent skip si existantes)`);
+  console.log(
+    `✓ Sv factures créées ${invCount} · soldes/paiements resync ${invSynced}`,
+  );
 
   let contractCount = 0;
   for (const ct of SV_SEED_CONTRACTS) {

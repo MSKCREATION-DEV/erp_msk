@@ -16,6 +16,7 @@
 | **D** | Prosperity FAC-143 vs 122 : **si même facture → une seule**, priorité fichier facture réel. |
 | **E** | Miroir paiements → mouvement IN : en V1, **enregistrer un paiement client peut créer** un mouvement `IN` lié (`linkedInvoiceId` / `linkedClientId`) pour la traçabilité. **Pas** de double saisie obligatoire : le paiement facture reste la source de vérité du solde client ; le miroir est optionnel côté action (flag / comportement par défaut ON recommandé). Aucun IN inventé au seed (fichier dépenses = OUT only). |
 | **F** | **Comptes** (nom produit) : 2 comptes `sv_accounts` — **physique** + **banque**. Solde = Σ mouvements liés (`accountId`). Ouverture seed = **0** (non documentée). OUT seed Espèces → **impactent le compte physique** (solde peut être négatif jusqu’aux retraits banque saisis). Transfert = 2 mouvements même `transferId`. Source de vérité unique = `sv_cash_movements`. |
+| **G** | **Paiements / soldes clients (confirmation Direction 2026-11-10)** — voir §8. KOUNDJI & ISDALINIA = **tout payé / reste 0** (compléments datés `2026-11-10` + note « confirmation Direction » si date exacte inconnue). ECOSOL = paiements cash **uniquement** 200 000 (02/10 → FAC-155) + 260 000 (04/11 → 22910263) ; arriéré 106 800 reporté FAC-155→22910263 via écriture `Report facture` (pas un encaissement). Prosperity **387 000** = TTC **FAC-22710262** (pas FAC-122=424 000) ; FAC-122 reste Excel absorbé par report récap. |
 
 Lien croisé : [`SPEC.md`](./SPEC.md) · [`docs/intent/module-suivi-tampon.md`](../../intent/module-suivi-tampon.md)
 
@@ -28,9 +29,10 @@ Plus de questions **bloquantes** seed/spec. Détail ci-dessous + flags `NEEDS_RE
 | # | Sujet | Verdict seed | Flag / note |
 |---|-------|--------------|-------------|
 | K1 | KOUNDJI chevauchement sept. FAC-2710261 / FAC-167 | **Seed les 2 fichiers** (décision A) | `NEEDS_REVIEW:KOUNDJI_SEPTEMBER_OVERLAP` — double comptage septembre possible (humain) |
-| K2 | Chèque FAC-117 = HT ou TTC ? | Excel documente **100 000** (= HT fichier 2710261) ; **ne pas inventer** 18 000 TVA encaissés | `amountPaid=100000`, statut **PARTIELLE**, `NEEDS_REVIEW:KOUNDJI_117_HT_VS_TTC` |
+| K2 | Chèque FAC-117 = HT ou TTC ? | Excel documente **100 000** (= HT fichier 2710261) ; complément 18 000 soldé **confirmation Direction 2026-11-10** (décision G) — pas inventé comme chèque Excel | `amountPaid=118000` PAYEE ; notes conservent `NEEDS_REVIEW:KOUNDJI_117_HT_VS_TTC` |
 | C1 | Contrat ECOSOL montant mensuel | Re-OCR 2026-11-10 : **200 000 FCFA** lisible (`‘200.000`) | Champ seed `monthlyAmount=200000` ; case offre STANDARD/PRO/PREMIUM encore ambiguë OCR → note `NEEDS_REVIEW:ECOSOL_CONTRACT_OFFER_CHECKBOX` (factures 155/22910263 confirment PREMIUM 200k) |
 | M1 | Miroir paiement → IN | **Décision E** — miroir autorisé V1, pas obligatoire | Pas de seed IN |
+| G1 | Soldes clients Direction | **Décision G** — KOUNDJI/ISDALINIA/Prosperity reste 0 ; Ecosol reste **153 600** | Voir §8 |
 
 ---
 
@@ -45,8 +47,8 @@ Pour chaque conflit : ligne Excel exacte (OOXML Strict / sharedStrings) + conten
 | Conflit | Conclusion | Cause probable | Seed retenir | Notes Excel |
 |---------|------------|----------------|--------------|-------------|
 | ECOSOL FAC-116 / Excel FAC-06 660k | **Même pièce** | Excel = **HT** ; PDF = **TTC 778 800** | PDF : HT 660 000 · TVA 118 800 · **TTC 778 800** ; payée (reste 0 PDF) | Ligne Facture R16 `FAC-06` G=H=660000 |
-| ECOSOL FAC-155 306800 vs 306000 | **Même pièce** | Excel **oublie +800** (TTC réel HT+TVA) | DOCX : **306 800** ; encaissé 200 000 ; reste **106 800** | R17 G=306000 H=200000 I=106000 |
-| Ecosol 29-10 n° | **Résolu** (humain) | — | N° **22910263** · net **413 600** | Pas encore de ligne Excel dédiée |
+| ECOSOL FAC-155 306800 vs 306000 | **Même pièce** | Excel **oublie +800** (TTC réel HT+TVA) | DOCX : **306 800** ; cash 200 000 (02/10) ; reste 106 800 **reporté** sur 22910263 (décision G) → FAC-155 PAYEE via Report | R17 G=306000 H=200000 I=106000 |
+| Ecosol 29-10 n° | **Résolu** (humain) | — | N° **22910263** · net **413 600** ; cash **260 000** (04/11) → reste **153 600** | Pas encore de ligne Excel dédiée |
 | KOUNDJI n° / dates | **Mapping Excel↔fichiers partiel** | Ancien n° Excel + confusion de lignes | Voir § KOUNDJI | Plusieurs causes |
 | Prosperity **143 vs 122** | **Même facture** → **1 seule** | 143 = **version obsolète / brouillon** | **FAC-122** (PDF ×3 MD5 id.) | 143 **absent** Excel |
 | Prosperity TTC PDF 424000 vs HT+TVA 424800 | Anomalie **dans le PDF** (+ Excel devis) | TTC PDF/Excel facture **−800** vs 360k+64,8k | Suivre **TTC document facture 424 000** (décision A) | Devis R13 G=424800 |
@@ -101,7 +103,7 @@ Pour chaque conflit : ligne Excel exacte (OOXML Strict / sharedStrings) + conten
 
 **Conclusion :** même pièce. Excel a saisi **306 000 / 106 000** (−800) — même ordre d’écart que Prosperity TTC (−800).
 
-**Seed :** totaux DOCX **306 800** ; paiement 200 000 ; reste dérivé 106 800.  
+**Seed (décision G) :** totaux DOCX **306 800** ; paiement cash **200 000** (02/10/2026) ; arriéré **106 800** reporté sur 22910263 via `Report facture` (FAC-155 PAYEE, sans 2e encaissement inventé).  
 `notes` : `NEEDS_REVIEW:ECOSOL_155_EXCEL_MINUS_800`.
 
 ---
@@ -125,13 +127,13 @@ Pour chaque conflit : ligne Excel exacte (OOXML Strict / sharedStrings) + conten
 
 **Chèque FAC-117 HT vs TTC (clarifié 2026-11-10) :** Excel FAC-117 = date **05/08/2026**, facturé/encaissé **100 000**, chèque **9587411**, statut Payée — aligné date/pièce avec DOCX FAC-2710261 (TTC **118 000**). Excel = **HT** (même pattern ECOSOL 116). Aucune preuve fichier que le chèque couvre la TVA → **ne pas inventer** 18 000.
 
-**Seed exact KOUNDJI V1 :**
+**Seed exact KOUNDJI V1 (+ décision G 2026-11-10 — tout payé) :**
 
 | Facture | Source | HT / TVA / TTC | amountPaid | Statut | Paiement | Notes |
 |---------|--------|----------------|------------|--------|----------|-------|
 | FAC-114 | PDF `… N° 04.pdf` | 400k / 72k / **472 000** | **472 000** | PAYEE | Chèque 1179836 (PDF) ; date émission PDF **16/04** (Excel 14/04 → note) | `NEEDS_REVIEW:KOUNDJI_114_DATE_EXCEL` |
-| FAC-2710261 | DOCX `… FAC-2710261.docx` | 100k / 18k / **118 000** | **100 000** | PARTIELLE | Excel FAC-117 chèque **9587411** (100 000) | `NEEDS_REVIEW:KOUNDJI_117_HT_VS_TTC` + `KOUNDJI_SEPTEMBER_OVERLAP` |
-| FAC-167 | DOCX `… SERVICES.docx` | 200k / 36k / **236 000** | **0** | EMISE | Aucun paiement documenté | `NEEDS_REVIEW:KOUNDJI_SEPTEMBER_OVERLAP` |
+| FAC-2710261 | DOCX `… FAC-2710261.docx` | 100k / 18k / **118 000** | **118 000** | PAYEE | Excel chèque **9587411** (100 000) + complément 18 000 daté **2026-11-10** confirmation Direction | `NEEDS_REVIEW:KOUNDJI_117_HT_VS_TTC` + `KOUNDJI_SEPTEMBER_OVERLAP` |
+| FAC-167 | DOCX `… SERVICES.docx` | 200k / 36k / **236 000** | **236 000** | PAYEE | **236 000** daté **2026-11-10** confirmation Direction (pas de fichier encaissement) | `NEEDS_REVIEW:KOUNDJI_SEPTEMBER_OVERLAP` |
 
 **Exclus :** ligne Excel erronée « FAC – 2710261 » du **07/10** ; **FAC-153** sans fichier (Excel only — note inventaire).
 
@@ -159,7 +161,8 @@ Fichier annexe : `DEVIS-2 PROSPERITY MANAGEMENT (Logo).docx` — contenu = **FAC
 **Anomalie TTC :** 360 000 + 64 800 = **424 800**, mais PDF/DOCX/Excel facture affichent **424 000** (−800). Devis Excel DEV-05-2 (R13) a TTC **424 800**.  
 **Seed montants :** TTC **424 000** (fichier facture, décision A) ; note `NEEDS_REVIEW:PROSPERITY_122_TTC_VS_HT_PLUS_VAT_800`.
 
-**Paiements / récap :** Excel FAC-122 H=300000 I=124000 ; récap 27-10 acomptes globaux 450 000 sur 121+122 ; FAC-22710262 solde 387 000 payée. Seed paiements **strictement** depuis Excel/récap sans inventer la ventilation 121 vs 122 au-delà du documenté ; flags review si double comptage solde récap vs lignes.
+**Paiements / récap (décision G) :** Excel FAC-122 H=300000 I=124000 ; récap 27-10 acomptes 450 000 ; **FAC-22710262 = 387 000** Payée chèque 000038 le **2026-10-30** (humain a pu écrire 30/11 — retenu date Excel/docs).  
+**Flag :** humain a associé 387 000 à « FAC-122 » — **écart** : FAC-122 TTC = **424 000** ≠ 387 000 ; 387 000 = TTC **FAC-22710262**. Seed : 387 000 sur 22710262 ; reste 124 000 de FAC-122 absorbé par `Report facture` → 22710262 (évite double-comptage) → Prosperity **reste 0**.
 
 ---
 
@@ -172,8 +175,9 @@ Fichier annexe : `DEVIS-2 PROSPERITY MANAGEMENT (Logo).docx` — contenu = **FAC
 
 **Cause :** PDF en dixièmes de FCFA ; Excel ≈ **corruption float / saisie .06** au lieu de ,6 — **pas** une autre facture.
 
-**Seed :** total **2 097 952** ; pour entiers FCFA (stack ERP) : arrondir pour **conserver la somme** → acompte **629 386** + reste **1 468 566** (= 2 097 952), **ou** stocker paiements dérivés du PDF avec note.  
-`notes` : `NEEDS_REVIEW:ISDALINIA_DECIMAL_FCFA` (choix d’arrondi figé ici : **half-up sur acompte + complément reste**).
+**Seed :** total **2 097 952** ; acompte **629 386** (somme-conservant).  
+**Décision G :** soldée au **2026-11-10** confirmation Direction → complément **1 468 566**, statut **PAYEE**, reste **0** (date exacte du solde non documentée dans les fichiers).  
+`notes` : `NEEDS_REVIEW:ISDALINIA_DECIMAL_FCFA`.
 
 ---
 
@@ -237,12 +241,52 @@ Si un futur re-scan contredisait le montant → remettre `monthlyAmount` null + 
 
 ---
 
+## 8. Décision G — paiements / soldes (confirmation Direction 2026-11-10)
+
+**Source :** confirmation humaine Direction (chat 2026-11-10). Pas d’autres encaissements inventés.
+
+### Tableau client → factures → paiements → reste
+
+| Client | Facture | TTC | Paiements (seed) | Reste | Statut |
+|--------|---------|-----|------------------|-------|--------|
+| **KOUNDJI** | FAC-114 | 472 000 | 472 000 chèque 1179836 | **0** | PAYEE |
+| | FAC-2710261 | 118 000 | 100 000 chèque 9587411 (05/08) + 18 000 conf. Direction (10/11) | **0** | PAYEE |
+| | FAC-167 | 236 000 | 236 000 conf. Direction (10/11) | **0** | PAYEE |
+| **ISDALINIA** | FAC-03 | 2 097 952 | 629 386 acompte + 1 468 566 conf. Direction (10/11) | **0** | PAYEE |
+| **ECOSOL** | FAC-116 | 778 800 | 778 800 (PDF acquittée) | **0** | PAYEE |
+| | FAC-155 | 306 800 | **200 000** cash 02/10 + **106 800** Report → 22910263 | **0** | PAYEE |
+| | 22910263 | 413 600 | **260 000** cash 04/11 | **153 600** | PARTIELLE |
+| **PROSPERITY** | FAC-122 | 424 000 | 300 000 Excel + 124 000 Report → 22710262 | **0** | PAYEE |
+| | FAC-22710262 | **387 000** | **387 000** chèque 000038 le **30/10/2026** | **0** | PAYEE |
+| BOMOYI / DELMORIAN | FAC-01 / 02 | … | déjà acquittées PDF | **0** | PAYEE |
+
+**Soldes client attendus :** KOUNDJI **0** · ISDALINIA **0** · Prosperity **0** · Ecosol **153 600**.
+
+### Raisonnement Ecosol (FAC-155 + 22910263)
+
+1. FAC-155 (02/10) : TTC **306 800** ; versement réel **200 000** le **02/10/2026** → arriéré **106 800**.
+2. Facture 29-10 (**22910263**) : prestations mois HT **260 000** + TVA **46 800** = **306 800** TTC mois + report arriéré **106 800** → **NET À PAYER historique 413 600**.
+3. Pour ne **pas double-compter** l’arriéré au solde client : écriture `Report facture` 106 800 sur FAC-155 (réf. 22910263) — **pas un encaissement**.
+4. Versement réel **260 000** le **04/11/2026** sur 22910263 → reste **413 600 − 260 000 = 153 600**.
+5. Aucun autre paiement Ecosol inventé.
+
+### Prosperity — flag 387 000 vs FAC-122
+
+- Humain : « 387 000 payés … facture = FAC-122 ».
+- **Écart :** FAC-122 TTC seed/PDF = **424 000** ; **387 000** = TTC **FAC-22710262** (récap 27-10 / Excel).
+- Retenu : paiement 387 000 sur **FAC-22710262** (date docs **2026-10-30**) ; FAC-122 soldée via report du reste Excel dans le récap.
+
+**Script correction DB déjà seedée :** `npx tsx --env-file=.env.local scripts/fix-suivi-payments.ts` (resync idempotent ; **ne touche pas** Auth).
+
+---
+
 ## Confirmation
 
 - Devis exclus V1 : **oui** (B)  
 - Mouvements ≠ caisse métier : **oui** (C)  
-- Prosperity : **une** facture (122) : **oui** (D)  
+- Prosperity : **une** facture branding (122) + récap 22710262 : **oui** (D)  
 - Miroir paiement → IN : **oui** (E)  
 - Priorité fichier facture : **oui** (A)  
+- Paiements / soldes Direction : **oui** (G)  
 - KOUNDJI / contrat ECOSOL / miroir : **clarifiés** (flags review non bloquants)  
-- **Aucune data inventée** dans ce document
+- **Aucune data inventée** dans ce document (compléments Direction explicitement notés ; reports = transfert de dette documenté)

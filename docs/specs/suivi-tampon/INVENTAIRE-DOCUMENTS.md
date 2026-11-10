@@ -143,9 +143,10 @@ FOROTONI · MALI GARDIENNAGE · RENOVISE · SKIN INSTITUT · MY HOSPITALITY CORN
 | Report | Facture mois précédent 306 800 − versement reçu 200 000 = solde restant 106 800 (arriéré septembre 2026) |
 | Mois en cours HT / TVA 18 % | 260 000 / 46 800 FCFA |
 | **Total NET À PAYER** | **413 600 FCFA** (TTC, arriéré sept. inclus) |
+| Paiements Direction (G) | Cash **200 000** le 02/10 → FAC-155 ; cash **260 000** le 04/11 → 22910263 ; reste seed **153 600** |
 | Notes | Montants FCFA · TVA 18 % Mali · modes paiement Virement · Orange Money · Wave |
 
-**Source n° / totaux :** confirmation utilisateur 2026-11-10 (fichier `FACTURE ECOSOL 29-10-2026.docx`). Gap « n° manquant » **résolu**.
+**Source n° / totaux :** confirmation utilisateur 2026-11-10 (fichier `FACTURE ECOSOL 29-10-2026.docx`). Gap « n° manquant » **résolu**. Paiements / soldes → [`DECISIONS-SEED.md`](./DECISIONS-SEED.md) §8 décision **G**.
 
 ### 2.8 `FACTURE ABNMT M_KOUNDJI_SERVICES.docx` — Fait
 
@@ -222,7 +223,7 @@ MD5 identique (`cdbef31a9b0a3fe80d015ca0323c99d7`) → **1 facture logique**, 3 
 | Total acomptes | −450 000 |
 | **Total à payer** | **387 000 FCFA** |
 
-**À valider :** Excel FAC-121 facturé 413 000 (≠ 350 000 HT devis / ≠ somme lignes récap 350 000 HT?) ; Excel FAC-122 encaissé 300 000 / reste 124 000 ; Excel FAC-22710262 = 387 000 Payée chèque 000038 le 2026-10-30.
+**Décision G (2026-11-10) :** Excel FAC-22710262 = **387 000** Payée chèque 000038 le **2026-10-30** (retenu vs mention orale 30/11). **387 000 = TTC FAC-22710262**, pas FAC-122 (424 000) — flag `NEEDS_REVIEW:PROSPERITY_387K_VS_122`. Reste Excel FAC-122 (124 000) absorbé par report récap → Prosperity reste client **0**. FAC-121 sans fichier dédié non seedé (écart Excel 413k vs lignes récap toujours à noter).
 
 ### 2.12 Tableau Excel — feuille Facture (Fait strict OOXML)
 
@@ -407,9 +408,10 @@ Analyse complète + décisions seed : [`DECISIONS-SEED.md`](./DECISIONS-SEED.md)
 |---|-------|--------|
 | 1 | ECOSOL FAC-116 TTC 778 800 vs Excel 660 000 | **Tranché** — Excel = HT ; seed TTC PDF |
 | 2 | ECOSOL FAC-155 306 800 vs Excel 306 000 | **Tranché** — Excel −800 ; seed DOCX |
-| 3 | KOUNDJI FAC-167 / 2710261 vs Excel 117 / 153 / 2710261 | **Clos seed** — 114 + 2710261 (paid 100k PARTIELLE) + 167 (paid 0) ; flags overlap / HT≠TTC ; pas 153 ; pas ligne Excel 07/10 |
-| 4 | Prosperity FAC-143 vs 122 | **Tranché** — **même facture → 122 seul** |
-| 5 | ISDALINIA décimales | **Analysé** — seed PDF + arrondi entiers somme-conservante |
+| 3 | KOUNDJI FAC-167 / 2710261 vs Excel 117 / 153 / 2710261 | **Clos seed + G** — 114 + 2710261 + 167 **PAYEE / reste 0** (compléments conf. Direction 10/11) ; flags overlap / HT≠TTC conservés ; pas 153 |
+| 4 | Prosperity FAC-143 vs 122 | **Tranché** — **même facture → 122 seul** ; 387k = FAC-22710262 (décision G) |
+| 5 | ISDALINIA décimales | **Clos + G** — seed PDF + arrondi ; **PAYEE / reste 0** conf. Direction 10/11 |
+| 10 | Paiements / soldes Direction | **Clos (G)** — KOUNDJI/ISDALINIA/Prosperity=0 ; Ecosol reste **153 600** |
 | 6 | Achats 28 050 vs 21 300 | **Analysé** — formules cassées ; vrai total lignes 29 850 ; pas seed total inventé |
 | 7 | Mouvements : sorties seules / entrées V1 | **Clos** — OUT seed ; IN UI + miroir paiement (décision E) ; zéro invention |
 | 8 | Contrats : montant mensuel ECOSOL OCR | **Clos** — **200 000 FCFA** (re-OCR) ; case offre flag non bloquant |

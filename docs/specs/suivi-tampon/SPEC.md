@@ -366,7 +366,8 @@ GED juridique complet · prélèvement auto · multi-entrepôts · rapprochement
 | 6 | FAC-143 vs 122 | **122 seul** (décision D) |
 | 7 | Ecosol 29-10 n° | **22910263** |
 | 8 | Achats totaux / seed stock mouvements | **Analysé** — import stock mouvements **pas en V1** |
-| 9 | KOUNDJI overlap sept. + paiement 117 HT vs TTC | **Clos seed** : 114 + 2710261 (`amountPaid=100000` PARTIELLE) + 167 (`paid=0`) ; flags `NEEDS_REVIEW` ; pas FAC-153 |
+| 9 | KOUNDJI overlap sept. + paiement 117 HT vs TTC | **Clos seed + G** : 114 + 2710261 + 167 **PAYEE / reste 0** (compléments Direction 2026-11-10) ; flags `NEEDS_REVIEW` conservés ; pas FAC-153 |
+| 11 | Paiements / soldes Direction (décision G) | **Clos** : KOUNDJI/ISDALINIA/Prosperity=0 ; Ecosol reste 153 600 (200k+260k cash ; report arriéré 155→22910263) |
 | 10 | Montant mensuel contrat ECOSOL (OCR) | **Clos** : re-OCR → **200 000 FCFA** ; case offre encore ambiguë (flag non bloquant) |
 
 ---

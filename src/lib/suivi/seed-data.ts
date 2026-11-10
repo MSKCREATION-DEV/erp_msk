@@ -178,17 +178,17 @@ export const SV_SEED_INVOICES: SeedInvoice[] = [
   {
     clientKey: "isdalinia",
     number: "FAC-03",
-    status: "PARTIELLE",
+    status: "PAYEE",
     issuedAt: "2026-01-17",
     dueAt: "2026-02-10",
     totalHt: 2097952,
     totalVat: 0,
     totalTtc: 2097952,
-    amountPaid: 629386,
+    amountPaid: 2097952,
     object: "Conception de site vitrine",
     sourceDocument: "docs/FACTURE_ISDALINIA_N° 03.pdf",
     notes:
-      "NEEDS_REVIEW:ISDALINIA_DECIMAL_FCFA — acompte PDF 629385,6 → 629386 (somme-conservant) ; reste 1468566",
+      "NEEDS_REVIEW:ISDALINIA_DECIMAL_FCFA — acompte PDF 629385,6 → 629386 (somme-conservant). Soldée au 2026-11-10 selon confirmation Direction (reste historique 1 468 566) — date exacte du solde non documentée dans les fichiers.",
     lines: [
       {
         label: "Conception de site vitrine",
@@ -203,6 +203,12 @@ export const SV_SEED_INVOICES: SeedInvoice[] = [
         paidAt: "2026-01-17",
         method: "Virement",
         note: "Acompte 30 % (arrondi somme-conservant)",
+      },
+      {
+        amount: 1468566,
+        paidAt: "2026-11-10",
+        method: "Confirmation Direction",
+        note: "Soldé au 2026-11-10 selon confirmation Direction — date exacte encaissement non documentée",
       },
     ],
   },
@@ -254,18 +260,18 @@ export const SV_SEED_INVOICES: SeedInvoice[] = [
     clientKey: "koundji",
     number: "FAC-2710261",
     legacyNumber: "FAC-117",
-    status: "PARTIELLE",
+    status: "PAYEE",
     issuedAt: "2026-08-05",
     dueAt: "2026-09-04",
     totalHt: 100000,
     totalVat: 18000,
     totalTtc: 118000,
-    amountPaid: 100000,
+    amountPaid: 118000,
     object: "Abonnement RS Septembre",
     sourceDocument:
       "docs/FACTURE ABNMT M_KOUNDJI_SERVICES FAC-2710261.docx",
     notes:
-      "NEEDS_REVIEW:KOUNDJI_117_HT_VS_TTC;NEEDS_REVIEW:KOUNDJI_SEPTEMBER_OVERLAP — Excel FAC-117 encaissé HT 100000 chèque 9587411 ; TVA non documentée payée",
+      "NEEDS_REVIEW:KOUNDJI_117_HT_VS_TTC;NEEDS_REVIEW:KOUNDJI_SEPTEMBER_OVERLAP — Excel FAC-117 encaissé HT 100000 chèque 9587411. Complément 18 000 (TVA/reste) soldé au 2026-11-10 selon confirmation Direction — date exacte non documentée.",
     lines: [
       {
         label:
@@ -283,22 +289,28 @@ export const SV_SEED_INVOICES: SeedInvoice[] = [
         reference: "9587411",
         note: "Excel FAC-117 — HT only documenté",
       },
+      {
+        amount: 18000,
+        paidAt: "2026-11-10",
+        method: "Confirmation Direction",
+        note: "Soldé au 2026-11-10 selon confirmation Direction — complément reste (ex-TVA) ; date exacte encaissement non documentée",
+      },
     ],
   },
   {
     clientKey: "koundji",
     number: "FAC-167",
-    status: "EMISE",
+    status: "PAYEE",
     issuedAt: "2026-10-07",
     dueAt: "2026-11-06",
     totalHt: 200000,
     totalVat: 36000,
     totalTtc: 236000,
-    amountPaid: 0,
+    amountPaid: 236000,
     object: "Abonnement RS sept + oct",
     sourceDocument: "docs/FACTURE ABNMT M_KOUNDJI_SERVICES.docx",
     notes:
-      "NEEDS_REVIEW:KOUNDJI_SEPTEMBER_OVERLAP — ligne 01/09 + 01/10 ; aucun paiement documenté",
+      "NEEDS_REVIEW:KOUNDJI_SEPTEMBER_OVERLAP — ligne 01/09 + 01/10. Soldée au 2026-11-10 selon confirmation Direction (aucun encaissement fichier antérieur) — date exacte non documentée.",
     lines: [
       {
         label:
@@ -315,7 +327,14 @@ export const SV_SEED_INVOICES: SeedInvoice[] = [
         vatRate: 18,
       },
     ],
-    payments: [],
+    payments: [
+      {
+        amount: 236000,
+        paidAt: "2026-11-10",
+        method: "Confirmation Direction",
+        note: "Soldé au 2026-11-10 selon confirmation Direction — date exacte encaissement non documentée",
+      },
+    ],
   },
   {
     clientKey: "ecosol",
@@ -357,16 +376,17 @@ export const SV_SEED_INVOICES: SeedInvoice[] = [
   {
     clientKey: "ecosol",
     number: "FAC-155",
-    status: "PARTIELLE",
+    status: "PAYEE",
     issuedAt: "2026-10-02",
     dueAt: "2026-11-01",
     totalHt: 260000,
     totalVat: 46800,
     totalTtc: 306800,
-    amountPaid: 200000,
+    amountPaid: 306800,
     object: "Gestion RS PREMIUM + déplacement",
     sourceDocument: "docs/FACTURE_ECOSOLS NVF N°155.docx",
-    notes: "NEEDS_REVIEW:ECOSOL_155_EXCEL_MINUS_800",
+    notes:
+      "NEEDS_REVIEW:ECOSOL_155_EXCEL_MINUS_800. Encaissement cash 200000 le 02/10/2026 ; reste 106800 reporté sur 22910263 (ligne arriéré) — écriture « Report facture » = transfert de dette, pas un 2e encaissement.",
     lines: [
       {
         label: "Gestion RS PREMIUM",
@@ -386,24 +406,31 @@ export const SV_SEED_INVOICES: SeedInvoice[] = [
         amount: 200000,
         paidAt: "2026-10-02",
         method: "Espèce",
-        note: "Excel + report facture 29-10",
+        note: "Paiement réel confirmé Direction — partiel FAC-155",
+      },
+      {
+        amount: 106800,
+        paidAt: "2026-10-29",
+        method: "Report facture",
+        reference: "22910263",
+        note: "Arriéré reporté sur 22910263 (pas d'encaissement cash) — évite double-comptage solde client",
       },
     ],
   },
   {
     clientKey: "ecosol",
     number: "22910263",
-    status: "EMISE",
+    status: "PARTIELLE",
     issuedAt: "2026-10-29",
     dueAt: "2026-11-30",
     totalHt: 260000,
     totalVat: 46800,
     totalTtc: 413600,
-    amountPaid: 0,
+    amountPaid: 260000,
     object: "RS PREMIUM octobre + arriéré sept. 106800",
     sourceDocument: "docs/FACTURE  ECOSOL 29-10-2026.docx",
     notes:
-      "Net à payer 413600 = mois TTC 306800 + arriéré 106800 (report FAC-155)",
+      "Net à payer historique 413600 = prestations oct TTC 306800 (HT 260000 + TVA 46800) + arriéré sept 106800 (report FAC-155 après versement 200000). Paiement réel 260000 le 04/11/2026 → reste 153600. Pas d'autre paiement inventé.",
     lines: [
       {
         label: "Gestion des Réseaux Sociaux — Offre PREMIUM",
@@ -425,22 +452,29 @@ export const SV_SEED_INVOICES: SeedInvoice[] = [
         vatRate: 0,
       },
     ],
-    payments: [],
+    payments: [
+      {
+        amount: 260000,
+        paidAt: "2026-11-04",
+        method: "Espèce",
+        note: "Paiement réel confirmé Direction — facture 29-10 / 22910263",
+      },
+    ],
   },
   {
     clientKey: "prosperity",
     number: "FAC-122",
     legacyNumber: "FAC-05-2",
-    status: "PARTIELLE",
+    status: "PAYEE",
     issuedAt: "2026-09-28",
     totalHt: 360000,
     totalVat: 64800,
     totalTtc: 424000,
-    amountPaid: 300000,
+    amountPaid: 424000,
     object: "Branding & identité visuelle",
     sourceDocument: "docs/FACTURE PROSPERITY MANAGEMENT.pdf",
     notes:
-      "NEEDS_REVIEW:PROSPERITY_122_TTC_VS_HT_PLUS_VAT_800 — TTC fichier 424000 (HT+TVA=424800) ; FAC-143 non seedé",
+      "NEEDS_REVIEW:PROSPERITY_122_TTC_VS_HT_PLUS_VAT_800 — TTC fichier 424000 (HT+TVA=424800) ; FAC-143 non seedé. NEEDS_REVIEW:PROSPERITY_387K_VS_122 — humain a cité 387000 pour FAC-122 ; 387000 = TTC FAC-22710262 (récap), pas 424000. Reste Excel 124000 absorbé dans récap 22710262 (report) pour solde client 0.",
     lines: [
       {
         label: "Branding & identité visuelle",
@@ -456,6 +490,13 @@ export const SV_SEED_INVOICES: SeedInvoice[] = [
         method: "Chèque",
         note: "Excel FAC-122 encaissé 300000",
       },
+      {
+        amount: 124000,
+        paidAt: "2026-10-23",
+        method: "Report facture",
+        reference: "FAC-22710262",
+        note: "Reste Excel absorbé dans récap FAC-22710262 (387000) — pas un 2e encaissement cash de 124000",
+      },
     ],
   },
   {
@@ -470,7 +511,7 @@ export const SV_SEED_INVOICES: SeedInvoice[] = [
     object: "Solde récap 121+122 (Excel / récap 27-10)",
     sourceDocument: "docs/FACTURE  PROSPERITY MANAGEMENT 27-10-2026.docx",
     notes:
-      "NEEDS_REVIEW:PROSPERITY_SOLDE_RECAP — Excel Payée chèque 000038 le 2026-10-30 ; FAC-121 sans fichier dédié non seedé",
+      "Décision G — 387000 match TTC de cette facture (pas FAC-122=424000). Excel + confirmation : Payée chèque 000038 le 2026-10-30 (humain a pu écrire 30/11 — retenu 30/10 docs). FAC-121 sans fichier dédié non seedé.",
     lines: [
       {
         label: "Solde à payer (récap branding / charte / RS / site)",
@@ -485,11 +526,21 @@ export const SV_SEED_INVOICES: SeedInvoice[] = [
         paidAt: "2026-10-30",
         method: "Chèque",
         reference: "000038",
-        note: "Excel FAC-22710262",
+        note: "Excel FAC-22710262 + confirmation Direction (387000)",
       },
     ],
   },
 ];
+
+/** Soldes client attendus après seed (décision G — 2026-11-10). */
+export const SV_SEED_EXPECTED_CLIENT_REMAINING: Record<string, number> = {
+  bomoyi: 0,
+  delmorian: 0,
+  isdalinia: 0,
+  koundji: 0,
+  ecosol: 153600, // 22910263 : 413600 − 260000 ; FAC-155 soldée via report
+  prosperity: 0,
+};
 
 export const SV_SEED_CONTRACTS: SeedContract[] = [
   {
