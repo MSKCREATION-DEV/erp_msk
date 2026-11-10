@@ -326,6 +326,9 @@ export type UserWhereInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseListRelationFilter
   opsTicketsCreated?: Prisma.OpsTicketListRelationFilter
   opsTicketsAssigned?: Prisma.OpsTicketListRelationFilter
+  svInvoicesCreated?: Prisma.SvInvoiceListRelationFilter
+  svCashMovementsCreated?: Prisma.SvCashMovementListRelationFilter
+  svStockMovementsCreated?: Prisma.SvStockMovementListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -408,6 +411,9 @@ export type UserOrderByWithRelationInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseOrderByRelationAggregateInput
   opsTicketsCreated?: Prisma.OpsTicketOrderByRelationAggregateInput
   opsTicketsAssigned?: Prisma.OpsTicketOrderByRelationAggregateInput
+  svInvoicesCreated?: Prisma.SvInvoiceOrderByRelationAggregateInput
+  svCashMovementsCreated?: Prisma.SvCashMovementOrderByRelationAggregateInput
+  svStockMovementsCreated?: Prisma.SvStockMovementOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -493,6 +499,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   prjExpensesReviewed?: Prisma.PrjExpenseListRelationFilter
   opsTicketsCreated?: Prisma.OpsTicketListRelationFilter
   opsTicketsAssigned?: Prisma.OpsTicketListRelationFilter
+  svInvoicesCreated?: Prisma.SvInvoiceListRelationFilter
+  svCashMovementsCreated?: Prisma.SvCashMovementListRelationFilter
+  svStockMovementsCreated?: Prisma.SvStockMovementListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -617,6 +626,9 @@ export type UserCreateInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -699,6 +711,9 @@ export type UserUncheckedCreateInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUpdateInput = {
@@ -781,6 +796,9 @@ export type UserUpdateInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -863,6 +881,9 @@ export type UserUncheckedUpdateInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1937,6 +1958,48 @@ export type UserUpdateOneRequiredWithoutOpsTicketsCreatedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOpsTicketsCreatedInput, Prisma.UserUpdateWithoutOpsTicketsCreatedInput>, Prisma.UserUncheckedUpdateWithoutOpsTicketsCreatedInput>
 }
 
+export type UserCreateNestedOneWithoutSvInvoicesCreatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSvInvoicesCreatedInput, Prisma.UserUncheckedCreateWithoutSvInvoicesCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSvInvoicesCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSvInvoicesCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSvInvoicesCreatedInput, Prisma.UserUncheckedCreateWithoutSvInvoicesCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSvInvoicesCreatedInput
+  upsert?: Prisma.UserUpsertWithoutSvInvoicesCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSvInvoicesCreatedInput, Prisma.UserUpdateWithoutSvInvoicesCreatedInput>, Prisma.UserUncheckedUpdateWithoutSvInvoicesCreatedInput>
+}
+
+export type UserCreateNestedOneWithoutSvCashMovementsCreatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSvCashMovementsCreatedInput, Prisma.UserUncheckedCreateWithoutSvCashMovementsCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSvCashMovementsCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSvCashMovementsCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSvCashMovementsCreatedInput, Prisma.UserUncheckedCreateWithoutSvCashMovementsCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSvCashMovementsCreatedInput
+  upsert?: Prisma.UserUpsertWithoutSvCashMovementsCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSvCashMovementsCreatedInput, Prisma.UserUpdateWithoutSvCashMovementsCreatedInput>, Prisma.UserUncheckedUpdateWithoutSvCashMovementsCreatedInput>
+}
+
+export type UserCreateNestedOneWithoutSvStockMovementsCreatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSvStockMovementsCreatedInput, Prisma.UserUncheckedCreateWithoutSvStockMovementsCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSvStockMovementsCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSvStockMovementsCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSvStockMovementsCreatedInput, Prisma.UserUncheckedCreateWithoutSvStockMovementsCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSvStockMovementsCreatedInput
+  upsert?: Prisma.UserUpsertWithoutSvStockMovementsCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSvStockMovementsCreatedInput, Prisma.UserUpdateWithoutSvStockMovementsCreatedInput>, Prisma.UserUncheckedUpdateWithoutSvStockMovementsCreatedInput>
+}
+
 export type UserCreateWithoutGroupMembersInput = {
   id: string
   email: string
@@ -2016,6 +2079,9 @@ export type UserCreateWithoutGroupMembersInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutGroupMembersInput = {
@@ -2097,6 +2163,9 @@ export type UserUncheckedCreateWithoutGroupMembersInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutGroupMembersInput = {
@@ -2194,6 +2263,9 @@ export type UserUpdateWithoutGroupMembersInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGroupMembersInput = {
@@ -2275,6 +2347,9 @@ export type UserUncheckedUpdateWithoutGroupMembersInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutUserPacksInput = {
@@ -2356,6 +2431,9 @@ export type UserCreateWithoutUserPacksInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutUserPacksInput = {
@@ -2437,6 +2515,9 @@ export type UserUncheckedCreateWithoutUserPacksInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutUserPacksInput = {
@@ -2534,6 +2615,9 @@ export type UserUpdateWithoutUserPacksInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserPacksInput = {
@@ -2615,6 +2699,9 @@ export type UserUncheckedUpdateWithoutUserPacksInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutOverridesInput = {
@@ -2696,6 +2783,9 @@ export type UserCreateWithoutOverridesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutOverridesInput = {
@@ -2777,6 +2867,9 @@ export type UserUncheckedCreateWithoutOverridesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutOverridesInput = {
@@ -2874,6 +2967,9 @@ export type UserUpdateWithoutOverridesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOverridesInput = {
@@ -2955,6 +3051,9 @@ export type UserUncheckedUpdateWithoutOverridesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -3036,6 +3135,9 @@ export type UserCreateWithoutAuditLogsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -3117,6 +3219,9 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -3214,6 +3319,9 @@ export type UserUpdateWithoutAuditLogsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -3295,6 +3403,9 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutResetRequestsInput = {
@@ -3376,6 +3487,9 @@ export type UserCreateWithoutResetRequestsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutResetRequestsInput = {
@@ -3457,6 +3571,9 @@ export type UserUncheckedCreateWithoutResetRequestsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutResetRequestsInput = {
@@ -3543,6 +3660,9 @@ export type UserCreateWithoutResetsResolvedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutResetsResolvedInput = {
@@ -3624,6 +3744,9 @@ export type UserUncheckedCreateWithoutResetsResolvedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutResetsResolvedInput = {
@@ -3721,6 +3844,9 @@ export type UserUpdateWithoutResetRequestsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResetRequestsInput = {
@@ -3802,6 +3928,9 @@ export type UserUncheckedUpdateWithoutResetRequestsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutResetsResolvedInput = {
@@ -3894,6 +4023,9 @@ export type UserUpdateWithoutResetsResolvedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResetsResolvedInput = {
@@ -3975,6 +4107,9 @@ export type UserUncheckedUpdateWithoutResetsResolvedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutFoldersCreatedInput = {
@@ -4056,6 +4191,9 @@ export type UserCreateWithoutFoldersCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutFoldersCreatedInput = {
@@ -4137,6 +4275,9 @@ export type UserUncheckedCreateWithoutFoldersCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutFoldersCreatedInput = {
@@ -4234,6 +4375,9 @@ export type UserUpdateWithoutFoldersCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFoldersCreatedInput = {
@@ -4315,6 +4459,9 @@ export type UserUncheckedUpdateWithoutFoldersCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutDocsCreatedInput = {
@@ -4396,6 +4543,9 @@ export type UserCreateWithoutDocsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutDocsCreatedInput = {
@@ -4477,6 +4627,9 @@ export type UserUncheckedCreateWithoutDocsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutDocsCreatedInput = {
@@ -4574,6 +4727,9 @@ export type UserUpdateWithoutDocsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDocsCreatedInput = {
@@ -4655,6 +4811,9 @@ export type UserUncheckedUpdateWithoutDocsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutDocumentAclsInput = {
@@ -4736,6 +4895,9 @@ export type UserCreateWithoutDocumentAclsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutDocumentAclsInput = {
@@ -4817,6 +4979,9 @@ export type UserUncheckedCreateWithoutDocumentAclsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutDocumentAclsInput = {
@@ -4914,6 +5079,9 @@ export type UserUpdateWithoutDocumentAclsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDocumentAclsInput = {
@@ -4995,6 +5163,9 @@ export type UserUncheckedUpdateWithoutDocumentAclsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSignaturesInput = {
@@ -5076,6 +5247,9 @@ export type UserCreateWithoutSignaturesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSignaturesInput = {
@@ -5157,6 +5331,9 @@ export type UserUncheckedCreateWithoutSignaturesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSignaturesInput = {
@@ -5254,6 +5431,9 @@ export type UserUpdateWithoutSignaturesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSignaturesInput = {
@@ -5335,6 +5515,9 @@ export type UserUncheckedUpdateWithoutSignaturesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutOrgNodesInput = {
@@ -5416,6 +5599,9 @@ export type UserCreateWithoutOrgNodesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutOrgNodesInput = {
@@ -5497,6 +5683,9 @@ export type UserUncheckedCreateWithoutOrgNodesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutOrgNodesInput = {
@@ -5594,6 +5783,9 @@ export type UserUpdateWithoutOrgNodesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrgNodesInput = {
@@ -5675,6 +5867,9 @@ export type UserUncheckedUpdateWithoutOrgNodesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmOrgsOwnedInput = {
@@ -5756,6 +5951,9 @@ export type UserCreateWithoutCrmOrgsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmOrgsOwnedInput = {
@@ -5837,6 +6035,9 @@ export type UserUncheckedCreateWithoutCrmOrgsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmOrgsOwnedInput = {
@@ -5923,6 +6124,9 @@ export type UserCreateWithoutCrmOrgsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmOrgsCreatedInput = {
@@ -6004,6 +6208,9 @@ export type UserUncheckedCreateWithoutCrmOrgsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmOrgsCreatedInput = {
@@ -6101,6 +6308,9 @@ export type UserUpdateWithoutCrmOrgsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmOrgsOwnedInput = {
@@ -6182,6 +6392,9 @@ export type UserUncheckedUpdateWithoutCrmOrgsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCrmOrgsCreatedInput = {
@@ -6274,6 +6487,9 @@ export type UserUpdateWithoutCrmOrgsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmOrgsCreatedInput = {
@@ -6355,6 +6571,9 @@ export type UserUncheckedUpdateWithoutCrmOrgsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmDealsOwnedInput = {
@@ -6436,6 +6655,9 @@ export type UserCreateWithoutCrmDealsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmDealsOwnedInput = {
@@ -6517,6 +6739,9 @@ export type UserUncheckedCreateWithoutCrmDealsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmDealsOwnedInput = {
@@ -6603,6 +6828,9 @@ export type UserCreateWithoutCrmDealsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmDealsCreatedInput = {
@@ -6684,6 +6912,9 @@ export type UserUncheckedCreateWithoutCrmDealsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmDealsCreatedInput = {
@@ -6781,6 +7012,9 @@ export type UserUpdateWithoutCrmDealsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmDealsOwnedInput = {
@@ -6862,6 +7096,9 @@ export type UserUncheckedUpdateWithoutCrmDealsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCrmDealsCreatedInput = {
@@ -6954,6 +7191,9 @@ export type UserUpdateWithoutCrmDealsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmDealsCreatedInput = {
@@ -7035,6 +7275,9 @@ export type UserUncheckedUpdateWithoutCrmDealsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmAssignmentRequestsInput = {
@@ -7116,6 +7359,9 @@ export type UserCreateWithoutCrmAssignmentRequestsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmAssignmentRequestsInput = {
@@ -7197,6 +7443,9 @@ export type UserUncheckedCreateWithoutCrmAssignmentRequestsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmAssignmentRequestsInput = {
@@ -7283,6 +7532,9 @@ export type UserCreateWithoutCrmAssignmentResolvedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmAssignmentResolvedInput = {
@@ -7364,6 +7616,9 @@ export type UserUncheckedCreateWithoutCrmAssignmentResolvedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmAssignmentResolvedInput = {
@@ -7461,6 +7716,9 @@ export type UserUpdateWithoutCrmAssignmentRequestsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmAssignmentRequestsInput = {
@@ -7542,6 +7800,9 @@ export type UserUncheckedUpdateWithoutCrmAssignmentRequestsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCrmAssignmentResolvedInput = {
@@ -7634,6 +7895,9 @@ export type UserUpdateWithoutCrmAssignmentResolvedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmAssignmentResolvedInput = {
@@ -7715,6 +7979,9 @@ export type UserUncheckedUpdateWithoutCrmAssignmentResolvedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmActivitiesInput = {
@@ -7796,6 +8063,9 @@ export type UserCreateWithoutCrmActivitiesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmActivitiesInput = {
@@ -7877,6 +8147,9 @@ export type UserUncheckedCreateWithoutCrmActivitiesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmActivitiesInput = {
@@ -7974,6 +8247,9 @@ export type UserUpdateWithoutCrmActivitiesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmActivitiesInput = {
@@ -8055,6 +8331,9 @@ export type UserUncheckedUpdateWithoutCrmActivitiesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmTasksAssignedInput = {
@@ -8136,6 +8415,9 @@ export type UserCreateWithoutCrmTasksAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmTasksAssignedInput = {
@@ -8217,6 +8499,9 @@ export type UserUncheckedCreateWithoutCrmTasksAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmTasksAssignedInput = {
@@ -8303,6 +8588,9 @@ export type UserCreateWithoutCrmTasksCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmTasksCreatedInput = {
@@ -8384,6 +8672,9 @@ export type UserUncheckedCreateWithoutCrmTasksCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmTasksCreatedInput = {
@@ -8481,6 +8772,9 @@ export type UserUpdateWithoutCrmTasksAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmTasksAssignedInput = {
@@ -8562,6 +8856,9 @@ export type UserUncheckedUpdateWithoutCrmTasksAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCrmTasksCreatedInput = {
@@ -8654,6 +8951,9 @@ export type UserUpdateWithoutCrmTasksCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmTasksCreatedInput = {
@@ -8735,6 +9035,9 @@ export type UserUncheckedUpdateWithoutCrmTasksCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmAppointmentsAssignedInput = {
@@ -8816,6 +9119,9 @@ export type UserCreateWithoutCrmAppointmentsAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmAppointmentsAssignedInput = {
@@ -8897,6 +9203,9 @@ export type UserUncheckedCreateWithoutCrmAppointmentsAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmAppointmentsAssignedInput = {
@@ -8983,6 +9292,9 @@ export type UserCreateWithoutCrmAppointmentsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmAppointmentsCreatedInput = {
@@ -9064,6 +9376,9 @@ export type UserUncheckedCreateWithoutCrmAppointmentsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmAppointmentsCreatedInput = {
@@ -9161,6 +9476,9 @@ export type UserUpdateWithoutCrmAppointmentsAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmAppointmentsAssignedInput = {
@@ -9242,6 +9560,9 @@ export type UserUncheckedUpdateWithoutCrmAppointmentsAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCrmAppointmentsCreatedInput = {
@@ -9334,6 +9655,9 @@ export type UserUpdateWithoutCrmAppointmentsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmAppointmentsCreatedInput = {
@@ -9415,6 +9739,9 @@ export type UserUncheckedUpdateWithoutCrmAppointmentsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAppNotificationsInput = {
@@ -9496,6 +9823,9 @@ export type UserCreateWithoutAppNotificationsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAppNotificationsInput = {
@@ -9577,6 +9907,9 @@ export type UserUncheckedCreateWithoutAppNotificationsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAppNotificationsInput = {
@@ -9674,6 +10007,9 @@ export type UserUpdateWithoutAppNotificationsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAppNotificationsInput = {
@@ -9755,6 +10091,9 @@ export type UserUncheckedUpdateWithoutAppNotificationsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmPeriodGoalsInput = {
@@ -9836,6 +10175,9 @@ export type UserCreateWithoutCrmPeriodGoalsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmPeriodGoalsInput = {
@@ -9917,6 +10259,9 @@ export type UserUncheckedCreateWithoutCrmPeriodGoalsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmPeriodGoalsInput = {
@@ -10014,6 +10359,9 @@ export type UserUpdateWithoutCrmPeriodGoalsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmPeriodGoalsInput = {
@@ -10095,6 +10443,9 @@ export type UserUncheckedUpdateWithoutCrmPeriodGoalsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmWeeklyReportsInput = {
@@ -10176,6 +10527,9 @@ export type UserCreateWithoutCrmWeeklyReportsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmWeeklyReportsInput = {
@@ -10257,6 +10611,9 @@ export type UserUncheckedCreateWithoutCrmWeeklyReportsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmWeeklyReportsInput = {
@@ -10354,6 +10711,9 @@ export type UserUpdateWithoutCrmWeeklyReportsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmWeeklyReportsInput = {
@@ -10435,6 +10795,9 @@ export type UserUncheckedUpdateWithoutCrmWeeklyReportsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComClientsOwnedInput = {
@@ -10516,6 +10879,9 @@ export type UserCreateWithoutComClientsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComClientsOwnedInput = {
@@ -10597,6 +10963,9 @@ export type UserUncheckedCreateWithoutComClientsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComClientsOwnedInput = {
@@ -10683,6 +11052,9 @@ export type UserCreateWithoutComClientsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComClientsCreatedInput = {
@@ -10764,6 +11136,9 @@ export type UserUncheckedCreateWithoutComClientsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComClientsCreatedInput = {
@@ -10861,6 +11236,9 @@ export type UserUpdateWithoutComClientsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComClientsOwnedInput = {
@@ -10942,6 +11320,9 @@ export type UserUncheckedUpdateWithoutComClientsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutComClientsCreatedInput = {
@@ -11034,6 +11415,9 @@ export type UserUpdateWithoutComClientsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComClientsCreatedInput = {
@@ -11115,6 +11499,9 @@ export type UserUncheckedUpdateWithoutComClientsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComQuotesOwnedInput = {
@@ -11196,6 +11583,9 @@ export type UserCreateWithoutComQuotesOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComQuotesOwnedInput = {
@@ -11277,6 +11667,9 @@ export type UserUncheckedCreateWithoutComQuotesOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComQuotesOwnedInput = {
@@ -11363,6 +11756,9 @@ export type UserCreateWithoutComQuotesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComQuotesCreatedInput = {
@@ -11444,6 +11840,9 @@ export type UserUncheckedCreateWithoutComQuotesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComQuotesCreatedInput = {
@@ -11541,6 +11940,9 @@ export type UserUpdateWithoutComQuotesOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComQuotesOwnedInput = {
@@ -11622,6 +12024,9 @@ export type UserUncheckedUpdateWithoutComQuotesOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutComQuotesCreatedInput = {
@@ -11714,6 +12119,9 @@ export type UserUpdateWithoutComQuotesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComQuotesCreatedInput = {
@@ -11795,6 +12203,9 @@ export type UserUncheckedUpdateWithoutComQuotesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComContractsOwnedInput = {
@@ -11876,6 +12287,9 @@ export type UserCreateWithoutComContractsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComContractsOwnedInput = {
@@ -11957,6 +12371,9 @@ export type UserUncheckedCreateWithoutComContractsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComContractsOwnedInput = {
@@ -12043,6 +12460,9 @@ export type UserCreateWithoutComContractsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComContractsCreatedInput = {
@@ -12124,6 +12544,9 @@ export type UserUncheckedCreateWithoutComContractsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComContractsCreatedInput = {
@@ -12221,6 +12644,9 @@ export type UserUpdateWithoutComContractsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComContractsOwnedInput = {
@@ -12302,6 +12728,9 @@ export type UserUncheckedUpdateWithoutComContractsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutComContractsCreatedInput = {
@@ -12394,6 +12823,9 @@ export type UserUpdateWithoutComContractsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComContractsCreatedInput = {
@@ -12475,6 +12907,9 @@ export type UserUncheckedUpdateWithoutComContractsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComInvoicesOwnedInput = {
@@ -12556,6 +12991,9 @@ export type UserCreateWithoutComInvoicesOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComInvoicesOwnedInput = {
@@ -12637,6 +13075,9 @@ export type UserUncheckedCreateWithoutComInvoicesOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComInvoicesOwnedInput = {
@@ -12723,6 +13164,9 @@ export type UserCreateWithoutComInvoicesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComInvoicesCreatedInput = {
@@ -12804,6 +13248,9 @@ export type UserUncheckedCreateWithoutComInvoicesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComInvoicesCreatedInput = {
@@ -12901,6 +13348,9 @@ export type UserUpdateWithoutComInvoicesOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComInvoicesOwnedInput = {
@@ -12982,6 +13432,9 @@ export type UserUncheckedUpdateWithoutComInvoicesOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutComInvoicesCreatedInput = {
@@ -13074,6 +13527,9 @@ export type UserUpdateWithoutComInvoicesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComInvoicesCreatedInput = {
@@ -13155,6 +13611,9 @@ export type UserUncheckedUpdateWithoutComInvoicesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComCreditNotesCreatedInput = {
@@ -13236,6 +13695,9 @@ export type UserCreateWithoutComCreditNotesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComCreditNotesCreatedInput = {
@@ -13317,6 +13779,9 @@ export type UserUncheckedCreateWithoutComCreditNotesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComCreditNotesCreatedInput = {
@@ -13414,6 +13879,9 @@ export type UserUpdateWithoutComCreditNotesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComCreditNotesCreatedInput = {
@@ -13495,6 +13963,9 @@ export type UserUncheckedUpdateWithoutComCreditNotesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComPaymentsRecordedInput = {
@@ -13576,6 +14047,9 @@ export type UserCreateWithoutComPaymentsRecordedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComPaymentsRecordedInput = {
@@ -13657,6 +14131,9 @@ export type UserUncheckedCreateWithoutComPaymentsRecordedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComPaymentsRecordedInput = {
@@ -13754,6 +14231,9 @@ export type UserUpdateWithoutComPaymentsRecordedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComPaymentsRecordedInput = {
@@ -13835,6 +14315,9 @@ export type UserUncheckedUpdateWithoutComPaymentsRecordedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComClientEventsInput = {
@@ -13916,6 +14399,9 @@ export type UserCreateWithoutComClientEventsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComClientEventsInput = {
@@ -13997,6 +14483,9 @@ export type UserUncheckedCreateWithoutComClientEventsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComClientEventsInput = {
@@ -14094,6 +14583,9 @@ export type UserUpdateWithoutComClientEventsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComClientEventsInput = {
@@ -14175,6 +14667,9 @@ export type UserUncheckedUpdateWithoutComClientEventsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComImportBatchesInput = {
@@ -14256,6 +14751,9 @@ export type UserCreateWithoutComImportBatchesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComImportBatchesInput = {
@@ -14337,6 +14835,9 @@ export type UserUncheckedCreateWithoutComImportBatchesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComImportBatchesInput = {
@@ -14434,6 +14935,9 @@ export type UserUpdateWithoutComImportBatchesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComImportBatchesInput = {
@@ -14515,6 +15019,9 @@ export type UserUncheckedUpdateWithoutComImportBatchesInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCptEntriesCreatedInput = {
@@ -14596,6 +15103,9 @@ export type UserCreateWithoutCptEntriesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCptEntriesCreatedInput = {
@@ -14677,6 +15187,9 @@ export type UserUncheckedCreateWithoutCptEntriesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCptEntriesCreatedInput = {
@@ -14763,6 +15276,9 @@ export type UserCreateWithoutCptEntriesValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCptEntriesValidatedInput = {
@@ -14844,6 +15360,9 @@ export type UserUncheckedCreateWithoutCptEntriesValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCptEntriesValidatedInput = {
@@ -14941,6 +15460,9 @@ export type UserUpdateWithoutCptEntriesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCptEntriesCreatedInput = {
@@ -15022,6 +15544,9 @@ export type UserUncheckedUpdateWithoutCptEntriesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCptEntriesValidatedInput = {
@@ -15114,6 +15639,9 @@ export type UserUpdateWithoutCptEntriesValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCptEntriesValidatedInput = {
@@ -15195,6 +15723,9 @@ export type UserUncheckedUpdateWithoutCptEntriesValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCptBankTxnsCreatedInput = {
@@ -15276,6 +15807,9 @@ export type UserCreateWithoutCptBankTxnsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCptBankTxnsCreatedInput = {
@@ -15357,6 +15891,9 @@ export type UserUncheckedCreateWithoutCptBankTxnsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCptBankTxnsCreatedInput = {
@@ -15454,6 +15991,9 @@ export type UserUpdateWithoutCptBankTxnsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCptBankTxnsCreatedInput = {
@@ -15535,6 +16075,9 @@ export type UserUncheckedUpdateWithoutCptBankTxnsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutBudLinesCreatedInput = {
@@ -15616,6 +16159,9 @@ export type UserCreateWithoutBudLinesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutBudLinesCreatedInput = {
@@ -15697,6 +16243,9 @@ export type UserUncheckedCreateWithoutBudLinesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutBudLinesCreatedInput = {
@@ -15794,6 +16343,9 @@ export type UserUpdateWithoutBudLinesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBudLinesCreatedInput = {
@@ -15875,6 +16427,9 @@ export type UserUncheckedUpdateWithoutBudLinesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhEmployeeInput = {
@@ -15956,6 +16511,9 @@ export type UserCreateWithoutRhEmployeeInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhEmployeeInput = {
@@ -16037,6 +16595,9 @@ export type UserUncheckedCreateWithoutRhEmployeeInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhEmployeeInput = {
@@ -16134,6 +16695,9 @@ export type UserUpdateWithoutRhEmployeeInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhEmployeeInput = {
@@ -16215,6 +16779,9 @@ export type UserUncheckedUpdateWithoutRhEmployeeInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhProfileChangesRequestedInput = {
@@ -16296,6 +16863,9 @@ export type UserCreateWithoutRhProfileChangesRequestedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhProfileChangesRequestedInput = {
@@ -16377,6 +16947,9 @@ export type UserUncheckedCreateWithoutRhProfileChangesRequestedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhProfileChangesRequestedInput = {
@@ -16463,6 +17036,9 @@ export type UserCreateWithoutRhProfileChangesReviewedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhProfileChangesReviewedInput = {
@@ -16544,6 +17120,9 @@ export type UserUncheckedCreateWithoutRhProfileChangesReviewedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhProfileChangesReviewedInput = {
@@ -16641,6 +17220,9 @@ export type UserUpdateWithoutRhProfileChangesRequestedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhProfileChangesRequestedInput = {
@@ -16722,6 +17304,9 @@ export type UserUncheckedUpdateWithoutRhProfileChangesRequestedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutRhProfileChangesReviewedInput = {
@@ -16814,6 +17399,9 @@ export type UserUpdateWithoutRhProfileChangesReviewedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhProfileChangesReviewedInput = {
@@ -16895,6 +17483,9 @@ export type UserUncheckedUpdateWithoutRhProfileChangesReviewedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhLeaveMovementsCreatedInput = {
@@ -16976,6 +17567,9 @@ export type UserCreateWithoutRhLeaveMovementsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhLeaveMovementsCreatedInput = {
@@ -17057,6 +17651,9 @@ export type UserUncheckedCreateWithoutRhLeaveMovementsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhLeaveMovementsCreatedInput = {
@@ -17154,6 +17751,9 @@ export type UserUpdateWithoutRhLeaveMovementsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhLeaveMovementsCreatedInput = {
@@ -17235,6 +17835,9 @@ export type UserUncheckedUpdateWithoutRhLeaveMovementsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhLeavesRequestedInput = {
@@ -17316,6 +17919,9 @@ export type UserCreateWithoutRhLeavesRequestedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhLeavesRequestedInput = {
@@ -17397,6 +18003,9 @@ export type UserUncheckedCreateWithoutRhLeavesRequestedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhLeavesRequestedInput = {
@@ -17483,6 +18092,9 @@ export type UserCreateWithoutRhLeavesValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhLeavesValidatedInput = {
@@ -17564,6 +18176,9 @@ export type UserUncheckedCreateWithoutRhLeavesValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhLeavesValidatedInput = {
@@ -17661,6 +18276,9 @@ export type UserUpdateWithoutRhLeavesRequestedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhLeavesRequestedInput = {
@@ -17742,6 +18360,9 @@ export type UserUncheckedUpdateWithoutRhLeavesRequestedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutRhLeavesValidatedInput = {
@@ -17834,6 +18455,9 @@ export type UserUpdateWithoutRhLeavesValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhLeavesValidatedInput = {
@@ -17915,6 +18539,9 @@ export type UserUncheckedUpdateWithoutRhLeavesValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhAbsencesDeclaredInput = {
@@ -17996,6 +18623,9 @@ export type UserCreateWithoutRhAbsencesDeclaredInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhAbsencesDeclaredInput = {
@@ -18077,6 +18707,9 @@ export type UserUncheckedCreateWithoutRhAbsencesDeclaredInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhAbsencesDeclaredInput = {
@@ -18163,6 +18796,9 @@ export type UserCreateWithoutRhAbsencesReviewedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhAbsencesReviewedInput = {
@@ -18244,6 +18880,9 @@ export type UserUncheckedCreateWithoutRhAbsencesReviewedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhAbsencesReviewedInput = {
@@ -18341,6 +18980,9 @@ export type UserUpdateWithoutRhAbsencesDeclaredInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhAbsencesDeclaredInput = {
@@ -18422,6 +19064,9 @@ export type UserUncheckedUpdateWithoutRhAbsencesDeclaredInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutRhAbsencesReviewedInput = {
@@ -18514,6 +19159,9 @@ export type UserUpdateWithoutRhAbsencesReviewedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhAbsencesReviewedInput = {
@@ -18595,6 +19243,9 @@ export type UserUncheckedUpdateWithoutRhAbsencesReviewedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhTimesheetsOwnedInput = {
@@ -18676,6 +19327,9 @@ export type UserCreateWithoutRhTimesheetsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhTimesheetsOwnedInput = {
@@ -18757,6 +19411,9 @@ export type UserUncheckedCreateWithoutRhTimesheetsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhTimesheetsOwnedInput = {
@@ -18843,6 +19500,9 @@ export type UserCreateWithoutRhTimesheetsValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhTimesheetsValidatedInput = {
@@ -18924,6 +19584,9 @@ export type UserUncheckedCreateWithoutRhTimesheetsValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhTimesheetsValidatedInput = {
@@ -19021,6 +19684,9 @@ export type UserUpdateWithoutRhTimesheetsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhTimesheetsOwnedInput = {
@@ -19102,6 +19768,9 @@ export type UserUncheckedUpdateWithoutRhTimesheetsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutRhTimesheetsValidatedInput = {
@@ -19194,6 +19863,9 @@ export type UserUpdateWithoutRhTimesheetsValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhTimesheetsValidatedInput = {
@@ -19275,6 +19947,9 @@ export type UserUncheckedUpdateWithoutRhTimesheetsValidatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhPayrollOpenedInput = {
@@ -19356,6 +20031,9 @@ export type UserCreateWithoutRhPayrollOpenedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhPayrollOpenedInput = {
@@ -19437,6 +20115,9 @@ export type UserUncheckedCreateWithoutRhPayrollOpenedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhPayrollOpenedInput = {
@@ -19523,6 +20204,9 @@ export type UserCreateWithoutRhPayrollApprovedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhPayrollApprovedInput = {
@@ -19604,6 +20288,9 @@ export type UserUncheckedCreateWithoutRhPayrollApprovedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhPayrollApprovedInput = {
@@ -19701,6 +20388,9 @@ export type UserUpdateWithoutRhPayrollOpenedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhPayrollOpenedInput = {
@@ -19782,6 +20472,9 @@ export type UserUncheckedUpdateWithoutRhPayrollOpenedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutRhPayrollApprovedInput = {
@@ -19874,6 +20567,9 @@ export type UserUpdateWithoutRhPayrollApprovedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhPayrollApprovedInput = {
@@ -19955,6 +20651,9 @@ export type UserUncheckedUpdateWithoutRhPayrollApprovedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStkArticlesCreatedInput = {
@@ -20036,6 +20735,9 @@ export type UserCreateWithoutStkArticlesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStkArticlesCreatedInput = {
@@ -20117,6 +20819,9 @@ export type UserUncheckedCreateWithoutStkArticlesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStkArticlesCreatedInput = {
@@ -20214,6 +20919,9 @@ export type UserUpdateWithoutStkArticlesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStkArticlesCreatedInput = {
@@ -20295,6 +21003,9 @@ export type UserUncheckedUpdateWithoutStkArticlesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStkMovementsCreatedInput = {
@@ -20376,6 +21087,9 @@ export type UserCreateWithoutStkMovementsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStkMovementsCreatedInput = {
@@ -20457,6 +21171,9 @@ export type UserUncheckedCreateWithoutStkMovementsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStkMovementsCreatedInput = {
@@ -20554,6 +21271,9 @@ export type UserUpdateWithoutStkMovementsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStkMovementsCreatedInput = {
@@ -20635,6 +21355,9 @@ export type UserUncheckedUpdateWithoutStkMovementsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStkPurchasesCreatedInput = {
@@ -20716,6 +21439,9 @@ export type UserCreateWithoutStkPurchasesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStkPurchasesCreatedInput = {
@@ -20797,6 +21523,9 @@ export type UserUncheckedCreateWithoutStkPurchasesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStkPurchasesCreatedInput = {
@@ -20894,6 +21623,9 @@ export type UserUpdateWithoutStkPurchasesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStkPurchasesCreatedInput = {
@@ -20975,6 +21707,9 @@ export type UserUncheckedUpdateWithoutStkPurchasesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutPatAssetsAssignedInput = {
@@ -21056,6 +21791,9 @@ export type UserCreateWithoutPatAssetsAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPatAssetsAssignedInput = {
@@ -21137,6 +21875,9 @@ export type UserUncheckedCreateWithoutPatAssetsAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPatAssetsAssignedInput = {
@@ -21223,6 +21964,9 @@ export type UserCreateWithoutPatAssetsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPatAssetsCreatedInput = {
@@ -21304,6 +22048,9 @@ export type UserUncheckedCreateWithoutPatAssetsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPatAssetsCreatedInput = {
@@ -21401,6 +22148,9 @@ export type UserUpdateWithoutPatAssetsAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatAssetsAssignedInput = {
@@ -21482,6 +22232,9 @@ export type UserUncheckedUpdateWithoutPatAssetsAssignedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutPatAssetsCreatedInput = {
@@ -21574,6 +22327,9 @@ export type UserUpdateWithoutPatAssetsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatAssetsCreatedInput = {
@@ -21655,6 +22411,9 @@ export type UserUncheckedUpdateWithoutPatAssetsCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutPrjProjectsOwnedInput = {
@@ -21736,6 +22495,9 @@ export type UserCreateWithoutPrjProjectsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPrjProjectsOwnedInput = {
@@ -21817,6 +22579,9 @@ export type UserUncheckedCreateWithoutPrjProjectsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPrjProjectsOwnedInput = {
@@ -21914,6 +22679,9 @@ export type UserUpdateWithoutPrjProjectsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrjProjectsOwnedInput = {
@@ -21995,6 +22763,9 @@ export type UserUncheckedUpdateWithoutPrjProjectsOwnedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutPrjMembershipsInput = {
@@ -22076,6 +22847,9 @@ export type UserCreateWithoutPrjMembershipsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPrjMembershipsInput = {
@@ -22157,6 +22931,9 @@ export type UserUncheckedCreateWithoutPrjMembershipsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPrjMembershipsInput = {
@@ -22254,6 +23031,9 @@ export type UserUpdateWithoutPrjMembershipsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrjMembershipsInput = {
@@ -22335,6 +23115,9 @@ export type UserUncheckedUpdateWithoutPrjMembershipsInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutPrjExpensesCreatedInput = {
@@ -22416,6 +23199,9 @@ export type UserCreateWithoutPrjExpensesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPrjExpensesCreatedInput = {
@@ -22497,6 +23283,9 @@ export type UserUncheckedCreateWithoutPrjExpensesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPrjExpensesCreatedInput = {
@@ -22583,6 +23372,9 @@ export type UserCreateWithoutPrjExpensesReviewedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPrjExpensesReviewedInput = {
@@ -22664,6 +23456,9 @@ export type UserUncheckedCreateWithoutPrjExpensesReviewedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPrjExpensesReviewedInput = {
@@ -22761,6 +23556,9 @@ export type UserUpdateWithoutPrjExpensesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrjExpensesCreatedInput = {
@@ -22842,6 +23640,9 @@ export type UserUncheckedUpdateWithoutPrjExpensesCreatedInput = {
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutPrjExpensesReviewedInput = {
@@ -22934,6 +23735,9 @@ export type UserUpdateWithoutPrjExpensesReviewedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrjExpensesReviewedInput = {
@@ -23015,6 +23819,9 @@ export type UserUncheckedUpdateWithoutPrjExpensesReviewedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutOpsTicketsAssignedInput = {
@@ -23096,6 +23903,9 @@ export type UserCreateWithoutOpsTicketsAssignedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutOpsTicketsAssignedInput = {
@@ -23177,6 +23987,9 @@ export type UserUncheckedCreateWithoutOpsTicketsAssignedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutOpsTicketsAssignedInput = {
@@ -23263,6 +24076,9 @@ export type UserCreateWithoutOpsTicketsCreatedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
   prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
   opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutOpsTicketsCreatedInput = {
@@ -23344,6 +24160,9 @@ export type UserUncheckedCreateWithoutOpsTicketsCreatedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutOpsTicketsCreatedInput = {
@@ -23441,6 +24260,9 @@ export type UserUpdateWithoutOpsTicketsAssignedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOpsTicketsAssignedInput = {
@@ -23522,6 +24344,9 @@ export type UserUncheckedUpdateWithoutOpsTicketsAssignedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutOpsTicketsCreatedInput = {
@@ -23614,6 +24439,9 @@ export type UserUpdateWithoutOpsTicketsCreatedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
   prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOpsTicketsCreatedInput = {
@@ -23695,6 +24523,1065 @@ export type UserUncheckedUpdateWithoutOpsTicketsCreatedInput = {
   prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
   prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
   opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutSvInvoicesCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutSvInvoicesCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackUncheckedCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclUncheckedCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetUncheckedCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeUncheckedCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityUncheckedCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationUncheckedCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientUncheckedCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientUncheckedCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberUncheckedCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutSvInvoicesCreatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSvInvoicesCreatedInput, Prisma.UserUncheckedCreateWithoutSvInvoicesCreatedInput>
+}
+
+export type UserUpsertWithoutSvInvoicesCreatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSvInvoicesCreatedInput, Prisma.UserUncheckedUpdateWithoutSvInvoicesCreatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSvInvoicesCreatedInput, Prisma.UserUncheckedCreateWithoutSvInvoicesCreatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSvInvoicesCreatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSvInvoicesCreatedInput, Prisma.UserUncheckedUpdateWithoutSvInvoicesCreatedInput>
+}
+
+export type UserUpdateWithoutSvInvoicesCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSvInvoicesCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUncheckedUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUncheckedUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUncheckedUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUncheckedUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUncheckedUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUncheckedUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUncheckedUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutSvCashMovementsCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutSvCashMovementsCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackUncheckedCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclUncheckedCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetUncheckedCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeUncheckedCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityUncheckedCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationUncheckedCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientUncheckedCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientUncheckedCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberUncheckedCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutSvCashMovementsCreatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSvCashMovementsCreatedInput, Prisma.UserUncheckedCreateWithoutSvCashMovementsCreatedInput>
+}
+
+export type UserUpsertWithoutSvCashMovementsCreatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSvCashMovementsCreatedInput, Prisma.UserUncheckedUpdateWithoutSvCashMovementsCreatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSvCashMovementsCreatedInput, Prisma.UserUncheckedCreateWithoutSvCashMovementsCreatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSvCashMovementsCreatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSvCashMovementsCreatedInput, Prisma.UserUncheckedUpdateWithoutSvCashMovementsCreatedInput>
+}
+
+export type UserUpdateWithoutSvCashMovementsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSvCashMovementsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUncheckedUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUncheckedUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUncheckedUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUncheckedUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUncheckedUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUncheckedUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUncheckedUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutSvStockMovementsCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutSvStockMovementsCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackUncheckedCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclUncheckedCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetUncheckedCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeUncheckedCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityUncheckedCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationUncheckedCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientUncheckedCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientUncheckedCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberUncheckedCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutSvStockMovementsCreatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSvStockMovementsCreatedInput, Prisma.UserUncheckedCreateWithoutSvStockMovementsCreatedInput>
+}
+
+export type UserUpsertWithoutSvStockMovementsCreatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSvStockMovementsCreatedInput, Prisma.UserUncheckedUpdateWithoutSvStockMovementsCreatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSvStockMovementsCreatedInput, Prisma.UserUncheckedCreateWithoutSvStockMovementsCreatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSvStockMovementsCreatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSvStockMovementsCreatedInput, Prisma.UserUncheckedUpdateWithoutSvStockMovementsCreatedInput>
+}
+
+export type UserUpdateWithoutSvStockMovementsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSvStockMovementsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUncheckedUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUncheckedUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUncheckedUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUncheckedUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUncheckedUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUncheckedUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUncheckedUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 
@@ -23766,6 +25653,9 @@ export type UserCountOutputType = {
   prjExpensesReviewed: number
   opsTicketsCreated: number
   opsTicketsAssigned: number
+  svInvoicesCreated: number
+  svCashMovementsCreated: number
+  svStockMovementsCreated: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -23832,6 +25722,9 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   prjExpensesReviewed?: boolean | UserCountOutputTypeCountPrjExpensesReviewedArgs
   opsTicketsCreated?: boolean | UserCountOutputTypeCountOpsTicketsCreatedArgs
   opsTicketsAssigned?: boolean | UserCountOutputTypeCountOpsTicketsAssignedArgs
+  svInvoicesCreated?: boolean | UserCountOutputTypeCountSvInvoicesCreatedArgs
+  svCashMovementsCreated?: boolean | UserCountOutputTypeCountSvCashMovementsCreatedArgs
+  svStockMovementsCreated?: boolean | UserCountOutputTypeCountSvStockMovementsCreatedArgs
 }
 
 /**
@@ -24285,6 +26178,27 @@ export type UserCountOutputTypeCountOpsTicketsAssignedArgs<ExtArgs extends runti
   where?: Prisma.OpsTicketWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSvInvoicesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SvInvoiceWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSvCashMovementsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SvCashMovementWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSvStockMovementsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SvStockMovementWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -24366,6 +26280,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   prjExpensesReviewed?: boolean | Prisma.User$prjExpensesReviewedArgs<ExtArgs>
   opsTicketsCreated?: boolean | Prisma.User$opsTicketsCreatedArgs<ExtArgs>
   opsTicketsAssigned?: boolean | Prisma.User$opsTicketsAssignedArgs<ExtArgs>
+  svInvoicesCreated?: boolean | Prisma.User$svInvoicesCreatedArgs<ExtArgs>
+  svCashMovementsCreated?: boolean | Prisma.User$svCashMovementsCreatedArgs<ExtArgs>
+  svStockMovementsCreated?: boolean | Prisma.User$svStockMovementsCreatedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -24489,6 +26406,9 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   prjExpensesReviewed?: boolean | Prisma.User$prjExpensesReviewedArgs<ExtArgs>
   opsTicketsCreated?: boolean | Prisma.User$opsTicketsCreatedArgs<ExtArgs>
   opsTicketsAssigned?: boolean | Prisma.User$opsTicketsAssignedArgs<ExtArgs>
+  svInvoicesCreated?: boolean | Prisma.User$svInvoicesCreatedArgs<ExtArgs>
+  svCashMovementsCreated?: boolean | Prisma.User$svCashMovementsCreatedArgs<ExtArgs>
+  svStockMovementsCreated?: boolean | Prisma.User$svStockMovementsCreatedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -24561,6 +26481,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     prjExpensesReviewed: Prisma.$PrjExpensePayload<ExtArgs>[]
     opsTicketsCreated: Prisma.$OpsTicketPayload<ExtArgs>[]
     opsTicketsAssigned: Prisma.$OpsTicketPayload<ExtArgs>[]
+    svInvoicesCreated: Prisma.$SvInvoicePayload<ExtArgs>[]
+    svCashMovementsCreated: Prisma.$SvCashMovementPayload<ExtArgs>[]
+    svStockMovementsCreated: Prisma.$SvStockMovementPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -25036,6 +26959,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   prjExpensesReviewed<T extends Prisma.User$prjExpensesReviewedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$prjExpensesReviewedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrjExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   opsTicketsCreated<T extends Prisma.User$opsTicketsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$opsTicketsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OpsTicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   opsTicketsAssigned<T extends Prisma.User$opsTicketsAssignedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$opsTicketsAssignedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OpsTicketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  svInvoicesCreated<T extends Prisma.User$svInvoicesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$svInvoicesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SvInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  svCashMovementsCreated<T extends Prisma.User$svCashMovementsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$svCashMovementsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SvCashMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  svStockMovementsCreated<T extends Prisma.User$svStockMovementsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$svStockMovementsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SvStockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -27001,6 +28927,78 @@ export type User$opsTicketsAssignedArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.OpsTicketScalarFieldEnum | Prisma.OpsTicketScalarFieldEnum[]
+}
+
+/**
+ * User.svInvoicesCreated
+ */
+export type User$svInvoicesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SvInvoice
+   */
+  select?: Prisma.SvInvoiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SvInvoice
+   */
+  omit?: Prisma.SvInvoiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SvInvoiceInclude<ExtArgs> | null
+  where?: Prisma.SvInvoiceWhereInput
+  orderBy?: Prisma.SvInvoiceOrderByWithRelationInput | Prisma.SvInvoiceOrderByWithRelationInput[]
+  cursor?: Prisma.SvInvoiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SvInvoiceScalarFieldEnum | Prisma.SvInvoiceScalarFieldEnum[]
+}
+
+/**
+ * User.svCashMovementsCreated
+ */
+export type User$svCashMovementsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SvCashMovement
+   */
+  select?: Prisma.SvCashMovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SvCashMovement
+   */
+  omit?: Prisma.SvCashMovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SvCashMovementInclude<ExtArgs> | null
+  where?: Prisma.SvCashMovementWhereInput
+  orderBy?: Prisma.SvCashMovementOrderByWithRelationInput | Prisma.SvCashMovementOrderByWithRelationInput[]
+  cursor?: Prisma.SvCashMovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SvCashMovementScalarFieldEnum | Prisma.SvCashMovementScalarFieldEnum[]
+}
+
+/**
+ * User.svStockMovementsCreated
+ */
+export type User$svStockMovementsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SvStockMovement
+   */
+  select?: Prisma.SvStockMovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SvStockMovement
+   */
+  omit?: Prisma.SvStockMovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SvStockMovementInclude<ExtArgs> | null
+  where?: Prisma.SvStockMovementWhereInput
+  orderBy?: Prisma.SvStockMovementOrderByWithRelationInput | Prisma.SvStockMovementOrderByWithRelationInput[]
+  cursor?: Prisma.SvStockMovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SvStockMovementScalarFieldEnum | Prisma.SvStockMovementScalarFieldEnum[]
 }
 
 /**

@@ -462,3 +462,43 @@ export type PrjExpense = Prisma.PrjExpenseModel
  * 
  */
 export type OpsTicket = Prisma.OpsTicketModel
+/**
+ * Model SvClient
+ * 
+ */
+export type SvClient = Prisma.SvClientModel
+/**
+ * Model SvInvoice
+ * 
+ */
+export type SvInvoice = Prisma.SvInvoiceModel
+/**
+ * Model SvInvoiceLine
+ * 
+ */
+export type SvInvoiceLine = Prisma.SvInvoiceLineModel
+/**
+ * Model SvPayment
+ * 
+ */
+export type SvPayment = Prisma.SvPaymentModel
+/**
+ * Model SvContractMeta
+ * 
+ */
+export type SvContractMeta = Prisma.SvContractMetaModel
+/**
+ * Model SvCashMovement
+ * 
+ */
+export type SvCashMovement = Prisma.SvCashMovementModel
+/**
+ * Model SvStockItem
+ * 
+ */
+export type SvStockItem = Prisma.SvStockItemModel
+/**
+ * Model SvStockMovement
+ * 
+ */
+export type SvStockMovement = Prisma.SvStockMovementModel

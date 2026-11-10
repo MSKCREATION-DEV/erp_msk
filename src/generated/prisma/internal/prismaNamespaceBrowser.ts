@@ -139,7 +139,15 @@ export const ModelName = {
   PrjProject: 'PrjProject',
   PrjMember: 'PrjMember',
   PrjExpense: 'PrjExpense',
-  OpsTicket: 'OpsTicket'
+  OpsTicket: 'OpsTicket',
+  SvClient: 'SvClient',
+  SvInvoice: 'SvInvoice',
+  SvInvoiceLine: 'SvInvoiceLine',
+  SvPayment: 'SvPayment',
+  SvContractMeta: 'SvContractMeta',
+  SvCashMovement: 'SvCashMovement',
+  SvStockItem: 'SvStockItem',
+  SvStockMovement: 'SvStockMovement'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1681,6 +1689,149 @@ export const OpsTicketScalarFieldEnum = {
 } as const
 
 export type OpsTicketScalarFieldEnum = (typeof OpsTicketScalarFieldEnum)[keyof typeof OpsTicketScalarFieldEnum]
+
+
+export const SvClientScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  contactName: 'contactName',
+  email: 'email',
+  phone: 'phone',
+  city: 'city',
+  country: 'country',
+  notes: 'notes',
+  sourceRef: 'sourceRef',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvClientScalarFieldEnum = (typeof SvClientScalarFieldEnum)[keyof typeof SvClientScalarFieldEnum]
+
+
+export const SvInvoiceScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  legacyNumber: 'legacyNumber',
+  status: 'status',
+  clientId: 'clientId',
+  issuedAt: 'issuedAt',
+  dueAt: 'dueAt',
+  totalHt: 'totalHt',
+  totalVat: 'totalVat',
+  totalTtc: 'totalTtc',
+  amountPaid: 'amountPaid',
+  currency: 'currency',
+  vatRate: 'vatRate',
+  object: 'object',
+  notes: 'notes',
+  sourceDocument: 'sourceDocument',
+  remixedFromId: 'remixedFromId',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvInvoiceScalarFieldEnum = (typeof SvInvoiceScalarFieldEnum)[keyof typeof SvInvoiceScalarFieldEnum]
+
+
+export const SvInvoiceLineScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  sortOrder: 'sortOrder',
+  label: 'label',
+  description: 'description',
+  qty: 'qty',
+  unitPrice: 'unitPrice',
+  vatRate: 'vatRate'
+} as const
+
+export type SvInvoiceLineScalarFieldEnum = (typeof SvInvoiceLineScalarFieldEnum)[keyof typeof SvInvoiceLineScalarFieldEnum]
+
+
+export const SvPaymentScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  amount: 'amount',
+  paidAt: 'paidAt',
+  method: 'method',
+  reference: 'reference',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type SvPaymentScalarFieldEnum = (typeof SvPaymentScalarFieldEnum)[keyof typeof SvPaymentScalarFieldEnum]
+
+
+export const SvContractMetaScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  title: 'title',
+  partyName: 'partyName',
+  effectiveFrom: 'effectiveFrom',
+  durationNote: 'durationNote',
+  monthlyAmount: 'monthlyAmount',
+  sourceDocument: 'sourceDocument',
+  gedDocumentId: 'gedDocumentId',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvContractMetaScalarFieldEnum = (typeof SvContractMetaScalarFieldEnum)[keyof typeof SvContractMetaScalarFieldEnum]
+
+
+export const SvCashMovementScalarFieldEnum = {
+  id: 'id',
+  movedAt: 'movedAt',
+  direction: 'direction',
+  amount: 'amount',
+  category: 'category',
+  description: 'description',
+  clientProject: 'clientProject',
+  beneficiary: 'beneficiary',
+  paymentMethod: 'paymentMethod',
+  paidBy: 'paidBy',
+  reference: 'reference',
+  linkedClientId: 'linkedClientId',
+  linkedInvoiceId: 'linkedInvoiceId',
+  linkedPaymentId: 'linkedPaymentId',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type SvCashMovementScalarFieldEnum = (typeof SvCashMovementScalarFieldEnum)[keyof typeof SvCashMovementScalarFieldEnum]
+
+
+export const SvStockItemScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  family: 'family',
+  subFamily: 'subFamily',
+  label: 'label',
+  unit: 'unit',
+  quantity: 'quantity',
+  location: 'location',
+  observations: 'observations',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvStockItemScalarFieldEnum = (typeof SvStockItemScalarFieldEnum)[keyof typeof SvStockItemScalarFieldEnum]
+
+
+export const SvStockMovementScalarFieldEnum = {
+  id: 'id',
+  itemId: 'itemId',
+  movedAt: 'movedAt',
+  kind: 'kind',
+  quantity: 'quantity',
+  note: 'note',
+  sourceRef: 'sourceRef',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type SvStockMovementScalarFieldEnum = (typeof SvStockMovementScalarFieldEnum)[keyof typeof SvStockMovementScalarFieldEnum]
 
 
 export const SortOrder = {

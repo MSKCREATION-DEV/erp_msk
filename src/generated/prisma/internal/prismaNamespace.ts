@@ -485,7 +485,15 @@ export const ModelName = {
   PrjProject: 'PrjProject',
   PrjMember: 'PrjMember',
   PrjExpense: 'PrjExpense',
-  OpsTicket: 'OpsTicket'
+  OpsTicket: 'OpsTicket',
+  SvClient: 'SvClient',
+  SvInvoice: 'SvInvoice',
+  SvInvoiceLine: 'SvInvoiceLine',
+  SvPayment: 'SvPayment',
+  SvContractMeta: 'SvContractMeta',
+  SvCashMovement: 'SvCashMovement',
+  SvStockItem: 'SvStockItem',
+  SvStockMovement: 'SvStockMovement'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -501,7 +509,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organizationSettings" | "user" | "group" | "groupMember" | "permission" | "permissionPack" | "packPermission" | "userPack" | "userPermissionOverride" | "auditLog" | "passwordResetRequest" | "documentFolder" | "document" | "documentLink" | "documentAcl" | "brandAsset" | "signatureAsset" | "orgNode" | "documentTemplate" | "catalogOffer" | "catalogOfferVersion" | "crmOrganization" | "crmContact" | "crmContactChannel" | "crmOpportunity" | "crmAssignmentRequest" | "crmOpportunityOffer" | "crmActivity" | "crmTask" | "crmAppointment" | "appNotification" | "crmScript" | "crmPeriodGoal" | "crmWeeklyReport" | "comNumberSequence" | "comClient" | "comQuote" | "comQuoteLine" | "comContract" | "comContractLine" | "comInvoice" | "comInvoiceLine" | "comInvoiceArrearsRef" | "comCreditNote" | "comPayment" | "comPaymentAllocation" | "comClientEvent" | "comInvoiceReminder" | "comImportBatch" | "comImportAnomaly" | "cptAccount" | "cptJournal" | "cptExercise" | "cptPeriod" | "cptEntry" | "cptEntryLine" | "cptBankAccount" | "cptBankTxn" | "cptFxRate" | "budExercise" | "budLine" | "budPatenteDue" | "rhEmployee" | "rhProfileChangeRequest" | "rhProfileChangeLine" | "rhLeaveTypeConfig" | "rhLeaveMovement" | "rhWorkSchedule" | "rhPublicHoliday" | "rhContract" | "rhLeaveRequest" | "rhAbsence" | "rhTimesheet" | "rhTimesheetLine" | "rhInpsSettings" | "rhPayrollPeriod" | "rhPayslip" | "rhPayslipLine" | "rhInpsLine" | "rhContractTypeRule" | "stkArticle" | "stkMovement" | "stkPurchase" | "stkPurchaseLine" | "patAsset" | "prjProject" | "prjMember" | "prjExpense" | "opsTicket"
+    modelProps: "organizationSettings" | "user" | "group" | "groupMember" | "permission" | "permissionPack" | "packPermission" | "userPack" | "userPermissionOverride" | "auditLog" | "passwordResetRequest" | "documentFolder" | "document" | "documentLink" | "documentAcl" | "brandAsset" | "signatureAsset" | "orgNode" | "documentTemplate" | "catalogOffer" | "catalogOfferVersion" | "crmOrganization" | "crmContact" | "crmContactChannel" | "crmOpportunity" | "crmAssignmentRequest" | "crmOpportunityOffer" | "crmActivity" | "crmTask" | "crmAppointment" | "appNotification" | "crmScript" | "crmPeriodGoal" | "crmWeeklyReport" | "comNumberSequence" | "comClient" | "comQuote" | "comQuoteLine" | "comContract" | "comContractLine" | "comInvoice" | "comInvoiceLine" | "comInvoiceArrearsRef" | "comCreditNote" | "comPayment" | "comPaymentAllocation" | "comClientEvent" | "comInvoiceReminder" | "comImportBatch" | "comImportAnomaly" | "cptAccount" | "cptJournal" | "cptExercise" | "cptPeriod" | "cptEntry" | "cptEntryLine" | "cptBankAccount" | "cptBankTxn" | "cptFxRate" | "budExercise" | "budLine" | "budPatenteDue" | "rhEmployee" | "rhProfileChangeRequest" | "rhProfileChangeLine" | "rhLeaveTypeConfig" | "rhLeaveMovement" | "rhWorkSchedule" | "rhPublicHoliday" | "rhContract" | "rhLeaveRequest" | "rhAbsence" | "rhTimesheet" | "rhTimesheetLine" | "rhInpsSettings" | "rhPayrollPeriod" | "rhPayslip" | "rhPayslipLine" | "rhInpsLine" | "rhContractTypeRule" | "stkArticle" | "stkMovement" | "stkPurchase" | "stkPurchaseLine" | "patAsset" | "prjProject" | "prjMember" | "prjExpense" | "opsTicket" | "svClient" | "svInvoice" | "svInvoiceLine" | "svPayment" | "svContractMeta" | "svCashMovement" | "svStockItem" | "svStockMovement"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -7091,6 +7099,598 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SvClient: {
+      payload: Prisma.$SvClientPayload<ExtArgs>
+      fields: Prisma.SvClientFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvClientFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvClientPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvClientFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvClientPayload>
+        }
+        findFirst: {
+          args: Prisma.SvClientFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvClientPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvClientFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvClientPayload>
+        }
+        findMany: {
+          args: Prisma.SvClientFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvClientPayload>[]
+        }
+        create: {
+          args: Prisma.SvClientCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvClientPayload>
+        }
+        createMany: {
+          args: Prisma.SvClientCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvClientCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvClientPayload>[]
+        }
+        delete: {
+          args: Prisma.SvClientDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvClientPayload>
+        }
+        update: {
+          args: Prisma.SvClientUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvClientPayload>
+        }
+        deleteMany: {
+          args: Prisma.SvClientDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvClientUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvClientUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvClientPayload>[]
+        }
+        upsert: {
+          args: Prisma.SvClientUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvClientPayload>
+        }
+        aggregate: {
+          args: Prisma.SvClientAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvClient>
+        }
+        groupBy: {
+          args: Prisma.SvClientGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvClientGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvClientCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvClientCountAggregateOutputType> | number
+        }
+      }
+    }
+    SvInvoice: {
+      payload: Prisma.$SvInvoicePayload<ExtArgs>
+      fields: Prisma.SvInvoiceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvInvoiceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoicePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvInvoiceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoicePayload>
+        }
+        findFirst: {
+          args: Prisma.SvInvoiceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoicePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvInvoiceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoicePayload>
+        }
+        findMany: {
+          args: Prisma.SvInvoiceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoicePayload>[]
+        }
+        create: {
+          args: Prisma.SvInvoiceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoicePayload>
+        }
+        createMany: {
+          args: Prisma.SvInvoiceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvInvoiceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoicePayload>[]
+        }
+        delete: {
+          args: Prisma.SvInvoiceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoicePayload>
+        }
+        update: {
+          args: Prisma.SvInvoiceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoicePayload>
+        }
+        deleteMany: {
+          args: Prisma.SvInvoiceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvInvoiceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvInvoiceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoicePayload>[]
+        }
+        upsert: {
+          args: Prisma.SvInvoiceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoicePayload>
+        }
+        aggregate: {
+          args: Prisma.SvInvoiceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvInvoice>
+        }
+        groupBy: {
+          args: Prisma.SvInvoiceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvInvoiceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvInvoiceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvInvoiceCountAggregateOutputType> | number
+        }
+      }
+    }
+    SvInvoiceLine: {
+      payload: Prisma.$SvInvoiceLinePayload<ExtArgs>
+      fields: Prisma.SvInvoiceLineFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvInvoiceLineFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoiceLinePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvInvoiceLineFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoiceLinePayload>
+        }
+        findFirst: {
+          args: Prisma.SvInvoiceLineFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoiceLinePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvInvoiceLineFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoiceLinePayload>
+        }
+        findMany: {
+          args: Prisma.SvInvoiceLineFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoiceLinePayload>[]
+        }
+        create: {
+          args: Prisma.SvInvoiceLineCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoiceLinePayload>
+        }
+        createMany: {
+          args: Prisma.SvInvoiceLineCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvInvoiceLineCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoiceLinePayload>[]
+        }
+        delete: {
+          args: Prisma.SvInvoiceLineDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoiceLinePayload>
+        }
+        update: {
+          args: Prisma.SvInvoiceLineUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoiceLinePayload>
+        }
+        deleteMany: {
+          args: Prisma.SvInvoiceLineDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvInvoiceLineUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvInvoiceLineUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoiceLinePayload>[]
+        }
+        upsert: {
+          args: Prisma.SvInvoiceLineUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvInvoiceLinePayload>
+        }
+        aggregate: {
+          args: Prisma.SvInvoiceLineAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvInvoiceLine>
+        }
+        groupBy: {
+          args: Prisma.SvInvoiceLineGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvInvoiceLineGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvInvoiceLineCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvInvoiceLineCountAggregateOutputType> | number
+        }
+      }
+    }
+    SvPayment: {
+      payload: Prisma.$SvPaymentPayload<ExtArgs>
+      fields: Prisma.SvPaymentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvPaymentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvPaymentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvPaymentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvPaymentPayload>
+        }
+        findFirst: {
+          args: Prisma.SvPaymentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvPaymentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvPaymentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvPaymentPayload>
+        }
+        findMany: {
+          args: Prisma.SvPaymentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvPaymentPayload>[]
+        }
+        create: {
+          args: Prisma.SvPaymentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvPaymentPayload>
+        }
+        createMany: {
+          args: Prisma.SvPaymentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvPaymentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvPaymentPayload>[]
+        }
+        delete: {
+          args: Prisma.SvPaymentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvPaymentPayload>
+        }
+        update: {
+          args: Prisma.SvPaymentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvPaymentPayload>
+        }
+        deleteMany: {
+          args: Prisma.SvPaymentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvPaymentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvPaymentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvPaymentPayload>[]
+        }
+        upsert: {
+          args: Prisma.SvPaymentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvPaymentPayload>
+        }
+        aggregate: {
+          args: Prisma.SvPaymentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvPayment>
+        }
+        groupBy: {
+          args: Prisma.SvPaymentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvPaymentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvPaymentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvPaymentCountAggregateOutputType> | number
+        }
+      }
+    }
+    SvContractMeta: {
+      payload: Prisma.$SvContractMetaPayload<ExtArgs>
+      fields: Prisma.SvContractMetaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvContractMetaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvContractMetaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvContractMetaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvContractMetaPayload>
+        }
+        findFirst: {
+          args: Prisma.SvContractMetaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvContractMetaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvContractMetaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvContractMetaPayload>
+        }
+        findMany: {
+          args: Prisma.SvContractMetaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvContractMetaPayload>[]
+        }
+        create: {
+          args: Prisma.SvContractMetaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvContractMetaPayload>
+        }
+        createMany: {
+          args: Prisma.SvContractMetaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvContractMetaCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvContractMetaPayload>[]
+        }
+        delete: {
+          args: Prisma.SvContractMetaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvContractMetaPayload>
+        }
+        update: {
+          args: Prisma.SvContractMetaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvContractMetaPayload>
+        }
+        deleteMany: {
+          args: Prisma.SvContractMetaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvContractMetaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvContractMetaUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvContractMetaPayload>[]
+        }
+        upsert: {
+          args: Prisma.SvContractMetaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvContractMetaPayload>
+        }
+        aggregate: {
+          args: Prisma.SvContractMetaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvContractMeta>
+        }
+        groupBy: {
+          args: Prisma.SvContractMetaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvContractMetaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvContractMetaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvContractMetaCountAggregateOutputType> | number
+        }
+      }
+    }
+    SvCashMovement: {
+      payload: Prisma.$SvCashMovementPayload<ExtArgs>
+      fields: Prisma.SvCashMovementFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvCashMovementFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvCashMovementPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvCashMovementFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvCashMovementPayload>
+        }
+        findFirst: {
+          args: Prisma.SvCashMovementFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvCashMovementPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvCashMovementFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvCashMovementPayload>
+        }
+        findMany: {
+          args: Prisma.SvCashMovementFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvCashMovementPayload>[]
+        }
+        create: {
+          args: Prisma.SvCashMovementCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvCashMovementPayload>
+        }
+        createMany: {
+          args: Prisma.SvCashMovementCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvCashMovementCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvCashMovementPayload>[]
+        }
+        delete: {
+          args: Prisma.SvCashMovementDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvCashMovementPayload>
+        }
+        update: {
+          args: Prisma.SvCashMovementUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvCashMovementPayload>
+        }
+        deleteMany: {
+          args: Prisma.SvCashMovementDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvCashMovementUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvCashMovementUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvCashMovementPayload>[]
+        }
+        upsert: {
+          args: Prisma.SvCashMovementUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvCashMovementPayload>
+        }
+        aggregate: {
+          args: Prisma.SvCashMovementAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvCashMovement>
+        }
+        groupBy: {
+          args: Prisma.SvCashMovementGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvCashMovementGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvCashMovementCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvCashMovementCountAggregateOutputType> | number
+        }
+      }
+    }
+    SvStockItem: {
+      payload: Prisma.$SvStockItemPayload<ExtArgs>
+      fields: Prisma.SvStockItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvStockItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvStockItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockItemPayload>
+        }
+        findFirst: {
+          args: Prisma.SvStockItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvStockItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockItemPayload>
+        }
+        findMany: {
+          args: Prisma.SvStockItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockItemPayload>[]
+        }
+        create: {
+          args: Prisma.SvStockItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockItemPayload>
+        }
+        createMany: {
+          args: Prisma.SvStockItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvStockItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockItemPayload>[]
+        }
+        delete: {
+          args: Prisma.SvStockItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockItemPayload>
+        }
+        update: {
+          args: Prisma.SvStockItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.SvStockItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvStockItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvStockItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.SvStockItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockItemPayload>
+        }
+        aggregate: {
+          args: Prisma.SvStockItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvStockItem>
+        }
+        groupBy: {
+          args: Prisma.SvStockItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvStockItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvStockItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvStockItemCountAggregateOutputType> | number
+        }
+      }
+    }
+    SvStockMovement: {
+      payload: Prisma.$SvStockMovementPayload<ExtArgs>
+      fields: Prisma.SvStockMovementFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvStockMovementFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockMovementPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvStockMovementFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockMovementPayload>
+        }
+        findFirst: {
+          args: Prisma.SvStockMovementFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockMovementPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvStockMovementFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockMovementPayload>
+        }
+        findMany: {
+          args: Prisma.SvStockMovementFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockMovementPayload>[]
+        }
+        create: {
+          args: Prisma.SvStockMovementCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockMovementPayload>
+        }
+        createMany: {
+          args: Prisma.SvStockMovementCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvStockMovementCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockMovementPayload>[]
+        }
+        delete: {
+          args: Prisma.SvStockMovementDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockMovementPayload>
+        }
+        update: {
+          args: Prisma.SvStockMovementUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockMovementPayload>
+        }
+        deleteMany: {
+          args: Prisma.SvStockMovementDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvStockMovementUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvStockMovementUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockMovementPayload>[]
+        }
+        upsert: {
+          args: Prisma.SvStockMovementUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvStockMovementPayload>
+        }
+        aggregate: {
+          args: Prisma.SvStockMovementAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvStockMovement>
+        }
+        groupBy: {
+          args: Prisma.SvStockMovementGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvStockMovementGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvStockMovementCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvStockMovementCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -8655,6 +9255,149 @@ export const OpsTicketScalarFieldEnum = {
 export type OpsTicketScalarFieldEnum = (typeof OpsTicketScalarFieldEnum)[keyof typeof OpsTicketScalarFieldEnum]
 
 
+export const SvClientScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  contactName: 'contactName',
+  email: 'email',
+  phone: 'phone',
+  city: 'city',
+  country: 'country',
+  notes: 'notes',
+  sourceRef: 'sourceRef',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvClientScalarFieldEnum = (typeof SvClientScalarFieldEnum)[keyof typeof SvClientScalarFieldEnum]
+
+
+export const SvInvoiceScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  legacyNumber: 'legacyNumber',
+  status: 'status',
+  clientId: 'clientId',
+  issuedAt: 'issuedAt',
+  dueAt: 'dueAt',
+  totalHt: 'totalHt',
+  totalVat: 'totalVat',
+  totalTtc: 'totalTtc',
+  amountPaid: 'amountPaid',
+  currency: 'currency',
+  vatRate: 'vatRate',
+  object: 'object',
+  notes: 'notes',
+  sourceDocument: 'sourceDocument',
+  remixedFromId: 'remixedFromId',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvInvoiceScalarFieldEnum = (typeof SvInvoiceScalarFieldEnum)[keyof typeof SvInvoiceScalarFieldEnum]
+
+
+export const SvInvoiceLineScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  sortOrder: 'sortOrder',
+  label: 'label',
+  description: 'description',
+  qty: 'qty',
+  unitPrice: 'unitPrice',
+  vatRate: 'vatRate'
+} as const
+
+export type SvInvoiceLineScalarFieldEnum = (typeof SvInvoiceLineScalarFieldEnum)[keyof typeof SvInvoiceLineScalarFieldEnum]
+
+
+export const SvPaymentScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  amount: 'amount',
+  paidAt: 'paidAt',
+  method: 'method',
+  reference: 'reference',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type SvPaymentScalarFieldEnum = (typeof SvPaymentScalarFieldEnum)[keyof typeof SvPaymentScalarFieldEnum]
+
+
+export const SvContractMetaScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  title: 'title',
+  partyName: 'partyName',
+  effectiveFrom: 'effectiveFrom',
+  durationNote: 'durationNote',
+  monthlyAmount: 'monthlyAmount',
+  sourceDocument: 'sourceDocument',
+  gedDocumentId: 'gedDocumentId',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvContractMetaScalarFieldEnum = (typeof SvContractMetaScalarFieldEnum)[keyof typeof SvContractMetaScalarFieldEnum]
+
+
+export const SvCashMovementScalarFieldEnum = {
+  id: 'id',
+  movedAt: 'movedAt',
+  direction: 'direction',
+  amount: 'amount',
+  category: 'category',
+  description: 'description',
+  clientProject: 'clientProject',
+  beneficiary: 'beneficiary',
+  paymentMethod: 'paymentMethod',
+  paidBy: 'paidBy',
+  reference: 'reference',
+  linkedClientId: 'linkedClientId',
+  linkedInvoiceId: 'linkedInvoiceId',
+  linkedPaymentId: 'linkedPaymentId',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type SvCashMovementScalarFieldEnum = (typeof SvCashMovementScalarFieldEnum)[keyof typeof SvCashMovementScalarFieldEnum]
+
+
+export const SvStockItemScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  family: 'family',
+  subFamily: 'subFamily',
+  label: 'label',
+  unit: 'unit',
+  quantity: 'quantity',
+  location: 'location',
+  observations: 'observations',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvStockItemScalarFieldEnum = (typeof SvStockItemScalarFieldEnum)[keyof typeof SvStockItemScalarFieldEnum]
+
+
+export const SvStockMovementScalarFieldEnum = {
+  id: 'id',
+  itemId: 'itemId',
+  movedAt: 'movedAt',
+  kind: 'kind',
+  quantity: 'quantity',
+  note: 'note',
+  sourceRef: 'sourceRef',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type SvStockMovementScalarFieldEnum = (typeof SvStockMovementScalarFieldEnum)[keyof typeof SvStockMovementScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -9683,6 +10426,48 @@ export type ListEnumOpsTicketStatusFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'SvInvoiceStatus'
+ */
+export type EnumSvInvoiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvInvoiceStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SvInvoiceStatus[]'
+ */
+export type ListEnumSvInvoiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvInvoiceStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SvCashDirection'
+ */
+export type EnumSvCashDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvCashDirection'>
+    
+
+
+/**
+ * Reference to a field of type 'SvCashDirection[]'
+ */
+export type ListEnumSvCashDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvCashDirection[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SvStockMoveKind'
+ */
+export type EnumSvStockMoveKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvStockMoveKind'>
+    
+
+
+/**
+ * Reference to a field of type 'SvStockMoveKind[]'
+ */
+export type ListEnumSvStockMoveKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvStockMoveKind[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -9935,6 +10720,14 @@ export type GlobalOmitConfig = {
   prjMember?: Prisma.PrjMemberOmit
   prjExpense?: Prisma.PrjExpenseOmit
   opsTicket?: Prisma.OpsTicketOmit
+  svClient?: Prisma.SvClientOmit
+  svInvoice?: Prisma.SvInvoiceOmit
+  svInvoiceLine?: Prisma.SvInvoiceLineOmit
+  svPayment?: Prisma.SvPaymentOmit
+  svContractMeta?: Prisma.SvContractMetaOmit
+  svCashMovement?: Prisma.SvCashMovementOmit
+  svStockItem?: Prisma.SvStockItemOmit
+  svStockMovement?: Prisma.SvStockMovementOmit
 }
 
 /* Types for Logging */

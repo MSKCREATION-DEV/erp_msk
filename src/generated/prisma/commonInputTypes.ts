@@ -1517,6 +1517,57 @@ export type EnumOpsTicketStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumOpsTicketStatusFilter<$PrismaModel>
 }
 
+export type EnumSvInvoiceStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvInvoiceStatus | Prisma.EnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvInvoiceStatus[] | Prisma.ListEnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvInvoiceStatus[] | Prisma.ListEnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvInvoiceStatusFilter<$PrismaModel> | $Enums.SvInvoiceStatus
+}
+
+export type EnumSvInvoiceStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvInvoiceStatus | Prisma.EnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvInvoiceStatus[] | Prisma.ListEnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvInvoiceStatus[] | Prisma.ListEnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvInvoiceStatusWithAggregatesFilter<$PrismaModel> | $Enums.SvInvoiceStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvInvoiceStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvInvoiceStatusFilter<$PrismaModel>
+}
+
+export type EnumSvCashDirectionFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvCashDirection | Prisma.EnumSvCashDirectionFieldRefInput<$PrismaModel>
+  in?: $Enums.SvCashDirection[] | Prisma.ListEnumSvCashDirectionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvCashDirection[] | Prisma.ListEnumSvCashDirectionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvCashDirectionFilter<$PrismaModel> | $Enums.SvCashDirection
+}
+
+export type EnumSvCashDirectionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvCashDirection | Prisma.EnumSvCashDirectionFieldRefInput<$PrismaModel>
+  in?: $Enums.SvCashDirection[] | Prisma.ListEnumSvCashDirectionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvCashDirection[] | Prisma.ListEnumSvCashDirectionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvCashDirectionWithAggregatesFilter<$PrismaModel> | $Enums.SvCashDirection
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvCashDirectionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvCashDirectionFilter<$PrismaModel>
+}
+
+export type EnumSvStockMoveKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvStockMoveKind | Prisma.EnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SvStockMoveKind[] | Prisma.ListEnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvStockMoveKind[] | Prisma.ListEnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvStockMoveKindFilter<$PrismaModel> | $Enums.SvStockMoveKind
+}
+
+export type EnumSvStockMoveKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvStockMoveKind | Prisma.EnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SvStockMoveKind[] | Prisma.ListEnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvStockMoveKind[] | Prisma.ListEnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvStockMoveKindWithAggregatesFilter<$PrismaModel> | $Enums.SvStockMoveKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvStockMoveKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvStockMoveKindFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -2973,6 +3024,57 @@ export type NestedEnumOpsTicketStatusWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumOpsTicketStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumOpsTicketStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumSvInvoiceStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvInvoiceStatus | Prisma.EnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvInvoiceStatus[] | Prisma.ListEnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvInvoiceStatus[] | Prisma.ListEnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvInvoiceStatusFilter<$PrismaModel> | $Enums.SvInvoiceStatus
+}
+
+export type NestedEnumSvInvoiceStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvInvoiceStatus | Prisma.EnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvInvoiceStatus[] | Prisma.ListEnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvInvoiceStatus[] | Prisma.ListEnumSvInvoiceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvInvoiceStatusWithAggregatesFilter<$PrismaModel> | $Enums.SvInvoiceStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvInvoiceStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvInvoiceStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumSvCashDirectionFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvCashDirection | Prisma.EnumSvCashDirectionFieldRefInput<$PrismaModel>
+  in?: $Enums.SvCashDirection[] | Prisma.ListEnumSvCashDirectionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvCashDirection[] | Prisma.ListEnumSvCashDirectionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvCashDirectionFilter<$PrismaModel> | $Enums.SvCashDirection
+}
+
+export type NestedEnumSvCashDirectionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvCashDirection | Prisma.EnumSvCashDirectionFieldRefInput<$PrismaModel>
+  in?: $Enums.SvCashDirection[] | Prisma.ListEnumSvCashDirectionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvCashDirection[] | Prisma.ListEnumSvCashDirectionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvCashDirectionWithAggregatesFilter<$PrismaModel> | $Enums.SvCashDirection
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvCashDirectionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvCashDirectionFilter<$PrismaModel>
+}
+
+export type NestedEnumSvStockMoveKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvStockMoveKind | Prisma.EnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SvStockMoveKind[] | Prisma.ListEnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvStockMoveKind[] | Prisma.ListEnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvStockMoveKindFilter<$PrismaModel> | $Enums.SvStockMoveKind
+}
+
+export type NestedEnumSvStockMoveKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvStockMoveKind | Prisma.EnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SvStockMoveKind[] | Prisma.ListEnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvStockMoveKind[] | Prisma.ListEnumSvStockMoveKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvStockMoveKindWithAggregatesFilter<$PrismaModel> | $Enums.SvStockMoveKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvStockMoveKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvStockMoveKindFilter<$PrismaModel>
 }
 
 

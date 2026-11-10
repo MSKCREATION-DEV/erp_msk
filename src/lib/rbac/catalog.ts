@@ -125,7 +125,30 @@ export const PERMISSIONS: PermissionDef[] = [
   { code: "ged.manage_folders", domain: "ged", description: "Créer / gérer dossiers" },
   { code: "ged.delete", domain: "ged", description: "Soft-delete documents" },
   { code: "ged.share", domain: "ged", description: "Partage nominatif" },
+  // Suivi tampon (direction / admin uniquement — pas commercial terrain)
+  { code: "sv.access", domain: "sv", description: "Accès module Suivi (tampon)" },
+  { code: "sv.clients.view", domain: "sv", description: "Voir clients Suivi" },
+  { code: "sv.clients.manage", domain: "sv", description: "Gérer clients Suivi" },
+  { code: "sv.invoices.view", domain: "sv", description: "Voir factures Suivi" },
+  { code: "sv.invoices.manage", domain: "sv", description: "Gérer factures / paiements Suivi" },
+  { code: "sv.movements.view", domain: "sv", description: "Voir mouvements trésorerie tampon" },
+  { code: "sv.movements.manage", domain: "sv", description: "Saisir mouvements IN/OUT" },
+  { code: "sv.stock.view", domain: "sv", description: "Voir stocks Suivi" },
+  { code: "sv.stock.manage", domain: "sv", description: "Ajuster / mouvements stock Suivi" },
 ];
+
+/** Pack Suivi complet — à attribuer Direction / Admin plateforme uniquement. */
+export const SV_PERMISSIONS = [
+  "sv.access",
+  "sv.clients.view",
+  "sv.clients.manage",
+  "sv.invoices.view",
+  "sv.invoices.manage",
+  "sv.movements.view",
+  "sv.movements.manage",
+  "sv.stock.view",
+  "sv.stock.manage",
+] as const;
 
 export const PACK_PERMISSIONS: Record<string, string[]> = {
   collaborateur: [
@@ -395,6 +418,7 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
     "ged.browse",
     "ged.upload",
     "orgchart.view",
+    ...SV_PERMISSIONS,
   ],
   admin_plateforme: [
     "home.view",
@@ -461,6 +485,7 @@ export const PACK_PERMISSIONS: Record<string, string[]> = {
     "com.factures.issue",
     "com.paiements.record",
     "com.reports.view",
+    ...SV_PERMISSIONS,
   ],
 };
 

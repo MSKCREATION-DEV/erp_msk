@@ -1,0 +1,41 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { requireUser } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/rbac/resolve";
+import { requireSvPermission } from "@/lib/suivi/access";
+import { PageHeader } from "@/components/ui/page-header";
+import { PageShell } from "@/components/ui/page-shell";
+import { Surface } from "@/components/ui/surface";
+
+export const metadata: Metadata = { title: "Clients · Suivi" };
+
+/** Placeholder fondation — liste complète en phase clients/factures. */
+export default async function SuiviClientsPlaceholderPage() {
+  const user = await requireUser();
+  requireSvPermission(user, "sv.clients.view");
+  const canManage =
+    hasPermission(user, "sv.clients.manage") || user.isSuperAdmin;
+
+  return (
+    <PageShell>
+      <PageHeader
+        title="Clients"
+        description="Clients tampon Suivi."
+        backHref="/suivi"
+        actions={
+          canManage ? (
+            <Link
+              href="/suivi/clients/nouveau"
+              className="inline-flex h-9 items-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
+            >
+              Nouveau
+            </Link>
+          ) : null
+        }
+      />
+      <Surface className="p-6 text-sm text-msk-ink/60">
+        Liste clients à venir (seed + KPI). Accès OK.
+      </Surface>
+    </PageShell>
+  );
+}

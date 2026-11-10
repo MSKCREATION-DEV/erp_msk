@@ -15,6 +15,7 @@ import {
   Package,
   AlertTriangle,
   BookOpen,
+  ClipboardList,
   type LucideIcon,
 } from "lucide-react";
 
@@ -87,6 +88,13 @@ export const NAV_GROUPS: NavGroup[] = [
         /** Suivi + ventes + offres — une seule entrée (FLOW-COMMERCIAL-E2E). */
         permission: "com.access",
         alsoMatch: ["/crm", "/catalogue"],
+      },
+      {
+        id: "suivi",
+        href: "/suivi",
+        label: "Suivi",
+        icon: ClipboardList,
+        permission: "sv.access",
       },
       {
         id: "comptabilite",

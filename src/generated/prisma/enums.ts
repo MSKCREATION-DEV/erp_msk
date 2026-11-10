@@ -669,3 +669,31 @@ export const OpsTicketStatus = {
 } as const
 
 export type OpsTicketStatus = (typeof OpsTicketStatus)[keyof typeof OpsTicketStatus]
+
+
+export const SvInvoiceStatus = {
+  BROUILLON: 'BROUILLON',
+  EMISE: 'EMISE',
+  PARTIELLE: 'PARTIELLE',
+  PAYEE: 'PAYEE',
+  ANNULEE: 'ANNULEE'
+} as const
+
+export type SvInvoiceStatus = (typeof SvInvoiceStatus)[keyof typeof SvInvoiceStatus]
+
+
+export const SvCashDirection = {
+  IN: 'IN',
+  OUT: 'OUT'
+} as const
+
+export type SvCashDirection = (typeof SvCashDirection)[keyof typeof SvCashDirection]
+
+
+export const SvStockMoveKind = {
+  IN: 'IN',
+  OUT: 'OUT',
+  ADJUST: 'ADJUST'
+} as const
+
+export type SvStockMoveKind = (typeof SvStockMoveKind)[keyof typeof SvStockMoveKind]
