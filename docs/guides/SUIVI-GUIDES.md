@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-10 (Suivi Task 14 GED contrats/factures ; voir §8) |
+| Dernière mise à jour | 2026-11-10 (Suivi Comptes + clients + anti-natif + GED preview ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -110,7 +110,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
 | `faq-acces-refuse` | Accès refusé / module absent | accueil | `validated` | redirect `acces_refuse` |
 | `faq-mot-de-passe` | Mot de passe / reset | accueil | `validated` | parcours auth connus |
-| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `draft` | hub + clients/factures/mouvements/stocks — à rédiger dans `src/lib/guides` |
+| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `draft` | hub + clients/factures/**comptes**/mouvements/stocks — à rédiger dans `src/lib/guides` |
 
 *Les modules sans guide `validated` apparaissent en fiche « stub » (objectif + liens manuels, sans fausse procédure).*
 
@@ -134,7 +134,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | patrimoine | stub | 0 | |
 | projets | stub | 0 | |
 | anomalies | stub | 0 | |
-| suivi | stub / draft | 0 (`sv-hub-naviguer` draft) | valider parcours UI hub→clients→remix→mouvements→stocks |
+| suivi | stub / draft | 0 (`sv-hub-naviguer` draft) | valider parcours UI hub→clients→comptes→remix→mouvements→stocks |
 | catalogue | via commercial | 0 | offres / planchers |
 
 ### Rôles documentés (packs / groupes)
@@ -196,6 +196,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-10 — Suivi : Comptes + clients renforcés + anti-UI-native + GED preview
+
+| | |
+|---|---|
+| Quoi | Sous-menu **Comptes** (physique / banque) ; crédit/débit/transfert ; soldes via `sv_cash_movements.accountId` ; clients liste+fiche renforcés (actions, identité, paiements inline) ; remplacement `<select>` Suivi par `ChoiceCards` / `OptionPickerSingle` ; modal GED : message clair DOCX/Office + CTA Télécharger / Nouvel onglet |
+| Pourquoi | Direction doit suivre caisse & banque sans double saisie ; clients incomplets vs Commercial ; zéro UI native navigateur sur Suivi ; DOCX ne doit plus ouvrir un modal vide |
+| Fichiers | `sv_accounts` migration, `src/app/(app)/suivi/comptes/**`, `src/actions/suivi/accounts.ts`, `src/lib/suivi/accounts.ts`, clients/mouvements/stock forms, `ged-preview-modal.tsx`, `docs/specs/suivi-tampon/*`, `tasks/suivi-tampon/todo.md` |
+| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — parcours Comptes + anti-natif à valider terrain |
+| Checklist anti-natif | Pas de `<select>` / `alert` / `confirm` / `prompt` sous `src/**/suivi/**` ni `src/components/suivi/**` — Select = ChoiceCards/OptionPicker ; confirm = `useConfirm` / Dialog MSK |
 
 ### 2026-11-10 — Suivi Task 14 : GED contrats + factures
 

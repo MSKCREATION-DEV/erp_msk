@@ -12,9 +12,10 @@
 |------|----------|
 | **A** | Conflits montants/refs : **analyser la cause** ; en seed, **priorité au fichier facture** (PDF/DOCX) quand c’est la même pièce. Documenter chaque écart. |
 | **B** | **Devis-only (~14) : IGNORER en V1** — pas de devis dans le module Suivi. Seed uniquement clients avec factures / contrats / mouvements / stocks issus des sources retenues. |
-| **C** | « Caisse » : **pas de module caisse métier** — juste **retracer tous les mouvements** (entrées/sorties) avec **historique**. Seed sorties depuis `Suivi_Depenses_Quotidiennes_MSK.xlsx`. UI = registre de mouvements + historique. Naming produit : **Mouvements** (trésorerie tampon) ; module menu reste **« Suivi »**. |
+| **C** | « Caisse » historique : **pas** de caisse métier isolée sans ledger — registre **Mouvements** + (complément 2026-11-10) sous-menu **Comptes** (physique / banque). Seed sorties depuis `Suivi_Depenses_Quotidiennes_MSK.xlsx`. |
 | **D** | Prosperity FAC-143 vs 122 : **si même facture → une seule**, priorité fichier facture réel. |
 | **E** | Miroir paiements → mouvement IN : en V1, **enregistrer un paiement client peut créer** un mouvement `IN` lié (`linkedInvoiceId` / `linkedClientId`) pour la traçabilité. **Pas** de double saisie obligatoire : le paiement facture reste la source de vérité du solde client ; le miroir est optionnel côté action (flag / comportement par défaut ON recommandé). Aucun IN inventé au seed (fichier dépenses = OUT only). |
+| **F** | **Comptes** (nom produit) : 2 comptes `sv_accounts` — **physique** + **banque**. Solde = Σ mouvements liés (`accountId`). Ouverture seed = **0** (non documentée). OUT seed Espèces → **impactent le compte physique** (solde peut être négatif jusqu’aux retraits banque saisis). Transfert = 2 mouvements même `transferId`. Source de vérité unique = `sv_cash_movements`. |
 
 Lien croisé : [`SPEC.md`](./SPEC.md) · [`docs/intent/module-suivi-tampon.md`](../../intent/module-suivi-tampon.md)
 

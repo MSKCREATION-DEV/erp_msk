@@ -154,6 +154,8 @@ Sidebar : entrée live (pas « bientôt ») réservée aux utilisateurs ayant `s
 | `sv.invoices.manage` | Créer (remix) / éditer / enregistrer paiements |
 | `sv.movements.view` | Registre mouvements (alias code historique `sv.cash.*` OK si déjà esquissé) |
 | `sv.movements.manage` | Saisir mouvements IN/OUT |
+| `sv.accounts.view` | Voir comptes physique / banque |
+| `sv.accounts.manage` | Créditer / débiter / transfert comptes |
 | `sv.stock.view` | Liste stocks |
 | `sv.stock.manage` | Ajuster / mouvements stock |
 

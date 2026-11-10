@@ -104,8 +104,30 @@ Réf. plan : [`plan.md`](./plan.md) · Spec : [`docs/specs/suivi-tampon/SPEC.md`
 
 ---
 
+## Task 18: Comptes physique / banque
+
+- [x] Nom produit **Comptes** (décision F) — nav + hub
+- [x] `sv_accounts` + `accountId` / `transferId` sur mouvements
+- [x] UI liste + fiche + crédit/débit/transfert
+- [x] Seed ouverture 0 ; OUT seed → compte physique
+- [x] Permissions `sv.accounts.*`
+- [ ] Manual : retrait banque → physique, solde cohérent
+
+---
+
+## Task 19: Clients renforcés + anti-natif + GED preview
+
+- [x] Liste actions (menu) + colonnes à venir / contact
+- [x] Fiche identité + paiements inline + mouvements liés
+- [x] Forms mouvements/stock sans `<select>` natif
+- [x] Modal GED DOCX : aperçu indisponible + CTA download
+- [ ] Manual smoke UI
+
+---
+
 ## Checkpoint: Complete
 
 - [x] GED seed (Task 14) — code + seed local ; smoke ouverture GED à rejouer
-- [ ] Smoke manuel parcours (commercial sans accès, remix FAC-155, paiement ISDALINIA, PAP-001, ouvrir GED)
+- [x] Comptes + anti-natif + clients (code) — smoke navigateur restant
+- [ ] Smoke manuel parcours (commercial sans accès, remix FAC-155, paiement ISDALINIA, PAP-001, ouvrir GED DOCX, Comptes)
 - [ ] Push / align remotes
