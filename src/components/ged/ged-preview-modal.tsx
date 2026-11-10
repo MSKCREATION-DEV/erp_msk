@@ -54,11 +54,39 @@ export function GedPreviewModal({
   }, [open, doc]);
 
   const mime = doc?.mime ?? "";
-  const canEmbedImage = mime.startsWith("image/");
+  const name = (doc?.originalName ?? "").toLowerCase();
+  const isOfficeByExt =
+    /\.(docx?|xlsx?|pptx?|odt|ods|odp)$/i.test(name) ||
+    mime.includes("officedocument") ||
+    mime.includes("msword") ||
+    mime.includes("ms-excel") ||
+    mime.includes("ms-powerpoint") ||
+    mime.includes("opendocument");
+  const canEmbedImage = mime.startsWith("image/") && !isOfficeByExt;
   const canEmbedPdf = mime === "application/pdf";
   const canEmbedText =
-    mime.startsWith("text/") || mime === "application/json";
+    (mime.startsWith("text/") || mime === "application/json") &&
+    !isOfficeByExt;
   const canPreview = canEmbedImage || canEmbedPdf || canEmbedText;
+  const kindLabel = doc
+    ? mimeKind(doc.mime) ||
+      (isOfficeByExt ? "Word / Office" : "Document")
+    : "Document";
+
+  function openUrl() {
+    if (!url) return;
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  function downloadUrl() {
+    if (!url) return;
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = doc?.originalName ?? "document";
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.click();
+  }
 
   return (
     <Modal
@@ -66,9 +94,7 @@ export function GedPreviewModal({
       onOpenChange={onOpenChange}
       title={doc?.originalName ?? "Document"}
       description={
-        doc
-          ? `${mimeKind(doc.mime)} · ${formatSize(doc.size)}`
-          : undefined
+        doc ? `${kindLabel} · ${formatSize(doc.size)}` : undefined
       }
       size="full"
       footer={
@@ -79,23 +105,12 @@ export function GedPreviewModal({
                 type="button"
                 variant="secondary"
                 size="sm"
-                onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
+                onClick={openUrl}
               >
                 <ExternalLink className="h-4 w-4" />
                 Nouvel onglet
               </Button>
-              <Button
-                type="button"
-                size="sm"
-                onClick={() => {
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = doc?.originalName ?? "document";
-                  a.target = "_blank";
-                  a.rel = "noopener";
-                  a.click();
-                }}
-              >
+              <Button type="button" size="sm" onClick={downloadUrl}>
                 <Download className="h-4 w-4" />
                 Télécharger
               </Button>
@@ -141,14 +156,29 @@ export function GedPreviewModal({
         ) : null}
 
         {!loading && !error && url && !canPreview ? (
-          <div className="flex max-w-md flex-col items-center gap-3 text-center">
+          <div className="flex max-w-md flex-col items-center gap-4 text-center">
             <FileWarning className="h-10 w-10 text-msk-ink/25" />
-            <p className="font-medium text-msk-ink">
-              Aperçu non disponible pour ce type
-            </p>
-            <p className="text-sm text-msk-ink/50">
-              {mimeKind(mime)} — ouvrez dans un nouvel onglet ou téléchargez.
-            </p>
+            <div>
+              <p className="font-medium text-msk-ink">
+                Aperçu non disponible pour ce format
+              </p>
+              <p className="mt-1 text-sm text-msk-ink/50">
+                {kindLabel}
+                {isOfficeByExt
+                  ? " (DOCX / Office) — téléchargez ou ouvrez dans un nouvel onglet."
+                  : " — téléchargez ou ouvrez dans un nouvel onglet."}
+              </p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button type="button" variant="secondary" size="sm" onClick={openUrl}>
+                <ExternalLink className="h-4 w-4" />
+                Nouvel onglet
+              </Button>
+              <Button type="button" size="sm" onClick={downloadUrl}>
+                <Download className="h-4 w-4" />
+                Télécharger
+              </Button>
+            </div>
           </div>
         ) : null}
       </div>
