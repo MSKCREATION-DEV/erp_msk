@@ -71,14 +71,14 @@ Livrer le module ERP temporaire **Suivi** (`/suivi`) : clients/factures avec rem
 
 ### Phase 5 — GED contrats & polish
 
-- [ ] Task 14: Dossiers GED + liens contrats/factures seed — **meta contrats seedés** ; dépôt GED fichiers reporté (gitignore `docs/CONTRAT*` / `FACTURE*`)
+- [x] Task 14: Dossiers GED `08_SUIVI_TAMPON` + `Document` / `DocumentLink` + UI ouverture (seed upload depuis `docs/` local)
 - [x] Task 15: Hub métriques finales + empty/error/loading
 - [x] Task 16: Guides + `SUIVI-GUIDES.md` (changelog draft)
-- [x] Task 17: Gate build / typecheck OK
+- [x] Task 17: Gate build / typecheck OK (rejouer après Task 14)
 
 ### Checkpoint: Complete
 
-- [x] V1 fonctionnelle hors upload GED binaire ; review humain + push restante
+- [x] V1 + GED Task 14 codés ; smokes manuels + push restante
 
 ## Parallelization
 

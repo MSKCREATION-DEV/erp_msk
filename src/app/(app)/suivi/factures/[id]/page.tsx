@@ -6,6 +6,7 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { requireSvPermission } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
 import { invoiceReste } from "@/lib/suivi/balances";
+import { listSvLinkedDocuments, SV_GED_ENTITY } from "@/lib/suivi/ged";
 import {
   formatSvXof,
   SV_INVOICE_STATUS_LABEL,
@@ -16,6 +17,7 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { SvPaymentForm } from "@/components/suivi/payment-form";
+import { SvGedDocActions } from "@/components/suivi/ged-doc-actions";
 
 export const metadata: Metadata = { title: "Facture · Suivi" };
 
@@ -41,6 +43,12 @@ export default async function SuiviFactureDetailPage({
   const reste = invoiceReste(invoice);
   const canPay =
     hasPermission(user, "sv.invoices.manage") || user.isSuperAdmin;
+
+  const gedLinks = await listSvLinkedDocuments({
+    entityType: SV_GED_ENTITY.INVOICE,
+    entityId: invoice.id,
+  });
+  const primaryGed = gedLinks[0]?.document ?? null;
 
   return (
     <PageShell>
@@ -152,11 +160,30 @@ export default async function SuiviFactureDetailPage({
               {invoice.notes}
             </p>
           ) : null}
-          {invoice.sourceDocument ? (
-            <p className="border-t border-msk-ink/6 px-4 py-2 text-xs text-msk-ink/40">
-              Source : {invoice.sourceDocument}
+          <div className="border-t border-msk-ink/6 px-4 py-3">
+            <p className="text-xs font-medium uppercase tracking-caps text-msk-ink/45">
+              Document GED
             </p>
-          ) : null}
+            {primaryGed ? (
+              <>
+                <p className="mt-1 text-sm text-msk-ink">
+                  {primaryGed.originalName}
+                </p>
+                <SvGedDocActions
+                  documentId={primaryGed.id}
+                  originalName={primaryGed.originalName}
+                  mime={primaryGed.mime}
+                  size={primaryGed.size}
+                />
+              </>
+            ) : invoice.sourceDocument ? (
+              <p className="mt-1 text-xs text-msk-ink/40">
+                Source : {invoice.sourceDocument} (GED non lié — relancer seed)
+              </p>
+            ) : (
+              <p className="mt-1 text-sm text-msk-ink/55">Aucun document lié.</p>
+            )}
+          </div>
         </Surface>
       </div>
     </PageShell>

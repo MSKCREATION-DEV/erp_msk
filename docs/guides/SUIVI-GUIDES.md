@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-10 (Module Suivi tampon `/suivi` — draft ; voir §8) |
+| Dernière mise à jour | 2026-11-10 (Suivi Task 14 GED contrats/factures ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,15 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-10 — Suivi Task 14 : GED contrats + factures
+
+| | |
+|---|---|
+| Quoi | Upload seed inventaire → `Document` sous `/{year}/08_SUIVI_TAMPON/clients/{SV_…}/Contrats\|Factures` ; `DocumentLink` `sv_client` / `sv_contract` / `sv_invoice` ; `gedDocumentId` sur meta contrats ; UI **Voir** / **Télécharger** (`SvGedDocActions`) sur fiche client + fiche facture |
+| Pourquoi | SPEC : contrats & factures GED visibles, réutiliser moteur GED existant (pas de 2ᵉ GED) |
+| Fichiers | `src/lib/suivi/ged.ts`, `seed-ged.ts`, `ged-resolve.test.ts`, `prisma/seed-suivi.ts`, `src/components/suivi/ged-doc-actions.tsx`, fiches `suivi/clients/[id]` + `suivi/factures/[id]`, `tasks/suivi-tampon/*` |
+| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — ajouter étapes « ouvrir contrat/facture GED » après smoke Direction (`ged.browse`) |
 
 ### 2026-11-10 — Module Suivi (tampon) `/suivi` — fondations + piliers V1
 

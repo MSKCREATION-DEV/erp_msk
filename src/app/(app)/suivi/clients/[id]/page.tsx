@@ -6,6 +6,7 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { requireSvPermission } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
 import { clientBalance, invoiceReste } from "@/lib/suivi/balances";
+import { SV_GED_ENTITY } from "@/lib/suivi/ged";
 import {
   formatSvXof,
   SV_INVOICE_STATUS_LABEL,
@@ -15,6 +16,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { SvGedDocActions } from "@/components/suivi/ged-doc-actions";
 
 export const metadata: Metadata = { title: "Fiche client · Suivi" };
 
@@ -44,6 +46,52 @@ export default async function SuiviClientDetailPage({
     hasPermission(user, "sv.invoices.manage") || user.isSuperAdmin;
   const canEdit =
     hasPermission(user, "sv.clients.manage") || user.isSuperAdmin;
+
+  const gedLinks = await prisma.documentLink.findMany({
+    where: {
+      OR: [
+        {
+          entityType: SV_GED_ENTITY.CLIENT,
+          entityId: client.id,
+        },
+        {
+          entityType: SV_GED_ENTITY.INVOICE,
+          entityId: { in: client.invoices.map((i) => i.id) },
+        },
+        {
+          entityType: SV_GED_ENTITY.CONTRACT,
+          entityId: { in: client.contracts.map((c) => c.id) },
+        },
+      ],
+      document: { status: "ACTIVE", softDeletedAt: null },
+    },
+    include: {
+      document: {
+        select: {
+          id: true,
+          originalName: true,
+          mime: true,
+          size: true,
+        },
+      },
+    },
+    orderBy: { document: { createdAt: "desc" } },
+  });
+
+  const docByInvoice = new Map<string, (typeof gedLinks)[number]["document"]>();
+  const docByContract = new Map<string, (typeof gedLinks)[number]["document"]>();
+  for (const link of gedLinks) {
+    if (link.entityType === SV_GED_ENTITY.INVOICE) {
+      if (!docByInvoice.has(link.entityId)) {
+        docByInvoice.set(link.entityId, link.document);
+      }
+    }
+    if (link.entityType === SV_GED_ENTITY.CONTRACT) {
+      if (!docByContract.has(link.entityId)) {
+        docByContract.set(link.entityId, link.document);
+      }
+    }
+  }
 
   return (
     <PageShell>
@@ -106,31 +154,42 @@ export default async function SuiviClientDetailPage({
             <p className="p-4 text-sm text-msk-ink/55">Aucune facture.</p>
           ) : (
             <ul className="divide-y divide-msk-ink/6">
-              {client.invoices.map((inv) => (
-                <li key={inv.id}>
-                  <Link
-                    href={`/suivi/factures/${inv.id}`}
-                    className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-msk-blue/4"
-                  >
-                    <div>
-                      <p className="font-medium text-msk-ink">
-                        {inv.number ?? "Sans n°"}
-                      </p>
-                      <p className="text-xs text-msk-ink/50">
-                        {inv.object ?? "—"}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <Badge tone={SV_INVOICE_STATUS_TONE[inv.status]}>
-                        {SV_INVOICE_STATUS_LABEL[inv.status]}
-                      </Badge>
-                      <p className="mt-1 text-sm tabular-nums">
-                        reste {formatSvXof(invoiceReste(inv))}
-                      </p>
-                    </div>
-                  </Link>
-                </li>
-              ))}
+              {client.invoices.map((inv) => {
+                const ged = docByInvoice.get(inv.id);
+                return (
+                  <li key={inv.id} className="px-4 py-3">
+                    <Link
+                      href={`/suivi/factures/${inv.id}`}
+                      className="flex items-center justify-between gap-3 hover:text-msk-blue"
+                    >
+                      <div>
+                        <p className="font-medium text-msk-ink">
+                          {inv.number ?? "Sans n°"}
+                        </p>
+                        <p className="text-xs text-msk-ink/50">
+                          {inv.object ?? "—"}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <Badge tone={SV_INVOICE_STATUS_TONE[inv.status]}>
+                          {SV_INVOICE_STATUS_LABEL[inv.status]}
+                        </Badge>
+                        <p className="mt-1 text-sm tabular-nums">
+                          reste {formatSvXof(invoiceReste(inv))}
+                        </p>
+                      </div>
+                    </Link>
+                    {ged ? (
+                      <SvGedDocActions
+                        documentId={ged.id}
+                        originalName={ged.originalName}
+                        mime={ged.mime}
+                        size={ged.size}
+                      />
+                    ) : null}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </Surface>
@@ -144,25 +203,39 @@ export default async function SuiviClientDetailPage({
               <p className="p-4 text-sm text-msk-ink/55">Aucun contrat lié.</p>
             ) : (
               <ul className="divide-y divide-msk-ink/6">
-                {client.contracts.map((ct) => (
-                  <li key={ct.id} className="px-4 py-3">
-                    <p className="font-medium text-msk-ink">{ct.title}</p>
-                    <p className="text-xs text-msk-ink/50">
-                      {ct.partyName ?? "—"}
-                      {ct.monthlyAmount != null
-                        ? ` · ${formatSvXof(ct.monthlyAmount)} / mois`
-                        : ""}
-                    </p>
-                    {ct.sourceDocument ? (
-                      <p className="mt-1 text-xs text-msk-ink/40">
-                        Source : {ct.sourceDocument}
+                {client.contracts.map((ct) => {
+                  const ged =
+                    (ct.gedDocumentId
+                      ? gedLinks.find((l) => l.document.id === ct.gedDocumentId)
+                          ?.document
+                      : null) ?? docByContract.get(ct.id);
+                  return (
+                    <li key={ct.id} className="px-4 py-3">
+                      <p className="font-medium text-msk-ink">{ct.title}</p>
+                      <p className="text-xs text-msk-ink/50">
+                        {ct.partyName ?? "—"}
+                        {ct.monthlyAmount != null
+                          ? ` · ${formatSvXof(ct.monthlyAmount)} / mois`
+                          : ""}
                       </p>
-                    ) : null}
-                    {ct.notes ? (
-                      <p className="mt-1 text-xs text-msk-coral/90">{ct.notes}</p>
-                    ) : null}
-                  </li>
-                ))}
+                      {ged ? (
+                        <SvGedDocActions
+                          documentId={ged.id}
+                          originalName={ged.originalName}
+                          mime={ged.mime}
+                          size={ged.size}
+                        />
+                      ) : ct.sourceDocument ? (
+                        <p className="mt-1 text-xs text-msk-ink/40">
+                          Source : {ct.sourceDocument} (GED non lié)
+                        </p>
+                      ) : null}
+                      {ct.notes ? (
+                        <p className="mt-1 text-xs text-msk-coral/90">{ct.notes}</p>
+                      ) : null}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </Surface>

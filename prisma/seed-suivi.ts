@@ -9,6 +9,7 @@ import {
   SV_SEED_MOVEMENTS,
   SV_SEED_STOCK,
 } from "../src/lib/suivi/seed-data";
+import { seedSuiviGed } from "../src/lib/suivi/seed-ged";
 
 export async function seedSuiviTampon(prisma: PrismaClient) {
   const actor =
@@ -168,4 +169,7 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
     stockCount += 1;
   }
   console.log(`✓ Sv stocks ${stockCount}`);
+
+  // Task 14 — dépôt GED contrats + factures (Document / DocumentLink)
+  await seedSuiviGed(prisma, actor.id);
 }

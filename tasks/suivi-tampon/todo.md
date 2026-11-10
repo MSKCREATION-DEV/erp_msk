@@ -87,8 +87,9 @@ Réf. plan : [`plan.md`](./plan.md) · Spec : [`docs/specs/suivi-tampon/SPEC.md`
 
 ## Task 14: GED contrats + liens factures
 
-- [ ] Dépôt fichiers GED + `DocumentLink` (meta contrats OK ; **GED upload/lien pas encore**)
-- [x] Affichage meta contrats sur fiche (sourceDocument path)
+- [x] Dépôt fichiers GED + `DocumentLink` (`08_SUIVI_TAMPON/clients/…/Contrats|Factures`, entityTypes `sv_*`)
+- [x] UI Voir / Télécharger sur fiche client + fiche facture (`SvGedDocActions`)
+- [x] Seed `seedSuiviGed` branché dans `seed-suivi` (idempotent)
 
 ---
 
@@ -105,6 +106,6 @@ Réf. plan : [`plan.md`](./plan.md) · Spec : [`docs/specs/suivi-tampon/SPEC.md`
 
 ## Checkpoint: Complete
 
-- [ ] GED seed (Task 14)
-- [ ] Smoke manuel parcours
+- [x] GED seed (Task 14) — code + seed local ; smoke ouverture GED à rejouer
+- [ ] Smoke manuel parcours (commercial sans accès, remix FAC-155, paiement ISDALINIA, PAP-001, ouvrir GED)
 - [ ] Push / align remotes
