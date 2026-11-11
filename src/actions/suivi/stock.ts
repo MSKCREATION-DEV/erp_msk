@@ -3,9 +3,29 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { nextStockQuantity, SV_STOCK_UNITS } from "@/lib/suivi/stock";
+
+const unitSchema = z.enum(SV_STOCK_UNITS);
+
+const itemSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .min(2, "Code trop court")
+    .max(32)
+    .regex(/^[A-Za-z0-9\-]+$/, "Code : lettres, chiffres, tirets"),
+  family: z.string().trim().min(1, "Famille obligatoire").max(80),
+  subFamily: z.string().trim().max(80).optional().or(z.literal("")),
+  label: z.string().trim().min(1, "Libellé obligatoire").max(200),
+  unit: unitSchema,
+  location: z.string().trim().max(120).optional().or(z.literal("")),
+  observations: z.string().trim().max(2000).optional().or(z.literal("")),
+  initialQuantity: z.coerce.number().int().min(0).max(1_000_000).optional(),
+});
 
 const stockMoveSchema = z.object({
   itemId: z.string().min(1),
@@ -17,12 +37,199 @@ const stockMoveSchema = z.object({
 
 export type SvStockActionState = { ok: false; error: string } | null;
 
+function emptyToNull(v: string | undefined) {
+  const t = v?.trim();
+  return t ? t : null;
+}
+
+function canManage(user: Parameters<typeof hasPermission>[0]) {
+  return hasPermission(user, "sv.stock.manage");
+}
+
+function revalidateStock(itemId?: string) {
+  revalidatePath("/suivi/stocks");
+  revalidatePath("/suivi");
+  if (itemId) {
+    revalidatePath(`/suivi/stocks/${itemId}`);
+    revalidatePath(`/suivi/stocks/${itemId}/edit`);
+  }
+}
+
+export async function createSvStockItem(
+  _prev: SvStockActionState,
+  formData: FormData,
+): Promise<SvStockActionState> {
+  const user = await requireUser();
+  if (!canManage(user)) {
+    return { ok: false, error: "Droit insuffisant." };
+  }
+
+  const parsed = itemSchema.safeParse({
+    code: formData.get("code"),
+    family: formData.get("family"),
+    subFamily: formData.get("subFamily") ?? "",
+    label: formData.get("label"),
+    unit: formData.get("unit"),
+    location: formData.get("location") ?? "",
+    observations: formData.get("observations") ?? "",
+    initialQuantity: formData.get("initialQuantity") ?? 0,
+  });
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Données invalides.",
+    };
+  }
+
+  const d = parsed.data;
+  const code = d.code.toUpperCase();
+  const qty = d.initialQuantity ?? 0;
+  let id: string;
+
+  try {
+    id = await prisma.$transaction(async (tx) => {
+      const row = await tx.svStockItem.create({
+        data: {
+          code,
+          family: d.family,
+          subFamily: emptyToNull(d.subFamily),
+          label: d.label,
+          unit: d.unit,
+          quantity: qty,
+          location: emptyToNull(d.location),
+          observations: emptyToNull(d.observations),
+        },
+      });
+      if (qty > 0) {
+        await tx.svStockMovement.create({
+          data: {
+            itemId: row.id,
+            kind: "ADJUST",
+            quantity: qty,
+            note: "Ouverture article",
+            createdById: user.id,
+          },
+        });
+      }
+      return row.id;
+    });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2002"
+    ) {
+      return { ok: false, error: "Ce code article existe déjà." };
+    }
+    return { ok: false, error: "Création impossible." };
+  }
+
+  revalidateStock(id);
+  redirect(`/suivi/stocks/${id}`);
+}
+
+export async function updateSvStockItem(
+  itemId: string,
+  _prev: SvStockActionState,
+  formData: FormData,
+): Promise<SvStockActionState> {
+  const user = await requireUser();
+  if (!canManage(user)) {
+    return { ok: false, error: "Droit insuffisant." };
+  }
+
+  const parsed = itemSchema.omit({ initialQuantity: true }).safeParse({
+    code: formData.get("code"),
+    family: formData.get("family"),
+    subFamily: formData.get("subFamily") ?? "",
+    label: formData.get("label"),
+    unit: formData.get("unit"),
+    location: formData.get("location") ?? "",
+    observations: formData.get("observations") ?? "",
+  });
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Données invalides.",
+    };
+  }
+
+  const existing = await prisma.svStockItem.findUnique({ where: { id: itemId } });
+  if (!existing || existing.archivedAt) {
+    return { ok: false, error: "Article introuvable ou archivé." };
+  }
+
+  const d = parsed.data;
+  const code = d.code.toUpperCase();
+
+  try {
+    await prisma.svStockItem.update({
+      where: { id: itemId },
+      data: {
+        code,
+        family: d.family,
+        subFamily: emptyToNull(d.subFamily),
+        label: d.label,
+        unit: d.unit,
+        location: emptyToNull(d.location),
+        observations: emptyToNull(d.observations),
+      },
+    });
+  } catch (e) {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2002"
+    ) {
+      return { ok: false, error: "Ce code article existe déjà." };
+    }
+    return { ok: false, error: "Mise à jour impossible." };
+  }
+
+  revalidateStock(itemId);
+  redirect(`/suivi/stocks/${itemId}`);
+}
+
+export async function archiveSvStockItem(
+  itemId: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const user = await requireUser();
+  if (!canManage(user)) {
+    return { ok: false, error: "Droit insuffisant." };
+  }
+
+  const existing = await prisma.svStockItem.findUnique({ where: { id: itemId } });
+  if (!existing) return { ok: false, error: "Article introuvable." };
+  if (existing.archivedAt) {
+    revalidateStock(itemId);
+    return { ok: true };
+  }
+
+  try {
+    await prisma.svStockItem.update({
+      where: { id: itemId },
+      data: {
+        archivedAt: new Date(),
+        observations: [
+          existing.observations,
+          `Archivé par ${user.email}`,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      },
+    });
+  } catch {
+    return { ok: false, error: "Archivage impossible." };
+  }
+
+  revalidateStock(itemId);
+  return { ok: true };
+}
+
 export async function createSvStockMovement(
   _prev: SvStockActionState,
   formData: FormData,
 ): Promise<SvStockActionState> {
   const user = await requireUser();
-  if (!hasPermission(user, "sv.stock.manage") && !user.isSuperAdmin) {
+  if (!canManage(user)) {
     return { ok: false, error: "Droit insuffisant." };
   }
 
@@ -34,7 +241,10 @@ export async function createSvStockMovement(
     movedAt: formData.get("movedAt"),
   });
   if (!parsed.success) {
-    return { ok: false, error: parsed.error.issues[0]?.message ?? "Données invalides." };
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Données invalides.",
+    };
   }
 
   const movedAt = new Date(parsed.data.movedAt);
@@ -45,25 +255,26 @@ export async function createSvStockMovement(
   const item = await prisma.svStockItem.findUnique({
     where: { id: parsed.data.itemId },
   });
-  if (!item) return { ok: false, error: "Article introuvable." };
+  if (!item || item.archivedAt) {
+    return { ok: false, error: "Article introuvable ou archivé." };
+  }
 
   if (parsed.data.kind !== "ADJUST" && parsed.data.quantity < 1) {
     return { ok: false, error: "Quantité invalide." };
   }
 
-  let nextQty = item.quantity;
-  if (parsed.data.kind === "IN") nextQty += parsed.data.quantity;
-  else if (parsed.data.kind === "OUT") nextQty -= parsed.data.quantity;
-  else nextQty = parsed.data.quantity; // ADJUST = niveau absolu
+  const { nextQty, moveQty } = nextStockQuantity(
+    item.quantity,
+    parsed.data.kind,
+    parsed.data.quantity,
+  );
 
   if (nextQty < 0) {
     return { ok: false, error: "Stock insuffisant (quantité négative refusée)." };
   }
-
-  const moveQty =
-    parsed.data.kind === "ADJUST"
-      ? Math.abs(nextQty - item.quantity)
-      : parsed.data.quantity;
+  if (parsed.data.kind === "ADJUST" && moveQty === 0) {
+    return { ok: false, error: "Quantité déjà à la cible — aucun mouvement." };
+  }
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -86,8 +297,6 @@ export async function createSvStockMovement(
     return { ok: false, error: "Mouvement stock impossible." };
   }
 
-  revalidatePath("/suivi/stocks");
-  revalidatePath(`/suivi/stocks/${item.id}`);
-  revalidatePath("/suivi");
-  redirect("/suivi/stocks");
+  revalidateStock(item.id);
+  redirect(`/suivi/stocks/${item.id}`);
 }

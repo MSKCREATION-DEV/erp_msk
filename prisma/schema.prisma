@@ -2707,21 +2707,24 @@ model SvCashMovement {
 }
 
 model SvStockItem {
-  id            String   @id @default(cuid())
-  code          String   @unique
+  id            String    @id @default(cuid())
+  code          String    @unique
   family        String
   subFamily     String?
   label         String
   unit          String
-  quantity      Int      @default(0)
+  quantity      Int       @default(0)
   location      String?
   observations  String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  /// Soft archive — hors inventaire courant (ex. lignes Excel remplacées)
+  archivedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   movements SvStockMovement[]
 
   @@index([family])
+  @@index([archivedAt])
   @@map("sv_stock_items")
 }
 

@@ -17,6 +17,7 @@
 | **E** | Miroir paiements → mouvement IN : en V1, **enregistrer un paiement client peut créer** un mouvement `IN` lié (`linkedInvoiceId` / `linkedClientId`) pour la traçabilité. **Pas** de double saisie obligatoire : le paiement facture reste la source de vérité du solde client ; le miroir est optionnel côté action (flag / comportement par défaut ON recommandé). Aucun IN inventé au seed (fichier dépenses = OUT only). |
 | **F** | **Comptes** (nom produit) : 2 comptes `sv_accounts` — **physique** + **banque**. Solde = Σ mouvements liés (`accountId`). Ouverture seed = **0** (non documentée). OUT seed Espèces → **impactent le compte physique** (solde peut être négatif jusqu’aux retraits banque saisis). Transfert = 2 mouvements même `transferId`. Source de vérité unique = `sv_cash_movements`. |
 | **G** | **Paiements / soldes clients (confirmation Direction 2026-11-10)** — voir §8. KOUNDJI & ISDALINIA = **tout payé / reste 0** (compléments datés `2026-11-10` + note « confirmation Direction » si date exacte inconnue). ECOSOL = paiements cash **uniquement** 200 000 (02/10 → FAC-155) + 260 000 (04/11 → 22910263) ; arriéré 106 800 reporté FAC-155→22910263 via écriture `Report facture` (pas un encaissement). Prosperity **387 000** = TTC **FAC-22710262** (pas FAC-122=424 000) ; FAC-122 reste Excel absorbé par report récap. |
+| **H** | **Stocks inventaire courant (confirmation Direction 2026-11-11)** — voir §9. Remplace le snapshot Excel ~33 lignes par **18 articles** listés par Direction (quantités exactes). Unités : pièce / paquet / paire / pack / sachet. Codes stables `PAP-` / `ECR-` / `BUR-` / `ALI-` / `HYI-` / `INF-`. Lignes Excel hors liste → **archivées** (`archivedAt`), pas supprimées. Resync soldes forcé via `SV_STOCK_FORCE_QTY=1` (`scripts/fix-suivi-stocks.ts`) — le seed normal ne réécrit pas les qté après go-live. |
 
 Lien croisé : [`SPEC.md`](./SPEC.md) · [`docs/intent/module-suivi-tampon.md`](../../intent/module-suivi-tampon.md)
 
@@ -211,7 +212,7 @@ Fichier annexe : `DEVIS-2 PROSPERITY MANAGEMENT (Logo).docx` — contenu = **FAC
 | Factures fichier + Excel alignées selon tableau ci-dessus | FAC-143 ; ligne Excel KOUNDJI 2710261 du 07/10 ; FAC-153 sans fichier (reco) |
 | 2 contrats PDF (meta + GED) | Devis comme entités module |
 | 34 mouvements **OUT** dépenses | Module « caisse » métier / approvisionnement inventé |
-| 32 articles stock | Totaux achats 21300/28050 comme vérité |
+| **18 articles stock** (décision H) | Snapshot Excel ~33 hors liste (archivés) ; totaux achats 21300/28050 |
 
 **Entrées (IN) mouvements :** aucune ligne IN dans le fichier dépenses. V1 = saisie libre IN en UI + **miroir paiement → IN** autorisé (décision **E**) — sans inventer de flux au seed.
 
@@ -280,6 +281,62 @@ Si un futur re-scan contredisait le montant → remettre `monthlyAmount` null + 
 
 ---
 
+## 9. Décision H — stocks inventaire Direction (2026-11-11)
+
+**Source :** confirmation humaine Direction (chat 2026-11-11). Priorité = liste humaine comme inventaire courant.
+
+### Unités (choix seed)
+
+| Article | Unité affichée | Packing |
+|---------|----------------|---------|
+| Crayon noir | **paquet** | 1 paquet = 12 crayons (observation) |
+| Piles bouton / petites | **paire** | 6 paires |
+| Piles AA | **pack** | 3 packs × 4 piles (observation) |
+| Enveloppes 90 g/m² | **pack** | 1 pack = 25 (observation) |
+| Sucre 1 kg | **sachet** | 2 sachets |
+| Autres | **pièce** | quantité unitaire |
+
+Orthographe : « Scotch » (pas « scoche ») ; « Ôte-agrafes » (staple remover).
+
+### Mapping code → libellé → qté
+
+| Code | Libellé | Unité | Qté |
+|------|---------|-------|-----|
+| PAP-010 | Règle pour tracer 30 cm | pièce | 1 |
+| ECR-010 | Crayon noir | paquet | 1 |
+| INF-010 | Souris | pièce | 3 |
+| ECR-001 | Stylo bleu | pièce | 7 |
+| INF-011 | Casque Logitech (appels) | pièce | 2 |
+| INF-012 | Clé USB 4 Go | pièce | 1 |
+| INF-013 | Piles bouton / petites (souris) | paire | 6 |
+| INF-003 | Piles AA | pack | 3 |
+| PAP-011 | Bloc-notes moyen (~20 cm) | pièce | 5 |
+| BUR-007 | Scotch | pièce | 1 |
+| INF-014 | Support / pose ordinateur | pièce | 1 |
+| HYI-008 | Sacs poubelle (petites poubelles) | pièce | 6 |
+| ALI-001 | Sucre 1 kg | sachet | 2 |
+| BUR-010 | Ôte-agrafes | pièce | 1 |
+| PAP-012 | Enveloppes 90 g/m² | pack | 1 |
+| BUR-001 | Agrafeuse | pièce | 1 |
+| HYI-003 | Mouchoirs 200 feuilles | pièce | 7 |
+| INF-015 | PC portable | pièce | 2 |
+
+Codes **réutilisés** depuis Excel quand le sens matchait (ECR-001, BUR-001, BUR-007, ALI-001, HYI-003, HYI-008, INF-003) — libellé / unité / qté mis à jour.
+
+### Ancien inventaire Excel (~33 lignes)
+
+| Action | Codes |
+|--------|-------|
+| **Conservés / mis à jour** | ECR-001, BUR-001, BUR-007, ALI-001, HYI-003, HYI-008, INF-003 |
+| **Archivés** (`archivedAt`) | PAP-001…007 (hors 010–012), ECR-002/003/004/006, BUR-002…005/008, ALI-002/003, HYI-002/004…007, NET-001, INF-001/002, DIV-002 — liste complète `SV_SEED_STOCK_EXCEL_ARCHIVED_CODES` |
+| **Créés** | PAP-010/011/012, ECR-010, BUR-010, INF-010…015 |
+
+Pas de hard delete : historique mouvements éventuel conservé. Soft archive hors inventaire UI (`archivedAt IS NULL` sur la liste).
+
+**Script :** `npx tsx --env-file=.env.local scripts/fix-suivi-stocks.ts` (force qté + archive ; **ne touche pas** Auth).
+
+---
+
 ## Confirmation
 
 - Devis exclus V1 : **oui** (B)  
@@ -288,5 +345,6 @@ Si un futur re-scan contredisait le montant → remettre `monthlyAmount` null + 
 - Miroir paiement → IN : **oui** (E)  
 - Priorité fichier facture : **oui** (A)  
 - Paiements / soldes Direction : **oui** (G)  
+- Stocks inventaire Direction : **oui** (H)  
 - KOUNDJI / contrat ECOSOL / miroir : **clarifiés** (flags review non bloquants)  
 - **Aucune data inventée** dans ce document (compléments Direction explicitement notés ; reports = transfert de dette documenté)

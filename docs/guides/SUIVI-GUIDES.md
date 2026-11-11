@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-10 (Suivi Comptes + clients + anti-natif + GED preview ; voir §8) |
+| Dernière mise à jour | 2026-11-11 (Suivi Stocks CRUD + inventaire Direction H ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-11 — Suivi Stocks : CRUD articles + inventaire Direction (H)
+
+| | |
+|---|---|
+| Quoi | CRUD complet articles `/suivi/stocks` (liste type Commercial, `/nouveau`, fiche, `/edit`, archive soft, mouvements IN/OUT/ADJUST) ; seed aligné **18 articles** confirmation Direction ; Excel hors liste → `archivedAt` ; script `fix-suivi-stocks.ts` |
+| Pourquoi | Snapshot lecture insuffisant ; inventaire Excel obsolète vs quantités Direction |
+| Fichiers | `src/app/(app)/suivi/stocks/**`, `src/actions/suivi/stock.ts`, `src/components/suivi/stock-*.tsx`, `src/lib/suivi/stock.ts`, `seed-data` / `seed-suivi`, migration `archivedAt`, `docs/specs/suivi-tampon/DECISIONS-SEED.md` §9 |
+| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — parcours Stocks (créer / ajuster / archiver) à valider terrain |
+| Routes | `/suivi/stocks` · `/suivi/stocks/nouveau` · `/suivi/stocks/[id]` · `/suivi/stocks/[id]/edit` · `/suivi/stocks/mouvements/nouveau` |
+| Droits | `sv.stock.view` / `sv.stock.manage` (inchangés) |
 
 ### 2026-11-10 — Suivi : Comptes + clients renforcés + anti-UI-native + GED preview
 

@@ -44,6 +44,7 @@ export type SvStockItemMinAggregateOutputType = {
   quantity: number | null
   location: string | null
   observations: string | null
+  archivedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +59,7 @@ export type SvStockItemMaxAggregateOutputType = {
   quantity: number | null
   location: string | null
   observations: string | null
+  archivedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +74,7 @@ export type SvStockItemCountAggregateOutputType = {
   quantity: number
   location: number
   observations: number
+  archivedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -96,6 +99,7 @@ export type SvStockItemMinAggregateInputType = {
   quantity?: true
   location?: true
   observations?: true
+  archivedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +114,7 @@ export type SvStockItemMaxAggregateInputType = {
   quantity?: true
   location?: true
   observations?: true
+  archivedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +129,7 @@ export type SvStockItemCountAggregateInputType = {
   quantity?: true
   location?: true
   observations?: true
+  archivedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -225,6 +231,7 @@ export type SvStockItemGroupByOutputType = {
   quantity: number
   location: string | null
   observations: string | null
+  archivedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: SvStockItemCountAggregateOutputType | null
@@ -262,6 +269,7 @@ export type SvStockItemWhereInput = {
   quantity?: Prisma.IntFilter<"SvStockItem"> | number
   location?: Prisma.StringNullableFilter<"SvStockItem"> | string | null
   observations?: Prisma.StringNullableFilter<"SvStockItem"> | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"SvStockItem"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"SvStockItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SvStockItem"> | Date | string
   movements?: Prisma.SvStockMovementListRelationFilter
@@ -277,6 +285,7 @@ export type SvStockItemOrderByWithRelationInput = {
   quantity?: Prisma.SortOrder
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   observations?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   movements?: Prisma.SvStockMovementOrderByRelationAggregateInput
@@ -295,6 +304,7 @@ export type SvStockItemWhereUniqueInput = Prisma.AtLeast<{
   quantity?: Prisma.IntFilter<"SvStockItem"> | number
   location?: Prisma.StringNullableFilter<"SvStockItem"> | string | null
   observations?: Prisma.StringNullableFilter<"SvStockItem"> | string | null
+  archivedAt?: Prisma.DateTimeNullableFilter<"SvStockItem"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"SvStockItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SvStockItem"> | Date | string
   movements?: Prisma.SvStockMovementListRelationFilter
@@ -310,6 +320,7 @@ export type SvStockItemOrderByWithAggregationInput = {
   quantity?: Prisma.SortOrder
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   observations?: Prisma.SortOrderInput | Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SvStockItemCountOrderByAggregateInput
@@ -332,6 +343,7 @@ export type SvStockItemScalarWhereWithAggregatesInput = {
   quantity?: Prisma.IntWithAggregatesFilter<"SvStockItem"> | number
   location?: Prisma.StringNullableWithAggregatesFilter<"SvStockItem"> | string | null
   observations?: Prisma.StringNullableWithAggregatesFilter<"SvStockItem"> | string | null
+  archivedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"SvStockItem"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SvStockItem"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"SvStockItem"> | Date | string
 }
@@ -346,6 +358,7 @@ export type SvStockItemCreateInput = {
   quantity?: number
   location?: string | null
   observations?: string | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   movements?: Prisma.SvStockMovementCreateNestedManyWithoutItemInput
@@ -361,6 +374,7 @@ export type SvStockItemUncheckedCreateInput = {
   quantity?: number
   location?: string | null
   observations?: string | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   movements?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutItemInput
@@ -376,6 +390,7 @@ export type SvStockItemUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observations?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   movements?: Prisma.SvStockMovementUpdateManyWithoutItemNestedInput
@@ -391,6 +406,7 @@ export type SvStockItemUncheckedUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observations?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   movements?: Prisma.SvStockMovementUncheckedUpdateManyWithoutItemNestedInput
@@ -406,6 +422,7 @@ export type SvStockItemCreateManyInput = {
   quantity?: number
   location?: string | null
   observations?: string | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -420,6 +437,7 @@ export type SvStockItemUpdateManyMutationInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observations?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -434,6 +452,7 @@ export type SvStockItemUncheckedUpdateManyInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observations?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -448,6 +467,7 @@ export type SvStockItemCountOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   location?: Prisma.SortOrder
   observations?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -466,6 +486,7 @@ export type SvStockItemMaxOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   location?: Prisma.SortOrder
   observations?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -480,6 +501,7 @@ export type SvStockItemMinOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   location?: Prisma.SortOrder
   observations?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -517,6 +539,7 @@ export type SvStockItemCreateWithoutMovementsInput = {
   quantity?: number
   location?: string | null
   observations?: string | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -531,6 +554,7 @@ export type SvStockItemUncheckedCreateWithoutMovementsInput = {
   quantity?: number
   location?: string | null
   observations?: string | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -561,6 +585,7 @@ export type SvStockItemUpdateWithoutMovementsInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observations?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -575,6 +600,7 @@ export type SvStockItemUncheckedUpdateWithoutMovementsInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   observations?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -620,6 +646,7 @@ export type SvStockItemSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   quantity?: boolean
   location?: boolean
   observations?: boolean
+  archivedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   movements?: boolean | Prisma.SvStockItem$movementsArgs<ExtArgs>
@@ -636,6 +663,7 @@ export type SvStockItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   quantity?: boolean
   location?: boolean
   observations?: boolean
+  archivedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["svStockItem"]>
@@ -650,6 +678,7 @@ export type SvStockItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   quantity?: boolean
   location?: boolean
   observations?: boolean
+  archivedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["svStockItem"]>
@@ -664,11 +693,12 @@ export type SvStockItemSelectScalar = {
   quantity?: boolean
   location?: boolean
   observations?: boolean
+  archivedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SvStockItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "family" | "subFamily" | "label" | "unit" | "quantity" | "location" | "observations" | "createdAt" | "updatedAt", ExtArgs["result"]["svStockItem"]>
+export type SvStockItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "family" | "subFamily" | "label" | "unit" | "quantity" | "location" | "observations" | "archivedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["svStockItem"]>
 export type SvStockItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   movements?: boolean | Prisma.SvStockItem$movementsArgs<ExtArgs>
   _count?: boolean | Prisma.SvStockItemCountOutputTypeDefaultArgs<ExtArgs>
@@ -691,6 +721,10 @@ export type $SvStockItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
     quantity: number
     location: string | null
     observations: string | null
+    /**
+     * Soft archive — hors inventaire courant (ex. lignes Excel remplacées)
+     */
+    archivedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["svStockItem"]>
@@ -1126,6 +1160,7 @@ export interface SvStockItemFieldRefs {
   readonly quantity: Prisma.FieldRef<"SvStockItem", 'Int'>
   readonly location: Prisma.FieldRef<"SvStockItem", 'String'>
   readonly observations: Prisma.FieldRef<"SvStockItem", 'String'>
+  readonly archivedAt: Prisma.FieldRef<"SvStockItem", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"SvStockItem", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"SvStockItem", 'DateTime'>
 }

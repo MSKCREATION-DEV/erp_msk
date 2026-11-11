@@ -8,6 +8,7 @@ import {
   SV_SEED_INVOICES,
   SV_SEED_MOVEMENTS,
   SV_SEED_STOCK,
+  SV_SEED_STOCK_EXCEL_ARCHIVED_CODES,
 } from "../src/lib/suivi/seed-data";
 import { seedSuiviGed } from "../src/lib/suivi/seed-ged";
 import {
@@ -201,25 +202,118 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
     `✓ Sv mouvements OUT ${moveCount} (rattachés compte physique — solde peut être négatif sans ouverture)`,
   );
 
-  let stockCount = 0;
+  // Stocks — inventaire Direction (décision H) : upsert méta + archive Excel hors liste.
+  // Quantités : posées à la création ; resync soldes seulement si SV_STOCK_FORCE_QTY=1
+  // (script fix-suivi-stocks) pour ne pas écraser les mouvements opérationnels.
+  const forceStockQty = process.env.SV_STOCK_FORCE_QTY === "1";
+  const activeCodes = new Set(SV_SEED_STOCK.map((s) => s.code));
+  let stockCreated = 0;
+  let stockUpdated = 0;
+  let stockQtySynced = 0;
   for (const s of SV_SEED_STOCK) {
     const existing = await prisma.svStockItem.findUnique({
       where: { code: s.code },
     });
-    if (existing) continue;
-    await prisma.svStockItem.create({
+    if (existing) {
+      const qtyChanged = forceStockQty && existing.quantity !== s.quantity;
+      await prisma.svStockItem.update({
+        where: { id: existing.id },
+        data: {
+          family: s.family,
+          label: s.label,
+          unit: s.unit,
+          ...(qtyChanged ? { quantity: s.quantity } : {}),
+          location: s.location ?? existing.location,
+          observations: s.observations ?? existing.observations,
+          archivedAt: null,
+        },
+      });
+      if (qtyChanged) {
+        await prisma.svStockMovement.create({
+          data: {
+            itemId: existing.id,
+            kind: "ADJUST",
+            quantity: Math.abs(s.quantity - existing.quantity),
+            note: "Inventaire Direction 2026-11-11 (décision H)",
+            sourceRef: "seed:decision-H",
+            createdById: actor.id,
+          },
+        });
+        stockQtySynced += 1;
+      }
+      stockUpdated += 1;
+      continue;
+    }
+    const row = await prisma.svStockItem.create({
       data: {
         code: s.code,
         family: s.family,
         label: s.label,
         unit: s.unit,
         quantity: s.quantity,
-        location: s.location,
+        location: s.location ?? null,
+        observations: s.observations ?? null,
       },
     });
-    stockCount += 1;
+    if (s.quantity > 0) {
+      await prisma.svStockMovement.create({
+        data: {
+          itemId: row.id,
+          kind: "ADJUST",
+          quantity: s.quantity,
+          note: "Ouverture inventaire Direction 2026-11-11 (décision H)",
+          sourceRef: "seed:decision-H",
+          createdById: actor.id,
+        },
+      });
+    }
+    stockCreated += 1;
   }
-  console.log(`✓ Sv stocks ${stockCount}`);
+
+  let stockArchived = 0;
+  const archiveAt = new Date("2026-11-11T12:00:00.000Z");
+  for (const code of SV_SEED_STOCK_EXCEL_ARCHIVED_CODES) {
+    if (activeCodes.has(code)) continue;
+    const row = await prisma.svStockItem.findUnique({ where: { code } });
+    if (!row || row.archivedAt) continue;
+    await prisma.svStockItem.update({
+      where: { id: row.id },
+      data: {
+        archivedAt: archiveAt,
+        observations: [
+          row.observations,
+          "Archivé : hors inventaire Direction 2026-11-11 (décision H / Excel snapshot)",
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      },
+    });
+    stockArchived += 1;
+  }
+  // Tout article actif hors liste courante (sécurité)
+  const stray = await prisma.svStockItem.findMany({
+    where: { archivedAt: null, code: { notIn: [...activeCodes] } },
+  });
+  for (const row of stray) {
+    await prisma.svStockItem.update({
+      where: { id: row.id },
+      data: {
+        archivedAt: archiveAt,
+        observations: [
+          row.observations,
+          "Archivé : hors inventaire Direction 2026-11-11 (décision H)",
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      },
+    });
+    stockArchived += 1;
+  }
+  console.log(
+    `✓ Sv stocks créés ${stockCreated} · méta ${stockUpdated} · qty forcées ${stockQtySynced} · archivés ${stockArchived}${
+      forceStockQty ? " (SV_STOCK_FORCE_QTY=1)" : ""
+    }`,
+  );
 
   // Task 14 — dépôt GED contrats + factures (Document / DocumentLink)
   await seedSuiviGed(prisma, actor.id);

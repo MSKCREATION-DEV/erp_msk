@@ -12,16 +12,42 @@ import { Button } from "@/components/ui/button";
 import { ChoiceCards } from "@/components/ui/choice-cards";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 
-type ItemOpt = { id: string; code: string; label: string; quantity: number };
+type ItemOpt = {
+  id: string;
+  code: string;
+  label: string;
+  quantity: number;
+  unit: string;
+};
 
-export function SvStockMoveForm({ items }: { items: ItemOpt[] }) {
+export function SvStockMoveForm({
+  items,
+  defaultItemId,
+}: {
+  items: ItemOpt[];
+  defaultItemId?: string;
+}) {
   const [state, formAction, pending] = useActionState<
     SvStockActionState,
     FormData
   >(createSvStockMovement, null);
   const today = new Date().toISOString().slice(0, 10);
-  const [itemId, setItemId] = useState<string | null>(null);
+  const [itemId, setItemId] = useState<string | null>(defaultItemId ?? null);
   const [kind, setKind] = useState<"IN" | "OUT" | "ADJUST">("OUT");
+  const selected = items.find((i) => i.id === itemId);
+
+  const qtyLabel =
+    kind === "ADJUST" ? "Nouvelle quantité (absolue)" : "Quantité";
+  const qtyPlaceholder =
+    kind === "ADJUST"
+      ? selected
+        ? `Actuel : ${selected.quantity} ${selected.unit}`
+        : "Niveau cible"
+      : "Ex. 2";
+
+  const cancelHref = itemId
+    ? `/suivi/stocks/${itemId}`
+    : "/suivi/stocks";
 
   return (
     <form action={formAction}>
@@ -30,19 +56,21 @@ export function SvStockMoveForm({ items }: { items: ItemOpt[] }) {
         footer={
           <div className="flex flex-wrap justify-end gap-3">
             <Link
-              href="/suivi/stocks"
+              href={cancelHref}
               className="inline-flex h-11 items-center rounded-lg border border-msk-ink/15 px-4 text-sm font-medium hover:bg-msk-chalk"
             >
               Annuler
             </Link>
             <Button type="submit" disabled={pending || !itemId}>
-              {pending ? "Enregistrement…" : "Enregistrer"}
+              {pending ? "Enregistrement…" : "Enregistrer le mouvement"}
             </Button>
           </div>
         }
       >
         {state && !state.ok ? (
-          <p className="mb-4 text-sm text-msk-coral">{state.error}</p>
+          <p className="mb-4 rounded-lg border border-msk-coral/30 bg-msk-coral/5 px-3 py-2 text-sm text-msk-coral">
+            {state.error}
+          </p>
         ) : null}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div className="sm:col-span-2">
@@ -54,7 +82,7 @@ export function SvStockMoveForm({ items }: { items: ItemOpt[] }) {
               options={items.map((i) => ({
                 value: i.id,
                 label: `${i.code} — ${i.label}`,
-                description: `Stock ${i.quantity}`,
+                description: `Stock ${i.quantity} ${i.unit}`,
               }))}
               placeholder="Choisir un article…"
               modalTitle="Article stock"
@@ -71,7 +99,11 @@ export function SvStockMoveForm({ items }: { items: ItemOpt[] }) {
                 disabled={pending}
                 columns={3}
                 options={[
-                  { value: "IN", label: "Entrée", description: "Ajoute au stock." },
+                  {
+                    value: "IN",
+                    label: "Entrée",
+                    description: "Ajoute au stock.",
+                  },
                   {
                     value: "OUT",
                     label: "Sortie",
@@ -80,7 +112,7 @@ export function SvStockMoveForm({ items }: { items: ItemOpt[] }) {
                   {
                     value: "ADJUST",
                     label: "Ajustement",
-                    description: "Quantité absolue.",
+                    description: "Quantité absolue cible.",
                   },
                 ]}
               />
@@ -88,14 +120,21 @@ export function SvStockMoveForm({ items }: { items: ItemOpt[] }) {
           </div>
           <div>
             <FieldLabel htmlFor="quantity" required>
-              Quantité
+              {qtyLabel}
             </FieldLabel>
             <input
               id="quantity"
               name="quantity"
               type="number"
-              min={1}
+              min={kind === "ADJUST" ? 0 : 1}
               required
+              placeholder={qtyPlaceholder}
+              defaultValue={
+                kind === "ADJUST" && selected
+                  ? String(selected.quantity)
+                  : undefined
+              }
+              key={`${kind}-${itemId ?? "none"}`}
               className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
               disabled={pending}
             />
@@ -119,6 +158,7 @@ export function SvStockMoveForm({ items }: { items: ItemOpt[] }) {
             <input
               id="note"
               name="note"
+              placeholder="Motif, destinataire…"
               className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
               disabled={pending}
             />

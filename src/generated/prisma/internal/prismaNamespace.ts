@@ -9465,6 +9465,7 @@ export const SvStockItemScalarFieldEnum = {
   quantity: 'quantity',
   location: 'location',
   observations: 'observations',
+  archivedAt: 'archivedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
