@@ -64,17 +64,27 @@
 
 Barre filtres UI : segment Jour/Semaine/Mois/Année + stepper date (← → + choix calendrier) + menus Compte / Catégorie (« Tous » / « Toutes » en placeholder, pas de pastille trompeuse).
 
-Liens listes : `/suivi/mouvements?direction=&from=&to=&compte=&categorie=` · `/suivi/factures?reste=1` · `/suivi/charges?impaye=1` · `/suivi/charges?impaye=1&echeance=retard|bientot` · `/suivi/comptes` · `/suivi/clients`.
+Liens listes : `/suivi/mouvements?direction=&from=&to=&compte=&categorie=` · `/suivi/factures?reste=1` · `/suivi/charges?impaye=1` · `/suivi/charges?impaye=1&type=…` · `/suivi/charges?echeance=retard|bientot` · `/suivi/comptes` · `/suivi/clients`.
 
-**Différenciation UI :** carte **Factures clients** (anneau bleu) ≠ carte **Charges fournisseurs** (anneau encre) — libellés et liens distincts, pas de KPI fusionné.
+**Différenciation UI :** carte **Factures clients** (bordure bleue) ≠ carte **Charges fournisseurs** (bordure encre) — libellés et liens distincts, pas de KPI fusionné.
+
+### Alertes « À traiter »
+
+| Type | Critère | Sévérité |
+|------|---------|----------|
+| Charge en retard | ouvert + reste > 0 + échéance passée | urgent |
+| Charge bientôt due | idem + échéance ≤ **7 jours** | attention |
+| Dette client critique | reste ≥ **100 000** F (≥ 500 k = urgent) | attention / urgent |
+
+Liens directs vers fiche charge / client. FR simple uniquement.
 
 ---
 
 ## Graphiques livrés
 
 1. **Aire** — entrées / sorties sur la période (buckets)
-2. **Donut** — dépenses mouvements par famille (cliquable → mouvements filtrés) — distinct des charges fournisseurs
+2. **Donut** — dépenses caisse par famille (cliquable → mouvements filtrés) — **≠** répartition charges fournisseurs
 3. **Barres** comparatif — période courante vs précédente (entrées / sorties)
-4. **Cartes** — soldes comptes + estimation mensuelle + factures clients + charges + alertes
+4. **Cartes** — soldes comptes + estimation mensuelle + charges + factures clients + alertes
 
 Lib : **recharts** + `ChartContainer` (déjà CRM / Commercial).
