@@ -69,7 +69,7 @@ export default async function AComptabiliserPage({
     where: {
       status: { in: ["EMISE", "PARTIELLEMENT_PAYEE", "PAYEE"] },
     },
-    orderBy: sort.orderBy as Prisma.ComInvoiceOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.ComInvoiceOrderByWithRelationInput[],
     take: 100,
     include: {
       client: { select: { name: true } },

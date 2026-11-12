@@ -66,7 +66,7 @@ export default async function StocksArticlesPage({
   const total = await prisma.stkArticle.count();
   const page = clampPage(requestedPage, total, pageSize);
   const articles = await prisma.stkArticle.findMany({
-    orderBy: sort.orderBy as Prisma.StkArticleOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.StkArticleOrderByWithRelationInput[],
     skip: pageSkip(page, pageSize),
     take: pageSize,
   });

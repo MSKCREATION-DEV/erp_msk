@@ -59,7 +59,7 @@ export default async function ComptabiliteEcrituresPage({
       ...(journalId ? { journalId } : {}),
       ...(status === "DRAFT" || status === "VALIDATED" ? { status } : {}),
     },
-    orderBy: sort.orderBy as Prisma.CptEntryOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.CptEntryOrderByWithRelationInput[],
     take: 200,
     include: {
       journal: { select: { code: true } },

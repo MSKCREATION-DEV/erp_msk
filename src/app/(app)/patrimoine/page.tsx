@@ -60,7 +60,7 @@ export default async function PatrimoinePage({
 
   const assets = await prisma.patAsset.findMany({
     take: 100,
-    orderBy: sort.orderBy as Prisma.PatAssetOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.PatAssetOrderByWithRelationInput[],
     include: {
       assignedTo: { select: { firstName: true, lastName: true } },
     },

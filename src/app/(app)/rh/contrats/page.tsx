@@ -61,7 +61,7 @@ export default async function RhContratsPage({
 
   const contracts = await prisma.rhContract.findMany({
     where: statusFilter ? { status: statusFilter } : undefined,
-    orderBy: sort.orderBy as Prisma.RhContractOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.RhContractOrderByWithRelationInput[],
     take: 300,
     include: {
       employee: { select: { firstName: true, lastName: true } },

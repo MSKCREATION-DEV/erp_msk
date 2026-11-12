@@ -62,7 +62,7 @@ export default async function ProjetsPage({
 
   const projects = await prisma.prjProject.findMany({
     take: 100,
-    orderBy: sort.orderBy as Prisma.PrjProjectOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.PrjProjectOrderByWithRelationInput[],
     include: {
       owner: { select: { firstName: true, lastName: true } },
       _count: { select: { expenses: true } },

@@ -53,7 +53,7 @@ export default async function StocksMouvementsPage({
 
   const moves = await prisma.stkMovement.findMany({
     take: 100,
-    orderBy: sort.orderBy as Prisma.StkMovementOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.StkMovementOrderByWithRelationInput[],
     include: {
       article: true,
       createdBy: { select: { firstName: true, lastName: true } },

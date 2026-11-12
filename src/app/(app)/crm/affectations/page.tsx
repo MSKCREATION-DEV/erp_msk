@@ -8,6 +8,7 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { canReassignCrmDeal } from "@/lib/crm/scope";
 import { listCommercialRoster } from "@/lib/crm/team";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import { STAGE_LABELS, STAGE_ORDER } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { firstSearchParam } from "@/lib/crm/scope-period";
@@ -101,73 +102,82 @@ export default async function CrmAffectationsPage({
     hsort: recentSort.key,
     hdir: recentSort.dir,
   };
-  const [commercials, assignableDeals, pending, recent] = await Promise.all([
-    listCommercialRoster({ mode: "assign", extraIds: [user.id] }).then((rows) =>
-      rows.map((u) => ({
+  const [commercials, assignableDeals, pending, recent] = await runSeries([
+    async () => {
+      const rows = await listCommercialRoster({
+        mode: "assign",
+        extraIds: [user.id],
+      });
+      return rows.map((u) => ({
         id: u.id,
         firstName: u.firstName,
         lastName: u.lastName,
-      })),
-    ),
-    prisma.crmOpportunity.findMany({
-      where: {
-        stage: { in: [...OPEN_STAGES, "NEGOCIATION"] },
-        comClients: { none: {} },
-      },
-      select: {
-        id: true,
-        ownerId: true,
-        organization: { select: { name: true } },
-        owner: { select: { firstName: true, lastName: true } },
-      },
-      orderBy: { updatedAt: "desc" },
-      take: 500,
-    }),
-    prisma.crmAssignmentRequest.findMany({
-      where: { status: "PENDING" },
-      orderBy:
-        sort.orderBy as Prisma.CrmAssignmentRequestOrderByWithRelationInput,
-      include: {
-        requester: { select: { firstName: true, lastName: true, email: true } },
-        opportunity: {
-          select: {
-            id: true,
-            stage: true,
-            title: true,
-            ownerId: true,
-            organization: { select: { name: true } },
-            owner: { select: { firstName: true, lastName: true } },
+      }));
+    },
+    () =>
+      prisma.crmOpportunity.findMany({
+        where: {
+          stage: { in: [...OPEN_STAGES, "NEGOCIATION"] },
+          comClients: { none: {} },
+        },
+        select: {
+          id: true,
+          ownerId: true,
+          organization: { select: { name: true } },
+          owner: { select: { firstName: true, lastName: true } },
+        },
+        orderBy: { updatedAt: "desc" },
+        take: 500,
+      }),
+    () =>
+      prisma.crmAssignmentRequest.findMany({
+        where: { status: "PENDING" },
+        orderBy:
+          sort.orderBy as Prisma.CrmAssignmentRequestOrderByWithRelationInput[],
+        include: {
+          requester: {
+            select: { firstName: true, lastName: true, email: true },
+          },
+          opportunity: {
+            select: {
+              id: true,
+              stage: true,
+              title: true,
+              ownerId: true,
+              organization: { select: { name: true } },
+              owner: { select: { firstName: true, lastName: true } },
+            },
           },
         },
-      },
-      take: 100,
-    }),
-    prisma.crmAssignmentRequest.findMany({
-      where: {
-        status: {
-          in:
-            statusFilter === "APPROVED" ||
-            statusFilter === "REJECTED" ||
-            statusFilter === "CANCELLED"
-              ? [statusFilter]
-              : ["APPROVED", "REJECTED", "CANCELLED"],
-        },
-      },
-      orderBy:
-        recentSort.orderBy as Prisma.CrmAssignmentRequestOrderByWithRelationInput,
-      take: 50,
-      include: {
-        requester: { select: { firstName: true, lastName: true } },
-        resolvedBy: { select: { firstName: true, lastName: true } },
-        opportunity: {
-          select: {
-            id: true,
-            organization: { select: { name: true } },
-            owner: { select: { firstName: true, lastName: true } },
+        take: 100,
+      }),
+    () =>
+      prisma.crmAssignmentRequest.findMany({
+        where: {
+          status: {
+            in:
+              statusFilter === "APPROVED" ||
+              statusFilter === "REJECTED" ||
+              statusFilter === "CANCELLED"
+                ? [statusFilter]
+                : ["APPROVED", "REJECTED", "CANCELLED"],
           },
         },
-      },
-    }),
+        orderBy:
+          recentSort.orderBy as Prisma.CrmAssignmentRequestOrderByWithRelationInput[],
+        take: 50,
+        include: {
+          requester: { select: { firstName: true, lastName: true } },
+          resolvedBy: { select: { firstName: true, lastName: true } },
+          opportunity: {
+            select: {
+              id: true,
+              organization: { select: { name: true } },
+              owner: { select: { firstName: true, lastName: true } },
+            },
+          },
+        },
+      }),
   ]);
 
   const prospectOpts = assignableDeals.map((d) => ({

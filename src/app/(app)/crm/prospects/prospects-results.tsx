@@ -284,7 +284,7 @@ export async function ProspectsResults({
   const deals = await prisma.crmOpportunity.findMany({
     where,
     include: dealInclude,
-    orderBy: sort.orderBy as Prisma.CrmOpportunityOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.CrmOpportunityOrderByWithRelationInput[],
     skip: pageSkip(page, pageSize),
     take: pageSize,
   });

@@ -61,7 +61,7 @@ export default async function ComptabiliteJournauxPage({
   const total = await prisma.cptJournal.count();
   const page = clampPage(requestedPage, total, pageSize);
   const journals = await prisma.cptJournal.findMany({
-    orderBy: sort.orderBy as Prisma.CptJournalOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.CptJournalOrderByWithRelationInput[],
     include: { _count: { select: { entries: true } } },
     skip: pageSkip(page, pageSize),
     take: pageSize,

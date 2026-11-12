@@ -1,12 +1,16 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import {
   buildSortHref,
   sortAriaLabel,
   type SortDir,
 } from "@/lib/list/sort";
 import { cn } from "@/lib/utils";
-import { SortableThIcon } from "@/components/ui/sortable-th-icon";
+import {
+  LinkPendingBusy,
+  SortIconSlot,
+} from "@/components/ui/sort-pending-indicator";
 
 type SortableThProps = {
   label: string;
@@ -27,7 +31,7 @@ type SortableThProps = {
 
 /**
  * En-tête de colonne triable — URL `?sort=` + `?dir=` (Server Components).
- * Link + `useLinkStatus` (prefetch=false, scroll=false) pour feedback immédiat.
+ * Link `scroll={false}` + `prefetch={false}` + indicateur `useLinkStatus`.
  */
 export function SortableTh({
   label,
@@ -54,7 +58,25 @@ export function SortableTh({
     dirKey: dirParam,
   });
 
-  const mode = !active ? "idle" : dir === "asc" ? "asc" : "desc";
+  const Icon = !active
+    ? ArrowUpDown
+    : dir === "asc"
+      ? ArrowUp
+      : ArrowDown;
+
+  const idleIcon = (
+    <span
+      className={cn(
+        "inline-flex h-5 w-5 shrink-0 items-center justify-center rounded border transition",
+        active
+          ? "border-msk-blue/30 bg-msk-blue/10 text-msk-blue"
+          : "border-msk-ink/15 bg-white text-msk-ink/50 group-hover:border-msk-blue/25 group-hover:text-msk-blue",
+      )}
+      aria-hidden
+    >
+      <Icon className="h-3 w-3" strokeWidth={2.5} />
+    </span>
+  );
 
   return (
     <th
@@ -83,8 +105,10 @@ export function SortableTh({
           align === "right" && "justify-end",
         )}
       >
-        <span className="truncate tracking-wide uppercase">{label}</span>
-        <SortableThIcon mode={mode} />
+        <LinkPendingBusy className="inline-flex max-w-full items-center gap-1.5">
+          <span className="truncate tracking-wide uppercase">{label}</span>
+          <SortIconSlot idle={idleIcon} />
+        </LinkPendingBusy>
       </Link>
     </th>
   );

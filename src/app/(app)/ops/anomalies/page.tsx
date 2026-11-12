@@ -78,7 +78,7 @@ export default async function OpsAnomaliesPage({
 
   const tickets = await prisma.opsTicket.findMany({
     take: 100,
-    orderBy: sort.orderBy as Prisma.OpsTicketOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.OpsTicketOrderByWithRelationInput[],
     include: {
       assignedTo: { select: { firstName: true, lastName: true } },
     },

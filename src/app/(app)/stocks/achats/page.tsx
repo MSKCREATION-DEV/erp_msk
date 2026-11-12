@@ -59,7 +59,7 @@ export default async function StocksAchatsPage({
 
   const purchases = await prisma.stkPurchase.findMany({
     take: 100,
-    orderBy: sort.orderBy as Prisma.StkPurchaseOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.StkPurchaseOrderByWithRelationInput[],
     include: {
       createdBy: { select: { firstName: true, lastName: true } },
       _count: { select: { lines: true } },
