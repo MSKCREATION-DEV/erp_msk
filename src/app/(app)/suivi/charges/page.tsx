@@ -15,6 +15,12 @@ import {
   SV_EXPENSE_STATUS_TONE,
 } from "@/lib/suivi/labels";
 import {
+  expenseDueBucket,
+  formatExpenseDueAlertDetail,
+  formatSvDateFr,
+  SV_EXPENSE_DUE_SOON_DAYS,
+} from "@/lib/suivi/dashboard-stats";
+import {
   clampPage,
   DEFAULT_PAGE_SIZE,
   pageSkip,
@@ -48,6 +54,7 @@ const CHARGE_SORT_COLUMNS = {
   totalTtc: (dir: SortDir) => ({ totalTtc: dir }),
   amountPaid: (dir: SortDir) => ({ amountPaid: dir }),
   issuedAt: (dir: SortDir) => ({ issuedAt: dir }),
+  dueAt: (dir: SortDir) => ({ dueAt: dir }),
 } satisfies SortColumnMap<
   | "number"
   | "vendor"
@@ -56,6 +63,7 @@ const CHARGE_SORT_COLUMNS = {
   | "totalTtc"
   | "amountPaid"
   | "issuedAt"
+  | "dueAt"
 >;
 
 const UNPAID: SvInvoiceStatus[] = ["BROUILLON", "EMISE", "PARTIELLE"];
@@ -105,7 +113,7 @@ export default async function SuiviChargesPage({
             <SvChargesToolbar />
           </Suspense>
         </div>
-        <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={8} cols={7} />}>
+        <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={8} cols={8} />}>
           <ChargesResults searchParams={searchParams} canManage={canManage} />
         </Suspense>
       </Surface>
@@ -150,7 +158,9 @@ async function ChargesResults({
   });
 
   const now = new Date();
-  const soon = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const soon = new Date(
+    now.getTime() + SV_EXPENSE_DUE_SOON_DAYS * 24 * 60 * 60 * 1000,
+  );
   const dueFilter: Prisma.SvExpenseInvoiceWhereInput | null =
     echeance === "retard"
       ? { dueAt: { lt: now }, status: { in: UNPAID } }
@@ -270,6 +280,15 @@ async function ChargesResults({
                 searchParams={listParams}
               />
               <SortableTh
+                label="Échéance"
+                column="dueAt"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/suivi/charges"
+                searchParams={listParams}
+                defaultDir="asc"
+              />
+              <SortableTh
                 label="TTC"
                 column="totalTtc"
                 sort={sort.key}
@@ -295,6 +314,12 @@ async function ChargesResults({
           <tbody className="divide-y divide-msk-ink/6">
             {rows.map((inv) => {
               const reste = invoiceReste(inv);
+              const due = inv.dueAt ?? inv.issuedAt;
+              const bucket = expenseDueBucket(inv, now);
+              const dueHint =
+                due && bucket
+                  ? formatExpenseDueAlertDetail(due, now, bucket)
+                  : null;
               return (
                 <ClickableRowLink
                   key={inv.id}
@@ -308,9 +333,37 @@ async function ChargesResults({
                   </td>
                   <td className="px-4 py-3">{inv.vendorName}</td>
                   <td className="px-4 py-3">
-                    <Badge tone={SV_EXPENSE_STATUS_TONE[inv.status]}>
-                      {SV_EXPENSE_STATUS_LABEL[inv.status]}
-                    </Badge>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <Badge tone={SV_EXPENSE_STATUS_TONE[inv.status]}>
+                        {SV_EXPENSE_STATUS_LABEL[inv.status]}
+                      </Badge>
+                      {bucket === "retard" ? (
+                        <Badge tone="coral" title={dueHint ?? undefined}>
+                          Retard
+                        </Badge>
+                      ) : null}
+                      {bucket === "bientot" ? (
+                        <Badge tone="blue" title={dueHint ?? undefined}>
+                          Bientôt
+                        </Badge>
+                      ) : null}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    {due ? (
+                      <span
+                        className={`tabular-nums ${
+                          bucket === "retard"
+                            ? "font-medium text-msk-coral"
+                            : ""
+                        }`}
+                        title={dueHint ?? undefined}
+                      >
+                        {formatSvDateFr(due)}
+                      </span>
+                    ) : (
+                      <span className="text-msk-ink/35">—</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
                     {formatSvXof(inv.totalTtc)}

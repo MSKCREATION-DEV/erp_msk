@@ -12,10 +12,25 @@ import {
   inferAccountKindFromPaymentMethod,
 } from "@/lib/suivi/accounts";
 import { uploadSvExpenseBytes } from "@/lib/suivi/ged";
+import {
+  parseExpenseDocument,
+  type ExpenseOcrFields,
+} from "@/lib/suivi/expense-ocr";
 import { redirectWithFlash } from "@/lib/toast/flash";
 import type { SvExpenseCategory } from "@/generated/prisma/client";
 
 export type SvExpenseActionState = { ok: false; error: string } | null;
+
+export type SvExpenseOcrState =
+  | {
+      ok: true;
+      fields: ExpenseOcrFields;
+      detected: string;
+      source: string;
+      confidence: string;
+      warnings: string[];
+    }
+  | { ok: false; error: string };
 
 const CATEGORIES = [
   "ORANGE_INTERNET",
@@ -76,6 +91,54 @@ function parseOptionalDate(raw: string | undefined): Date | null {
   if (!raw) return null;
   const d = new Date(raw);
   return Number.isNaN(d.getTime()) ? null : d;
+}
+
+export async function parseSvExpenseDocumentAction(
+  formData: FormData,
+): Promise<SvExpenseOcrState> {
+  const user = await requireUser();
+  if (!hasPermission(user, "sv.expenses.manage") && !user.isSuperAdmin) {
+    return { ok: false, error: "Permission refusée." };
+  }
+
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size <= 0) {
+    return { ok: false, error: "Choisissez un PDF ou une image à lire." };
+  }
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return { ok: false, error: "Fichier trop volumineux (max 12 Mo)." };
+  }
+  const mime = file.type || "application/octet-stream";
+  if (!ALLOWED_MIME.has(mime)) {
+    return {
+      ok: false,
+      error: "Type de fichier non autorisé (PDF ou image).",
+    };
+  }
+
+  const categoryRaw = String(formData.get("categoryHint") ?? "");
+  const categoryHint = CATEGORIES.includes(
+    categoryRaw as (typeof CATEGORIES)[number],
+  )
+    ? (categoryRaw as SvExpenseCategory)
+    : undefined;
+
+  const bytes = Buffer.from(await file.arrayBuffer());
+  const result = await parseExpenseDocument({
+    bytes,
+    mime,
+    categoryHint,
+  });
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    fields: result.fields,
+    detected: result.detected,
+    source: result.source,
+    confidence: result.confidence,
+    warnings: result.warnings,
+  };
 }
 
 export async function createSvExpenseInvoice(

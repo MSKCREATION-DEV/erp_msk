@@ -50,6 +50,7 @@ next-env.d.ts
 .claude/
 .devin/
 tmp/
+*.traineddata
 
 # Références métier / données sensibles — hors dépôt (ne jamais versionner)
 # Contrats, paie, attestations, règlements nominatifs

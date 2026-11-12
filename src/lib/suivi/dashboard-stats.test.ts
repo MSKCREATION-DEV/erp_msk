@@ -6,6 +6,9 @@ import {
   computeExpenseKpis,
   computeRunRate,
   expenseByFamily,
+  expenseDueBucket,
+  formatExpenseDueAlertDetail,
+  formatSvDateFr,
   sumFlows,
   type SvExpenseRow,
   type SvMoveRow,
@@ -154,23 +157,56 @@ const expenseRows: SvExpenseRow[] = [
   },
 ];
 
-const expKpis = computeExpenseKpis(expenseRows, [{ amount: 79_113 }]);
+const nowTb = new Date("2026-11-12T12:00:00Z");
+const expKpis = computeExpenseKpis(expenseRows, [{ amount: 79_113 }], nowTb);
 assert.equal(expKpis.unpaidCount, 2);
 assert.equal(expKpis.paidCount, 1);
 assert.equal(expKpis.resteAPayer, 447_615);
 assert.equal(expKpis.amountPaidPeriod, 79_113);
 assert.equal(expKpis.byCategory[0]!.category, "LOYER");
+assert.equal(expKpis.overdueCount, 1);
+assert.equal(expKpis.overdueAmount, 400_000);
+assert.equal(expKpis.dueSoonCount, 1);
+assert.equal(expKpis.dueSoonAmount, 47_615);
+
+assert.equal(formatSvDateFr(new Date("2026-11-13T00:00:00Z")), "13/11/2026");
+assert.equal(expenseDueBucket(expenseRows[0]!, nowTb), "retard");
+assert.equal(expenseDueBucket(expenseRows[1]!, nowTb), "bientot");
+assert.equal(expenseDueBucket(expenseRows[2]!, nowTb), null);
+assert.equal(
+  formatExpenseDueAlertDetail(
+    expenseRows[0]!.dueAt!,
+    nowTb,
+    "retard",
+  ),
+  "Échéance le 07/11/2026 · 6 jours de retard",
+);
+assert.equal(
+  formatExpenseDueAlertDetail(
+    expenseRows[1]!.dueAt!,
+    nowTb,
+    "bientot",
+  ),
+  "Échéance le 13/11/2026 · dans 1 jour",
+);
 
 const alerts = buildSvDashboardAlerts({
-  now: new Date("2026-11-12T12:00:00Z"),
+  now: nowTb,
   expenses: expenseRows,
   debtors: [
     { id: "c1", name: "ECOSOL", restant: 153_600 },
     { id: "c2", name: "Petit", restant: 50_000 },
   ],
 });
-assert.ok(alerts.some((a) => a.kind === "charge_retard" && a.href.includes("e1")));
-assert.ok(alerts.some((a) => a.kind === "charge_bientot" && a.href.includes("e2")));
+const loyerAlert = alerts.find((a) => a.href.includes("e1"));
+assert.ok(loyerAlert?.kind === "charge_retard");
+assert.equal(
+  loyerAlert?.detail,
+  "Échéance le 07/11/2026 · 6 jours de retard",
+);
+const edmAlert = alerts.find((a) => a.href.includes("e2"));
+assert.ok(edmAlert?.kind === "charge_bientot");
+assert.match(edmAlert?.detail ?? "", /Échéance le 13\/11\/2026/);
 assert.ok(alerts.some((a) => a.kind === "dette_client" && a.title.includes("ECOSOL")));
 assert.ok(!alerts.some((a) => a.title.includes("Petit")));
 

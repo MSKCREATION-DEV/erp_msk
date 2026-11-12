@@ -287,6 +287,37 @@ export default async function SuiviDashboardPage({
                     </dd>
                   </div>
                 </dl>
+                {(data.expenses.overdueCount > 0 ||
+                  data.expenses.dueSoonCount > 0) && (
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <Link
+                      href="/suivi/charges?echeance=retard"
+                      prefetch={false}
+                      className="rounded-lg border border-msk-coral/25 bg-msk-coral/5 px-3 py-2 transition hover:border-msk-coral/40"
+                    >
+                      <p className="text-[11px] font-medium uppercase tracking-caps text-msk-coral/80">
+                        En retard
+                      </p>
+                      <p className="mt-0.5 text-sm font-semibold tabular-nums text-msk-coral">
+                        {data.expenses.overdueCount} ·{" "}
+                        {formatSvXof(data.expenses.overdueAmount)}
+                      </p>
+                    </Link>
+                    <Link
+                      href="/suivi/charges?echeance=bientot"
+                      prefetch={false}
+                      className="rounded-lg border border-msk-blue/20 bg-msk-blue/4 px-3 py-2 transition hover:border-msk-blue/35"
+                    >
+                      <p className="text-[11px] font-medium uppercase tracking-caps text-msk-blue/80">
+                        Bientôt dues
+                      </p>
+                      <p className="mt-0.5 text-sm font-semibold tabular-nums text-msk-ink">
+                        {data.expenses.dueSoonCount} ·{" "}
+                        {formatSvXof(data.expenses.dueSoonAmount)}
+                      </p>
+                    </Link>
+                  </div>
+                )}
                 {data.expenses.byCategory.length > 0 ? (
                   <ul className="mt-3 divide-y divide-msk-ink/6">
                     {data.expenses.byCategory.map((c) => (
@@ -315,6 +346,13 @@ export default async function SuiviDashboardPage({
                   </p>
                 )}
                 <div className="mt-4 flex flex-wrap gap-3">
+                  <Link
+                    href="/suivi/charges?echeance=retard"
+                    prefetch={false}
+                    className={linkQuiet}
+                  >
+                    Voir les retards
+                  </Link>
                   <Link
                     href="/suivi/charges?impaye=1"
                     prefetch={false}

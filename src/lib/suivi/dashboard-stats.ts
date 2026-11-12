@@ -248,6 +248,12 @@ export type SvExpenseKpis = {
   paidCount: number;
   resteAPayer: number;
   amountPaidPeriod: number;
+  /** Ouvertes avec échéance passée (reste > 0). */
+  overdueCount: number;
+  overdueAmount: number;
+  /** Ouvertes avec échéance dans ≤ SV_EXPENSE_DUE_SOON_DAYS. */
+  dueSoonCount: number;
+  dueSoonAmount: number;
   byCategory: SvExpenseCategorySlice[];
 };
 
@@ -287,14 +293,77 @@ export function isExpenseOpen(status: string): boolean {
   return status === "BROUILLON" || status === "EMISE" || status === "PARTIELLE";
 }
 
+/** Date d’échéance retenue (dueAt, sinon émission). */
+export function expenseDueRef(row: {
+  dueAt: Date | null;
+  issuedAt: Date | null;
+}): Date | null {
+  return row.dueAt ?? row.issuedAt;
+}
+
+/** Affichage JJ/MM/AAAA en UTC (Bamako = UTC+0). */
+export function formatSvDateFr(d: Date): string {
+  return d.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+export type ExpenseDueBucket = "retard" | "bientot";
+
+/** Retard / bientôt dû pour une charge ouverte avec reste. */
+export function expenseDueBucket(
+  row: {
+    status: string;
+    totalTtc: number;
+    amountPaid: number;
+    dueAt: Date | null;
+    issuedAt: Date | null;
+  },
+  now: Date = new Date(),
+): ExpenseDueBucket | null {
+  if (!isExpenseOpen(row.status)) return null;
+  if (expenseReste(row) <= 0) return null;
+  const due = expenseDueRef(row);
+  if (!due) return null;
+  const delta = due.getTime() - now.getTime();
+  if (delta < 0) return "retard";
+  if (delta <= SV_EXPENSE_DUE_SOON_DAYS * MS_DAY) return "bientot";
+  return null;
+}
+
+/** Libellé alerte / liste : date + retard ou délai. */
+export function formatExpenseDueAlertDetail(
+  due: Date,
+  now: Date,
+  kind: ExpenseDueBucket,
+): string {
+  const dateFr = formatSvDateFr(due);
+  const delta = due.getTime() - now.getTime();
+  if (kind === "retard") {
+    const days = Math.max(1, Math.ceil(-delta / MS_DAY));
+    return `Échéance le ${dateFr} · ${days} jour${days > 1 ? "s" : ""} de retard`;
+  }
+  const days = Math.max(0, Math.ceil(delta / MS_DAY));
+  if (days === 0) return `Échéance le ${dateFr} · à régler aujourd’hui`;
+  return `Échéance le ${dateFr} · dans ${days} jour${days > 1 ? "s" : ""}`;
+}
+
 /** Agrégats charges : à payer, payées période, répartition type. */
 export function computeExpenseKpis(
   rows: SvExpenseRow[],
   periodPayments: { amount: number }[],
+  now: Date = new Date(),
 ): SvExpenseKpis {
   let unpaidCount = 0;
   let paidCount = 0;
   let resteAPayer = 0;
+  let overdueCount = 0;
+  let overdueAmount = 0;
+  let dueSoonCount = 0;
+  let dueSoonAmount = 0;
   const byCat = new Map<
     SvExpenseRow["category"],
     { amountDue: number; count: number }
@@ -310,6 +379,14 @@ export function computeExpenseKpis(
       slot.amountDue += reste;
       slot.count += 1;
       byCat.set(row.category, slot);
+      const bucket = expenseDueBucket(row, now);
+      if (bucket === "retard") {
+        overdueCount += 1;
+        overdueAmount += reste;
+      } else if (bucket === "bientot") {
+        dueSoonCount += 1;
+        dueSoonAmount += reste;
+      }
     }
     if (row.status === "PAYEE") paidCount += 1;
   }
@@ -329,12 +406,12 @@ export function computeExpenseKpis(
     paidCount,
     resteAPayer,
     amountPaidPeriod,
+    overdueCount,
+    overdueAmount,
+    dueSoonCount,
+    dueSoonAmount,
     byCategory,
   };
-}
-
-function dueRef(row: SvExpenseRow): Date | null {
-  return row.dueAt ?? row.issuedAt;
 }
 
 /** Alertes unifiées charges + dettes clients critiques. */
@@ -346,7 +423,6 @@ export function buildSvDashboardAlerts(input: {
   debtorCriticalMin?: number;
 }): SvDashboardAlert[] {
   const now = input.now ?? new Date();
-  const soonMs = SV_EXPENSE_DUE_SOON_DAYS * MS_DAY;
   const debtorMin = input.debtorCriticalMin ?? 100_000;
   const alerts: SvDashboardAlert[] = [];
 
@@ -354,32 +430,28 @@ export function buildSvDashboardAlerts(input: {
     if (!isExpenseOpen(row.status)) continue;
     const reste = expenseReste(row);
     if (reste <= 0) continue;
-    const due = dueRef(row);
+    const due = expenseDueRef(row);
     if (!due) continue;
-    const delta = due.getTime() - now.getTime();
+    const bucket = expenseDueBucket(row, now);
+    if (!bucket) continue;
     const label =
       row.number?.trim() ||
       `${EXPENSE_CAT_LABEL[row.category]} · ${row.vendorName}`;
-    if (delta < 0) {
-      const days = Math.max(1, Math.ceil(-delta / MS_DAY));
+    if (bucket === "retard") {
       alerts.push({
         kind: "charge_retard",
         severity: "urgent",
         title: `Charge en retard · ${label}`,
-        detail: `Échéance dépassée de ${days} jour${days > 1 ? "s" : ""}`,
+        detail: formatExpenseDueAlertDetail(due, now, "retard"),
         amount: reste,
         href: `/suivi/charges/${row.id}`,
       });
-    } else if (delta <= soonMs) {
-      const days = Math.max(0, Math.ceil(delta / MS_DAY));
+    } else {
       alerts.push({
         kind: "charge_bientot",
         severity: "attention",
         title: `Charge bientôt due · ${label}`,
-        detail:
-          days === 0
-            ? "À régler aujourd’hui"
-            : `Dans ${days} jour${days > 1 ? "s" : ""}`,
+        detail: formatExpenseDueAlertDetail(due, now, "bientot"),
         amount: reste,
         href: `/suivi/charges/${row.id}`,
       });

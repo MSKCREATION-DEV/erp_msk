@@ -195,6 +195,10 @@ export async function loadSvDashboard(
     paidCount: 0,
     resteAPayer: 0,
     amountPaidPeriod: 0,
+    overdueCount: 0,
+    overdueAmount: 0,
+    dueSoonCount: 0,
+    dueSoonAmount: 0,
     byCategory: [],
   };
   let expenseRows: SvExpenseRow[] = [];

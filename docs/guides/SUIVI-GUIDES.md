@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-12 (Charges / factures internes Suivi ; voir §8) |
+| Dernière mise à jour | 2026-11-12 (échéances TB + OCR création charges ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-12 — Échéances visibles + OCR création charges
+
+| | |
+|---|---|
+| Quoi | TB : dates dans alertes (« Échéance le JJ/MM/AAAA · X j de retard »), widgets En retard / Bientôt dues + liens `?echeance=`. Liste Charges : colonne Échéance + badges Retard/Bientôt. Création `/charges/nouveau` : upload → OCR/parse Orange·EDM·Loyer·Autre → préremplissage champs |
+| Pourquoi | Échéances calculées mais peu visibles ; saisie manuelle complète trop lourde vs seed OCR |
+| Fichiers | `dashboard-stats.ts`, `tableau-de-bord/page.tsx`, `charges/page.tsx`, `expense-ocr.ts` (+ fixtures/tests), `actions/suivi/expenses.ts`, `expense-form.tsx`, `next.config.ts` |
+| Statut doc | Guide hub reste **`draft`** — parcours OCR à valider en UI |
+| Routes | `/suivi/tableau-de-bord` · `/suivi/charges?echeance=retard\|bientot` · `/suivi/charges/nouveau` |
+| Note clients | Factures clients Suivi ont `dueAt` en seed ; TB alerte dettes par **montant** (≥100 kF), pas par échéance client — non inventé |
 
 ### 2026-11-12 — TB Suivi : charges + alertes urgentes
 
