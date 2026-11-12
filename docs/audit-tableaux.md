@@ -37,7 +37,7 @@ Note : `Promise.all` Prisma **interdit** (pool max=1) → count puis findMany, o
 | 2 | `commercial/clients/page.tsx` | page | `ComClient` | `OK_URL` | city, contact, invoices, name, owner, phone, quotes, updatedAt | updatedAt desc | 100–2k | oui | oui + listKey | non | ☑ |
 | 3 | `commercial/devis/page.tsx` | page | `ComQuote` | `OK_URL` | client, createdAt, number, object, status, totalTtc | createdAt desc | 200–5k | oui | oui + listKey | non | ☑ |
 | 4 | `comptabilite/a-comptabiliser/page.tsx` | page | `ComInvoice` | `OK_URL` | client, number, status, totalTtc (+ issuedAt défaut) | issuedAt desc | 20–200 | non | **oui + listKey** | non | ☑ |
-| 5 | `comptabilite/ecritures/page.tsx` | page | `CptJournalEntry` | `OK_URL` | entryDate, journal, label, number, status | entryDate desc | 500–20k | non | **oui + listKey** | non | ☑ |
+| 5 | `comptabilite/ecritures/page.tsx` | page | `CptJournalEntry` | `OK_URL` | entryDate, journal, label, number, status | entryDate desc | 500–20k | oui | **oui + listKey** | non | ☑ |
 | 6 | `comptabilite/factures/page.tsx` | page | `ComInvoice` | `OK_URL` | amountPaid, client, createdAt, number, status, totalTtc | createdAt desc | 200–10k | oui | oui + listKey | non | ☑ |
 | 7 | `comptabilite/journaux/page.tsx` | page | `CptJournal` | `OK_URL` | active, code, entries, label | sortOrder asc | &lt;50 | oui | **oui + listKey** | non | ☑ |
 | 8 | `comptabilite/plan/page.tsx` | page | `CptAccount` | `OK_URL` | classNum, code, label, nature, postable | code asc | 100–500 | non | oui + listKey | non | ☑ |
