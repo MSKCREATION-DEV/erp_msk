@@ -1,24 +1,35 @@
+---
+description: Listes / tableaux — pagination + recherche + filtres + tri (absolu ERP MSK)
+alwaysApply: true
+---
+
 # Listes / tableaux ERP (absolu)
+
+Référence UX : **Commercial** (`/commercial/devis`, `/commercial/clients`) + helpers `src/lib/list/*` + UI `ListSearchForm` / `ListPagination` / `SortableTh`.
 
 ## Obligatoire
 
 Toute page qui affiche des **données en tableau** (listing métier) doit :
 
-1. **Pagination** via `searchParams` (`page`, éventuellement `pageSize`) — helpers `src/lib/list/pagination.ts`
-2. **Recherche** via `q` — composant `ListSearchForm` + filtre serveur
-3. **Tri colonnes** via `searchParams` (`sort`, `dir`) — helpers `src/lib/list/sort.ts` + UI `SortableTh`
-4. UI : `ListPagination` en bas du tableau ; compteur « X–Y sur N » ; en-têtes cliquables avec indicateur de sens
+1. **Pagination serveur** via `searchParams` (`page`, éventuellement `pageSize`) — helpers `src/lib/list/pagination.ts` (`DEFAULT_PAGE_SIZE`, `parsePage`, `pageSkip`, `clampPage`, `totalPages`) + `count` Prisma + `skip`/`take`
+2. **Recherche** via `q` — composant `ListSearchForm` + filtre serveur (dès qu’on peut dépasser ~10 lignes)
+3. **Filtres métier pertinents** via URL `searchParams` (statut, période, compte, solde dû, etc.) — pas de state-only client pour le filtre principal
+4. **Tri colonnes** via `searchParams` (`sort`, `dir`) — helpers `src/lib/list/sort.ts` + UI `SortableTh`
+5. UI : barre recherche (+ filtres) au-dessus ; `ListPagination` en bas ; compteur « X–Y sur N » ; en-têtes cliquables
 
 **Aussi obligatoire** : tableaux de **sélection** dans un formulaire (ex. choisir un prospect pour un RDV) — recherche + pagination (`ClientListPagination` si état client, sinon URL). Pas de liste interminable sans pages.
 
 ## Interdit
 
 - `findMany` sans `take` / `skip` sur un listing (plafond « take: 400 » seul = insuffisant)
+- Tableau qui **dump** tout le jeu sans pagination UI
+- Liste sans recherche quand > ~10 items attendus en prod
 - Recherche uniquement côté client sur un gros jeu chargé **sans** pagination UI
 - Tableau sans moyen de paginer dès qu’il peut dépasser ~20 lignes (listing **ou** picker)
 - En-têtes de listing **non triables** (sauf colonnes d’actions / cases à cocher — `PlainTh`)
 - Tri uniquement côté client sur une liste paginée serveur (désync pages)
 - Inventer des clés `sort` hors allow-list (toujours `parseListSort` + map colonnes)
+- `<select>` / `alert` / `confirm` natifs pour filtres — menus / chips / modales MSK
 
 ## Pattern
 
@@ -27,10 +38,12 @@ Toute page qui affiche des **données en tableau** (listing métier) doit :
 ```
 
 - Recherche : `ListSearchForm` — debounce + `router.replace` (instantané, historique propre)
-- Pagination : `ListPagination` — numéros + ellipses (inspiré [shadcn Pagination](https://ui.shadcn.com/docs/components/base/pagination))
+- Pagination : `ListPagination` — numéros + ellipses
 - Tri : `SortableTh` — `Link` serveur, `aria-sort`, icône sens ; `buildSortHref` reset `page`
-- Changement de `q` **ou** de `sort`/`dir` → reset `page`
+- Filtres : chips / menus / modale → URL ; totaux agrégés sur **le filtre entier**, pas seulement la page courante
+- Changement de `q`, filtre, `sort`/`dir` → reset `page`
 - Pas de champ recherche dupliqué dans les modales de filtres (`q` = barre seule)
+- Shell page : `Suspense` autour des résultats (`ListTableSkeleton`) pour que la barre reste montée
 
 ## Nouveaux tableaux
 
@@ -38,9 +51,17 @@ Toute page qui affiche des **données en tableau** (listing métier) doit :
 2. `parseListSort(sp, columns, { key, dir })` avant le `findMany`
 3. Remplacer chaque `<th>` métier par `<SortableTh … />` ; actions → `<PlainTh>`
 4. Dates / montants : `defaultDir="desc"` sur la colonne
+5. Ajouter les filtres métier utiles (au minimum ceux déjà liés depuis un TB / hub)
 
 ## Exceptions
 
 - Tableaux de **saisie** (lignes éditables dans un formulaire)
 - Matrices fixes non listables (ex. budget mois × catégorie en grille de saisie)
+- Jeux **fixes et courts** connus (ex. 2 comptes caisse/banque en cartes) — pas un listing croissant
+- Micro-listes **inline fiche** (ex. 5–10 paiements récents) — plafond `take` + lien « voir tout » vers listing paginé
 - En-têtes purement décoratifs sans données triables
+
+## Test mental
+
+> Un commercial ouvre la liste : peut-il chercher, filtrer, trier et paginer sans charger 500 lignes d’un coup, comme sur Devis / Clients Commercial ?
+> Si non → **bug bloquant**, aligner avant gate.
