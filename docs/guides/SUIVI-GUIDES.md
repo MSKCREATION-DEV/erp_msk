@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-12 (Suivi Tableau de bord + bascule Comptes I ; voir §8) |
+| Dernière mise à jour | 2026-11-12 (listes Suivi paginées + règle tableaux ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-12 — Listes Suivi : pagination + recherche + filtres
+
+| | |
+|---|---|
+| Quoi | Alignement Commercial : clients / factures / mouvements / stocks — `ListSearchForm`, filtres URL, tri `SortableTh`, pagination serveur (`DEFAULT_PAGE_SIZE`) ; règle `.cursor/rules/list-pagination-search.mdc` renforcée (`alwaysApply` + filtres métier) |
+| Pourquoi | Tableaux Suivi dumpaient tout (take 200/800 ou findMany sans page) — non conforme à la règle plateforme listes |
+| Fichiers | `list-pagination-search.mdc`, `src/app/(app)/suivi/{clients,factures,mouvements,stocks}/page.tsx`, `src/components/suivi/*-toolbar.tsx`, `list-filter-chip.tsx` |
+| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — mentionner barre recherche / filtres / pagination sur chaque liste |
+| Routes | `/suivi/clients` · `/suivi/factures` · `/suivi/mouvements` · `/suivi/stocks` |
+| Exception | `/suivi/comptes` = 2 cartes fixes (pas listing croissant) ; micro-listes fiche inchangées |
 
 ### 2026-11-12 — Suivi TB : filtres redesign + français UI
 
