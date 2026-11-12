@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-12 (échéances TB + OCR création charges ; voir §8) |
+| Dernière mise à jour | 2026-11-12 (UI lecture auto charges/nouveau ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-12 — UI lecture auto `/suivi/charges/nouveau`
+
+| | |
+|---|---|
+| Quoi | Zone justificatif refaite : dropzone MSK (pas d’input fichier natif), dépôt/parcourir, pending « Lecture du document… », bandeau succès « Infos remplies… » + **Relire** (plus de jargon « OCR » en UI) |
+| Pourquoi | Rendu amateur / cluttered (file input + « Réessayer OCR ») |
+| Fichiers | `expense-form.tsx`, ce suivi |
+| Statut doc | Guide hub **`draft`** — libellés UI à valider terrain |
+| Routes | `/suivi/charges/nouveau` |
 
 ### 2026-11-12 — Échéances visibles + OCR création charges
 
