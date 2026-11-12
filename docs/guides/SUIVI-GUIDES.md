@@ -197,6 +197,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-12 — KPI Suivi : séparation clients ≠ charges (pattern Commercial)
+
+| | |
+|---|---|
+| Quoi | Hub : suppression bandeau hybride « Impayés clients / charges » ; sections Pilotage / Clients et encaissements / Charges et trésorerie / Stocks ; KPI distincts sur cartes Factures vs Charges. TB : sections Comptes · Trésorerie · Factures clients · Charges fournisseurs ; alertes en **deux** panneaux (charges ≠ dettes clients) ; grilles KPI 4 cartes par domaine |
+| Pourquoi | Même type de KPI mélangés (clients / fournisseurs) — illisible vs logique Commercial |
+| Fichiers | `suivi/page.tsx`, `suivi-hub-cards.tsx`, `modules.ts`, `tableau-de-bord/page.tsx`, `DASHBOARD-KPI.md`, `SPEC.md`, ce suivi |
+| Statut doc | `DASHBOARD-KPI` / SPEC à jour ; guide hub reste **`draft`** |
+| Routes | `/suivi` · `/suivi/tableau-de-bord` |
+
 ### 2026-11-12 — UI lecture auto `/suivi/charges/nouveau`
 
 | | |

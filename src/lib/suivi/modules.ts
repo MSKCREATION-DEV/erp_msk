@@ -1,6 +1,12 @@
 /**
- * Modules du hub Suivi (tampon) — pattern Commercial.
+ * Modules du hub Suivi (tampon) — pattern Commercial (sections + KPI par carte).
  */
+
+export type SuiviHubSection =
+  | "pilotage"
+  | "clients"
+  | "tresorerie"
+  | "stocks";
 
 export type SuiviHubTone = "blue" | "coral" | "cyan" | "ink";
 
@@ -9,16 +15,46 @@ export type SuiviModule = {
   href: string;
   title: string;
   description: string;
+  section: SuiviHubSection;
   tone: SuiviHubTone;
   permission: string;
 };
+
+/** Ordre d’affichage — comme Commercial : Pilotage d’abord. */
+export const SUIVI_HUB_SECTIONS: {
+  id: SuiviHubSection;
+  title: string;
+  subtitle: string;
+}[] = [
+  {
+    id: "pilotage",
+    title: "Pilotage",
+    subtitle: "Mesurer trésorerie et alertes",
+  },
+  {
+    id: "clients",
+    title: "Clients et encaissements",
+    subtitle: "Dettes clients — à encaisser",
+  },
+  {
+    id: "tresorerie",
+    title: "Charges et trésorerie",
+    subtitle: "Fournisseurs, comptes, mouvements",
+  },
+  {
+    id: "stocks",
+    title: "Stocks",
+    subtitle: "Articles et quantités",
+  },
+];
 
 export const SUIVI_MODULES: SuiviModule[] = [
   {
     id: "dashboard",
     href: "/suivi/tableau-de-bord",
     title: "Tableau de bord",
-    description: "Soldes, conso, catégories, dettes — pilotage budgets.",
+    description: "Soldes, flux, factures clients, charges — sections séparées.",
+    section: "pilotage",
     tone: "blue",
     permission: "sv.access",
   },
@@ -27,6 +63,7 @@ export const SUIVI_MODULES: SuiviModule[] = [
     href: "/suivi/clients",
     title: "Clients",
     description: "Fiches, soldes, restants et à venir.",
+    section: "clients",
     tone: "blue",
     permission: "sv.clients.view",
   },
@@ -35,6 +72,7 @@ export const SUIVI_MODULES: SuiviModule[] = [
     href: "/suivi/factures",
     title: "Factures clients",
     description: "Encaissements clients — payé / reste.",
+    section: "clients",
     tone: "cyan",
     permission: "sv.invoices.view",
   },
@@ -43,6 +81,7 @@ export const SUIVI_MODULES: SuiviModule[] = [
     href: "/suivi/charges",
     title: "Charges",
     description: "Factures fournisseurs — Orange, EDM, loyer…",
+    section: "tresorerie",
     tone: "coral",
     permission: "sv.expenses.view",
   },
@@ -51,6 +90,7 @@ export const SUIVI_MODULES: SuiviModule[] = [
     href: "/suivi/comptes",
     title: "Comptes",
     description: "Caisse physique et banque — soldes et historique.",
+    section: "tresorerie",
     tone: "ink",
     permission: "sv.accounts.view",
   },
@@ -59,6 +99,7 @@ export const SUIVI_MODULES: SuiviModule[] = [
     href: "/suivi/mouvements",
     title: "Mouvements",
     description: "Registre transversal entrées / sorties.",
+    section: "tresorerie",
     tone: "cyan",
     permission: "sv.movements.view",
   },
@@ -67,6 +108,7 @@ export const SUIVI_MODULES: SuiviModule[] = [
     href: "/suivi/stocks",
     title: "Stocks",
     description: "Articles, quantités et emplacements.",
+    section: "stocks",
     tone: "coral",
     permission: "sv.stock.view",
   },

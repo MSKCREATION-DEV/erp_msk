@@ -274,8 +274,8 @@ Référence UX : `src/app/(app)/commercial/` (hub cards, clients list + `Clickab
 
 ### Hub `/suivi`
 
-- Grille modules (Clients, Factures clients, **Charges**, Comptes, Mouvements, Stocks) + métriques : impayés clients / charges, solde mouvements, articles stock bas (qty=0 ou seuil)
-- Pattern `CommercialHubGrid` / `MetricNavCard`
+- Grille modules **par sections** (Pilotage · Clients et encaissements · Charges et trésorerie · Stocks) — KPI **par carte** (factures à encaisser ≠ charges à payer) ; **pas** de bandeau hybride « Impayés clients / charges »
+- Pattern `CommercialHubGrid` / `MetricNavCard` / `SUIVI_HUB_SECTIONS`
 
 ### Clients
 

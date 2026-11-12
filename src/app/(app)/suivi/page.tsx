@@ -4,10 +4,10 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { requireSvAccess } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import { SuiviHubGrid } from "@/components/suivi/suivi-hub-cards";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
-import { formatSvXof } from "@/lib/suivi/labels";
 
 export const metadata: Metadata = { title: "Suivi" };
 
@@ -44,54 +44,44 @@ export default async function SuiviHubPage() {
     unpaidInvoices,
     unpaidExpenses,
     stockZero,
-    inAgg,
-    outAgg,
     movementsCount,
     accountsCount,
-  ] = await Promise.all([
-    canClients ? prisma.svClient.count() : Promise.resolve(0),
-    canInvoices
-      ? prisma.svInvoice.findMany({
-          where: { status: { in: ["EMISE", "PARTIELLE"] } },
-          select: { totalTtc: true, amountPaid: true },
-        })
-      : Promise.resolve([] as { totalTtc: number; amountPaid: number }[]),
-    canExpenses
-      ? prisma.svExpenseInvoice.findMany({
-          where: { status: { in: ["EMISE", "PARTIELLE"] } },
-          select: { totalTtc: true, amountPaid: true },
-        })
-      : Promise.resolve([] as { totalTtc: number; amountPaid: number }[]),
-    canStock
-      ? prisma.svStockItem.count({ where: { quantity: 0 } })
-      : Promise.resolve(0),
-    canMovements
-      ? prisma.svCashMovement.aggregate({
-          where: { direction: "IN" },
-          _sum: { amount: true },
-        })
-      : Promise.resolve({ _sum: { amount: 0 } }),
-    canMovements
-      ? prisma.svCashMovement.aggregate({
-          where: { direction: "OUT" },
-          _sum: { amount: true },
-        })
-      : Promise.resolve({ _sum: { amount: 0 } }),
-    canMovements ? prisma.svCashMovement.count() : Promise.resolve(0),
-    canAccounts ? prisma.svAccount.count() : Promise.resolve(0),
+  ] = await runSeries([
+    () => (canClients ? prisma.svClient.count() : Promise.resolve(0)),
+    () =>
+      canInvoices
+        ? prisma.svInvoice.findMany({
+            where: { status: { in: ["EMISE", "PARTIELLE"] } },
+            select: { totalTtc: true, amountPaid: true },
+          })
+        : Promise.resolve([] as { totalTtc: number; amountPaid: number }[]),
+    () =>
+      canExpenses
+        ? prisma.svExpenseInvoice.findMany({
+            where: { status: { in: ["EMISE", "PARTIELLE"] } },
+            select: { totalTtc: true, amountPaid: true },
+          })
+        : Promise.resolve([] as { totalTtc: number; amountPaid: number }[]),
+    () =>
+      canStock
+        ? prisma.svStockItem.count({ where: { quantity: 0 } })
+        : Promise.resolve(0),
+    () =>
+      canMovements ? prisma.svCashMovement.count() : Promise.resolve(0),
+    () => (canAccounts ? prisma.svAccount.count() : Promise.resolve(0)),
   ]);
 
   const unpaid = unpaidInvoices.filter((i) => i.amountPaid < i.totalTtc).length;
   const unpaidCharges = unpaidExpenses.filter(
     (i) => i.amountPaid < i.totalTtc,
   ).length;
-  const solde = (inAgg._sum.amount ?? 0) - (outAgg._sum.amount ?? 0);
 
   return (
     <PageShell>
       <PageHeader
         title="Suivi"
         description="Tampon clients · mouvements · stocks — direction / admins."
+        breadcrumbs={[{ label: "Accueil", href: "/accueil" }]}
         actions={
           <Link
             prefetch={false}
@@ -102,38 +92,13 @@ export default async function SuiviHubPage() {
           </Link>
         }
       />
-      <div className="mb-4 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
-          <p className="text-xs font-medium uppercase tracking-caps text-msk-ink/45">
-            Impayés clients / charges
-          </p>
-          <p className="mt-1 text-2xl font-semibold text-msk-ink">
-            {unpaid}
-            <span className="text-base font-medium text-msk-ink/45">
-              {" "}
-              / {unpaidCharges}
-            </span>
-          </p>
-        </div>
-        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
-          <p className="text-xs font-medium uppercase tracking-caps text-msk-ink/45">
-            Solde mouvements
-          </p>
-          <p className="mt-1 text-2xl font-semibold text-msk-ink">
-            {formatSvXof(solde)}
-          </p>
-        </div>
-        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
-          <p className="text-xs font-medium uppercase tracking-caps text-msk-ink/45">
-            Stocks à zéro
-          </p>
-          <p className="mt-1 text-2xl font-semibold text-msk-ink">{stockZero}</p>
-        </div>
-      </div>
+      {/*
+        Pas de bandeau KPI hybride (ex. « Impayés clients / charges »).
+        Comme Commercial : un KPI par carte module, sections métier séparées.
+      */}
       <SuiviHubGrid
         allowed={allowed}
         counts={{
-          dashboard: { value: unpaid, hint: "impayés" },
           clients,
           factures: { value: unpaid, hint: "à encaisser" },
           charges: { value: unpaidCharges, hint: "à payer" },

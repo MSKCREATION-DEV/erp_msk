@@ -35,11 +35,15 @@ import {
   SvExpenseDonut,
   SvFlowAreaChart,
 } from "@/components/suivi/dashboard-charts";
+import { gridKpi2, gridKpi4 } from "@/lib/ui/layout-grids";
 
 export const metadata: Metadata = { title: "Tableau de bord · Suivi" };
 
 const linkQuiet =
   "text-sm font-medium text-msk-blue hover:underline underline-offset-2";
+
+const sectionTitle =
+  "text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/40";
 
 export default async function SuiviDashboardPage({
   searchParams,
@@ -86,6 +90,11 @@ export default async function SuiviDashboardPage({
     categorie: scope.categorie,
   });
 
+  const chargeAlerts = data.alerts.filter(
+    (a) => a.kind === "charge_retard" || a.kind === "charge_bientot",
+  );
+  const clientAlerts = data.alerts.filter((a) => a.kind === "dette_client");
+
   return (
     <PageShell>
       <PageHeader
@@ -98,7 +107,7 @@ export default async function SuiviDashboardPage({
         ]}
       />
 
-      <div className="space-y-4">
+      <div className="space-y-8">
         <SvDashboardFilters
           mode={scope.mode}
           on={scope.on}
@@ -110,63 +119,86 @@ export default async function SuiviDashboardPage({
           periodLabel={scope.label}
         />
 
-        {data.alerts.length > 0 ? (
-          <AlertsPanel alerts={data.alerts} />
-        ) : null}
-
-        {canAccounts ? (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {data.accounts.map((acc) => (
-              <Link
-                key={acc.id}
-                href={`/suivi/comptes/${acc.id}`}
-                prefetch={false}
-                className="rounded-xl border border-msk-ink/8 bg-white p-4 transition hover:border-msk-blue/30 hover:shadow-sm"
-              >
-                <div className="flex items-start gap-3">
-                  <span className="flex size-10 items-center justify-center rounded-lg bg-msk-blue/8 text-msk-blue">
-                    {acc.kind === "BANK" ? (
-                      <Landmark className="size-5" aria-hidden />
-                    ) : (
-                      <Wallet className="size-5" aria-hidden />
-                    )}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-medium uppercase tracking-caps text-msk-ink/45">
-                      {SV_ACCOUNT_KIND_LABEL[acc.kind]}
-                    </p>
-                    <p
-                      className={`mt-1 text-2xl font-semibold tabular-nums ${
-                        acc.balance < 0 ? "text-msk-coral" : "text-msk-ink"
-                      }`}
-                    >
-                      {formatSvXof(acc.balance)}
-                    </p>
-                    <p className="mt-1 text-xs text-msk-ink/40">
-                      Solde courant (post-bascule {formatSvBaselineDateFr()}) ·
-                      voir le compte
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-            {data.accounts.length === 0 ? (
-              <Surface className="p-4 sm:col-span-2">
-                <p className="text-sm text-msk-ink/55">
-                  Aucun compte — ouvrez{" "}
-                  <Link href="/suivi/comptes" className={linkQuiet}>
-                    Comptes
-                  </Link>{" "}
-                  après migration / seed.
-                </p>
-              </Surface>
+        {(chargeAlerts.length > 0 || clientAlerts.length > 0) && (
+          <div className="space-y-4">
+            {chargeAlerts.length > 0 && canExpenses ? (
+              <AlertsPanel
+                title="Charges à traiter"
+                subtitle="Fournisseurs — en retard ou bientôt dues"
+                alerts={chargeAlerts}
+              />
+            ) : null}
+            {clientAlerts.length > 0 && canClients ? (
+              <AlertsPanel
+                title="Dettes clients à traiter"
+                subtitle="Encours clients importants — à encaisser"
+                alerts={clientAlerts}
+              />
             ) : null}
           </div>
+        )}
+
+        {canAccounts ? (
+          <section aria-labelledby="sv-tb-comptes" className="space-y-3">
+            <h2 id="sv-tb-comptes" className={sectionTitle}>
+              Comptes · soldes courants
+            </h2>
+            <div className={gridKpi2}>
+              {data.accounts.map((acc) => (
+                <Link
+                  key={acc.id}
+                  href={`/suivi/comptes/${acc.id}`}
+                  prefetch={false}
+                  className="rounded-xl border border-msk-ink/8 bg-white p-4 transition hover:border-msk-blue/30 hover:shadow-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="flex size-10 items-center justify-center rounded-lg bg-msk-blue/8 text-msk-blue">
+                      {acc.kind === "BANK" ? (
+                        <Landmark className="size-5" aria-hidden />
+                      ) : (
+                        <Wallet className="size-5" aria-hidden />
+                      )}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium uppercase tracking-caps text-msk-ink/45">
+                        {SV_ACCOUNT_KIND_LABEL[acc.kind]}
+                      </p>
+                      <p
+                        className={`mt-1 text-2xl font-semibold tabular-nums ${
+                          acc.balance < 0 ? "text-msk-coral" : "text-msk-ink"
+                        }`}
+                      >
+                        {formatSvXof(acc.balance)}
+                      </p>
+                      <p className="mt-1 text-xs text-msk-ink/40">
+                        Solde courant (post-bascule {formatSvBaselineDateFr()}) ·
+                        voir le compte
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+              {data.accounts.length === 0 ? (
+                <Surface className="p-4 sm:col-span-2">
+                  <p className="text-sm text-msk-ink/55">
+                    Aucun compte — ouvrez{" "}
+                    <Link href="/suivi/comptes" className={linkQuiet}>
+                      Comptes
+                    </Link>{" "}
+                    après migration / seed.
+                  </p>
+                </Surface>
+              ) : null}
+            </div>
+          </section>
         ) : null}
 
         {canMovements ? (
-          <>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <section aria-labelledby="sv-tb-flux" className="space-y-3">
+            <h2 id="sv-tb-flux" className={sectionTitle}>
+              Trésorerie · {scope.label}
+            </h2>
+            <div className={gridKpi4}>
               <KpiCard
                 href={outHref}
                 icon={ArrowDownRight}
@@ -235,7 +267,7 @@ export default async function SuiviDashboardPage({
               data={data.compare}
               subtitle={`${scope.label} vs ${scope.prevLabel}`}
             />
-          </>
+          </section>
         ) : (
           <Surface className="p-6">
             <p className="text-sm text-msk-ink/55">
@@ -244,197 +276,65 @@ export default async function SuiviDashboardPage({
           </Surface>
         )}
 
-        {(canExpenses || canInvoices || canClients) && (
-          <div className="grid gap-3 lg:grid-cols-2">
-            {canExpenses ? (
-              <Surface className="border-l-4 border-l-msk-ink/25 p-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
-                      Charges fournisseurs
-                    </p>
-                    <p className="mt-1 text-sm text-msk-ink/50">
-                      Orange, EDM, loyer — à payer à l’extérieur
-                    </p>
-                  </div>
-                  <Building2 className="size-5 text-msk-ink/55" aria-hidden />
-                </div>
-                <dl className="mt-4 grid grid-cols-2 gap-3">
-                  <div>
-                    <dt className="text-xs text-msk-ink/45">Reste à payer</dt>
-                    <dd className="text-xl font-semibold tabular-nums text-msk-coral">
-                      {formatSvXof(data.expenses.resteAPayer)}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-msk-ink/45">Non payées</dt>
-                    <dd className="text-xl font-semibold tabular-nums">
-                      {data.expenses.unpaidCount}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-msk-ink/45">
-                      Payé (période)
-                    </dt>
-                    <dd className="text-lg font-semibold tabular-nums text-msk-ink">
-                      {formatSvXof(data.expenses.amountPaidPeriod)}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-msk-ink/45">Déjà payées</dt>
-                    <dd className="text-lg font-semibold tabular-nums">
-                      {data.expenses.paidCount}
-                    </dd>
-                  </div>
-                </dl>
-                {(data.expenses.overdueCount > 0 ||
-                  data.expenses.dueSoonCount > 0) && (
-                  <div className="mt-3 grid grid-cols-2 gap-2">
-                    <Link
-                      href="/suivi/charges?echeance=retard"
-                      prefetch={false}
-                      className="rounded-lg border border-msk-coral/25 bg-msk-coral/5 px-3 py-2 transition hover:border-msk-coral/40"
-                    >
-                      <p className="text-[11px] font-medium uppercase tracking-caps text-msk-coral/80">
-                        En retard
-                      </p>
-                      <p className="mt-0.5 text-sm font-semibold tabular-nums text-msk-coral">
-                        {data.expenses.overdueCount} ·{" "}
-                        {formatSvXof(data.expenses.overdueAmount)}
-                      </p>
-                    </Link>
-                    <Link
-                      href="/suivi/charges?echeance=bientot"
-                      prefetch={false}
-                      className="rounded-lg border border-msk-blue/20 bg-msk-blue/4 px-3 py-2 transition hover:border-msk-blue/35"
-                    >
-                      <p className="text-[11px] font-medium uppercase tracking-caps text-msk-blue/80">
-                        Bientôt dues
-                      </p>
-                      <p className="mt-0.5 text-sm font-semibold tabular-nums text-msk-ink">
-                        {data.expenses.dueSoonCount} ·{" "}
-                        {formatSvXof(data.expenses.dueSoonAmount)}
-                      </p>
-                    </Link>
-                  </div>
-                )}
-                {data.expenses.byCategory.length > 0 ? (
-                  <ul className="mt-3 divide-y divide-msk-ink/6">
-                    {data.expenses.byCategory.map((c) => (
-                      <li key={c.category}>
-                        <Link
-                          href={`/suivi/charges?impaye=1&type=${c.category}`}
-                          prefetch={false}
-                          className="flex items-center justify-between gap-3 py-2 transition hover:text-msk-blue"
-                        >
-                          <span className="text-sm font-medium">
-                            {c.label}
-                            <span className="ml-1.5 text-xs font-normal text-msk-ink/40">
-                              ({c.count})
-                            </span>
-                          </span>
-                          <span className="tabular-nums text-sm text-msk-coral">
-                            {formatSvXof(c.amountDue)}
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="mt-3 text-sm text-msk-ink/45">
-                    Aucune charge à payer.
-                  </p>
-                )}
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <Link
-                    href="/suivi/charges?echeance=retard"
-                    prefetch={false}
-                    className={linkQuiet}
-                  >
-                    Voir les retards
-                  </Link>
-                  <Link
-                    href="/suivi/charges?impaye=1"
-                    prefetch={false}
-                    className={linkQuiet}
-                  >
-                    Charges non payées
-                  </Link>
-                  <Link
-                    href="/suivi/charges"
-                    prefetch={false}
-                    className={linkQuiet}
-                  >
-                    Toutes les charges
-                  </Link>
-                </div>
-              </Surface>
-            ) : null}
-
-            {canInvoices ? (
-              <Surface className="border-l-4 border-l-msk-blue p-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
-                      Factures clients
-                    </p>
-                    <p className="mt-1 text-sm text-msk-ink/50">
-                      Encours à encaisser (reste dû)
-                    </p>
-                  </div>
-                  <Receipt className="size-5 text-msk-blue/70" aria-hidden />
-                </div>
-                <dl className="mt-4 grid grid-cols-2 gap-3">
-                  <div>
-                    <dt className="text-xs text-msk-ink/45">Reste dû</dt>
-                    <dd className="text-xl font-semibold tabular-nums text-msk-coral">
-                      {formatSvXof(data.invoices.resteDue)}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-msk-ink/45">Factures ouvertes</dt>
-                    <dd className="text-xl font-semibold tabular-nums">
-                      {data.invoices.unpaidCount}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-msk-ink/45">
-                      Encaissé (période)
-                    </dt>
-                    <dd className="text-lg font-semibold tabular-nums text-msk-ink">
-                      {formatSvXof(data.invoices.amountPaidPeriod)}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-msk-ink/45">Déjà payées</dt>
-                    <dd className="text-lg font-semibold tabular-nums">
-                      {data.invoices.paidCount}
-                    </dd>
-                  </div>
-                </dl>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <Link
-                    href="/suivi/factures?reste=1"
-                    prefetch={false}
-                    className={linkQuiet}
-                  >
-                    Factures à encaisser
-                  </Link>
-                  <Link
-                    href={inHref}
-                    prefetch={false}
-                    className={linkQuiet}
-                  >
-                    Entrées période
-                  </Link>
-                </div>
-              </Surface>
-            ) : null}
+        {canInvoices ? (
+          <section aria-labelledby="sv-tb-factures" className="space-y-3">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h2 id="sv-tb-factures" className={sectionTitle}>
+                Factures clients
+              </h2>
+              <p className="text-sm text-msk-ink/45">
+                Encours à encaisser — distinct des charges fournisseurs
+              </p>
+            </div>
+            <div className={gridKpi4}>
+              <KpiCard
+                href="/suivi/factures?reste=1"
+                icon={Receipt}
+                tone="coral"
+                label="Reste dû"
+                value={formatSvXof(data.invoices.resteDue)}
+                hint="Total à encaisser"
+              />
+              <KpiCard
+                href="/suivi/factures?reste=1"
+                icon={Receipt}
+                tone="blue"
+                label="Factures ouvertes"
+                value={String(data.invoices.unpaidCount)}
+                hint="Émises ou partielles"
+              />
+              <KpiCard
+                href={inHref}
+                icon={ArrowUpRight}
+                tone="cyan"
+                label="Encaissé (période)"
+                value={formatSvXof(data.invoices.amountPaidPeriod)}
+                hint={scope.label}
+              />
+              <KpiCard
+                href="/suivi/factures"
+                icon={Receipt}
+                tone="ink"
+                label="Déjà payées"
+                value={String(data.invoices.paidCount)}
+                hint="Soldées"
+              />
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/suivi/factures?reste=1"
+                prefetch={false}
+                className={linkQuiet}
+              >
+                Factures à encaisser
+              </Link>
+              <Link href={inHref} prefetch={false} className={linkQuiet}>
+                Entrées période
+              </Link>
+            </div>
 
             {canClients ? (
-              <Surface
-                className={`p-4 ${canExpenses && canInvoices ? "lg:col-span-2" : ""}`}
-              >
+              <Surface className="p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
@@ -479,24 +379,165 @@ export default async function SuiviDashboardPage({
                 </Link>
               </Surface>
             ) : null}
-          </div>
-        )}
+          </section>
+        ) : null}
+
+        {canExpenses ? (
+          <section aria-labelledby="sv-tb-charges" className="space-y-3">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h2 id="sv-tb-charges" className={sectionTitle}>
+                Charges fournisseurs
+              </h2>
+              <p className="text-sm text-msk-ink/45">
+                Orange, EDM, loyer — à payer à l’extérieur
+              </p>
+            </div>
+            <div className={gridKpi4}>
+              <KpiCard
+                href="/suivi/charges?impaye=1"
+                icon={Building2}
+                tone="coral"
+                label="Reste à payer"
+                value={formatSvXof(data.expenses.resteAPayer)}
+                hint="Total ouvert"
+              />
+              <KpiCard
+                href="/suivi/charges?impaye=1"
+                icon={Building2}
+                tone="ink"
+                label="Non payées"
+                value={String(data.expenses.unpaidCount)}
+                hint="Émises ou partielles"
+              />
+              <KpiCard
+                href="/suivi/charges"
+                icon={ArrowDownRight}
+                tone="blue"
+                label="Payé (période)"
+                value={formatSvXof(data.expenses.amountPaidPeriod)}
+                hint={scope.label}
+              />
+              <KpiCard
+                href="/suivi/charges"
+                icon={Building2}
+                tone="cyan"
+                label="Déjà payées"
+                value={String(data.expenses.paidCount)}
+                hint="Soldées"
+              />
+            </div>
+
+            {(data.expenses.overdueCount > 0 ||
+              data.expenses.dueSoonCount > 0) && (
+              <div className={gridKpi2}>
+                <Link
+                  href="/suivi/charges?echeance=retard"
+                  prefetch={false}
+                  className="rounded-lg border border-msk-coral/25 bg-msk-coral/5 px-4 py-3 transition hover:border-msk-coral/40"
+                >
+                  <p className="text-[11px] font-medium uppercase tracking-caps text-msk-coral/80">
+                    En retard
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold tabular-nums text-msk-coral">
+                    {data.expenses.overdueCount} ·{" "}
+                    {formatSvXof(data.expenses.overdueAmount)}
+                  </p>
+                </Link>
+                <Link
+                  href="/suivi/charges?echeance=bientot"
+                  prefetch={false}
+                  className="rounded-lg border border-msk-blue/20 bg-msk-blue/4 px-4 py-3 transition hover:border-msk-blue/35"
+                >
+                  <p className="text-[11px] font-medium uppercase tracking-caps text-msk-blue/80">
+                    Bientôt dues
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold tabular-nums text-msk-ink">
+                    {data.expenses.dueSoonCount} ·{" "}
+                    {formatSvXof(data.expenses.dueSoonAmount)}
+                  </p>
+                </Link>
+              </div>
+            )}
+
+            <Surface className="p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
+                Répartition par type
+              </p>
+              {data.expenses.byCategory.length > 0 ? (
+                <ul className="mt-3 divide-y divide-msk-ink/6">
+                  {data.expenses.byCategory.map((c) => (
+                    <li key={c.category}>
+                      <Link
+                        href={`/suivi/charges?impaye=1&type=${c.category}`}
+                        prefetch={false}
+                        className="flex items-center justify-between gap-3 py-2 transition hover:text-msk-blue"
+                      >
+                        <span className="text-sm font-medium">
+                          {c.label}
+                          <span className="ml-1.5 text-xs font-normal text-msk-ink/40">
+                            ({c.count})
+                          </span>
+                        </span>
+                        <span className="tabular-nums text-sm text-msk-coral">
+                          {formatSvXof(c.amountDue)}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-3 text-sm text-msk-ink/45">
+                  Aucune charge à payer.
+                </p>
+              )}
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Link
+                  href="/suivi/charges?echeance=retard"
+                  prefetch={false}
+                  className={linkQuiet}
+                >
+                  Voir les retards
+                </Link>
+                <Link
+                  href="/suivi/charges?impaye=1"
+                  prefetch={false}
+                  className={linkQuiet}
+                >
+                  Charges non payées
+                </Link>
+                <Link
+                  href="/suivi/charges"
+                  prefetch={false}
+                  className={linkQuiet}
+                >
+                  Toutes les charges
+                </Link>
+              </div>
+            </Surface>
+          </section>
+        ) : null}
       </div>
     </PageShell>
   );
 }
 
-function AlertsPanel({ alerts }: { alerts: SvDashboardAlert[] }) {
+function AlertsPanel({
+  title,
+  subtitle,
+  alerts,
+}: {
+  title: string;
+  subtitle: string;
+  alerts: SvDashboardAlert[];
+}) {
   const shown = alerts.slice(0, 8);
   return (
     <Surface className="overflow-hidden p-0">
       <div className="flex items-center gap-2 border-b border-msk-ink/6 bg-msk-chalk/60 px-4 py-3">
         <AlertTriangle className="size-4 text-msk-coral" aria-hidden />
         <div>
-          <p className="text-sm font-semibold text-msk-ink">À traiter</p>
-          <p className="text-xs text-msk-ink/45">
-            Charges en retard / bientôt dues · dettes clients importantes
-          </p>
+          <p className="text-sm font-semibold text-msk-ink">{title}</p>
+          <p className="text-xs text-msk-ink/45">{subtitle}</p>
         </div>
       </div>
       <ul className="divide-y divide-msk-ink/6">
@@ -540,7 +581,7 @@ function AlertsPanel({ alerts }: { alerts: SvDashboardAlert[] }) {
       {alerts.length > shown.length ? (
         <p className="border-t border-msk-ink/6 px-4 py-2 text-xs text-msk-ink/40">
           + {alerts.length - shown.length} autre
-          {alerts.length - shown.length > 1 ? "s" : ""} — voir Charges / Clients
+          {alerts.length - shown.length > 1 ? "s" : ""}
         </p>
       ) : null}
     </Surface>
@@ -557,7 +598,7 @@ function KpiCard({
 }: {
   href: string;
   icon: typeof Wallet;
-  tone: "blue" | "coral" | "ink";
+  tone: "blue" | "coral" | "ink" | "cyan";
   label: string;
   value: string;
   hint: string;
@@ -567,7 +608,9 @@ function KpiCard({
       ? "bg-msk-coral/10 text-msk-coral"
       : tone === "ink"
         ? "bg-msk-ink/6 text-msk-ink/70"
-        : "bg-msk-blue/8 text-msk-blue";
+        : tone === "cyan"
+          ? "bg-[#00ACEE]/12 text-[#1384CB]"
+          : "bg-msk-blue/8 text-msk-blue";
   return (
     <Link
       href={href}

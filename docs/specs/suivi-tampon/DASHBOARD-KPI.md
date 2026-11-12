@@ -31,7 +31,8 @@
 | Factures clients — reste dû / ouvertes / encaissé période | `sv_invoices` + paiements | Dettes **clients** (encaisser) |
 | Charges fournisseurs — à payer / non payées / payé période | `sv_expense_invoices` + `sv_expense_payments` | Dettes **entreprise** (Orange / EDM / loyer) |
 | Répartition charges par type | reste dû groupé `ORANGE_INTERNET` / `EDM` / `LOYER` | Liens filtrés `/suivi/charges?impaye=1&type=` |
-| À traiter / Alertes | charges en retard · bientôt dues (≤ 7 j) · dettes clients ≥ 100 kF | Zone unifiée urgente |
+| Charges à traiter | charges en retard · bientôt dues (≤ 7 j) | Panneau **séparé** (pas mélangé aux clients) |
+| Dettes clients à traiter | dettes clients ≥ 100 kF | Panneau **séparé** (pas mélangé aux charges) |
 | Top débiteurs | clients avec `reste > 0` | Priorisation recouvrement |
 | Comparatif période vs précédente | mêmes agrégats période précédente | Tendance sans sur-ingénierie |
 | Série temporelle entrées / sorties | buckets jour ou semaine selon période | Graphique tendance |
@@ -66,15 +67,18 @@ Barre filtres UI : segment Jour/Semaine/Mois/Année + stepper date (← → + ch
 
 Liens listes : `/suivi/mouvements?direction=&from=&to=&compte=&categorie=` · `/suivi/factures?reste=1` · `/suivi/charges?impaye=1` · `/suivi/charges?impaye=1&type=…` · `/suivi/charges?echeance=retard|bientot` · `/suivi/comptes` · `/suivi/clients`.
 
-**Différenciation UI :** carte **Factures clients** (bordure bleue) ≠ carte **Charges fournisseurs** (bordure encre) — libellés et liens distincts, pas de KPI fusionné.
+**Différenciation UI (absolu, comme Commercial) :**  
+- Sections TB séparées : **Comptes** · **Trésorerie** · **Factures clients** · **Charges fournisseurs** — jamais un KPI hybride « Impayés clients / charges ».  
+- Hub `/suivi` : sections Pilotage / Clients et encaissements / Charges et trésorerie / Stocks ; KPI **par carte module** (pas de bandeau fusionné).  
+- Alertes : deux panneaux (**Charges à traiter** ≠ **Dettes clients à traiter**).
 
-### Alertes « À traiter »
+### Alertes
 
-| Type | Critère | Sévérité |
-|------|---------|----------|
-| Charge en retard | ouvert + reste > 0 + échéance passée | urgent |
-| Charge bientôt due | idem + échéance ≤ **7 jours** | attention |
-| Dette client critique | reste ≥ **100 000** F (≥ 500 k = urgent) | attention / urgent |
+| Type | Critère | Sévérité | Panneau |
+|------|---------|----------|---------|
+| Charge en retard | ouvert + reste > 0 + échéance passée | urgent | Charges à traiter |
+| Charge bientôt due | idem + échéance ≤ **7 jours** | attention | Charges à traiter |
+| Dette client critique | reste ≥ **100 000** F (≥ 500 k = urgent) | attention / urgent | Dettes clients à traiter |
 
 Libellé alerte charge : **« Échéance le JJ/MM/AAAA · X jours de retard »** (ou « dans X jours »).  
 Carte Charges : pastilles **En retard** / **Bientôt dues** → `/suivi/charges?echeance=retard|bientot`.  
@@ -91,6 +95,6 @@ Liens directs vers fiche charge / client. FR simple uniquement.
 1. **Aire** — entrées / sorties sur la période (buckets)
 2. **Donut** — dépenses caisse par famille (cliquable → mouvements filtrés) — **≠** répartition charges fournisseurs
 3. **Barres** comparatif — période courante vs précédente (entrées / sorties)
-4. **Cartes** — soldes comptes + estimation mensuelle + charges + factures clients + alertes
+4. **Cartes KPI par section** — soldes comptes · flux trésorerie · factures clients (grille 4) · charges fournisseurs (grille 4) · alertes séparées
 
 Lib : **recharts** + `ChartContainer` (déjà CRM / Commercial).
