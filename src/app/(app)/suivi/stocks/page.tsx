@@ -147,7 +147,7 @@ async function StocksResults({
   const items = await prisma.svStockItem.findMany({
     where,
     orderBy: [
-      sort.orderBy as Prisma.SvStockItemOrderByWithRelationInput[],
+      ...(sort.orderBy as Prisma.SvStockItemOrderByWithRelationInput[]),
       { code: "asc" },
     ],
     skip: pageSkip(page, pageSize),

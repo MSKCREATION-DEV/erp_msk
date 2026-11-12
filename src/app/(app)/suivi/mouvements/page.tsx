@@ -315,7 +315,7 @@ async function MouvementsResults({
   const rows = await prisma.svCashMovement.findMany({
     where,
     orderBy: [
-      sort.orderBy as Prisma.SvCashMovementOrderByWithRelationInput[],
+      ...(sort.orderBy as Prisma.SvCashMovementOrderByWithRelationInput[]),
       { createdAt: "desc" },
     ],
     skip: pageSkip(page, pageSize),

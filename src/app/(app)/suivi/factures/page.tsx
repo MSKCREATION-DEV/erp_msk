@@ -150,7 +150,7 @@ async function FacturesResults({
   const invoices = await prisma.svInvoice.findMany({
     where,
     orderBy: [
-      sort.orderBy as Prisma.SvInvoiceOrderByWithRelationInput[],
+      ...(sort.orderBy as Prisma.SvInvoiceOrderByWithRelationInput[]),
       { createdAt: "desc" },
     ],
     skip: pageSkip(page, pageSize),
