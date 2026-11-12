@@ -31,6 +31,18 @@ export function SvChargesToolbar() {
           label="Payées"
           clearLabel="Toutes"
         />
+        <ListFilterChip
+          param="echeance"
+          value="retard"
+          label="En retard"
+          clearLabel="Toutes"
+        />
+        <ListFilterChip
+          param="echeance"
+          value="bientot"
+          label="Bientôt dues"
+          clearLabel="Toutes"
+        />
       </div>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Type de charge">
         <CategoryChip

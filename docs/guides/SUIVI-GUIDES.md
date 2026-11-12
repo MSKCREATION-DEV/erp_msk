@@ -197,6 +197,34 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-12 — TB Suivi : charges + alertes urgentes
+
+| | |
+|---|---|
+| Quoi | Tableau de bord : KPIs **Charges** (à payer, payé période, répartition Orange/EDM/Loyer), zone **À traiter / Alertes** (retard, bientôt dues ≤ 7 j, dettes clients ≥ 100 kF), différenciation visuelle Factures clients vs Charges ; filtres `echeance=retard|bientot` sur `/suivi/charges` |
+| Pourquoi | Vision trésorerie complète + priorisation paiement fournisseurs |
+| Fichiers | `dashboard-stats.ts` / `dashboard-load.ts` / `tableau-de-bord/page.tsx`, `charges/page.tsx`, `charges-toolbar.tsx`, `DASHBOARD-KPI.md` |
+| Statut doc | `DASHBOARD-KPI` à jour ; guide hub reste **`draft`** |
+| Routes | `/suivi/tableau-de-bord` · `/suivi/charges?impaye=1&echeance=…` |
+
+### 2026-11-12 — TB Suivi : charges + alertes
+
+| | |
+|---|---|
+| Quoi | Tableau de bord : KPIs **Charges fournisseurs** (reste / payé période / répartition Orange·EDM·Loyer) · zone **À traiter** (retard, bientôt dues ≤7 j, dettes clients) · différenciation visuelle vs Factures clients |
+| Pourquoi | Vision trésorerie complète + priorisation paiement fournisseurs |
+| Fichiers | `dashboard-stats.ts`, `dashboard-load.ts`, `tableau-de-bord/page.tsx`, `DASHBOARD-KPI.md` |
+| Statut doc | `DASHBOARD-KPI` à jour ; guide hub **`draft`** |
+
+### 2026-11-12 — Charges : statuts paiement Direction
+
+| | |
+|---|---|
+| Quoi | Alignement statuts seed charges : **3 non payées** (Orange oct. CB503620261001, EDM, loyer nov.) · **3 PAYEE** (Orange août/sept. + loyer oct.) ; script `fix-suivi-expenses.ts` |
+| Pourquoi | Confirmation Direction — Orange passé = soldé ; dates exactes inconnues → paidAt = échéance + note Direction |
+| Fichiers | `expense-seed-data.ts`, `scripts/fix-suivi-expenses.ts`, `DECISIONS-SEED` §11, `INVENTAIRE` §12 |
+| Statut doc | Inventaire / décisions mis à jour ; guide hub reste **`draft`** |
+
 ### 2026-11-12 — Suivi Charges (factures internes / fournisseurs)
 
 | | |

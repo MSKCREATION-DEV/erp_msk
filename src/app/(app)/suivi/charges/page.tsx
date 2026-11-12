@@ -124,6 +124,11 @@ async function ChargesResults({
   const q = (firstParam(raw.q) ?? "").trim();
   const onlyUnpaid = firstParam(raw.impaye) === "1";
   const onlyPaid = firstParam(raw.paye) === "1";
+  const echeanceRaw = firstParam(raw.echeance) ?? "";
+  const echeance =
+    echeanceRaw === "retard" || echeanceRaw === "bientot"
+      ? echeanceRaw
+      : null;
   const typeRaw = firstParam(raw.type) ?? "";
   const category = CATEGORY_VALUES.has(typeRaw)
     ? (typeRaw as SvExpenseCategory)
@@ -132,8 +137,9 @@ async function ChargesResults({
   const pageSize = DEFAULT_PAGE_SIZE;
   const sp: Record<string, string | undefined> = {
     q: q || undefined,
-    impaye: onlyUnpaid ? "1" : undefined,
-    paye: onlyPaid && !onlyUnpaid ? "1" : undefined,
+    impaye: onlyUnpaid || echeance ? "1" : undefined,
+    paye: onlyPaid && !onlyUnpaid && !echeance ? "1" : undefined,
+    echeance: echeance ?? undefined,
     type: category ?? undefined,
     sort: firstParam(raw.sort),
     dir: firstParam(raw.dir),
@@ -143,11 +149,26 @@ async function ChargesResults({
     dir: "desc",
   });
 
+  const now = new Date();
+  const soon = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const dueFilter: Prisma.SvExpenseInvoiceWhereInput | null =
+    echeance === "retard"
+      ? { dueAt: { lt: now }, status: { in: UNPAID } }
+      : echeance === "bientot"
+        ? {
+            dueAt: { gte: now, lte: soon },
+            status: { in: UNPAID },
+          }
+        : null;
+
   const where: Prisma.SvExpenseInvoiceWhereInput = {
     AND: [
       { status: { not: "ANNULEE" } },
-      ...(onlyUnpaid ? [{ status: { in: UNPAID } }] : []),
-      ...(onlyPaid && !onlyUnpaid ? [{ status: "PAYEE" as const }] : []),
+      ...(onlyUnpaid || echeance ? [{ status: { in: UNPAID } }] : []),
+      ...(onlyPaid && !onlyUnpaid && !echeance
+        ? [{ status: "PAYEE" as const }]
+        : []),
+      ...(dueFilter ? [dueFilter] : []),
       ...(category ? [{ category }] : []),
       ...(q
         ? [
@@ -179,8 +200,9 @@ async function ChargesResults({
   const pages = totalPages(total, pageSize);
   const listParams: Record<string, string | undefined> = {
     q: q || undefined,
-    impaye: onlyUnpaid ? "1" : undefined,
-    paye: onlyPaid && !onlyUnpaid ? "1" : undefined,
+    impaye: onlyUnpaid || echeance ? "1" : undefined,
+    paye: onlyPaid && !onlyUnpaid && !echeance ? "1" : undefined,
+    echeance: echeance ?? undefined,
     type: category ?? undefined,
     sort: sort.key,
     dir: sort.dir,
@@ -189,7 +211,7 @@ async function ChargesResults({
   if (rows.length === 0) {
     return (
       <div className="p-8 text-center text-sm text-msk-ink/50">
-        {q || onlyUnpaid || onlyPaid || category ? (
+        {q || onlyUnpaid || onlyPaid || category || echeance ? (
           <>Aucune charge pour ces critères.</>
         ) : (
           <>

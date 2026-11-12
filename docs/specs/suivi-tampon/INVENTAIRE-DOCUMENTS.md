@@ -462,8 +462,8 @@ Méthodes : `pdftotext` (Orange) · extraction visuelle scans (EDM, loyer).
 | `facture_CB503620261001.pdf` | Orange Mali | CB503620261001 | 12/11/2026 | 14/12/2026 | 01–31/10/2026 | 65 600 | 11 808 | **85 149** (dont FDS 7 741) | **Non payée** | Confirmation Direction |
 | `Fac-edm-octobre.pdf` | EDM-S.A. | 455053 | 28/10/2026 | 13/11/2026 | 26/09→27/10 · fact. 10/2026 | 40 812 | 6 803 | **47 615** (chèque ; espèces 47 855) | **Non payée** | Client 012 30000034012 01 · « déposée Le 30-10 » |
 | `Fac-location-novembre.pdf` | Modibo Hamaye GAMBY | 2026/01597 | 02/11/2026 | ~5 j après réception | 01–30/11/2026 | 400 000 | 0 | **400 000** | **Non payée** | « Pour acquit » pré-imprimé ≠ preuve |
-| `facture_CB503620260901.pdf` | Orange Mali | CB503620260901 | 12/10/2026 | 13/11/2026 | 01–30/09/2026 | 55 000 | 9 900 | **71 390** (FDS 6 490) | Non payée / **paiement inconnu** | Pas de mention payé → pas PAYEE |
-| `facture_CB503620260801.pdf` | Orange Mali | CB503620260801 | 10/09/2026 | 12/10/2026 | 01–31/08/2026 | 60 950 | 10 971 | **79 113** (FDS 7 192) | Non payée / **paiement inconnu** | Idem |
-| `FACTURE_LOYER_OCT_2026-10-08.pdf` | Modibo Hamaye GAMBY | 2026/01435 | 01/10/2026 | ~5 j après réception | 01–31/10/2026 | 400 000 | 0 | **400 000** | **Payée** | Signature + cachet « Pour acquit » = preuve OCR |
+| `facture_CB503620260901.pdf` | Orange Mali | CB503620260901 | 12/10/2026 | 13/11/2026 | 01–30/09/2026 | 55 000 | 9 900 | **71 390** (FDS 6 490) | **Payée** | Confirmation Direction (passé) · paidAt = échéance · note « soldé selon confirmation Direction (passé) » |
+| `facture_CB503620260801.pdf` | Orange Mali | CB503620260801 | 10/09/2026 | 12/10/2026 | 01–31/08/2026 | 60 950 | 10 971 | **79 113** (FDS 7 192) | **Payée** | Idem |
+| `FACTURE_LOYER_OCT_2026-10-08.pdf` | Modibo Hamaye GAMBY | 2026/01435 | 01/10/2026 | ~5 j après réception | 01–31/10/2026 | 400 000 | 0 | **400 000** | **Payée** | Signature + cachet « Pour acquit » = preuve OCR · confirmé Direction |
 
 Types récurrents : **Wi‑Fi / Internet Orange** · **EDM électricité** · **Location appartement**.

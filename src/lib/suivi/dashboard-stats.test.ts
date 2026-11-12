@@ -2,9 +2,12 @@ import assert from "node:assert/strict";
 import {
   buildCompareBars,
   buildFlowSeries,
+  buildSvDashboardAlerts,
+  computeExpenseKpis,
   computeRunRate,
   expenseByFamily,
   sumFlows,
+  type SvExpenseRow,
   type SvMoveRow,
 } from "@/lib/suivi/dashboard-stats";
 import { normalizeSvCategoryFamily } from "@/lib/suivi/categories";
@@ -114,5 +117,61 @@ assert.equal(scope.daysInPeriod, 30);
 const bad = parseSvDashboardFilters({ periode: "invalid", compte: "X" });
 assert.equal(bad.mode, "mois");
 assert.equal(bad.compte, null);
+
+const expenseRows: SvExpenseRow[] = [
+  {
+    id: "e1",
+    number: "2026/01597",
+    vendorName: "GAMBY",
+    category: "LOYER",
+    status: "EMISE",
+    totalTtc: 400_000,
+    amountPaid: 0,
+    dueAt: new Date("2026-11-07T00:00:00Z"),
+    issuedAt: new Date("2026-11-02T00:00:00Z"),
+  },
+  {
+    id: "e2",
+    number: "455053",
+    vendorName: "EDM",
+    category: "EDM_ELECTRICITE",
+    status: "EMISE",
+    totalTtc: 47_615,
+    amountPaid: 0,
+    dueAt: new Date("2026-11-13T00:00:00Z"),
+    issuedAt: new Date("2026-10-28T00:00:00Z"),
+  },
+  {
+    id: "e3",
+    number: "CB503620260801",
+    vendorName: "Orange",
+    category: "ORANGE_INTERNET",
+    status: "PAYEE",
+    totalTtc: 79_113,
+    amountPaid: 79_113,
+    dueAt: new Date("2026-10-12T00:00:00Z"),
+    issuedAt: new Date("2026-09-10T00:00:00Z"),
+  },
+];
+
+const expKpis = computeExpenseKpis(expenseRows, [{ amount: 79_113 }]);
+assert.equal(expKpis.unpaidCount, 2);
+assert.equal(expKpis.paidCount, 1);
+assert.equal(expKpis.resteAPayer, 447_615);
+assert.equal(expKpis.amountPaidPeriod, 79_113);
+assert.equal(expKpis.byCategory[0]!.category, "LOYER");
+
+const alerts = buildSvDashboardAlerts({
+  now: new Date("2026-11-12T12:00:00Z"),
+  expenses: expenseRows,
+  debtors: [
+    { id: "c1", name: "ECOSOL", restant: 153_600 },
+    { id: "c2", name: "Petit", restant: 50_000 },
+  ],
+});
+assert.ok(alerts.some((a) => a.kind === "charge_retard" && a.href.includes("e1")));
+assert.ok(alerts.some((a) => a.kind === "charge_bientot" && a.href.includes("e2")));
+assert.ok(alerts.some((a) => a.kind === "dette_client" && a.title.includes("ECOSOL")));
+assert.ok(!alerts.some((a) => a.title.includes("Petit")));
 
 console.log("dashboard-stats.test.ts OK");

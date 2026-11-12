@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import {
   accountBalanceFromMoves,
   ensureSvAccounts,
@@ -7,6 +8,8 @@ import { clientBalance, invoiceReste } from "@/lib/suivi/balances";
 import {
   buildCompareBars,
   buildFlowSeries,
+  buildSvDashboardAlerts,
+  computeExpenseKpis,
   computeRunRate,
   expenseByFamily,
   filterMovesByFamily,
@@ -14,6 +17,9 @@ import {
   type SvAccountBalance,
   type SvCategorySlice,
   type SvCompareBar,
+  type SvDashboardAlert,
+  type SvExpenseKpis,
+  type SvExpenseRow,
   type SvFlowTotals,
   type SvMoveRow,
   type SvRunRate,
@@ -46,6 +52,8 @@ export type SvDashboardData = {
   runRate: SvRunRate;
   invoices: SvInvoicePeriodKpis;
   debtors: SvDebtorRow[];
+  expenses: SvExpenseKpis;
+  alerts: SvDashboardAlert[];
   movementCount: number;
 };
 
@@ -74,6 +82,7 @@ export async function loadSvDashboard(
     canMovements: boolean;
     canInvoices: boolean;
     canClients: boolean;
+    canExpenses: boolean;
   },
 ): Promise<SvDashboardData> {
   const emptyFlows: SvFlowTotals = {
@@ -126,35 +135,37 @@ export async function loadSvDashboard(
       countsTowardBalance: true as const,
       ...(accountFilterId ? { accountId: accountFilterId } : {}),
     };
-    const [curRaw, prevRaw] = await Promise.all([
-      prisma.svCashMovement.findMany({
-        where: {
-          ...ledgerWhere,
-          movedAt: { gte: scope.from, lte: scope.to },
-        },
-        select: {
-          movedAt: true,
-          direction: true,
-          amount: true,
-          category: true,
-          accountId: true,
-          transferId: true,
-        },
-      }),
-      prisma.svCashMovement.findMany({
-        where: {
-          ...ledgerWhere,
-          movedAt: { gte: scope.prevFrom, lte: scope.prevTo },
-        },
-        select: {
-          movedAt: true,
-          direction: true,
-          amount: true,
-          category: true,
-          accountId: true,
-          transferId: true,
-        },
-      }),
+    const [curRaw, prevRaw] = await runSeries([
+      () =>
+        prisma.svCashMovement.findMany({
+          where: {
+            ...ledgerWhere,
+            movedAt: { gte: scope.from, lte: scope.to },
+          },
+          select: {
+            movedAt: true,
+            direction: true,
+            amount: true,
+            category: true,
+            accountId: true,
+            transferId: true,
+          },
+        }),
+      () =>
+        prisma.svCashMovement.findMany({
+          where: {
+            ...ledgerWhere,
+            movedAt: { gte: scope.prevFrom, lte: scope.prevTo },
+          },
+          select: {
+            movedAt: true,
+            direction: true,
+            amount: true,
+            category: true,
+            accountId: true,
+            transferId: true,
+          },
+        }),
     ]);
 
     let curMoves = curRaw.map(toMoveRow);
@@ -179,6 +190,14 @@ export async function loadSvDashboard(
     amountPaidPeriod: 0,
   };
   let debtors: SvDebtorRow[] = [];
+  let expenses: SvExpenseKpis = {
+    unpaidCount: 0,
+    paidCount: 0,
+    resteAPayer: 0,
+    amountPaidPeriod: 0,
+    byCategory: [],
+  };
+  let expenseRows: SvExpenseRow[] = [];
 
   if (opts.canInvoices) {
     const allInvoices = await prisma.svInvoice.findMany({
@@ -250,6 +269,41 @@ export async function loadSvDashboard(
       .slice(0, 8);
   }
 
+  if (opts.canExpenses) {
+    const [allExpenses, periodPays] = await runSeries([
+      () =>
+        prisma.svExpenseInvoice.findMany({
+          where: { status: { not: "ANNULEE" } },
+          select: {
+            id: true,
+            number: true,
+            vendorName: true,
+            category: true,
+            status: true,
+            totalTtc: true,
+            amountPaid: true,
+            dueAt: true,
+            issuedAt: true,
+          },
+        }),
+      () =>
+        prisma.svExpensePayment.findMany({
+          where: {
+            paidAt: { gte: scope.from, lte: scope.to },
+            invoice: { status: { not: "ANNULEE" } },
+          },
+          select: { amount: true },
+        }),
+    ]);
+    expenseRows = allExpenses;
+    expenses = computeExpenseKpis(allExpenses, periodPays);
+  }
+
+  const alerts = buildSvDashboardAlerts({
+    expenses: opts.canExpenses ? expenseRows : [],
+    debtors: opts.canClients ? debtors : [],
+  });
+
   return {
     accounts,
     current,
@@ -260,6 +314,8 @@ export async function loadSvDashboard(
     runRate,
     invoices,
     debtors,
+    expenses,
+    alerts,
     movementCount,
   };
 }

@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import {
+  AlertTriangle,
   ArrowDownRight,
   ArrowUpRight,
+  Building2,
+  Clock,
   Landmark,
   Receipt,
   Users,
@@ -22,6 +25,7 @@ import {
   SV_ACCOUNT_KIND_LABEL,
 } from "@/lib/suivi/accounts";
 import { formatSvXof } from "@/lib/suivi/labels";
+import type { SvDashboardAlert } from "@/lib/suivi/dashboard-stats";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -54,6 +58,8 @@ export default async function SuiviDashboardPage({
     hasPermission(user, "sv.invoices.view") || user.isSuperAdmin;
   const canClients =
     hasPermission(user, "sv.clients.view") || user.isSuperAdmin;
+  const canExpenses =
+    hasPermission(user, "sv.expenses.view") || user.isSuperAdmin;
 
   const raw = await searchParams;
   const scope = parseSvDashboardFilters(raw);
@@ -62,6 +68,7 @@ export default async function SuiviDashboardPage({
     canMovements,
     canInvoices,
     canClients,
+    canExpenses,
   });
 
   const outHref = buildSvMovementsHref({
@@ -83,7 +90,7 @@ export default async function SuiviDashboardPage({
     <PageShell>
       <PageHeader
         title="Tableau de bord"
-        description="Trésorerie, conso et dettes clients — base pour voter des budgets."
+        description="Trésorerie, charges fournisseurs, factures clients et alertes — base pour voter des budgets."
         backHref="/suivi"
         breadcrumbs={[
           { label: "Accueil", href: "/accueil" },
@@ -102,6 +109,10 @@ export default async function SuiviDashboardPage({
           categorie={scope.categorie}
           periodLabel={scope.label}
         />
+
+        {data.alerts.length > 0 ? (
+          <AlertsPanel alerts={data.alerts} />
+        ) : null}
 
         {canAccounts ? (
           <div className="grid gap-3 sm:grid-cols-2">
@@ -233,17 +244,104 @@ export default async function SuiviDashboardPage({
           </Surface>
         )}
 
-        {(canInvoices || canClients) && (
+        {(canExpenses || canInvoices || canClients) && (
           <div className="grid gap-3 lg:grid-cols-2">
-            {canInvoices ? (
-              <Surface className="p-4">
+            {canExpenses ? (
+              <Surface className="border-l-4 border-l-msk-ink/25 p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
-                      Factures & dettes
+                      Charges fournisseurs
                     </p>
                     <p className="mt-1 text-sm text-msk-ink/50">
-                      Encours clients (reste dû)
+                      Orange, EDM, loyer — à payer à l’extérieur
+                    </p>
+                  </div>
+                  <Building2 className="size-5 text-msk-ink/55" aria-hidden />
+                </div>
+                <dl className="mt-4 grid grid-cols-2 gap-3">
+                  <div>
+                    <dt className="text-xs text-msk-ink/45">Reste à payer</dt>
+                    <dd className="text-xl font-semibold tabular-nums text-msk-coral">
+                      {formatSvXof(data.expenses.resteAPayer)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-msk-ink/45">Non payées</dt>
+                    <dd className="text-xl font-semibold tabular-nums">
+                      {data.expenses.unpaidCount}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-msk-ink/45">
+                      Payé (période)
+                    </dt>
+                    <dd className="text-lg font-semibold tabular-nums text-msk-ink">
+                      {formatSvXof(data.expenses.amountPaidPeriod)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-msk-ink/45">Déjà payées</dt>
+                    <dd className="text-lg font-semibold tabular-nums">
+                      {data.expenses.paidCount}
+                    </dd>
+                  </div>
+                </dl>
+                {data.expenses.byCategory.length > 0 ? (
+                  <ul className="mt-3 divide-y divide-msk-ink/6">
+                    {data.expenses.byCategory.map((c) => (
+                      <li key={c.category}>
+                        <Link
+                          href={`/suivi/charges?impaye=1&type=${c.category}`}
+                          prefetch={false}
+                          className="flex items-center justify-between gap-3 py-2 transition hover:text-msk-blue"
+                        >
+                          <span className="text-sm font-medium">
+                            {c.label}
+                            <span className="ml-1.5 text-xs font-normal text-msk-ink/40">
+                              ({c.count})
+                            </span>
+                          </span>
+                          <span className="tabular-nums text-sm text-msk-coral">
+                            {formatSvXof(c.amountDue)}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-3 text-sm text-msk-ink/45">
+                    Aucune charge à payer.
+                  </p>
+                )}
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Link
+                    href="/suivi/charges?impaye=1"
+                    prefetch={false}
+                    className={linkQuiet}
+                  >
+                    Charges non payées
+                  </Link>
+                  <Link
+                    href="/suivi/charges"
+                    prefetch={false}
+                    className={linkQuiet}
+                  >
+                    Toutes les charges
+                  </Link>
+                </div>
+              </Surface>
+            ) : null}
+
+            {canInvoices ? (
+              <Surface className="border-l-4 border-l-msk-blue p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
+                      Factures clients
+                    </p>
+                    <p className="mt-1 text-sm text-msk-ink/50">
+                      Encours à encaisser (reste dû)
                     </p>
                   </div>
                   <Receipt className="size-5 text-msk-blue/70" aria-hidden />
@@ -282,7 +380,7 @@ export default async function SuiviDashboardPage({
                     prefetch={false}
                     className={linkQuiet}
                   >
-                    Voir factures à encaisser
+                    Factures à encaisser
                   </Link>
                   <Link
                     href={inHref}
@@ -296,7 +394,9 @@ export default async function SuiviDashboardPage({
             ) : null}
 
             {canClients ? (
-              <Surface className="p-4">
+              <Surface
+                className={`p-4 ${canExpenses && canInvoices ? "lg:col-span-2" : ""}`}
+              >
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/35">
@@ -345,6 +445,67 @@ export default async function SuiviDashboardPage({
         )}
       </div>
     </PageShell>
+  );
+}
+
+function AlertsPanel({ alerts }: { alerts: SvDashboardAlert[] }) {
+  const shown = alerts.slice(0, 8);
+  return (
+    <Surface className="overflow-hidden p-0">
+      <div className="flex items-center gap-2 border-b border-msk-ink/6 bg-msk-chalk/60 px-4 py-3">
+        <AlertTriangle className="size-4 text-msk-coral" aria-hidden />
+        <div>
+          <p className="text-sm font-semibold text-msk-ink">À traiter</p>
+          <p className="text-xs text-msk-ink/45">
+            Charges en retard / bientôt dues · dettes clients importantes
+          </p>
+        </div>
+      </div>
+      <ul className="divide-y divide-msk-ink/6">
+        {shown.map((a, i) => (
+          <li key={`${a.kind}-${a.href}-${i}`}>
+            <Link
+              href={a.href}
+              prefetch={false}
+              className="flex items-start gap-3 px-4 py-3 transition hover:bg-msk-chalk/50"
+            >
+              <span
+                className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg ${
+                  a.severity === "urgent"
+                    ? "bg-msk-coral/10 text-msk-coral"
+                    : "bg-msk-blue/8 text-msk-blue"
+                }`}
+              >
+                {a.kind === "charge_bientot" ? (
+                  <Clock className="size-4" aria-hidden />
+                ) : a.kind === "dette_client" ? (
+                  <Users className="size-4" aria-hidden />
+                ) : (
+                  <AlertTriangle className="size-4" aria-hidden />
+                )}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-msk-ink">{a.title}</p>
+                <p className="text-xs text-msk-ink/45">{a.detail}</p>
+              </div>
+              <span
+                className={`shrink-0 tabular-nums text-sm font-semibold ${
+                  a.severity === "urgent" ? "text-msk-coral" : "text-msk-ink"
+                }`}
+              >
+                {formatSvXof(a.amount)}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {alerts.length > shown.length ? (
+        <p className="border-t border-msk-ink/6 px-4 py-2 text-xs text-msk-ink/40">
+          + {alerts.length - shown.length} autre
+          {alerts.length - shown.length > 1 ? "s" : ""} — voir Charges / Clients
+        </p>
+      ) : null}
+    </Surface>
   );
 }
 

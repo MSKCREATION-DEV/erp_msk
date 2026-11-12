@@ -37,9 +37,11 @@ export type SvExpenseSeedRow = {
 };
 
 /**
- * Synthèse OCR 2026-11-12 :
- * - Orange : pdftotext (couche texte).
- * - EDM / Loyer : scans photo → extraction visuelle.
+ * Synthèse OCR 2026-11-12 + confirmation Direction (statuts paiement) :
+ * - Non payées (3) : Orange oct. CB503620261001 · EDM oct. · loyer nov.
+ * - Payées (3) : Orange août/sept. (passé Direction) · loyer oct. (OCR Pour acquit).
+ * - Orange : pdftotext · EDM / Loyer : scans photo.
+ * Date de paiement exacte inconnue → paidAt = échéance (ou émission) + note Direction.
  */
 export const SV_SEED_EXPENSE_INVOICES: SvExpenseSeedRow[] = [
   {
@@ -108,7 +110,7 @@ export const SV_SEED_EXPENSE_INVOICES: SvExpenseSeedRow[] = [
   {
     sourceDocument: "docs/facture_CB503620260901.pdf",
     category: "ORANGE_INTERNET",
-    status: "EMISE",
+    status: "PAYEE",
     vendorName: "Orange Mali",
     vendorRef: "CB5036 / A00367302863",
     number: "CB503620260901",
@@ -120,16 +122,23 @@ export const SV_SEED_EXPENSE_INVOICES: SvExpenseSeedRow[] = [
     totalHt: 55000,
     totalVat: 9900,
     totalTtc: 71390,
-    amountPaid: 0,
+    amountPaid: 71390,
     object: "Orange Internet FO B2B — septembre 2026",
     notes:
-      "OCR pdftotext. HT 55 000 · TVA 9 900 · Facture 64 900 · FDS 6 490 · Total 71 390. Hypothèse paiement : INCONNU — PDF sans mention payé → non marquée PAYEE (décision J).",
-    payments: [],
+      "OCR pdftotext. HT 55 000 · TVA 9 900 · Facture 64 900 · FDS 6 490 · Total 71 390. PAYEE — soldé selon confirmation Direction (passé). Date exacte inconnue → paidAt = échéance. Pas de mouvement caisse inventé.",
+    payments: [
+      {
+        amount: 71390,
+        paidAt: "2026-11-13",
+        method: "Non précisé",
+        note: "soldé selon confirmation Direction (passé)",
+      },
+    ],
   },
   {
     sourceDocument: "docs/facture_CB503620260801.pdf",
     category: "ORANGE_INTERNET",
-    status: "EMISE",
+    status: "PAYEE",
     vendorName: "Orange Mali",
     vendorRef: "CB5036 / A00367302863",
     number: "CB503620260801",
@@ -141,11 +150,18 @@ export const SV_SEED_EXPENSE_INVOICES: SvExpenseSeedRow[] = [
     totalHt: 60950,
     totalVat: 10971,
     totalTtc: 79113,
-    amountPaid: 0,
+    amountPaid: 79113,
     object: "Orange Internet FO B2B — août 2026",
     notes:
-      "OCR pdftotext. HT 60 950 · TVA 10 971 · Facture 71 921 · FDS 7 192 · Total 79 113. Hypothèse paiement : INCONNU — PDF sans mention payé → non marquée PAYEE (décision J).",
-    payments: [],
+      "OCR pdftotext. HT 60 950 · TVA 10 971 · Facture 71 921 · FDS 7 192 · Total 79 113. PAYEE — soldé selon confirmation Direction (passé). Date exacte inconnue → paidAt = échéance. Pas de mouvement caisse inventé.",
+    payments: [
+      {
+        amount: 79113,
+        paidAt: "2026-10-12",
+        method: "Non précisé",
+        note: "soldé selon confirmation Direction (passé)",
+      },
+    ],
   },
   {
     sourceDocument: "docs/FACTURE_LOYER_OCT_2026-10-08.pdf",
@@ -165,7 +181,7 @@ export const SV_SEED_EXPENSE_INVOICES: SvExpenseSeedRow[] = [
     amountPaid: 400000,
     object: "Loyer appartement — octobre 2026",
     notes:
-      "OCR scan. 400 000 F. Signature + cachet sur « Pour acquit » → preuve de paiement retenue (décision J). Pas de mouvement caisse inventé (compte/mode non documentés).",
+      "OCR scan. 400 000 F. Signature + cachet sur « Pour acquit » → preuve de paiement retenue (décision J). Confirmé PAYEE Direction. Pas de mouvement caisse inventé (compte/mode non documentés).",
     payments: [
       {
         amount: 400000,
