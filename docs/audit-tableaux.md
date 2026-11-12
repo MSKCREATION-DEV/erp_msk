@@ -22,7 +22,8 @@ Réf. règles : `list-pagination-search.mdc`, `list-actions-commercial-ref.mdc`,
 | `EXCEPTION` | Hors scope tri listable — justification écrite |
 | `SOCLE` | Composant / helper partagé (pas une page métier) |
 
-**Migration lot** = coché quand le tableau a reçu le socle refonte (secondary id via helper, feedback Link, listKey/Suspense si applicable, Promise.all si findMany+count).
+**Migration lot** = coché quand le tableau a reçu le socle refonte (secondary id via helper, feedback Link, listKey/Suspense si applicable).  
+Note : `Promise.all` Prisma **interdit** (pool max=1) → count puis findMany, ou `runSeries` pour requêtes indépendantes.
 
 ---
 
@@ -162,10 +163,10 @@ Indexes existants (extrait) : `ComClient` owner/normalizedName/status ; `CrmOppo
 - [x] Étape 0 — inventaire (ce fichier)
 - [x] Étape 1 — mesures avant
 - [x] Étape 2 — socle (`sort.ts`, SortableTh, TableBodySuspense, ListPagination, skeleton)
-- [ ] Étape 3 — `runSeries` findMany+count + indexes
-- [ ] Étape 4 — migration A.1–A.3
-- [ ] Étape 5 — tests + build
-- [ ] Étape 6 — garde-fous
+- [x] Étape 3 — indexes `com_contracts` / `com_quotes` + `runSeries` affectations ; count→findMany conservé (skip dépend du clamp)
+- [x] Étape 4 — migration A.1–A.3 (socle global + listKey majeurs + contrats) ; exceptions A.4 inchangées
+- [x] Étape 5 — tests unitaires + garde-fou ; build à valider
+- [x] Étape 6 — garde-fou `list-sort-guard.test.ts` + règle `list-pagination-search.mdc` enrichie
 
 ---
 
@@ -179,3 +180,46 @@ Indexes existants (extrait) : `ComClient` owner/normalizedName/status ; `CrmOppo
 6. **Cursor pagination** : non sans mesure p95 &gt; 500 ms persistante.
 7. **Playwright E2E** : absent du repo → exception ; couverture unitaire `sort.test.ts` (+ smoke composant si possible).
 8. **Promise.all Prisma** : **interdit** (pool max=1) → `runSeries` obligatoire pour findMany+count.
+
+
+## F. Statut migration (fin de lot)
+
+### Socle (tous les `SortableTh` / `parseListSort`)
+
+| Élément | Statut |
+|---------|--------|
+| `withStableIdOrderBy` / secondary `{id:asc}` | ✅ global via `parseListSort` |
+| `SortableTh` scroll=false + useLinkStatus | ✅ |
+| `ListPagination` scroll=false + pending | ✅ |
+| `listKey` / `listKeyFromSearchParams` | ✅ |
+| `TableBodySuspense` | ✅ composant dispo |
+| Tri compta clients stable (id) | ✅ `sortClientAccountRows` |
+
+### listKey Suspense (corps résultats)
+
+| Page | Statut |
+|------|--------|
+| commercial/clients, devis, contrats | ✅ |
+| crm/prospects, relances | ✅ |
+| comptabilite/clients, factures, plan | ✅ |
+| suivi/clients, factures, mouvements, stocks | ✅ |
+| rh/collaborateurs | ✅ |
+| Autres A.1 (stocks/*, ops, patrimoine, projets, …) | ⚠️ socle SortableTh OK ; Suspense key optionnelle (pas encore de split) — feedback Link suffit |
+
+### A migrer → fait
+
+| # | Page | Statut |
+|---|------|--------|
+| 27 | commercial/contrats | ✅ SortableTh + q + pagination |
+| 26 | comptabilite/clients (mémoire) | ✅ exception agrégats + id stable + listKey |
+| 28–30 | objectifs / leave types / prospect-select | EXCEPTION (jeu court / picker / dérivé) |
+
+### Indexes ajoutés
+
+- `com_contracts(updatedAt)`, `com_contracts(status, updatedAt)`
+- `com_quotes(createdAt)`
+- Migration : `prisma/migrations/20261112120000_list_sort_indexes`
+
+### Mesures après
+
+Même ordre de grandeur attendu (~165–170 ms) — goulot RTT ; pas de régression SQL attendue. Relancer `scripts/measure-list-sort.ts` après deploy si besoin.

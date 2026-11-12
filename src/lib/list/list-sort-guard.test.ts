@@ -55,10 +55,15 @@ for (const file of files) {
     offenders.push(`${rel}: <th onClick> (utiliser SortableTh / URL)`);
   }
 
-  // Tri JS sur lignes chargées dans une page listing app (heuristique)
-  if (
+  // Tri JS sur lignes — listings (`page.tsx` hors fiches `[id]` / formulaires)
+  const isListingPage =
     rel.includes("app/(app)/") &&
-    rel.endsWith("page.tsx") &&
+    rel.endsWith("/page.tsx") &&
+    !rel.includes("/[") &&
+    !rel.includes("/nouveau/") &&
+    !rel.includes("/edit/");
+  if (
+    isListingPage &&
     /\.sort\s*\(/.test(src) &&
     /localeCompare|\.sort\s*\(\s*\(/.test(src)
   ) {

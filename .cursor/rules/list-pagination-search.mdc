@@ -66,7 +66,21 @@ Toute page qui affiche des **données en tableau** (listing métier) doit :
 - Micro-listes **inline fiche** (ex. 5–10 paiements récents) — plafond `take` + lien « voir tout » vers listing paginé
 - En-têtes purement décoratifs sans données triables
 
+## Tri — feedback & stabilité (absolu)
+
+| Exigence | Pattern |
+|---|---|
+| Source de vérité | URL `?sort=` + `?dir=` (`hsort`/`hdir` si 2 tableaux) |
+| En-tête | `SortableTh` — `Link` `prefetch={false}` `scroll={false}` + pending `useLinkStatus` |
+| Suspense | `key={listKey(…)}` / `listKeyFromSearchParams` autour du corps résultats (Next #49297) |
+| orderBy | `parseListSort` → primaire + secondaire `{ id: "asc" }` (`withStableIdOrderBy`) |
+| findMany + count | **Séquentiel** via `runSeries` — **jamais** `Promise.all([prisma…, prisma…])` (pool max=1) |
+| Pas de | TanStack Table, `<th onClick>`, tri `.sort()` sur lignes d’un listing paginé serveur |
+
+Garde-fou : `src/lib/list/sort-guard.test.ts` (+ `npm run test:list`).
+
 ## Test mental
 
 > Un commercial ouvre la liste : peut-il chercher, filtrer, trier et paginer sans charger 500 lignes d’un coup, comme sur Devis / Clients Commercial ?
+> Clic en-tête : spinner immédiat + skeleton corps (Suspense key) sans freeze header ?
 > Si non → **bug bloquant**, aligner avant gate.
