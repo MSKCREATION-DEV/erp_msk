@@ -6,7 +6,7 @@ export default function SuiviDashboardLoading() {
       <div className="animate-pulse space-y-4">
         <div className="h-8 w-56 rounded-lg bg-msk-ink/8" />
         <div className="h-4 w-80 max-w-full rounded bg-msk-ink/6" />
-        <div className="h-36 rounded-xl border border-msk-ink/8 bg-white" />
+        <div className="h-14 rounded-xl border border-msk-ink/8 bg-white" />
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="h-28 rounded-xl bg-white border border-msk-ink/8" />
           <div className="h-28 rounded-xl bg-white border border-msk-ink/8" />

@@ -34,7 +34,7 @@ export const SUIVI_MODULES: SuiviModule[] = [
     id: "factures",
     href: "/suivi/factures",
     title: "Factures",
-    description: "Payé / reste, remix depuis l’historique.",
+    description: "Payé / reste, nouvelle facture depuis l’historique.",
     tone: "cyan",
     permission: "sv.invoices.view",
   },

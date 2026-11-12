@@ -197,14 +197,24 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-12 — Suivi TB : filtres redesign + français UI
+
+| | |
+|---|---|
+| Quoi | Barre filtres TB alignée CRM (segment + stepper date + menus Compte/Catégorie sans pastille « Tous ») ; chasse anglais/jargon UI Suivi (run-rate → Estimation mensuelle, OPS retiré, Hub → Menu, remix → française, badges Entrée/Sortie) |
+| Pourquoi | Filtres trop lourds / confus ; Direction non-tech ne doit voir que du français simple |
+| Fichiers | `dashboard-filters.tsx`, `tableau-de-bord/page.tsx`, charts, hub cards, mouvements, factures, error, `DASHBOARD-KPI.md` |
+| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — revalider libellés TB / factures / mouvements |
+| Routes | `/suivi/tableau-de-bord` · `/suivi/mouvements` · `/suivi/factures` |
+
 ### 2026-11-12 — Suivi Tableau de bord (pilotage budgets)
 
 | | |
 |---|---|
-| Quoi | Page `/suivi/tableau-de-bord` : soldes comptes post-bascule, sorties/entrées ops, répartition catégories, run-rate (estimation), comparatif N vs N−1, factures/reste dû, top débiteurs ; filtres URL ; charts recharts ; liens listes filtrées |
-| Pourquoi | Direction doit voir conso jour/semaine/mois/année avant de voter des budgets |
+| Quoi | Page `/suivi/tableau-de-bord` : soldes comptes post-bascule, sorties/entrées d’activité, répartition catégories, estimation mensuelle, comparatif N vs N−1, factures/reste dû, top débiteurs ; filtres URL ; charts recharts ; liens listes filtrées |
+| Pourquoi | Direction doit voir dépenses jour/semaine/mois/année avant de voter des budgets |
 | Fichiers | `src/app/(app)/suivi/tableau-de-bord/**`, `src/lib/suivi/dashboard-*.ts`, `categories.ts`, `dashboard-charts/filters`, nav/modules, `mouvements` filtres URL, `docs/specs/suivi-tampon/DASHBOARD-KPI.md` |
-| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — ajouter étape TB ; KPI doc `DASHBOARD-KPI.md` |
+| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — ajouter étape TB ; doc indicateurs `DASHBOARD-KPI.md` |
 | Routes | `/suivi/tableau-de-bord` · filtres `periode`/`compte`/`categorie` · `/suivi/mouvements?…` |
 | Droits | `sv.access` + sections `sv.accounts|movements|invoices|clients.view` |
 

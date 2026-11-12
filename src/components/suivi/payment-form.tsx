@@ -45,8 +45,8 @@ export function SvPaymentForm({
         <p className="text-sm text-msk-coral">{state.error}</p>
       ) : null}
       <p className="text-xs text-msk-ink/55">
-        Reste à encaisser : {formatSvXof(reste)}. Un mouvement IN lié peut être
-        créé (traçabilité).
+        Reste à encaisser : {formatSvXof(reste)}. Une entrée de trésorerie liée
+        peut être créée (suivi).
       </p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div>

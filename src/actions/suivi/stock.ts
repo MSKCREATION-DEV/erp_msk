@@ -270,7 +270,10 @@ export async function createSvStockMovement(
   );
 
   if (nextQty < 0) {
-    return { ok: false, error: "Stock insuffisant (quantité négative refusée)." };
+    return {
+      ok: false,
+      error: "Quantité insuffisante — on ne peut pas descendre en négatif.",
+    };
   }
   if (parsed.data.kind === "ADJUST" && moveQty === 0) {
     return { ok: false, error: "Quantité déjà à la cible — aucun mouvement." };

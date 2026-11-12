@@ -59,13 +59,13 @@ export function SvMovementForm() {
                 options={[
                   {
                     value: "OUT",
-                    label: "Sortie (OUT)",
-                    description: "Débit du compte choisi.",
+                    label: "Sortie",
+                    description: "Argent qui sort du compte choisi.",
                   },
                   {
                     value: "IN",
-                    label: "Entrée (IN)",
-                    description: "Crédit du compte choisi.",
+                    label: "Entrée",
+                    description: "Argent qui entre sur le compte choisi.",
                   },
                 ]}
               />

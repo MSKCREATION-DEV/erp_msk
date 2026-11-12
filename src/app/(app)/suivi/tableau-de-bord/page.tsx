@@ -160,7 +160,7 @@ export default async function SuiviDashboardPage({
                 href={outHref}
                 icon={ArrowDownRight}
                 tone="coral"
-                label="Sorties (ops)"
+                label="Sorties"
                 value={formatSvXof(data.current.outOps)}
                 hint={`${scope.label} · hors transferts`}
               />
@@ -168,7 +168,7 @@ export default async function SuiviDashboardPage({
                 href={inHref}
                 icon={ArrowUpRight}
                 tone="blue"
-                label="Entrées (ops)"
+                label="Entrées"
                 value={formatSvXof(data.current.inOps)}
                 hint={`${scope.label} · hors ouverture`}
               />
@@ -176,13 +176,13 @@ export default async function SuiviDashboardPage({
                 href={outHref}
                 icon={ArrowDownRight}
                 tone="ink"
-                label="Conso / jour"
+                label="Dépense / jour"
                 value={formatSvXof(data.runRate.dailyAvgOut)}
                 hint="Moyenne sur la période"
               />
               <Surface className="p-4">
                 <p className="text-xs font-medium uppercase tracking-caps text-msk-ink/45">
-                  Estimation run-rate
+                  Estimation mensuelle
                 </p>
                 <p className="mt-1 text-lg font-semibold tabular-nums text-msk-ink">
                   {formatSvXof(data.runRate.monthEstimate)}
@@ -195,8 +195,8 @@ export default async function SuiviDashboardPage({
                   <span className="ml-1 text-xs text-msk-ink/45">/ an</span>
                 </p>
                 <p className="mt-2 text-[11px] leading-snug text-msk-ink/40">
-                  Estimation linéaire (conso période × jours) — pas un budget
-                  voté.
+                  Si on continue au même rythme : projection sur 30 et 365 jours
+                  — ce n’est pas un budget voté.
                 </p>
               </Surface>
             </div>
@@ -228,7 +228,7 @@ export default async function SuiviDashboardPage({
         ) : (
           <Surface className="p-6">
             <p className="text-sm text-msk-ink/55">
-              Permission `sv.movements.view` requise pour les flux trésorerie.
+              Droit « voir les mouvements » requis pour les flux de trésorerie.
             </p>
           </Surface>
         )}
@@ -270,7 +270,7 @@ export default async function SuiviDashboardPage({
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-msk-ink/45">Payées (stock)</dt>
+                    <dt className="text-xs text-msk-ink/45">Déjà payées</dt>
                     <dd className="text-lg font-semibold tabular-nums">
                       {data.invoices.paidCount}
                     </dd>

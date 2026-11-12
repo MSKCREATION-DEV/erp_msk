@@ -45,7 +45,7 @@ export default async function SuiviFacturesPage({
     <PageShell>
       <PageHeader
         title="Factures"
-        description="Payé / reste — remix depuis l’historique."
+        description="Payé / reste — nouvelle facture depuis l’historique."
         backHref="/suivi"
         actions={
           <div className="flex flex-wrap gap-2">
@@ -60,7 +60,7 @@ export default async function SuiviFacturesPage({
                 href="/suivi/factures/nouveau"
                 className="inline-flex h-9 items-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
               >
-                Nouvelle (remix)
+                Nouvelle facture
               </Link>
             ) : null}
           </div>

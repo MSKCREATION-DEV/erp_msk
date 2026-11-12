@@ -36,7 +36,7 @@ type LineDraft = {
 const STEPS = [
   { id: "client", label: "Client", hint: "Qui facturer" },
   { id: "source", label: "Source", hint: "Historique" },
-  { id: "lignes", label: "Lignes", hint: "Remix" },
+  { id: "lignes", label: "Lignes", hint: "À facturer" },
   { id: "recap", label: "Récap", hint: "Émettre" },
 ] as const;
 

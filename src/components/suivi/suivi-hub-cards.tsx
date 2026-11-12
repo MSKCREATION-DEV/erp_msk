@@ -50,7 +50,7 @@ function moduleKpi(
     case "comptes":
       return { value: String(count), hint: "comptes" };
     case "mouvements":
-      return { value: String(count), hint: "ops" };
+      return { value: String(count), hint: "mouvements" };
     case "stocks":
       return { value: String(count), hint: "à zéro" };
     default:

@@ -46,7 +46,7 @@ export default async function SuiviFactureNouveauPage({
   return (
     <PageShell>
       <PageHeader
-        title="Nouvelle facture (remix)"
+        title="Nouvelle facture"
         description="Choisir un client, reprendre l’historique, ajuster les lignes."
         backHref="/suivi/factures"
       />

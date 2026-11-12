@@ -1,8 +1,10 @@
-# Tableau de bord Suivi — KPI retenus / exclus
+# Tableau de bord Suivi — indicateurs retenus / exclus
 
 **Date :** 2026-11-12  
 **Route :** `/suivi/tableau-de-bord`  
-**Objectif :** préparer le vote de budgets (conso jour / semaine / mois / année) + vision trésorerie complète.
+**Objectif :** préparer le vote de budgets (dépenses jour / semaine / mois / année) + vision trésorerie complète.
+
+**Langue UI :** français simple uniquement (pas d’anglais ni jargon : pas de run-rate, OPS, Hub, remix…).
 
 ---
 
@@ -10,36 +12,37 @@
 
 1. Bascule comptes (décision I) **livrée** : physique **145 000** F · banque **204 815** F · **12/11/2026**. Soldes = `accountBalanceFromMoves` (ignore `countsTowardBalance=false`). Flux TB = mouvements **ledger courant** uniquement.
 2. Pas de permission `sv.dashboard` dédiée : accès `sv.access` + sections gated par `sv.accounts.view` / `sv.movements.view` / `sv.invoices.view` / `sv.clients.view`.
-3. Hub `/suivi` reste le menu modules ; le TB est une page dédiée (nav « Tableau de bord »).
+3. Menu `/suivi` reste l’accueil modules ; le TB est une page dédiée (nav « Tableau de bord »).
 4. Mapping catégories au **runtime** (pas de migration des strings seed Excel) — incl. `Ouverture / Bascule Direction`.
 
 ---
 
-## KPI retenus
+## Indicateurs retenus (libellés UI)
 
-| KPI | Source | Pourquoi |
+| Libellé UI | Source | Pourquoi |
 |-----|--------|----------|
-| Solde compte physique | `sv_accounts` PHYSICAL + mouvements | Trésorerie cash réelle (post-bascule) |
+| Solde compte physique | `sv_accounts` PHYSICAL + mouvements | Trésorerie caisse réelle (post-bascule) |
 | Solde compte banque | idem BANK | Idem |
-| Sorties période (OUT ops) | `sv_cash_movements` OUT hors transferts / hors ouverture | Conso budgétaire |
-| Entrées période (IN ops) | IN hors transferts / hors ouverture | Encaissements / rentrées |
-| Répartition dépenses par famille | OUT groupé (mapping catégories) | Alimentation, transport, internet… |
+| Sorties | `sv_cash_movements` sorties hors transferts / hors ouverture | Conso budgétaire |
+| Entrées | entrées hors transferts / hors ouverture | Encaissements / rentrées |
+| Dépense / jour | sorties ÷ jours de la période | Rythme de dépenses |
+| Estimation mensuelle (/ mois · / an) | dépense/jour × 30 / 365 | « Si on continue comme ça » — **pas un budget voté** |
+| Répartition dépenses par famille | sorties groupées (mapping catégories) | Alimentation, transport, internet… |
 | Facturé période / payé / reste dû | `sv_invoices` + `amountPaid` | Dettes clients |
 | Top débiteurs | clients avec `reste > 0` | Priorisation recouvrement |
-| Run-rate mois & année (estimation) | OUT ops / jours × projection | Aide vote budget — **libellé « estimation »** |
-| Comparatif période N vs N−1 | mêmes agrégats période précédente | Tendance sans sur-ingénierie |
-| Série temporelle IN/OUT | buckets jour ou semaine selon période | Graphique tendance |
+| Comparatif période vs précédente | mêmes agrégats période précédente | Tendance sans sur-ingénierie |
+| Série temporelle entrées / sorties | buckets jour ou semaine selon période | Graphique tendance |
 
-## KPI exclus (vanity / hors scope V1)
+## Indicateurs exclus (vanity / hors scope V1)
 
 | Exclu | Pourquoi |
 |-------|----------|
 | Nombre de mouvements seul | Volume ≠ santé financière |
-| Stocks à zéro sur le TB | Déjà hub ; pas trésorerie |
+| Stocks à zéro sur le TB | Déjà menu ; pas trésorerie |
 | Taux de conversion / pipeline | Domaine Commercial/CRM |
 | Solde « mouvements globaux » sans compte | Trompeur si legacy `accountId` null + bascule |
 | Projection ML / saisonnalité | Sur-ingénierie |
-| Cash-flow forecast multi-scénarios | V2 budgets |
+| Prévision de trésorerie multi-scénarios | V2 budgets |
 | Ratio salaires / CA inventé | CA Suivi ≠ CA compta ; pas assez fiable |
 
 ---
@@ -56,15 +59,17 @@
 | `compte` | `PHYSICAL` · `BANK` · omit = tous | tous |
 | `categorie` | slug famille (ex. `transport`) | omit = toutes |
 
+Barre filtres UI : segment Jour/Semaine/Mois/Année + stepper date (← → + choix calendrier) + menus Compte / Catégorie (« Tous » / « Toutes » en placeholder, pas de pastille trompeuse).
+
 Liens listes : `/suivi/mouvements?direction=&from=&to=&compte=&categorie=` · `/suivi/factures?reste=1` · `/suivi/comptes` · `/suivi/clients`.
 
 ---
 
-## Charts livrés
+## Graphiques livrés
 
-1. **Area** — entrées / sorties sur la période (buckets)
+1. **Aire** — entrées / sorties sur la période (buckets)
 2. **Donut** — dépenses par famille (cliquable → mouvements filtrés)
-3. **Bar** comparatif — période courante vs précédente (IN / OUT)
-4. **KPI cards** — soldes comptes + run-rate
+3. **Barres** comparatif — période courante vs précédente (entrées / sorties)
+4. **Cartes** — soldes comptes + estimation mensuelle
 
 Lib : **recharts** + `ChartContainer` (déjà CRM / Commercial).

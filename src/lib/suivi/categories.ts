@@ -45,7 +45,7 @@ export const SV_CATEGORY_FAMILY_COLOR: Record<SvCategoryFamily, string> = {
   autre: "#64748B",
 };
 
-/** Familles exclues de la « conso ops » (budgets / run-rate). */
+/** Familles exclues de la conso d’activité (budgets / estimation mensuelle). */
 export const SV_NON_OPS_FAMILIES: ReadonlySet<SvCategoryFamily> = new Set([
   "transfert",
   "ouverture",

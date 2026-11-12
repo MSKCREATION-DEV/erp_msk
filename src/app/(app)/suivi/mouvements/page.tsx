@@ -222,7 +222,7 @@ export default async function SuiviMouvementsPage({
                     </td>
                     <td className="px-4 py-3">
                       <Badge tone={m.direction === "IN" ? "success" : "coral"}>
-                        {m.direction === "IN" ? "IN" : "OUT"}
+                        {m.direction === "IN" ? "Entrée" : "Sortie"}
                       </Badge>
                     </td>
                     <td className="px-4 py-3">{m.category}</td>

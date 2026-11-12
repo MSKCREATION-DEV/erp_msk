@@ -210,7 +210,7 @@ function MovementsTable({
                         : "font-medium text-msk-coral"
                   }
                 >
-                  {m.direction === "IN" ? "Crédit" : "Débit"}
+                  {m.direction === "IN" ? "Entrée" : "Sortie"}
                 </span>
               </td>
               <td className="px-4 py-3 text-msk-ink/70">{m.category}</td>
