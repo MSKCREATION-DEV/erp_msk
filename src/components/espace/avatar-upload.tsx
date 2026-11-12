@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, Loader2 } from "lucide-react";
@@ -61,11 +62,11 @@ export function AvatarUpload({
           }),
         );
         const res = await uploadAvatarAction(fd);
-        if (!res.ok) {
-          setError(res.error ?? "Échec");
+        if (failAction(res, setError, "Échec")) {
           setPreview(null);
           return;
         }
+        reportActionSuccess("Photo mise à jour.");
         setOkMsg(res.message ?? "Photo mise à jour");
         router.refresh();
       } catch (e) {
@@ -154,10 +155,8 @@ export function AvatarUpload({
                   try {
                     setPhase("upload");
                     const res = await removeAvatarAction();
-                    if (!res.ok) {
-                      setError(res.error ?? "Échec");
-                      return;
-                    }
+                    if (failAction(res, setError, "Échec")) return;
+                    reportActionSuccess("Enregistré.");
                     setPreview(null);
                     setOkMsg("Photo retirée");
                     router.refresh();

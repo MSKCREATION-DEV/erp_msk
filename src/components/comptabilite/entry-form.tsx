@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createEntryAction } from "@/actions/comptabilite";
@@ -115,10 +116,8 @@ export function EntryForm({
 
     void run(async () => {
       const res = await createEntryAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
       if (res.entryId) router.push(`/comptabilite/ecritures/${res.entryId}`);
       else router.refresh();
     });

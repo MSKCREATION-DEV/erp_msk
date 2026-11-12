@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { generateContractPdfAction } from "@/actions/rh";
@@ -30,10 +31,8 @@ export function ContractPdfButton({
       const fd = new FormData();
       fd.set("contractId", contractId);
       const res = await generateContractPdfAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("PDF généré.");
       if (res.documentId) setDocId(res.documentId);
       setMsg(res.message ?? "PDF généré — utilisez Voir / Télécharger");
       router.refresh();

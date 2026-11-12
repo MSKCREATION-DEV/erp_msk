@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction } from "@/lib/toast/report";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pencil } from "lucide-react";
@@ -453,13 +454,14 @@ export function ClientWizardForm({
 
     void run(async () => {
       const res = await createClientWizardAction(fd);
-      if (res && !res.ok) {
-        setError(res.error ?? "Échec de la création");
+      if (failAction(res, setError, "Échec de la création")) {
         setDuplicateHref(
           res.duplicateHref ??
             (res.clientId ? `/commercial/clients/${res.clientId}` : null),
         );
+        return;
       }
+      // Succès : redirect() dans l’action
     });
   }
 

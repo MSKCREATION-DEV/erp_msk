@@ -11,7 +11,7 @@
  */
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithFlash } from "@/lib/toast/flash";
 import { z } from "zod";
 import {
   ComCompositionSource,
@@ -514,5 +514,8 @@ export async function createClientWizardAction(
     revalidatePath("/crm/prospects");
     revalidatePath("/crm");
   }
-  redirect(`/commercial/contrats/${txResult.contractId}`);
+  return redirectWithFlash(
+    `/commercial/contrats/${txResult.contractId}`,
+    "Dossier client / contrat créé.",
+  );
 }

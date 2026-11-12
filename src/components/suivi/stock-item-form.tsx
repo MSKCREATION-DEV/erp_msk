@@ -17,6 +17,7 @@ import {
   SV_STOCK_UNITS,
   type SvStockUnit,
 } from "@/lib/suivi/stock";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 type Initial = {
   code?: string;
@@ -52,6 +53,7 @@ export function SvStockItemForm({
     SvStockActionState,
     FormData
   >(action, null);
+  useActionStateToast(state);
 
   const [step, setStep] = useState(0);
   const [code, setCode] = useState(initial?.code ?? "");

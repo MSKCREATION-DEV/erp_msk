@@ -37,6 +37,7 @@ import {
 } from "@/actions/ged";
 import { cn } from "@/lib/utils";
 import { childCountLabel, formatSize } from "@/lib/ged/format";
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { gridGedTiles } from "@/lib/ui/layout-grids";
 import {
   dateBucket,
@@ -190,10 +191,8 @@ export function GedBrowser({
     setMessage(null);
     await runBusy(async () => {
       const res = await uploadDocumentAction(formData);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Document enregistré.");
       setMessage(res.message ?? "OK");
       setUploadOpen(false);
       router.refresh();
@@ -205,10 +204,8 @@ export function GedBrowser({
     setMessage(null);
     await runBusy(async () => {
       const res = await createFolderAction(formData);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Document enregistré.");
       setMessage(res.message ?? "OK");
       setFolderOpen(false);
       router.refresh();
@@ -220,10 +217,8 @@ export function GedBrowser({
     setMessage(null);
     await runBusy(async () => {
       const res = await renameFolderAction(formData);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Document enregistré.");
       setMessage(res.message ?? "OK");
       setRenameTarget(null);
       router.refresh();
@@ -264,7 +259,11 @@ export function GedBrowser({
     if (res.ok && res.url) {
       window.open(res.url, "_blank", "noopener,noreferrer");
     } else {
-      setError(res.error ?? "Téléchargement impossible");
+      failAction(
+        { ok: false, error: res.error ?? "Téléchargement impossible" },
+        setError,
+        "Téléchargement impossible",
+      );
     }
   }
 

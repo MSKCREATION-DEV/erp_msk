@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { toggleCatalogOfferAction } from "@/actions/catalogue";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 
 export function CatalogueToggleButton({
   id,
@@ -27,7 +28,9 @@ export function CatalogueToggleButton({
         fd.set("id", id);
         fd.set("active", active ? "false" : "true");
         void run(async () => {
-          await toggleCatalogOfferAction(fd);
+          const res = await toggleCatalogOfferAction(fd);
+          if (failAction(res, undefined, "Échec de la mise à jour")) return;
+          reportActionSuccess(active ? "Offre désactivée." : "Offre activée.");
           router.refresh();
         });
       }}

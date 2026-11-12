@@ -10,6 +10,7 @@ import {
 import { FormShell } from "@/components/ui/form-shell";
 import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 type Initial = {
   name?: string;
@@ -39,6 +40,7 @@ export function SvClientForm({
     SvClientActionState,
     FormData
   >(action, null);
+  useActionStateToast(state);
 
   return (
     <form action={formAction}>

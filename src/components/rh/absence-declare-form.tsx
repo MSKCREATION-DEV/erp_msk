@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { declareAbsenceAction } from "@/actions/rh";
@@ -21,10 +22,8 @@ export function AbsenceDeclareForm() {
 
     void run(async () => {
       const res = await declareAbsenceAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
       router.push("/espace/absences");
       router.refresh();
     });

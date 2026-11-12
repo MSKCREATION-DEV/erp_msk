@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction } from "@/lib/toast/report";
 import Link from "next/link";
 import {
   useEffect,
@@ -335,9 +336,7 @@ export function QuoteCreateForm({
 
     void run(async () => {
       const res = await createQuoteAction(fd);
-      if (res && !res.ok) {
-        setError(res.error ?? "Échec de la création");
-      }
+      if (failAction(res, setError, "Échec de la création")) return;
       // Succès : redirect() dans l’action
     });
   }

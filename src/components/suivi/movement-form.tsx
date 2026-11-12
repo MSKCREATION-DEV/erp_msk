@@ -11,6 +11,7 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
 import { ChoiceCards } from "@/components/ui/choice-cards";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 import { SV_MOVEMENT_CATEGORY_OPTIONS } from "@/lib/suivi/categories";
 
 const CATEGORIES = [...SV_MOVEMENT_CATEGORY_OPTIONS];
@@ -20,6 +21,8 @@ export function SvMovementForm() {
     SvMovementActionState,
     FormData
   >(createSvCashMovement, null);
+  useActionStateToast(state);
+
   const today = new Date().toISOString().slice(0, 10);
   const [direction, setDirection] = useState<"IN" | "OUT">("OUT");
   const [category, setCategory] = useState<string>(CATEGORIES[0]!);

@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { addDays, format, startOfWeek } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useMemo, useState } from "react";
@@ -53,10 +54,8 @@ export function TimesheetForm() {
 
     void run(async () => {
       const res = await submitTimesheetAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
       router.push("/espace/heures");
       router.refresh();
     });

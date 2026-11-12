@@ -1,5 +1,6 @@
 "use client";
 
+import { reportActionError } from "@/lib/toast/report";
 import { useEffect, useState } from "react";
 import { Download, ExternalLink, FileWarning, Loader2 } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
@@ -43,7 +44,11 @@ export function GedPreviewModal({
       if (cancelled) return;
       setLoading(false);
       if (!res.ok || !res.url) {
-        setError(res.error ?? "Impossible d’ouvrir le document");
+        reportActionError(
+          res.error,
+          setError,
+          "Impossible d’ouvrir le document",
+        );
         return;
       }
       setUrl(res.url);

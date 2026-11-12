@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { saveWeeklyReportAction } from "@/actions/crm";
@@ -46,11 +47,10 @@ export function WeeklyReportForm({
     fd.set("weekStart", weekStartIso);
     void run(async () => {
       const res = await saveWeeklyReportAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else {
-        setOk(res.message ?? "Enregistré");
-        router.refresh();
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Rapport enregistré.");
+      setOk(res.message ?? "Enregistré");
+      router.refresh();
     });
   }
 

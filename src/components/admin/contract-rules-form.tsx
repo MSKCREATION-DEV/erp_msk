@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { updateContractTypeRuleAction } from "@/actions/contract-rules";
@@ -65,10 +66,8 @@ function RuleCard({ initial }: { initial: RuleRow }) {
       fd.set("accruePaidLeave", String(row.accruePaidLeave));
       fd.set("active", String(row.active));
       const res = await updateContractTypeRuleAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Règles enregistrées.");
       setMsg(res.message ?? "Enregistré");
       router.refresh();
     });

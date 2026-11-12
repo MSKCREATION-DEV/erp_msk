@@ -8,6 +8,7 @@ import type { ActionResult } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 type DemoState = (ActionResult & { documentId?: string }) | null;
 
@@ -23,6 +24,8 @@ export function GenerateDemoButton({
     generateDemoPdfAction,
     null,
   );
+  useActionStateToast(state);
+
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);

@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { redirect } from "next/navigation";
+import { redirectWithFlash, setFlashToast } from "@/lib/toast/flash";
 import { revalidatePath } from "next/cache";
 import { UserStatus } from "@/generated/prisma/client";
 import { createClient } from "@/lib/supabase/server";
@@ -86,10 +87,14 @@ export async function loginAction(
     profile.status === UserStatus.MUST_CHANGE_PASSWORD ||
     profile.status === UserStatus.INVITE_PENDING
   ) {
+    await setFlashToast(
+      "info",
+      "Veuillez définir votre mot de passe pour continuer.",
+    );
     redirect("/changer-mot-de-passe");
   }
 
-  redirect("/accueil");
+  return redirectWithFlash("/accueil", "Connexion réussie.");
 }
 
 /** Déconnexion Auth — le client doit faire un hard nav (`window.location`) pour vider l’état. */
@@ -161,7 +166,7 @@ export async function changePasswordAction(
     entityId: session.id,
   });
 
-  redirect("/accueil");
+  return redirectWithFlash("/accueil", "Mot de passe mis à jour.");
 }
 
 const resetRequestSchema = z.object({

@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { openPayrollPeriodAction } from "@/actions/paie";
@@ -27,8 +28,7 @@ export function OpenPeriodForm() {
           fd.set("year", year);
           fd.set("month", month);
           const res = await openPayrollPeriodAction(fd);
-          if (!res.ok) {
-            setError(res.error ?? "Échec");
+          if (failAction(res, setError, "Échec")) {
             if (res.periodId) {
               router.push(`/rh/paie/${res.periodId}`);
             }

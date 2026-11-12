@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { upsertCatalogOfferAction } from "@/actions/catalogue";
@@ -38,8 +39,9 @@ export function CatalogueOfferForm({
     const fd = new FormData(e.currentTarget);
     void run(async () => {
       const res = await upsertCatalogOfferAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else router.push(redirectTo);
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Offre enregistrée.");
+      router.push(redirectTo);
     });
   }
 

@@ -33,6 +33,7 @@ import {
   type PermissionMark,
   type PermissionOption,
 } from "@/components/admin/permission-domains";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 type OverrideRow = {
   id: string;
@@ -99,6 +100,9 @@ export function UserAccessForm({
     ActionResult | null,
     FormData
   >(syncOverridesAction, null);
+  useActionStateToast(accessState);
+  useActionStateToast(statusState);
+  useActionStateToast(ovState);
 
   useEffect(() => {
     if (accessState?.ok) setDrawer(null);

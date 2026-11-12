@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction } from "@/lib/toast/report";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { upsertCrmScriptAction } from "@/actions/crm";
@@ -70,7 +71,7 @@ export function ScriptForm({ initial }: { initial?: Initial }) {
     void run(async () => {
       const res = await upsertCrmScriptAction(fd);
       // Succès → redirect() dans l’action (exception de contrôle).
-      if (res && !res.ok) setError(res.error ?? "Échec");
+      if (failAction(res, setError, "Échec")) return;
     });
   }
 

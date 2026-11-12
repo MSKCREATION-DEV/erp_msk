@@ -5,12 +5,14 @@ import { changePasswordAction, type ActionResult } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 export function ChangePasswordForm() {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(
     changePasswordAction,
     null,
   );
+  useActionStateToast(state);
 
   return (
     <form action={action} className="space-y-5">

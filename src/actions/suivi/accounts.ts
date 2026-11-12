@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithFlash } from "@/lib/toast/flash";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth/session";
@@ -168,5 +168,8 @@ export async function createSvAccountEntry(
   }
 
   revalidateAccounts(account.id);
-  redirect(`/suivi/comptes/${account.id}`);
+  return redirectWithFlash(
+    `/suivi/comptes/${account.id}`,
+    "Écriture enregistrée.",
+  );
 }

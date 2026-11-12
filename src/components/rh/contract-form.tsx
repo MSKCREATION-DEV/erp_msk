@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createContractAction } from "@/actions/rh";
@@ -32,10 +33,8 @@ export function ContractCreateForm({
 
     void run(async () => {
       const res = await createContractAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
       router.push(
         res.contractId ? `/rh/contrats/${res.contractId}` : "/rh/contrats",
       );

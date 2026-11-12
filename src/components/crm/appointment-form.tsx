@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction } from "@/lib/toast/report";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createAppointmentAction } from "@/actions/appointments";
@@ -130,9 +131,7 @@ export function AppointmentForm({
     if (notes.trim()) fd.set("notes", notes.trim());
     void run(async () => {
       const res = await createAppointmentAction(fd);
-      if (res && !res.ok) {
-        setError(res.error ?? "Échec");
-      }
+      if (failAction(res, setError, "Échec")) return;
     });
   }
 

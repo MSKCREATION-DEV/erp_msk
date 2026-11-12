@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { toggleCrmScriptAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
 import { usePendingAction } from "@/hooks/use-pending-action";
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 
 export function ScriptToggleButton({
   id,
@@ -27,7 +28,9 @@ export function ScriptToggleButton({
         fd.set("id", id);
         fd.set("active", active ? "false" : "true");
         void run(async () => {
-          await toggleCrmScriptAction(fd);
+          const res = await toggleCrmScriptAction(fd);
+          if (failAction(res, undefined, "Échec de la mise à jour")) return;
+          reportActionSuccess(active ? "Script désactivé." : "Script activé.");
           router.refresh();
         });
       }}

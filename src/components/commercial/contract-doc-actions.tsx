@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Share2 } from "lucide-react";
@@ -93,10 +94,8 @@ export function ContractDocActions({
       fd.set("contractId", contractId);
       withPrestationFields(fd);
       const res = await generateContractPdfAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec génération PDF");
-        return;
-      }
+      if (failAction(res, setError, "Échec génération PDF")) return;
+      reportActionSuccess("Document généré.");
       router.refresh();
     });
   }
@@ -110,10 +109,8 @@ export function ContractDocActions({
       fd.set("family", pickFamily);
       fd.set("serviceKind", pickServiceKind);
       const res = await setContractPrestationAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Enregistrement impossible");
-        return;
-      }
+      if (failAction(res, setError, "Enregistrement impossible")) return;
+      reportActionSuccess("Prestation enregistrée.");
       setNotice(res.message ?? "Nature enregistrée");
       router.refresh();
     });
@@ -126,7 +123,11 @@ export function ContractDocActions({
     void runShare(async () => {
       const res = await getDocumentDownloadUrlAction(gedDocumentId);
       if (!res.ok || !res.url) {
-        setError(res.error ?? "Lien indisponible");
+        failAction(
+          { ok: false, error: res.error ?? "Lien indisponible" },
+          setError,
+          "Lien indisponible",
+        );
         return;
       }
       try {

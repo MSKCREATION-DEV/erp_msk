@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createTicketAction } from "@/actions/ops";
@@ -21,8 +22,9 @@ export function TicketForm({ users }: { users: UserOpt[] }) {
     const fd = new FormData(e.currentTarget);
     void run(async () => {
       const res = await createTicketAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else router.push(res.id ? `/ops/anomalies/${res.id}` : "/ops/anomalies");
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
+      router.push(res.id ? `/ops/anomalies/${res.id}` : "/ops/anomalies");
     });
   }
 

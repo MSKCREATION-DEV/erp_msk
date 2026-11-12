@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { requestProfileChangeAction } from "@/actions/rh-profile";
@@ -58,10 +59,8 @@ export function ProfileChangeForm({
             JSON.stringify([{ fieldKey, newValue }]),
           );
           const res = await requestProfileChangeAction(fd);
-          if (!res.ok) {
-            setError(res.error ?? "Échec de la demande");
-            return;
-          }
+          if (failAction(res, setError, "Échec de la demande")) return;
+          reportActionSuccess("Demande envoyée.");
           setOkMsg("Demande envoyée — en attente de validation RH.");
           setNewValue("");
           setNote("");

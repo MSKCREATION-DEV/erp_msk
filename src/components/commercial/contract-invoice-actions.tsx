@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createInvoiceFromContractAction } from "@/actions/invoices-contract";
@@ -21,8 +22,8 @@ export function ContractInvoiceActions({
       const fd = new FormData();
       fd.set("contractId", contractId);
       const res = await createInvoiceFromContractAction(fd);
-      if (res && !res.ok) {
-        setError(res.error ?? "Échec");
+      if (failAction(res, setError, "Échec")) {
+        return;
         return;
       }
       router.refresh();

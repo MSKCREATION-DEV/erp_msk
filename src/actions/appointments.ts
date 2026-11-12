@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithFlash } from "@/lib/toast/flash";
 import { z } from "zod";
 import {
   CrmActivityType,
@@ -96,7 +96,7 @@ export async function createAppointmentAction(
   revalidatePath("/crm/rdv");
   revalidatePath(`/crm/prospects/${deal.id}`);
   revalidatePath("/crm");
-  redirect(`/crm/rdv?focus=${appt.id}`);
+  return redirectWithFlash(`/crm/rdv?focus=${appt.id}`, "Rendez-vous créé.");
 }
 
 export async function updateAppointmentAction(

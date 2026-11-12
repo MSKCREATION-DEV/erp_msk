@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { importCrmCsvAction } from "@/actions/crm";
@@ -24,11 +25,10 @@ export function CrmImportForm({
     const fd = new FormData(e.currentTarget);
     void run(async () => {
       const res = await importCrmCsvAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else {
-        setMsg(res.message ?? "OK");
-        router.push(redirectTo);
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Import terminé.");
+      setMsg(res.message ?? "OK");
+      router.push(redirectTo);
     });
   }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import type { CrmActivityType } from "@/generated/prisma/client";
@@ -68,12 +69,12 @@ export function ActivityForm({
     if (completeTaskId) fd.set("completeTaskId", completeTaskId);
     void run(async () => {
       const res = await logActivityAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
       form.reset();
       setType("APPEL");
+      reportActionSuccess("Enregistré.");
+
       onSuccess?.();
       router.refresh();
     });

@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { adjustLeaveBalanceAction } from "@/actions/rh-leave-ledger";
@@ -21,10 +22,8 @@ export function LeaveAdjustForm({ employeeId }: { employeeId: string }) {
     fd.set("employeeId", employeeId);
     void run(async () => {
       const res = await adjustLeaveBalanceAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
       setOkMsg(res.message ?? "Solde régularisé");
       e.currentTarget.reset();
       router.refresh();

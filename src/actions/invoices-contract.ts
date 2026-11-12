@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithFlash } from "@/lib/toast/flash";
 import { nanoid } from "nanoid";
 import {
   ComContractLineStatus,
@@ -244,5 +244,8 @@ export async function createInvoiceFromContractAction(
   // Ownership facturation = Comptabilité.
   revalidatePath("/comptabilite/factures");
   revalidatePath(`/commercial/clients/${contract.clientId}`);
-  redirect(`/comptabilite/factures/${invoiceId}`);
+  return redirectWithFlash(
+    `/comptabilite/factures/${invoiceId}`,
+    "Facture générée.",
+  );
 }

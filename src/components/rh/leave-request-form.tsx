@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { requestLeaveAction } from "@/actions/rh";
@@ -22,10 +23,8 @@ export function LeaveRequestForm() {
 
     void run(async () => {
       const res = await requestLeaveAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
       router.push("/espace/conges");
       router.refresh();
     });

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithFlash } from "@/lib/toast/flash";
 import { z } from "zod";
 import { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
@@ -124,7 +124,7 @@ export async function createSvStockItem(
   }
 
   revalidateStock(id);
-  redirect(`/suivi/stocks/${id}`);
+  return redirectWithFlash(`/suivi/stocks/${id}`, "Article créé.");
 }
 
 export async function updateSvStockItem(
@@ -185,7 +185,7 @@ export async function updateSvStockItem(
   }
 
   revalidateStock(itemId);
-  redirect(`/suivi/stocks/${itemId}`);
+  return redirectWithFlash(`/suivi/stocks/${itemId}`, "Article mis à jour.");
 }
 
 export async function archiveSvStockItem(
@@ -301,5 +301,5 @@ export async function createSvStockMovement(
   }
 
   revalidateStock(item.id);
-  redirect(`/suivi/stocks/${item.id}`);
+  return redirectWithFlash(`/suivi/stocks/${item.id}`, "Mouvement stock enregistré.");
 }

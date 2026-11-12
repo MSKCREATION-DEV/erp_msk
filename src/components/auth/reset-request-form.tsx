@@ -6,12 +6,14 @@ import { requestPasswordResetAction, type ActionResult } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 export function ResetRequestForm() {
   const [state, action, pending] = useActionState<ActionResult | null, FormData>(
     requestPasswordResetAction,
     null,
   );
+  useActionStateToast(state);
 
   return (
     <form action={action} className="space-y-5">

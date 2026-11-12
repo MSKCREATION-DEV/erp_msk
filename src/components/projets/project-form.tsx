@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createProjectAction } from "@/actions/projets";
@@ -19,8 +20,9 @@ export function ProjectForm() {
     const fd = new FormData(e.currentTarget);
     void run(async () => {
       const res = await createProjectAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else router.push(res.id ? `/projets/${res.id}` : "/projets");
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
+      router.push(res.id ? `/projets/${res.id}` : "/projets");
     });
   }
 

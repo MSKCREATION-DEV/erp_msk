@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { updatePurchaseStatusAction } from "@/actions/purchases";
@@ -26,11 +27,10 @@ export function PurchaseStatusButtons({
     fd.set("status", next);
     void run(async () => {
       const res = await updatePurchaseStatusAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else {
-        setMsg(res.message ?? "OK");
-        router.refresh();
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Statut mis à jour.");
+      setMsg(res.message ?? "OK");
+      router.refresh();
     });
   }
 

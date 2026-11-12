@@ -10,6 +10,7 @@ import { Modal } from "@/components/ui/modal";
 import { ActionLink } from "@/components/ui/action-link";
 import type { QuotePrefillLine } from "@/components/commercial/quote-form";
 import { usePendingAction } from "@/hooks/use-pending-action";
+import { notify } from "@/lib/toast/notify";
 import { canTransformProspectToClient } from "@/lib/crm/guide-rules";
 import { STAGE_LABELS } from "@/lib/crm/labels";
 import { COM_DOCS_GATED } from "@/lib/commercial/gates";
@@ -263,7 +264,10 @@ function ProspectDevisCta({
         fd.set("opportunityId", opportunityId);
         const res = await ensureProspectClientDraftForQuoteAction(fd);
         if (!res.ok || !res.clientId) {
-          setPrepError(res.error ?? "Impossible de préparer la fiche client");
+          const msg =
+            res.error ?? "Impossible de préparer la fiche client";
+          setPrepError(msg);
+          notify.error(msg);
           setBlockedOpen(true);
           return;
         }

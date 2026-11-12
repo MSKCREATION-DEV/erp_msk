@@ -2,7 +2,7 @@
 
 import { createHash } from "crypto";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithFlash } from "@/lib/toast/flash";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import {
@@ -301,7 +301,10 @@ export async function createClientAction(
 
   revalidateCommercial([`/commercial/clients/${client.id}`]);
   // Hors try/catch — voir https://nextjs.org/docs/app/guides/redirecting
-  redirect(`/commercial/clients/${client.id}`);
+  return redirectWithFlash(
+    `/commercial/clients/${client.id}`,
+    "Client créé.",
+  );
 }
 
 export async function updateClientAction(
@@ -807,7 +810,10 @@ export async function convertOpportunityToClientRedirectAction(
 ): Promise<ActionResult & { clientId?: string }> {
   const res = await convertOpportunityToClientAction(formData);
   if (!res.ok || !res.clientId) return res;
-  redirect(`/commercial/clients/${res.clientId}`);
+  return redirectWithFlash(
+    `/commercial/clients/${res.clientId}`,
+    "Client créé depuis le prospect.",
+  );
 }
 
 export async function createQuoteAction(
@@ -1057,7 +1063,7 @@ export async function createQuoteAction(
   ]);
 
   // https://nextjs.org/docs/app/guides/redirecting
-  redirect(`/commercial/devis/${quote.id}`);
+  return redirectWithFlash(`/commercial/devis/${quote.id}`, "Devis créé.");
 }
 
 export async function updateQuoteStatusAction(
@@ -1464,7 +1470,10 @@ export async function createInvoiceFromQuoteAction(
     `/comptabilite/factures/${invoiceId}`,
     `/commercial/devis/${quoteId}`,
   ]);
-  redirect(`/comptabilite/factures/${invoiceId}`);
+  return redirectWithFlash(
+    `/comptabilite/factures/${invoiceId}`,
+    "Facture créée.",
+  );
 }
 
 export async function issueInvoiceAction(

@@ -84,3 +84,35 @@ body {
   background-color: color-mix(in srgb, var(--color-msk-ink) 22%, transparent);
   border-radius: 999px;
 }
+
+/**
+ * react-toastify — charte MSK (theme colored).
+ * @see https://fkhadra.github.io/react-toastify/how-to-style
+ */
+:root {
+  --toastify-color-success: #1d73bc;
+  --toastify-color-error: #ff5a3c;
+  --toastify-color-warning: #c9782a;
+  --toastify-color-info: #2a3d8e;
+  --toastify-color-progress-success: #1d73bc;
+  --toastify-color-progress-error: #ff5a3c;
+  --toastify-color-progress-warning: #c9782a;
+  --toastify-color-progress-info: #2a3d8e;
+  --toastify-font-family: var(--font-sans);
+  --toastify-toast-width: 360px;
+  --toastify-z-index: 10000;
+}
+
+.msk-toast {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  border-radius: 0.75rem;
+  box-shadow:
+    0 10px 30px color-mix(in srgb, var(--color-msk-ink) 18%, transparent),
+    0 1px 0 color-mix(in srgb, var(--color-msk-ink) 6%, transparent);
+}
+
+.msk-toast-progress {
+  height: 3px;
+}

@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction } from "@/lib/toast/report";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CrmSource } from "@/generated/prisma/client";
@@ -289,10 +290,8 @@ export function ProspectCreateForm({
       const checkFd = new FormData();
       checkFd.set("orgName", readTrim(fd, "orgName"));
       const res = await findOrgDuplicateCandidatesAction(checkFd);
-      if (!res.ok) {
-        setError(res.error ?? "Vérification doublons impossible");
-        return;
-      }
+      if (failAction(res, setError, "Vérification doublons impossible")) return;
+      if (!res.ok) return;
       setOrgDupes(res.candidates);
       const blocked = hasBlockingOrgMatch(res.candidates);
       setOrgMatchBlock(blocked);
@@ -334,10 +333,8 @@ export function ProspectCreateForm({
       const checkFd = new FormData();
       checkFd.set("channelsJson", JSON.stringify(filled));
       const res = await findContactDuplicateCandidatesAction(checkFd);
-      if (!res.ok) {
-        setError(res.error ?? "Vérification contact impossible");
-        return;
-      }
+      if (failAction(res, setError, "Vérification contact impossible")) return;
+      if (!res.ok) return;
       setContactDupes(res.candidates);
       if (res.candidates.length > 0 && !contactAcked) {
         setError(
@@ -462,9 +459,7 @@ export function ProspectCreateForm({
 
     void run(async () => {
       const res = await createProspectAction(fd);
-      if (res && !res.ok) {
-        setError(res.error ?? "Échec de la création");
-      }
+      if (failAction(res, setError, "Échec de la création")) return;
     });
   }
 

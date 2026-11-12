@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserRoundPen } from "lucide-react";
@@ -156,10 +157,8 @@ export function AssignProspectForm({
     fd.set("newOwnerId", ownerId);
     void run(async () => {
       const res = await reassignProspectAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec de l’affectation");
-        return;
-      }
+      if (failAction(res, setError, "Échec de l’affectation")) return;
+      reportActionSuccess("Affectation enregistrée.");
       setOpen(false);
       resetForm();
       router.refresh();

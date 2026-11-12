@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FileCheck2 } from "lucide-react";
@@ -41,10 +42,8 @@ export function InvoiceActions({
       const fd = new FormData();
       fd.set("invoiceId", invoiceId);
       const res = await generateInvoicePdfAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Action effectuée.");
       if (res.documentId) setDocId(res.documentId);
       setMsg("PDF généré — miniature ci-dessous");
       router.refresh();
@@ -66,11 +65,10 @@ export function InvoiceActions({
                 const fd = new FormData();
                 fd.set("invoiceId", invoiceId);
                 const res = await issueInvoiceAction(fd);
-                if (!res.ok) setError(res.error ?? "Échec");
-                else {
-                  setMsg("Facture émise");
-                  router.refresh();
-                }
+                if (failAction(res, setError, "Échec")) return;
+                reportActionSuccess("Facture émise.");
+                setMsg("Facture émise");
+                router.refresh();
               });
             }}
           >

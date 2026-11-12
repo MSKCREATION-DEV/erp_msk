@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Pencil } from "lucide-react";
@@ -54,10 +55,8 @@ export function UserProfileEditForm({
     fd.set("userId", userId);
     void run(async () => {
       const res = await updateUserProfileAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Profil mis à jour.");
       setOkMsg(res.message ?? "Profil mis à jour");
       setOpen(false);
       router.refresh();

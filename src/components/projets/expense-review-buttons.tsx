@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { reviewExpenseAction } from "@/actions/projets";
@@ -28,8 +29,9 @@ export function ExpenseReviewButtons({
     fd.set("reviewNote", note);
     void run(async () => {
       const res = await reviewExpenseAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else router.refresh();
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Décision enregistrée.");
+      router.refresh();
     });
   }
 

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithFlash } from "@/lib/toast/flash";
 import { z } from "zod";
 import {
   CrmActivityType,
@@ -445,7 +445,7 @@ export async function createProspectAction(
   revalidatePath("/crm/prospects");
   revalidatePath("/crm/relances");
   // Hors try/catch — voir https://nextjs.org/docs/app/guides/redirecting
-  redirect(`/crm/prospects/${deal.id}`);
+  return redirectWithFlash(`/crm/prospects/${deal.id}`, "Prospect créé.");
 }
 
 const updateProspectSchema = z
@@ -766,7 +766,7 @@ export async function updateProspectAction(
   revalidatePath("/crm");
   revalidatePath("/crm/prospects");
   revalidatePath(`/crm/prospects/${deal.id}`);
-  redirect(`/crm/prospects/${deal.id}`);
+  return redirectWithFlash(`/crm/prospects/${deal.id}`, "Prospect mis à jour.");
 }
 
 const reassignProspectSchema = z.object({
@@ -1957,7 +1957,7 @@ export async function upsertCrmScriptAction(
   });
 
   revalidatePath("/crm/scripts");
-  redirect("/crm/scripts");
+  return redirectWithFlash("/crm/scripts", "Script enregistré.");
 }
 
 export async function toggleCrmScriptAction(

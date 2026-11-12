@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -63,18 +64,17 @@ export function ClientForm({
     void run(async () => {
       if (isEdit) {
         const res = await updateClientAction(fd);
-        if (!res.ok) {
-          setError(res.error ?? "Échec de la mise à jour");
-          return;
-        }
+        if (failAction(res, setError, "Échec de la mise à jour")) return;
+        reportActionSuccess("Client mis à jour.");
+
         onSuccess?.();
         return;
       }
       // Succès : redirect() dans l’action. Erreur : return { ok: false }.
       const res = await createClientAction(fd);
-      if (res && !res.ok) {
-        setError(res.error ?? "Échec de la création");
+      if (failAction(res, setError, "Échec de la création")) {
         setDuplicateClientId(res.duplicateClientId ?? null);
+        return;
       }
     });
   }

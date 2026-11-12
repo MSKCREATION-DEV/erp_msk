@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction } from "@/lib/toast/report";
 import { useState } from "react";
 import { getDocumentDownloadUrlAction } from "@/actions/ged";
 import { getRhDocumentUrlAction } from "@/actions/rh";
@@ -38,8 +39,18 @@ export function DocDownloadButton({
               fd.set("documentId", documentId);
               res = await getRhDocumentUrlAction(fd);
             }
-            if (!res.ok || !res.url) {
-              setError(res.error ?? "Téléchargement impossible");
+            if (
+              failAction(
+                !res.ok || !res.url
+                  ? {
+                      ok: false,
+                      error: res.error ?? "Téléchargement impossible",
+                    }
+                  : res,
+                setError,
+                "Téléchargement impossible",
+              )
+            ) {
               return;
             }
             window.open(res.url, "_blank", "noopener,noreferrer");

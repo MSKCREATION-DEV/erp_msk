@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createBankTxnAction } from "@/actions/comptabilite";
@@ -25,10 +26,8 @@ export function BankTxnForm({ bankAccountId }: { bankAccountId: string }) {
 
     void run(async () => {
       const res = await createBankTxnAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
       router.push(`/comptabilite/banques/${bankAccountId}`);
     });
   }

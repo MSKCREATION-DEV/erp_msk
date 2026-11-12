@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithFlash } from "@/lib/toast/flash";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -95,5 +95,5 @@ export async function createSvCashMovement(
   revalidatePath("/suivi/mouvements");
   revalidatePath("/suivi/comptes");
   revalidatePath("/suivi");
-  redirect("/suivi/mouvements");
+  return redirectWithFlash("/suivi/mouvements", "Mouvement enregistré.");
 }

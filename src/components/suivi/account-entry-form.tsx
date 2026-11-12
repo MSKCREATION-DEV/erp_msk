@@ -12,6 +12,7 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
 import { ChoiceCards } from "@/components/ui/choice-cards";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 import { SV_ACCOUNT_BASELINE_CATEGORY } from "@/lib/suivi/accounts";
 import { SV_MOVEMENT_CATEGORY_OPTIONS } from "@/lib/suivi/categories";
@@ -48,6 +49,8 @@ export function SvAccountEntryForm({
     SvAccountActionState,
     FormData
   >(createSvAccountEntry, null);
+  useActionStateToast(state);
+
   const today = new Date().toISOString().slice(0, 10);
   const [op, setOp] = useState<Op>("CREDIT");
   const [category, setCategory] = useState(CATEGORIES[0]!);

@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { markInpsDeclaredAction } from "@/actions/paie";
@@ -24,10 +25,8 @@ export function MarkInpsDeclaredButton({ periodId }: { periodId: string }) {
             const fd = new FormData();
             fd.set("periodId", periodId);
             const res = await markInpsDeclaredAction(fd);
-            if (!res.ok) {
-              setError(res.error ?? "Échec");
-              return;
-            }
+            if (failAction(res, setError, "Échec")) return;
+            reportActionSuccess("Décision enregistrée.");
             router.refresh();
           });
         }}

@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { updateTicketAction } from "@/actions/ops";
@@ -36,8 +37,9 @@ export function TicketUpdateForm({
     const fd = new FormData(e.currentTarget);
     void run(async () => {
       const res = await updateTicketAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else router.refresh();
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
+      router.refresh();
     });
   }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -83,10 +84,8 @@ export function RelanceActions({
     fd.set("days", String(days));
     void run(async () => {
       const res = await rescheduleTaskAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec du report");
-        return;
-      }
+      if (failAction(res, setError, "Échec du report")) return;
+      reportActionSuccess("Relance mise à jour.");
       setRescheduleOpen(false);
       router.refresh();
     });
@@ -100,10 +99,8 @@ export function RelanceActions({
     fd.set("dueAt", editDue);
     void run(async () => {
       const res = await updateOpenTaskAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec de la modification");
-        return;
-      }
+      if (failAction(res, setError, "Échec de la modification")) return;
+      reportActionSuccess("Relance mise à jour.");
       setEditOpen(false);
       router.refresh();
     });
@@ -116,10 +113,8 @@ export function RelanceActions({
     fd.set("reason", cancelReason.trim());
     void run(async () => {
       const res = await cancelTaskAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec de l’annulation");
-        return;
-      }
+      if (failAction(res, setError, "Échec de l’annulation")) return;
+      reportActionSuccess("Relance mise à jour.");
       setCancelOpen(false);
       setCancelReason("");
       router.refresh();

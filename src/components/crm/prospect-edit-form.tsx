@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction } from "@/lib/toast/report";
 import Link from "next/link";
 import { useState } from "react";
 import type { CrmSource } from "@/generated/prisma/client";
@@ -149,9 +150,7 @@ export function ProspectEditForm({ initial }: { initial: ProspectEditInitial }) 
     }
     void run(async () => {
       const res = await updateProspectAction(fd);
-      if (res && !res.ok) {
-        setError(res.error ?? "Échec de l’enregistrement");
-      }
+      if (failAction(res, setError, "Échec de l’enregistrement")) return;
     });
   }
 

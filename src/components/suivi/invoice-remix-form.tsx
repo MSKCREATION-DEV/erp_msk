@@ -10,6 +10,7 @@ import { FormShell } from "@/components/ui/form-shell";
 import { FormSteps } from "@/components/ui/form-steps";
 import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 import { formatSvXof } from "@/lib/suivi/labels";
 
 type ClientOpt = { id: string; name: string };
@@ -60,6 +61,7 @@ export function SvInvoiceRemixForm({
     SvInvoiceActionState,
     FormData
   >(createSvInvoiceRemix, null);
+  useActionStateToast(state);
 
   const clientInvoices = useMemo(
     () => invoices.filter((i) => i.clientId === clientId),

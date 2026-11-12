@@ -6,6 +6,7 @@ import { Loader2, LogOut } from "lucide-react";
 import { logoutAction } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { toUserFacingError } from "@/lib/errors/user-facing";
+import { notify } from "@/lib/toast/notify";
 import { cn } from "@/lib/utils";
 
 /**
@@ -37,6 +38,7 @@ export function LogoutButton() {
         e instanceof Error ? e : new Error("Une erreur est survenue"),
       );
       setError(facing.description);
+      notify.error(facing.description);
     }
   }
 

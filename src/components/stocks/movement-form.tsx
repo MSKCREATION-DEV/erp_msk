@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createMovementAction } from "@/actions/stocks";
@@ -34,8 +35,9 @@ export function MovementForm({
     const fd = new FormData(e.currentTarget);
     void run(async () => {
       const res = await createMovementAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else router.push("/stocks/mouvements");
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
+      router.push("/stocks/mouvements");
     });
   }
 

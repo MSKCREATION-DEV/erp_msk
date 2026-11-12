@@ -1,0 +1,38 @@
+# react-toastify — feedback UI (absolu ERP MSK)
+
+Lib : `react-toastify` v11 · Provider : `ToastProvider` dans `AppProviders` · API : `@/lib/toast/notify` + `@/lib/toast/report` + flash `@/lib/toast/flash`.
+
+## Obligatoire
+
+| Cas | Action |
+|-----|--------|
+| Erreur mutation / soumission | `failAction(res, setError)` **ou** `reportActionError` **ou** `useActionStateToast(state)` — toast **en plus** du message inline |
+| Succès **sans** redirect | `reportActionSuccess("…")` / `notify.success` |
+| Succès **avec** `redirect()` | `redirectWithFlash(url, "…")` (jamais `redirect` nu après mutation métier réussie) |
+| Confirm modal (`useConfirm` + `action`) | toast error auto ; success via `successToast` (défaut « Action effectuée. ») |
+| Nouveau formulaire / bouton d’action | brancher toast dès le premier commit |
+
+## Interdit
+
+- `toast` importé depuis `react-toastify` hors `src/lib/toast/notify.ts`
+- Remplacer / supprimer les messages d’erreur **inline** (bannières, `state.error`, `setError`)
+- Succès métier silencieux (pas de toast ni flash)
+- Toasts pour le **centre de notifications in-app** (hors scope)
+- `alert()` / `window.alert` pour feedback métier
+
+## Imports
+
+```ts
+// Client
+import { notify } from "@/lib/toast/notify";
+import { failAction, reportActionError, reportActionSuccess } from "@/lib/toast/report";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
+
+// Serveur (Server Actions)
+import { redirectWithFlash, setFlashToast } from "@/lib/toast/flash";
+```
+
+## Test mental
+
+> Après submit : l’utilisateur voit-il un toast (succès ou erreur) **et**, en erreur, le texte sous le formulaire ?
+> Si non → **bug bloquant**, corriger avant gate.

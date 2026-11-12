@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -45,10 +46,8 @@ export function AppointmentActions({
     if (note.trim()) fd.set("note", note.trim());
     void run(async () => {
       const res = await setAppointmentStatusAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("RDV mis à jour.");
       setMode(null);
       setNote("");
       router.refresh();

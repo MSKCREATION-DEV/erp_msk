@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { uploadSignatureAction } from "@/actions/signatures";
@@ -21,11 +22,10 @@ export function SignatureUploadForm() {
     const formData = new FormData(e.currentTarget);
     void run(async () => {
       const res = await uploadSignatureAction(formData);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else {
-        setOk(res.message ?? "OK");
-        router.refresh();
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Signature enregistrée.");
+      setOk(res.message ?? "OK");
+      router.refresh();
     });
   }
 

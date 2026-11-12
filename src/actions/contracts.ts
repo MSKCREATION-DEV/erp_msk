@@ -2,7 +2,7 @@
 
 import { createHash } from "crypto";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithFlash } from "@/lib/toast/flash";
 import { z } from "zod";
 import {
   CatalogPillar,
@@ -96,7 +96,11 @@ export async function createContractFromQuoteAction(
     select: { id: true },
   });
   if (existing) {
-    redirect(`/commercial/contrats/${existing.id}`);
+    return redirectWithFlash(
+      `/commercial/contrats/${existing.id}`,
+      "Contrat déjà existant pour ce devis.",
+      "info",
+    );
   }
 
   const startDate = startRaw ? new Date(startRaw) : new Date();
@@ -188,7 +192,10 @@ export async function createContractFromQuoteAction(
     `/commercial/devis/${quoteId}`,
     `/commercial/clients/${quote.clientId}`,
   ]);
-  redirect(`/commercial/contrats/${contractId}`);
+  return redirectWithFlash(
+    `/commercial/contrats/${contractId}`,
+    "Contrat créé.",
+  );
 }
 
 const setContractStatusSchema = z.object({

@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GroupPicker, type GroupOption } from "@/components/admin/group-picker";
 import { PackPicker, type PackOption } from "@/components/admin/pack-picker";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 export function InviteUserForm({
   groups,
@@ -30,6 +31,8 @@ export function InviteUserForm({
     inviteUserAction,
     null,
   );
+  useActionStateToast(state);
+
   const [accessOpen, setAccessOpen] = useState(false);
   const [selectedPackIds, setSelectedPackIds] = useState<string[]>([]);
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);

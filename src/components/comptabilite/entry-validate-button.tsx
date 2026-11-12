@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { validateEntryAction } from "@/actions/comptabilite";
@@ -22,10 +23,8 @@ export function EntryValidateButton({ entryId }: { entryId: string }) {
           fd.set("entryId", entryId);
           void run(async () => {
             const res = await validateEntryAction(fd);
-            if (!res.ok) {
-              setError(res.error ?? "Échec");
-              return;
-            }
+            if (failAction(res, setError, "Échec")) return;
+            reportActionSuccess("Écriture validée.");
             router.refresh();
           });
         }}

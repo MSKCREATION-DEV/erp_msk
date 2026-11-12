@@ -7,6 +7,7 @@ import {
 } from "@/actions/suivi/invoices";
 import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 import { formatSvXof } from "@/lib/suivi/labels";
 
 export function SvPaymentForm({
@@ -21,6 +22,7 @@ export function SvPaymentForm({
     SvInvoiceActionState,
     FormData
   >(recordSvPayment, null);
+  useActionStateToast(state);
 
   if (reste <= 0) return null;
 

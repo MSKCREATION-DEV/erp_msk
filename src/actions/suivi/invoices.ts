@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithFlash } from "@/lib/toast/flash";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -136,7 +136,7 @@ export async function createSvInvoiceRemix(
 
   revalidatePath("/suivi/factures");
   revalidatePath(`/suivi/clients/${client.id}`);
-  redirect(`/suivi/factures/${id}`);
+  return redirectWithFlash(`/suivi/factures/${id}`, "Facture créée.");
 }
 
 export async function recordSvPayment(
@@ -240,5 +240,8 @@ export async function recordSvPayment(
   revalidatePath("/suivi/mouvements");
   revalidatePath("/suivi/comptes");
   revalidatePath("/suivi");
-  redirect(`/suivi/factures/${invoice.id}`);
+  return redirectWithFlash(
+    `/suivi/factures/${invoice.id}`,
+    "Paiement enregistré.",
+  );
 }

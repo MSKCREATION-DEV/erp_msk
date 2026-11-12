@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { CrmActivityType } from "@/generated/prisma/client";
@@ -72,10 +73,8 @@ export function ActivityJournalActions({
     fd.set("occurredAt", occurred);
     void run(async () => {
       const res = await updateActivityAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Activité enregistrée.");
       setEditOpen(false);
       router.refresh();
     });
@@ -87,10 +86,8 @@ export function ActivityJournalActions({
     fd.set("activityId", activityId);
     void run(async () => {
       const res = await deleteActivityAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Activité enregistrée.");
       setDeleteOpen(false);
       router.refresh();
     });

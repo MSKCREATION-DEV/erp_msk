@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserRoundPen } from "lucide-react";
@@ -90,10 +91,8 @@ export function ClientReassignForm({
     fd.set("ownerId", ownerId);
     void run(async () => {
       const res = await reassignClientOwnerAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec de l’attribution");
-        return;
-      }
+      if (failAction(res, setError, "Échec de l’attribution")) return;
+      reportActionSuccess("Attribution enregistrée.");
       setOpen(false);
       resetForm();
       router.refresh();

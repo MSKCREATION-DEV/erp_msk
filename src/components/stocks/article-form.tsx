@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { upsertArticleAction } from "@/actions/stocks";
@@ -39,8 +40,9 @@ export function ArticleForm({
     const fd = new FormData(e.currentTarget);
     void run(async () => {
       const res = await upsertArticleAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else router.push(res.id ? `/stocks/articles/${res.id}` : redirectTo);
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
+      router.push(res.id ? `/stocks/articles/${res.id}` : redirectTo);
     });
   }
 

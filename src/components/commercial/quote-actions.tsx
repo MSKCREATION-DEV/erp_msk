@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FileCheck2 } from "lucide-react";
@@ -54,10 +55,8 @@ export function QuoteActions({
     setError(null);
     void run(async () => {
       const res = await fn();
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Action effectuée.");
       setMsg(label);
       if (res.documentId) setDocId(res.documentId);
       // createInvoiceFromQuoteAction → redirect() serveur

@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, XCircle } from "lucide-react";
@@ -30,10 +31,8 @@ export function ProfileChangeReviewActions({
       fd.set("decision", mode);
       if (reviewNote.trim()) fd.set("reviewNote", reviewNote.trim());
       const res = await reviewProfileChangeAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Décision enregistrée.");
       setMode(null);
       setReviewNote("");
       router.refresh();

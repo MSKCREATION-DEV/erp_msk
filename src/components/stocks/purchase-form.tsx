@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createPurchaseAction } from "@/actions/purchases";
@@ -40,8 +41,9 @@ export function PurchaseForm({ articles }: { articles: ArticleOpt[] }) {
     fd.set("linesJson", JSON.stringify(payload));
     void run(async () => {
       const res = await createPurchaseAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else router.push(res.id ? `/stocks/achats/${res.id}` : "/stocks/achats");
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
+      router.push(res.id ? `/stocks/achats/${res.id}` : "/stocks/achats");
     });
   }
 

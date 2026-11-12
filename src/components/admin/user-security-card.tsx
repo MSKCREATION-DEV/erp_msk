@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 /**
  * Accès / sécurité — envoi lien ou MDP temporaire par e-mail uniquement.
@@ -37,6 +38,8 @@ export function UserSecurityCard({
     ActionResult | null,
     FormData
   >(adminSendTempPasswordEmailAction, null);
+  useActionStateToast(linkState);
+  useActionStateToast(tempState);
 
   const pending = linkPending || tempPending;
   const message = linkState?.message ?? tempState?.message;

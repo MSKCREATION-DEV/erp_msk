@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { savePeriodGoalsAction } from "@/actions/crm";
@@ -103,10 +104,8 @@ export function GoalsForm({
     }
     void run(async () => {
       const res = await savePeriodGoalsAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Objectifs enregistrés.");
       setOk(res.message ?? "Objectifs enregistrés");
       startRefresh(() => {
         router.refresh();

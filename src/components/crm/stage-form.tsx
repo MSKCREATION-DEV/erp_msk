@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { CrmActivityType, CrmLossReason, CrmPipelineStage } from "@/generated/prisma/client";
@@ -119,10 +120,9 @@ export function StageForm({
     }
     void run(async () => {
       const res = await updateOpportunityStageAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
+
       onSuccess?.();
       router.refresh();
     });

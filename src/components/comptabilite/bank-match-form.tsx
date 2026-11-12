@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { matchBankTxnAction } from "@/actions/comptabilite";
@@ -29,10 +30,8 @@ export function BankMatchForm({
     fd.set("entryId", entryId);
     void run(async () => {
       const res = await matchBankTxnAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
       router.refresh();
     });
   }
@@ -44,10 +43,8 @@ export function BankMatchForm({
     fd.set("entryId", "");
     void run(async () => {
       const res = await matchBankTxnAction(fd);
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
       setEntryId("");
       router.refresh();
     });

@@ -22,6 +22,7 @@ import { unstable_rethrow } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toUserFacingError } from "@/lib/errors/user-facing";
+import { notify } from "@/lib/toast/notify";
 
 export type ConfirmTone = "danger" | "primary" | "neutral";
 export type ConfirmIcon = "trash" | "logout" | "warning" | "info";
@@ -41,6 +42,8 @@ export type ConfirmOptions = {
    * Throw / reject → message d’erreur, modal reste ouverte.
    */
   action?: () => void | Promise<void>;
+  /** Toast success à la fermeture OK (défaut si `action` fournie : « Action effectuée. »). */
+  successToast?: string | false;
 };
 
 type ConfirmFn = (options: ConfirmOptions) => Promise<boolean>;
@@ -146,6 +149,14 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
       if (opts?.action) {
         await opts.action();
       }
+      const successToast = opts?.successToast;
+      if (successToast !== false && opts?.action) {
+        notify.success(
+          typeof successToast === "string" && successToast.trim()
+            ? successToast.trim()
+            : "Action effectuée.",
+        );
+      }
       finish(true);
     } catch (e) {
       // redirect() / notFound() — propager sans avaler (sinon pending reste true).
@@ -156,6 +167,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
         e instanceof Error ? e : new Error("Une erreur est survenue"),
       );
       setError(facing.description);
+      notify.error(facing.description);
     }
   }
 

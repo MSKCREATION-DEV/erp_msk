@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -32,10 +33,8 @@ export function PeriodActions({
     setError(null);
     void run(async () => {
       const res = await fn();
-      if (!res.ok) {
-        setError(res.error ?? "Échec");
-        return;
-      }
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Statut mis à jour.");
       setMsg(res.message ?? "OK");
       router.refresh();
     });

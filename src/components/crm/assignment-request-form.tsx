@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useState } from "react";
 import { requestAssignmentAction } from "@/actions/crm";
 import { Button } from "@/components/ui/button";
@@ -56,10 +57,8 @@ export function AssignmentRequestForm({
         fd.set("message", message.trim());
         void run(async () => {
           const res = await requestAssignmentAction(fd);
-          if (!res.ok) {
-            setError(res.error ?? "Échec");
-            return;
-          }
+          if (failAction(res, setError, "Échec")) return;
+          reportActionSuccess("Demande envoyée.");
           setDone(true);
           setOpen(false);
           router.refresh();

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirectWithFlash } from "@/lib/toast/flash";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -69,7 +69,7 @@ export async function createSvClient(
   }
 
   revalidatePath("/suivi/clients");
-  redirect(`/suivi/clients/${id}`);
+  return redirectWithFlash(`/suivi/clients/${id}`, "Client suivi créé.");
 }
 
 export async function updateSvClient(
@@ -115,5 +115,5 @@ export async function updateSvClient(
 
   revalidatePath(`/suivi/clients/${clientId}`);
   revalidatePath("/suivi/clients");
-  redirect(`/suivi/clients/${clientId}`);
+  return redirectWithFlash(`/suivi/clients/${clientId}`, "Client suivi mis à jour.");
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { requestProfileChangeAction } from "@/actions/rh-profile";
@@ -98,10 +99,8 @@ export function ProfileEditor({
     void run(async () => {
       try {
         const res = await requestProfileChangeAction(fd);
-        if (!res.ok) {
-          setError(res.error ?? "Échec");
-          return;
-        }
+        if (failAction(res, setError, "Échec")) return;
+        reportActionSuccess("Profil mis à jour.");
         setOkMsg("Demande envoyée — les RH valideront vos modifications.");
         setEditing(false);
         setNote("");

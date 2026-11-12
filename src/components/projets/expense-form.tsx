@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { createExpenseAction } from "@/actions/projets";
@@ -22,8 +23,9 @@ export function ExpenseForm({ projectId }: { projectId: string }) {
     fd.set("submit", submitFlag.current ? "true" : "false");
     void run(async () => {
       const res = await createExpenseAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else router.refresh();
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
+      router.refresh();
     });
   }
 

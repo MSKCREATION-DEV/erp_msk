@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -53,10 +54,8 @@ export function ProposeInvoiceButton({
           fd.set("invoiceId", invoiceId);
           void run(async () => {
             const res = await proposeInvoiceEntryAction(fd);
-            if (!res.ok) {
-              setError(res.error ?? "Échec");
-              return;
-            }
+            if (failAction(res, setError, "Échec")) return;
+            reportActionSuccess("Facture proposée.");
             if (res.entryId)
               router.push(`/comptabilite/ecritures/${res.entryId}`);
             else router.refresh();

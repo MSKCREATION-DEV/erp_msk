@@ -1,5 +1,6 @@
 "use client";
 
+import { failAction, reportActionSuccess } from "@/lib/toast/report";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { disposeAssetAction, upsertAssetAction } from "@/actions/patrimoine";
@@ -41,8 +42,9 @@ export function AssetForm({
     const fd = new FormData(e.currentTarget);
     void run(async () => {
       const res = await upsertAssetAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else router.push(res.id ? `/patrimoine/${res.id}` : redirectTo);
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
+      router.push(res.id ? `/patrimoine/${res.id}` : redirectTo);
     });
   }
 
@@ -177,8 +179,9 @@ export function AssetDisposeButton({ assetId }: { assetId: string }) {
     fd.set("disposeNote", note);
     void run(async () => {
       const res = await disposeAssetAction(fd);
-      if (!res.ok) setError(res.error ?? "Échec");
-      else router.refresh();
+      if (failAction(res, setError, "Échec")) return;
+      reportActionSuccess("Enregistré.");
+      router.refresh();
     });
   }
 
