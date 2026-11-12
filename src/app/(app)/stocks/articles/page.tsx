@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -13,12 +14,19 @@ import {
   parsePage,
   totalPages,
 } from "@/lib/list/pagination";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  listKeyFromSearchParams,
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { SortableTh } from "@/components/ui/sortable-th";
 import { ListPagination } from "@/components/ui/list-pagination";
+import { ListSearchForm } from "@/components/ui/list-search-form";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 
 export const metadata: Metadata = { title: "Articles stock" };
 
@@ -46,30 +54,8 @@ export default async function StocksArticlesPage({
   if (!hasPermission(user, "stk.access")) redirect("/accueil");
   const canManage = hasPermission(user, "stk.articles.manage");
 
-  const raw = await searchParams;
-  const sp: Record<string, string | undefined> = {
-    sort: firstParam(raw.sort),
-    dir: firstParam(raw.dir),
-    page: firstParam(raw.page),
-  };
-  const sort = parseListSort(sp, ARTICLE_SORT_COLUMNS, {
-    key: "code",
-    dir: "asc",
-  });
-  const pageSize = DEFAULT_PAGE_SIZE;
-  const requestedPage = parsePage(sp.page);
-  const listParams: Record<string, string | undefined> = {
-    sort: sort.key,
-    dir: sort.dir,
-  };
-
-  const total = await prisma.stkArticle.count();
-  const page = clampPage(requestedPage, total, pageSize);
-  const articles = await prisma.stkArticle.findMany({
-    orderBy: sort.orderBy as Prisma.StkArticleOrderByWithRelationInput[],
-    skip: pageSkip(page, pageSize),
-    take: pageSize,
-  });
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
 
   return (
     <PageShell>
@@ -95,132 +81,186 @@ export default async function StocksArticlesPage({
         }
       />
 
-      <Surface className="overflow-x-auto p-0">
-        {articles.length === 0 ? (
-          <p className="p-6 text-sm text-msk-ink/45">
-            Aucun article.{" "}
-            {canManage ? (
-              <Link
-                prefetch={false}
-                href="/stocks/articles/nouveau"
-                className="text-msk-blue"
-              >
-                Créer le premier
-              </Link>
-            ) : null}
-          </p>
-        ) : (
-          <table className="w-full min-w-160 text-left text-sm">
-            <thead className="border-b border-msk-paper bg-msk-chalk/60 text-xs tracking-caps uppercase text-msk-ink/45">
-              <tr>
-                <SortableTh
-                  label="Code"
-                  column="code"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/stocks/articles"
-                  searchParams={listParams}
-                />
-                <SortableTh
-                  label="Désignation"
-                  column="designation"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/stocks/articles"
-                  searchParams={listParams}
-                />
-                <SortableTh
-                  label="Famille"
-                  column="family"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/stocks/articles"
-                  searchParams={listParams}
-                />
-                <SortableTh
-                  label="Stock"
-                  column="qty"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/stocks/articles"
-                  searchParams={listParams}
-                  defaultDir="desc"
-                  align="right"
-                />
-                <SortableTh
-                  label="Min"
-                  column="min"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/stocks/articles"
-                  searchParams={listParams}
-                  defaultDir="desc"
-                  align="right"
-                />
-                <SortableTh
-                  label="Lieu"
-                  column="location"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/stocks/articles"
-                  searchParams={listParams}
-                />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-msk-paper">
-              {articles.map((a) => {
-                const low =
-                  Number(a.stockMin) > 0 &&
-                  new Prisma.Decimal(a.qtyOnHand).lte(a.stockMin);
-                return (
-                  <tr
-                    key={a.id}
-                    className={!a.active ? "opacity-50" : undefined}
-                  >
-                    <td className="px-4 py-3 font-medium">
-                      <Link
-                        prefetch={false}
-                        href={`/stocks/articles/${a.id}`}
-                        className="text-msk-blue hover:underline"
-                      >
-                        {a.code}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3 text-msk-ink/80">
-                      {a.designation}
-                    </td>
-                    <td className="px-4 py-3 text-msk-ink/55">
-                      {a.family}
-                      {a.subFamily ? ` / ${a.subFamily}` : ""}
-                    </td>
-                    <td
-                      className={`px-4 py-3 text-right tabular-nums ${low ? "font-semibold text-msk-coral" : ""}`}
-                    >
-                      {qtyStr(a.qtyOnHand)} {a.unit}
-                    </td>
-                    <td className="px-4 py-3 text-right tabular-nums text-msk-ink/55">
-                      {qtyStr(a.stockMin)}
-                    </td>
-                    <td className="px-4 py-3 text-msk-ink/55">
-                      {a.location ?? "—"}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-        {total > 0 ? (
-          <ListPagination
-            pathname="/stocks/articles"
-            searchParams={listParams}
-            page={page}
-            totalPages={totalPages(total, pageSize)}
-            total={total}
-            pageSize={pageSize}
-          />
-        ) : null}
-      </Surface>
+      <Suspense
+        key={resultsKey}
+        fallback={<ListTableSkeleton rows={8} cols={6} />}
+      >
+        <ArticlesResults searchParams={searchParams} canManage={canManage} />
+      </Suspense>
     </PageShell>
+  );
+}
+
+async function ArticlesResults({
+  searchParams,
+  canManage,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  canManage: boolean;
+}) {
+  const raw = await searchParams;
+  const q = (firstParam(raw.q) ?? "").trim();
+  const sp: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: firstParam(raw.sort),
+    dir: firstParam(raw.dir),
+    page: firstParam(raw.page),
+  };
+  const sort = parseListSort(sp, ARTICLE_SORT_COLUMNS, {
+    key: "code",
+    dir: "asc",
+  });
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const requestedPage = parsePage(sp.page);
+  const listParams: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: sort.key,
+    dir: sort.dir,
+  };
+
+  const where: Prisma.StkArticleWhereInput = q
+    ? {
+        OR: [
+          { code: { contains: q, mode: "insensitive" } },
+          { designation: { contains: q, mode: "insensitive" } },
+          { family: { contains: q, mode: "insensitive" } },
+          { location: { contains: q, mode: "insensitive" } },
+        ],
+      }
+    : {};
+  const total = await prisma.stkArticle.count({ where });
+  const page = clampPage(requestedPage, total, pageSize);
+  const articles = await prisma.stkArticle.findMany({
+    where,
+    orderBy: sort.orderBy as Prisma.StkArticleOrderByWithRelationInput[],
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
+  });
+
+  return (
+    <Surface className="overflow-x-auto p-0">
+      {articles.length === 0 ? (
+        <p className="p-6 text-sm text-msk-ink/45">
+          Aucun article.{" "}
+          {canManage ? (
+            <Link
+              prefetch={false}
+              href="/stocks/articles/nouveau"
+              className="text-msk-blue"
+            >
+              Créer le premier
+            </Link>
+          ) : null}
+        </p>
+      ) : (
+        <table className="w-full min-w-160 text-left text-sm">
+          <thead className="border-b border-msk-paper bg-msk-chalk/60 text-xs tracking-caps uppercase text-msk-ink/45">
+            <tr>
+              <SortableTh
+                label="Code"
+                column="code"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/stocks/articles"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Désignation"
+                column="designation"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/stocks/articles"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Famille"
+                column="family"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/stocks/articles"
+                searchParams={listParams}
+              />
+              <SortableTh
+                label="Stock"
+                column="qty"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/stocks/articles"
+                searchParams={listParams}
+                defaultDir="desc"
+                align="right"
+              />
+              <SortableTh
+                label="Min"
+                column="min"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/stocks/articles"
+                searchParams={listParams}
+                defaultDir="desc"
+                align="right"
+              />
+              <SortableTh
+                label="Lieu"
+                column="location"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/stocks/articles"
+                searchParams={listParams}
+              />
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-msk-paper">
+            {articles.map((a) => {
+              const low =
+                Number(a.stockMin) > 0 &&
+                new Prisma.Decimal(a.qtyOnHand).lte(a.stockMin);
+              return (
+                <tr
+                  key={a.id}
+                  className={!a.active ? "opacity-50" : undefined}
+                >
+                  <td className="px-4 py-3 font-medium">
+                    <Link
+                      prefetch={false}
+                      href={`/stocks/articles/${a.id}`}
+                      className="text-msk-blue hover:underline"
+                    >
+                      {a.code}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 text-msk-ink/80">{a.designation}</td>
+                  <td className="px-4 py-3 text-msk-ink/55">
+                    {a.family}
+                    {a.subFamily ? ` / ${a.subFamily}` : ""}
+                  </td>
+                  <td
+                    className={`px-4 py-3 text-right tabular-nums ${low ? "font-semibold text-msk-coral" : ""}`}
+                  >
+                    {qtyStr(a.qtyOnHand)} {a.unit}
+                  </td>
+                  <td className="px-4 py-3 text-right tabular-nums text-msk-ink/55">
+                    {qtyStr(a.stockMin)}
+                  </td>
+                  <td className="px-4 py-3 text-msk-ink/55">
+                    {a.location ?? "—"}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+      {total > 0 ? (
+        <ListPagination
+          pathname="/stocks/articles"
+          searchParams={listParams}
+          page={page}
+          totalPages={totalPages(total, pageSize)}
+          total={total}
+          pageSize={pageSize}
+        />
+      ) : null}
+    </Surface>
   );
 }

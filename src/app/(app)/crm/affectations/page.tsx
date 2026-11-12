@@ -12,8 +12,17 @@ import { runSeries } from "@/lib/db/serial";
 import { STAGE_LABELS, STAGE_ORDER } from "@/lib/crm/labels";
 import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { firstSearchParam } from "@/lib/crm/scope-period";
+import { firstParam } from "@/lib/list/search-params";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
 import {
   appendSortParams,
+  listKeyFromSearchParams,
   parseListSort,
   type SortColumnMap,
   type SortDir,
@@ -23,6 +32,8 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ListSearchForm } from "@/components/ui/list-search-form";
+import { ListPagination } from "@/components/ui/list-pagination";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { AssignmentResolveActions } from "@/components/crm/assignment-resolve-actions";
 import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
@@ -67,6 +78,41 @@ const STATUS_LABEL: Record<string, string> = {
   CANCELLED: "Annulée",
 };
 
+function assignmentSearchWhere(
+  q: string,
+): Prisma.CrmAssignmentRequestWhereInput | undefined {
+  if (!q) return undefined;
+  return {
+    OR: [
+      {
+        opportunity: {
+          organization: { name: { contains: q, mode: "insensitive" } },
+        },
+      },
+      {
+        opportunity: {
+          title: { contains: q, mode: "insensitive" },
+        },
+      },
+      { requester: { firstName: { contains: q, mode: "insensitive" } } },
+      { requester: { lastName: { contains: q, mode: "insensitive" } } },
+      {
+        opportunity: {
+          owner: { firstName: { contains: q, mode: "insensitive" } },
+        },
+      },
+      {
+        opportunity: {
+          owner: { lastName: { contains: q, mode: "insensitive" } },
+        },
+      },
+      { resolvedBy: { firstName: { contains: q, mode: "insensitive" } } },
+      { resolvedBy: { lastName: { contains: q, mode: "insensitive" } } },
+      { message: { contains: q, mode: "insensitive" } },
+    ],
+  };
+}
+
 export default async function CrmAffectationsPage({
   searchParams,
 }: {
@@ -76,33 +122,22 @@ export default async function CrmAffectationsPage({
   if (!hasPermission(user, "crm.access")) redirect("/accueil");
   if (!canReassignCrmDeal(user)) redirect("/crm/prospects");
 
-  const spRaw = await searchParams;
-  const sp: Record<string, string | undefined> = {};
-  for (const [k, v] of Object.entries(spRaw)) {
-    sp[k] = Array.isArray(v) ? v[0] : v;
-  }
-  const q = (firstSearchParam(spRaw.q) ?? "").trim().toLowerCase();
-  const statusFilter = firstSearchParam(spRaw.statut)?.toUpperCase();
+  const rawSp = await searchParams;
+  const pendingKey = listKeyFromSearchParams(rawSp, [
+    "q",
+    "sort",
+    "dir",
+    "page",
+  ]);
+  const historyKey = listKeyFromSearchParams(rawSp, [
+    "q",
+    "statut",
+    "hsort",
+    "hdir",
+    "hpage",
+  ]);
 
-  const sort = parseListSort(sp, PENDING_SORT, {
-    key: "createdAt",
-    dir: "asc",
-  });
-  const recentSort = parseListSort(
-    sp,
-    RECENT_SORT,
-    { key: "resolvedAt", dir: "desc" },
-    { sortKey: "hsort", dirKey: "hdir" },
-  );
-  const listParams: Record<string, string | undefined> = {
-    q: sp.q,
-    statut: sp.statut,
-    sort: sort.key,
-    dir: sort.dir,
-    hsort: recentSort.key,
-    hdir: recentSort.dir,
-  };
-  const [commercials, assignableDeals, pending, recent] = await runSeries([
+  const [commercials, assignableDeals] = await runSeries([
     async () => {
       const rows = await listCommercialRoster({
         mode: "assign",
@@ -127,56 +162,7 @@ export default async function CrmAffectationsPage({
           owner: { select: { firstName: true, lastName: true } },
         },
         orderBy: { updatedAt: "desc" },
-        take: 500,
-      }),
-    () =>
-      prisma.crmAssignmentRequest.findMany({
-        where: { status: "PENDING" },
-        orderBy:
-          sort.orderBy as Prisma.CrmAssignmentRequestOrderByWithRelationInput[],
-        include: {
-          requester: {
-            select: { firstName: true, lastName: true, email: true },
-          },
-          opportunity: {
-            select: {
-              id: true,
-              stage: true,
-              title: true,
-              ownerId: true,
-              organization: { select: { name: true } },
-              owner: { select: { firstName: true, lastName: true } },
-            },
-          },
-        },
-        take: 100,
-      }),
-    () =>
-      prisma.crmAssignmentRequest.findMany({
-        where: {
-          status: {
-            in:
-              statusFilter === "APPROVED" ||
-              statusFilter === "REJECTED" ||
-              statusFilter === "CANCELLED"
-                ? [statusFilter]
-                : ["APPROVED", "REJECTED", "CANCELLED"],
-          },
-        },
-        orderBy:
-          recentSort.orderBy as Prisma.CrmAssignmentRequestOrderByWithRelationInput[],
-        take: 50,
-        include: {
-          requester: { select: { firstName: true, lastName: true } },
-          resolvedBy: { select: { firstName: true, lastName: true } },
-          opportunity: {
-            select: {
-              id: true,
-              organization: { select: { name: true } },
-              owner: { select: { firstName: true, lastName: true } },
-            },
-          },
-        },
+        take: 200,
       }),
   ]);
 
@@ -186,36 +172,6 @@ export default async function CrmAffectationsPage({
     ownerId: d.ownerId,
     ownerLabel: `${d.owner.firstName} ${d.owner.lastName}`,
   }));
-
-  const filterText = (name: string, a: string, b?: string | null) => {
-    if (!q) return true;
-    const hay = `${name} ${a} ${b ?? ""}`.toLowerCase();
-    return hay.includes(q);
-  };
-
-  const pendingFiltered = pending.filter((r) =>
-    filterText(
-      r.opportunity.organization.name,
-      `${r.requester.firstName} ${r.requester.lastName}`,
-      `${r.opportunity.owner.firstName} ${r.opportunity.owner.lastName}`,
-    ),
-  );
-  const recentFiltered = recent.filter((r) =>
-    filterText(
-      r.opportunity.organization.name,
-      `${r.requester.firstName} ${r.requester.lastName}`,
-      r.resolvedBy
-        ? `${r.resolvedBy.firstName} ${r.resolvedBy.lastName}`
-        : null,
-    ),
-  );
-
-  const statutLinks = [
-    { id: "", label: "Toutes" },
-    { id: "APPROVED", label: "Approuvées" },
-    { id: "REJECTED", label: "Refusées" },
-    { id: "CANCELLED", label: "Annulées" },
-  ] as const;
 
   return (
     <PageShell>
@@ -252,25 +208,144 @@ export default async function CrmAffectationsPage({
         </Suspense>
       </div>
 
-      <Surface className="overflow-hidden p-0">
-        <div className="border-b border-msk-ink/6 bg-msk-chalk/40 px-4 py-2.5">
-          <h2 className="text-sm font-semibold text-msk-ink">
-            Demandes en attente
-            <Badge
-              tone={pendingFiltered.length > 0 ? "coral" : "muted"}
-              className="ml-2"
-            >
-              {pendingFiltered.length}
-            </Badge>
-          </h2>
-        </div>
-        {pendingFiltered.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-msk-ink/40">
-            {q
-              ? `Aucune demande en attente pour « ${q} ».`
-              : "Aucune demande en attente."}
-          </p>
-        ) : (
+      <Suspense
+        key={pendingKey}
+        fallback={<ListTableSkeleton rows={5} cols={6} />}
+      >
+        <PendingAffectationsResults
+          searchParams={searchParams}
+          commercials={commercials}
+        />
+      </Suspense>
+
+      <Suspense
+        key={historyKey}
+        fallback={<ListTableSkeleton rows={6} cols={6} />}
+      >
+        <HistoryAffectationsResults searchParams={searchParams} />
+      </Suspense>
+    </PageShell>
+  );
+}
+
+function flattenSp(
+  raw: Record<string, string | string[] | undefined>,
+): Record<string, string | undefined> {
+  const sp: Record<string, string | undefined> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    sp[k] = Array.isArray(v) ? v[0] : v;
+  }
+  return sp;
+}
+
+/** Préserve les params de l’autre tableau dans les hrefs SortableTh. */
+function crossTableListParams(
+  sp: Record<string, string | undefined>,
+  pending: { key: string; dir: string; page?: number },
+  recent: { key: string; dir: string; page?: number },
+  q: string,
+): Record<string, string | undefined> {
+  return {
+    q: q || undefined,
+    statut: sp.statut,
+    sort: pending.key,
+    dir: pending.dir,
+    hsort: recent.key,
+    hdir: recent.dir,
+    page: pending.page && pending.page > 1 ? String(pending.page) : undefined,
+    hpage: recent.page && recent.page > 1 ? String(recent.page) : undefined,
+  };
+}
+
+async function PendingAffectationsResults({
+  searchParams,
+  commercials,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  commercials: { id: string; firstName: string; lastName: string }[];
+}) {
+  const spRaw = await searchParams;
+  const sp = flattenSp(spRaw);
+  const q = (firstSearchParam(spRaw.q) ?? "").trim();
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const searchWhere = assignmentSearchWhere(q);
+
+  const sort = parseListSort(sp, PENDING_SORT, {
+    key: "createdAt",
+    dir: "asc",
+  });
+  const recentSort = parseListSort(
+    sp,
+    RECENT_SORT,
+    { key: "resolvedAt", dir: "desc" },
+    { sortKey: "hsort", dirKey: "hdir" },
+  );
+
+  const pendingWhere: Prisma.CrmAssignmentRequestWhereInput = {
+    status: "PENDING",
+    ...(searchWhere ?? {}),
+  };
+
+  const pendingTotal = await prisma.crmAssignmentRequest.count({
+    where: pendingWhere,
+  });
+  const pendingPage = clampPage(
+    parsePage(firstParam(spRaw.page)),
+    pendingTotal,
+    pageSize,
+  );
+  const pending = await prisma.crmAssignmentRequest.findMany({
+    where: pendingWhere,
+    orderBy:
+      sort.orderBy as Prisma.CrmAssignmentRequestOrderByWithRelationInput[],
+    include: {
+      requester: {
+        select: { firstName: true, lastName: true, email: true },
+      },
+      opportunity: {
+        select: {
+          id: true,
+          stage: true,
+          title: true,
+          ownerId: true,
+          organization: { select: { name: true } },
+          owner: { select: { firstName: true, lastName: true } },
+        },
+      },
+    },
+    skip: pageSkip(pendingPage, pageSize),
+    take: pageSize,
+  });
+
+  const listParams = crossTableListParams(
+    sp,
+    { key: sort.key, dir: sort.dir, page: pendingPage },
+    {
+      key: recentSort.key,
+      dir: recentSort.dir,
+      page: parsePage(firstParam(spRaw.hpage)),
+    },
+    q,
+  );
+
+  return (
+    <Surface className="overflow-hidden p-0">
+      <div className="border-b border-msk-ink/6 bg-msk-chalk/40 px-4 py-2.5">
+        <h2 className="text-sm font-semibold text-msk-ink">
+          Demandes en attente
+          <Badge tone={pendingTotal > 0 ? "coral" : "muted"} className="ml-2">
+            {pendingTotal}
+          </Badge>
+        </h2>
+      </div>
+      {pending.length === 0 ? (
+        <p className="px-4 py-8 text-center text-sm text-msk-ink/40">
+          {q
+            ? `Aucune demande en attente pour « ${q} ».`
+            : "Aucune demande en attente."}
+        </p>
+      ) : (
+        <>
           <ListTableScroll>
             <table className="w-full min-w-200 text-left text-sm">
               <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
@@ -320,7 +395,7 @@ export default async function CrmAffectationsPage({
                 </tr>
               </thead>
               <tbody className="divide-y divide-msk-ink/6">
-                {pendingFiltered.map((r) => {
+                {pending.map((r) => {
                   const uiStage = normalizeUiStage(r.opportunity.stage);
                   return (
                     <tr key={r.id} className="align-top">
@@ -385,51 +460,146 @@ export default async function CrmAffectationsPage({
               </tbody>
             </table>
           </ListTableScroll>
-        )}
-      </Surface>
+          <ListPagination
+            pathname="/crm/affectations"
+            searchParams={listParams}
+            page={pendingPage}
+            totalPages={totalPages(pendingTotal, pageSize)}
+            total={pendingTotal}
+            pageSize={pageSize}
+          />
+        </>
+      )}
+    </Surface>
+  );
+}
 
-      <Surface className="overflow-hidden p-0">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-msk-ink/6 bg-msk-chalk/40 px-4 py-2.5">
-          <h2 className="text-sm font-semibold text-msk-ink">Historique</h2>
-          <div className="flex flex-wrap gap-1.5">
-            {statutLinks.map((s) => {
-              const active = (statusFilter ?? "") === s.id;
-              const params = new URLSearchParams();
-              if (s.id) params.set("statut", s.id);
-              if (sp.q) params.set("q", sp.q);
-              appendSortParams(params, listParams);
-              appendSortParams(params, listParams, {
-                sortKey: "hsort",
-                dirKey: "hdir",
-              });
-              const qs = params.toString();
-              const href = qs
-                ? `/crm/affectations?${qs}`
-                : "/crm/affectations";
-              return (
-                <Link
-                  key={s.id || "all"}
-                  prefetch={false}
-                  href={href}
-                  className={
-                    active
-                      ? "rounded-lg bg-msk-blue px-2.5 py-1 text-xs font-medium text-white"
-                      : "rounded-lg bg-white px-2.5 py-1 text-xs font-medium text-msk-ink/55 hover:bg-msk-chalk"
-                  }
-                >
-                  {s.label}
-                </Link>
-              );
-            })}
-          </div>
+async function HistoryAffectationsResults({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const spRaw = await searchParams;
+  const sp = flattenSp(spRaw);
+  const q = (firstSearchParam(spRaw.q) ?? "").trim();
+  const statusFilter = firstSearchParam(spRaw.statut)?.toUpperCase();
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const searchWhere = assignmentSearchWhere(q);
+
+  const sort = parseListSort(sp, PENDING_SORT, {
+    key: "createdAt",
+    dir: "asc",
+  });
+  const recentSort = parseListSort(
+    sp,
+    RECENT_SORT,
+    { key: "resolvedAt", dir: "desc" },
+    { sortKey: "hsort", dirKey: "hdir" },
+  );
+
+  const recentStatus =
+    statusFilter === "APPROVED" ||
+    statusFilter === "REJECTED" ||
+    statusFilter === "CANCELLED"
+      ? [statusFilter]
+      : (["APPROVED", "REJECTED", "CANCELLED"] as const);
+  const recentWhere: Prisma.CrmAssignmentRequestWhereInput = {
+    status: { in: [...recentStatus] },
+    ...(searchWhere ?? {}),
+  };
+
+  const recentTotal = await prisma.crmAssignmentRequest.count({
+    where: recentWhere,
+  });
+  const recentPage = clampPage(
+    parsePage(firstParam(spRaw.hpage)),
+    recentTotal,
+    pageSize,
+  );
+  const recent = await prisma.crmAssignmentRequest.findMany({
+    where: recentWhere,
+    orderBy:
+      recentSort.orderBy as Prisma.CrmAssignmentRequestOrderByWithRelationInput[],
+    skip: pageSkip(recentPage, pageSize),
+    take: pageSize,
+    include: {
+      requester: { select: { firstName: true, lastName: true } },
+      resolvedBy: { select: { firstName: true, lastName: true } },
+      opportunity: {
+        select: {
+          id: true,
+          organization: { select: { name: true } },
+          owner: { select: { firstName: true, lastName: true } },
+        },
+      },
+    },
+  });
+
+  const listParams = crossTableListParams(
+    sp,
+    {
+      key: sort.key,
+      dir: sort.dir,
+      page: parsePage(firstParam(spRaw.page)),
+    },
+    { key: recentSort.key, dir: recentSort.dir, page: recentPage },
+    q,
+  );
+
+  const statutLinks = [
+    { id: "", label: "Toutes" },
+    { id: "APPROVED", label: "Approuvées" },
+    { id: "REJECTED", label: "Refusées" },
+    { id: "CANCELLED", label: "Annulées" },
+  ] as const;
+
+  return (
+    <Surface className="overflow-hidden p-0">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-msk-ink/6 bg-msk-chalk/40 px-4 py-2.5">
+        <h2 className="text-sm font-semibold text-msk-ink">
+          Historique
+          <Badge tone="muted" className="ml-2">
+            {recentTotal}
+          </Badge>
+        </h2>
+        <div className="flex flex-wrap gap-1.5">
+          {statutLinks.map((s) => {
+            const active = (statusFilter ?? "") === s.id;
+            const params = new URLSearchParams();
+            if (s.id) params.set("statut", s.id);
+            if (q) params.set("q", q);
+            appendSortParams(params, listParams);
+            appendSortParams(params, listParams, {
+              sortKey: "hsort",
+              dirKey: "hdir",
+            });
+            const qs = params.toString();
+            const href = qs ? `/crm/affectations?${qs}` : "/crm/affectations";
+            return (
+              <Link
+                key={s.id || "all"}
+                prefetch={false}
+                href={href}
+                className={
+                  active
+                    ? "rounded-lg bg-msk-blue px-2.5 py-1 text-xs font-medium text-white"
+                    : "rounded-lg bg-white px-2.5 py-1 text-xs font-medium text-msk-ink/55 hover:bg-msk-chalk"
+                }
+              >
+                {s.label}
+              </Link>
+            );
+          })}
         </div>
-        {recentFiltered.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-msk-ink/40">
-            {q
-              ? `Aucune affectation pour « ${q} » dans cet historique.`
-              : "Aucune affectation dans cet historique."}
-          </p>
-        ) : (
+      </div>
+      {recent.length === 0 ? (
+        <p className="px-4 py-8 text-center text-sm text-msk-ink/40">
+          {q
+            ? `Aucune affectation pour « ${q} » dans cet historique.`
+            : "Aucune affectation dans cet historique."}
+        </p>
+      ) : (
+        <>
           <ListTableScroll>
             <table className="w-full min-w-200 text-left text-sm">
               <thead className="border-b border-msk-ink/8 bg-msk-chalk/50 text-[11px] uppercase tracking-wide text-msk-ink/40">
@@ -441,6 +611,9 @@ export default async function CrmAffectationsPage({
                     dir={recentSort.dir}
                     pathname="/crm/affectations"
                     searchParams={listParams}
+                    sortParam="hsort"
+                    dirParam="hdir"
+                    pageParam="hpage"
                   />
                   <SortableTh
                     label="Demandeur"
@@ -451,6 +624,7 @@ export default async function CrmAffectationsPage({
                     searchParams={listParams}
                     sortParam="hsort"
                     dirParam="hdir"
+                    pageParam="hpage"
                   />
                   <SortableTh
                     label="Décidé par"
@@ -461,6 +635,7 @@ export default async function CrmAffectationsPage({
                     searchParams={listParams}
                     sortParam="hsort"
                     dirParam="hdir"
+                    pageParam="hpage"
                   />
                   <SortableTh
                     label="Créée"
@@ -471,6 +646,7 @@ export default async function CrmAffectationsPage({
                     searchParams={listParams}
                     sortParam="hsort"
                     dirParam="hdir"
+                    pageParam="hpage"
                     defaultDir="desc"
                   />
                   <SortableTh
@@ -482,6 +658,7 @@ export default async function CrmAffectationsPage({
                     searchParams={listParams}
                     sortParam="hsort"
                     dirParam="hdir"
+                    pageParam="hpage"
                     defaultDir="desc"
                   />
                   <SortableTh
@@ -493,11 +670,12 @@ export default async function CrmAffectationsPage({
                     searchParams={listParams}
                     sortParam="hsort"
                     dirParam="hdir"
+                    pageParam="hpage"
                   />
                 </tr>
               </thead>
               <tbody className="divide-y divide-msk-ink/6">
-                {recentFiltered.map((r) => (
+                {recent.map((r) => (
                   <tr key={r.id}>
                     <td className="px-4 py-3">
                       <Link
@@ -548,8 +726,17 @@ export default async function CrmAffectationsPage({
               </tbody>
             </table>
           </ListTableScroll>
-        )}
-      </Surface>
-    </PageShell>
+          <ListPagination
+            pathname="/crm/affectations"
+            searchParams={listParams}
+            page={recentPage}
+            totalPages={totalPages(recentTotal, pageSize)}
+            total={recentTotal}
+            pageSize={pageSize}
+            pageParam="hpage"
+          />
+        </>
+      )}
+    </Surface>
   );
 }

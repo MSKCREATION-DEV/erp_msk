@@ -1,16 +1,32 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/list/search-params";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
+import {
+  listKeyFromSearchParams,
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
+import { ListPagination } from "@/components/ui/list-pagination";
+import { ListSearchForm } from "@/components/ui/list-search-form";
 
 export const metadata: Metadata = { title: "Mouvements stock" };
 
@@ -37,28 +53,8 @@ export default async function StocksMouvementsPage({
   if (!hasPermission(user, "stk.access")) redirect("/accueil");
   const canMove = hasPermission(user, "stk.moves.create");
 
-  const raw = await searchParams;
-  const sp: Record<string, string | undefined> = {
-    sort: firstParam(raw.sort),
-    dir: firstParam(raw.dir),
-  };
-  const sort = parseListSort(sp, MOVE_SORT_COLUMNS, {
-    key: "movedAt",
-    dir: "desc",
-  });
-  const listParams: Record<string, string | undefined> = {
-    sort: sort.key,
-    dir: sort.dir,
-  };
-
-  const moves = await prisma.stkMovement.findMany({
-    take: 100,
-    orderBy: sort.orderBy as Prisma.StkMovementOrderByWithRelationInput[],
-    include: {
-      article: true,
-      createdBy: { select: { firstName: true, lastName: true } },
-    },
-  });
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
 
   return (
     <PageShell>
@@ -84,21 +80,99 @@ export default async function StocksMouvementsPage({
         }
       />
 
-      <Surface className="overflow-x-auto p-0">
-        {moves.length === 0 ? (
-          <p className="p-6 text-sm text-msk-ink/45">
-            Aucun mouvement.{" "}
-            {canMove ? (
-              <Link
-                prefetch={false}
-                href="/stocks/mouvements/nouveau"
-                className="text-msk-blue"
-              >
-                Enregistrer le premier
-              </Link>
-            ) : null}
-          </p>
-        ) : (
+      <div className="pb-3">
+        <Suspense
+          fallback={
+            <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+          }
+        >
+          <ListSearchForm
+            placeholder="Article, motif…"
+            className="sm:max-w-md"
+          />
+        </Suspense>
+      </div>
+
+      <Suspense
+        key={resultsKey}
+        fallback={<ListTableSkeleton rows={8} cols={6} />}
+      >
+        <MouvementsResults searchParams={searchParams} canMove={canMove} />
+      </Suspense>
+    </PageShell>
+  );
+}
+
+async function MouvementsResults({
+  searchParams,
+  canMove,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  canMove: boolean;
+}) {
+  const raw = await searchParams;
+  const q = (firstParam(raw.q) ?? "").trim();
+  const sp: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: firstParam(raw.sort),
+    dir: firstParam(raw.dir),
+  };
+  const sort = parseListSort(sp, MOVE_SORT_COLUMNS, {
+    key: "movedAt",
+    dir: "desc",
+  });
+  const listParams: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: sort.key,
+    dir: sort.dir,
+  };
+
+  const where: Prisma.StkMovementWhereInput = q
+    ? {
+        OR: [
+          { article: { code: { contains: q, mode: "insensitive" } } },
+          { article: { designation: { contains: q, mode: "insensitive" } } },
+          { reason: { contains: q, mode: "insensitive" } },
+        ],
+      }
+    : {};
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const total = await prisma.stkMovement.count({ where });
+  const page = clampPage(parsePage(firstParam(raw.page)), total, pageSize);
+  const moves = await prisma.stkMovement.findMany({
+    where,
+    orderBy: sort.orderBy as Prisma.StkMovementOrderByWithRelationInput[],
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
+    include: {
+      article: true,
+      createdBy: { select: { firstName: true, lastName: true } },
+    },
+  });
+
+  return (
+    <Surface className="overflow-x-auto p-0">
+      {moves.length === 0 ? (
+        <p className="p-6 text-sm text-msk-ink/45">
+          {q ? (
+            <>Aucun mouvement pour « {q} ».</>
+          ) : (
+            <>
+              Aucun mouvement.{" "}
+              {canMove ? (
+                <Link
+                  prefetch={false}
+                  href="/stocks/mouvements/nouveau"
+                  className="text-msk-blue"
+                >
+                  Enregistrer le premier
+                </Link>
+              ) : null}
+            </>
+          )}
+        </p>
+      ) : (
+        <>
           <table className="w-full min-w-180 text-left text-sm">
             <thead className="border-b border-msk-paper bg-msk-chalk/60 text-xs tracking-caps uppercase text-msk-ink/45">
               <tr>
@@ -180,8 +254,16 @@ export default async function StocksMouvementsPage({
               ))}
             </tbody>
           </table>
-        )}
-      </Surface>
-    </PageShell>
+          <ListPagination
+            pathname="/stocks/mouvements"
+            searchParams={listParams}
+            page={page}
+            totalPages={totalPages(total, pageSize)}
+            total={total}
+            pageSize={pageSize}
+          />
+        </>
+      )}
+    </Surface>
   );
 }
