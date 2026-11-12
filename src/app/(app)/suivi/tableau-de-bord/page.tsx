@@ -211,15 +211,11 @@ export default async function SuiviDashboardPage({
               <div className="lg:col-span-2">
                 <SvExpenseDonut
                   data={data.categories}
-                  hrefForFamily={(family) =>
-                    buildSvMovementsHref({
-                      fromIso: scope.fromIso,
-                      toIso: scope.toIso,
-                      direction: "OUT",
-                      compte: scope.compte,
-                      categorie: family as typeof scope.categorie,
-                    })
-                  }
+                  hrefParams={{
+                    fromIso: scope.fromIso,
+                    toIso: scope.toIso,
+                    compte: scope.compte,
+                  }}
                 />
               </div>
             </div>

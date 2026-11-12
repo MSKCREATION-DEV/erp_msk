@@ -27,6 +27,8 @@ import type {
   SvCompareBar,
   SvSeriesPoint,
 } from "@/lib/suivi/dashboard-stats";
+import { buildSvMovementsHref } from "@/lib/suivi/dashboard-period";
+import type { SvAccountKind } from "@/generated/prisma/client";
 import { cn } from "@/lib/utils";
 
 const flowConfig = {
@@ -120,12 +122,21 @@ export function SvFlowAreaChart({
 
 export function SvExpenseDonut({
   data,
-  hrefForFamily,
+  hrefParams,
   title = "Dépenses par catégorie",
   subtitle = "clic = mouvements filtrés",
 }: {
   data: SvCategorySlice[];
-  hrefForFamily: (family: string) => string;
+  /**
+   * Paramètres sérialisables pour reconstruire le lien « mouvements filtrés »
+   * par famille. On ne peut pas passer de fonction (closure) d'un Server
+   * Component à ce Client Component — voir `buildSvMovementsHref`.
+   */
+  hrefParams: {
+    fromIso: string;
+    toIso: string;
+    compte: SvAccountKind | null;
+  };
   title?: string;
   subtitle?: string;
 }) {
@@ -173,7 +184,13 @@ export function SvExpenseDonut({
             {data.map((d) => (
               <li key={d.key}>
                 <Link
-                  href={hrefForFamily(d.family)}
+                  href={buildSvMovementsHref({
+                    fromIso: hrefParams.fromIso,
+                    toIso: hrefParams.toIso,
+                    direction: "OUT",
+                    compte: hrefParams.compte,
+                    categorie: d.family,
+                  })}
                   prefetch={false}
                   className="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 transition hover:bg-msk-chalk/70"
                 >
