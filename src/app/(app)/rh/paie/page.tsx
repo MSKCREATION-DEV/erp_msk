@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
@@ -13,12 +14,18 @@ import {
   parsePage,
   totalPages,
 } from "@/lib/list/pagination";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  listKeyFromSearchParams,
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { SortableTh } from "@/components/ui/sortable-th";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { ListPagination } from "@/components/ui/list-pagination";
 import {
   PERIOD_STATUS_LABEL,
@@ -51,6 +58,48 @@ export default async function RhPaiePage({
   }
 
   const canRun = hasPermission(user, "rh.payroll.run");
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
+
+  return (
+    <PageShell>
+      <PageHeader
+        title="Paie"
+        description="Périodes mensuelles, bulletins, PDF et écritures journal PA."
+        backHref="/rh"
+        backLabel="Retour RH"
+        breadcrumbs={[
+          { label: "RH", href: "/rh" },
+          { label: "Paie" },
+        ]}
+        actions={
+          canRun ? (
+            <Link
+              prefetch={false}
+              href="/rh/paie/nouveau"
+              className="inline-flex h-9 items-center justify-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
+            >
+              Ouvrir une période
+            </Link>
+          ) : null
+        }
+      />
+
+      <Suspense
+        key={resultsKey}
+        fallback={<ListTableSkeleton rows={8} cols={3} />}
+      >
+        <PaieResults searchParams={searchParams} />
+      </Suspense>
+    </PageShell>
+  );
+}
+
+async function PaieResults({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const raw = await searchParams;
   const sp: Record<string, string | undefined> = {};
   for (const [k, v] of Object.entries(raw)) sp[k] = Array.isArray(v) ? v[0] : v;
@@ -76,34 +125,13 @@ export default async function RhPaiePage({
   });
 
   return (
-    <PageShell>
-      <PageHeader
-        title="Paie"
-        description="Périodes mensuelles, bulletins, PDF et écritures journal PA."
-        backHref="/rh"
-        backLabel="Retour RH"
-        breadcrumbs={[
-          { label: "RH", href: "/rh" },
-          { label: "Paie" },
-        ]}
-        actions={
-          canRun ? (
-            <Link prefetch={false}
-              href="/rh/paie/nouveau"
-              className="inline-flex h-9 items-center justify-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
-            >
-              Ouvrir une période
-            </Link>
-          ) : null
-        }
-      />
-
-      <Surface className="overflow-x-auto p-0">
-        {periods.length === 0 ? (
-          <p className="px-4 py-10 text-center text-sm text-msk-ink/50">
-            Aucune période — ouvrir le mois en cours pour calculer la paie.
-          </p>
-        ) : (
+    <Surface className="overflow-x-auto p-0">
+      {periods.length === 0 ? (
+        <p className="px-4 py-10 text-center text-sm text-msk-ink/50">
+          Aucune période — ouvrir le mois en cours pour calculer la paie.
+        </p>
+      ) : (
+        <>
           <table className="w-full text-left text-sm">
             <thead className="border-b border-msk-ink/10 text-msk-ink/45">
               <tr>
@@ -139,7 +167,8 @@ export default async function RhPaiePage({
               {periods.map((p) => (
                 <tr key={p.id} className="border-b border-msk-ink/5">
                   <td className="px-4 py-3">
-                    <Link prefetch={false}
+                    <Link
+                      prefetch={false}
                       href={`/rh/paie/${p.id}`}
                       className="font-medium capitalize text-msk-blue hover:underline"
                     >
@@ -158,16 +187,16 @@ export default async function RhPaiePage({
               ))}
             </tbody>
           </table>
-        )}
-        <ListPagination
-          pathname="/rh/paie"
-          searchParams={listParams}
-          page={page}
-          totalPages={totalPages(total, pageSize)}
-          total={total}
-          pageSize={pageSize}
-        />
-      </Surface>
-    </PageShell>
+          <ListPagination
+            pathname="/rh/paie"
+            searchParams={listParams}
+            page={page}
+            totalPages={totalPages(total, pageSize)}
+            total={total}
+            pageSize={pageSize}
+          />
+        </>
+      )}
+    </Surface>
   );
 }
