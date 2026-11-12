@@ -12,6 +12,7 @@ import {
 } from "../src/lib/suivi/seed-data";
 import { seedSuiviGed } from "../src/lib/suivi/seed-ged";
 import {
+  applySvAccountBaseline,
   ensureSvAccounts,
   getSvAccountByKind,
 } from "../src/lib/suivi/accounts";
@@ -161,10 +162,10 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
   }
   console.log(`✓ Sv contrats ${contractCount}`);
 
-  // Comptes physique / banque (soldes initiaux 0 — pas d’ouverture inventée)
+  // Comptes physique / banque — seed OUT puis bascule Direction (décision I)
   await ensureSvAccounts(prisma);
   const physical = await getSvAccountByKind("PHYSICAL", prisma);
-  console.log("✓ Sv comptes PHYSICAL + BANK (ouverture 0)");
+  console.log("✓ Sv comptes PHYSICAL + BANK");
 
   let moveCount = 0;
   for (const m of SV_SEED_MOVEMENTS) {
@@ -193,13 +194,20 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
         paymentMethod: m.paymentMethod ?? "Espèces",
         reference: m.reference,
         accountId: physical.id,
+        // Pre-bascule : archivé juste après via applySvAccountBaseline
+        countsTowardBalance: false,
         createdById: actor.id,
       },
     });
     moveCount += 1;
   }
   console.log(
-    `✓ Sv mouvements OUT ${moveCount} (rattachés compte physique — solde peut être négatif sans ouverture)`,
+    `✓ Sv mouvements OUT ${moveCount} (historique archive — hors solde courant)`,
+  );
+
+  await applySvAccountBaseline(prisma, actor.id);
+  console.log(
+    "✓ Sv bascule Direction 12/11/2026 — PHYSICAL 145 000 · BANK 204 815",
   );
 
   // Stocks — inventaire Direction (décision H) : upsert méta + archive Excel hors liste.

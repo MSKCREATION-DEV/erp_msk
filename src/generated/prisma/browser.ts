@@ -490,7 +490,8 @@ export type SvContractMeta = Prisma.SvContractMetaModel
 /**
  * Model SvAccount
  * Compte trésorerie tampon (caisse physique ou banque).
- * Solde = Σ IN − Σ OUT des mouvements liés (`sv_cash_movements.accountId`).
+ * Solde courant = Σ IN − Σ OUT des mouvements liés avec `countsTowardBalance=true`
+ * (écritures d’ouverture bascule Direction + mouvements post-bascule).
  */
 export type SvAccount = Prisma.SvAccountModel
 /**

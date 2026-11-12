@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import {
   accountBalanceFromMoves,
   ensureSvAccounts,
+  formatSvBaselineDateFr,
   SV_ACCOUNT_KIND_HINT,
   SV_ACCOUNT_KIND_LABEL,
 } from "@/lib/suivi/accounts";
@@ -24,7 +25,13 @@ export default async function SuiviComptesPage() {
   const accounts = await prisma.svAccount.findMany({
     orderBy: { kind: "asc" },
     include: {
-      movements: { select: { direction: true, amount: true } },
+      movements: {
+        select: {
+          direction: true,
+          amount: true,
+          countsTowardBalance: true,
+        },
+      },
     },
   });
 
@@ -32,12 +39,19 @@ export default async function SuiviComptesPage() {
     <PageShell>
       <PageHeader
         title="Comptes"
-        description="Caisse physique et compte banque — soldes recalculés depuis les mouvements."
+        description="Caisse physique et compte banque — solde courant depuis la bascule Direction ; historique antérieur archivé."
         backHref="/suivi"
       />
       <div className="grid gap-3 sm:grid-cols-2">
         {accounts.map((acc) => {
           const balance = accountBalanceFromMoves(acc.movements);
+          const currentCount = acc.movements.filter(
+            (m) => m.countsTowardBalance,
+          ).length;
+          const archivedCount = acc.movements.length - currentCount;
+          const baselineLabel = acc.baselineAt
+            ? formatSvBaselineDateFr(acc.baselineAt)
+            : null;
           return (
             <Link
               key={acc.id}
@@ -62,9 +76,20 @@ export default async function SuiviComptesPage() {
                   >
                     {formatSvXof(balance)}
                   </p>
+                  {baselineLabel && acc.baselineBalance != null ? (
+                    <p className="mt-1 text-xs text-msk-ink/45">
+                      Solde au {baselineLabel} :{" "}
+                      <span className="tabular-nums font-medium text-msk-ink/70">
+                        {formatSvXof(acc.baselineBalance)}
+                      </span>
+                    </p>
+                  ) : null}
                   <p className="mt-1 text-xs text-msk-ink/40">
-                    {acc.movements.length} mouvement
-                    {acc.movements.length === 1 ? "" : "s"}
+                    {currentCount} courant
+                    {currentCount === 1 ? "" : "s"}
+                    {archivedCount > 0
+                      ? ` · ${archivedCount} archivé${archivedCount === 1 ? "" : "s"}`
+                      : ""}
                   </p>
                 </div>
               </div>

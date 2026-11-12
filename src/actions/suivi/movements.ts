@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import {
+  countsTowardBalanceForDate,
   getSvAccountByKind,
   inferAccountKindFromPaymentMethod,
 } from "@/lib/suivi/accounts";
@@ -83,6 +84,7 @@ export async function createSvCashMovement(
         paidBy: emptyToNull(parsed.data.paidBy),
         reference: emptyToNull(parsed.data.reference),
         accountId: account.id,
+        countsTowardBalance: countsTowardBalanceForDate(movedAt),
         createdById: user.id,
       },
     });

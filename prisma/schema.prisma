@@ -2656,14 +2656,19 @@ model SvContractMeta {
 }
 
 /// Compte trésorerie tampon (caisse physique ou banque).
-/// Solde = Σ IN − Σ OUT des mouvements liés (`sv_cash_movements.accountId`).
+/// Solde courant = Σ IN − Σ OUT des mouvements liés avec `countsTowardBalance=true`
+/// (écritures d’ouverture bascule Direction + mouvements post-bascule).
 model SvAccount {
-  id        String        @id @default(cuid())
-  kind      SvAccountKind @unique
-  label     String
-  notes     String?
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id              String        @id @default(cuid())
+  kind            SvAccountKind @unique
+  label           String
+  notes           String?
+  /// Instant de bascule Direction (début de journée locale Bamako = UTC).
+  baselineAt      DateTime?
+  /// Solde documenté à la bascule (FCFA) — UI « Solde au … » ; source ledger = mouvement IN ouverture.
+  baselineBalance Int?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   movements SvCashMovement[]
 
@@ -2686,6 +2691,8 @@ model SvCashMovement {
   accountId       String?
   /// Même id sur les 2 jambes d’un transfert banque ↔ physique.
   transferId      String?
+  /// false = archive pre-bascule (visible historique, exclu du solde courant).
+  countsTowardBalance Boolean     @default(true)
   linkedClientId  String?
   linkedInvoiceId String?
   linkedPaymentId String?
@@ -2702,6 +2709,7 @@ model SvCashMovement {
   @@index([direction, movedAt])
   @@index([reference])
   @@index([accountId, movedAt])
+  @@index([accountId, countsTowardBalance])
   @@index([transferId])
   @@map("sv_cash_movements")
 }

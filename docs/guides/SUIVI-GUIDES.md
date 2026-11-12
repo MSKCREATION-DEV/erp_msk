@@ -197,6 +197,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-12 — Suivi Comptes : bascule Direction (I)
+
+| | |
+|---|---|
+| Quoi | Soldes d’ouverture Direction **145 000** (physique) / **204 815** (banque) au **12/11/2026 début de journée** ; historique pre-bascule archivé (`countsTowardBalance=false`) ; UI « Solde au 12/11/2026 » + sections courants / archivés ; script `fix-suivi-accounts-baseline.ts` |
+| Pourquoi | Passé seed/miroirs incomplet → soldes négatifs artificiels ; Direction fixe une nouvelle base traçable |
+| Fichiers | migration `sv_accounts` baseline + `countsTowardBalance`, `src/lib/suivi/accounts.ts`, `src/app/(app)/suivi/comptes/**`, actions mouvements/comptes/factures, `seed-suivi`, `DECISIONS-SEED.md` §10 |
+| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — vérifier libellés solde / archive sur `/suivi/comptes` |
+| Routes | `/suivi/comptes` · `/suivi/comptes/[id]` (inchangées) |
+| Droits | `sv.accounts.view` / `sv.accounts.manage` (inchangés) |
+
 ### 2026-11-11 — Suivi Stocks : CRUD articles + inventaire Direction (H)
 
 | | |

@@ -9424,6 +9424,8 @@ export const SvAccountScalarFieldEnum = {
   kind: 'kind',
   label: 'label',
   notes: 'notes',
+  baselineAt: 'baselineAt',
+  baselineBalance: 'baselineBalance',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -9445,6 +9447,7 @@ export const SvCashMovementScalarFieldEnum = {
   reference: 'reference',
   accountId: 'accountId',
   transferId: 'transferId',
+  countsTowardBalance: 'countsTowardBalance',
   linkedClientId: 'linkedClientId',
   linkedInvoiceId: 'linkedInvoiceId',
   linkedPaymentId: 'linkedPaymentId',

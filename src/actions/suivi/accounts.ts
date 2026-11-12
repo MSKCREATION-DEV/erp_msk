@@ -7,7 +7,10 @@ import { z } from "zod";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { getSvAccountByKind } from "@/lib/suivi/accounts";
+import {
+  countsTowardBalanceForDate,
+  getSvAccountByKind,
+} from "@/lib/suivi/accounts";
 
 export type SvAccountActionState = { ok: false; error: string } | null;
 
@@ -92,6 +95,7 @@ export async function createSvAccountEntry(
           description: desc,
           paymentMethod: method,
           reference: ref,
+          countsTowardBalance: countsTowardBalanceForDate(movedAt),
           createdById: user.id,
         },
       });
@@ -125,6 +129,7 @@ export async function createSvAccountEntry(
           ? "Retrait banque → caisse physique"
           : "Versement caisse → banque");
 
+      const towardBalance = countsTowardBalanceForDate(movedAt);
       await prisma.$transaction([
         prisma.svCashMovement.create({
           data: {
@@ -137,6 +142,7 @@ export async function createSvAccountEntry(
             description: transferDesc,
             paymentMethod: method ?? (toPhysical ? "Retrait" : "Versement"),
             reference: ref,
+            countsTowardBalance: towardBalance,
             createdById: user.id,
           },
         }),
@@ -151,6 +157,7 @@ export async function createSvAccountEntry(
             description: transferDesc,
             paymentMethod: method ?? (toPhysical ? "Retrait" : "Versement"),
             reference: ref,
+            countsTowardBalance: towardBalance,
             createdById: user.id,
           },
         }),

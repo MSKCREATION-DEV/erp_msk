@@ -15,9 +15,10 @@
 | **C** | « Caisse » historique : **pas** de caisse métier isolée sans ledger — registre **Mouvements** + (complément 2026-11-10) sous-menu **Comptes** (physique / banque). Seed sorties depuis `Suivi_Depenses_Quotidiennes_MSK.xlsx`. |
 | **D** | Prosperity FAC-143 vs 122 : **si même facture → une seule**, priorité fichier facture réel. |
 | **E** | Miroir paiements → mouvement IN : en V1, **enregistrer un paiement client peut créer** un mouvement `IN` lié (`linkedInvoiceId` / `linkedClientId`) pour la traçabilité. **Pas** de double saisie obligatoire : le paiement facture reste la source de vérité du solde client ; le miroir est optionnel côté action (flag / comportement par défaut ON recommandé). Aucun IN inventé au seed (fichier dépenses = OUT only). |
-| **F** | **Comptes** (nom produit) : 2 comptes `sv_accounts` — **physique** + **banque**. Solde = Σ mouvements liés (`accountId`). Ouverture seed = **0** (non documentée). OUT seed Espèces → **impactent le compte physique** (solde peut être négatif jusqu’aux retraits banque saisis). Transfert = 2 mouvements même `transferId`. Source de vérité unique = `sv_cash_movements`. |
+| **F** | **Comptes** (nom produit) : 2 comptes `sv_accounts` — **physique** + **banque**. Solde courant = Σ mouvements liés (`accountId`) avec `countsTowardBalance=true` (voir **I**). Transfert = 2 mouvements même `transferId`. Source de vérité unique = `sv_cash_movements`. *(Ouverture seed 0 obsolète — remplacée par bascule Direction I.)* |
 | **G** | **Paiements / soldes clients (confirmation Direction 2026-11-10)** — voir §8. KOUNDJI & ISDALINIA = **tout payé / reste 0** (compléments datés `2026-11-10` + note « confirmation Direction » si date exacte inconnue). ECOSOL = paiements cash **uniquement** 200 000 (02/10 → FAC-155) + 260 000 (04/11 → 22910263) ; arriéré 106 800 reporté FAC-155→22910263 via écriture `Report facture` (pas un encaissement). Prosperity **387 000** = TTC **FAC-22710262** (pas FAC-122=424 000) ; FAC-122 reste Excel absorbé par report récap. |
 | **H** | **Stocks inventaire courant (confirmation Direction 2026-11-11)** — voir §9. Remplace le snapshot Excel ~33 lignes par **18 articles** listés par Direction (quantités exactes). Unités : pièce / paquet / paire / pack / sachet. Codes stables `PAP-` / `ECR-` / `BUR-` / `ALI-` / `HYI-` / `INF-`. Lignes Excel hors liste → **archivées** (`archivedAt`), pas supprimées. Resync soldes forcé via `SV_STOCK_FORCE_QTY=1` (`scripts/fix-suivi-stocks.ts`) — le seed normal ne réécrit pas les qté après go-live. |
+| **I** | **Comptes bascule Direction (confirmation 2026-11-12)** — voir §10. Soldes d’ouverture : **physique 145 000** · **banque 204 815** FCFA. Date de bascule = **12/11/2026 début de journée** Bamako (UTC+0 = `2026-11-12T00:00:00.000Z`). Historique antérieur (OUT seed, miroirs pre-bascule…) reste **visible** mais `countsTowardBalance=false` (exclu du solde). Solde courant = écriture d’ouverture IN + mouvements ≥ bascule. Pas de soldes négatifs dus au passé inconnu. |
 
 Lien croisé : [`SPEC.md`](./SPEC.md) · [`docs/intent/module-suivi-tampon.md`](../../intent/module-suivi-tampon.md)
 
@@ -337,6 +338,41 @@ Pas de hard delete : historique mouvements éventuel conservé. Soft archive hor
 
 ---
 
+## 10. Décision I — bascule Comptes Direction (2026-11-12)
+
+**Source :** confirmation humaine Direction (chat 2026-11-12). Montants = réalité terrain au jour de bascule, **pas** reconstruits depuis l’historique Excel (passé incomplet → soldes négatifs artificiels).
+
+### Montants & instant
+
+| Compte | Solde d’ouverture | Instant |
+|--------|-------------------|---------|
+| **Physique** (`PHYSICAL`) | **145 000** FCFA | 12/11/2026 **début de journée** Bamako |
+| **Banque** (`BANK`) | **204 815** FCFA | idem |
+
+Fuseau : Bamako = UTC+0 → `baselineAt = 2026-11-12T00:00:00.000Z`.
+
+### Modèle technique retenu (B + flag A)
+
+| Élément | Choix |
+|---------|--------|
+| Approche | **Écriture d’ouverture IN** (réf. `sv-baseline:{KIND}:2026-11-12`) + flag **`countsTowardBalance`** sur chaque mouvement |
+| Pre-bascule | `countsTowardBalance=false` — visible en « Historique archivé », **exclu** du solde courant |
+| Post-bascule / ouverture | `countsTowardBalance=true` — impacte le solde |
+| Meta compte | `sv_accounts.baselineAt` + `baselineBalance` pour l’UI « Solde au 12/11/2026 » |
+| Source ledger | Toujours `sv_cash_movements` (décision F enrichie) — pas de 2ᵉ ledger |
+
+**Non retenu :** soft-close / nouveau ledger (C) — trop cassant pour l’UI historique.
+
+### Soldes affichés
+
+- Après bascule, sans nouveau mouvement : **exactement** 145 000 / 204 815.
+- Tout crédit/débit/transfert daté ≥ bascule débite/crédite ces soldes.
+- Saisie datée **avant** bascule → archivée automatiquement (`countsTowardBalanceForDate`).
+
+**Script DB déjà seedée :** `npx tsx --env-file=.env.local scripts/fix-suivi-accounts-baseline.ts` (idempotent ; **ne touche pas** Auth).
+
+---
+
 ## Confirmation
 
 - Devis exclus V1 : **oui** (B)  
@@ -346,5 +382,6 @@ Pas de hard delete : historique mouvements éventuel conservé. Soft archive hor
 - Priorité fichier facture : **oui** (A)  
 - Paiements / soldes Direction : **oui** (G)  
 - Stocks inventaire Direction : **oui** (H)  
+- Comptes bascule Direction : **oui** (I)  
 - KOUNDJI / contrat ECOSOL / miroir : **clarifiés** (flags review non bloquants)  
 - **Aucune data inventée** dans ce document (compléments Direction explicitement notés ; reports = transfert de dette documenté)

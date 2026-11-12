@@ -8,6 +8,7 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { deriveInvoiceStatus } from "@/lib/suivi/balances";
 import {
+  countsTowardBalanceForDate,
   getSvAccountByKind,
   inferAccountKindFromPaymentMethod,
 } from "@/lib/suivi/accounts";
@@ -223,6 +224,7 @@ export async function recordSvPayment(
             linkedClientId: invoice.clientId,
             linkedInvoiceId: invoice.id,
             linkedPaymentId: payment.id,
+            countsTowardBalance: countsTowardBalanceForDate(paidAt),
             createdById: user.id,
           },
         });
