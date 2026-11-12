@@ -14,8 +14,12 @@ import {
   parsePage,
   totalPages,
 } from "@/lib/list/pagination";
-import { firstParam } from "@/lib/list/search-params";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  listKeyFromSearchParams,
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+} from "@/lib/list/sort";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { KpiGrid } from "@/components/ui/kpi-card";
@@ -27,6 +31,8 @@ import { PlainTh, SortableTh } from "@/components/ui/sortable-th";
 import { ListTableScroll } from "@/components/ui/list-table-scroll";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { ListSearchForm } from "@/components/ui/list-search-form";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
+import { firstParam } from "@/lib/list/search-params";
 
 export const metadata: Metadata = {
   title: "Utilisateurs",
@@ -45,54 +51,10 @@ export default async function UsersAdminPage({
   const user = await requireUser({ permission: "users.view" });
   const canInvite = hasPermission(user, "users.create");
 
-  const raw = await searchParams;
-  const sp: Record<string, string | undefined> = {};
-  for (const [k, v] of Object.entries(raw)) {
-    sp[k] = Array.isArray(v) ? v[0] : v;
-  }
-  const q = (firstParam(raw.q) ?? "").trim();
-  const sort = parseListSort(sp, USER_SORT_COLUMNS, {
-    key: "name",
-    dir: "asc",
-  });
-  const pageSize = DEFAULT_PAGE_SIZE;
-  const requestedPage = parsePage(sp.page);
-  const listParams: Record<string, string | undefined> = {
-    q: q || undefined,
-    sort: sort.key,
-    dir: sort.dir,
-  };
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
 
-  const where: Prisma.UserWhereInput = q
-    ? {
-        OR: [
-          { firstName: { contains: q, mode: "insensitive" } },
-          { lastName: { contains: q, mode: "insensitive" } },
-          { email: { contains: q, mode: "insensitive" } },
-        ],
-      }
-    : {};
-  const totalUsers = await prisma.user.count({ where });
-  const page = clampPage(requestedPage, totalUsers, pageSize);
-  const users = await prisma.user.findMany({
-    where,
-    orderBy: sort.orderBy as
-      | Prisma.UserOrderByWithRelationInput
-      | Prisma.UserOrderByWithRelationInput[],
-    skip: pageSkip(page, pageSize),
-    take: pageSize,
-    select: {
-      id: true,
-      email: true,
-      firstName: true,
-      lastName: true,
-      status: true,
-      isSuperAdmin: true,
-      groupMembers: { select: { group: { select: { name: true } } } },
-      userPacks: { select: { pack: { select: { name: true, code: true } } } },
-    },
-  });
-  const kpiTotalUsers = q ? await prisma.user.count() : totalUsers;
+  const totalUsers = await prisma.user.count();
   const pendingResets = await prisma.passwordResetRequest.findMany({
     where: { status: "PENDING" },
     select: {
@@ -113,15 +75,15 @@ export default async function UsersAdminPage({
   ) as Record<string, number>;
 
   const kpis = [
-    { label: "Total", value: String(kpiTotalUsers), hint: "comptes" },
+    { label: "Total", value: String(totalUsers), hint: "comptes" },
     {
       label: "Actifs",
       value: String(countBy.ACTIVE ?? 0),
       hint: "accès ouvert",
       trend: {
         value:
-          kpiTotalUsers > 0
-            ? `${Math.round(((countBy.ACTIVE ?? 0) / kpiTotalUsers) * 100)}%`
+          totalUsers > 0
+            ? `${Math.round(((countBy.ACTIVE ?? 0) / totalUsers) * 100)}%`
             : "0%",
         direction: "up" as const,
       },
@@ -155,7 +117,8 @@ export default async function UsersAdminPage({
         description="Comptes, invitations et statuts. Groupes, packs et exceptions se gèrent sur chaque fiche."
         actions={
           canInvite ? (
-            <Link prefetch={false}
+            <Link
+              prefetch={false}
               href="/administration/utilisateurs/inviter"
               className="cursor-pointer"
             >
@@ -205,100 +168,163 @@ export default async function UsersAdminPage({
         </Surface>
       ) : null}
 
-      <Surface className="overflow-hidden">
-        <div className="flex items-center justify-between border-b border-msk-ink/6 px-5 py-4">
-          <h2 className="font-semibold text-msk-ink">Collaborateurs</h2>
-          <p className="text-sm text-msk-ink/45">
-            {totalUsers} compte(s){q ? " (filtre)" : ""}
-          </p>
-        </div>
-        <ListTableScroll>
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-msk-ink/6 bg-[#F8F9FB] text-[11px] font-semibold uppercase tracking-[0.1em] text-msk-ink/40">
-              <tr>
-                <SortableTh
-                  label="Collaborateur"
-                  column="name"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/administration/utilisateurs"
-                  searchParams={listParams}
-                  className="px-5 py-3.5"
-                />
-                <SortableTh
-                  label="Statut"
-                  column="status"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/administration/utilisateurs"
-                  searchParams={listParams}
-                  className="px-5 py-3.5"
-                />
-                <PlainTh className="hidden px-5 py-3.5 md:table-cell">
-                  Groupes
-                </PlainTh>
-                <PlainTh className="hidden px-5 py-3.5 lg:table-cell">
-                  Packs
-                </PlainTh>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((u) => (
-                <tr
-                  key={u.id}
-                  className="relative border-b border-msk-ink/4 last:border-0 hover:bg-msk-chalk/40"
-                >
-                  <td className="px-5 py-3.5">
-                    <Link
-                      href={`/administration/utilisateurs/${u.id}`}
-                      prefetch={false}
-                      className="absolute inset-0 z-[1] cursor-pointer"
-                      aria-label={`Ouvrir ${u.firstName} ${u.lastName}`}
-                    />
-                    <div className="relative z-0 flex items-center gap-3">
-                      <UserAvatar
-                        firstName={u.firstName}
-                        lastName={u.lastName}
-                        size="sm"
-                      />
-                      <div>
-                        <p className="font-medium text-msk-ink">
-                          {u.firstName} {u.lastName}
-                        </p>
-                        <p className="text-xs text-msk-ink/45">{u.email}</p>
-                        {u.isSuperAdmin ? (
-                          <Badge tone="blue" className="mt-1">
-                            Super Admin
-                          </Badge>
-                        ) : null}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="relative z-0 px-5 py-3.5">
-                    <Badge tone={USER_STATUS_TONE[u.status] ?? "ink"}>
-                      {USER_STATUS_LABEL[u.status] ?? u.status}
-                    </Badge>
-                  </td>
-                  <td className="relative z-0 hidden px-5 py-3.5 text-msk-ink/60 md:table-cell">
-                    {u.groupMembers.map((m) => m.group.name).join(", ") || "—"}
-                  </td>
-                  <td className="relative z-0 hidden px-5 py-3.5 text-msk-ink/60 lg:table-cell">
-                    {u.userPacks.map((p) => p.pack.name).join(", ") || "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </ListTableScroll>
-        <ListPagination
-          pathname="/administration/utilisateurs"
-          searchParams={listParams}
-          page={page}
-          totalPages={totalPages(totalUsers, pageSize)}
-          total={totalUsers}
-          pageSize={pageSize}
-        />
-      </Surface>
+      <Suspense
+        key={resultsKey}
+        fallback={<ListTableSkeleton rows={8} cols={4} />}
+      >
+        <UsersResults searchParams={searchParams} />
+      </Suspense>
     </PageShell>
+  );
+}
+
+async function UsersResults({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const raw = await searchParams;
+  const sp: Record<string, string | undefined> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    sp[k] = Array.isArray(v) ? v[0] : v;
+  }
+  const q = (firstParam(raw.q) ?? "").trim();
+  const sort = parseListSort(sp, USER_SORT_COLUMNS, {
+    key: "name",
+    dir: "asc",
+  });
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const requestedPage = parsePage(sp.page);
+  const listParams: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: sort.key,
+    dir: sort.dir,
+  };
+
+  const where: Prisma.UserWhereInput = q
+    ? {
+        OR: [
+          { firstName: { contains: q, mode: "insensitive" } },
+          { lastName: { contains: q, mode: "insensitive" } },
+          { email: { contains: q, mode: "insensitive" } },
+        ],
+      }
+    : {};
+  const filteredTotal = await prisma.user.count({ where });
+  const page = clampPage(requestedPage, filteredTotal, pageSize);
+  const users = await prisma.user.findMany({
+    where,
+    orderBy: sort.orderBy as
+      | Prisma.UserOrderByWithRelationInput
+      | Prisma.UserOrderByWithRelationInput[],
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      status: true,
+      isSuperAdmin: true,
+      groupMembers: { select: { group: { select: { name: true } } } },
+      userPacks: { select: { pack: { select: { name: true, code: true } } } },
+    },
+  });
+
+  return (
+    <Surface className="overflow-hidden">
+      <div className="flex items-center justify-between border-b border-msk-ink/6 px-5 py-4">
+        <h2 className="font-semibold text-msk-ink">Collaborateurs</h2>
+        <p className="text-sm text-msk-ink/45">
+          {filteredTotal} compte(s){q ? " (filtre)" : ""}
+        </p>
+      </div>
+      <ListTableScroll>
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-msk-ink/6 bg-[#F8F9FB] text-[11px] font-semibold uppercase tracking-[0.1em] text-msk-ink/40">
+            <tr>
+              <SortableTh
+                label="Collaborateur"
+                column="name"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/administration/utilisateurs"
+                searchParams={listParams}
+                className="px-5 py-3.5"
+              />
+              <SortableTh
+                label="Statut"
+                column="status"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/administration/utilisateurs"
+                searchParams={listParams}
+                className="px-5 py-3.5"
+              />
+              <PlainTh className="hidden px-5 py-3.5 md:table-cell">
+                Groupes
+              </PlainTh>
+              <PlainTh className="hidden px-5 py-3.5 lg:table-cell">
+                Packs
+              </PlainTh>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((u) => (
+              <tr
+                key={u.id}
+                className="relative border-b border-msk-ink/4 last:border-0 hover:bg-msk-chalk/40"
+              >
+                <td className="px-5 py-3.5">
+                  <Link
+                    href={`/administration/utilisateurs/${u.id}`}
+                    prefetch={false}
+                    className="absolute inset-0 z-[1] cursor-pointer"
+                    aria-label={`Ouvrir ${u.firstName} ${u.lastName}`}
+                  />
+                  <div className="relative z-0 flex items-center gap-3">
+                    <UserAvatar
+                      firstName={u.firstName}
+                      lastName={u.lastName}
+                      size="sm"
+                    />
+                    <div>
+                      <p className="font-medium text-msk-ink">
+                        {u.firstName} {u.lastName}
+                      </p>
+                      <p className="text-xs text-msk-ink/45">{u.email}</p>
+                      {u.isSuperAdmin ? (
+                        <Badge tone="blue" className="mt-1">
+                          Super Admin
+                        </Badge>
+                      ) : null}
+                    </div>
+                  </div>
+                </td>
+                <td className="relative z-0 px-5 py-3.5">
+                  <Badge tone={USER_STATUS_TONE[u.status] ?? "ink"}>
+                    {USER_STATUS_LABEL[u.status] ?? u.status}
+                  </Badge>
+                </td>
+                <td className="relative z-0 hidden px-5 py-3.5 text-msk-ink/60 md:table-cell">
+                  {u.groupMembers.map((m) => m.group.name).join(", ") || "—"}
+                </td>
+                <td className="relative z-0 hidden px-5 py-3.5 text-msk-ink/60 lg:table-cell">
+                  {u.userPacks.map((p) => p.pack.name).join(", ") || "—"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </ListTableScroll>
+      <ListPagination
+        pathname="/administration/utilisateurs"
+        searchParams={listParams}
+        page={page}
+        totalPages={totalPages(filteredTotal, pageSize)}
+        total={filteredTotal}
+        pageSize={pageSize}
+      />
+    </Surface>
   );
 }
