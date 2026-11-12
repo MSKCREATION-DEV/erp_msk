@@ -167,7 +167,7 @@ Sidebar : entrée live (pas « bientôt ») réservée aux utilisateurs ayant `s
 
 Montants : `Int` FCFA. Dates : `DateTime`. Pas de lien Prisma vers `com_*`.
 
-### Clients / factures
+### Clients / factures clients
 
 ```
 SvClient
@@ -201,6 +201,27 @@ SvContractMeta (léger — pas GED juridique)
   notes?
   @@map("sv_contracts")
 ```
+
+### Charges / factures internes (décision J)
+
+```
+SvExpenseInvoice   // UI = « Charges » — isolé des factures clients
+  id, category (ORANGE_INTERNET|EDM_ELECTRICITE|LOYER|AUTRE)
+  status (BROUILLON|EMISE|PARTIELLE|PAYEE|ANNULEE)
+  vendorName, vendorRef?, number?
+  issuedAt?, dueAt?, periodStart?, periodEnd?, periodLabel?
+  totalHt, totalVat, totalTtc, amountPaid, currency
+  object?, notes?, sourceDocument?, gedDocumentId?
+  createdById, createdAt, updatedAt
+  @@map("sv_expense_invoices")
+
+SvExpensePayment
+  id, invoiceId, amount, paidAt, method?, reference?, note?
+  @@map("sv_expense_payments")
+```
+
+Routes : `/suivi/charges` · `/suivi/charges/nouveau` · `/suivi/charges/[id]`.  
+GED : `08_SUIVI_TAMPON/charges/…` · `DocumentLink.entityType = sv_expense_invoice`.
 
 **Soldes (dérivés, pas colonnes inventées) :**
 
@@ -243,7 +264,7 @@ Un seul « entrepôt logique » (emplacements texte : Armoire 1 / 2).
 
 - Dossier client sous arborescence existante (ex. path `suivi/clients/{slug}`)
 - Upload des 2 contrats + PDFs/DOCX factures fournis
-- `DocumentLink` : `entityType` ∈ `sv_client` | `sv_invoice` | `sv_contract`
+- `DocumentLink` : `entityType` ∈ `sv_client` | `sv_invoice` | `sv_contract` | `sv_expense_invoice`
 
 ---
 
@@ -253,7 +274,7 @@ Référence UX : `src/app/(app)/commercial/` (hub cards, clients list + `Clickab
 
 ### Hub `/suivi`
 
-- Grille modules (Clients, Factures, Mouvements, Stocks) + métriques : impayés total, solde mouvements, articles stock bas (qty=0 ou seuil)
+- Grille modules (Clients, Factures clients, **Charges**, Comptes, Mouvements, Stocks) + métriques : impayés clients / charges, solde mouvements, articles stock bas (qty=0 ou seuil)
 - Pattern `CommercialHubGrid` / `MetricNavCard`
 
 ### Clients

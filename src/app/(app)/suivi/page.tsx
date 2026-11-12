@@ -19,6 +19,8 @@ export default async function SuiviHubPage() {
     hasPermission(user, "sv.clients.view") || user.isSuperAdmin;
   const canInvoices =
     hasPermission(user, "sv.invoices.view") || user.isSuperAdmin;
+  const canExpenses =
+    hasPermission(user, "sv.expenses.view") || user.isSuperAdmin;
   const canMovements =
     hasPermission(user, "sv.movements.view") || user.isSuperAdmin;
   const canAccounts =
@@ -30,6 +32,7 @@ export default async function SuiviHubPage() {
       "sv.access",
       "sv.clients.view",
       "sv.invoices.view",
+      "sv.expenses.view",
       "sv.accounts.view",
       "sv.movements.view",
       "sv.stock.view",
@@ -39,6 +42,7 @@ export default async function SuiviHubPage() {
   const [
     clients,
     unpaidInvoices,
+    unpaidExpenses,
     stockZero,
     inAgg,
     outAgg,
@@ -48,6 +52,12 @@ export default async function SuiviHubPage() {
     canClients ? prisma.svClient.count() : Promise.resolve(0),
     canInvoices
       ? prisma.svInvoice.findMany({
+          where: { status: { in: ["EMISE", "PARTIELLE"] } },
+          select: { totalTtc: true, amountPaid: true },
+        })
+      : Promise.resolve([] as { totalTtc: number; amountPaid: number }[]),
+    canExpenses
+      ? prisma.svExpenseInvoice.findMany({
           where: { status: { in: ["EMISE", "PARTIELLE"] } },
           select: { totalTtc: true, amountPaid: true },
         })
@@ -72,6 +82,9 @@ export default async function SuiviHubPage() {
   ]);
 
   const unpaid = unpaidInvoices.filter((i) => i.amountPaid < i.totalTtc).length;
+  const unpaidCharges = unpaidExpenses.filter(
+    (i) => i.amountPaid < i.totalTtc,
+  ).length;
   const solde = (inAgg._sum.amount ?? 0) - (outAgg._sum.amount ?? 0);
 
   return (
@@ -92,9 +105,15 @@ export default async function SuiviHubPage() {
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
           <p className="text-xs font-medium uppercase tracking-caps text-msk-ink/45">
-            Impayés (factures)
+            Impayés clients / charges
           </p>
-          <p className="mt-1 text-2xl font-semibold text-msk-ink">{unpaid}</p>
+          <p className="mt-1 text-2xl font-semibold text-msk-ink">
+            {unpaid}
+            <span className="text-base font-medium text-msk-ink/45">
+              {" "}
+              / {unpaidCharges}
+            </span>
+          </p>
         </div>
         <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
           <p className="text-xs font-medium uppercase tracking-caps text-msk-ink/45">
@@ -117,6 +136,7 @@ export default async function SuiviHubPage() {
           dashboard: { value: unpaid, hint: "impayés" },
           clients,
           factures: { value: unpaid, hint: "à encaisser" },
+          charges: { value: unpaidCharges, hint: "à payer" },
           comptes: accountsCount || 2,
           mouvements: movementsCount,
           stocks: { value: stockZero, hint: "à zéro" },

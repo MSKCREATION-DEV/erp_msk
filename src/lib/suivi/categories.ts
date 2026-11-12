@@ -7,6 +7,8 @@ export const SV_CATEGORY_FAMILIES = [
   "alimentation",
   "transport",
   "internet",
+  "electricite",
+  "loyer",
   "fournitures",
   "salaires",
   "prospection",
@@ -22,6 +24,8 @@ export const SV_CATEGORY_FAMILY_LABEL: Record<SvCategoryFamily, string> = {
   alimentation: "Alimentation",
   transport: "Transports / carburants",
   internet: "Internet / télécom",
+  electricite: "Électricité / EDM",
+  loyer: "Loyer",
   fournitures: "Fournitures",
   salaires: "Salaires",
   prospection: "Prospection / RDV",
@@ -36,6 +40,8 @@ export const SV_CATEGORY_FAMILY_COLOR: Record<SvCategoryFamily, string> = {
   alimentation: "#FF5A3C",
   transport: "#1D73BC",
   internet: "#00ACEE",
+  electricite: "#F59E0B",
+  loyer: "#2A3D8E",
   fournitures: "#284393",
   salaires: "#0D1330",
   prospection: "#2A3D8E",
@@ -60,6 +66,8 @@ const EXACT: Record<string, SvCategoryFamily> = {
   "Repas / eau": "alimentation",
   Fournitures: "fournitures",
   "Téléphone / Internet": "internet",
+  "Électricité / EDM": "electricite",
+  Loyer: "loyer",
   Salaires: "salaires",
   "Encaissement client": "encaissement",
   Autre: "autre",
@@ -99,9 +107,20 @@ export function normalizeSvCategoryFamily(
     lower.includes("téléphone") ||
     lower.includes("telephone") ||
     lower.includes("telecom") ||
-    lower.includes("télécom")
+    lower.includes("télécom") ||
+    lower.includes("orange")
   ) {
     return "internet";
+  }
+  if (
+    lower.includes("électricité") ||
+    lower.includes("electricite") ||
+    lower.includes("edm")
+  ) {
+    return "electricite";
+  }
+  if (lower.includes("loyer") || lower.includes("location")) {
+    return "loyer";
   }
   if (lower.includes("salaire") || lower.includes("paie")) return "salaires";
   if (lower.includes("fourniture") || lower.includes("bureau")) {
@@ -143,6 +162,8 @@ export const SV_MOVEMENT_CATEGORY_OPTIONS = [
   "Repas / eau",
   "Fournitures",
   "Téléphone / Internet",
+  "Électricité / EDM",
+  "Loyer",
   "Salaires",
   "Encaissement client",
   "Ouverture / Bascule Direction",

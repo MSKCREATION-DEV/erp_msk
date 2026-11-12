@@ -19,6 +19,7 @@
 | **G** | **Paiements / soldes clients (confirmation Direction 2026-11-10)** — voir §8. KOUNDJI & ISDALINIA = **tout payé / reste 0** (compléments datés `2026-11-10` + note « confirmation Direction » si date exacte inconnue). ECOSOL = paiements cash **uniquement** 200 000 (02/10 → FAC-155) + 260 000 (04/11 → 22910263) ; arriéré 106 800 reporté FAC-155→22910263 via écriture `Report facture` (pas un encaissement). Prosperity **387 000** = TTC **FAC-22710262** (pas FAC-122=424 000) ; FAC-122 reste Excel absorbé par report récap. |
 | **H** | **Stocks inventaire courant (confirmation Direction 2026-11-11)** — voir §9. Remplace le snapshot Excel ~33 lignes par **18 articles** listés par Direction (quantités exactes). Unités : pièce / paquet / paire / pack / sachet. Codes stables `PAP-` / `ECR-` / `BUR-` / `ALI-` / `HYI-` / `INF-`. Lignes Excel hors liste → **archivées** (`archivedAt`), pas supprimées. Resync soldes forcé via `SV_STOCK_FORCE_QTY=1` (`scripts/fix-suivi-stocks.ts`) — le seed normal ne réécrit pas les qté après go-live. |
 | **I** | **Comptes bascule Direction (confirmation 2026-11-12)** — voir §10. Soldes d’ouverture : **physique 145 000** · **banque 204 815** FCFA. Date de bascule = **12/11/2026 début de journée** Bamako (UTC+0 = `2026-11-12T00:00:00.000Z`). Historique antérieur (OUT seed, miroirs pre-bascule…) reste **visible** mais `countsTowardBalance=false` (exclu du solde). Solde courant = écriture d’ouverture IN + mouvements ≥ bascule. Pas de soldes négatifs dus au passé inconnu. |
+| **J** | **Charges / factures internes (2026-11-12)** — voir §11. Table **`sv_expense_invoices`** séparée des factures clients. UI **Charges** (`/suivi/charges`). Seed OCR 6 PDF (`docs/`). Non payées confirmées : Orange oct., EDM oct., loyer nov. Historique Orange août/sept. : paiement **inconnu** → statut EMISE / amountPaid 0 (pas PAYEE). Loyer oct. : PAYEE (OCR « Pour acquit » signé). GED `08_SUIVI_TAMPON/charges/{orange\|edm\|loyer}`. Paiement UI peut créer OUT lié (miroir). |
 
 Lien croisé : [`SPEC.md`](./SPEC.md) · [`docs/intent/module-suivi-tampon.md`](../../intent/module-suivi-tampon.md)
 
@@ -373,6 +374,24 @@ Fuseau : Bamako = UTC+0 → `baselineAt = 2026-11-12T00:00:00.000Z`.
 
 ---
 
+## 11. Décision J — charges / factures internes (2026-11-12)
+
+**Besoin :** suivre les factures **fournisseurs** (charges entreprise) distinctement des factures **clients**.
+
+| Élément | Choix |
+|---------|--------|
+| Modèle | `SvExpenseInvoice` / `sv_expense_invoices` (+ `sv_expense_payments`) |
+| UI | Nav / hub **Charges** — libellé simple ; factures clients = **Factures clients** |
+| Types | `ORANGE_INTERNET` · `EDM_ELECTRICITE` · `LOYER` · `AUTRE` |
+| GED | `/{year}/08_SUIVI_TAMPON/charges/{orange\|edm\|loyer\|autre}` · `DocumentLink` `sv_expense_invoice` |
+| Permissions | `sv.expenses.view` / `sv.expenses.manage` |
+| Paiement | Enregistrement + miroir OUT optionnel (`linkedExpenseInvoiceId`) |
+| Seed | Inventaire §12 — **aucune** PAYEE sans preuve OCR / confirmation |
+
+Hypothèses documentées (pas inventées comme payées) : Orange CB503620260801 / CB503620260901 — statut paiement inconnu.
+
+---
+
 ## Confirmation
 
 - Devis exclus V1 : **oui** (B)  
@@ -383,5 +402,6 @@ Fuseau : Bamako = UTC+0 → `baselineAt = 2026-11-12T00:00:00.000Z`.
 - Paiements / soldes Direction : **oui** (G)  
 - Stocks inventaire Direction : **oui** (H)  
 - Comptes bascule Direction : **oui** (I)  
+- Charges / factures internes : **oui** (J)  
 - KOUNDJI / contrat ECOSOL / miroir : **clarifiés** (flags review non bloquants)  
 - **Aucune data inventée** dans ce document (compléments Direction explicitement notés ; reports = transfert de dette documenté)

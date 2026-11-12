@@ -5,6 +5,7 @@
 import type { PrismaClient } from "@/generated/prisma/client";
 import {
   SV_GED_ENTITY,
+  upsertSvExpenseDocument,
   upsertSvSourceDocument,
 } from "@/lib/suivi/ged";
 
@@ -68,6 +69,31 @@ export async function seedSuiviGed(
         { entityType: SV_GED_ENTITY.INVOICE, entityId: inv.id },
         { entityType: SV_GED_ENTITY.CLIENT, entityId: inv.clientId },
       ],
+    });
+    if (!res) {
+      missing += 1;
+      continue;
+    }
+    if (res.created) created += 1;
+    else linked += 1;
+  }
+
+  const expenses = await prisma.svExpenseInvoice.findMany({
+    where: { sourceDocument: { not: null } },
+    select: {
+      id: true,
+      category: true,
+      sourceDocument: true,
+    },
+  });
+
+  for (const exp of expenses) {
+    if (!exp.sourceDocument) continue;
+    const res = await upsertSvExpenseDocument({
+      expenseId: exp.id,
+      category: exp.category,
+      sourceDocument: exp.sourceDocument,
+      createdById,
     });
     if (!res) {
       missing += 1;

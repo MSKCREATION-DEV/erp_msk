@@ -500,6 +500,16 @@ export type SvAccount = Prisma.SvAccountModel
  */
 export type SvCashMovement = Prisma.SvCashMovementModel
 /**
+ * Model SvExpenseInvoice
+ * Facture interne / fournisseur (charges entreprise) — isolée des factures clients.
+ */
+export type SvExpenseInvoice = Prisma.SvExpenseInvoiceModel
+/**
+ * Model SvExpensePayment
+ * 
+ */
+export type SvExpensePayment = Prisma.SvExpensePaymentModel
+/**
  * Model SvStockItem
  * 
  */

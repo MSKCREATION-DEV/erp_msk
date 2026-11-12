@@ -147,6 +147,8 @@ export const ModelName = {
   SvContractMeta: 'SvContractMeta',
   SvAccount: 'SvAccount',
   SvCashMovement: 'SvCashMovement',
+  SvExpenseInvoice: 'SvExpenseInvoice',
+  SvExpensePayment: 'SvExpensePayment',
   SvStockItem: 'SvStockItem',
   SvStockMovement: 'SvStockMovement'
 } as const
@@ -1813,11 +1815,56 @@ export const SvCashMovementScalarFieldEnum = {
   linkedClientId: 'linkedClientId',
   linkedInvoiceId: 'linkedInvoiceId',
   linkedPaymentId: 'linkedPaymentId',
+  linkedExpenseInvoiceId: 'linkedExpenseInvoiceId',
+  linkedExpensePaymentId: 'linkedExpensePaymentId',
   createdById: 'createdById',
   createdAt: 'createdAt'
 } as const
 
 export type SvCashMovementScalarFieldEnum = (typeof SvCashMovementScalarFieldEnum)[keyof typeof SvCashMovementScalarFieldEnum]
+
+
+export const SvExpenseInvoiceScalarFieldEnum = {
+  id: 'id',
+  category: 'category',
+  status: 'status',
+  vendorName: 'vendorName',
+  vendorRef: 'vendorRef',
+  number: 'number',
+  issuedAt: 'issuedAt',
+  dueAt: 'dueAt',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  periodLabel: 'periodLabel',
+  totalHt: 'totalHt',
+  totalVat: 'totalVat',
+  totalTtc: 'totalTtc',
+  amountPaid: 'amountPaid',
+  currency: 'currency',
+  object: 'object',
+  notes: 'notes',
+  sourceDocument: 'sourceDocument',
+  gedDocumentId: 'gedDocumentId',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvExpenseInvoiceScalarFieldEnum = (typeof SvExpenseInvoiceScalarFieldEnum)[keyof typeof SvExpenseInvoiceScalarFieldEnum]
+
+
+export const SvExpensePaymentScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  amount: 'amount',
+  paidAt: 'paidAt',
+  method: 'method',
+  reference: 'reference',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type SvExpensePaymentScalarFieldEnum = (typeof SvExpensePaymentScalarFieldEnum)[keyof typeof SvExpensePaymentScalarFieldEnum]
 
 
 export const SvStockItemScalarFieldEnum = {

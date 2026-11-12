@@ -1568,6 +1568,23 @@ export type EnumSvCashDirectionWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumSvCashDirectionFilter<$PrismaModel>
 }
 
+export type EnumSvExpenseCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvExpenseCategory | Prisma.EnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.SvExpenseCategory[] | Prisma.ListEnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvExpenseCategory[] | Prisma.ListEnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvExpenseCategoryFilter<$PrismaModel> | $Enums.SvExpenseCategory
+}
+
+export type EnumSvExpenseCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvExpenseCategory | Prisma.EnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.SvExpenseCategory[] | Prisma.ListEnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvExpenseCategory[] | Prisma.ListEnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvExpenseCategoryWithAggregatesFilter<$PrismaModel> | $Enums.SvExpenseCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvExpenseCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvExpenseCategoryFilter<$PrismaModel>
+}
+
 export type EnumSvStockMoveKindFilter<$PrismaModel = never> = {
   equals?: $Enums.SvStockMoveKind | Prisma.EnumSvStockMoveKindFieldRefInput<$PrismaModel>
   in?: $Enums.SvStockMoveKind[] | Prisma.ListEnumSvStockMoveKindFieldRefInput<$PrismaModel>
@@ -3092,6 +3109,23 @@ export type NestedEnumSvCashDirectionWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSvCashDirectionFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSvCashDirectionFilter<$PrismaModel>
+}
+
+export type NestedEnumSvExpenseCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvExpenseCategory | Prisma.EnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.SvExpenseCategory[] | Prisma.ListEnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvExpenseCategory[] | Prisma.ListEnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvExpenseCategoryFilter<$PrismaModel> | $Enums.SvExpenseCategory
+}
+
+export type NestedEnumSvExpenseCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvExpenseCategory | Prisma.EnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.SvExpenseCategory[] | Prisma.ListEnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvExpenseCategory[] | Prisma.ListEnumSvExpenseCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvExpenseCategoryWithAggregatesFilter<$PrismaModel> | $Enums.SvExpenseCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvExpenseCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvExpenseCategoryFilter<$PrismaModel>
 }
 
 export type NestedEnumSvStockMoveKindFilter<$PrismaModel = never> = {

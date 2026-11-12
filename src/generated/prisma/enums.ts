@@ -682,6 +682,16 @@ export const SvInvoiceStatus = {
 export type SvInvoiceStatus = (typeof SvInvoiceStatus)[keyof typeof SvInvoiceStatus]
 
 
+export const SvExpenseCategory = {
+  ORANGE_INTERNET: 'ORANGE_INTERNET',
+  EDM_ELECTRICITE: 'EDM_ELECTRICITE',
+  LOYER: 'LOYER',
+  AUTRE: 'AUTRE'
+} as const
+
+export type SvExpenseCategory = (typeof SvExpenseCategory)[keyof typeof SvExpenseCategory]
+
+
 export const SvCashDirection = {
   IN: 'IN',
   OUT: 'OUT'

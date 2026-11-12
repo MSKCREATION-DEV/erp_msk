@@ -10,6 +10,7 @@ import {
   SV_SEED_STOCK,
   SV_SEED_STOCK_EXCEL_ARCHIVED_CODES,
 } from "../src/lib/suivi/seed-data";
+import { SV_SEED_EXPENSE_INVOICES } from "../src/lib/suivi/expense-seed-data";
 import { seedSuiviGed } from "../src/lib/suivi/seed-ged";
 import {
   applySvAccountBaseline,
@@ -323,6 +324,87 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
     }`,
   );
 
-  // Task 14 — dépôt GED contrats + factures (Document / DocumentLink)
+  // Charges entreprise (décision J) — factures internes / fournisseurs
+  let expenseCreated = 0;
+  let expenseSynced = 0;
+  for (const exp of SV_SEED_EXPENSE_INVOICES) {
+    const existing = await prisma.svExpenseInvoice.findUnique({
+      where: { sourceDocument: exp.sourceDocument },
+    });
+    if (existing) {
+      await prisma.svExpensePayment.deleteMany({
+        where: { invoiceId: existing.id },
+      });
+      await prisma.svExpenseInvoice.update({
+        where: { id: existing.id },
+        data: {
+          category: exp.category,
+          status: exp.status,
+          vendorName: exp.vendorName,
+          vendorRef: exp.vendorRef ?? null,
+          number: exp.number,
+          issuedAt: new Date(exp.issuedAt),
+          dueAt: exp.dueAt ? new Date(exp.dueAt) : null,
+          periodStart: exp.periodStart ? new Date(exp.periodStart) : null,
+          periodEnd: exp.periodEnd ? new Date(exp.periodEnd) : null,
+          periodLabel: exp.periodLabel ?? null,
+          totalHt: exp.totalHt,
+          totalVat: exp.totalVat,
+          totalTtc: exp.totalTtc,
+          amountPaid: exp.amountPaid,
+          object: exp.object,
+          notes: exp.notes ?? null,
+          payments: {
+            create: exp.payments.map((p) => ({
+              amount: p.amount,
+              paidAt: new Date(p.paidAt),
+              method: p.method ?? null,
+              reference: p.reference ?? null,
+              note: p.note ?? null,
+            })),
+          },
+        },
+      });
+      expenseSynced += 1;
+      continue;
+    }
+    await prisma.svExpenseInvoice.create({
+      data: {
+        category: exp.category,
+        status: exp.status,
+        vendorName: exp.vendorName,
+        vendorRef: exp.vendorRef ?? null,
+        number: exp.number,
+        issuedAt: new Date(exp.issuedAt),
+        dueAt: exp.dueAt ? new Date(exp.dueAt) : null,
+        periodStart: exp.periodStart ? new Date(exp.periodStart) : null,
+        periodEnd: exp.periodEnd ? new Date(exp.periodEnd) : null,
+        periodLabel: exp.periodLabel ?? null,
+        totalHt: exp.totalHt,
+        totalVat: exp.totalVat,
+        totalTtc: exp.totalTtc,
+        amountPaid: exp.amountPaid,
+        object: exp.object,
+        notes: exp.notes ?? null,
+        sourceDocument: exp.sourceDocument,
+        createdById: actor.id,
+        payments: {
+          create: exp.payments.map((p) => ({
+            amount: p.amount,
+            paidAt: new Date(p.paidAt),
+            method: p.method ?? null,
+            reference: p.reference ?? null,
+            note: p.note ?? null,
+          })),
+        },
+      },
+    });
+    expenseCreated += 1;
+  }
+  console.log(
+    `✓ Sv charges créées ${expenseCreated} · resync ${expenseSynced}`,
+  );
+
+  // Task 14 — dépôt GED contrats + factures clients + charges
   await seedSuiviGed(prisma, actor.id);
 }

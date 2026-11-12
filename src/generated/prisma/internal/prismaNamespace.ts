@@ -493,6 +493,8 @@ export const ModelName = {
   SvContractMeta: 'SvContractMeta',
   SvAccount: 'SvAccount',
   SvCashMovement: 'SvCashMovement',
+  SvExpenseInvoice: 'SvExpenseInvoice',
+  SvExpensePayment: 'SvExpensePayment',
   SvStockItem: 'SvStockItem',
   SvStockMovement: 'SvStockMovement'
 } as const
@@ -510,7 +512,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organizationSettings" | "user" | "group" | "groupMember" | "permission" | "permissionPack" | "packPermission" | "userPack" | "userPermissionOverride" | "auditLog" | "passwordResetRequest" | "documentFolder" | "document" | "documentLink" | "documentAcl" | "brandAsset" | "signatureAsset" | "orgNode" | "documentTemplate" | "catalogOffer" | "catalogOfferVersion" | "crmOrganization" | "crmContact" | "crmContactChannel" | "crmOpportunity" | "crmAssignmentRequest" | "crmOpportunityOffer" | "crmActivity" | "crmTask" | "crmAppointment" | "appNotification" | "crmScript" | "crmPeriodGoal" | "crmWeeklyReport" | "comNumberSequence" | "comClient" | "comQuote" | "comQuoteLine" | "comContract" | "comContractLine" | "comInvoice" | "comInvoiceLine" | "comInvoiceArrearsRef" | "comCreditNote" | "comPayment" | "comPaymentAllocation" | "comClientEvent" | "comInvoiceReminder" | "comImportBatch" | "comImportAnomaly" | "cptAccount" | "cptJournal" | "cptExercise" | "cptPeriod" | "cptEntry" | "cptEntryLine" | "cptBankAccount" | "cptBankTxn" | "cptFxRate" | "budExercise" | "budLine" | "budPatenteDue" | "rhEmployee" | "rhProfileChangeRequest" | "rhProfileChangeLine" | "rhLeaveTypeConfig" | "rhLeaveMovement" | "rhWorkSchedule" | "rhPublicHoliday" | "rhContract" | "rhLeaveRequest" | "rhAbsence" | "rhTimesheet" | "rhTimesheetLine" | "rhInpsSettings" | "rhPayrollPeriod" | "rhPayslip" | "rhPayslipLine" | "rhInpsLine" | "rhContractTypeRule" | "stkArticle" | "stkMovement" | "stkPurchase" | "stkPurchaseLine" | "patAsset" | "prjProject" | "prjMember" | "prjExpense" | "opsTicket" | "svClient" | "svInvoice" | "svInvoiceLine" | "svPayment" | "svContractMeta" | "svAccount" | "svCashMovement" | "svStockItem" | "svStockMovement"
+    modelProps: "organizationSettings" | "user" | "group" | "groupMember" | "permission" | "permissionPack" | "packPermission" | "userPack" | "userPermissionOverride" | "auditLog" | "passwordResetRequest" | "documentFolder" | "document" | "documentLink" | "documentAcl" | "brandAsset" | "signatureAsset" | "orgNode" | "documentTemplate" | "catalogOffer" | "catalogOfferVersion" | "crmOrganization" | "crmContact" | "crmContactChannel" | "crmOpportunity" | "crmAssignmentRequest" | "crmOpportunityOffer" | "crmActivity" | "crmTask" | "crmAppointment" | "appNotification" | "crmScript" | "crmPeriodGoal" | "crmWeeklyReport" | "comNumberSequence" | "comClient" | "comQuote" | "comQuoteLine" | "comContract" | "comContractLine" | "comInvoice" | "comInvoiceLine" | "comInvoiceArrearsRef" | "comCreditNote" | "comPayment" | "comPaymentAllocation" | "comClientEvent" | "comInvoiceReminder" | "comImportBatch" | "comImportAnomaly" | "cptAccount" | "cptJournal" | "cptExercise" | "cptPeriod" | "cptEntry" | "cptEntryLine" | "cptBankAccount" | "cptBankTxn" | "cptFxRate" | "budExercise" | "budLine" | "budPatenteDue" | "rhEmployee" | "rhProfileChangeRequest" | "rhProfileChangeLine" | "rhLeaveTypeConfig" | "rhLeaveMovement" | "rhWorkSchedule" | "rhPublicHoliday" | "rhContract" | "rhLeaveRequest" | "rhAbsence" | "rhTimesheet" | "rhTimesheetLine" | "rhInpsSettings" | "rhPayrollPeriod" | "rhPayslip" | "rhPayslipLine" | "rhInpsLine" | "rhContractTypeRule" | "stkArticle" | "stkMovement" | "stkPurchase" | "stkPurchaseLine" | "patAsset" | "prjProject" | "prjMember" | "prjExpense" | "opsTicket" | "svClient" | "svInvoice" | "svInvoiceLine" | "svPayment" | "svContractMeta" | "svAccount" | "svCashMovement" | "svExpenseInvoice" | "svExpensePayment" | "svStockItem" | "svStockMovement"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -7618,6 +7620,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SvExpenseInvoice: {
+      payload: Prisma.$SvExpenseInvoicePayload<ExtArgs>
+      fields: Prisma.SvExpenseInvoiceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvExpenseInvoiceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpenseInvoicePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvExpenseInvoiceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpenseInvoicePayload>
+        }
+        findFirst: {
+          args: Prisma.SvExpenseInvoiceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpenseInvoicePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvExpenseInvoiceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpenseInvoicePayload>
+        }
+        findMany: {
+          args: Prisma.SvExpenseInvoiceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpenseInvoicePayload>[]
+        }
+        create: {
+          args: Prisma.SvExpenseInvoiceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpenseInvoicePayload>
+        }
+        createMany: {
+          args: Prisma.SvExpenseInvoiceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvExpenseInvoiceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpenseInvoicePayload>[]
+        }
+        delete: {
+          args: Prisma.SvExpenseInvoiceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpenseInvoicePayload>
+        }
+        update: {
+          args: Prisma.SvExpenseInvoiceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpenseInvoicePayload>
+        }
+        deleteMany: {
+          args: Prisma.SvExpenseInvoiceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvExpenseInvoiceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvExpenseInvoiceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpenseInvoicePayload>[]
+        }
+        upsert: {
+          args: Prisma.SvExpenseInvoiceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpenseInvoicePayload>
+        }
+        aggregate: {
+          args: Prisma.SvExpenseInvoiceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvExpenseInvoice>
+        }
+        groupBy: {
+          args: Prisma.SvExpenseInvoiceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvExpenseInvoiceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvExpenseInvoiceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvExpenseInvoiceCountAggregateOutputType> | number
+        }
+      }
+    }
+    SvExpensePayment: {
+      payload: Prisma.$SvExpensePaymentPayload<ExtArgs>
+      fields: Prisma.SvExpensePaymentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvExpensePaymentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpensePaymentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvExpensePaymentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpensePaymentPayload>
+        }
+        findFirst: {
+          args: Prisma.SvExpensePaymentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpensePaymentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvExpensePaymentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpensePaymentPayload>
+        }
+        findMany: {
+          args: Prisma.SvExpensePaymentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpensePaymentPayload>[]
+        }
+        create: {
+          args: Prisma.SvExpensePaymentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpensePaymentPayload>
+        }
+        createMany: {
+          args: Prisma.SvExpensePaymentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvExpensePaymentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpensePaymentPayload>[]
+        }
+        delete: {
+          args: Prisma.SvExpensePaymentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpensePaymentPayload>
+        }
+        update: {
+          args: Prisma.SvExpensePaymentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpensePaymentPayload>
+        }
+        deleteMany: {
+          args: Prisma.SvExpensePaymentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvExpensePaymentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvExpensePaymentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpensePaymentPayload>[]
+        }
+        upsert: {
+          args: Prisma.SvExpensePaymentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvExpensePaymentPayload>
+        }
+        aggregate: {
+          args: Prisma.SvExpensePaymentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvExpensePayment>
+        }
+        groupBy: {
+          args: Prisma.SvExpensePaymentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvExpensePaymentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvExpensePaymentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvExpensePaymentCountAggregateOutputType> | number
+        }
+      }
+    }
     SvStockItem: {
       payload: Prisma.$SvStockItemPayload<ExtArgs>
       fields: Prisma.SvStockItemFieldRefs
@@ -9451,11 +9601,56 @@ export const SvCashMovementScalarFieldEnum = {
   linkedClientId: 'linkedClientId',
   linkedInvoiceId: 'linkedInvoiceId',
   linkedPaymentId: 'linkedPaymentId',
+  linkedExpenseInvoiceId: 'linkedExpenseInvoiceId',
+  linkedExpensePaymentId: 'linkedExpensePaymentId',
   createdById: 'createdById',
   createdAt: 'createdAt'
 } as const
 
 export type SvCashMovementScalarFieldEnum = (typeof SvCashMovementScalarFieldEnum)[keyof typeof SvCashMovementScalarFieldEnum]
+
+
+export const SvExpenseInvoiceScalarFieldEnum = {
+  id: 'id',
+  category: 'category',
+  status: 'status',
+  vendorName: 'vendorName',
+  vendorRef: 'vendorRef',
+  number: 'number',
+  issuedAt: 'issuedAt',
+  dueAt: 'dueAt',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  periodLabel: 'periodLabel',
+  totalHt: 'totalHt',
+  totalVat: 'totalVat',
+  totalTtc: 'totalTtc',
+  amountPaid: 'amountPaid',
+  currency: 'currency',
+  object: 'object',
+  notes: 'notes',
+  sourceDocument: 'sourceDocument',
+  gedDocumentId: 'gedDocumentId',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvExpenseInvoiceScalarFieldEnum = (typeof SvExpenseInvoiceScalarFieldEnum)[keyof typeof SvExpenseInvoiceScalarFieldEnum]
+
+
+export const SvExpensePaymentScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  amount: 'amount',
+  paidAt: 'paidAt',
+  method: 'method',
+  reference: 'reference',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type SvExpensePaymentScalarFieldEnum = (typeof SvExpensePaymentScalarFieldEnum)[keyof typeof SvExpensePaymentScalarFieldEnum]
 
 
 export const SvStockItemScalarFieldEnum = {
@@ -10561,6 +10756,20 @@ export type ListEnumSvCashDirectionFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'SvExpenseCategory'
+ */
+export type EnumSvExpenseCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvExpenseCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'SvExpenseCategory[]'
+ */
+export type ListEnumSvExpenseCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvExpenseCategory[]'>
+    
+
+
+/**
  * Reference to a field of type 'SvStockMoveKind'
  */
 export type EnumSvStockMoveKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvStockMoveKind'>
@@ -10834,6 +11043,8 @@ export type GlobalOmitConfig = {
   svContractMeta?: Prisma.SvContractMetaOmit
   svAccount?: Prisma.SvAccountOmit
   svCashMovement?: Prisma.SvCashMovementOmit
+  svExpenseInvoice?: Prisma.SvExpenseInvoiceOmit
+  svExpensePayment?: Prisma.SvExpensePaymentOmit
   svStockItem?: Prisma.SvStockItemOmit
   svStockMovement?: Prisma.SvStockMovementOmit
 }

@@ -52,6 +52,8 @@ export type SvCashMovementMinAggregateOutputType = {
   linkedClientId: string | null
   linkedInvoiceId: string | null
   linkedPaymentId: string | null
+  linkedExpenseInvoiceId: string | null
+  linkedExpensePaymentId: string | null
   createdById: string | null
   createdAt: Date | null
 }
@@ -74,6 +76,8 @@ export type SvCashMovementMaxAggregateOutputType = {
   linkedClientId: string | null
   linkedInvoiceId: string | null
   linkedPaymentId: string | null
+  linkedExpenseInvoiceId: string | null
+  linkedExpensePaymentId: string | null
   createdById: string | null
   createdAt: Date | null
 }
@@ -96,6 +100,8 @@ export type SvCashMovementCountAggregateOutputType = {
   linkedClientId: number
   linkedInvoiceId: number
   linkedPaymentId: number
+  linkedExpenseInvoiceId: number
+  linkedExpensePaymentId: number
   createdById: number
   createdAt: number
   _all: number
@@ -128,6 +134,8 @@ export type SvCashMovementMinAggregateInputType = {
   linkedClientId?: true
   linkedInvoiceId?: true
   linkedPaymentId?: true
+  linkedExpenseInvoiceId?: true
+  linkedExpensePaymentId?: true
   createdById?: true
   createdAt?: true
 }
@@ -150,6 +158,8 @@ export type SvCashMovementMaxAggregateInputType = {
   linkedClientId?: true
   linkedInvoiceId?: true
   linkedPaymentId?: true
+  linkedExpenseInvoiceId?: true
+  linkedExpensePaymentId?: true
   createdById?: true
   createdAt?: true
 }
@@ -172,6 +182,8 @@ export type SvCashMovementCountAggregateInputType = {
   linkedClientId?: true
   linkedInvoiceId?: true
   linkedPaymentId?: true
+  linkedExpenseInvoiceId?: true
+  linkedExpensePaymentId?: true
   createdById?: true
   createdAt?: true
   _all?: true
@@ -281,6 +293,8 @@ export type SvCashMovementGroupByOutputType = {
   linkedClientId: string | null
   linkedInvoiceId: string | null
   linkedPaymentId: string | null
+  linkedExpenseInvoiceId: string | null
+  linkedExpensePaymentId: string | null
   createdById: string
   createdAt: Date
   _count: SvCashMovementCountAggregateOutputType | null
@@ -326,12 +340,16 @@ export type SvCashMovementWhereInput = {
   linkedClientId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
   linkedInvoiceId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
   linkedPaymentId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
+  linkedExpenseInvoiceId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
+  linkedExpensePaymentId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
   createdById?: Prisma.UuidFilter<"SvCashMovement"> | string
   createdAt?: Prisma.DateTimeFilter<"SvCashMovement"> | Date | string
   account?: Prisma.XOR<Prisma.SvAccountNullableScalarRelationFilter, Prisma.SvAccountWhereInput> | null
   linkedClient?: Prisma.XOR<Prisma.SvClientNullableScalarRelationFilter, Prisma.SvClientWhereInput> | null
   linkedInvoice?: Prisma.XOR<Prisma.SvInvoiceNullableScalarRelationFilter, Prisma.SvInvoiceWhereInput> | null
   linkedPayment?: Prisma.XOR<Prisma.SvPaymentNullableScalarRelationFilter, Prisma.SvPaymentWhereInput> | null
+  linkedExpenseInvoice?: Prisma.XOR<Prisma.SvExpenseInvoiceNullableScalarRelationFilter, Prisma.SvExpenseInvoiceWhereInput> | null
+  linkedExpensePayment?: Prisma.XOR<Prisma.SvExpensePaymentNullableScalarRelationFilter, Prisma.SvExpensePaymentWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
@@ -353,12 +371,16 @@ export type SvCashMovementOrderByWithRelationInput = {
   linkedClientId?: Prisma.SortOrderInput | Prisma.SortOrder
   linkedInvoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
   linkedPaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkedExpenseInvoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkedExpensePaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   account?: Prisma.SvAccountOrderByWithRelationInput
   linkedClient?: Prisma.SvClientOrderByWithRelationInput
   linkedInvoice?: Prisma.SvInvoiceOrderByWithRelationInput
   linkedPayment?: Prisma.SvPaymentOrderByWithRelationInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceOrderByWithRelationInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -383,12 +405,16 @@ export type SvCashMovementWhereUniqueInput = Prisma.AtLeast<{
   linkedClientId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
   linkedInvoiceId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
   linkedPaymentId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
+  linkedExpenseInvoiceId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
+  linkedExpensePaymentId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
   createdById?: Prisma.UuidFilter<"SvCashMovement"> | string
   createdAt?: Prisma.DateTimeFilter<"SvCashMovement"> | Date | string
   account?: Prisma.XOR<Prisma.SvAccountNullableScalarRelationFilter, Prisma.SvAccountWhereInput> | null
   linkedClient?: Prisma.XOR<Prisma.SvClientNullableScalarRelationFilter, Prisma.SvClientWhereInput> | null
   linkedInvoice?: Prisma.XOR<Prisma.SvInvoiceNullableScalarRelationFilter, Prisma.SvInvoiceWhereInput> | null
   linkedPayment?: Prisma.XOR<Prisma.SvPaymentNullableScalarRelationFilter, Prisma.SvPaymentWhereInput> | null
+  linkedExpenseInvoice?: Prisma.XOR<Prisma.SvExpenseInvoiceNullableScalarRelationFilter, Prisma.SvExpenseInvoiceWhereInput> | null
+  linkedExpensePayment?: Prisma.XOR<Prisma.SvExpensePaymentNullableScalarRelationFilter, Prisma.SvExpensePaymentWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
@@ -410,6 +436,8 @@ export type SvCashMovementOrderByWithAggregationInput = {
   linkedClientId?: Prisma.SortOrderInput | Prisma.SortOrder
   linkedInvoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
   linkedPaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkedExpenseInvoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  linkedExpensePaymentId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.SvCashMovementCountOrderByAggregateInput
@@ -440,6 +468,8 @@ export type SvCashMovementScalarWhereWithAggregatesInput = {
   linkedClientId?: Prisma.StringNullableWithAggregatesFilter<"SvCashMovement"> | string | null
   linkedInvoiceId?: Prisma.StringNullableWithAggregatesFilter<"SvCashMovement"> | string | null
   linkedPaymentId?: Prisma.StringNullableWithAggregatesFilter<"SvCashMovement"> | string | null
+  linkedExpenseInvoiceId?: Prisma.StringNullableWithAggregatesFilter<"SvCashMovement"> | string | null
+  linkedExpensePaymentId?: Prisma.StringNullableWithAggregatesFilter<"SvCashMovement"> | string | null
   createdById?: Prisma.UuidWithAggregatesFilter<"SvCashMovement"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SvCashMovement"> | Date | string
 }
@@ -463,6 +493,8 @@ export type SvCashMovementCreateInput = {
   linkedClient?: Prisma.SvClientCreateNestedOneWithoutMovementsInput
   linkedInvoice?: Prisma.SvInvoiceCreateNestedOneWithoutMovementsInput
   linkedPayment?: Prisma.SvPaymentCreateNestedOneWithoutMovementsInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceCreateNestedOneWithoutMovementsInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentCreateNestedOneWithoutMovementsInput
   createdBy: Prisma.UserCreateNestedOneWithoutSvCashMovementsCreatedInput
 }
 
@@ -484,6 +516,8 @@ export type SvCashMovementUncheckedCreateInput = {
   linkedClientId?: string | null
   linkedInvoiceId?: string | null
   linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdById: string
   createdAt?: Date | string
 }
@@ -507,6 +541,8 @@ export type SvCashMovementUpdateInput = {
   linkedClient?: Prisma.SvClientUpdateOneWithoutMovementsNestedInput
   linkedInvoice?: Prisma.SvInvoiceUpdateOneWithoutMovementsNestedInput
   linkedPayment?: Prisma.SvPaymentUpdateOneWithoutMovementsNestedInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceUpdateOneWithoutMovementsNestedInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentUpdateOneWithoutMovementsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutSvCashMovementsCreatedNestedInput
 }
 
@@ -528,6 +564,8 @@ export type SvCashMovementUncheckedUpdateInput = {
   linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -550,6 +588,8 @@ export type SvCashMovementCreateManyInput = {
   linkedClientId?: string | null
   linkedInvoiceId?: string | null
   linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdById: string
   createdAt?: Date | string
 }
@@ -589,6 +629,8 @@ export type SvCashMovementUncheckedUpdateManyInput = {
   linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -621,6 +663,8 @@ export type SvCashMovementCountOrderByAggregateInput = {
   linkedClientId?: Prisma.SortOrder
   linkedInvoiceId?: Prisma.SortOrder
   linkedPaymentId?: Prisma.SortOrder
+  linkedExpenseInvoiceId?: Prisma.SortOrder
+  linkedExpensePaymentId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -647,6 +691,8 @@ export type SvCashMovementMaxOrderByAggregateInput = {
   linkedClientId?: Prisma.SortOrder
   linkedInvoiceId?: Prisma.SortOrder
   linkedPaymentId?: Prisma.SortOrder
+  linkedExpenseInvoiceId?: Prisma.SortOrder
+  linkedExpensePaymentId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -669,6 +715,8 @@ export type SvCashMovementMinOrderByAggregateInput = {
   linkedClientId?: Prisma.SortOrder
   linkedInvoiceId?: Prisma.SortOrder
   linkedPaymentId?: Prisma.SortOrder
+  linkedExpenseInvoiceId?: Prisma.SortOrder
+  linkedExpensePaymentId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -891,6 +939,90 @@ export type EnumSvCashDirectionFieldUpdateOperationsInput = {
   set?: $Enums.SvCashDirection
 }
 
+export type SvCashMovementCreateNestedManyWithoutLinkedExpenseInvoiceInput = {
+  create?: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpenseInvoiceInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpenseInvoiceInput> | Prisma.SvCashMovementCreateWithoutLinkedExpenseInvoiceInput[] | Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpenseInvoiceInput[]
+  connectOrCreate?: Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpenseInvoiceInput | Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpenseInvoiceInput[]
+  createMany?: Prisma.SvCashMovementCreateManyLinkedExpenseInvoiceInputEnvelope
+  connect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+}
+
+export type SvCashMovementUncheckedCreateNestedManyWithoutLinkedExpenseInvoiceInput = {
+  create?: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpenseInvoiceInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpenseInvoiceInput> | Prisma.SvCashMovementCreateWithoutLinkedExpenseInvoiceInput[] | Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpenseInvoiceInput[]
+  connectOrCreate?: Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpenseInvoiceInput | Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpenseInvoiceInput[]
+  createMany?: Prisma.SvCashMovementCreateManyLinkedExpenseInvoiceInputEnvelope
+  connect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+}
+
+export type SvCashMovementUpdateManyWithoutLinkedExpenseInvoiceNestedInput = {
+  create?: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpenseInvoiceInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpenseInvoiceInput> | Prisma.SvCashMovementCreateWithoutLinkedExpenseInvoiceInput[] | Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpenseInvoiceInput[]
+  connectOrCreate?: Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpenseInvoiceInput | Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpenseInvoiceInput[]
+  upsert?: Prisma.SvCashMovementUpsertWithWhereUniqueWithoutLinkedExpenseInvoiceInput | Prisma.SvCashMovementUpsertWithWhereUniqueWithoutLinkedExpenseInvoiceInput[]
+  createMany?: Prisma.SvCashMovementCreateManyLinkedExpenseInvoiceInputEnvelope
+  set?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  disconnect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  delete?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  connect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  update?: Prisma.SvCashMovementUpdateWithWhereUniqueWithoutLinkedExpenseInvoiceInput | Prisma.SvCashMovementUpdateWithWhereUniqueWithoutLinkedExpenseInvoiceInput[]
+  updateMany?: Prisma.SvCashMovementUpdateManyWithWhereWithoutLinkedExpenseInvoiceInput | Prisma.SvCashMovementUpdateManyWithWhereWithoutLinkedExpenseInvoiceInput[]
+  deleteMany?: Prisma.SvCashMovementScalarWhereInput | Prisma.SvCashMovementScalarWhereInput[]
+}
+
+export type SvCashMovementUncheckedUpdateManyWithoutLinkedExpenseInvoiceNestedInput = {
+  create?: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpenseInvoiceInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpenseInvoiceInput> | Prisma.SvCashMovementCreateWithoutLinkedExpenseInvoiceInput[] | Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpenseInvoiceInput[]
+  connectOrCreate?: Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpenseInvoiceInput | Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpenseInvoiceInput[]
+  upsert?: Prisma.SvCashMovementUpsertWithWhereUniqueWithoutLinkedExpenseInvoiceInput | Prisma.SvCashMovementUpsertWithWhereUniqueWithoutLinkedExpenseInvoiceInput[]
+  createMany?: Prisma.SvCashMovementCreateManyLinkedExpenseInvoiceInputEnvelope
+  set?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  disconnect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  delete?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  connect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  update?: Prisma.SvCashMovementUpdateWithWhereUniqueWithoutLinkedExpenseInvoiceInput | Prisma.SvCashMovementUpdateWithWhereUniqueWithoutLinkedExpenseInvoiceInput[]
+  updateMany?: Prisma.SvCashMovementUpdateManyWithWhereWithoutLinkedExpenseInvoiceInput | Prisma.SvCashMovementUpdateManyWithWhereWithoutLinkedExpenseInvoiceInput[]
+  deleteMany?: Prisma.SvCashMovementScalarWhereInput | Prisma.SvCashMovementScalarWhereInput[]
+}
+
+export type SvCashMovementCreateNestedManyWithoutLinkedExpensePaymentInput = {
+  create?: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpensePaymentInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpensePaymentInput> | Prisma.SvCashMovementCreateWithoutLinkedExpensePaymentInput[] | Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpensePaymentInput[]
+  connectOrCreate?: Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpensePaymentInput | Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpensePaymentInput[]
+  createMany?: Prisma.SvCashMovementCreateManyLinkedExpensePaymentInputEnvelope
+  connect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+}
+
+export type SvCashMovementUncheckedCreateNestedManyWithoutLinkedExpensePaymentInput = {
+  create?: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpensePaymentInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpensePaymentInput> | Prisma.SvCashMovementCreateWithoutLinkedExpensePaymentInput[] | Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpensePaymentInput[]
+  connectOrCreate?: Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpensePaymentInput | Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpensePaymentInput[]
+  createMany?: Prisma.SvCashMovementCreateManyLinkedExpensePaymentInputEnvelope
+  connect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+}
+
+export type SvCashMovementUpdateManyWithoutLinkedExpensePaymentNestedInput = {
+  create?: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpensePaymentInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpensePaymentInput> | Prisma.SvCashMovementCreateWithoutLinkedExpensePaymentInput[] | Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpensePaymentInput[]
+  connectOrCreate?: Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpensePaymentInput | Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpensePaymentInput[]
+  upsert?: Prisma.SvCashMovementUpsertWithWhereUniqueWithoutLinkedExpensePaymentInput | Prisma.SvCashMovementUpsertWithWhereUniqueWithoutLinkedExpensePaymentInput[]
+  createMany?: Prisma.SvCashMovementCreateManyLinkedExpensePaymentInputEnvelope
+  set?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  disconnect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  delete?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  connect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  update?: Prisma.SvCashMovementUpdateWithWhereUniqueWithoutLinkedExpensePaymentInput | Prisma.SvCashMovementUpdateWithWhereUniqueWithoutLinkedExpensePaymentInput[]
+  updateMany?: Prisma.SvCashMovementUpdateManyWithWhereWithoutLinkedExpensePaymentInput | Prisma.SvCashMovementUpdateManyWithWhereWithoutLinkedExpensePaymentInput[]
+  deleteMany?: Prisma.SvCashMovementScalarWhereInput | Prisma.SvCashMovementScalarWhereInput[]
+}
+
+export type SvCashMovementUncheckedUpdateManyWithoutLinkedExpensePaymentNestedInput = {
+  create?: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpensePaymentInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpensePaymentInput> | Prisma.SvCashMovementCreateWithoutLinkedExpensePaymentInput[] | Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpensePaymentInput[]
+  connectOrCreate?: Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpensePaymentInput | Prisma.SvCashMovementCreateOrConnectWithoutLinkedExpensePaymentInput[]
+  upsert?: Prisma.SvCashMovementUpsertWithWhereUniqueWithoutLinkedExpensePaymentInput | Prisma.SvCashMovementUpsertWithWhereUniqueWithoutLinkedExpensePaymentInput[]
+  createMany?: Prisma.SvCashMovementCreateManyLinkedExpensePaymentInputEnvelope
+  set?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  disconnect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  delete?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  connect?: Prisma.SvCashMovementWhereUniqueInput | Prisma.SvCashMovementWhereUniqueInput[]
+  update?: Prisma.SvCashMovementUpdateWithWhereUniqueWithoutLinkedExpensePaymentInput | Prisma.SvCashMovementUpdateWithWhereUniqueWithoutLinkedExpensePaymentInput[]
+  updateMany?: Prisma.SvCashMovementUpdateManyWithWhereWithoutLinkedExpensePaymentInput | Prisma.SvCashMovementUpdateManyWithWhereWithoutLinkedExpensePaymentInput[]
+  deleteMany?: Prisma.SvCashMovementScalarWhereInput | Prisma.SvCashMovementScalarWhereInput[]
+}
+
 export type SvCashMovementCreateWithoutCreatedByInput = {
   id?: string
   movedAt: Date | string
@@ -910,6 +1042,8 @@ export type SvCashMovementCreateWithoutCreatedByInput = {
   linkedClient?: Prisma.SvClientCreateNestedOneWithoutMovementsInput
   linkedInvoice?: Prisma.SvInvoiceCreateNestedOneWithoutMovementsInput
   linkedPayment?: Prisma.SvPaymentCreateNestedOneWithoutMovementsInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceCreateNestedOneWithoutMovementsInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentCreateNestedOneWithoutMovementsInput
 }
 
 export type SvCashMovementUncheckedCreateWithoutCreatedByInput = {
@@ -930,6 +1064,8 @@ export type SvCashMovementUncheckedCreateWithoutCreatedByInput = {
   linkedClientId?: string | null
   linkedInvoiceId?: string | null
   linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdAt?: Date | string
 }
 
@@ -980,6 +1116,8 @@ export type SvCashMovementScalarWhereInput = {
   linkedClientId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
   linkedInvoiceId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
   linkedPaymentId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
+  linkedExpenseInvoiceId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
+  linkedExpensePaymentId?: Prisma.StringNullableFilter<"SvCashMovement"> | string | null
   createdById?: Prisma.UuidFilter<"SvCashMovement"> | string
   createdAt?: Prisma.DateTimeFilter<"SvCashMovement"> | Date | string
 }
@@ -1002,6 +1140,8 @@ export type SvCashMovementCreateWithoutLinkedClientInput = {
   account?: Prisma.SvAccountCreateNestedOneWithoutMovementsInput
   linkedInvoice?: Prisma.SvInvoiceCreateNestedOneWithoutMovementsInput
   linkedPayment?: Prisma.SvPaymentCreateNestedOneWithoutMovementsInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceCreateNestedOneWithoutMovementsInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentCreateNestedOneWithoutMovementsInput
   createdBy: Prisma.UserCreateNestedOneWithoutSvCashMovementsCreatedInput
 }
 
@@ -1022,6 +1162,8 @@ export type SvCashMovementUncheckedCreateWithoutLinkedClientInput = {
   countsTowardBalance?: boolean
   linkedInvoiceId?: string | null
   linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdById: string
   createdAt?: Date | string
 }
@@ -1070,6 +1212,8 @@ export type SvCashMovementCreateWithoutLinkedInvoiceInput = {
   account?: Prisma.SvAccountCreateNestedOneWithoutMovementsInput
   linkedClient?: Prisma.SvClientCreateNestedOneWithoutMovementsInput
   linkedPayment?: Prisma.SvPaymentCreateNestedOneWithoutMovementsInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceCreateNestedOneWithoutMovementsInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentCreateNestedOneWithoutMovementsInput
   createdBy: Prisma.UserCreateNestedOneWithoutSvCashMovementsCreatedInput
 }
 
@@ -1090,6 +1234,8 @@ export type SvCashMovementUncheckedCreateWithoutLinkedInvoiceInput = {
   countsTowardBalance?: boolean
   linkedClientId?: string | null
   linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdById: string
   createdAt?: Date | string
 }
@@ -1138,6 +1284,8 @@ export type SvCashMovementCreateWithoutLinkedPaymentInput = {
   account?: Prisma.SvAccountCreateNestedOneWithoutMovementsInput
   linkedClient?: Prisma.SvClientCreateNestedOneWithoutMovementsInput
   linkedInvoice?: Prisma.SvInvoiceCreateNestedOneWithoutMovementsInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceCreateNestedOneWithoutMovementsInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentCreateNestedOneWithoutMovementsInput
   createdBy: Prisma.UserCreateNestedOneWithoutSvCashMovementsCreatedInput
 }
 
@@ -1158,6 +1306,8 @@ export type SvCashMovementUncheckedCreateWithoutLinkedPaymentInput = {
   countsTowardBalance?: boolean
   linkedClientId?: string | null
   linkedInvoiceId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdById: string
   createdAt?: Date | string
 }
@@ -1206,6 +1356,8 @@ export type SvCashMovementCreateWithoutAccountInput = {
   linkedClient?: Prisma.SvClientCreateNestedOneWithoutMovementsInput
   linkedInvoice?: Prisma.SvInvoiceCreateNestedOneWithoutMovementsInput
   linkedPayment?: Prisma.SvPaymentCreateNestedOneWithoutMovementsInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceCreateNestedOneWithoutMovementsInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentCreateNestedOneWithoutMovementsInput
   createdBy: Prisma.UserCreateNestedOneWithoutSvCashMovementsCreatedInput
 }
 
@@ -1226,6 +1378,8 @@ export type SvCashMovementUncheckedCreateWithoutAccountInput = {
   linkedClientId?: string | null
   linkedInvoiceId?: string | null
   linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdById: string
   createdAt?: Date | string
 }
@@ -1256,6 +1410,150 @@ export type SvCashMovementUpdateManyWithWhereWithoutAccountInput = {
   data: Prisma.XOR<Prisma.SvCashMovementUpdateManyMutationInput, Prisma.SvCashMovementUncheckedUpdateManyWithoutAccountInput>
 }
 
+export type SvCashMovementCreateWithoutLinkedExpenseInvoiceInput = {
+  id?: string
+  movedAt: Date | string
+  direction: $Enums.SvCashDirection
+  amount: number
+  category: string
+  description?: string | null
+  clientProject?: string | null
+  beneficiary?: string | null
+  paymentMethod?: string | null
+  paidBy?: string | null
+  reference?: string | null
+  transferId?: string | null
+  countsTowardBalance?: boolean
+  createdAt?: Date | string
+  account?: Prisma.SvAccountCreateNestedOneWithoutMovementsInput
+  linkedClient?: Prisma.SvClientCreateNestedOneWithoutMovementsInput
+  linkedInvoice?: Prisma.SvInvoiceCreateNestedOneWithoutMovementsInput
+  linkedPayment?: Prisma.SvPaymentCreateNestedOneWithoutMovementsInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentCreateNestedOneWithoutMovementsInput
+  createdBy: Prisma.UserCreateNestedOneWithoutSvCashMovementsCreatedInput
+}
+
+export type SvCashMovementUncheckedCreateWithoutLinkedExpenseInvoiceInput = {
+  id?: string
+  movedAt: Date | string
+  direction: $Enums.SvCashDirection
+  amount: number
+  category: string
+  description?: string | null
+  clientProject?: string | null
+  beneficiary?: string | null
+  paymentMethod?: string | null
+  paidBy?: string | null
+  reference?: string | null
+  accountId?: string | null
+  transferId?: string | null
+  countsTowardBalance?: boolean
+  linkedClientId?: string | null
+  linkedInvoiceId?: string | null
+  linkedPaymentId?: string | null
+  linkedExpensePaymentId?: string | null
+  createdById: string
+  createdAt?: Date | string
+}
+
+export type SvCashMovementCreateOrConnectWithoutLinkedExpenseInvoiceInput = {
+  where: Prisma.SvCashMovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpenseInvoiceInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpenseInvoiceInput>
+}
+
+export type SvCashMovementCreateManyLinkedExpenseInvoiceInputEnvelope = {
+  data: Prisma.SvCashMovementCreateManyLinkedExpenseInvoiceInput | Prisma.SvCashMovementCreateManyLinkedExpenseInvoiceInput[]
+  skipDuplicates?: boolean
+}
+
+export type SvCashMovementUpsertWithWhereUniqueWithoutLinkedExpenseInvoiceInput = {
+  where: Prisma.SvCashMovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.SvCashMovementUpdateWithoutLinkedExpenseInvoiceInput, Prisma.SvCashMovementUncheckedUpdateWithoutLinkedExpenseInvoiceInput>
+  create: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpenseInvoiceInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpenseInvoiceInput>
+}
+
+export type SvCashMovementUpdateWithWhereUniqueWithoutLinkedExpenseInvoiceInput = {
+  where: Prisma.SvCashMovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.SvCashMovementUpdateWithoutLinkedExpenseInvoiceInput, Prisma.SvCashMovementUncheckedUpdateWithoutLinkedExpenseInvoiceInput>
+}
+
+export type SvCashMovementUpdateManyWithWhereWithoutLinkedExpenseInvoiceInput = {
+  where: Prisma.SvCashMovementScalarWhereInput
+  data: Prisma.XOR<Prisma.SvCashMovementUpdateManyMutationInput, Prisma.SvCashMovementUncheckedUpdateManyWithoutLinkedExpenseInvoiceInput>
+}
+
+export type SvCashMovementCreateWithoutLinkedExpensePaymentInput = {
+  id?: string
+  movedAt: Date | string
+  direction: $Enums.SvCashDirection
+  amount: number
+  category: string
+  description?: string | null
+  clientProject?: string | null
+  beneficiary?: string | null
+  paymentMethod?: string | null
+  paidBy?: string | null
+  reference?: string | null
+  transferId?: string | null
+  countsTowardBalance?: boolean
+  createdAt?: Date | string
+  account?: Prisma.SvAccountCreateNestedOneWithoutMovementsInput
+  linkedClient?: Prisma.SvClientCreateNestedOneWithoutMovementsInput
+  linkedInvoice?: Prisma.SvInvoiceCreateNestedOneWithoutMovementsInput
+  linkedPayment?: Prisma.SvPaymentCreateNestedOneWithoutMovementsInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceCreateNestedOneWithoutMovementsInput
+  createdBy: Prisma.UserCreateNestedOneWithoutSvCashMovementsCreatedInput
+}
+
+export type SvCashMovementUncheckedCreateWithoutLinkedExpensePaymentInput = {
+  id?: string
+  movedAt: Date | string
+  direction: $Enums.SvCashDirection
+  amount: number
+  category: string
+  description?: string | null
+  clientProject?: string | null
+  beneficiary?: string | null
+  paymentMethod?: string | null
+  paidBy?: string | null
+  reference?: string | null
+  accountId?: string | null
+  transferId?: string | null
+  countsTowardBalance?: boolean
+  linkedClientId?: string | null
+  linkedInvoiceId?: string | null
+  linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  createdById: string
+  createdAt?: Date | string
+}
+
+export type SvCashMovementCreateOrConnectWithoutLinkedExpensePaymentInput = {
+  where: Prisma.SvCashMovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpensePaymentInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpensePaymentInput>
+}
+
+export type SvCashMovementCreateManyLinkedExpensePaymentInputEnvelope = {
+  data: Prisma.SvCashMovementCreateManyLinkedExpensePaymentInput | Prisma.SvCashMovementCreateManyLinkedExpensePaymentInput[]
+  skipDuplicates?: boolean
+}
+
+export type SvCashMovementUpsertWithWhereUniqueWithoutLinkedExpensePaymentInput = {
+  where: Prisma.SvCashMovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.SvCashMovementUpdateWithoutLinkedExpensePaymentInput, Prisma.SvCashMovementUncheckedUpdateWithoutLinkedExpensePaymentInput>
+  create: Prisma.XOR<Prisma.SvCashMovementCreateWithoutLinkedExpensePaymentInput, Prisma.SvCashMovementUncheckedCreateWithoutLinkedExpensePaymentInput>
+}
+
+export type SvCashMovementUpdateWithWhereUniqueWithoutLinkedExpensePaymentInput = {
+  where: Prisma.SvCashMovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.SvCashMovementUpdateWithoutLinkedExpensePaymentInput, Prisma.SvCashMovementUncheckedUpdateWithoutLinkedExpensePaymentInput>
+}
+
+export type SvCashMovementUpdateManyWithWhereWithoutLinkedExpensePaymentInput = {
+  where: Prisma.SvCashMovementScalarWhereInput
+  data: Prisma.XOR<Prisma.SvCashMovementUpdateManyMutationInput, Prisma.SvCashMovementUncheckedUpdateManyWithoutLinkedExpensePaymentInput>
+}
+
 export type SvCashMovementCreateManyCreatedByInput = {
   id?: string
   movedAt: Date | string
@@ -1274,6 +1572,8 @@ export type SvCashMovementCreateManyCreatedByInput = {
   linkedClientId?: string | null
   linkedInvoiceId?: string | null
   linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdAt?: Date | string
 }
 
@@ -1296,6 +1596,8 @@ export type SvCashMovementUpdateWithoutCreatedByInput = {
   linkedClient?: Prisma.SvClientUpdateOneWithoutMovementsNestedInput
   linkedInvoice?: Prisma.SvInvoiceUpdateOneWithoutMovementsNestedInput
   linkedPayment?: Prisma.SvPaymentUpdateOneWithoutMovementsNestedInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceUpdateOneWithoutMovementsNestedInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentUpdateOneWithoutMovementsNestedInput
 }
 
 export type SvCashMovementUncheckedUpdateWithoutCreatedByInput = {
@@ -1316,6 +1618,8 @@ export type SvCashMovementUncheckedUpdateWithoutCreatedByInput = {
   linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1337,6 +1641,8 @@ export type SvCashMovementUncheckedUpdateManyWithoutCreatedByInput = {
   linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -1357,6 +1663,8 @@ export type SvCashMovementCreateManyLinkedClientInput = {
   countsTowardBalance?: boolean
   linkedInvoiceId?: string | null
   linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdById: string
   createdAt?: Date | string
 }
@@ -1379,6 +1687,8 @@ export type SvCashMovementUpdateWithoutLinkedClientInput = {
   account?: Prisma.SvAccountUpdateOneWithoutMovementsNestedInput
   linkedInvoice?: Prisma.SvInvoiceUpdateOneWithoutMovementsNestedInput
   linkedPayment?: Prisma.SvPaymentUpdateOneWithoutMovementsNestedInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceUpdateOneWithoutMovementsNestedInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentUpdateOneWithoutMovementsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutSvCashMovementsCreatedNestedInput
 }
 
@@ -1399,6 +1709,8 @@ export type SvCashMovementUncheckedUpdateWithoutLinkedClientInput = {
   countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
   linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1420,6 +1732,8 @@ export type SvCashMovementUncheckedUpdateManyWithoutLinkedClientInput = {
   countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
   linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1441,6 +1755,8 @@ export type SvCashMovementCreateManyLinkedInvoiceInput = {
   countsTowardBalance?: boolean
   linkedClientId?: string | null
   linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdById: string
   createdAt?: Date | string
 }
@@ -1463,6 +1779,8 @@ export type SvCashMovementUpdateWithoutLinkedInvoiceInput = {
   account?: Prisma.SvAccountUpdateOneWithoutMovementsNestedInput
   linkedClient?: Prisma.SvClientUpdateOneWithoutMovementsNestedInput
   linkedPayment?: Prisma.SvPaymentUpdateOneWithoutMovementsNestedInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceUpdateOneWithoutMovementsNestedInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentUpdateOneWithoutMovementsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutSvCashMovementsCreatedNestedInput
 }
 
@@ -1483,6 +1801,8 @@ export type SvCashMovementUncheckedUpdateWithoutLinkedInvoiceInput = {
   countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
   linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1504,6 +1824,8 @@ export type SvCashMovementUncheckedUpdateManyWithoutLinkedInvoiceInput = {
   countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
   linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1525,6 +1847,8 @@ export type SvCashMovementCreateManyLinkedPaymentInput = {
   countsTowardBalance?: boolean
   linkedClientId?: string | null
   linkedInvoiceId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdById: string
   createdAt?: Date | string
 }
@@ -1547,6 +1871,8 @@ export type SvCashMovementUpdateWithoutLinkedPaymentInput = {
   account?: Prisma.SvAccountUpdateOneWithoutMovementsNestedInput
   linkedClient?: Prisma.SvClientUpdateOneWithoutMovementsNestedInput
   linkedInvoice?: Prisma.SvInvoiceUpdateOneWithoutMovementsNestedInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceUpdateOneWithoutMovementsNestedInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentUpdateOneWithoutMovementsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutSvCashMovementsCreatedNestedInput
 }
 
@@ -1567,6 +1893,8 @@ export type SvCashMovementUncheckedUpdateWithoutLinkedPaymentInput = {
   countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
   linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1588,6 +1916,8 @@ export type SvCashMovementUncheckedUpdateManyWithoutLinkedPaymentInput = {
   countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
   linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1609,6 +1939,8 @@ export type SvCashMovementCreateManyAccountInput = {
   linkedClientId?: string | null
   linkedInvoiceId?: string | null
   linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  linkedExpensePaymentId?: string | null
   createdById: string
   createdAt?: Date | string
 }
@@ -1631,6 +1963,8 @@ export type SvCashMovementUpdateWithoutAccountInput = {
   linkedClient?: Prisma.SvClientUpdateOneWithoutMovementsNestedInput
   linkedInvoice?: Prisma.SvInvoiceUpdateOneWithoutMovementsNestedInput
   linkedPayment?: Prisma.SvPaymentUpdateOneWithoutMovementsNestedInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceUpdateOneWithoutMovementsNestedInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentUpdateOneWithoutMovementsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutSvCashMovementsCreatedNestedInput
 }
 
@@ -1651,6 +1985,8 @@ export type SvCashMovementUncheckedUpdateWithoutAccountInput = {
   linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1672,6 +2008,192 @@ export type SvCashMovementUncheckedUpdateManyWithoutAccountInput = {
   linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SvCashMovementCreateManyLinkedExpenseInvoiceInput = {
+  id?: string
+  movedAt: Date | string
+  direction: $Enums.SvCashDirection
+  amount: number
+  category: string
+  description?: string | null
+  clientProject?: string | null
+  beneficiary?: string | null
+  paymentMethod?: string | null
+  paidBy?: string | null
+  reference?: string | null
+  accountId?: string | null
+  transferId?: string | null
+  countsTowardBalance?: boolean
+  linkedClientId?: string | null
+  linkedInvoiceId?: string | null
+  linkedPaymentId?: string | null
+  linkedExpensePaymentId?: string | null
+  createdById: string
+  createdAt?: Date | string
+}
+
+export type SvCashMovementUpdateWithoutLinkedExpenseInvoiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  movedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  direction?: Prisma.EnumSvCashDirectionFieldUpdateOperationsInput | $Enums.SvCashDirection
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientProject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  beneficiary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  account?: Prisma.SvAccountUpdateOneWithoutMovementsNestedInput
+  linkedClient?: Prisma.SvClientUpdateOneWithoutMovementsNestedInput
+  linkedInvoice?: Prisma.SvInvoiceUpdateOneWithoutMovementsNestedInput
+  linkedPayment?: Prisma.SvPaymentUpdateOneWithoutMovementsNestedInput
+  linkedExpensePayment?: Prisma.SvExpensePaymentUpdateOneWithoutMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutSvCashMovementsCreatedNestedInput
+}
+
+export type SvCashMovementUncheckedUpdateWithoutLinkedExpenseInvoiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  movedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  direction?: Prisma.EnumSvCashDirectionFieldUpdateOperationsInput | $Enums.SvCashDirection
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientProject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  beneficiary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SvCashMovementUncheckedUpdateManyWithoutLinkedExpenseInvoiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  movedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  direction?: Prisma.EnumSvCashDirectionFieldUpdateOperationsInput | $Enums.SvCashDirection
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientProject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  beneficiary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpensePaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SvCashMovementCreateManyLinkedExpensePaymentInput = {
+  id?: string
+  movedAt: Date | string
+  direction: $Enums.SvCashDirection
+  amount: number
+  category: string
+  description?: string | null
+  clientProject?: string | null
+  beneficiary?: string | null
+  paymentMethod?: string | null
+  paidBy?: string | null
+  reference?: string | null
+  accountId?: string | null
+  transferId?: string | null
+  countsTowardBalance?: boolean
+  linkedClientId?: string | null
+  linkedInvoiceId?: string | null
+  linkedPaymentId?: string | null
+  linkedExpenseInvoiceId?: string | null
+  createdById: string
+  createdAt?: Date | string
+}
+
+export type SvCashMovementUpdateWithoutLinkedExpensePaymentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  movedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  direction?: Prisma.EnumSvCashDirectionFieldUpdateOperationsInput | $Enums.SvCashDirection
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientProject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  beneficiary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  account?: Prisma.SvAccountUpdateOneWithoutMovementsNestedInput
+  linkedClient?: Prisma.SvClientUpdateOneWithoutMovementsNestedInput
+  linkedInvoice?: Prisma.SvInvoiceUpdateOneWithoutMovementsNestedInput
+  linkedPayment?: Prisma.SvPaymentUpdateOneWithoutMovementsNestedInput
+  linkedExpenseInvoice?: Prisma.SvExpenseInvoiceUpdateOneWithoutMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutSvCashMovementsCreatedNestedInput
+}
+
+export type SvCashMovementUncheckedUpdateWithoutLinkedExpensePaymentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  movedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  direction?: Prisma.EnumSvCashDirectionFieldUpdateOperationsInput | $Enums.SvCashDirection
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientProject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  beneficiary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SvCashMovementUncheckedUpdateManyWithoutLinkedExpensePaymentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  movedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  direction?: Prisma.EnumSvCashDirectionFieldUpdateOperationsInput | $Enums.SvCashDirection
+  amount?: Prisma.IntFieldUpdateOperationsInput | number
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clientProject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  beneficiary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  transferId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countsTowardBalance?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  linkedClientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedPaymentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedExpenseInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1696,12 +2218,16 @@ export type SvCashMovementSelect<ExtArgs extends runtime.Types.Extensions.Intern
   linkedClientId?: boolean
   linkedInvoiceId?: boolean
   linkedPaymentId?: boolean
+  linkedExpenseInvoiceId?: boolean
+  linkedExpensePaymentId?: boolean
   createdById?: boolean
   createdAt?: boolean
   account?: boolean | Prisma.SvCashMovement$accountArgs<ExtArgs>
   linkedClient?: boolean | Prisma.SvCashMovement$linkedClientArgs<ExtArgs>
   linkedInvoice?: boolean | Prisma.SvCashMovement$linkedInvoiceArgs<ExtArgs>
   linkedPayment?: boolean | Prisma.SvCashMovement$linkedPaymentArgs<ExtArgs>
+  linkedExpenseInvoice?: boolean | Prisma.SvCashMovement$linkedExpenseInvoiceArgs<ExtArgs>
+  linkedExpensePayment?: boolean | Prisma.SvCashMovement$linkedExpensePaymentArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["svCashMovement"]>
 
@@ -1723,12 +2249,16 @@ export type SvCashMovementSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   linkedClientId?: boolean
   linkedInvoiceId?: boolean
   linkedPaymentId?: boolean
+  linkedExpenseInvoiceId?: boolean
+  linkedExpensePaymentId?: boolean
   createdById?: boolean
   createdAt?: boolean
   account?: boolean | Prisma.SvCashMovement$accountArgs<ExtArgs>
   linkedClient?: boolean | Prisma.SvCashMovement$linkedClientArgs<ExtArgs>
   linkedInvoice?: boolean | Prisma.SvCashMovement$linkedInvoiceArgs<ExtArgs>
   linkedPayment?: boolean | Prisma.SvCashMovement$linkedPaymentArgs<ExtArgs>
+  linkedExpenseInvoice?: boolean | Prisma.SvCashMovement$linkedExpenseInvoiceArgs<ExtArgs>
+  linkedExpensePayment?: boolean | Prisma.SvCashMovement$linkedExpensePaymentArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["svCashMovement"]>
 
@@ -1750,12 +2280,16 @@ export type SvCashMovementSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   linkedClientId?: boolean
   linkedInvoiceId?: boolean
   linkedPaymentId?: boolean
+  linkedExpenseInvoiceId?: boolean
+  linkedExpensePaymentId?: boolean
   createdById?: boolean
   createdAt?: boolean
   account?: boolean | Prisma.SvCashMovement$accountArgs<ExtArgs>
   linkedClient?: boolean | Prisma.SvCashMovement$linkedClientArgs<ExtArgs>
   linkedInvoice?: boolean | Prisma.SvCashMovement$linkedInvoiceArgs<ExtArgs>
   linkedPayment?: boolean | Prisma.SvCashMovement$linkedPaymentArgs<ExtArgs>
+  linkedExpenseInvoice?: boolean | Prisma.SvCashMovement$linkedExpenseInvoiceArgs<ExtArgs>
+  linkedExpensePayment?: boolean | Prisma.SvCashMovement$linkedExpensePaymentArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["svCashMovement"]>
 
@@ -1777,16 +2311,20 @@ export type SvCashMovementSelectScalar = {
   linkedClientId?: boolean
   linkedInvoiceId?: boolean
   linkedPaymentId?: boolean
+  linkedExpenseInvoiceId?: boolean
+  linkedExpensePaymentId?: boolean
   createdById?: boolean
   createdAt?: boolean
 }
 
-export type SvCashMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "movedAt" | "direction" | "amount" | "category" | "description" | "clientProject" | "beneficiary" | "paymentMethod" | "paidBy" | "reference" | "accountId" | "transferId" | "countsTowardBalance" | "linkedClientId" | "linkedInvoiceId" | "linkedPaymentId" | "createdById" | "createdAt", ExtArgs["result"]["svCashMovement"]>
+export type SvCashMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "movedAt" | "direction" | "amount" | "category" | "description" | "clientProject" | "beneficiary" | "paymentMethod" | "paidBy" | "reference" | "accountId" | "transferId" | "countsTowardBalance" | "linkedClientId" | "linkedInvoiceId" | "linkedPaymentId" | "linkedExpenseInvoiceId" | "linkedExpensePaymentId" | "createdById" | "createdAt", ExtArgs["result"]["svCashMovement"]>
 export type SvCashMovementInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   account?: boolean | Prisma.SvCashMovement$accountArgs<ExtArgs>
   linkedClient?: boolean | Prisma.SvCashMovement$linkedClientArgs<ExtArgs>
   linkedInvoice?: boolean | Prisma.SvCashMovement$linkedInvoiceArgs<ExtArgs>
   linkedPayment?: boolean | Prisma.SvCashMovement$linkedPaymentArgs<ExtArgs>
+  linkedExpenseInvoice?: boolean | Prisma.SvCashMovement$linkedExpenseInvoiceArgs<ExtArgs>
+  linkedExpensePayment?: boolean | Prisma.SvCashMovement$linkedExpensePaymentArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type SvCashMovementIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1794,6 +2332,8 @@ export type SvCashMovementIncludeCreateManyAndReturn<ExtArgs extends runtime.Typ
   linkedClient?: boolean | Prisma.SvCashMovement$linkedClientArgs<ExtArgs>
   linkedInvoice?: boolean | Prisma.SvCashMovement$linkedInvoiceArgs<ExtArgs>
   linkedPayment?: boolean | Prisma.SvCashMovement$linkedPaymentArgs<ExtArgs>
+  linkedExpenseInvoice?: boolean | Prisma.SvCashMovement$linkedExpenseInvoiceArgs<ExtArgs>
+  linkedExpensePayment?: boolean | Prisma.SvCashMovement$linkedExpensePaymentArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type SvCashMovementIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1801,6 +2341,8 @@ export type SvCashMovementIncludeUpdateManyAndReturn<ExtArgs extends runtime.Typ
   linkedClient?: boolean | Prisma.SvCashMovement$linkedClientArgs<ExtArgs>
   linkedInvoice?: boolean | Prisma.SvCashMovement$linkedInvoiceArgs<ExtArgs>
   linkedPayment?: boolean | Prisma.SvCashMovement$linkedPaymentArgs<ExtArgs>
+  linkedExpenseInvoice?: boolean | Prisma.SvCashMovement$linkedExpenseInvoiceArgs<ExtArgs>
+  linkedExpensePayment?: boolean | Prisma.SvCashMovement$linkedExpensePaymentArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
@@ -1811,6 +2353,8 @@ export type $SvCashMovementPayload<ExtArgs extends runtime.Types.Extensions.Inte
     linkedClient: Prisma.$SvClientPayload<ExtArgs> | null
     linkedInvoice: Prisma.$SvInvoicePayload<ExtArgs> | null
     linkedPayment: Prisma.$SvPaymentPayload<ExtArgs> | null
+    linkedExpenseInvoice: Prisma.$SvExpenseInvoicePayload<ExtArgs> | null
+    linkedExpensePayment: Prisma.$SvExpensePaymentPayload<ExtArgs> | null
     createdBy: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1840,6 +2384,8 @@ export type $SvCashMovementPayload<ExtArgs extends runtime.Types.Extensions.Inte
     linkedClientId: string | null
     linkedInvoiceId: string | null
     linkedPaymentId: string | null
+    linkedExpenseInvoiceId: string | null
+    linkedExpensePaymentId: string | null
     createdById: string
     createdAt: Date
   }, ExtArgs["result"]["svCashMovement"]>
@@ -2240,6 +2786,8 @@ export interface Prisma__SvCashMovementClient<T, Null = never, ExtArgs extends r
   linkedClient<T extends Prisma.SvCashMovement$linkedClientArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SvCashMovement$linkedClientArgs<ExtArgs>>): Prisma.Prisma__SvClientClient<runtime.Types.Result.GetResult<Prisma.$SvClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   linkedInvoice<T extends Prisma.SvCashMovement$linkedInvoiceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SvCashMovement$linkedInvoiceArgs<ExtArgs>>): Prisma.Prisma__SvInvoiceClient<runtime.Types.Result.GetResult<Prisma.$SvInvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   linkedPayment<T extends Prisma.SvCashMovement$linkedPaymentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SvCashMovement$linkedPaymentArgs<ExtArgs>>): Prisma.Prisma__SvPaymentClient<runtime.Types.Result.GetResult<Prisma.$SvPaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  linkedExpenseInvoice<T extends Prisma.SvCashMovement$linkedExpenseInvoiceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SvCashMovement$linkedExpenseInvoiceArgs<ExtArgs>>): Prisma.Prisma__SvExpenseInvoiceClient<runtime.Types.Result.GetResult<Prisma.$SvExpenseInvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  linkedExpensePayment<T extends Prisma.SvCashMovement$linkedExpensePaymentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SvCashMovement$linkedExpensePaymentArgs<ExtArgs>>): Prisma.Prisma__SvExpensePaymentClient<runtime.Types.Result.GetResult<Prisma.$SvExpensePaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2287,6 +2835,8 @@ export interface SvCashMovementFieldRefs {
   readonly linkedClientId: Prisma.FieldRef<"SvCashMovement", 'String'>
   readonly linkedInvoiceId: Prisma.FieldRef<"SvCashMovement", 'String'>
   readonly linkedPaymentId: Prisma.FieldRef<"SvCashMovement", 'String'>
+  readonly linkedExpenseInvoiceId: Prisma.FieldRef<"SvCashMovement", 'String'>
+  readonly linkedExpensePaymentId: Prisma.FieldRef<"SvCashMovement", 'String'>
   readonly createdById: Prisma.FieldRef<"SvCashMovement", 'String'>
   readonly createdAt: Prisma.FieldRef<"SvCashMovement", 'DateTime'>
 }
@@ -2763,6 +3313,44 @@ export type SvCashMovement$linkedPaymentArgs<ExtArgs extends runtime.Types.Exten
    */
   include?: Prisma.SvPaymentInclude<ExtArgs> | null
   where?: Prisma.SvPaymentWhereInput
+}
+
+/**
+ * SvCashMovement.linkedExpenseInvoice
+ */
+export type SvCashMovement$linkedExpenseInvoiceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SvExpenseInvoice
+   */
+  select?: Prisma.SvExpenseInvoiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SvExpenseInvoice
+   */
+  omit?: Prisma.SvExpenseInvoiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SvExpenseInvoiceInclude<ExtArgs> | null
+  where?: Prisma.SvExpenseInvoiceWhereInput
+}
+
+/**
+ * SvCashMovement.linkedExpensePayment
+ */
+export type SvCashMovement$linkedExpensePaymentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SvExpensePayment
+   */
+  select?: Prisma.SvExpensePaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SvExpensePayment
+   */
+  omit?: Prisma.SvExpensePaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SvExpensePaymentInclude<ExtArgs> | null
+  where?: Prisma.SvExpensePaymentWhereInput
 }
 
 /**

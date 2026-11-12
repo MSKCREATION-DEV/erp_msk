@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Users,
   Wallet,
+  Building2,
   type LucideIcon,
 } from "lucide-react";
 import { SUIVI_MODULES, type SuiviModule } from "@/lib/suivi/modules";
@@ -20,6 +21,7 @@ const ICONS: Record<string, LucideIcon> = {
   dashboard: LayoutDashboard,
   clients: Users,
   factures: Receipt,
+  charges: Building2,
   comptes: Wallet,
   mouvements: ArrowLeftRight,
   stocks: Package,
@@ -47,6 +49,8 @@ function moduleKpi(
       };
     case "factures":
       return { value: String(count), hint: "à encaisser" };
+    case "charges":
+      return { value: String(count), hint: "à payer" };
     case "comptes":
       return { value: String(count), hint: "comptes" };
     case "mouvements":

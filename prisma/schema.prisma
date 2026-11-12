@@ -397,9 +397,10 @@ model User {
   prjExpensesReviewed PrjExpense[]      @relation("PrjExpenseReviewer")
   opsTicketsCreated   OpsTicket[]       @relation("OpsTicketCreator")
   opsTicketsAssigned  OpsTicket[]       @relation("OpsTicketAssignee")
-  svInvoicesCreated       SvInvoice[]       @relation("SvInvoiceCreator")
-  svCashMovementsCreated  SvCashMovement[]  @relation("SvCashMovementCreator")
-  svStockMovementsCreated SvStockMovement[] @relation("SvStockMovementCreator")
+  svInvoicesCreated          SvInvoice[]         @relation("SvInvoiceCreator")
+  svExpenseInvoicesCreated   SvExpenseInvoice[]  @relation("SvExpenseInvoiceCreator")
+  svCashMovementsCreated     SvCashMovement[]    @relation("SvCashMovementCreator")
+  svStockMovementsCreated    SvStockMovement[]   @relation("SvStockMovementCreator")
 
   @@index([status])
   @@map("users")
@@ -2532,6 +2533,14 @@ enum SvInvoiceStatus {
   ANNULEE
 }
 
+/// Type de charge entreprise (factures internes / fournisseurs).
+enum SvExpenseCategory {
+  ORANGE_INTERNET
+  EDM_ELECTRICITE
+  LOYER
+  AUTRE
+}
+
 enum SvCashDirection {
   IN
   OUT
@@ -2696,17 +2705,21 @@ model SvCashMovement {
   transferId      String?
   /// false = archive pre-bascule (visible historique, exclu du solde courant).
   countsTowardBalance Boolean     @default(true)
-  linkedClientId  String?
-  linkedInvoiceId String?
-  linkedPaymentId String?
-  createdById     String          @db.Uuid
-  createdAt       DateTime        @default(now())
+  linkedClientId           String?
+  linkedInvoiceId          String?
+  linkedPaymentId          String?
+  linkedExpenseInvoiceId   String?
+  linkedExpensePaymentId   String?
+  createdById              String          @db.Uuid
+  createdAt                DateTime        @default(now())
 
-  account       SvAccount? @relation(fields: [accountId], references: [id], onDelete: Restrict)
-  linkedClient  SvClient?  @relation(fields: [linkedClientId], references: [id], onDelete: SetNull)
-  linkedInvoice SvInvoice? @relation(fields: [linkedInvoiceId], references: [id], onDelete: SetNull)
-  linkedPayment SvPayment? @relation(fields: [linkedPaymentId], references: [id], onDelete: SetNull)
-  createdBy     User       @relation("SvCashMovementCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  account              SvAccount?         @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  linkedClient         SvClient?          @relation(fields: [linkedClientId], references: [id], onDelete: SetNull)
+  linkedInvoice        SvInvoice?         @relation(fields: [linkedInvoiceId], references: [id], onDelete: SetNull)
+  linkedPayment        SvPayment?         @relation(fields: [linkedPaymentId], references: [id], onDelete: SetNull)
+  linkedExpenseInvoice SvExpenseInvoice?  @relation(fields: [linkedExpenseInvoiceId], references: [id], onDelete: SetNull)
+  linkedExpensePayment SvExpensePayment?  @relation(fields: [linkedExpensePaymentId], references: [id], onDelete: SetNull)
+  createdBy            User               @relation("SvCashMovementCreator", fields: [createdById], references: [id], onDelete: Restrict)
 
   @@index([movedAt])
   @@index([direction, movedAt])
@@ -2714,7 +2727,63 @@ model SvCashMovement {
   @@index([accountId, movedAt])
   @@index([accountId, countsTowardBalance])
   @@index([transferId])
+  @@index([linkedExpenseInvoiceId])
   @@map("sv_cash_movements")
+}
+
+/// Facture interne / fournisseur (charges entreprise) — isolée des factures clients.
+model SvExpenseInvoice {
+  id             String            @id @default(cuid())
+  category       SvExpenseCategory
+  status         SvInvoiceStatus   @default(BROUILLON)
+  vendorName     String
+  vendorRef      String?
+  number         String?
+  issuedAt       DateTime?
+  dueAt          DateTime?
+  periodStart    DateTime?
+  periodEnd      DateTime?
+  periodLabel    String?
+  totalHt        Int               @default(0)
+  totalVat       Int               @default(0)
+  totalTtc       Int               @default(0)
+  amountPaid     Int               @default(0)
+  currency       String            @default("XOF")
+  object         String?
+  notes          String?
+  sourceDocument String?
+  gedDocumentId  String?
+  createdById    String            @db.Uuid
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  payments  SvExpensePayment[]
+  movements SvCashMovement[]
+  createdBy User               @relation("SvExpenseInvoiceCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@unique([sourceDocument])
+  @@index([category, status])
+  @@index([number])
+  @@index([issuedAt])
+  @@index([vendorName])
+  @@map("sv_expense_invoices")
+}
+
+model SvExpensePayment {
+  id        String   @id @default(cuid())
+  invoiceId String
+  amount    Int
+  paidAt    DateTime @default(now())
+  method    String?
+  reference String?
+  note      String?
+  createdAt DateTime @default(now())
+
+  invoice   SvExpenseInvoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  movements SvCashMovement[]
+
+  @@index([invoiceId, paidAt])
+  @@map("sv_expense_payments")
 }
 
 model SvStockItem {

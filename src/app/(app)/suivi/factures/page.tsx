@@ -52,7 +52,7 @@ const FACTURE_SORT_COLUMNS = {
 
 const RESTE_STATUSES: SvInvoiceStatus[] = ["BROUILLON", "EMISE", "PARTIELLE"];
 
-export const metadata: Metadata = { title: "Factures · Suivi" };
+export const metadata: Metadata = { title: "Factures clients · Suivi" };
 
 export default async function SuiviFacturesPage({
   searchParams,
@@ -70,8 +70,8 @@ export default async function SuiviFacturesPage({
   return (
     <PageShell>
       <PageHeader
-        title="Factures"
-        description="Payé / reste — nouvelle facture depuis l’historique."
+        title="Factures clients"
+        description="Encaissements clients — payé / reste. (Les charges fournisseurs sont dans Charges.)"
         backHref="/suivi"
         actions={
           canManage ? (

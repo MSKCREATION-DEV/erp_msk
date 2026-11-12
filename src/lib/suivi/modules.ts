@@ -33,10 +33,18 @@ export const SUIVI_MODULES: SuiviModule[] = [
   {
     id: "factures",
     href: "/suivi/factures",
-    title: "Factures",
-    description: "Payé / reste, nouvelle facture depuis l’historique.",
+    title: "Factures clients",
+    description: "Encaissements clients — payé / reste.",
     tone: "cyan",
     permission: "sv.invoices.view",
+  },
+  {
+    id: "charges",
+    href: "/suivi/charges",
+    title: "Charges",
+    description: "Factures fournisseurs — Orange, EDM, loyer…",
+    tone: "coral",
+    permission: "sv.expenses.view",
   },
   {
     id: "comptes",
@@ -72,7 +80,16 @@ export const SUIVI_SUBNAV = [
     permission: "sv.access",
   },
   { href: "/suivi/clients", label: "Clients", permission: "sv.clients.view" },
-  { href: "/suivi/factures", label: "Factures", permission: "sv.invoices.view" },
+  {
+    href: "/suivi/factures",
+    label: "Factures clients",
+    permission: "sv.invoices.view",
+  },
+  {
+    href: "/suivi/charges",
+    label: "Charges",
+    permission: "sv.expenses.view",
+  },
   {
     href: "/suivi/comptes",
     label: "Comptes",

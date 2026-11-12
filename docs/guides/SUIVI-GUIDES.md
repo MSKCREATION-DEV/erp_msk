@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-12 (listes Suivi paginées + règle tableaux ; voir §8) |
+| Dernière mise à jour | 2026-11-12 (Charges / factures internes Suivi ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -110,7 +110,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
 | `faq-acces-refuse` | Accès refusé / module absent | accueil | `validated` | redirect `acces_refuse` |
 | `faq-mot-de-passe` | Mot de passe / reset | accueil | `validated` | parcours auth connus |
-| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `draft` | hub + **tableau-de-bord** + clients/factures/comptes/mouvements/stocks — à rédiger dans `src/lib/guides` |
+| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `draft` | hub + **tableau-de-bord** + clients/factures clients/**charges**/comptes/mouvements/stocks — à rédiger dans `src/lib/guides` |
 
 *Les modules sans guide `validated` apparaissent en fiche « stub » (objectif + liens manuels, sans fausse procédure).*
 
@@ -196,6 +196,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-12 — Suivi Charges (factures internes / fournisseurs)
+
+| | |
+|---|---|
+| Quoi | Module **Charges** distinct des **Factures clients** : table `sv_expense_invoices`, liste paginée + filtres type/payé, fiche + historique fournisseur, create `/nouveau` + upload GED, seed OCR 6 PDF, permissions `sv.expenses.*`, décision **J** |
+| Pourquoi | Suivre Orange / EDM / loyer (payé-impayé) sans polluer le listing clients |
+| Fichiers | `prisma/schema` + migration `20261112170000_sv_expense_invoices`, `src/app/(app)/suivi/charges/**`, `actions/suivi/expenses.ts`, `expense-seed-data.ts`, `ged.ts`, `modules.ts`, `DECISIONS-SEED` §11, `INVENTAIRE` §12, `SPEC` |
+| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — ajouter parcours Charges / différenciation Factures clients |
+| Routes | `/suivi/charges` · `/suivi/charges/nouveau` · `/suivi/charges/[id]` · GED `08_SUIVI_TAMPON/charges/…` |
 
 ### 2026-11-12 — Listes Suivi : pagination + recherche + filtres
 
