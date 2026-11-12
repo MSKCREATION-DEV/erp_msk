@@ -1,7 +1,7 @@
 /**
  * Tri URL pour listes / tableaux ERP (`?sort=` + `?dir=`).
- * Serveur : `parseListSort` → `orderBy` Prisma.
- * UI : `SortableTh` + `buildSortHref`.
+ * Serveur : `parseListSort` → `orderBy` Prisma (primaire + `{ id: "asc" }`).
+ * UI : `SortableTh` + `buildSortHref` + `listKey` (Suspense).
  */
 
 export type SortDir = "asc" | "desc";
@@ -41,6 +41,28 @@ export function parseSortKey<TKey extends string>(
 }
 
 /**
+ * Tri déterministe : append `{ id: "asc" }` sauf si `id` déjà présent.
+ * Évite les pages qui « sautent » quand la colonne primaire a des égalités.
+ */
+export function withStableIdOrderBy(orderBy: unknown): unknown {
+  const secondary = { id: "asc" as const };
+  if (Array.isArray(orderBy)) {
+    const hasId = orderBy.some(
+      (o) =>
+        o != null &&
+        typeof o === "object" &&
+        !Array.isArray(o) &&
+        "id" in (o as object),
+    );
+    return hasId ? orderBy : [...orderBy, secondary];
+  }
+  if (orderBy != null && typeof orderBy === "object" && "id" in orderBy) {
+    return orderBy;
+  }
+  return [orderBy, secondary];
+}
+
+/**
  * Lit `sort` / `dir` depuis les searchParams et résout le `orderBy` Prisma.
  * `paramKeys` permet une 2ᵉ table sur la même page (ex. `hsort` / `hdir`).
  */
@@ -59,7 +81,7 @@ export function parseListSort<TKey extends string>(
   return {
     key,
     dir,
-    orderBy: columns[key](dir),
+    orderBy: withStableIdOrderBy(columns[key](dir)),
   };
 }
 
@@ -77,6 +99,27 @@ export function appendSortParams(
   const dir = get(dirKey)?.trim();
   if (sort) target.set(sortKey, sort);
   if (dir === "asc" || dir === "desc") target.set(dirKey, dir);
+}
+
+/**
+ * Clé Suspense pour rejouer le skeleton quand seuls les searchParams changent
+ * (Next.js #49297 — sans `key`, le fallback ne se remonte pas).
+ */
+export function listKey(
+  params: Record<string, string | undefined | null | number>,
+  keys?: readonly string[],
+): string {
+  const entries = Object.entries(params)
+    .filter(([k, v]) => {
+      if (keys && !keys.includes(k)) return false;
+      if (v == null) return false;
+      if (typeof v === "string" && v.trim() === "") return false;
+      return true;
+    })
+    .map(([k, v]) => [k, String(v)] as const)
+    .sort(([a], [b]) => a.localeCompare(b));
+  if (entries.length === 0) return "default";
+  return entries.map(([k, v]) => `${k}=${v}`).join("&");
 }
 
 /**

@@ -3,11 +3,13 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { buildPageWindow } from "@/lib/list/page-window";
 import { cn } from "@/lib/utils";
+import { SortPendingIndicator } from "@/components/ui/sort-pending-indicator";
 
 /**
  * Pagination URL — composition inspirée shadcn Pagination
  * @see https://ui.shadcn.com/docs/components/base/pagination
  * Adaptée Next.js `Link` + charte MSK.
+ * Conserve `sort`/`dir`/`q`/filtres via `searchParams` ; `scroll={false}`.
  */
 export function ListPagination({
   pathname,
@@ -26,6 +28,8 @@ export function ListPagination({
 }) {
   if (total === 0) return null;
 
+  const safePage = Math.min(Math.max(1, page), Math.max(1, totalPages));
+
   function hrefFor(p: number) {
     const params = new URLSearchParams();
     for (const [k, v] of Object.entries(searchParams)) {
@@ -37,9 +41,9 @@ export function ListPagination({
     return qs ? `${pathname}?${qs}` : pathname;
   }
 
-  const from = (page - 1) * pageSize + 1;
-  const to = Math.min(page * pageSize, total);
-  const tokens = buildPageWindow(page, totalPages);
+  const from = (safePage - 1) * pageSize + 1;
+  const to = Math.min(safePage * pageSize, total);
+  const tokens = buildPageWindow(safePage, totalPages);
 
   return (
     <nav
@@ -58,8 +62,8 @@ export function ListPagination({
       <ul className="flex flex-wrap items-center gap-1">
         <li>
           <PaginationNavLink
-            href={hrefFor(page - 1)}
-            disabled={page <= 1}
+            href={hrefFor(safePage - 1)}
+            disabled={safePage <= 1}
             aria-label="Page précédente"
             className="gap-1 px-2.5"
           >
@@ -81,9 +85,9 @@ export function ListPagination({
             <li key={token}>
               <PaginationNavLink
                 href={hrefFor(token)}
-                isActive={token === page}
+                isActive={token === safePage}
                 aria-label={`Page ${token}`}
-                aria-current={token === page ? "page" : undefined}
+                aria-current={token === safePage ? "page" : undefined}
               >
                 {token}
               </PaginationNavLink>
@@ -93,8 +97,8 @@ export function ListPagination({
 
         <li>
           <PaginationNavLink
-            href={hrefFor(page + 1)}
-            disabled={page >= totalPages}
+            href={hrefFor(safePage + 1)}
+            disabled={safePage >= totalPages}
             aria-label="Page suivante"
             className="gap-1 px-2.5"
           >
@@ -142,6 +146,7 @@ function PaginationNavLink({
   return (
     <Link
       prefetch={false}
+      scroll={false}
       href={href}
       aria-label={ariaLabel}
       aria-current={ariaCurrent}
@@ -154,7 +159,10 @@ function PaginationNavLink({
         className,
       )}
     >
-      {children}
+      <span className="inline-flex items-center gap-1">
+        {children}
+        <SortPendingIndicator label="Chargement de la page" />
+      </span>
     </Link>
   );
 }

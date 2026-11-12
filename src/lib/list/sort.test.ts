@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import {
   appendSortParams,
   buildSortHref,
+  listKey,
   parseListSort,
   parseSortDir,
   parseSortKey,
   sortAriaLabel,
+  withStableIdOrderBy,
   type SortDir,
 } from "./sort";
 
@@ -13,9 +15,14 @@ assert.equal(parseSortDir("asc"), "asc");
 assert.equal(parseSortDir("desc"), "desc");
 assert.equal(parseSortDir("nope"), "asc");
 assert.equal(parseSortDir(undefined, "desc"), "desc");
+assert.equal(parseSortDir("ASC" as string), "asc"); // injection / casse → fallback
 
 assert.equal(parseSortKey("name", ["name", "date"] as const, "date"), "name");
 assert.equal(parseSortKey("x", ["name", "date"] as const, "date"), "date");
+assert.equal(
+  parseSortKey("name;drop table", ["name", "date"] as const, "date"),
+  "date",
+);
 
 {
   const columns = {
@@ -29,7 +36,7 @@ assert.equal(parseSortKey("x", ["name", "date"] as const, "date"), "date");
   );
   assert.equal(parsed.key, "updatedAt");
   assert.equal(parsed.dir, "asc");
-  assert.deepEqual(parsed.orderBy, { updatedAt: "asc" });
+  assert.deepEqual(parsed.orderBy, [{ updatedAt: "asc" }, { id: "asc" }]);
 }
 
 {
@@ -39,6 +46,27 @@ assert.equal(parseSortKey("x", ["name", "date"] as const, "date"), "date");
   });
   assert.equal(parsed.key, "name");
   assert.equal(parsed.dir, "asc");
+  assert.deepEqual(parsed.orderBy, [{ name: "asc" }, { id: "asc" }]);
+}
+
+{
+  // orderBy déjà tableau avec id → pas de doublon
+  const parsed = parseListSort(
+    { sort: "name", dir: "desc" },
+    {
+      name: (d: SortDir) => [{ name: d }, { id: "desc" }],
+    },
+    { key: "name", dir: "asc" },
+  );
+  assert.deepEqual(parsed.orderBy, [{ name: "desc" }, { id: "desc" }]);
+}
+
+{
+  assert.deepEqual(withStableIdOrderBy({ code: "asc" }), [
+    { code: "asc" },
+    { id: "asc" },
+  ]);
+  assert.deepEqual(withStableIdOrderBy({ id: "desc" }), { id: "desc" });
 }
 
 {
@@ -85,6 +113,7 @@ assert.ok(sortAriaLabel("Client", true, "asc").includes("croissant"));
   );
   assert.equal(parsed.key, "resolvedAt");
   assert.equal(parsed.dir, "asc");
+  assert.deepEqual(parsed.orderBy, [{ resolvedAt: "asc" }, { id: "asc" }]);
 }
 
 {
@@ -98,6 +127,19 @@ assert.ok(sortAriaLabel("Client", true, "asc").includes("croissant"));
   assert.equal(target.get("dir"), "desc");
   assert.equal(target.get("hsort"), "status");
   assert.equal(target.get("hdir"), "asc");
+}
+
+{
+  assert.equal(listKey({}), "default");
+  assert.equal(listKey({ q: "", sort: undefined }), "default");
+  assert.equal(
+    listKey({ page: "2", sort: "name", dir: "asc", q: "a" }),
+    "dir=asc&page=2&q=a&sort=name",
+  );
+  assert.equal(
+    listKey({ page: "2", sort: "name", secret: "x" }, ["page", "sort"]),
+    "page=2&sort=name",
+  );
 }
 
 console.log("sort.test.ts OK");

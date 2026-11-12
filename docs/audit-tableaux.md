@@ -161,7 +161,7 @@ Indexes existants (extrait) : `ComClient` owner/normalizedName/status ; `CrmOppo
 
 - [x] Étape 0 — inventaire (ce fichier)
 - [x] Étape 1 — mesures avant
-- [ ] Étape 2 — socle (`sort.ts`, SortableTh, TableBodySuspense, ListPagination, skeleton)
+- [x] Étape 2 — socle (`sort.ts`, SortableTh, TableBodySuspense, ListPagination, skeleton)
 - [ ] Étape 3 — `runSeries` findMany+count + indexes
 - [ ] Étape 4 — migration A.1–A.3
 - [ ] Étape 5 — tests + build

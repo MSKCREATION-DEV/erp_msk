@@ -6,15 +6,19 @@ export function ListTableSkeleton({
   rows = 8,
   cols = 6,
   className,
+  ariaBusy = true,
 }: {
   rows?: number;
   cols?: number;
   className?: string;
+  /** Hauteur stable pour éviter le jump layout au remount Suspense. */
+  ariaBusy?: boolean;
 }) {
   return (
     <div
-      className={cn("overflow-x-auto", className)}
+      className={cn("min-h-80 overflow-x-auto", className)}
       role="status"
+      aria-busy={ariaBusy || undefined}
       aria-label="Chargement des résultats"
     >
       <div className="min-w-full space-y-0 px-4 py-3">

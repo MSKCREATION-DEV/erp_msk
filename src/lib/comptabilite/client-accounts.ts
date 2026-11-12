@@ -141,8 +141,12 @@ export function sortClientAccountRows(
   key: ClientAccountSortKey,
   dir: SortDir,
 ): ClientAccountRow[] {
-  const sorted = [...rows].sort((a, b) => compareClientAccountRows(a, b, key));
-  return dir === "asc" ? sorted : sorted.reverse();
+  const sign = dir === "asc" ? 1 : -1;
+  return [...rows].sort((a, b) => {
+    const primary = compareClientAccountRows(a, b, key);
+    if (primary !== 0) return primary * sign;
+    return a.client.id.localeCompare(b.client.id);
+  });
 }
 
 export function sumClientAccountTotals(rows: ClientAccountRow[]) {
