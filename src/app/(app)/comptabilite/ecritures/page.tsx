@@ -55,8 +55,17 @@ export default async function ComptabiliteEcrituresPage({
   const rawSp = await searchParams;
   const resultsKey = listKeyFromSearchParams(rawSp);
   const status = firstParam(rawSp.status);
+  const q = (firstParam(rawSp.q) ?? "").trim();
   const sortKey = firstParam(rawSp.sort) ?? "entryDate";
   const sortDir = firstParam(rawSp.dir) ?? "desc";
+  function statusHref(nextStatus?: string) {
+    const p = new URLSearchParams();
+    if (nextStatus) p.set("status", nextStatus);
+    if (q) p.set("q", q);
+    p.set("sort", sortKey);
+    p.set("dir", sortDir);
+    return `/comptabilite/ecritures?${p.toString()}`;
+  }
 
   return (
     <PageShell>
@@ -82,24 +91,37 @@ export default async function ComptabiliteEcrituresPage({
         }
       />
 
+      <div className="pb-3">
+        <Suspense
+          fallback={
+            <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+          }
+        >
+          <ListSearchForm
+            placeholder="N°, libellé, journal…"
+            className="sm:max-w-md"
+          />
+        </Suspense>
+      </div>
+
       <div className="flex flex-wrap gap-2 text-sm">
         <Link
           prefetch={false}
-          href={`/comptabilite/ecritures?sort=${sortKey}&dir=${sortDir}`}
+          href={statusHref()}
           className={`rounded-lg px-3 py-1.5 ${!status ? "bg-msk-blue text-white" : "bg-white text-msk-ink/60 border border-msk-ink/15"}`}
         >
           Toutes
         </Link>
         <Link
           prefetch={false}
-          href={`/comptabilite/ecritures?status=DRAFT&sort=${sortKey}&dir=${sortDir}`}
+          href={statusHref("DRAFT")}
           className={`rounded-lg px-3 py-1.5 ${status === "DRAFT" ? "bg-msk-blue text-white" : "bg-white text-msk-ink/60 border border-msk-ink/15"}`}
         >
           Brouillons
         </Link>
         <Link
           prefetch={false}
-          href={`/comptabilite/ecritures?status=VALIDATED&sort=${sortKey}&dir=${sortDir}`}
+          href={statusHref("VALIDATED")}
           className={`rounded-lg px-3 py-1.5 ${status === "VALIDATED" ? "bg-msk-blue text-white" : "bg-white text-msk-ink/60 border border-msk-ink/15"}`}
         >
           Validées
@@ -172,13 +194,15 @@ async function EcrituresResults({
   if (entries.length === 0) {
     return (
       <Surface className="p-8 text-center text-sm text-msk-ink/50">
-        Aucune écriture pour ce filtre.
+        {q
+          ? `Aucune écriture pour « ${q} ».`
+          : "Aucune écriture pour ce filtre."}
       </Surface>
     );
   }
 
   return (
-    <Surface className="overflow-x-auto">
+    <Surface className="overflow-x-auto p-0">
       <table className="w-full min-w-180 text-left text-sm">
         <thead className="border-b border-msk-ink/10 text-msk-ink/45">
           <tr>
@@ -228,7 +252,7 @@ async function EcrituresResults({
         </thead>
         <tbody>
           {entries.map((e) => {
-            const total = e.lines.reduce((s, l) => s + l.debit, 0);
+            const amount = e.lines.reduce((s, l) => s + l.debit, 0);
             return (
               <tr
                 key={e.id}
@@ -250,7 +274,7 @@ async function EcrituresResults({
                   <Badge tone="muted">{e.journal.code}</Badge>
                 </td>
                 <td className="px-4 py-3">{e.label}</td>
-                <td className="px-4 py-3">{formatXof(total)}</td>
+                <td className="px-4 py-3">{formatXof(amount)}</td>
                 <td className="px-4 py-3">
                   <Badge tone={e.status === "VALIDATED" ? "success" : "ink"}>
                     {ENTRY_STATUS_LABEL[e.status]}
@@ -261,6 +285,14 @@ async function EcrituresResults({
           })}
         </tbody>
       </table>
+      <ListPagination
+        pathname="/comptabilite/ecritures"
+        searchParams={listParams}
+        page={page}
+        totalPages={totalPages(total, pageSize)}
+        total={total}
+        pageSize={pageSize}
+      />
     </Surface>
   );
 }

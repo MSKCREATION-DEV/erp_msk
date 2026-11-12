@@ -25,7 +25,6 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { SortableTh } from "@/components/ui/sortable-th";
 import { ListPagination } from "@/components/ui/list-pagination";
-import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 
 export const metadata: Metadata = { title: "Articles stock" };
