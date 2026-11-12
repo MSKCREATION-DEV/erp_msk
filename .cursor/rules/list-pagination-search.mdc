@@ -16,6 +16,10 @@ Toute page qui affiche des **données en tableau** (listing métier) doit :
 3. **Filtres métier pertinents** via URL `searchParams` (statut, période, compte, solde dû, etc.) — pas de state-only client pour le filtre principal
 4. **Tri colonnes** via `searchParams` (`sort`, `dir`) — helpers `src/lib/list/sort.ts` + UI `SortableTh`
 5. UI : barre recherche (+ filtres) au-dessus ; `ListPagination` en bas ; compteur « X–Y sur N » ; en-têtes cliquables
+6. **Feedback tri** : `SortableTh` = `Link` `scroll={false}` + `prefetch={false}` + `useLinkStatus` (pending visible)
+7. **Suspense** autour du corps résultats avec `key={listKeyFromSearchParams(…)}` (rejouer skeleton quand seuls les params changent — Next #49297)
+8. **`orderBy` stable** : `parseListSort` injecte `{ id: "asc" }` en secondaire — ne pas retirer
+9. **Requêtes** : count puis findMany (skip dépend du count/`clampPage`) ; **jamais** `Promise.all([prisma…, prisma…])` (pool max=1 → `runSeries`)
 
 **Aussi obligatoire** : tableaux de **sélection** dans un formulaire (ex. choisir un prospect pour un RDV) — recherche + pagination (`ClientListPagination` si état client, sinon URL). Pas de liste interminable sans pages.
 
@@ -29,6 +33,7 @@ Toute page qui affiche des **données en tableau** (listing métier) doit :
 - En-têtes de listing **non triables** (sauf colonnes d’actions / cases à cocher — `PlainTh`)
 - Tri uniquement côté client sur une liste paginée serveur (désync pages)
 - Inventer des clés `sort` hors allow-list (toujours `parseListSort` + map colonnes)
+- `<th onClick={…}>` pour trier — uniquement `SortableTh` / URL
 - `<select>` / `alert` / `confirm` natifs pour filtres — menus / chips / modales MSK
 
 ## Pattern

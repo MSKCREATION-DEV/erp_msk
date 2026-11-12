@@ -1168,6 +1168,7 @@ model ComQuote {
   @@index([clientId])
   @@index([ownerId, status])
   @@index([legacyNumber])
+  @@index([createdAt])
   /// Un seul devis lié par prospect (NULL autorisé plusieurs fois en PG).
   @@unique([opportunityId])
   @@map("com_quotes")
@@ -1236,6 +1237,8 @@ model ComContract {
 
   @@index([clientId, status])
   @@index([ownerId])
+  @@index([updatedAt])
+  @@index([status, updatedAt])
   @@map("com_contracts")
 }
 
