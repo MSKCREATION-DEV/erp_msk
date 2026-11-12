@@ -134,29 +134,35 @@ Réf. règles : `list-pagination-search.mdc`, `list-actions-commercial-ref.mdc`,
 
 ## C. Mesures avant (étape 1)
 
-Méthode : script one-shot `Promise.all([findMany, count])` via Prisma local (`.env.local`), 3 runs warm, médiane.  
-Date : _à remplir à l’étape 1_.
+Méthode : `npx tsx --env-file=.env.local scripts/measure-list-sort.ts` — **séquentiel** findMany puis count (pool Prisma `max=1` : **interdit** `Promise.all([prisma…, prisma…])`, cf. `src/lib/prisma.ts` / `runSeries`).  
+3 runs warm, médiane. Date : **2026-11-12**.
 
-| Liste | findMany+count (ms) | Observations |
-|-------|---------------------|--------------|
-| commercial/clients | _TBD_ | |
-| crm/prospects | _TBD_ | |
-| commercial/devis | _TBD_ | |
-| suivi/mouvements | _TBD_ | déjà Promise.all |
-| stocks/articles | _TBD_ | |
+Volumes DB au moment de la mesure : clients=3, opportunities=468, quotes=1, svCashMovements=36, articles=8.
 
-Layout / auth : `requireUser()` dans pages (pas layout shell bloquant — conforme `ui-never-freeze`). Mutualisation `React.cache` : à vérifier sur `requireUser` / loaders.
+| Liste | findMany+count médiane (ms) | Runs | Observations |
+|-------|-----------------------------|------|--------------|
+| commercial/clients | **168** | 167,168,169 | Sous seuil 500 ms |
+| crm/prospects | **169** | 167,169,205 | Volume réel le plus élevé (468) |
+| commercial/devis | **165** | 165,165,166 | Peu de lignes (1) |
+| suivi/mouvements (`svCashMovement`) | **167** | 167,167,168 | Modèle corrigé (pas `svMovement`) |
+| stocks/articles | **168** | 166,168,168 | Champ `qtyOnHand` (pas `quantity`) |
+
+**Verdict avant** : p95 cible &lt; 500 ms déjà respectée sur les 5 listes en warm (réseau local → Supabase ~165–170 ms dominé par RTT). Goulot UX = feedback nav / Suspense key, pas la requête SQL seule.
+
+Layout / auth : `requireUser()` → `getSessionUser` déjà wrappé `React.cache()` (`src/lib/auth/session.ts`) — mutualisé par requête. Layout shell synchrone (conforme `ui-never-freeze`).
 
 Indexes existants (extrait) : `ComClient` owner/normalizedName/status ; `CrmOpportunity` owner+stage, followUpAt ; `ComQuote` clientId, owner+status ; factures dueDate+status. Manques potentiels documentés à l’étape 3.
+
+**Décision couche données** : remplacer l’exigence cahier `Promise.all([findMany,count])` par `runSeries([() => findMany, () => count])` — même intention (enchaîner sans waterfalls inutiles hors Prisma), sans P2024.
 
 ---
 
 ## D. Checklist migration (mise à jour au fil des lots)
 
-- [ ] Étape 0 — inventaire (ce fichier)
-- [ ] Étape 1 — mesures avant
+- [x] Étape 0 — inventaire (ce fichier)
+- [x] Étape 1 — mesures avant
 - [ ] Étape 2 — socle (`sort.ts`, SortableTh, TableBodySuspense, ListPagination, skeleton)
-- [ ] Étape 3 — Promise.all + indexes
+- [ ] Étape 3 — `runSeries` findMany+count + indexes
 - [ ] Étape 4 — migration A.1–A.3
 - [ ] Étape 5 — tests + build
 - [ ] Étape 6 — garde-fous
@@ -172,3 +178,4 @@ Indexes existants (extrait) : `ComClient` owner/normalizedName/status ; `CrmOppo
 5. **pg_trgm** : non activé sans preuve de lenteur `contains`/`mode: insensitive`.
 6. **Cursor pagination** : non sans mesure p95 &gt; 500 ms persistante.
 7. **Playwright E2E** : absent du repo → exception ; couverture unitaire `sort.test.ts` (+ smoke composant si possible).
+8. **Promise.all Prisma** : **interdit** (pool max=1) → `runSeries` obligatoire pour findMany+count.
