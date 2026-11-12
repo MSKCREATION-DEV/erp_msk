@@ -15,6 +15,8 @@ export type BuildListSearchHrefOpts = {
   paramKey?: string;
   /** Clé pagination à retirer (défaut `page`). */
   pageKey?: string;
+  /** Clés pagination additionnelles (ex. `hpage` pour un 2ᵉ tableau). */
+  extraPageKeys?: string[];
 };
 
 function toParams(
@@ -46,6 +48,9 @@ export function buildListSearchHref(opts: BuildListSearchHrefOpts): string {
   const pageKey = opts.pageKey ?? "page";
   const params = toParams(opts.currentSearch);
   params.delete(pageKey);
+  // 2ᵉ tableau (Affectations historique) — toujours reset si présent
+  params.delete("hpage");
+  for (const k of opts.extraPageKeys ?? []) params.delete(k);
   const trimmed = opts.q.trim();
   if (trimmed) params.set(paramKey, trimmed);
   else params.delete(paramKey);

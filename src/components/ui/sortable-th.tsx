@@ -24,6 +24,8 @@ type SortableThProps = {
   /** Clés URL custom (2ᵉ tableau sur la même page). */
   sortParam?: string;
   dirParam?: string;
+  /** Clé page à réinitialiser au tri (ex. `hpage`). */
+  pageParam?: string;
   className?: string;
   /** Alignement contenu (ex. chiffres). */
   align?: "left" | "center" | "right";
@@ -43,6 +45,7 @@ export function SortableTh({
   defaultDir = "asc",
   sortParam,
   dirParam,
+  pageParam,
   className,
   align = "left",
 }: SortableThProps) {
@@ -56,6 +59,7 @@ export function SortableTh({
     defaultDir,
     sortKey: sortParam,
     dirKey: dirParam,
+    pageKey: pageParam,
   });
 
   const Icon = !active

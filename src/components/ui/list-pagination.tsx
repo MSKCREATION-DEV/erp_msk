@@ -18,6 +18,7 @@ export function ListPagination({
   totalPages,
   total,
   pageSize,
+  pageParam = "page",
 }: {
   pathname: string;
   searchParams: Record<string, string | undefined>;
@@ -25,6 +26,8 @@ export function ListPagination({
   totalPages: number;
   total: number;
   pageSize: number;
+  /** Clé URL (ex. `hpage` pour un 2ᵉ tableau sur la même page). */
+  pageParam?: string;
 }) {
   if (total === 0) return null;
 
@@ -33,10 +36,10 @@ export function ListPagination({
   function hrefFor(p: number) {
     const params = new URLSearchParams();
     for (const [k, v] of Object.entries(searchParams)) {
-      if (v == null || v === "" || k === "page") continue;
+      if (v == null || v === "" || k === pageParam) continue;
       params.set(k, v);
     }
-    if (p > 1) params.set("page", String(p));
+    if (p > 1) params.set(pageParam, String(p));
     const qs = params.toString();
     return qs ? `${pathname}?${qs}` : pathname;
   }
