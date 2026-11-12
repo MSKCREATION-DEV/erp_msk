@@ -1,16 +1,32 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/list/search-params";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
+import {
+  listKeyFromSearchParams,
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { SortableTh } from "@/components/ui/sortable-th";
+import { ListPagination } from "@/components/ui/list-pagination";
+import { ListSearchForm } from "@/components/ui/list-search-form";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 
 export const metadata: Metadata = { title: "Anomalies" };
 
@@ -62,29 +78,8 @@ export default async function OpsAnomaliesPage({
     hasPermission(user, "ops.ticket.create") ||
     hasPermission(user, "ops.ticket.manage");
 
-  const raw = await searchParams;
-  const sp: Record<string, string | undefined> = {
-    sort: firstParam(raw.sort),
-    dir: firstParam(raw.dir),
-  };
-  const sort = parseListSort(sp, TICKET_SORT_COLUMNS, {
-    key: "priority",
-    dir: "desc",
-  });
-  const listParams: Record<string, string | undefined> = {
-    sort: sort.key,
-    dir: sort.dir,
-  };
-
-  const tickets = await prisma.opsTicket.findMany({
-    take: 100,
-    orderBy: sort.orderBy as Prisma.OpsTicketOrderByWithRelationInput[],
-    include: {
-      assignedTo: { select: { firstName: true, lastName: true } },
-    },
-  });
-
-  const escalatedCount = tickets.filter(isEscalated).length;
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
 
   return (
     <PageShell>
@@ -108,6 +103,86 @@ export default async function OpsAnomaliesPage({
         }
       />
 
+      <div className="pb-3">
+        <Suspense
+          fallback={
+            <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+          }
+        >
+          <ListSearchForm
+            placeholder="Équipement, problème…"
+            className="sm:max-w-md"
+          />
+        </Suspense>
+      </div>
+
+      <Suspense
+        key={resultsKey}
+        fallback={<ListTableSkeleton rows={8} cols={5} />}
+      >
+        <AnomaliesResults searchParams={searchParams} canCreate={canCreate} />
+      </Suspense>
+    </PageShell>
+  );
+}
+
+async function AnomaliesResults({
+  searchParams,
+  canCreate,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  canCreate: boolean;
+}) {
+  const raw = await searchParams;
+  const q = (firstParam(raw.q) ?? "").trim();
+  const sp: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: firstParam(raw.sort),
+    dir: firstParam(raw.dir),
+  };
+  const sort = parseListSort(sp, TICKET_SORT_COLUMNS, {
+    key: "priority",
+    dir: "desc",
+  });
+  const listParams: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: sort.key,
+    dir: sort.dir,
+  };
+
+  const where: Prisma.OpsTicketWhereInput = q
+    ? {
+        OR: [
+          { equipment: { contains: q, mode: "insensitive" } },
+          { problem: { contains: q, mode: "insensitive" } },
+        ],
+      }
+    : {};
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const total = await prisma.opsTicket.count({ where });
+  const page = clampPage(parsePage(firstParam(raw.page)), total, pageSize);
+  const tickets = await prisma.opsTicket.findMany({
+    where,
+    orderBy: sort.orderBy as Prisma.OpsTicketOrderByWithRelationInput[],
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
+    include: {
+      assignedTo: { select: { firstName: true, lastName: true } },
+    },
+  });
+
+  const escalationCutoff = new Date(Date.now() - ESCALATION_MS);
+  const escalatedCount = await prisma.opsTicket.count({
+    where: {
+      ...where,
+      priority: "CRITICAL",
+      status: { not: "DONE" },
+      createdAt: { lt: escalationCutoff },
+    },
+  });
+
+  return (
+    <>
       {escalatedCount > 0 ? (
         <Surface className="border-msk-coral/25 bg-msk-coral/5 p-4">
           <p className="text-sm font-semibold text-msk-coral">
@@ -120,123 +195,139 @@ export default async function OpsAnomaliesPage({
       <Surface className="overflow-x-auto p-0">
         {tickets.length === 0 ? (
           <p className="p-6 text-sm text-msk-ink/45">
-            Aucun ticket.{" "}
-            {canCreate ? (
-              <Link
-                prefetch={false}
-                href="/ops/anomalies/nouveau"
-                className="text-msk-blue"
-              >
-                Signaler la première
-              </Link>
-            ) : null}
+            {q ? (
+              <>Aucun ticket pour « {q} ».</>
+            ) : (
+              <>
+                Aucun ticket.{" "}
+                {canCreate ? (
+                  <Link
+                    prefetch={false}
+                    href="/ops/anomalies/nouveau"
+                    className="text-msk-blue"
+                  >
+                    Signaler la première
+                  </Link>
+                ) : null}
+              </>
+            )}
           </p>
         ) : (
-          <table className="w-full min-w-180 text-left text-sm">
-            <thead className="border-b border-msk-paper bg-msk-chalk/60 text-xs tracking-caps uppercase text-msk-ink/45">
-              <tr>
-                <SortableTh
-                  label="Équipement"
-                  column="equipment"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/ops/anomalies"
-                  searchParams={listParams}
-                />
-                <SortableTh
-                  label="Priorité"
-                  column="priority"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/ops/anomalies"
-                  searchParams={listParams}
-                  defaultDir="desc"
-                />
-                <SortableTh
-                  label="Statut"
-                  column="status"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/ops/anomalies"
-                  searchParams={listParams}
-                />
-                <SortableTh
-                  label="Assigné"
-                  column="assigned"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/ops/anomalies"
-                  searchParams={listParams}
-                />
-                <SortableTh
-                  label="Signalé"
-                  column="noticedAt"
-                  sort={sort.key}
-                  dir={sort.dir}
-                  pathname="/ops/anomalies"
-                  searchParams={listParams}
-                  defaultDir="desc"
-                />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-msk-paper">
-              {tickets.map((t) => {
-                const escalated = isEscalated(t);
-                return (
-                  <tr
-                    key={t.id}
-                    className={
-                      escalated
-                        ? "bg-msk-coral/10 hover:bg-msk-coral/15"
-                        : "hover:bg-msk-chalk/40"
-                    }
-                  >
-                    <td className="px-4 py-3">
-                      <Link
-                        prefetch={false}
-                        href={`/ops/anomalies/${t.id}`}
-                        className="font-medium text-msk-blue hover:underline"
-                      >
-                        {t.equipment}
-                      </Link>
-                      {escalated ? (
-                        <span className="ml-2 rounded bg-msk-coral px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                          &gt;48h
+          <>
+            <table className="w-full min-w-180 text-left text-sm">
+              <thead className="border-b border-msk-paper bg-msk-chalk/60 text-xs tracking-caps uppercase text-msk-ink/45">
+                <tr>
+                  <SortableTh
+                    label="Équipement"
+                    column="equipment"
+                    sort={sort.key}
+                    dir={sort.dir}
+                    pathname="/ops/anomalies"
+                    searchParams={listParams}
+                  />
+                  <SortableTh
+                    label="Priorité"
+                    column="priority"
+                    sort={sort.key}
+                    dir={sort.dir}
+                    pathname="/ops/anomalies"
+                    searchParams={listParams}
+                    defaultDir="desc"
+                  />
+                  <SortableTh
+                    label="Statut"
+                    column="status"
+                    sort={sort.key}
+                    dir={sort.dir}
+                    pathname="/ops/anomalies"
+                    searchParams={listParams}
+                  />
+                  <SortableTh
+                    label="Assigné"
+                    column="assigned"
+                    sort={sort.key}
+                    dir={sort.dir}
+                    pathname="/ops/anomalies"
+                    searchParams={listParams}
+                  />
+                  <SortableTh
+                    label="Signalé"
+                    column="noticedAt"
+                    sort={sort.key}
+                    dir={sort.dir}
+                    pathname="/ops/anomalies"
+                    searchParams={listParams}
+                    defaultDir="desc"
+                  />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-msk-paper">
+                {tickets.map((t) => {
+                  const escalated = isEscalated(t);
+                  return (
+                    <tr
+                      key={t.id}
+                      className={
+                        escalated
+                          ? "bg-msk-coral/10 hover:bg-msk-coral/15"
+                          : "hover:bg-msk-chalk/40"
+                      }
+                    >
+                      <td className="px-4 py-3">
+                        <Link
+                          prefetch={false}
+                          href={`/ops/anomalies/${t.id}`}
+                          className="font-medium text-msk-blue hover:underline"
+                        >
+                          {t.equipment}
+                        </Link>
+                        {escalated ? (
+                          <span className="ml-2 rounded bg-msk-coral px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                            &gt;48h
+                          </span>
+                        ) : null}
+                        <p className="mt-0.5 line-clamp-1 text-xs text-msk-ink/45">
+                          {t.problem}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={
+                            t.priority === "CRITICAL"
+                              ? "font-semibold text-msk-coral"
+                              : ""
+                          }
+                        >
+                          {PRIORITY_LABEL[t.priority] ?? t.priority}
                         </span>
-                      ) : null}
-                      <p className="mt-0.5 line-clamp-1 text-xs text-msk-ink/45">
-                        {t.problem}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={
-                          t.priority === "CRITICAL"
-                            ? "font-semibold text-msk-coral"
-                            : ""
-                        }
-                      >
-                        {PRIORITY_LABEL[t.priority] ?? t.priority}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      {STATUS_LABEL[t.status] ?? t.status}
-                    </td>
-                    <td className="px-4 py-3 text-msk-ink/55">
-                      {t.assignedTo
-                        ? `${t.assignedTo.firstName} ${t.assignedTo.lastName}`
-                        : "—"}
-                    </td>
-                    <td className="px-4 py-3 text-msk-ink/55">
-                      {t.noticedAt.toLocaleDateString("fr-FR")}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td className="px-4 py-3">
+                        {STATUS_LABEL[t.status] ?? t.status}
+                      </td>
+                      <td className="px-4 py-3 text-msk-ink/55">
+                        {t.assignedTo
+                          ? `${t.assignedTo.firstName} ${t.assignedTo.lastName}`
+                          : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-msk-ink/55">
+                        {t.noticedAt.toLocaleDateString("fr-FR")}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <ListPagination
+              pathname="/ops/anomalies"
+              searchParams={listParams}
+              page={page}
+              totalPages={totalPages(total, pageSize)}
+              total={total}
+              pageSize={pageSize}
+            />
+          </>
         )}
       </Surface>
-    </PageShell>
+    </>
   );
 }

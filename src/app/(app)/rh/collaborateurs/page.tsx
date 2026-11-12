@@ -13,12 +13,20 @@ import {
   listKeyFromSearchParams,
 } from "@/lib/list/sort";
 import { firstParam } from "@/lib/list/search-params";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
+import { ListPagination } from "@/components/ui/list-pagination";
 import { SortableTh } from "@/components/ui/sortable-th";
 import {
   EMPLOYEE_STATUS_LABEL,
@@ -187,21 +195,26 @@ async function CollaborateursResults({
     dir: sort.dir,
   };
 
+  const where: Prisma.RhEmployeeWhereInput = {
+    ...(statusFilter ? { status: statusFilter } : {}),
+    ...(query
+      ? {
+          OR: [
+            { firstName: { contains: query, mode: "insensitive" } },
+            { lastName: { contains: query, mode: "insensitive" } },
+            { jobTitle: { contains: query, mode: "insensitive" } },
+          ],
+        }
+      : {}),
+  };
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const total = await prisma.rhEmployee.count({ where });
+  const page = clampPage(parsePage(firstParam(raw.page)), total, pageSize);
   const employees = await prisma.rhEmployee.findMany({
-    where: {
-      ...(statusFilter ? { status: statusFilter } : {}),
-      ...(query
-        ? {
-            OR: [
-              { firstName: { contains: query, mode: "insensitive" } },
-              { lastName: { contains: query, mode: "insensitive" } },
-              { jobTitle: { contains: query, mode: "insensitive" } },
-            ],
-          }
-        : {}),
-    },
+    where,
     orderBy: sort.orderBy as Prisma.RhEmployeeOrderByWithRelationInput[],
-    take: 300,
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
   });
 
   if (employees.length === 0) {
@@ -213,7 +226,7 @@ async function CollaborateursResults({
   }
 
   return (
-    <Surface className="overflow-x-auto">
+    <Surface className="overflow-x-auto p-0">
       <table className="w-full min-w-180 text-left text-sm">
         <thead className="border-b border-msk-ink/10 text-msk-ink/45">
           <tr>
@@ -295,6 +308,14 @@ async function CollaborateursResults({
           ))}
         </tbody>
       </table>
+      <ListPagination
+        pathname="/rh/collaborateurs"
+        searchParams={listParams}
+        page={page}
+        totalPages={totalPages(total, pageSize)}
+        total={total}
+        pageSize={pageSize}
+      />
     </Surface>
   );
 }

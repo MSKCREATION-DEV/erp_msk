@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import type { Prisma } from "@/generated/prisma/client";
+import type {
+  CrmAssignmentRequestStatus,
+  Prisma,
+} from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { canReassignCrmDeal } from "@/lib/crm/scope";
@@ -497,14 +500,14 @@ async function HistoryAffectationsResults({
     { sortKey: "hsort", dirKey: "hdir" },
   );
 
-  const recentStatus =
+  const recentStatus: CrmAssignmentRequestStatus[] =
     statusFilter === "APPROVED" ||
     statusFilter === "REJECTED" ||
     statusFilter === "CANCELLED"
       ? [statusFilter]
-      : (["APPROVED", "REJECTED", "CANCELLED"] as const);
+      : ["APPROVED", "REJECTED", "CANCELLED"];
   const recentWhere: Prisma.CrmAssignmentRequestWhereInput = {
-    status: { in: [...recentStatus] },
+    status: { in: recentStatus },
     ...(searchWhere ?? {}),
   };
 

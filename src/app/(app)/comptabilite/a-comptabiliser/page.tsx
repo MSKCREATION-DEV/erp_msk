@@ -1,17 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/list/search-params";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  listKeyFromSearchParams,
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { formatComMoney, INVOICE_STATUS_LABELS } from "@/lib/commercial/labels";
 import { ProposeInvoiceButton } from "@/components/comptabilite/propose-invoice-button";
 
@@ -36,6 +43,37 @@ export default async function AComptabiliserPage({
   const user = await requireUser();
   if (!hasPermission(user, "cpt.ecritures.manage")) redirect("/accueil");
 
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
+
+  return (
+    <PageShell>
+      <PageHeader
+        title="À comptabiliser"
+        description="Factures Commercial émises ou payées — proposer l’écriture VE SYSCOHADA."
+        backHref="/comptabilite"
+        backLabel="Retour Comptabilité"
+        breadcrumbs={[
+          { label: "Comptabilité", href: "/comptabilite" },
+          { label: "À comptabiliser" },
+        ]}
+      />
+
+      <Suspense
+        key={resultsKey}
+        fallback={<ListTableSkeleton rows={8} cols={5} />}
+      >
+        <AComptabiliserResults searchParams={searchParams} />
+      </Suspense>
+    </PageShell>
+  );
+}
+
+async function AComptabiliserResults({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const raw = await searchParams;
   const sp: Record<string, string | undefined> = {
     sort: firstParam(raw.sort),
@@ -82,18 +120,7 @@ export default async function AComptabiliserPage({
     .slice(0, 20);
 
   return (
-    <PageShell>
-      <PageHeader
-        title="À comptabiliser"
-        description="Factures Commercial émises ou payées — proposer l’écriture VE SYSCOHADA."
-        backHref="/comptabilite"
-        backLabel="Retour Comptabilité"
-        breadcrumbs={[
-          { label: "Comptabilité", href: "/comptabilite" },
-          { label: "À comptabiliser" },
-        ]}
-      />
-
+    <>
       <Surface className="overflow-x-auto p-0">
         {pending.length === 0 ? (
           <p className="p-8 text-center text-sm text-msk-ink/50">
@@ -198,7 +225,9 @@ export default async function AComptabiliserPage({
                   >
                     {entry.number}
                   </Link>
-                  <Badge tone={entry.status === "VALIDATED" ? "success" : "muted"}>
+                  <Badge
+                    tone={entry.status === "VALIDATED" ? "success" : "muted"}
+                  >
                     {entry.status === "VALIDATED" ? "Validée" : "Brouillon"}
                   </Badge>
                 </li>
@@ -207,6 +236,6 @@ export default async function AComptabiliserPage({
           </ul>
         </Surface>
       ) : null}
-    </PageShell>
+    </>
   );
 }

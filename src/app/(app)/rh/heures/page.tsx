@@ -1,14 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
+import type { Prisma, RhTimesheetStatus } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { firstParam } from "@/lib/list/search-params";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
-import type { RhTimesheetStatus } from "@/generated/prisma/client";
+import { ListSearchForm } from "@/components/ui/list-search-form";
+import { ListPagination } from "@/components/ui/list-pagination";
 import {
   TIMESHEET_STATUS_LABEL,
   formatMinutes,
@@ -28,24 +39,53 @@ const STATUS_FILTERS: RhTimesheetStatus[] = [
 export default async function RhHeuresPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await requireUser();
   if (!hasPermission(user, "rh.timesheet.validate")) redirect("/accueil");
 
-  const { status } = await searchParams;
+  const raw = await searchParams;
+  const q = (firstParam(raw.q) ?? "").trim();
+  const status = firstParam(raw.status);
   const statusFilter = STATUS_FILTERS.includes(status as RhTimesheetStatus)
     ? (status as RhTimesheetStatus)
     : "SUBMITTED";
 
+  const where: Prisma.RhTimesheetWhereInput = {
+    status: statusFilter,
+    ...(q
+      ? {
+          OR: [
+            { employee: { firstName: { contains: q, mode: "insensitive" } } },
+            { employee: { lastName: { contains: q, mode: "insensitive" } } },
+          ],
+        }
+      : {}),
+  };
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const total = await prisma.rhTimesheet.count({ where });
+  const page = clampPage(parsePage(firstParam(raw.page)), total, pageSize);
   const sheets = await prisma.rhTimesheet.findMany({
-    where: { status: statusFilter },
+    where,
     orderBy: { weekStart: "desc" },
-    take: 200,
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
     include: {
       employee: { select: { firstName: true, lastName: true } },
     },
   });
+
+  const listParams: Record<string, string | undefined> = {
+    q: q || undefined,
+    status: statusFilter,
+  };
+
+  function statusHref(next: RhTimesheetStatus) {
+    const p = new URLSearchParams();
+    p.set("status", next);
+    if (q) p.set("q", q);
+    return `/rh/heures?${p.toString()}`;
+  }
 
   return (
     <PageShell>
@@ -57,11 +97,25 @@ export default async function RhHeuresPage({
         breadcrumbs={[{ label: "RH", href: "/rh" }, { label: "Heures" }]}
       />
 
+      <div className="pb-1">
+        <Suspense
+          fallback={
+            <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+          }
+        >
+          <ListSearchForm
+            placeholder="Collaborateur…"
+            className="sm:max-w-md"
+          />
+        </Suspense>
+      </div>
+
       <div className="flex flex-wrap gap-2 text-sm">
         {STATUS_FILTERS.map((s) => (
-          <Link prefetch={false}
+          <Link
+            prefetch={false}
             key={s}
-            href={`/rh/heures?status=${s}`}
+            href={statusHref(s)}
             className={`rounded-lg px-3 py-1.5 ${statusFilter === s ? "bg-msk-blue text-white" : "bg-white text-msk-ink/60 border border-msk-ink/15"}`}
           >
             {TIMESHEET_STATUS_LABEL[s]}
@@ -71,7 +125,9 @@ export default async function RhHeuresPage({
 
       {sheets.length === 0 ? (
         <Surface className="p-8 text-center text-sm text-msk-ink/50">
-          Aucune feuille pour ce filtre.
+          {q
+            ? `Aucune feuille pour « ${q} ».`
+            : "Aucune feuille pour ce filtre."}
         </Surface>
       ) : (
         <div className="space-y-3">
@@ -98,6 +154,14 @@ export default async function RhHeuresPage({
               ) : null}
             </Surface>
           ))}
+          <ListPagination
+            pathname="/rh/heures"
+            searchParams={listParams}
+            page={page}
+            totalPages={totalPages(total, pageSize)}
+            total={total}
+            pageSize={pageSize}
+          />
         </div>
       )}
     </PageShell>

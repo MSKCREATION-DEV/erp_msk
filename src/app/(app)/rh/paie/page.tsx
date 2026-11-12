@@ -5,12 +5,21 @@ import type { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import { firstParam } from "@/lib/list/search-params";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
 import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { SortableTh } from "@/components/ui/sortable-th";
+import { ListPagination } from "@/components/ui/list-pagination";
 import {
   PERIOD_STATUS_LABEL,
   monthLabel,
@@ -54,10 +63,15 @@ export default async function RhPaiePage({
     dir: sort.dir,
   };
 
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const total = await prisma.rhPayrollPeriod.count();
+  const page = clampPage(parsePage(firstParam(raw.page)), total, pageSize);
   const periods = await prisma.rhPayrollPeriod.findMany({
     orderBy: sort.orderBy as
       | Prisma.RhPayrollPeriodOrderByWithRelationInput
       | Prisma.RhPayrollPeriodOrderByWithRelationInput[],
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
     include: { _count: { select: { slips: true } } },
   });
 
@@ -145,6 +159,14 @@ export default async function RhPaiePage({
             </tbody>
           </table>
         )}
+        <ListPagination
+          pathname="/rh/paie"
+          searchParams={listParams}
+          page={page}
+          totalPages={totalPages(total, pageSize)}
+          total={total}
+          pageSize={pageSize}
+        />
       </Surface>
     </PageShell>
   );

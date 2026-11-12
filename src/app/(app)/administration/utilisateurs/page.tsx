@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Prisma } from "@/generated/prisma/client";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Plus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
@@ -13,6 +14,7 @@ import {
   parsePage,
   totalPages,
 } from "@/lib/list/pagination";
+import { firstParam } from "@/lib/list/search-params";
 import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,6 +26,7 @@ import { UserAvatar } from "@/components/ui/user-avatar";
 import { PlainTh, SortableTh } from "@/components/ui/sortable-th";
 import { ListTableScroll } from "@/components/ui/list-table-scroll";
 import { ListPagination } from "@/components/ui/list-pagination";
+import { ListSearchForm } from "@/components/ui/list-search-form";
 
 export const metadata: Metadata = {
   title: "Utilisateurs",
@@ -47,6 +50,7 @@ export default async function UsersAdminPage({
   for (const [k, v] of Object.entries(raw)) {
     sp[k] = Array.isArray(v) ? v[0] : v;
   }
+  const q = (firstParam(raw.q) ?? "").trim();
   const sort = parseListSort(sp, USER_SORT_COLUMNS, {
     key: "name",
     dir: "asc",
@@ -54,13 +58,24 @@ export default async function UsersAdminPage({
   const pageSize = DEFAULT_PAGE_SIZE;
   const requestedPage = parsePage(sp.page);
   const listParams: Record<string, string | undefined> = {
+    q: q || undefined,
     sort: sort.key,
     dir: sort.dir,
   };
 
-  const totalUsers = await prisma.user.count();
+  const where: Prisma.UserWhereInput = q
+    ? {
+        OR: [
+          { firstName: { contains: q, mode: "insensitive" } },
+          { lastName: { contains: q, mode: "insensitive" } },
+          { email: { contains: q, mode: "insensitive" } },
+        ],
+      }
+    : {};
+  const totalUsers = await prisma.user.count({ where });
   const page = clampPage(requestedPage, totalUsers, pageSize);
   const users = await prisma.user.findMany({
+    where,
     orderBy: sort.orderBy as
       | Prisma.UserOrderByWithRelationInput
       | Prisma.UserOrderByWithRelationInput[],
@@ -77,6 +92,7 @@ export default async function UsersAdminPage({
       userPacks: { select: { pack: { select: { name: true, code: true } } } },
     },
   });
+  const kpiTotalUsers = q ? await prisma.user.count() : totalUsers;
   const pendingResets = await prisma.passwordResetRequest.findMany({
     where: { status: "PENDING" },
     select: {
@@ -97,15 +113,15 @@ export default async function UsersAdminPage({
   ) as Record<string, number>;
 
   const kpis = [
-    { label: "Total", value: String(totalUsers), hint: "comptes" },
+    { label: "Total", value: String(kpiTotalUsers), hint: "comptes" },
     {
       label: "Actifs",
       value: String(countBy.ACTIVE ?? 0),
       hint: "accès ouvert",
       trend: {
         value:
-          totalUsers > 0
-            ? `${Math.round(((countBy.ACTIVE ?? 0) / totalUsers) * 100)}%`
+          kpiTotalUsers > 0
+            ? `${Math.round(((countBy.ACTIVE ?? 0) / kpiTotalUsers) * 100)}%`
             : "0%",
         direction: "up" as const,
       },
@@ -154,6 +170,19 @@ export default async function UsersAdminPage({
 
       <KpiGrid items={kpis} />
 
+      <div className="pb-1">
+        <Suspense
+          fallback={
+            <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+          }
+        >
+          <ListSearchForm
+            placeholder="Nom, prénom, e-mail…"
+            className="sm:max-w-md"
+          />
+        </Suspense>
+      </div>
+
       {pendingResets.length > 0 ? (
         <Surface className="border-msk-coral/20 bg-msk-coral/4 px-5 py-4">
           <h2 className="text-sm font-semibold text-msk-ink">
@@ -179,7 +208,9 @@ export default async function UsersAdminPage({
       <Surface className="overflow-hidden">
         <div className="flex items-center justify-between border-b border-msk-ink/6 px-5 py-4">
           <h2 className="font-semibold text-msk-ink">Collaborateurs</h2>
-          <p className="text-sm text-msk-ink/45">{totalUsers} compte(s)</p>
+          <p className="text-sm text-msk-ink/45">
+            {totalUsers} compte(s){q ? " (filtre)" : ""}
+          </p>
         </div>
         <ListTableScroll>
           <table className="w-full text-left text-sm">

@@ -1,16 +1,32 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/list/search-params";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
+import {
+  listKeyFromSearchParams,
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { SortableTh } from "@/components/ui/sortable-th";
+import { ListPagination } from "@/components/ui/list-pagination";
+import { ListSearchForm } from "@/components/ui/list-search-form";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 
 export const metadata: Metadata = { title: "Achats stock" };
 
@@ -43,28 +59,8 @@ export default async function StocksAchatsPage({
   }
   const canManage = hasPermission(user, "stk.achats.manage");
 
-  const raw = await searchParams;
-  const sp: Record<string, string | undefined> = {
-    sort: firstParam(raw.sort),
-    dir: firstParam(raw.dir),
-  };
-  const sort = parseListSort(sp, PURCHASE_SORT_COLUMNS, {
-    key: "createdAt",
-    dir: "desc",
-  });
-  const listParams: Record<string, string | undefined> = {
-    sort: sort.key,
-    dir: sort.dir,
-  };
-
-  const purchases = await prisma.stkPurchase.findMany({
-    take: 100,
-    orderBy: sort.orderBy as Prisma.StkPurchaseOrderByWithRelationInput[],
-    include: {
-      createdBy: { select: { firstName: true, lastName: true } },
-      _count: { select: { lines: true } },
-    },
-  });
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
 
   return (
     <PageShell>
@@ -90,21 +86,98 @@ export default async function StocksAchatsPage({
         }
       />
 
-      <Surface className="overflow-x-auto p-0">
-        {purchases.length === 0 ? (
-          <p className="p-6 text-sm text-msk-ink/45">
-            Aucun achat.{" "}
-            {canManage ? (
-              <Link
-                prefetch={false}
-                href="/stocks/achats/nouveau"
-                className="text-msk-blue"
-              >
-                Créer le premier
-              </Link>
-            ) : null}
-          </p>
-        ) : (
+      <div className="pb-3">
+        <Suspense
+          fallback={
+            <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+          }
+        >
+          <ListSearchForm
+            placeholder="N°, fournisseur…"
+            className="sm:max-w-md"
+          />
+        </Suspense>
+      </div>
+
+      <Suspense
+        key={resultsKey}
+        fallback={<ListTableSkeleton rows={8} cols={6} />}
+      >
+        <AchatsResults searchParams={searchParams} canManage={canManage} />
+      </Suspense>
+    </PageShell>
+  );
+}
+
+async function AchatsResults({
+  searchParams,
+  canManage,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  canManage: boolean;
+}) {
+  const raw = await searchParams;
+  const q = (firstParam(raw.q) ?? "").trim();
+  const sp: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: firstParam(raw.sort),
+    dir: firstParam(raw.dir),
+  };
+  const sort = parseListSort(sp, PURCHASE_SORT_COLUMNS, {
+    key: "createdAt",
+    dir: "desc",
+  });
+  const listParams: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: sort.key,
+    dir: sort.dir,
+  };
+
+  const where: Prisma.StkPurchaseWhereInput = q
+    ? {
+        OR: [
+          { number: { contains: q, mode: "insensitive" } },
+          { supplierName: { contains: q, mode: "insensitive" } },
+        ],
+      }
+    : {};
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const total = await prisma.stkPurchase.count({ where });
+  const page = clampPage(parsePage(firstParam(raw.page)), total, pageSize);
+  const purchases = await prisma.stkPurchase.findMany({
+    where,
+    orderBy: sort.orderBy as Prisma.StkPurchaseOrderByWithRelationInput[],
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
+    include: {
+      createdBy: { select: { firstName: true, lastName: true } },
+      _count: { select: { lines: true } },
+    },
+  });
+
+  return (
+    <Surface className="overflow-x-auto p-0">
+      {purchases.length === 0 ? (
+        <p className="p-6 text-sm text-msk-ink/45">
+          {q ? (
+            <>Aucun achat pour « {q} ».</>
+          ) : (
+            <>
+              Aucun achat.{" "}
+              {canManage ? (
+                <Link
+                  prefetch={false}
+                  href="/stocks/achats/nouveau"
+                  className="text-msk-blue"
+                >
+                  Créer le premier
+                </Link>
+              ) : null}
+            </>
+          )}
+        </p>
+      ) : (
+        <>
           <table className="w-full min-w-180 text-left text-sm">
             <thead className="border-b border-msk-paper bg-msk-chalk/60 text-xs tracking-caps uppercase text-msk-ink/45">
               <tr>
@@ -192,8 +265,16 @@ export default async function StocksAchatsPage({
               ))}
             </tbody>
           </table>
-        )}
-      </Surface>
-    </PageShell>
+          <ListPagination
+            pathname="/stocks/achats"
+            searchParams={listParams}
+            page={page}
+            totalPages={totalPages(total, pageSize)}
+            total={total}
+            pageSize={pageSize}
+          />
+        </>
+      )}
+    </Surface>
   );
 }

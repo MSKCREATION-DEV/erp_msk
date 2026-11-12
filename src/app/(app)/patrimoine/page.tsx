@@ -1,16 +1,32 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import type { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/list/search-params";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  clampPage,
+  DEFAULT_PAGE_SIZE,
+  pageSkip,
+  parsePage,
+  totalPages,
+} from "@/lib/list/pagination";
+import {
+  listKeyFromSearchParams,
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { SortableTh } from "@/components/ui/sortable-th";
+import { ListPagination } from "@/components/ui/list-pagination";
+import { ListSearchForm } from "@/components/ui/list-search-form";
+import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 
 export const metadata: Metadata = { title: "Patrimoine" };
 
@@ -44,27 +60,8 @@ export default async function PatrimoinePage({
   if (!hasPermission(user, "pat.access")) redirect("/accueil");
   const canManage = hasPermission(user, "pat.manage");
 
-  const raw = await searchParams;
-  const sp: Record<string, string | undefined> = {
-    sort: firstParam(raw.sort),
-    dir: firstParam(raw.dir),
-  };
-  const sort = parseListSort(sp, ASSET_SORT_COLUMNS, {
-    key: "code",
-    dir: "asc",
-  });
-  const listParams: Record<string, string | undefined> = {
-    sort: sort.key,
-    dir: sort.dir,
-  };
-
-  const assets = await prisma.patAsset.findMany({
-    take: 100,
-    orderBy: sort.orderBy as Prisma.PatAssetOrderByWithRelationInput[],
-    include: {
-      assignedTo: { select: { firstName: true, lastName: true } },
-    },
-  });
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
 
   return (
     <PageShell>
@@ -85,21 +82,98 @@ export default async function PatrimoinePage({
         }
       />
 
-      <Surface className="overflow-x-auto p-0">
-        {assets.length === 0 ? (
-          <p className="p-6 text-sm text-msk-ink/45">
-            Aucun bien.{" "}
-            {canManage ? (
-              <Link
-                prefetch={false}
-                href="/patrimoine/nouveau"
-                className="text-msk-blue"
-              >
-                Enregistrer le premier
-              </Link>
-            ) : null}
-          </p>
-        ) : (
+      <div className="pb-3">
+        <Suspense
+          fallback={
+            <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+          }
+        >
+          <ListSearchForm
+            placeholder="Code, désignation, catégorie…"
+            className="sm:max-w-md"
+          />
+        </Suspense>
+      </div>
+
+      <Suspense
+        key={resultsKey}
+        fallback={<ListTableSkeleton rows={8} cols={6} />}
+      >
+        <PatrimoineResults searchParams={searchParams} canManage={canManage} />
+      </Suspense>
+    </PageShell>
+  );
+}
+
+async function PatrimoineResults({
+  searchParams,
+  canManage,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  canManage: boolean;
+}) {
+  const raw = await searchParams;
+  const q = (firstParam(raw.q) ?? "").trim();
+  const sp: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: firstParam(raw.sort),
+    dir: firstParam(raw.dir),
+  };
+  const sort = parseListSort(sp, ASSET_SORT_COLUMNS, {
+    key: "code",
+    dir: "asc",
+  });
+  const listParams: Record<string, string | undefined> = {
+    q: q || undefined,
+    sort: sort.key,
+    dir: sort.dir,
+  };
+
+  const where: Prisma.PatAssetWhereInput = q
+    ? {
+        OR: [
+          { code: { contains: q, mode: "insensitive" } },
+          { designation: { contains: q, mode: "insensitive" } },
+          { category: { contains: q, mode: "insensitive" } },
+        ],
+      }
+    : {};
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const total = await prisma.patAsset.count({ where });
+  const page = clampPage(parsePage(firstParam(raw.page)), total, pageSize);
+  const assets = await prisma.patAsset.findMany({
+    where,
+    orderBy: sort.orderBy as Prisma.PatAssetOrderByWithRelationInput[],
+    skip: pageSkip(page, pageSize),
+    take: pageSize,
+    include: {
+      assignedTo: { select: { firstName: true, lastName: true } },
+    },
+  });
+
+  return (
+    <Surface className="overflow-x-auto p-0">
+      {assets.length === 0 ? (
+        <p className="p-6 text-sm text-msk-ink/45">
+          {q ? (
+            <>Aucun bien pour « {q} ».</>
+          ) : (
+            <>
+              Aucun bien.{" "}
+              {canManage ? (
+                <Link
+                  prefetch={false}
+                  href="/patrimoine/nouveau"
+                  className="text-msk-blue"
+                >
+                  Enregistrer le premier
+                </Link>
+              ) : null}
+            </>
+          )}
+        </p>
+      ) : (
+        <>
           <table className="w-full min-w-180 text-left text-sm">
             <thead className="border-b border-msk-paper bg-msk-chalk/60 text-xs tracking-caps uppercase text-msk-ink/45">
               <tr>
@@ -186,8 +260,16 @@ export default async function PatrimoinePage({
               ))}
             </tbody>
           </table>
-        )}
-      </Surface>
-    </PageShell>
+          <ListPagination
+            pathname="/patrimoine"
+            searchParams={listParams}
+            page={page}
+            totalPages={totalPages(total, pageSize)}
+            total={total}
+            pageSize={pageSize}
+          />
+        </>
+      )}
+    </Surface>
   );
 }
