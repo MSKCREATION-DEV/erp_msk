@@ -33,31 +33,31 @@ Note : `Promise.all` Prisma **interdit** (pool max=1) → count puis findMany, o
 
 | # | Chemin | Composant | Modèle Prisma | État avant | Colonnes triables | Défaut | Volume estimé | Pag. | Suspense | Promise.all | Migration |
 |---|--------|-----------|---------------|------------|-------------------|--------|---------------|------|----------|-------------|-----------|
-| 1 | `administration/utilisateurs/page.tsx` | page | `User` | `OK_URL` | name, status | name asc | 50–200 | oui | non | non | ☐ |
-| 2 | `commercial/clients/page.tsx` | page | `ComClient` | `OK_URL` | city, contact, invoices, name, owner, phone, quotes, updatedAt | updatedAt desc | 100–2k | oui | oui (sans key list) | non | ☐ |
-| 3 | `commercial/devis/page.tsx` | page | `ComQuote` | `OK_URL` | client, createdAt, number, object, status, totalTtc | createdAt desc | 200–5k | oui | oui | non | ☐ |
-| 4 | `comptabilite/a-comptabiliser/page.tsx` | page | `ComInvoice` | `OK_URL` | client, number, status, totalTtc (+ issuedAt défaut) | issuedAt desc | 20–200 | non | non | non | ☐ |
-| 5 | `comptabilite/ecritures/page.tsx` | page | `CptJournalEntry` | `OK_URL` | entryDate, journal, label, number, status | entryDate desc | 500–20k | non | non | non | ☐ |
-| 6 | `comptabilite/factures/page.tsx` | page | `ComInvoice` | `OK_URL` | amountPaid, client, createdAt, number, status, totalTtc | createdAt desc | 200–10k | oui | oui | non | ☐ |
-| 7 | `comptabilite/journaux/page.tsx` | page | `CptJournal` | `OK_URL` | active, code, entries, label | sortOrder asc | &lt;50 | oui | non | non | ☐ |
-| 8 | `comptabilite/plan/page.tsx` | page | `CptAccount` | `OK_URL` | classNum, code, label, nature, postable | code asc | 100–500 | non | oui | non | ☐ |
-| 9 | `crm/affectations/page.tsx` | page **2 tableaux** | `CrmAssignmentRequest` | `OK_URL` + `hsort`/`hdir` | pending: createdAt, owner, prospect, requester, stage, status · historique: resolvedAt, … | createdAt asc / resolvedAt desc | 50–1k | non | oui | partiel | ☐ |
-| 10 | `crm/prospects/prospects-results.tsx` | results | `CrmOpportunity` | `OK_URL` | createdAt, createdBy, followUpAt, nextAction, org, owner, source, stage | followUpAt asc | 500–20k | oui | parent | non | ☐ |
-| 11 | `crm/relances/relances-results.tsx` | results **2 tableaux** | activités / tâches | `OK_URL` | action, actor, assignee, dueAt, occurredAt, org, owner, stage, summary, type | occurredAt desc / dueAt asc | 200–10k | oui | oui | non | ☐ |
-| 12 | `ops/anomalies/page.tsx` | page | `OpsTicket` | `OK_URL` | assigned, equipment, noticedAt, priority, status | priority desc | 50–500 | non | non | non | ☐ |
-| 13 | `patrimoine/page.tsx` | page | `PatAsset` | `OK_URL` | assigned, category, code, designation, status, value | code asc | 50–500 | non | non | non | ☐ |
-| 14 | `projets/page.tsx` | page | `PrjProject` | `OK_URL` | budget, code, expenses, name, owner, status | updatedAt desc | 20–200 | non | non | non | ☐ |
-| 15 | `rh/collaborateurs/page.tsx` | page | `RhEmployee` | `OK_URL` | hireDate, jobTitle, name, status, type | name asc | 20–200 | non | oui | non | ☐ |
-| 16 | `rh/contrats/page.tsx` | page | `RhContract` | `OK_URL` | employee, startDate, status, title, type | startDate desc | 20–300 | non | non | non | ☐ |
-| 17 | `rh/inps/page.tsx` | page **2 tableaux** | périodes / déclarations | `OK_URL` | period | period desc | &lt;100 | non | non | non | ☐ |
-| 18 | `rh/paie/page.tsx` | page | `PayPeriod` | `OK_URL` | period, slips, status | period desc | &lt;100 | non | non | non | ☐ |
-| 19 | `stocks/achats/page.tsx` | page | `StkPurchase` | `OK_URL` | by, createdAt, lines, number, status, supplier | createdAt desc | 50–1k | non | non | non | ☐ |
-| 20 | `stocks/articles/page.tsx` | page | `StkArticle` | `OK_URL` | code, designation, family, location, min, qty | code asc | 50–2k | oui | non | non | ☐ |
-| 21 | `stocks/mouvements/page.tsx` | page | `StkMovement` | `OK_URL` | article, by, movedAt, quantity, type | movedAt desc | 200–10k | non | non | non | ☐ |
-| 22 | `suivi/clients/page.tsx` | page | `SvClient` | `OK_URL` | contact, invoices, name | name asc | 50–500 | oui | oui | non | ☐ |
-| 23 | `suivi/factures/page.tsx` | page | `SvInvoice` | `OK_URL` | amountPaid, client, number, status, totalTtc | issuedAt desc | 100–5k | oui | oui | non | ☐ |
-| 24 | `suivi/mouvements/page.tsx` | page | `SvMovement` | `OK_URL` | account, amount, category, direction, movedAt | movedAt desc | 200–10k | oui | oui | **oui** | ☐ |
-| 25 | `suivi/stocks/page.tsx` | page | `SvStockItem` | `OK_URL` | code, family, label, location, quantity | family asc | 50–1k | oui | oui | non | ☐ |
+| 1 | `administration/utilisateurs/page.tsx` | page | `User` | `OK_URL` | name, status | name asc | 50–200 | oui | **oui + listKey** | non | ☑ |
+| 2 | `commercial/clients/page.tsx` | page | `ComClient` | `OK_URL` | city, contact, invoices, name, owner, phone, quotes, updatedAt | updatedAt desc | 100–2k | oui | oui + listKey | non | ☑ |
+| 3 | `commercial/devis/page.tsx` | page | `ComQuote` | `OK_URL` | client, createdAt, number, object, status, totalTtc | createdAt desc | 200–5k | oui | oui + listKey | non | ☑ |
+| 4 | `comptabilite/a-comptabiliser/page.tsx` | page | `ComInvoice` | `OK_URL` | client, number, status, totalTtc (+ issuedAt défaut) | issuedAt desc | 20–200 | non | **oui + listKey** | non | ☑ |
+| 5 | `comptabilite/ecritures/page.tsx` | page | `CptJournalEntry` | `OK_URL` | entryDate, journal, label, number, status | entryDate desc | 500–20k | non | **oui + listKey** | non | ☑ |
+| 6 | `comptabilite/factures/page.tsx` | page | `ComInvoice` | `OK_URL` | amountPaid, client, createdAt, number, status, totalTtc | createdAt desc | 200–10k | oui | oui + listKey | non | ☑ |
+| 7 | `comptabilite/journaux/page.tsx` | page | `CptJournal` | `OK_URL` | active, code, entries, label | sortOrder asc | &lt;50 | oui | **oui + listKey** | non | ☑ |
+| 8 | `comptabilite/plan/page.tsx` | page | `CptAccount` | `OK_URL` | classNum, code, label, nature, postable | code asc | 100–500 | non | oui + listKey | non | ☑ |
+| 9 | `crm/affectations/page.tsx` | page **2 tableaux** | `CrmAssignmentRequest` | `OK_URL` + `hsort`/`hdir` | pending: createdAt, owner, prospect, requester, stage, status · historique: resolvedAt, … | createdAt asc / resolvedAt desc | 50–1k | oui | **oui + keys dédiées** | `runSeries` | ☑ |
+| 10 | `crm/prospects/prospects-results.tsx` | results | `CrmOpportunity` | `OK_URL` | createdAt, createdBy, followUpAt, nextAction, org, owner, source, stage | followUpAt asc | 500–20k | oui | parent + listKey | non | ☑ |
+| 11 | `crm/relances/relances-results.tsx` | results **2 tableaux** | activités / tâches | `OK_URL` | action, actor, assignee, dueAt, occurredAt, org, owner, stage, summary, type | occurredAt desc / dueAt asc | 200–10k | oui | oui + listKey | non | ☑ |
+| 12 | `ops/anomalies/page.tsx` | page | `OpsTicket` | `OK_URL` | assigned, equipment, noticedAt, priority, status | priority desc | 50–500 | oui | **oui + listKey** | non | ☑ |
+| 13 | `patrimoine/page.tsx` | page | `PatAsset` | `OK_URL` | assigned, category, code, designation, status, value | code asc | 50–500 | oui | **oui + listKey** | non | ☑ |
+| 14 | `projets/page.tsx` | page | `PrjProject` | `OK_URL` | budget, code, expenses, name, owner, status | updatedAt desc | 20–200 | oui | **oui + listKey** | non | ☑ |
+| 15 | `rh/collaborateurs/page.tsx` | page | `RhEmployee` | `OK_URL` | hireDate, jobTitle, name, status, type | name asc | 20–200 | oui | oui + listKey | non | ☑ |
+| 16 | `rh/contrats/page.tsx` | page | `RhContract` | `OK_URL` | employee, startDate, status, title, type | startDate desc | 20–300 | oui | **oui + listKey** | non | ☑ |
+| 17 | `rh/inps/page.tsx` | page **2 tableaux** | périodes / déclarations | `OK_URL` | period | period desc | &lt;100 | non | **oui + listKey** (périodes) | non | ☑ |
+| 18 | `rh/paie/page.tsx` | page | `PayPeriod` | `OK_URL` | period, slips, status | period desc | &lt;100 | non | **oui + listKey** | non | ☑ |
+| 19 | `stocks/achats/page.tsx` | page | `StkPurchase` | `OK_URL` | by, createdAt, lines, number, status, supplier | createdAt desc | 50–1k | oui | **oui + listKey** | non | ☑ |
+| 20 | `stocks/articles/page.tsx` | page | `StkArticle` | `OK_URL` | code, designation, family, location, min, qty | code asc | 50–2k | oui | **oui + listKey** | non | ☑ |
+| 21 | `stocks/mouvements/page.tsx` | page | `StkMovement` | `OK_URL` | article, by, movedAt, quantity, type | movedAt desc | 200–10k | non | **oui + listKey** | non | ☑ |
+| 22 | `suivi/clients/page.tsx` | page | `SvClient` | `OK_URL` | contact, invoices, name | name asc | 50–500 | oui | oui + listKey | non | ☑ |
+| 23 | `suivi/factures/page.tsx` | page | `SvInvoice` | `OK_URL` | amountPaid, client, number, status, totalTtc | issuedAt desc | 100–5k | oui | oui + listKey | non | ☑ |
+| 24 | `suivi/mouvements/page.tsx` | page | `SvMovement` | `OK_URL` | account, amount, category, direction, movedAt | movedAt desc | 200–10k | oui | oui + listKey | **non** (`runSeries`) | ☑ |
+| 25 | `suivi/stocks/page.tsx` | page | `SvStockItem` | `OK_URL` | code, family, label, location, quantity | family asc | 50–1k | oui | oui + listKey | non | ☑ |
 
 **Sous-total A.1 : 25 pages / ~27 tableaux UI** (affectations ×2, relances ×2, inps ×2).
 
@@ -201,10 +201,14 @@ Indexes existants (extrait) : `ComClient` owner/normalizedName/status ; `CrmOppo
 |------|--------|
 | commercial/clients, devis, contrats | ✅ |
 | crm/prospects, relances | ✅ |
-| comptabilite/clients, factures, plan | ✅ |
-| suivi/clients, factures, mouvements, stocks | ✅ |
-| rh/collaborateurs | ✅ |
-| Autres A.1 (stocks/*, ops, patrimoine, projets, …) | ⚠️ socle SortableTh OK ; Suspense key optionnelle (pas encore de split) — feedback Link suffit |
+| crm/affectations | ✅ dual keys (`sort/dir/page` vs `hsort/hdir/hpage` + `q`/`statut`) |
+| comptabilite/clients, factures, plan, a-comptabiliser, ecritures, journaux | ✅ |
+| suivi/clients, factures, mouvements, stocks | ✅ (+ `runSeries` agrégats mouvements) |
+| rh/collaborateurs, contrats, inps (périodes), paie | ✅ |
+| administration/utilisateurs | ✅ |
+| ops/anomalies, patrimoine, projets | ✅ |
+| stocks/achats, articles, mouvements | ✅ |
+| **A.1 listKey P0** | ✅ **14/14** pages cibles branchées (2026-11-12) |
 
 ### A migrer → fait
 

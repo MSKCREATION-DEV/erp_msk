@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { requireSvPermission } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
+import { runSeries } from "@/lib/db/serial";
 import { ensureSvAccounts, getSvAccountByKind } from "@/lib/suivi/accounts";
 import {
   familyToCategoryFilterValues,
@@ -218,15 +219,17 @@ async function MouvementsSummary({
       filters.category,
   );
 
-  const [inAgg, outAgg] = await Promise.all([
-    prisma.svCashMovement.aggregate({
-      where: { AND: [where, { direction: "IN" }] },
-      _sum: { amount: true },
-    }),
-    prisma.svCashMovement.aggregate({
-      where: { AND: [where, { direction: "OUT" }] },
-      _sum: { amount: true },
-    }),
+  const [inAgg, outAgg] = await runSeries([
+    () =>
+      prisma.svCashMovement.aggregate({
+        where: { AND: [where, { direction: "IN" }] },
+        _sum: { amount: true },
+      }),
+    () =>
+      prisma.svCashMovement.aggregate({
+        where: { AND: [where, { direction: "OUT" }] },
+        _sum: { amount: true },
+      }),
   ]);
   const inSum = inAgg._sum.amount ?? 0;
   const outSum = outAgg._sum.amount ?? 0;
