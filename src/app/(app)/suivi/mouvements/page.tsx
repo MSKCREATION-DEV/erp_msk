@@ -22,7 +22,12 @@ import {
   totalPages,
 } from "@/lib/list/pagination";
 import { firstParam } from "@/lib/list/search-params";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+  listKeyFromSearchParams,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -79,6 +84,9 @@ export default async function SuiviMouvementsPage({
   const canManage =
     hasPermission(user, "sv.movements.manage") || user.isSuperAdmin;
 
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
+
   return (
     <PageShell>
       <PageHeader
@@ -117,7 +125,7 @@ export default async function SuiviMouvementsPage({
             <SvMouvementsToolbar />
           </Suspense>
         </div>
-        <Suspense fallback={<ListTableSkeleton rows={8} cols={8} />}>
+        <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={8} cols={8} />}>
           <MouvementsResults searchParams={searchParams} />
         </Suspense>
       </Surface>
@@ -307,7 +315,7 @@ async function MouvementsResults({
   const rows = await prisma.svCashMovement.findMany({
     where,
     orderBy: [
-      sort.orderBy as Prisma.SvCashMovementOrderByWithRelationInput,
+      sort.orderBy as Prisma.SvCashMovementOrderByWithRelationInput[],
       { createdAt: "desc" },
     ],
     skip: pageSkip(page, pageSize),

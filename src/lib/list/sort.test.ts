@@ -3,6 +3,7 @@ import {
   appendSortParams,
   buildSortHref,
   listKey,
+  listKeyFromSearchParams,
   parseListSort,
   parseSortDir,
   parseSortKey,
@@ -139,6 +140,10 @@ assert.ok(sortAriaLabel("Client", true, "asc").includes("croissant"));
   assert.equal(
     listKey({ page: "2", sort: "name", secret: "x" }, ["page", "sort"]),
     "page=2&sort=name",
+  );
+  assert.equal(
+    listKeyFromSearchParams({ q: ["a"], page: ["2"], sort: "name" }),
+    "page=2&q=a&sort=name",
   );
 }
 

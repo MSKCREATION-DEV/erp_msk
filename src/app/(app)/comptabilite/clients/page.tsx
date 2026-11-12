@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { listKeyFromSearchParams } from "@/lib/list/sort";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import {
@@ -45,6 +46,7 @@ export default async function ComptabiliteClientsPage({
   const allRows = await loadClientAccounts();
   const kpiRows = filterClientAccountRows(allRows, { statut: statutFilter });
   const totals = sumClientAccountTotals(kpiRows);
+  const resultsKey = listKeyFromSearchParams(sp);
 
   return (
     <PageShell>
@@ -89,7 +91,7 @@ export default async function ComptabiliteClientsPage({
           </Suspense>
         </div>
 
-        <Suspense fallback={<ListTableSkeleton rows={10} cols={8} />}>
+        <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={10} cols={8} />}>
           <ClientsResults searchParams={searchParams} />
         </Suspense>
       </Surface>

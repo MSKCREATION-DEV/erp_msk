@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { listKeyFromSearchParams } from "@/lib/list/sort";
 import type { Prisma } from "@/generated/prisma/client";
 import { FileUp, UserPlus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
@@ -105,6 +106,7 @@ export default async function CrmProspectsPage({
   );
 
   const canCreate = hasPermission(user, "crm.prospect.create");
+  const resultsKey = listKeyFromSearchParams(sp);
 
   return (
     <PageShell>
@@ -178,7 +180,7 @@ export default async function CrmProspectsPage({
           </Suspense>
         </div>
 
-        <Suspense fallback={<ListTableSkeleton rows={10} cols={11} />}>
+        <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={10} cols={11} />}>
           <ProspectsResults searchParams={searchParams} />
         </Suspense>
       </Surface>

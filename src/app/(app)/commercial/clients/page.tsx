@@ -30,7 +30,12 @@ import {
   parsePage,
   totalPages,
 } from "@/lib/list/pagination";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+  listKeyFromSearchParams,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -92,6 +97,9 @@ export default async function CommercialClientsPage({
     ),
   }));
 
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
+
   return (
     <PageShell>
       <PageHeader
@@ -123,7 +131,7 @@ export default async function CommercialClientsPage({
           </Suspense>
         </div>
 
-        <Suspense fallback={<ListTableSkeleton rows={8} cols={8} />}>
+        <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={8} cols={8} />}>
           <ClientsResults
             searchParams={searchParams}
             canCreate={canCreate}
@@ -236,7 +244,7 @@ async function ClientsResults({
   const page = clampPage(requestedPage, total, pageSize);
   const clients = await prisma.comClient.findMany({
     where,
-    orderBy: sort.orderBy as Prisma.ComClientOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.ComClientOrderByWithRelationInput[],
     skip: pageSkip(page, pageSize),
     take: pageSize,
     include: {

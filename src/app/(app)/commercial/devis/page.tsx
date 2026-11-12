@@ -21,7 +21,12 @@ import {
   totalPages,
 } from "@/lib/list/pagination";
 import { firstParam } from "@/lib/list/search-params";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+  listKeyFromSearchParams,
+} from "@/lib/list/sort";
 import type { Prisma } from "@/generated/prisma/client";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -64,6 +69,9 @@ export default async function CommercialDevisPage({
 
   const canCreate = hasPermission(user, "com.devis.create");
 
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
+
   return (
     <PageShell>
       <PageHeader
@@ -97,7 +105,7 @@ export default async function CommercialDevisPage({
             />
           </Suspense>
         </div>
-        <Suspense fallback={<ListTableSkeleton rows={8} cols={6} />}>
+        <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={8} cols={6} />}>
           <DevisResults searchParams={searchParams} canCreate={canCreate} />
         </Suspense>
       </Surface>
@@ -154,7 +162,7 @@ async function DevisResults({
   const page = clampPage(requestedPage, total, pageSize);
   const quotes = await prisma.comQuote.findMany({
     where,
-    orderBy: sort.orderBy as Prisma.ComQuoteOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.ComQuoteOrderByWithRelationInput[],
     skip: pageSkip(page, pageSize),
     take: pageSize,
     include: {

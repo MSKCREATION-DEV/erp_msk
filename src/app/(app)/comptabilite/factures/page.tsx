@@ -19,7 +19,12 @@ import {
   totalPages,
 } from "@/lib/list/pagination";
 import { firstParam } from "@/lib/list/search-params";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+  listKeyFromSearchParams,
+} from "@/lib/list/sort";
 import type { Prisma } from "@/generated/prisma/client";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -67,6 +72,9 @@ export default async function ComptabiliteFacturesPage({
     redirect("/accueil");
   }
 
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
+
   return (
     <PageShell>
       <PageHeader
@@ -93,7 +101,7 @@ export default async function ComptabiliteFacturesPage({
             />
           </Suspense>
         </div>
-        <Suspense fallback={<ListTableSkeleton rows={8} cols={6} />}>
+        <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={8} cols={6} />}>
           <FacturesResults searchParams={searchParams} />
         </Suspense>
       </Surface>
@@ -148,7 +156,7 @@ async function FacturesResults({
   const page = clampPage(requestedPage, total, pageSize);
   const invoices = await prisma.comInvoice.findMany({
     where,
-    orderBy: sort.orderBy as Prisma.ComInvoiceOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.ComInvoiceOrderByWithRelationInput[],
     skip: pageSkip(page, pageSize),
     take: pageSize,
     include: { client: { select: { name: true } } },

@@ -6,7 +6,12 @@ import type { Prisma, RhEmployeeStatus } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasAnyPermission, hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+  listKeyFromSearchParams,
+} from "@/lib/list/sort";
 import { firstParam } from "@/lib/list/search-params";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
@@ -52,6 +57,9 @@ export default async function RhCollaborateursPage({
 
   const canManage = hasPermission(user, "rh.employees.manage");
 
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
+
   return (
     <PageShell>
       <PageHeader
@@ -93,7 +101,7 @@ export default async function RhCollaborateursPage({
         <StatusFilters searchParams={searchParams} />
       </Suspense>
 
-      <Suspense fallback={<ListTableSkeleton rows={8} cols={5} />}>
+      <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={8} cols={5} />}>
         <CollaborateursResults searchParams={searchParams} />
       </Suspense>
     </PageShell>
@@ -192,7 +200,7 @@ async function CollaborateursResults({
           }
         : {}),
     },
-    orderBy: sort.orderBy as Prisma.RhEmployeeOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.RhEmployeeOrderByWithRelationInput[],
     take: 300,
   });
 

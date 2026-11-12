@@ -21,7 +21,12 @@ import {
   totalPages,
 } from "@/lib/list/pagination";
 import { firstParam } from "@/lib/list/search-params";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+  listKeyFromSearchParams,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -59,6 +64,9 @@ export default async function SuiviFacturesPage({
   const canManage =
     hasPermission(user, "sv.invoices.manage") || user.isSuperAdmin;
 
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
+
   return (
     <PageShell>
       <PageHeader
@@ -83,7 +91,7 @@ export default async function SuiviFacturesPage({
             <SvFacturesToolbar />
           </Suspense>
         </div>
-        <Suspense fallback={<ListTableSkeleton rows={8} cols={6} />}>
+        <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={8} cols={6} />}>
           <FacturesResults searchParams={searchParams} canManage={canManage} />
         </Suspense>
       </Surface>
@@ -142,7 +150,7 @@ async function FacturesResults({
   const invoices = await prisma.svInvoice.findMany({
     where,
     orderBy: [
-      sort.orderBy as Prisma.SvInvoiceOrderByWithRelationInput,
+      sort.orderBy as Prisma.SvInvoiceOrderByWithRelationInput[],
       { createdAt: "desc" },
     ],
     skip: pageSkip(page, pageSize),

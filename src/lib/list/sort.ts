@@ -122,6 +122,19 @@ export function listKey(
   return entries.map(([k, v]) => `${k}=${v}`).join("&");
 }
 
+/** Aplatit les searchParams Next (`string | string[]`) puis calcule `listKey`. */
+export function listKeyFromSearchParams(
+  raw: Record<string, string | string[] | undefined>,
+  keys?: readonly string[],
+): string {
+  const flat: Record<string, string | undefined> = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (v == null) continue;
+    flat[k] = Array.isArray(v) ? v[0] : v;
+  }
+  return listKey(flat, keys);
+}
+
 /**
  * Href au clic sur une colonne :
  * - même colonne → inverse `dir`

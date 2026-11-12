@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { listKeyFromSearchParams } from "@/lib/list/sort";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -27,6 +28,7 @@ export default async function CrmRelancesPage({
   const raw = await searchParams;
   const focusFaites = firstSearchParam(raw.focus) === "faites";
   const vis = crmVisibility(user);
+  const resultsKey = listKeyFromSearchParams(raw);
 
   return (
     <PageShell>
@@ -47,7 +49,7 @@ export default async function CrmRelancesPage({
         ]}
       />
 
-      <Suspense fallback={<ListTableSkeleton rows={10} cols={8} />}>
+      <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={10} cols={8} />}>
         <RelancesResults searchParams={searchParams} />
       </Suspense>
     </PageShell>

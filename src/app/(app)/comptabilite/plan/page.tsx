@@ -7,7 +7,12 @@ import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { firstParam } from "@/lib/list/search-params";
-import { parseListSort, type SortColumnMap, type SortDir } from "@/lib/list/sort";
+import {
+  parseListSort,
+  type SortColumnMap,
+  type SortDir,
+  listKeyFromSearchParams,
+} from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -44,6 +49,9 @@ export default async function ComptabilitePlanPage({
 }) {
   const user = await requireUser();
   if (!hasPermission(user, "cpt.access")) redirect("/accueil");
+
+  const rawSp = await searchParams;
+  const resultsKey = listKeyFromSearchParams(rawSp);
 
   return (
     <PageShell>
@@ -82,7 +90,7 @@ export default async function ComptabilitePlanPage({
         </Suspense>
       </div>
 
-      <Suspense fallback={<ListTableSkeleton rows={10} cols={5} />}>
+      <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={10} cols={5} />}>
         <PlanResults searchParams={searchParams} />
       </Suspense>
     </PageShell>
@@ -121,7 +129,7 @@ async function PlanResults({
           ],
         }
       : undefined,
-    orderBy: sort.orderBy as Prisma.CptAccountOrderByWithRelationInput,
+    orderBy: sort.orderBy as Prisma.CptAccountOrderByWithRelationInput[],
     take: 300,
   });
 
