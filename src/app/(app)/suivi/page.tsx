@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { requireSvAccess } from "@/lib/suivi/access";
@@ -78,6 +79,15 @@ export default async function SuiviHubPage() {
       <PageHeader
         title="Suivi"
         description="Tampon clients · mouvements · stocks — direction / admins."
+        actions={
+          <Link
+            prefetch={false}
+            href="/suivi/tableau-de-bord"
+            className="inline-flex h-9 items-center rounded-lg bg-msk-blue px-3 text-sm font-medium text-white hover:bg-msk-blue/90"
+          >
+            Tableau de bord
+          </Link>
+        }
       />
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
@@ -104,6 +114,7 @@ export default async function SuiviHubPage() {
       <SuiviHubGrid
         allowed={allowed}
         counts={{
+          dashboard: { value: unpaid, hint: "impayés" },
           clients,
           factures: { value: unpaid, hint: "à encaisser" },
           comptes: accountsCount || 2,

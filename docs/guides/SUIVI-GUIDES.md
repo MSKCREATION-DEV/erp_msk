@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-11 (Suivi Stocks CRUD + inventaire Direction H ; voir §8) |
+| Dernière mise à jour | 2026-11-12 (Suivi Tableau de bord + bascule Comptes I ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -110,7 +110,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
 | `faq-acces-refuse` | Accès refusé / module absent | accueil | `validated` | redirect `acces_refuse` |
 | `faq-mot-de-passe` | Mot de passe / reset | accueil | `validated` | parcours auth connus |
-| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `draft` | hub + clients/factures/**comptes**/mouvements/stocks — à rédiger dans `src/lib/guides` |
+| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `draft` | hub + **tableau-de-bord** + clients/factures/comptes/mouvements/stocks — à rédiger dans `src/lib/guides` |
 
 *Les modules sans guide `validated` apparaissent en fiche « stub » (objectif + liens manuels, sans fausse procédure).*
 
@@ -134,7 +134,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | patrimoine | stub | 0 | |
 | projets | stub | 0 | |
 | anomalies | stub | 0 | |
-| suivi | stub / draft | 0 (`sv-hub-naviguer` draft) | valider parcours UI hub→clients→comptes→remix→mouvements→stocks |
+| suivi | stub / draft | 0 (`sv-hub-naviguer` draft) | valider hub→**TB**→clients→comptes→remix→mouvements→stocks |
 | catalogue | via commercial | 0 | offres / planchers |
 
 ### Rôles documentés (packs / groupes)
@@ -196,6 +196,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-12 — Suivi Tableau de bord (pilotage budgets)
+
+| | |
+|---|---|
+| Quoi | Page `/suivi/tableau-de-bord` : soldes comptes post-bascule, sorties/entrées ops, répartition catégories, run-rate (estimation), comparatif N vs N−1, factures/reste dû, top débiteurs ; filtres URL ; charts recharts ; liens listes filtrées |
+| Pourquoi | Direction doit voir conso jour/semaine/mois/année avant de voter des budgets |
+| Fichiers | `src/app/(app)/suivi/tableau-de-bord/**`, `src/lib/suivi/dashboard-*.ts`, `categories.ts`, `dashboard-charts/filters`, nav/modules, `mouvements` filtres URL, `docs/specs/suivi-tampon/DASHBOARD-KPI.md` |
+| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — ajouter étape TB ; KPI doc `DASHBOARD-KPI.md` |
+| Routes | `/suivi/tableau-de-bord` · filtres `periode`/`compte`/`categorie` · `/suivi/mouvements?…` |
+| Droits | `sv.access` + sections `sv.accounts|movements|invoices|clients.view` |
 
 ### 2026-11-12 — Suivi Comptes : bascule Direction (I)
 

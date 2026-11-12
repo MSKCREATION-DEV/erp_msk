@@ -2,6 +2,7 @@ import {
   Package,
   Receipt,
   ArrowLeftRight,
+  LayoutDashboard,
   Users,
   Wallet,
   type LucideIcon,
@@ -16,6 +17,7 @@ import { gridCards4 } from "@/lib/ui/layout-grids";
 import { cn } from "@/lib/utils";
 
 const ICONS: Record<string, LucideIcon> = {
+  dashboard: LayoutDashboard,
   clients: Users,
   factures: Receipt,
   comptes: Wallet,
@@ -36,6 +38,8 @@ function moduleKpi(
     return { value: String(count.value), hint: count.hint };
   }
   switch (module.id) {
+    case "dashboard":
+      return { value: String(count), hint: "pilotage" };
     case "clients":
       return {
         value: String(count),

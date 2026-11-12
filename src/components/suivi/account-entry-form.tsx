@@ -13,17 +13,21 @@ import { Button } from "@/components/ui/button";
 import { ChoiceCards } from "@/components/ui/choice-cards";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 
+import { SV_ACCOUNT_BASELINE_CATEGORY } from "@/lib/suivi/accounts";
+import { SV_MOVEMENT_CATEGORY_OPTIONS } from "@/lib/suivi/categories";
+
 const CATEGORIES = [
   "Banque / transfert",
   "Versement banque",
   "Achats",
-  "Transport / carburant",
-  "Prospection / RDV",
-  "Repas / eau",
-  "Fournitures",
-  "Téléphone / Internet",
-  "Salaires",
-  "Encaissement client",
+  SV_ACCOUNT_BASELINE_CATEGORY,
+  ...SV_MOVEMENT_CATEGORY_OPTIONS.filter(
+    (c) =>
+      c !== "Banque / transfert" &&
+      c !== "Autre" &&
+      c !== SV_ACCOUNT_BASELINE_CATEGORY &&
+      c !== "Ouverture / bascule",
+  ),
   "Autre",
 ];
 

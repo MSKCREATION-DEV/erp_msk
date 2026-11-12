@@ -11,19 +11,9 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
 import { ChoiceCards } from "@/components/ui/choice-cards";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
+import { SV_MOVEMENT_CATEGORY_OPTIONS } from "@/lib/suivi/categories";
 
-const CATEGORIES = [
-  "Transport / carburant",
-  "Transport",
-  "Prospection / RDV",
-  "Banque / transfert",
-  "Repas / eau",
-  "Fournitures",
-  "Téléphone / Internet",
-  "Salaires",
-  "Encaissement client",
-  "Autre",
-];
+const CATEGORIES = [...SV_MOVEMENT_CATEGORY_OPTIONS];
 
 export function SvMovementForm() {
   const [state, formAction, pending] = useActionState<
@@ -32,7 +22,7 @@ export function SvMovementForm() {
   >(createSvCashMovement, null);
   const today = new Date().toISOString().slice(0, 10);
   const [direction, setDirection] = useState<"IN" | "OUT">("OUT");
-  const [category, setCategory] = useState(CATEGORIES[0]!);
+  const [category, setCategory] = useState<string>(CATEGORIES[0]!);
   const [accountKind, setAccountKind] = useState<"PHYSICAL" | "BANK">(
     "PHYSICAL",
   );

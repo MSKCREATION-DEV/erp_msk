@@ -15,6 +15,14 @@ export type SuiviModule = {
 
 export const SUIVI_MODULES: SuiviModule[] = [
   {
+    id: "dashboard",
+    href: "/suivi/tableau-de-bord",
+    title: "Tableau de bord",
+    description: "Soldes, conso, catégories, dettes — pilotage budgets.",
+    tone: "blue",
+    permission: "sv.access",
+  },
+  {
     id: "clients",
     href: "/suivi/clients",
     title: "Clients",
@@ -58,6 +66,11 @@ export const SUIVI_MODULES: SuiviModule[] = [
 
 export const SUIVI_SUBNAV = [
   { href: "/suivi", label: "Menu", exact: true },
+  {
+    href: "/suivi/tableau-de-bord",
+    label: "Tableau de bord",
+    permission: "sv.access",
+  },
   { href: "/suivi/clients", label: "Clients", permission: "sv.clients.view" },
   { href: "/suivi/factures", label: "Factures", permission: "sv.invoices.view" },
   {

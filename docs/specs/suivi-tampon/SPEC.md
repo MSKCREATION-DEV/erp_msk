@@ -278,7 +278,8 @@ Remix : préremplir lignes depuis dernière facture client (ou sélection) ; val
 
 | Route | Intention |
 |-------|-----------|
-| `/suivi/mouvements` | Registre + historique + solde · filtres date/catégorie |
+| `/suivi/tableau-de-bord` | TB trésorerie / conso / dettes · filtres période/compte/catégorie · charts |
+| `/suivi/mouvements` | Registre + historique + solde · filtres date/catégorie/compte/direction (URL) |
 | `/suivi/mouvements/nouveau` | Saisie mouvement (direction, montant, catégorie…) — mono ou mini-stepper |
 
 Alias redirect `/suivi/caisse` → `/suivi/mouvements` optionnel si liens internes précoces.
