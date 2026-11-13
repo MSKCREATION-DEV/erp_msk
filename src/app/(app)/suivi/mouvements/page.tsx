@@ -318,8 +318,8 @@ async function MouvementsSummary({
             Activité du filtre
           </p>
           <p className="mt-0.5 text-sm text-msk-ink/55">
-            Post-bascule ({baselineLabel}) · hors archive, ouverture et
-            transferts
+            Depuis le {baselineLabel} · hors archive, solde d’ouverture et
+            virements internes
             {hasFilters && filterChips.length > 0
               ? ` · ${filterChips.join(" · ")}`
               : ""}

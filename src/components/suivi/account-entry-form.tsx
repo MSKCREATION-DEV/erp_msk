@@ -18,16 +18,18 @@ import { SV_ACCOUNT_BASELINE_CATEGORY } from "@/lib/suivi/accounts";
 import { SV_MOVEMENT_CATEGORY_OPTIONS } from "@/lib/suivi/categories";
 
 const CATEGORIES = [
-  "Banque / transfert",
+  "Banque / virement interne",
   "Versement banque",
   "Achats",
   SV_ACCOUNT_BASELINE_CATEGORY,
   ...SV_MOVEMENT_CATEGORY_OPTIONS.filter(
     (c) =>
+      c !== "Banque / virement interne" &&
       c !== "Banque / transfert" &&
       c !== "Autre" &&
       c !== SV_ACCOUNT_BASELINE_CATEGORY &&
-      c !== "Ouverture / bascule",
+      c !== "Ouverture / bascule" &&
+      c !== "Solde d’ouverture",
   ),
   "Autre",
 ];

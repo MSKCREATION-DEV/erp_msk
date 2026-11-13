@@ -548,7 +548,7 @@ export async function extractExpenseDocumentText(input: {
       return {
         ok: false,
         error:
-          "PDF scanné illisible. Uploadez une photo JPEG/PNG nette de la facture.",
+          "PDF scanné illisible. Déposez une photo JPEG/PNG nette de la facture.",
       };
     }
     return { ok: true, text, source: "ocr-pdf-scan" };
@@ -556,7 +556,7 @@ export async function extractExpenseDocumentText(input: {
     return {
       ok: false,
       error:
-        "Ce PDF semble scanné (sans texte). Uploadez une photo JPEG/PNG, ou un PDF Orange numérique.",
+        "Ce PDF semble scanné (sans texte). Déposez une photo JPEG/PNG, ou un PDF Orange numérique.",
     };
   }
 }

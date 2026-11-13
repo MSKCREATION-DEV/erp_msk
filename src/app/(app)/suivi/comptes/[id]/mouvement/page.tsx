@@ -26,7 +26,7 @@ export default async function SuiviCompteMouvementPage({
     <PageShell>
       <PageHeader
         title={`Opération — ${SV_ACCOUNT_KIND_LABEL[account.kind]}`}
-        description="Crédit, débit ou transfert banque ↔ physique. Une seule source : registre Mouvements."
+        description="Crédit, débit ou virement banque ↔ caisse. Une seule source : registre Mouvements."
         backHref={`/suivi/comptes/${account.id}`}
       />
       <SvAccountEntryForm accountId={account.id} accountKind={account.kind} />

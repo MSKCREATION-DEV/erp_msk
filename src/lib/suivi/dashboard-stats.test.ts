@@ -200,14 +200,20 @@ const alerts = buildSvDashboardAlerts({
 });
 const loyerAlert = alerts.find((a) => a.href.includes("e1"));
 assert.ok(loyerAlert?.kind === "charge_retard");
+assert.equal(loyerAlert?.title, "GAMBY · Location appartement");
 assert.equal(
   loyerAlert?.detail,
-  "Échéance le 07/11/2026 · 6 jours de retard",
+  "Échéance le 07/11/2026 · 6 jours de retard · n° 2026/01597",
 );
+assert.ok(!loyerAlert?.title.includes("2026/01597"));
 const edmAlert = alerts.find((a) => a.href.includes("e2"));
 assert.ok(edmAlert?.kind === "charge_bientot");
+assert.equal(edmAlert?.title, "EDM · EDM électricité");
 assert.match(edmAlert?.detail ?? "", /Échéance le 13\/11\/2026/);
-assert.ok(alerts.some((a) => a.kind === "dette_client" && a.title.includes("ECOSOL")));
+assert.match(edmAlert?.detail ?? "", /n° 455053/);
+assert.ok(
+  alerts.some((a) => a.kind === "dette_client" && a.title === "ECOSOL"),
+);
 assert.ok(!alerts.some((a) => a.title.includes("Petit")));
 
 console.log("dashboard-stats.test.ts OK");

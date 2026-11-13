@@ -7,6 +7,7 @@ import {
   type SvCategoryFamily,
 } from "@/lib/suivi/categories";
 import type { SvPeriodMode } from "@/lib/suivi/dashboard-period";
+import { SV_EXPENSE_CATEGORY_LABEL } from "@/lib/suivi/labels";
 
 export type SvMoveRow = {
   movedAt: Date;
@@ -271,12 +272,8 @@ export type SvDashboardAlert = {
   href: string;
 };
 
-const EXPENSE_CAT_LABEL: Record<SvExpenseRow["category"], string> = {
-  ORANGE_INTERNET: "Orange / Internet",
-  EDM_ELECTRICITE: "EDM",
-  LOYER: "Loyer",
-  AUTRE: "Autre",
-};
+/** Libellés type charge — alignés fiche `/suivi/charges/[id]`. */
+const EXPENSE_CAT_LABEL = SV_EXPENSE_CATEGORY_LABEL;
 
 const MS_DAY = 24 * 60 * 60 * 1000;
 /** Fenêtre « bientôt due » (jours calendaires). */
@@ -434,15 +431,17 @@ export function buildSvDashboardAlerts(input: {
     if (!due) continue;
     const bucket = expenseDueBucket(row, now);
     if (!bucket) continue;
-    const label =
-      row.number?.trim() ||
-      `${EXPENSE_CAT_LABEL[row.category]} · ${row.vendorName}`;
+    const typeLabel = EXPENSE_CAT_LABEL[row.category];
+    const title = `${row.vendorName} · ${typeLabel}`;
+    const dueDetail = formatExpenseDueAlertDetail(due, now, bucket);
+    const number = row.number?.trim();
+    const detail = number ? `${dueDetail} · n° ${number}` : dueDetail;
     if (bucket === "retard") {
       alerts.push({
         kind: "charge_retard",
         severity: "urgent",
-        title: `Charge en retard · ${label}`,
-        detail: formatExpenseDueAlertDetail(due, now, "retard"),
+        title,
+        detail,
         amount: reste,
         href: `/suivi/charges/${row.id}`,
       });
@@ -450,8 +449,8 @@ export function buildSvDashboardAlerts(input: {
       alerts.push({
         kind: "charge_bientot",
         severity: "attention",
-        title: `Charge bientôt due · ${label}`,
-        detail: formatExpenseDueAlertDetail(due, now, "bientot"),
+        title,
+        detail,
         amount: reste,
         href: `/suivi/charges/${row.id}`,
       });
@@ -463,8 +462,8 @@ export function buildSvDashboardAlerts(input: {
     alerts.push({
       kind: "dette_client",
       severity: d.restant >= 500_000 ? "urgent" : "attention",
-      title: `Dette client · ${d.name}`,
-      detail: "Reste à encaisser (seuil critique)",
+      title: d.name,
+      detail: "Reste à encaisser — seuil critique",
       amount: d.restant,
       href: `/suivi/clients/${d.id}`,
     });

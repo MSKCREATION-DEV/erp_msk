@@ -29,9 +29,9 @@ export const SV_CATEGORY_FAMILY_LABEL: Record<SvCategoryFamily, string> = {
   fournitures: "Fournitures",
   salaires: "Salaires",
   prospection: "Prospection / RDV",
-  transfert: "Banque / transfert",
+  transfert: "Banque / virement interne",
   encaissement: "Encaissement client",
-  ouverture: "Ouverture / bascule",
+  ouverture: "Solde d’ouverture",
   autre: "Autre",
 };
 
@@ -63,6 +63,7 @@ const EXACT: Record<string, SvCategoryFamily> = {
   Transport: "transport",
   "Prospection / RDV": "prospection",
   "Banque / transfert": "transfert",
+  "Banque / virement interne": "transfert",
   "Repas / eau": "alimentation",
   Fournitures: "fournitures",
   "Téléphone / Internet": "internet",
@@ -74,6 +75,7 @@ const EXACT: Record<string, SvCategoryFamily> = {
   "Ouverture / bascule": "ouverture",
   "Ouverture / Bascule Direction": "ouverture",
   "Ouverture compte": "ouverture",
+  "Solde d’ouverture": "ouverture",
   Bascule: "ouverture",
 };
 
@@ -131,6 +133,7 @@ export function normalizeSvCategoryFamily(
   }
   if (
     lower.includes("transfert") ||
+    lower.includes("virement interne") ||
     lower.includes("retrait") ||
     lower.includes("versement")
   ) {
@@ -158,6 +161,7 @@ export const SV_MOVEMENT_CATEGORY_OPTIONS = [
   "Transport / carburant",
   "Transport",
   "Prospection / RDV",
+  "Banque / virement interne",
   "Banque / transfert",
   "Repas / eau",
   "Fournitures",
@@ -166,6 +170,7 @@ export const SV_MOVEMENT_CATEGORY_OPTIONS = [
   "Loyer",
   "Salaires",
   "Encaissement client",
+  "Solde d’ouverture",
   "Ouverture / Bascule Direction",
   "Ouverture / bascule",
   "Autre",

@@ -121,7 +121,7 @@ export async function createSvAccountEntry(
       const fromId = toPhysical ? bank.id : physical.id;
       const toId = toPhysical ? physical.id : bank.id;
       const transferCat = toPhysical
-        ? "Banque / transfert"
+        ? "Banque / virement interne"
         : "Versement banque";
       const transferDesc =
         desc ??

@@ -34,6 +34,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { DetailHeroAmount } from "@/components/ui/detail-hero-amount";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 import { ContractDocActions } from "@/components/commercial/contract-doc-actions";
 import { ClientDetailActions } from "@/components/commercial/client-detail-actions";
@@ -361,11 +362,15 @@ export default async function CommercialClientDetailPage({
     })),
   });
 
+  const ownerLabel = client.owner
+    ? `${client.owner.firstName} ${client.owner.lastName}`
+    : null;
+
   return (
     <PageShell>
       <PageHeader
         title={client.name}
-        description={[client.contactName, location].filter(Boolean).join(" · ")}
+        description="Client commercial — devis, factures et contrats"
         backHref="/commercial/clients"
         backLabel="Retour aux clients"
         breadcrumbs={[
@@ -373,11 +378,107 @@ export default async function CommercialClientDetailPage({
           { label: "Clients", href: "/commercial/clients" },
           { label: client.name },
         ]}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            {client.includeTravelDefault ? (
-              <Badge tone="muted">Frais déplacement</Badge>
-            ) : null}
+      />
+
+      <Surface className="mb-5 overflow-hidden p-0">
+        <div className="border-b border-msk-ink/6 bg-gradient-to-br from-msk-blue/6 via-white to-msk-chalk/80 px-5 py-5 sm:px-6 sm:py-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0 space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-msk-blue/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-caps text-msk-blue">
+                  <Building2 className="size-3.5" aria-hidden />
+                  Client
+                </span>
+                {fin.overdueAmount > 0 ? (
+                  <Badge tone="coral">En retard</Badge>
+                ) : fin.openReceivable > 0 ? (
+                  <Badge tone="blue">Créances ouvertes</Badge>
+                ) : (
+                  <Badge tone="success">À jour</Badge>
+                )}
+                {client.includeTravelDefault ? (
+                  <Badge tone="muted">Frais déplacement</Badge>
+                ) : null}
+                {originSource ? <OriginChip source={originSource} /> : null}
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-xl bg-white text-msk-blue shadow-sm ring-1 ring-msk-ink/6">
+                  <Building2 className="size-5" aria-hidden />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-medium uppercase tracking-caps text-msk-ink/40">
+                    Entreprise
+                  </p>
+                  <h1 className="truncate text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
+                    {client.name}
+                  </h1>
+                  <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-msk-ink/55">
+                    {client.contactName ? (
+                      <span className="inline-flex items-center gap-1">
+                        <UserRound
+                          className="size-3.5 opacity-50"
+                          aria-hidden
+                        />
+                        {client.contactName}
+                      </span>
+                    ) : null}
+                    {client.phone ? (
+                      <span className="inline-flex items-center gap-1">
+                        <Phone className="size-3.5 opacity-50" aria-hidden />
+                        {client.phone}
+                      </span>
+                    ) : null}
+                    {client.email ? (
+                      <span className="inline-flex items-center gap-1">
+                        <Mail className="size-3.5 opacity-50" aria-hidden />
+                        {client.email}
+                      </span>
+                    ) : null}
+                    {location ? (
+                      <span className="inline-flex items-center gap-1">
+                        <MapPin className="size-3.5 opacity-50" aria-hidden />
+                        {location}
+                      </span>
+                    ) : null}
+                    {ownerLabel ? (
+                      <span className="text-msk-ink/45">
+                        Suivi par {ownerLabel}
+                      </span>
+                    ) : null}
+                    {fin.nextDueDate ? (
+                      <span className="tabular-nums">
+                        Prochaine échéance{" "}
+                        {fin.nextDueDate.toLocaleDateString("fr-FR")}
+                      </span>
+                    ) : null}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:min-w-80 sm:grid-cols-4">
+              <DetailHeroAmount
+                label="Facturé"
+                value={formatComMoney(fin.totalInvoiced)}
+              />
+              <DetailHeroAmount
+                label="Encaissé"
+                value={formatComMoney(fin.totalPaidAllocated)}
+              />
+              <DetailHeroAmount
+                label="Créances"
+                value={formatComMoney(fin.openReceivable)}
+                emphasize={fin.openReceivable > 0}
+              />
+              <DetailHeroAmount
+                label="Retard"
+                value={formatComMoney(fin.overdueAmount)}
+                emphasize={fin.overdueAmount > 0}
+              />
+            </div>
+          </div>
+
+          <div className="mt-5 border-t border-msk-ink/6 pt-4">
             <ClientDetailActions
               clientId={client.id}
               canEdit={canEdit}
@@ -395,48 +496,8 @@ export default async function CommercialClientDetailPage({
               }}
             />
           </div>
-        }
-      />
-
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Surface className="p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/40">
-            Facturé
-          </p>
-          <p className="mt-1 text-lg font-semibold tabular-nums">
-            {formatComMoney(fin.totalInvoiced)}
-          </p>
-        </Surface>
-        <Surface className="p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/40">
-            Encaissé (imputé)
-          </p>
-          <p className="mt-1 text-lg font-semibold tabular-nums">
-            {formatComMoney(fin.totalPaidAllocated)}
-          </p>
-        </Surface>
-        <Surface className="p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/40">
-            Créances
-          </p>
-          <p className="mt-1 text-lg font-semibold tabular-nums text-msk-blue">
-            {formatComMoney(fin.openReceivable)}
-          </p>
-        </Surface>
-        <Surface className="p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/40">
-            Retard
-          </p>
-          <p className="mt-1 text-lg font-semibold tabular-nums text-msk-coral">
-            {formatComMoney(fin.overdueAmount)}
-          </p>
-          {fin.nextDueDate ? (
-            <p className="mt-1 text-xs text-msk-ink/45">
-              Prochaine échéance {fin.nextDueDate.toLocaleDateString("fr-FR")}
-            </p>
-          ) : null}
-        </Surface>
-      </div>
+        </div>
+      </Surface>
 
       {client.contracts.length > 0 ? (
         <Section title="Contrats">

@@ -21,10 +21,10 @@
 
 | Libellé UI | Source | Pourquoi |
 |-----|--------|----------|
-| Solde compte physique | `sv_accounts` PHYSICAL + mouvements | Trésorerie caisse réelle (post-bascule) |
+| Solde compte physique | `sv_accounts` PHYSICAL + mouvements | Trésorerie caisse réelle (depuis le nouveau solde) |
 | Solde compte banque | idem BANK | Idem |
-| Sorties | `sv_cash_movements` sorties hors transferts / hors ouverture | Conso budgétaire |
-| Entrées | entrées hors transferts / hors ouverture | Encaissements / rentrées |
+| Sorties | `sv_cash_movements` sorties hors virements internes / hors solde d’ouverture | Conso budgétaire |
+| Entrées | entrées hors virements internes / hors solde d’ouverture | Encaissements / rentrées |
 | Dépense / jour | sorties ÷ jours de la période | Rythme de dépenses |
 | Estimation mensuelle (/ mois · / an) | dépense/jour × 30 / 365 | « Si on continue comme ça » — **pas un budget voté** |
 | Répartition dépenses par famille | sorties groupées (mapping catégories) | Alimentation, transport, internet… |
@@ -96,13 +96,14 @@ Liens listes : `/suivi/mouvements?direction=&from=&to=&compte=&categorie=` · `/
 | Charge bientôt due | idem + échéance ≤ **7 jours** | attention | Charges à traiter |
 | Dette client critique | reste ≥ **100 000** F (≥ 500 k = urgent) | attention / urgent | Dettes clients à traiter |
 
-Libellé alerte charge : **« Échéance le JJ/MM/AAAA · X jours de retard »** (ou « dans X jours »).  
+Titre alerte charge : **Fournisseur · Type** (comme fiche charge) — n° en secondaire.  
+Détail : **« Échéance le JJ/MM/AAAA · X jours de retard »** (ou « dans X jours ») · n° si connu.  
 Carte Charges : pastilles **En retard** / **Bientôt dues** → `/suivi/charges?echeance=retard|bientot`.  
 Liste Charges : colonne **Échéance** + badge Retard/Bientôt.  
 Timezone dates : **UTC** (= Bamako UTC+0).  
 Factures clients : alerte par **solde**, pas par `dueAt` (champ seed existant, non exposé en alerte échéance V1).
 
-Liens directs vers fiche charge / client. FR simple uniquement.
+Liens directs vers fiche charge / client. FR simple uniquement (pas de jargon « post-bascule », OCR, etc. en UI).
 
 ---
 

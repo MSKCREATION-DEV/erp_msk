@@ -3,8 +3,10 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
   Building2,
+  CalendarClock,
   CalendarPlus,
   Globe2,
+  Layers,
   Mail,
   MapPin,
   MessageSquareText,
@@ -40,6 +42,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { DetailHeroAmount } from "@/components/ui/detail-hero-amount";
 import { ActionLink } from "@/components/ui/action-link";
 import { ProspectDetailActions } from "@/components/crm/prospect-detail-actions";
 import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
@@ -442,12 +445,34 @@ export default async function CrmProspectDetailPage({
       ]
     : [];
 
+  const primaryContact = deal.organization.contacts[0] ?? null;
+  const primaryContactLabel = primaryContact
+    ? formatContactLabel(primaryContact.firstName, primaryContact.lastName)
+    : null;
+  const offerName =
+    deal.opportunityOffers[0]?.catalogOffer.name ??
+    deal.catalogOffer?.name ??
+    deal.offerLabel ??
+    null;
+  const offerPrice =
+    deal.opportunityOffers[0]?.catalogOffer.priceXof ??
+    deal.catalogOffer?.priceXof ??
+    null;
+  const location = [deal.organization.city, deal.organization.country]
+    .filter(Boolean)
+    .join(", ");
+  const followUpLabel = deal.followUpAt
+    ? deal.followUpAt.toLocaleDateString("fr-FR")
+    : "—";
+
   return (
     <PageShell>
       <PageHeader
         title={deal.organization.name}
         description={
-          deal.title !== deal.organization.name ? deal.title : undefined
+          deal.title !== deal.organization.name
+            ? deal.title
+            : "Prospect — suivi commercial"
         }
         backHref="/crm/prospects"
         backLabel="Retour aux prospects"
@@ -456,23 +481,132 @@ export default async function CrmProspectDetailPage({
           { label: "Prospects", href: "/crm/prospects" },
           { label: deal.organization.name },
         ]}
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge tone={stageTone(uiStage)}>{STAGE_LABELS[uiStage]}</Badge>
-            <RelanceCountBadge count={outreachCount} />
-            {linkedClient ? (
-              <Badge tone="success">Client commercial</Badge>
-            ) : null}
-            {isTestOrgName(deal.organization.name) ? (
-              <Badge tone="coral">TEST</Badge>
-            ) : null}
-            {overdue ? <Badge tone="coral">Relance en retard</Badge> : null}
-          </div>
-        }
       />
 
-      {/* Barre d’actions — (1) chips ci-dessus (2) secondaire méta/nav à gauche
-          (3) pipeline + conversion commerciale à droite, séparés visuellement. */}
+      <Surface className="mb-5 overflow-hidden p-0">
+        <div className="border-b border-msk-ink/6 bg-gradient-to-br from-msk-blue/6 via-white to-msk-chalk/80 px-5 py-5 sm:px-6 sm:py-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0 space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-msk-blue/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-caps text-msk-blue">
+                  <Layers className="size-3.5" aria-hidden />
+                  Prospect
+                </span>
+                <Badge tone={stageTone(uiStage)}>{STAGE_LABELS[uiStage]}</Badge>
+                <RelanceCountBadge count={outreachCount} />
+                {linkedClient ? (
+                  <Badge tone="success">Client commercial</Badge>
+                ) : null}
+                {isTestOrgName(deal.organization.name) ? (
+                  <Badge tone="coral">Jeu d’essai</Badge>
+                ) : null}
+                {overdue ? (
+                  <Badge tone="coral">Relance en retard</Badge>
+                ) : null}
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-xl bg-white text-msk-blue shadow-sm ring-1 ring-msk-ink/6">
+                  <Building2 className="size-5" aria-hidden />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-medium uppercase tracking-caps text-msk-ink/40">
+                    Entreprise
+                  </p>
+                  <h1 className="truncate text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
+                    {deal.organization.name}
+                  </h1>
+                  <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-msk-ink/55">
+                    {primaryContactLabel ? (
+                      <span className="inline-flex items-center gap-1">
+                        <UserRound
+                          className="size-3.5 opacity-50"
+                          aria-hidden
+                        />
+                        {primaryContactLabel}
+                      </span>
+                    ) : null}
+                    {primaryContact?.phone ? (
+                      <span className="inline-flex items-center gap-1">
+                        <Phone className="size-3.5 opacity-50" aria-hidden />
+                        {primaryContact.phone}
+                      </span>
+                    ) : null}
+                    {primaryContact?.email ? (
+                      <span className="inline-flex items-center gap-1">
+                        <Mail className="size-3.5 opacity-50" aria-hidden />
+                        {primaryContact.email}
+                      </span>
+                    ) : null}
+                    {location ? (
+                      <span className="inline-flex items-center gap-1">
+                        <MapPin className="size-3.5 opacity-50" aria-hidden />
+                        {location}
+                      </span>
+                    ) : null}
+                    {deal.organization.sector ? (
+                      <span>{deal.organization.sector}</span>
+                    ) : null}
+                    <span className="text-msk-ink/45">
+                      Suivi par {deal.owner.firstName} {deal.owner.lastName}
+                    </span>
+                    {deal.source ? (
+                      <OriginChip source={deal.source} />
+                    ) : null}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid w-full grid-cols-3 gap-2 sm:w-auto sm:min-w-72">
+              <DetailHeroAmount
+                label="Budget"
+                value={
+                  deal.budgetXof != null ? formatXof(deal.budgetXof) : "—"
+                }
+              />
+              <DetailHeroAmount
+                label="Offre"
+                value={
+                  offerPrice != null
+                    ? formatXof(offerPrice)
+                    : offerName
+                      ? "Sans montant"
+                      : "—"
+                }
+              />
+              <DetailHeroAmount
+                label="Relance"
+                value={followUpLabel}
+                emphasize={overdue}
+              />
+            </div>
+          </div>
+
+          {(offerName || deal.followUpAt) && (
+            <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-msk-ink/50">
+              {offerName ? (
+                <span className="inline-flex items-center gap-1">
+                  <Layers className="size-3.5 opacity-50" aria-hidden />
+                  {offerName}
+                </span>
+              ) : null}
+              {deal.followUpAt ? (
+                <span
+                  className={`inline-flex items-center gap-1 ${
+                    overdue ? "font-medium text-msk-coral" : ""
+                  }`}
+                >
+                  <CalendarClock className="size-3.5 opacity-50" aria-hidden />
+                  Prochaine relance {followUpLabel}
+                  {overdue ? " · en retard" : ""}
+                </span>
+              ) : null}
+            </p>
+          )}
+        </div>
+      </Surface>
+
+      {/* Barre d’actions — secondaire méta/nav à gauche, conversion à droite. */}
       {showActionToolbar ? (
         <Surface className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
           <div className="flex flex-wrap items-center gap-2">

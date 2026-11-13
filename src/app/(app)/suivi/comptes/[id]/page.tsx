@@ -127,7 +127,7 @@ export default async function SuiviCompteDetailPage({
           </p>
           <p className="mt-1 text-sm text-msk-ink/70">
             {account.notes ??
-              "Chaque mouvement post-bascule met à jour le solde courant. L’historique antérieur reste visible en archive."}
+              "Chaque mouvement depuis le nouveau solde met à jour le solde courant. L’historique antérieur reste visible en archive."}
           </p>
         </Surface>
       </div>
@@ -268,10 +268,11 @@ async function CompteHistorySections({
               Courant
             </p>
             <h2 className="text-sm font-semibold text-msk-ink">
-              Mouvements post-bascule
+              Mouvements depuis le nouveau solde
             </h2>
             <p className="mt-0.5 text-xs text-msk-ink/45">
-              Ouverture + opérations depuis la bascule — impactent le solde ·{" "}
+              Ouverture + opérations depuis le{" "}
+              {baselineLabel ?? "12/11/2026"} — impactent le solde ·{" "}
               {currentTotal} ligne{currentTotal === 1 ? "" : "s"}
             </p>
           </div>
@@ -313,11 +314,11 @@ async function CompteHistorySections({
               Archive
             </p>
             <h2 className="text-sm font-semibold text-msk-ink">
-              Historique avant bascule
+              Historique avant le {baselineLabel ?? "12/11/2026"}
             </h2>
             <p className="mt-0.5 text-xs text-msk-ink/45">
-              Avant le {baselineLabel ?? "12/11/2026"} — traçabilité, exclu du
-              solde · {archiveTotal} ligne{archiveTotal === 1 ? "" : "s"}
+              Traçabilité uniquement — exclu du solde courant · {archiveTotal}{" "}
+              ligne{archiveTotal === 1 ? "" : "s"}
             </p>
           </div>
         </div>
@@ -389,7 +390,9 @@ function MovementsTable({
               <td className="px-4 py-3 tabular-nums text-msk-ink/70">
                 {m.movedAt.toLocaleDateString("fr-FR")}
                 {m.transferId ? (
-                  <span className="ml-1 text-xs text-msk-blue">transfert</span>
+                  <span className="ml-1 text-xs text-msk-blue">
+                    virement interne
+                  </span>
                 ) : null}
               </td>
               <td className="px-4 py-3">

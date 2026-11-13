@@ -175,8 +175,8 @@ export default async function SuiviDashboardPage({
                         {formatSvXof(acc.balance)}
                       </p>
                       <p className="mt-1 text-xs text-msk-ink/40">
-                        Solde courant (post-bascule {formatSvBaselineDateFr()}) ·
-                        voir le compte
+                        Solde depuis le {formatSvBaselineDateFr()} · voir le
+                        compte
                       </p>
                     </div>
                   </div>
@@ -209,7 +209,7 @@ export default async function SuiviDashboardPage({
                 tone="coral"
                 label="Sorties"
                 value={formatSvXof(data.current.outOps)}
-                hint={`${scope.label} · hors transferts`}
+                hint={`${scope.label} · hors virements internes`}
               />
               <KpiCard
                 href={inHref}
@@ -217,7 +217,7 @@ export default async function SuiviDashboardPage({
                 tone="blue"
                 label="Entrées"
                 value={formatSvXof(data.current.inOps)}
-                hint={`${scope.label} · hors ouverture`}
+                hint={`${scope.label} · hors solde d’ouverture`}
               />
               <KpiCard
                 href={outHref}

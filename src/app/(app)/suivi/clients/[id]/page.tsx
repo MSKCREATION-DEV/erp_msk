@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Mail, MapPin, Phone, StickyNote } from "lucide-react";
+import {
+  Building2,
+  Mail,
+  MapPin,
+  Phone,
+  StickyNote,
+  UserRound,
+} from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { requireSvPermission } from "@/lib/suivi/access";
@@ -17,6 +24,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
+import { DetailHeroAmount } from "@/components/ui/detail-hero-amount";
 import { SvGedDocActions } from "@/components/suivi/ged-doc-actions";
 import { SvClientDetailActions } from "@/components/suivi/client-detail-actions";
 import { SvPaymentForm } from "@/components/suivi/payment-form";
@@ -110,44 +118,101 @@ export default async function SuiviClientDetailPage({
     }
   }
 
+  const location = [client.city, client.country].filter(Boolean).join(", ");
+
   return (
     <PageShell>
       <PageHeader
         title={client.name}
-        description={[client.contactName, client.city, client.country]
-          .filter(Boolean)
-          .join(" · ")}
+        description="Client Suivi — solde et encaissements"
         backHref="/suivi/clients"
-        actions={
-          <SvClientDetailActions
-            clientId={client.id}
-            canEdit={canEdit}
-            canInvoice={canInvoice}
-          />
-        }
       />
 
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          { label: "Totale", value: bal.totale },
-          { label: "Payé", value: bal.paye },
-          { label: "Restant", value: bal.restant, accent: bal.restant > 0 },
-          { label: "À venir", value: bal.aVenir },
-        ].map((k) => (
-          <Surface key={k.label} className="p-4">
-            <p className="text-xs font-medium uppercase tracking-caps text-msk-ink/45">
-              {k.label}
-            </p>
-            <p
-              className={`mt-1 text-xl font-semibold tabular-nums ${
-                k.accent ? "text-msk-coral" : "text-msk-ink"
-              }`}
-            >
-              {formatSvXof(k.value)}
-            </p>
-          </Surface>
-        ))}
-      </div>
+      <Surface className="mb-5 overflow-hidden p-0">
+        <div className="border-b border-msk-ink/6 bg-gradient-to-br from-msk-blue/6 via-white to-msk-chalk/80 px-5 py-5 sm:px-6 sm:py-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0 space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-msk-blue/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-caps text-msk-blue">
+                  <Building2 className="size-3.5" aria-hidden />
+                  Client
+                </span>
+                {bal.restant > 0 ? (
+                  <Badge tone="coral">Reste dû</Badge>
+                ) : (
+                  <Badge tone="success">À jour</Badge>
+                )}
+                {bal.aVenir > 0 ? (
+                  <Badge tone="blue">À venir {formatSvXof(bal.aVenir)}</Badge>
+                ) : null}
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-xl bg-white text-msk-blue shadow-sm ring-1 ring-msk-ink/6">
+                  <Building2 className="size-5" aria-hidden />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-medium uppercase tracking-caps text-msk-ink/40">
+                    Entreprise
+                  </p>
+                  <h1 className="truncate text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
+                    {client.name}
+                  </h1>
+                  <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-msk-ink/55">
+                    {client.contactName ? (
+                      <span className="inline-flex items-center gap-1">
+                        <UserRound
+                          className="size-3.5 opacity-50"
+                          aria-hidden
+                        />
+                        {client.contactName}
+                      </span>
+                    ) : null}
+                    {client.phone ? (
+                      <span className="inline-flex items-center gap-1">
+                        <Phone className="size-3.5 opacity-50" aria-hidden />
+                        {client.phone}
+                      </span>
+                    ) : null}
+                    {client.email ? (
+                      <span className="inline-flex items-center gap-1">
+                        <Mail className="size-3.5 opacity-50" aria-hidden />
+                        {client.email}
+                      </span>
+                    ) : null}
+                    {location ? (
+                      <span className="inline-flex items-center gap-1">
+                        <MapPin className="size-3.5 opacity-50" aria-hidden />
+                        {location}
+                      </span>
+                    ) : null}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid w-full grid-cols-3 gap-2 sm:w-auto sm:min-w-72">
+              <DetailHeroAmount
+                label="Facturé"
+                value={formatSvXof(bal.totale)}
+              />
+              <DetailHeroAmount label="Payé" value={formatSvXof(bal.paye)} />
+              <DetailHeroAmount
+                label="Reste"
+                value={formatSvXof(bal.restant)}
+                emphasize={bal.restant > 0}
+              />
+            </div>
+          </div>
+
+          <div className="mt-5 border-t border-msk-ink/6 pt-4">
+            <SvClientDetailActions
+              clientId={client.id}
+              canEdit={canEdit}
+              canInvoice={canInvoice}
+            />
+          </div>
+        </div>
+      </Surface>
 
       <div className="mb-5 grid gap-5 lg:grid-cols-3">
         <Surface className="p-4 lg:col-span-1">
@@ -173,10 +238,10 @@ export default async function SuiviClientDetailPage({
                 {client.phone}
               </li>
             ) : null}
-            {client.city || client.country ? (
+            {location ? (
               <li className="flex items-center gap-2 text-msk-ink/70">
                 <MapPin className="size-3.5 shrink-0 text-msk-ink/35" aria-hidden />
-                {[client.city, client.country].filter(Boolean).join(", ")}
+                {location}
               </li>
             ) : null}
             {client.notes ? (
@@ -188,7 +253,7 @@ export default async function SuiviClientDetailPage({
             {!client.contactName &&
             !client.email &&
             !client.phone &&
-            !client.city &&
+            !location &&
             !client.notes ? (
               <li className="text-msk-ink/45">Aucune coordonnée.</li>
             ) : null}

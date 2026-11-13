@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-13 (UX charges / mouvements KPI / comptes histo / TB alertes ; voir §8) |
+| Dernière mise à jour | 2026-11-13 (libellés FR Suivi, alertes Fournisseur+Type, en-têtes fiches ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-13 — Libellés FR simples + alertes + en-têtes fiches
+
+| | |
+|---|---|
+| Quoi | **Langue UI** : plus de « Post-bascule » / jargon (→ « depuis le … », « nouveau solde », « virement interne », « solde d’ouverture »). **Alertes TB charges** : titre = Fournisseur · Type (comme fiche charge) ; n° en secondaire. **En-têtes** alignés fiche charge : clients Suivi, clients Commercial, prospects CRM (badges, montants, hiérarchie). |
+| Pourquoi | Direction : lisibilité sans jargon ; alertes 2026/01597 illisibles ; fiches clients/prospects moins claires que charge |
+| Fichiers | `dashboard-stats.ts`, `tableau-de-bord`, `mouvements`, `comptes/[id]`, `categories.ts`, `detail-hero-amount.tsx`, `suivi/clients/[id]`, `commercial/clients/[id]`, `crm/prospects/[id]`, ce suivi |
+| Statut doc | Guide hub **`draft`** — libellés / en-têtes à valider terrain |
+| Routes | `/suivi/tableau-de-bord` · `/suivi/clients/[id]` · `/commercial/clients/[id]` · `/crm/prospects/[id]` |
 
 ### 2026-11-13 — UX Suivi : charges, KPI mouvements, comptes, alertes TB
 

@@ -24,6 +24,7 @@ import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { SvExpenseDetailActions } from "@/components/suivi/expense-detail-actions";
+import { DetailHeroAmount } from "@/components/ui/detail-hero-amount";
 
 export const metadata: Metadata = { title: "Charge · Suivi" };
 
@@ -154,9 +155,15 @@ export default async function SuiviChargeDetailPage({
             </div>
 
             <div className="grid w-full grid-cols-3 gap-2 sm:w-auto sm:min-w-72">
-              <HeroAmount label="TTC" value={formatSvXof(invoice.totalTtc)} />
-              <HeroAmount label="Payé" value={formatSvXof(invoice.amountPaid)} />
-              <HeroAmount
+              <DetailHeroAmount
+                label="TTC"
+                value={formatSvXof(invoice.totalTtc)}
+              />
+              <DetailHeroAmount
+                label="Payé"
+                value={formatSvXof(invoice.amountPaid)}
+              />
+              <DetailHeroAmount
                 label="Reste"
                 value={formatSvXof(reste)}
                 emphasize={reste > 0}
@@ -323,27 +330,3 @@ export default async function SuiviChargeDetailPage({
   );
 }
 
-function HeroAmount({
-  label,
-  value,
-  emphasize = false,
-}: {
-  label: string;
-  value: string;
-  emphasize?: boolean;
-}) {
-  return (
-    <div className="rounded-xl bg-white/80 px-3 py-2.5 ring-1 ring-msk-ink/6">
-      <p className="text-[10px] font-medium uppercase tracking-caps text-msk-ink/40">
-        {label}
-      </p>
-      <p
-        className={`mt-0.5 text-sm font-semibold tabular-nums sm:text-base ${
-          emphasize ? "text-msk-coral" : "text-msk-ink"
-        }`}
-      >
-        {value}
-      </p>
-    </div>
-  );
-}
