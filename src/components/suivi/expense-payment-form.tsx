@@ -13,11 +13,16 @@ import { formatSvXof } from "@/lib/suivi/labels";
 export function SvExpensePaymentForm({
   invoiceId,
   reste,
+  forceOpen = false,
+  onClose,
 }: {
   invoiceId: string;
   reste: number;
+  /** Contrôlé par la barre d’actions fiche (pas de bouton interne). */
+  forceOpen?: boolean;
+  onClose?: () => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(forceOpen);
   const [state, formAction, pending] = useActionState<
     SvExpenseActionState,
     FormData
@@ -26,7 +31,9 @@ export function SvExpensePaymentForm({
 
   if (reste <= 0) return null;
 
-  if (!open) {
+  const visible = forceOpen || open;
+
+  if (!visible) {
     return (
       <Button type="button" size="sm" onClick={() => setOpen(true)}>
         Enregistrer un paiement
@@ -36,10 +43,15 @@ export function SvExpensePaymentForm({
 
   const today = new Date().toISOString().slice(0, 10);
 
+  function close() {
+    if (onClose) onClose();
+    else setOpen(false);
+  }
+
   return (
     <form
       action={formAction}
-      className="mt-3 space-y-3 rounded-xl border border-msk-ink/8 bg-msk-chalk/40 p-4"
+      className="space-y-3 rounded-xl border border-msk-ink/8 bg-msk-chalk/40 p-4"
     >
       <input type="hidden" name="invoiceId" value={invoiceId} />
       <input type="hidden" name="mirrorMovement" value="1" />
@@ -110,7 +122,7 @@ export function SvExpensePaymentForm({
           type="button"
           variant="secondary"
           disabled={pending}
-          onClick={() => setOpen(false)}
+          onClick={close}
         >
           Fermer
         </Button>

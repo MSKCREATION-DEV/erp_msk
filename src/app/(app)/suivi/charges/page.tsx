@@ -248,8 +248,8 @@ async function ChargesResults({
           <thead className="border-b border-msk-ink/6 bg-msk-chalk/60 text-xs uppercase tracking-caps text-msk-ink/45">
             <tr>
               <SortableTh
-                label="N°"
-                column="number"
+                label="Fournisseur"
+                column="vendor"
                 sort={sort.key}
                 dir={sort.dir}
                 pathname="/suivi/charges"
@@ -258,14 +258,6 @@ async function ChargesResults({
               <SortableTh
                 label="Type"
                 column="category"
-                sort={sort.key}
-                dir={sort.dir}
-                pathname="/suivi/charges"
-                searchParams={listParams}
-              />
-              <SortableTh
-                label="Fournisseur"
-                column="vendor"
                 sort={sort.key}
                 dir={sort.dir}
                 pathname="/suivi/charges"
@@ -288,27 +280,15 @@ async function ChargesResults({
                 searchParams={listParams}
                 defaultDir="asc"
               />
-              <SortableTh
-                label="TTC"
-                column="totalTtc"
-                sort={sort.key}
-                dir={sort.dir}
-                pathname="/suivi/charges"
-                searchParams={listParams}
-                defaultDir="desc"
-                align="right"
-              />
-              <SortableTh
-                label="Payé"
-                column="amountPaid"
-                sort={sort.key}
-                dir={sort.dir}
-                pathname="/suivi/charges"
-                searchParams={listParams}
-                defaultDir="desc"
-                align="right"
-              />
               <PlainTh align="right">Reste</PlainTh>
+              <SortableTh
+                label="N°"
+                column="number"
+                sort={sort.key}
+                dir={sort.dir}
+                pathname="/suivi/charges"
+                searchParams={listParams}
+              />
             </tr>
           </thead>
           <tbody className="divide-y divide-msk-ink/6">
@@ -325,13 +305,23 @@ async function ChargesResults({
                   key={inv.id}
                   href={`/suivi/charges/${inv.id}`}
                 >
-                  <td className="px-4 py-3 font-medium">
-                    {inv.number ?? "—"}
+                  <td className="px-4 py-3">
+                    <p className="font-semibold text-msk-ink">
+                      {inv.vendorName}
+                    </p>
+                    {inv.object || inv.periodLabel ? (
+                      <p className="mt-0.5 truncate text-xs text-msk-ink/45">
+                        {[inv.periodLabel, inv.object]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                    ) : null}
                   </td>
-                  <td className="px-4 py-3 text-msk-ink/70">
-                    {SV_EXPENSE_CATEGORY_LABEL[inv.category]}
+                  <td className="px-4 py-3">
+                    <span className="inline-flex rounded-md bg-msk-blue/8 px-2 py-0.5 text-xs font-medium text-msk-blue">
+                      {SV_EXPENSE_CATEGORY_LABEL[inv.category]}
+                    </span>
                   </td>
-                  <td className="px-4 py-3">{inv.vendorName}</td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap items-center gap-1.5">
                       <Badge tone={SV_EXPENSE_STATUS_TONE[inv.status]}>
@@ -355,7 +345,7 @@ async function ChargesResults({
                         className={`tabular-nums ${
                           bucket === "retard"
                             ? "font-medium text-msk-coral"
-                            : ""
+                            : "text-msk-ink/70"
                         }`}
                         title={dueHint ?? undefined}
                       >
@@ -365,18 +355,20 @@ async function ChargesResults({
                       <span className="text-msk-ink/35">—</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-right tabular-nums">
-                    {formatSvXof(inv.totalTtc)}
-                  </td>
-                  <td className="px-4 py-3 text-right tabular-nums">
-                    {formatSvXof(inv.amountPaid)}
-                  </td>
                   <td
                     className={`px-4 py-3 text-right tabular-nums ${
-                      reste > 0 ? "font-medium text-msk-coral" : ""
+                      reste > 0
+                        ? "font-semibold text-msk-coral"
+                        : "text-msk-ink/55"
                     }`}
                   >
-                    {formatSvXof(reste)}
+                    <span className="block">{formatSvXof(reste)}</span>
+                    <span className="text-[11px] font-normal text-msk-ink/40">
+                      TTC {formatSvXof(inv.totalTtc)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm tabular-nums text-msk-ink/55">
+                    {inv.number ?? "—"}
                   </td>
                 </ClickableRowLink>
               );

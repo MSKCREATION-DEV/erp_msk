@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-12 (UI lecture auto charges/nouveau ; voir §8) |
+| Dernière mise à jour | 2026-11-13 (UX charges / mouvements KPI / comptes histo / TB alertes ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-13 — UX Suivi : charges, KPI mouvements, comptes, alertes TB
+
+| | |
+|---|---|
+| Quoi | **Charges** : listing recentré Fournisseur/Type/Reste ; fiche hero fournisseur+type + actions (payer / GED). **Mouvements** : KPI « activité du filtre » (sorties / entrées / net) + soldes physique/banque — plus de Solde opaque mélangeant archive+ouverture. **Comptes** : historique paginé + recherche + filtres sens/période (courant `page` / archive `hpage`). **TB** : panneaux alertes charges / dettes clients épurés (échéance, montant, lien). |
+| Pourquoi | Lisibilité Direction ; chiffres mouvements incompréhensibles ; historiques comptes trop longs sans recherche |
+| Fichiers | `charges/page.tsx`, `charges/[id]/page.tsx`, `expense-detail-actions.tsx`, `expense-payment-form.tsx`, `mouvements/page.tsx`, `comptes/[id]/page.tsx`, `compte-history-toolbar.tsx`, `list-filter-chip.tsx`, `tableau-de-bord/page.tsx`, `DASHBOARD-KPI.md`, ce suivi |
+| Statut doc | `DASHBOARD-KPI` à jour (§ Mouvements liste) ; guide hub reste **`draft`** |
+| Routes | `/suivi/charges` · `/suivi/charges/[id]` · `/suivi/mouvements` · `/suivi/comptes/[id]` · `/suivi/tableau-de-bord` |
 
 ### 2026-11-12 — KPI Suivi : séparation clients ≠ charges (pattern Commercial)
 

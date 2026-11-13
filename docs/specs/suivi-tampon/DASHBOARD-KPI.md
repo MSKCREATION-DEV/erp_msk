@@ -48,6 +48,22 @@
 | Projection ML / saisonnalité | Sur-ingénierie |
 | Prévision de trésorerie multi-scénarios | V2 budgets |
 | Ratio salaires / CA inventé | CA Suivi ≠ CA compta ; pas assez fiable |
+| **Solde brut Entrées−Sorties sur tout le registre** (liste `/suivi/mouvements`) | Mélange archive pré-bascule + ouverture + ops → chiffres trompeurs (ex. Solde −123 185) |
+
+---
+
+## Mouvements liste — KPI (2026-11-13)
+
+Route : `/suivi/mouvements`.
+
+| Libellé UI | Source | Pourquoi |
+|------------|--------|----------|
+| Sorties d’activité | `sumFlows` sur filtre + `countsTowardBalance=true` | Dépenses du filtre, hors archive / ouverture / transferts |
+| Entrées d’activité | idem | Encaissements / rentrées du filtre |
+| Net activité | `inOps − outOps` | Explicitement « activité », pas le cash en caisse ; négatif = plus de sorties |
+| Solde physique / banque | `accountBalanceFromMoves` (ledger courant) | Cash réel, **indépendant** du filtre liste (masqué si filtre `compte`) |
+
+Aide UI courte sous les cartes. Aligné sur les flux TB (même `sumFlows`).
 
 ---
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { z } from "zod";
 import { LayoutDashboard, Plus } from "lucide-react";
@@ -8,13 +9,20 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { requireSvPermission } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
 import { runSeries } from "@/lib/db/serial";
-import { ensureSvAccounts, getSvAccountByKind } from "@/lib/suivi/accounts";
+import {
+  accountBalanceFromMoves,
+  ensureSvAccounts,
+  formatSvBaselineDateFr,
+  getSvAccountByKind,
+  SV_ACCOUNT_KIND_LABEL,
+} from "@/lib/suivi/accounts";
 import {
   familyToCategoryFilterValues,
   SV_CATEGORY_FAMILIES,
   SV_CATEGORY_FAMILY_LABEL,
 } from "@/lib/suivi/categories";
 import { formatSvXof } from "@/lib/suivi/labels";
+import { sumFlows } from "@/lib/suivi/dashboard-stats";
 import {
   clampPage,
   DEFAULT_PAGE_SIZE,
@@ -136,13 +144,16 @@ export default async function SuiviMouvementsPage({
 
 function MouvementsSummarySkeleton() {
   return (
-    <div className="mb-4 grid gap-3 sm:grid-cols-3">
-      {[0, 1, 2].map((i) => (
-        <div
-          key={i}
-          className="h-20 animate-pulse rounded-xl border border-msk-ink/8 bg-white"
-        />
-      ))}
+    <div className="mb-4 space-y-3">
+      <div className="h-4 w-64 animate-pulse rounded bg-msk-chalk" />
+      <div className="grid gap-3 sm:grid-cols-3">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="h-24 animate-pulse rounded-xl border border-msk-ink/8 bg-white"
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -202,6 +213,15 @@ async function buildMovementWhere(
   return { where, filters, q };
 }
 
+/**
+ * KPI mouvements (décision 2026-11-13) :
+ * - Ne plus afficher Entrées/Sorties/Solde sur *tout* le registre (archive
+ *   pré-bascule + ouverture + ops → chiffres trompeurs, ex. Solde négatif).
+ * - Afficher l’**activité du filtre** post-bascule via `sumFlows` (hors archive
+ *   `countsTowardBalance=false`, hors ouverture, hors transferts) — aligné TB.
+ * - Soldes physique / banque = cash réel courant (comptes), séparés.
+ * Doc : docs/specs/suivi-tampon/DASHBOARD-KPI.md § Mouvements liste.
+ */
 async function MouvementsSummary({
   searchParams,
 }: {
@@ -219,21 +239,53 @@ async function MouvementsSummary({
       filters.category,
   );
 
-  const [inAgg, outAgg] = await runSeries([
+  const activityWhere: Prisma.SvCashMovementWhereInput = {
+    AND: [where, { countsTowardBalance: true }],
+  };
+
+  const [activityMoves, accounts, ledgerMoves] = await runSeries([
     () =>
-      prisma.svCashMovement.aggregate({
-        where: { AND: [where, { direction: "IN" }] },
-        _sum: { amount: true },
+      prisma.svCashMovement.findMany({
+        where: activityWhere,
+        select: {
+          direction: true,
+          amount: true,
+          category: true,
+          accountId: true,
+          transferId: true,
+          movedAt: true,
+        },
       }),
+    async () => {
+      await ensureSvAccounts(prisma);
+      return prisma.svAccount.findMany({
+        orderBy: { kind: "asc" },
+        select: { id: true, kind: true, label: true },
+      });
+    },
     () =>
-      prisma.svCashMovement.aggregate({
-        where: { AND: [where, { direction: "OUT" }] },
-        _sum: { amount: true },
+      prisma.svCashMovement.findMany({
+        where: { countsTowardBalance: true },
+        select: {
+          accountId: true,
+          direction: true,
+          amount: true,
+          countsTowardBalance: true,
+        },
       }),
   ]);
-  const inSum = inAgg._sum.amount ?? 0;
-  const outSum = outAgg._sum.amount ?? 0;
-  const solde = inSum - outSum;
+
+  const flows = sumFlows(activityMoves);
+  const baselineLabel = formatSvBaselineDateFr();
+
+  const balanceByAccount = accounts.map((acc) => ({
+    id: acc.id,
+    kind: acc.kind,
+    label: SV_ACCOUNT_KIND_LABEL[acc.kind],
+    balance: accountBalanceFromMoves(
+      ledgerMoves.filter((m) => m.accountId === acc.id),
+    ),
+  }));
 
   const filterChips: string[] = [];
   if (filters.direction) {
@@ -251,40 +303,94 @@ async function MouvementsSummary({
   if (filters.category) filterChips.push(filters.category);
   if (q) filterChips.push(`« ${q} »`);
 
+  const netTone =
+    flows.netOps < 0
+      ? "text-msk-coral"
+      : flows.netOps > 0
+        ? "text-emerald-700"
+        : "text-msk-ink";
+
   return (
-    <>
-      {hasFilters && filterChips.length > 0 ? (
-        <p className="mb-3 text-sm text-msk-ink/55">
-          Filtres : {filterChips.join(" · ")}
-        </p>
-      ) : null}
-      <div className="mb-4 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
-          <p className="text-xs uppercase tracking-caps text-msk-ink/45">
-            Entrées
+    <div className="mb-5 space-y-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-msk-ink/40">
+            Activité du filtre
           </p>
-          <p className="mt-1 text-xl font-semibold tabular-nums">
-            {formatSvXof(inSum)}
-          </p>
-        </div>
-        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
-          <p className="text-xs uppercase tracking-caps text-msk-ink/45">
-            Sorties
-          </p>
-          <p className="mt-1 text-xl font-semibold tabular-nums">
-            {formatSvXof(outSum)}
-          </p>
-        </div>
-        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
-          <p className="text-xs uppercase tracking-caps text-msk-ink/45">
-            Solde
-          </p>
-          <p className="mt-1 text-xl font-semibold tabular-nums">
-            {formatSvXof(solde)}
+          <p className="mt-0.5 text-sm text-msk-ink/55">
+            Post-bascule ({baselineLabel}) · hors archive, ouverture et
+            transferts
+            {hasFilters && filterChips.length > 0
+              ? ` · ${filterChips.join(" · ")}`
+              : ""}
           </p>
         </div>
       </div>
-    </>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
+          <p className="text-xs uppercase tracking-caps text-msk-ink/45">
+            Sorties d’activité
+          </p>
+          <p className="mt-1 text-xl font-semibold tabular-nums text-msk-coral">
+            {formatSvXof(flows.outOps)}
+          </p>
+          <p className="mt-1 text-[11px] leading-snug text-msk-ink/40">
+            Dépenses du filtre (pas le solde de caisse)
+          </p>
+        </div>
+        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
+          <p className="text-xs uppercase tracking-caps text-msk-ink/45">
+            Entrées d’activité
+          </p>
+          <p className="mt-1 text-xl font-semibold tabular-nums text-msk-blue">
+            {formatSvXof(flows.inOps)}
+          </p>
+          <p className="mt-1 text-[11px] leading-snug text-msk-ink/40">
+            Encaissements / rentrées du filtre
+          </p>
+        </div>
+        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
+          <p className="text-xs uppercase tracking-caps text-msk-ink/45">
+            Net activité
+          </p>
+          <p className={`mt-1 text-xl font-semibold tabular-nums ${netTone}`}>
+            {flows.netOps > 0 ? "+" : ""}
+            {formatSvXof(flows.netOps)}
+          </p>
+          <p className="mt-1 text-[11px] leading-snug text-msk-ink/40">
+            Entrées − sorties · négatif = plus de sorties que d’entrées
+          </p>
+        </div>
+      </div>
+
+      {!filters.compte && balanceByAccount.length > 0 ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {balanceByAccount.map((acc) => (
+            <Link
+              key={acc.id}
+              prefetch={false}
+              href={`/suivi/comptes/${acc.id}`}
+              className="rounded-xl border border-msk-ink/8 bg-msk-chalk/40 px-4 py-3 transition hover:border-msk-blue/30 hover:bg-white"
+            >
+              <p className="text-[11px] font-medium uppercase tracking-caps text-msk-ink/40">
+                Solde {acc.label.replace(/^Compte\s+/i, "").toLowerCase()}
+              </p>
+              <p
+                className={`mt-0.5 text-lg font-semibold tabular-nums ${
+                  acc.balance < 0 ? "text-msk-coral" : "text-msk-ink"
+                }`}
+              >
+                {formatSvXof(acc.balance)}
+              </p>
+              <p className="text-[11px] text-msk-ink/40">
+                Cash réel courant · indépendant du filtre liste
+              </p>
+            </Link>
+          ))}
+        </div>
+      ) : null}
+    </div>
   );
 }
 

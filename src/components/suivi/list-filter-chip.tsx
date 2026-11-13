@@ -27,6 +27,7 @@ export function ListFilterChip({
 
   const params = new URLSearchParams(searchParams.toString());
   params.delete("page");
+  params.delete("hpage");
   if (active) params.delete(param);
   else params.set(param, value);
   const qs = params.toString();
