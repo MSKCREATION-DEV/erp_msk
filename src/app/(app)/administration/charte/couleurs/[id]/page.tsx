@@ -13,8 +13,15 @@ import {
   BRAND_STATUS_LABELS,
   brandStatusTone,
 } from "@/lib/brand/labels";
+import { contrastRatio, wcagLevel } from "@/lib/brand/colors";
 
 export const metadata: Metadata = { title: "Couleur charte" };
+
+const CONTRAST_SURFACES: { label: string; hex: string }[] = [
+  { label: "Sur blanc", hex: "#FFFFFF" },
+  { label: "Sur craie", hex: "#F5F3EF" },
+  { label: "Sur encre", hex: "#0D1330" },
+];
 
 export default async function CouleurDetailPage({
   params,
@@ -42,30 +49,79 @@ export default async function CouleurDetailPage({
       />
 
       <Surface className="overflow-hidden p-0">
-        <div className="flex flex-wrap items-stretch gap-0">
-          <div
-            className="min-h-28 w-full sm:w-40"
-            style={{ backgroundColor: color.hex }}
-          />
-          <div className="flex-1 space-y-2 p-5">
-            <div className="flex flex-wrap gap-2">
-              <Badge tone={brandStatusTone(color.status)}>
-                {BRAND_STATUS_LABELS[color.status]}
-              </Badge>
-              <Badge tone="muted">
-                {BRAND_COLOR_CATEGORY_LABELS[color.category]}
-              </Badge>
-              {color.isReference ? (
-                <Badge tone="blue">Référence MSK</Badge>
+        <div className="border-b border-msk-ink/6 bg-gradient-to-br from-msk-blue/6 via-white to-msk-chalk/80 px-5 py-5 sm:px-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-xl font-semibold text-msk-ink">
+                  {color.label}
+                </h1>
+                <Badge tone={brandStatusTone(color.status)}>
+                  {BRAND_STATUS_LABELS[color.status]}
+                </Badge>
+                <Badge tone="muted">
+                  {BRAND_COLOR_CATEGORY_LABELS[color.category]}
+                </Badge>
+                {color.isReference ? (
+                  <Badge tone="blue">Référence MSK</Badge>
+                ) : null}
+              </div>
+              <p className="mt-1 font-mono text-xs text-msk-ink/45">
+                {color.hex} · {color.tokenKey}
+              </p>
+              {color.usageNotes ? (
+                <p className="mt-1 text-sm text-msk-ink/60">
+                  {color.usageNotes}
+                </p>
               ) : null}
             </div>
-            <p className="font-mono text-lg font-semibold text-msk-ink">
-              {color.hex}
+          </div>
+
+          <div className="mt-4 flex h-24 items-center justify-center rounded-xl border border-msk-ink/8">
+            <div
+              className="h-full w-full rounded-xl"
+              style={{ backgroundColor: color.hex }}
+            />
+          </div>
+
+          <div className="mt-4 border-t border-msk-ink/6 pt-4">
+            <p className="mb-2 text-xs font-medium uppercase tracking-caps text-msk-ink/40">
+              Contraste WCAG (texte sur fond)
             </p>
-            <p className="font-mono text-xs text-msk-ink/45">{color.tokenKey}</p>
-            {color.usageNotes ? (
-              <p className="text-sm text-msk-ink/60">{color.usageNotes}</p>
-            ) : null}
+            <div className="grid gap-2 sm:grid-cols-3">
+              {CONTRAST_SURFACES.map((s) => {
+                const ratio = contrastRatio(color.hex, s.hex);
+                const level = ratio != null ? wcagLevel(ratio) : "fail";
+                return (
+                  <div
+                    key={s.label}
+                    className="rounded-lg border border-msk-ink/8 p-2.5"
+                    style={{ backgroundColor: s.hex, color: color.hex }}
+                  >
+                    <p
+                      className="text-xs font-semibold"
+                      style={{ color: s.hex === "#0D1330" ? "#fff" : undefined }}
+                    >
+                      {s.label}
+                    </p>
+                    <p
+                      className="mt-0.5 text-[11px] opacity-90"
+                      style={{ color: s.hex === "#0D1330" ? "#fff" : undefined }}
+                    >
+                      {ratio ?? "—"} ·{" "}
+                      {level === "fail"
+                        ? "insuffisant pour du texte"
+                        : `conforme ${level} texte`}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-2 text-[11px] leading-relaxed text-msk-ink/40">
+              « Insuffisant » signifie que la couleur ne doit pas servir de
+              texte fin sur ce fond — elle reste utilisable en bouton,
+              surface, icône ou texte large/gras selon le contexte.
+            </p>
           </div>
         </div>
       </Surface>

@@ -11,6 +11,7 @@ import {
 import type { ActionResult } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ChoiceCards } from "@/components/ui/choice-cards";
 import { FieldLabel } from "@/components/ui/field-label";
 import { FormShell } from "@/components/ui/form-shell";
 import {
@@ -31,12 +32,21 @@ import { reportActionSuccess } from "@/lib/toast/report";
 
 const initial: ActionResult | null = null;
 
+const CATEGORY_OPTIONS = Object.entries(BRAND_COLOR_CATEGORY_LABELS).map(
+  ([value, label]) => ({ value: value as BrandColorCategory, label }),
+);
+
+const STATUS_OPTIONS = Object.entries(BRAND_STATUS_LABELS).map(
+  ([value, label]) => ({ value: value as BrandItemStatus, label }),
+);
+
 export function ColorCreateForm() {
   const [state, action, pending] = useActionState(
     createBrandColorAction,
     initial,
   );
   const [color, setColor] = useState("#1D73BC");
+  const [category, setCategory] = useState<BrandColorCategory>("MARQUE");
   const parsed = useMemo(() => parseColorInput(color), [color]);
 
   return (
@@ -74,24 +84,6 @@ export function ColorCreateForm() {
             />
           </div>
           <div>
-            <FieldLabel htmlFor="category" required>
-              Catégorie
-            </FieldLabel>
-            <select
-              id="category"
-              name="category"
-              defaultValue="MARQUE"
-              disabled={pending}
-              className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-            >
-              {Object.entries(BRAND_COLOR_CATEGORY_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
             <FieldLabel htmlFor="color" required>
               Couleur
             </FieldLabel>
@@ -118,6 +110,18 @@ export function ColorCreateForm() {
           <div className="sm:col-span-2">
             <FieldLabel htmlFor="usageNotes">Usages</FieldLabel>
             <Input id="usageNotes" name="usageNotes" disabled={pending} />
+          </div>
+          <div className="sm:col-span-2 lg:col-span-3">
+            <FieldLabel required>Catégorie</FieldLabel>
+            <ChoiceCards
+              name="category"
+              className="mt-2"
+              columns={4}
+              disabled={pending}
+              value={category}
+              onChange={setCategory}
+              options={CATEGORY_OPTIONS}
+            />
           </div>
         </div>
         {parsed ? (
@@ -198,6 +202,10 @@ export function ColorEditForm({
     initial,
   );
   const [color, setColor] = useState(hex);
+  const [categoryValue, setCategoryValue] = useState<BrandColorCategory>(
+    category,
+  );
+  const [statusValue, setStatusValue] = useState<BrandItemStatus>(status);
   const parsed = useMemo(() => parseColorInput(color), [color]);
   const confirm = useConfirm();
 
@@ -221,42 +229,6 @@ export function ColorEditForm({
               required
               disabled={pending}
             />
-          </div>
-          <div>
-            <FieldLabel htmlFor="category" required>
-              Catégorie
-            </FieldLabel>
-            <select
-              id="category"
-              name="category"
-              defaultValue={category}
-              disabled={pending}
-              className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-            >
-              {Object.entries(BRAND_COLOR_CATEGORY_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <FieldLabel htmlFor="status" required>
-              Statut
-            </FieldLabel>
-            <select
-              id="status"
-              name="status"
-              defaultValue={status}
-              disabled={pending}
-              className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-            >
-              {Object.entries(BRAND_STATUS_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
           </div>
           <div>
             <FieldLabel htmlFor="color" required>
@@ -288,6 +260,30 @@ export function ColorEditForm({
               name="usageNotes"
               defaultValue={usageNotes ?? ""}
               disabled={pending}
+            />
+          </div>
+          <div className="sm:col-span-2 lg:col-span-3">
+            <FieldLabel required>Catégorie</FieldLabel>
+            <ChoiceCards
+              name="category"
+              className="mt-2"
+              columns={4}
+              disabled={pending}
+              value={categoryValue}
+              onChange={setCategoryValue}
+              options={CATEGORY_OPTIONS}
+            />
+          </div>
+          <div className="sm:col-span-2 lg:col-span-3">
+            <FieldLabel required>Statut</FieldLabel>
+            <ChoiceCards
+              name="status"
+              className="mt-2"
+              columns={3}
+              disabled={pending}
+              value={statusValue}
+              onChange={setStatusValue}
+              options={STATUS_OPTIONS}
             />
           </div>
         </div>

@@ -22,6 +22,19 @@ import { runSeries } from "@/lib/db/serial";
 
 export const metadata: Metadata = { title: "Charte MSK" };
 
+function ContrastPill({ ratio }: { ratio: number | null }) {
+  if (ratio == null) {
+    return <Badge tone="muted">—</Badge>;
+  }
+  const level = wcagLevel(ratio);
+  const tone = level === "fail" ? "coral" : level === "AAA" ? "success" : "blue";
+  return (
+    <Badge tone={tone}>
+      {ratio} · {level === "fail" ? "sous le seuil texte" : level}
+    </Badge>
+  );
+}
+
 export default async function CharteOverviewPage() {
   const user = await requireUser();
   if (!hasPermission(user, "cfg.brand")) redirect("/accueil");
@@ -144,39 +157,54 @@ export default async function CharteOverviewPage() {
 
         <Surface className="space-y-4 p-5 lg:col-span-4 sm:p-6">
           <h3 className="text-sm font-semibold text-msk-ink">État config</h3>
-          <ul className="space-y-2 text-sm text-msk-ink/70">
-            <li>
-              Logos actifs :{" "}
-              <strong className="text-msk-ink">
+          <ul className="grid grid-cols-2 gap-3 text-sm">
+            <li className="rounded-lg bg-msk-chalk/60 p-2.5">
+              <p className="text-xs text-msk-ink/50">Logos actifs</p>
+              <p className="text-lg font-semibold text-msk-ink">
                 {logos.filter((l) => l.status === "ACTIVE").length}
-              </strong>
+              </p>
             </li>
-            <li>
-              Couleurs actives :{" "}
-              <strong className="text-msk-ink">{colors.length}</strong>
+            <li className="rounded-lg bg-msk-chalk/60 p-2.5">
+              <p className="text-xs text-msk-ink/50">Couleurs actives</p>
+              <p className="text-lg font-semibold text-msk-ink">
+                {colors.length}
+              </p>
             </li>
-            <li>
-              Typographies :{" "}
-              <strong className="text-msk-ink">{typos.length}</strong>
+            <li className="rounded-lg bg-msk-chalk/60 p-2.5">
+              <p className="text-xs text-msk-ink/50">Typographies</p>
+              <p className="text-lg font-semibold text-msk-ink">
+                {typos.length}
+              </p>
             </li>
-            <li>
-              Autres ressources :{" "}
-              <strong className="text-msk-ink">{resources}</strong>
-            </li>
-            <li>
-              Contraste encre / craie :{" "}
-              <strong className="text-msk-ink">
-                {docContrast ?? "—"} ({docContrast ? wcagLevel(docContrast) : "—"})
-              </strong>
-            </li>
-            <li>
-              Bleu sur craie :{" "}
-              <strong className="text-msk-ink">
-                {primaryOnChalk ?? "—"} (
-                {primaryOnChalk ? wcagLevel(primaryOnChalk) : "—"})
-              </strong>
+            <li className="rounded-lg bg-msk-chalk/60 p-2.5">
+              <p className="text-xs text-msk-ink/50">Autres ressources</p>
+              <p className="text-lg font-semibold text-msk-ink">
+                {resources}
+              </p>
             </li>
           </ul>
+
+          <div className="border-t border-msk-ink/6 pt-3">
+            <p className="mb-2 text-xs font-medium uppercase tracking-caps text-msk-ink/40">
+              Contraste WCAG — texte uniquement
+            </p>
+            <ul className="space-y-1.5 text-sm text-msk-ink/70">
+              <li className="flex items-center justify-between gap-2">
+                <span>Encre sur craie (texte courant)</span>
+                <ContrastPill ratio={docContrast} />
+              </li>
+              <li className="flex items-center justify-between gap-2">
+                <span>Bleu sur craie (texte fin)</span>
+                <ContrastPill ratio={primaryOnChalk} />
+              </li>
+            </ul>
+            <p className="mt-2 text-[11px] leading-relaxed text-msk-ink/40">
+              Le bleu MSK reste conforme en usage UI (boutons, liens, icônes,
+              texte large/gras) — ce ratio ne concerne que du texte fin sur
+              fond craie, à éviter avec cette combinaison.
+            </p>
+          </div>
+
           <div className="flex flex-wrap gap-2 pt-2">
             <Link
               prefetch={false}
@@ -265,29 +293,35 @@ export default async function CharteOverviewPage() {
               Gérer
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {colors.slice(0, 9).map((c) => (
-              <Link
-                key={c.id}
-                prefetch={false}
-                href={`/administration/charte/couleurs/${c.id}`}
-                className="overflow-hidden rounded-lg border border-msk-ink/8"
-              >
-                <div className="h-12" style={{ backgroundColor: c.hex }} />
-                <div className="px-2 py-1.5">
-                  <p className="truncate text-xs font-medium text-msk-ink">
-                    {c.label}
-                  </p>
-                  <p className="font-mono text-[10px] text-msk-ink/45">
-                    {c.hex}
-                  </p>
-                  <p className="text-[10px] text-msk-ink/35">
-                    {BRAND_COLOR_CATEGORY_LABELS[c.category]}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {colors.length === 0 ? (
+            <p className="text-sm text-msk-ink/45">
+              Aucune couleur active — lancez le seed ou ajoutez-en une.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {colors.slice(0, 9).map((c) => (
+                <Link
+                  key={c.id}
+                  prefetch={false}
+                  href={`/administration/charte/couleurs/${c.id}`}
+                  className="overflow-hidden rounded-lg border border-msk-ink/8"
+                >
+                  <div className="h-12" style={{ backgroundColor: c.hex }} />
+                  <div className="px-2 py-1.5">
+                    <p className="truncate text-xs font-medium text-msk-ink">
+                      {c.label}
+                    </p>
+                    <p className="font-mono text-[10px] text-msk-ink/45">
+                      {c.hex}
+                    </p>
+                    <p className="text-[10px] text-msk-ink/35">
+                      {BRAND_COLOR_CATEGORY_LABELS[c.category]}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </Surface>
 
         <Surface className="p-5 sm:p-6">
@@ -301,32 +335,38 @@ export default async function CharteOverviewPage() {
               Gérer
             </Link>
           </div>
-          <ul className="divide-y divide-msk-ink/6">
-            {typos.map((t) => (
-              <li key={t.id}>
-                <Link
-                  prefetch={false}
-                  href={`/administration/charte/typographies/${t.id}`}
-                  className="flex items-center justify-between gap-3 py-3 hover:text-msk-blue"
-                >
-                  <div>
-                    <p className="text-sm font-medium">{t.familyName}</p>
-                    <p className="text-xs text-msk-ink/45">
-                      {BRAND_TYPO_ROLE_LABELS[t.role]}
-                      {t.isDefaultErp ? " · défaut ERP" : ""}
-                      {t.isDefaultPdf ? " · défaut PDF" : ""}
-                      {t.files.length
-                        ? ` · ${t.files.length} fichier(s)`
-                        : " · stack système"}
-                    </p>
-                  </div>
-                  <Badge tone={brandStatusTone(t.status)}>
-                    {BRAND_STATUS_LABELS[t.status]}
-                  </Badge>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {typos.length === 0 ? (
+            <p className="text-sm text-msk-ink/45">
+              Aucune typographie — lancez le seed ou ajoutez-en une.
+            </p>
+          ) : (
+            <ul className="divide-y divide-msk-ink/6">
+              {typos.map((t) => (
+                <li key={t.id}>
+                  <Link
+                    prefetch={false}
+                    href={`/administration/charte/typographies/${t.id}`}
+                    className="flex items-center justify-between gap-3 py-3 hover:text-msk-blue"
+                  >
+                    <div>
+                      <p className="text-sm font-medium">{t.familyName}</p>
+                      <p className="text-xs text-msk-ink/45">
+                        {BRAND_TYPO_ROLE_LABELS[t.role]}
+                        {t.isDefaultErp ? " · défaut ERP" : ""}
+                        {t.isDefaultPdf ? " · défaut PDF" : ""}
+                        {t.files.length
+                          ? ` · ${t.files.length} fichier(s)`
+                          : " · stack système"}
+                      </p>
+                    </div>
+                    <Badge tone={brandStatusTone(t.status)}>
+                      {BRAND_STATUS_LABELS[t.status]}
+                    </Badge>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </Surface>
       </div>
     </PageShell>

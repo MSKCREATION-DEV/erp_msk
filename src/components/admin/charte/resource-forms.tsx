@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   createBrandResourceAction,
@@ -10,6 +10,7 @@ import {
 import type { ActionResult } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ChoiceCards } from "@/components/ui/choice-cards";
 import { FieldLabel } from "@/components/ui/field-label";
 import { FormShell } from "@/components/ui/form-shell";
 import { FileDropzone } from "@/components/admin/charte/file-dropzone";
@@ -26,11 +27,20 @@ import { reportActionSuccess } from "@/lib/toast/report";
 
 const initial: ActionResult | null = null;
 
+const KIND_OPTIONS = Object.entries(BRAND_RESOURCE_KIND_LABELS).map(
+  ([value, label]) => ({ value: value as BrandResourceKind, label }),
+);
+
+const STATUS_OPTIONS = Object.entries(BRAND_STATUS_LABELS).map(
+  ([value, label]) => ({ value: value as BrandItemStatus, label }),
+);
+
 export function ResourceCreateForm() {
   const [state, action, pending] = useActionState(
     createBrandResourceAction,
     initial,
   );
+  const [kind, setKind] = useState<BrandResourceKind>("ICONE");
 
   return (
     <FormShell
@@ -57,23 +67,17 @@ export function ResourceCreateForm() {
             </FieldLabel>
             <Input id="label" name="label" required disabled={pending} />
           </div>
-          <div>
-            <FieldLabel htmlFor="kind" required>
-              Catégorie
-            </FieldLabel>
-            <select
-              id="kind"
+          <div className="sm:col-span-2 lg:col-span-3">
+            <FieldLabel required>Catégorie</FieldLabel>
+            <ChoiceCards
               name="kind"
-              defaultValue="ICONE"
+              className="mt-2"
+              columns={4}
               disabled={pending}
-              className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-            >
-              {Object.entries(BRAND_RESOURCE_KIND_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
+              value={kind}
+              onChange={setKind}
+              options={KIND_OPTIONS}
+            />
           </div>
           <div className="sm:col-span-2 lg:col-span-3">
             <FieldLabel htmlFor="description">Description</FieldLabel>
@@ -111,6 +115,8 @@ export function ResourceEditForm({
     updateBrandResourceAction,
     initial,
   );
+  const [kindValue, setKindValue] = useState<BrandResourceKind>(kind);
+  const [statusValue, setStatusValue] = useState<BrandItemStatus>(status);
   const confirm = useConfirm();
   useEffect(() => {
     if (state?.ok) reportActionSuccess(state.message ?? "OK");
@@ -121,7 +127,7 @@ export function ResourceEditForm({
       <form action={action} className="space-y-5">
         <input type="hidden" name="id" value={id} />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div>
+          <div className="sm:col-span-2 lg:col-span-3">
             <FieldLabel htmlFor="label" required>
               Libellé
             </FieldLabel>
@@ -133,41 +139,29 @@ export function ResourceEditForm({
               disabled={pending}
             />
           </div>
-          <div>
-            <FieldLabel htmlFor="kind" required>
-              Catégorie
-            </FieldLabel>
-            <select
-              id="kind"
+          <div className="sm:col-span-2 lg:col-span-3">
+            <FieldLabel required>Catégorie</FieldLabel>
+            <ChoiceCards
               name="kind"
-              defaultValue={kind}
+              className="mt-2"
+              columns={4}
               disabled={pending}
-              className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-            >
-              {Object.entries(BRAND_RESOURCE_KIND_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
+              value={kindValue}
+              onChange={setKindValue}
+              options={KIND_OPTIONS}
+            />
           </div>
-          <div>
-            <FieldLabel htmlFor="status" required>
-              Statut
-            </FieldLabel>
-            <select
-              id="status"
+          <div className="sm:col-span-2 lg:col-span-3">
+            <FieldLabel required>Statut</FieldLabel>
+            <ChoiceCards
               name="status"
-              defaultValue={status}
+              className="mt-2"
+              columns={3}
               disabled={pending}
-              className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-            >
-              {Object.entries(BRAND_STATUS_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
+              value={statusValue}
+              onChange={setStatusValue}
+              options={STATUS_OPTIONS}
+            />
           </div>
           <div className="sm:col-span-2 lg:col-span-3">
             <FieldLabel htmlFor="description">Description</FieldLabel>

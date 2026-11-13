@@ -47,26 +47,40 @@ export default async function TypoDetailPage({
         ]}
       />
 
-      <Surface className="p-5 sm:p-6">
-        <div className="mb-4 flex flex-wrap gap-2">
-          <Badge tone={brandStatusTone(typo.status)}>
-            {BRAND_STATUS_LABELS[typo.status]}
-          </Badge>
-          {typo.isDefaultErp ? <Badge tone="blue">Défaut ERP</Badge> : null}
-          {typo.isDefaultPdf ? <Badge tone="blue">Défaut PDF</Badge> : null}
+      <Surface className="overflow-hidden p-0">
+        <div className="border-b border-msk-ink/6 bg-gradient-to-br from-msk-blue/6 via-white to-msk-chalk/80 px-5 py-5 sm:px-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl font-semibold text-msk-ink">
+              {typo.familyName}
+            </h1>
+            <Badge tone={brandStatusTone(typo.status)}>
+              {BRAND_STATUS_LABELS[typo.status]}
+            </Badge>
+            <Badge tone="muted">{BRAND_TYPO_ROLE_LABELS[typo.role]}</Badge>
+            {typo.isDefaultErp ? <Badge tone="blue">Défaut ERP</Badge> : null}
+            {typo.isDefaultPdf ? <Badge tone="blue">Défaut PDF</Badge> : null}
+          </div>
+          <p className="mt-1 text-xs text-msk-ink/45">
+            {typo.files.length
+              ? `${typo.files.length} fichier(s) de graisse`
+              : "Stack CSS / police système — pas de fichier uploadé"}
+          </p>
+
+          <div className="mt-4 rounded-xl border border-msk-ink/8 bg-white p-5">
+            <p
+              className="text-3xl font-semibold text-msk-ink"
+              style={typo.cssStack ? { fontFamily: typo.cssStack } : undefined}
+            >
+              Agence de création et de digitalisation
+            </p>
+            <p
+              className="mt-2 text-sm text-msk-ink/60"
+              style={typo.cssStack ? { fontFamily: typo.cssStack } : undefined}
+            >
+              ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789
+            </p>
+          </div>
         </div>
-        <p
-          className="text-3xl font-semibold text-msk-ink"
-          style={typo.cssStack ? { fontFamily: typo.cssStack } : undefined}
-        >
-          Agence de création et de digitalisation
-        </p>
-        <p
-          className="mt-2 text-sm text-msk-ink/60"
-          style={typo.cssStack ? { fontFamily: typo.cssStack } : undefined}
-        >
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789
-        </p>
       </Surface>
 
       <div className="grid gap-4 lg:grid-cols-2">

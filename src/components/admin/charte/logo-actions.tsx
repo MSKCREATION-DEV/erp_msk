@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import {
   deleteBrandLogoAction,
   setDefaultDocumentsLogoAction,
@@ -10,7 +10,9 @@ import {
 import type { ActionResult } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ChoiceCards } from "@/components/ui/choice-cards";
 import { FieldLabel } from "@/components/ui/field-label";
+import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import { FileDropzone } from "@/components/admin/charte/file-dropzone";
 import { BRAND_LOGO_KIND_LABELS, BRAND_STATUS_LABELS } from "@/lib/brand/labels";
 import type { BrandItemStatus, BrandLogoKind } from "@/generated/prisma/client";
@@ -18,6 +20,14 @@ import { useConfirm } from "@/components/ui/confirm-dialog";
 import { reportActionSuccess } from "@/lib/toast/report";
 
 const initial: ActionResult | null = null;
+
+const KIND_OPTIONS = Object.entries(BRAND_LOGO_KIND_LABELS).map(
+  ([value, label]) => ({ value, label }),
+);
+
+const STATUS_OPTIONS = Object.entries(BRAND_STATUS_LABELS).map(
+  ([value, label]) => ({ value: value as BrandItemStatus, label }),
+);
 
 export function LogoMetaForm({
   id,
@@ -38,6 +48,8 @@ export function LogoMetaForm({
     updateBrandLogoMetaAction,
     initial,
   );
+  const [kindValue, setKindValue] = useState<BrandLogoKind>(kind);
+  const [statusValue, setStatusValue] = useState<BrandItemStatus>(status);
 
   useEffect(() => {
     if (state?.ok) reportActionSuccess(state.message ?? "Enregistré");
@@ -60,40 +72,29 @@ export function LogoMetaForm({
           />
         </div>
         <div>
-          <FieldLabel htmlFor="kind" required>
-            Type
-          </FieldLabel>
-          <select
-            id="kind"
-            name="kind"
-            defaultValue={kind}
+          <input type="hidden" name="kind" value={kindValue} />
+          <OptionPickerSingle
+            label="Type"
+            required
             disabled={pending}
-            className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-          >
-            {Object.entries(BRAND_LOGO_KIND_LABELS).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
-          </select>
+            options={KIND_OPTIONS}
+            value={kindValue}
+            onChange={(v) => setKindValue((v as BrandLogoKind) ?? kind)}
+            placeholder="Choisir un type"
+            modalTitle="Type de logo"
+          />
         </div>
-        <div>
-          <FieldLabel htmlFor="status" required>
-            Statut
-          </FieldLabel>
-          <select
-            id="status"
+        <div className="sm:col-span-2 lg:col-span-3">
+          <FieldLabel required>Statut</FieldLabel>
+          <ChoiceCards
             name="status"
-            defaultValue={status}
+            className="mt-2"
+            columns={3}
             disabled={pending || isDefaultDocuments}
-            className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-          >
-            {Object.entries(BRAND_STATUS_LABELS).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
-          </select>
+            value={statusValue}
+            onChange={setStatusValue}
+            options={STATUS_OPTIONS}
+          />
           {isDefaultDocuments ? (
             <p className="mt-1 text-xs text-msk-ink/45">
               Défaut documents : reste actif tant qu’il n’est pas remplacé.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { createBrandLogoAction } from "@/actions/brand";
 import type { ActionResult } from "@/actions/auth";
@@ -8,16 +8,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FieldLabel } from "@/components/ui/field-label";
 import { FormShell } from "@/components/ui/form-shell";
+import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import { FileDropzone } from "@/components/admin/charte/file-dropzone";
 import { BRAND_LOGO_KIND_LABELS } from "@/lib/brand/labels";
+import type { BrandLogoKind } from "@/generated/prisma/client";
 
 const initial: ActionResult | null = null;
+
+const KIND_OPTIONS = Object.entries(BRAND_LOGO_KIND_LABELS).map(
+  ([value, label]) => ({ value, label }),
+);
 
 export function LogoCreateForm() {
   const [state, action, pending] = useActionState(
     createBrandLogoAction,
     initial,
   );
+  const [kind, setKind] = useState<BrandLogoKind>("DOCUMENTS");
 
   return (
     <FormShell
@@ -56,22 +63,17 @@ export function LogoCreateForm() {
             />
           </div>
           <div>
-            <FieldLabel htmlFor="kind" required>
-              Type
-            </FieldLabel>
-            <select
-              id="kind"
-              name="kind"
-              defaultValue="DOCUMENTS"
+            <input type="hidden" name="kind" value={kind} />
+            <OptionPickerSingle
+              label="Type"
+              required
               disabled={pending}
-              className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-            >
-              {Object.entries(BRAND_LOGO_KIND_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
+              options={KIND_OPTIONS}
+              value={kind}
+              onChange={(v) => setKind((v as BrandLogoKind) ?? "AUTRE")}
+              placeholder="Choisir un type"
+              modalTitle="Type de logo"
+            />
           </div>
           <div className="sm:col-span-2 lg:col-span-3">
             <FieldLabel htmlFor="description">Description</FieldLabel>

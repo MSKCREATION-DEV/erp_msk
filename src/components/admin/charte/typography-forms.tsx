@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   createBrandTypographyAction,
@@ -10,6 +10,7 @@ import {
 import type { ActionResult } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ChoiceCards } from "@/components/ui/choice-cards";
 import { FieldLabel } from "@/components/ui/field-label";
 import { FormShell } from "@/components/ui/form-shell";
 import { FileDropzone } from "@/components/admin/charte/file-dropzone";
@@ -25,11 +26,26 @@ import { reportActionSuccess } from "@/lib/toast/report";
 
 const initial: ActionResult | null = null;
 
+const ROLE_OPTIONS = Object.entries(BRAND_TYPO_ROLE_LABELS).map(
+  ([value, label]) => ({ value: value as BrandTypographyRole, label }),
+);
+
+const STATUS_OPTIONS = Object.entries(BRAND_STATUS_LABELS).map(
+  ([value, label]) => ({ value: value as BrandItemStatus, label }),
+);
+
+const STYLE_OPTIONS: { value: "normal" | "italic"; label: string }[] = [
+  { value: "normal", label: "Normal" },
+  { value: "italic", label: "Italique" },
+];
+
 export function TypographyCreateForm() {
   const [state, action, pending] = useActionState(
     createBrandTypographyAction,
     initial,
   );
+  const [role, setRole] = useState<BrandTypographyRole>("UI");
+  const [style, setStyle] = useState<"normal" | "italic">("normal");
 
   return (
     <FormShell
@@ -62,23 +78,17 @@ export function TypographyCreateForm() {
               placeholder="Ex. Jost"
             />
           </div>
-          <div>
-            <FieldLabel htmlFor="role" required>
-              Rôle
-            </FieldLabel>
-            <select
-              id="role"
+          <div className="sm:col-span-2 lg:col-span-2">
+            <FieldLabel required>Rôle</FieldLabel>
+            <ChoiceCards
               name="role"
-              defaultValue="UI"
+              className="mt-2"
+              columns={3}
               disabled={pending}
-              className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-            >
-              {Object.entries(BRAND_TYPO_ROLE_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
+              value={role}
+              onChange={setRole}
+              options={ROLE_OPTIONS}
+            />
           </div>
           <div>
             <FieldLabel htmlFor="cssStack">Stack CSS</FieldLabel>
@@ -122,17 +132,16 @@ export function TypographyCreateForm() {
             />
           </div>
           <div>
-            <FieldLabel htmlFor="style">Style</FieldLabel>
-            <select
-              id="style"
+            <FieldLabel required>Style</FieldLabel>
+            <ChoiceCards
               name="style"
-              defaultValue="normal"
+              className="mt-2"
+              columns={2}
               disabled={pending}
-              className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-            >
-              <option value="normal">Normal</option>
-              <option value="italic">Italique</option>
-            </select>
+              value={style}
+              onChange={setStyle}
+              options={STYLE_OPTIONS}
+            />
           </div>
         </div>
         {state && !state.ok ? (
@@ -166,6 +175,8 @@ export function TypographyEditForm({
     updateBrandTypographyAction,
     initial,
   );
+  const [roleValue, setRoleValue] = useState<BrandTypographyRole>(role);
+  const [statusValue, setStatusValue] = useState<BrandItemStatus>(status);
   useEffect(() => {
     if (state?.ok) reportActionSuccess(state.message ?? "OK");
   }, [state]);
@@ -186,41 +197,29 @@ export function TypographyEditForm({
             disabled={pending}
           />
         </div>
-        <div>
-          <FieldLabel htmlFor="role" required>
-            Rôle
-          </FieldLabel>
-          <select
-            id="role"
+        <div className="sm:col-span-2 lg:col-span-2">
+          <FieldLabel required>Rôle</FieldLabel>
+          <ChoiceCards
             name="role"
-            defaultValue={role}
+            className="mt-2"
+            columns={3}
             disabled={pending}
-            className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-          >
-            {Object.entries(BRAND_TYPO_ROLE_LABELS).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
-          </select>
+            value={roleValue}
+            onChange={setRoleValue}
+            options={ROLE_OPTIONS}
+          />
         </div>
-        <div>
-          <FieldLabel htmlFor="status" required>
-            Statut
-          </FieldLabel>
-          <select
-            id="status"
+        <div className="sm:col-span-2 lg:col-span-3">
+          <FieldLabel required>Statut</FieldLabel>
+          <ChoiceCards
             name="status"
-            defaultValue={status}
+            className="mt-2"
+            columns={3}
             disabled={pending}
-            className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-          >
-            {Object.entries(BRAND_STATUS_LABELS).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
-          </select>
+            value={statusValue}
+            onChange={setStatusValue}
+            options={STATUS_OPTIONS}
+          />
         </div>
         <div className="sm:col-span-2">
           <FieldLabel htmlFor="cssStack">Stack CSS</FieldLabel>
@@ -276,6 +275,7 @@ export function FontFileUploadForm({ typographyId }: { typographyId: string }) {
     addBrandFontFileAction,
     initial,
   );
+  const [style, setStyle] = useState<"normal" | "italic">("normal");
   useEffect(() => {
     if (state?.ok) reportActionSuccess(state.message ?? "OK");
   }, [state]);
@@ -301,17 +301,16 @@ export function FontFileUploadForm({ typographyId }: { typographyId: string }) {
           />
         </div>
         <div>
-          <FieldLabel htmlFor="style">Style</FieldLabel>
-          <select
-            id="style"
+          <FieldLabel required>Style</FieldLabel>
+          <ChoiceCards
             name="style"
-            defaultValue="normal"
+            className="mt-2"
+            columns={2}
             disabled={pending}
-            className="h-11 w-full rounded-lg border border-msk-ink/15 bg-white px-3 text-sm"
-          >
-            <option value="normal">Normal</option>
-            <option value="italic">Italique</option>
-          </select>
+            value={style}
+            onChange={setStyle}
+            options={STYLE_OPTIONS}
+          />
         </div>
       </div>
       {state && !state.ok ? (

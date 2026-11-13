@@ -220,6 +220,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 | Routes | `/administration/charte` · `/logos` · `/couleurs` · `/typographies` · `/ressources` (+ `/nouveau`, `/[id]`) |
 | Permission | `cfg.brand` (granulaire view/edit non découpée — dette assumée) |
 
+### 2026-11-13 — Charte : fin des `<select>` natifs + fiches détail alignées canon
+
+| | |
+|---|---|
+| Quoi | Audit complet du module **Charte** vs règles plateforme : **14 `<select>` natifs** (Rôle/Style typographies, Catégorie ressources, Type logo, Catégorie couleurs, Statut) remplacés par `ChoiceCards` (enums courts) ou `OptionPickerSingle` (Type logo, 10 valeurs, picker + recherche) — plus aucun select navigateur dans `administration/charte/**`. Fiches `/couleurs/[id]`, `/ressources/[id]`, `/typographies/[id]` passées en bandeau identité dégradé (même canon que `/logos/[id]`) : titre + badges + métadonnées + aperçu dans un seul bloc, au lieu d’un bloc plat. Overview : contraste WCAG reformulé (pastilles `Badge` tone-codées + note explicite que « Bleu sur craie » ne concerne que du texte fin, pas les boutons/liens) pour ne plus laisser croire à un échec d’accessibilité global ; empty states ajoutés sur Palette/Typographies. |
+| Pourquoi | Signalement utilisateur : listes natives du navigateur interdites par `list-pagination-search.mdc` ; message de contraste WCAG trompeur ; fiches détail hétérogènes vs `detail-page-header.mdc` |
+| Fichiers | `src/components/admin/charte/{typography-forms,resource-forms,logo-create-form,logo-actions,color-forms}.tsx`, `src/app/(app)/administration/charte/{page,couleurs/[id]/page,ressources/[id]/page,typographies/[id]/page}.tsx`, ce suivi |
+| Statut doc | Inchangé (toujours `draft` — aucun parcours/libellé/route supprimé ou renommé, uniquement le contrôle de saisie et l’habillage visuel) |
+| Build/Lint | `tsc --noEmit`, `eslint` (ciblé charte), `next build` : OK sans erreur |
+| Dette restante | Formulaires création Couleur/Logo/Ressource/Typographie restent mono-écran (pas de stepper) — jugé acceptable (`forms-stepper.mdc` exception « formulaire simple », une seule intention métier par formulaire) ; permission `cfg.brand` toujours non découpée view/edit (dette déjà connue, non traitée ici) |
+
 ### 2026-11-13 — Factures clients Suivi : en-tête fiche + règle plateforme
 
 | | |
