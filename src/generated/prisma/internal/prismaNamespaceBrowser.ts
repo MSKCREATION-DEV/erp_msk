@@ -156,7 +156,9 @@ export const ModelName = {
   SvExpenseInvoice: 'SvExpenseInvoice',
   SvExpensePayment: 'SvExpensePayment',
   SvStockItem: 'SvStockItem',
-  SvStockMovement: 'SvStockMovement'
+  SvStockMovement: 'SvStockMovement',
+  SvAbsence: 'SvAbsence',
+  SvLate: 'SvLate'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2011,6 +2013,42 @@ export const SvStockMovementScalarFieldEnum = {
 } as const
 
 export type SvStockMovementScalarFieldEnum = (typeof SvStockMovementScalarFieldEnum)[keyof typeof SvStockMovementScalarFieldEnum]
+
+
+export const SvAbsenceScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  status: 'status',
+  reason: 'reason',
+  reasonNote: 'reasonNote',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  deductLeave: 'deductLeave',
+  deductLeaveNote: 'deductLeaveNote',
+  gedDocumentId: 'gedDocumentId',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvAbsenceScalarFieldEnum = (typeof SvAbsenceScalarFieldEnum)[keyof typeof SvAbsenceScalarFieldEnum]
+
+
+export const SvLateScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  status: 'status',
+  lateDate: 'lateDate',
+  expectedAt: 'expectedAt',
+  arrivedAt: 'arrivedAt',
+  minutesLate: 'minutesLate',
+  note: 'note',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvLateScalarFieldEnum = (typeof SvLateScalarFieldEnum)[keyof typeof SvLateScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -404,6 +404,25 @@ Fuseau : Bamako = UTC+0 → `baselineAt = 2026-11-12T00:00:00.000Z`.
 
 ---
 
+## 12. Décision K — Absences & retards Suivi (2026-11-13)
+
+**Besoin :** tampon Direction pour tracer absences / retards sans polluer ni casser le module RH (`rh_absences`, congés, soldes).
+
+| Élément | Choix |
+|---------|--------|
+| Modèles | `SvAbsence` / `sv_absences` · `SvLate` / `sv_lates` |
+| Collaborateur | FK `rh_employees` (annuaire RH existant — **pas** de 2ᵉ annuaire) |
+| Motifs absence | `MALADIE` · `PERSONNEL` · `AUTORISEE` · `FORMATION` · `AUTRE` |
+| Statuts absence | `ENREGISTREE` · `JUSTIFIEE` · `NON_JUSTIFIEE` · `ANNULEE` |
+| Congés | Flag `deductLeave` + `deductLeaveNote` — **traçabilité seule** ; aucun write `RhLeaveMovement` / solde |
+| Justificatif | GED optionnel à la création ; ajoutable en édition → `/{year}/08_SUIVI_TAMPON/rh/absences` · `DocumentLink` `sv_absence` |
+| Retards | Date + heure arrivée + heure prévue optionnelle → `minutesLate` calculé |
+| UI | `/suivi/absences` · `/suivi/retards` (+ `/nouveau`, fiche, `/edit`) · nav Absences / Retards · hub section « Absences et retards » |
+| Permissions | `sv.hr.view` / `sv.hr.manage` (pack Suivi Direction / Admin) |
+| Seed | **Aucun** — ne pas inventer de collaborateurs ni d’absences |
+
+---
+
 ## Confirmation
 
 - Devis exclus V1 : **oui** (B)  
@@ -415,5 +434,6 @@ Fuseau : Bamako = UTC+0 → `baselineAt = 2026-11-12T00:00:00.000Z`.
 - Stocks inventaire Direction : **oui** (H)  
 - Comptes bascule Direction : **oui** (I)  
 - Charges / factures internes : **oui** (J)  
+- Absences & retards tampon : **oui** (K)  
 - KOUNDJI / contrat ECOSOL / miroir : **clarifiés** (flags review non bloquants)  
 - **Aucune data inventée** dans ce document (compléments Direction explicitement notés ; reports = transfert de dette documenté)

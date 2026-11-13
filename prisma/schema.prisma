@@ -447,6 +447,8 @@ model User {
   svExpenseInvoicesCreated   SvExpenseInvoice[]  @relation("SvExpenseInvoiceCreator")
   svCashMovementsCreated     SvCashMovement[]    @relation("SvCashMovementCreator")
   svStockMovementsCreated    SvStockMovement[]   @relation("SvStockMovementCreator")
+  svAbsencesCreated          SvAbsence[]         @relation("SvAbsenceCreator")
+  svLatesCreated             SvLate[]            @relation("SvLateCreator")
   brandLogosCreated          BrandLogo[]         @relation("BrandLogoCreator")
   brandResourcesCreated      BrandResource[]     @relation("BrandResourceCreator")
 
@@ -2064,6 +2066,9 @@ model RhEmployee {
   inpsLines  RhInpsLine[]
   profileChanges RhProfileChangeRequest[]
   leaveMovements RhLeaveMovement[]
+  /// Absences tampon Suivi (isolées de rh_absences).
+  svAbsences     SvAbsence[]
+  svLates        SvLate[]
 
   @@index([status, lastName])
   @@index([managerEmployeeId])
@@ -2993,4 +2998,79 @@ model SvStockMovement {
 
   @@index([itemId, movedAt])
   @@map("sv_stock_movements")
+}
+
+/// Motif d’absence tampon Suivi (FR simple).
+enum SvAbsenceReason {
+  MALADIE
+  PERSONNEL
+  AUTORISEE
+  FORMATION
+  AUTRE
+}
+
+enum SvAbsenceStatus {
+  ENREGISTREE
+  JUSTIFIEE
+  NON_JUSTIFIEE
+  ANNULEE
+}
+
+enum SvLateStatus {
+  ENREGISTRE
+  ANNULE
+}
+
+/// Absence Suivi (tampon) — isolée de `rh_absences`. Lien collab = `RhEmployee`.
+/// Flag `deductLeave` = traçabilité seule ; ne crée pas de mouvement congés RH.
+model SvAbsence {
+  id              String           @id @default(cuid())
+  employeeId      String
+  status          SvAbsenceStatus  @default(ENREGISTREE)
+  reason          SvAbsenceReason  @default(MALADIE)
+  reasonNote      String?
+  startDate       DateTime         @db.Date
+  endDate         DateTime         @db.Date
+  /// Intention « déduire des congés » — tampon uniquement (pas de write RH).
+  deductLeave     Boolean          @default(false)
+  deductLeaveNote String?
+  gedDocumentId   String?
+  createdById     String           @db.Uuid
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  employee  RhEmployee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  createdBy User       @relation("SvAbsenceCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([employeeId, status])
+  @@index([status, startDate])
+  @@index([startDate, endDate])
+  @@map("sv_absences")
+}
+
+/// Retard Suivi (tampon) — isolé RH timesheet.
+model SvLate {
+  id           String       @id @default(cuid())
+  employeeId   String
+  status       SvLateStatus @default(ENREGISTRE)
+  /// Jour du retard (date locale Bamako).
+  lateDate     DateTime     @db.Date
+  /// Heure prévue d’arrivée (optionnelle) — même jour.
+  expectedAt   DateTime?
+  /// Heure d’arrivée réelle.
+  arrivedAt    DateTime
+  /// Minutes de retard (calculées si expectedAt connu).
+  minutesLate  Int?
+  note         String?
+  createdById  String       @db.Uuid
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  employee  RhEmployee @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  createdBy User       @relation("SvLateCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([employeeId, lateDate])
+  @@index([status, lateDate])
+  @@index([lateDate])
+  @@map("sv_lates")
 }

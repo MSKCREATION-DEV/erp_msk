@@ -11,7 +11,7 @@
 ## ASSUMPTIONS
 
 1. Bascule comptes (décision I) **livrée** : physique **145 000** F · banque **204 815** F · **12/11/2026**. Soldes = `accountBalanceFromMoves` (ignore `countsTowardBalance=false`). Flux TB = mouvements **ledger courant** uniquement.
-2. Pas de permission `sv.dashboard` dédiée : accès `sv.access` + sections gated par `sv.accounts.view` / `sv.movements.view` / `sv.invoices.view` / `sv.clients.view` / `sv.expenses.view`.
+2. Pas de permission `sv.dashboard` dédiée : accès `sv.access` + sections gated par `sv.accounts.view` / `sv.movements.view` / `sv.invoices.view` / `sv.clients.view` / `sv.expenses.view` / `sv.hr.view`.
 3. Menu `/suivi` reste l’accueil modules ; le TB est une page dédiée (nav « Tableau de bord »).
 4. Mapping catégories au **runtime** (pas de migration des strings seed Excel) — incl. `Ouverture / Bascule Direction`.
 
@@ -33,6 +33,7 @@
 | Répartition charges par type | reste dû groupé `ORANGE_INTERNET` / `EDM` / `LOYER` | Liens filtrés `/suivi/charges?impaye=1&type=` |
 | Charges à traiter | charges en retard · bientôt dues (≤ 7 j) | Panneau **séparé** (pas mélangé aux clients) |
 | Dettes clients à traiter | dettes clients ≥ 100 kF | Panneau **séparé** (pas mélangé aux charges) |
+| Absences du jour / retards 7 j | `sv_absences` / `sv_lates` (si `sv.hr.view`) | KPI légers RH tampon — pas de panneau lourd |
 | Top débiteurs | clients avec `reste > 0` | Priorisation recouvrement |
 | Comparatif période vs précédente | mêmes agrégats période précédente | Tendance sans sur-ingénierie |
 | Série temporelle entrées / sorties | buckets jour ou semaine selon période | Graphique tendance |

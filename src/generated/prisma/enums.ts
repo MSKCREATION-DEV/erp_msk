@@ -775,3 +775,32 @@ export const SvStockMoveKind = {
 } as const
 
 export type SvStockMoveKind = (typeof SvStockMoveKind)[keyof typeof SvStockMoveKind]
+
+
+export const SvAbsenceReason = {
+  MALADIE: 'MALADIE',
+  PERSONNEL: 'PERSONNEL',
+  AUTORISEE: 'AUTORISEE',
+  FORMATION: 'FORMATION',
+  AUTRE: 'AUTRE'
+} as const
+
+export type SvAbsenceReason = (typeof SvAbsenceReason)[keyof typeof SvAbsenceReason]
+
+
+export const SvAbsenceStatus = {
+  ENREGISTREE: 'ENREGISTREE',
+  JUSTIFIEE: 'JUSTIFIEE',
+  NON_JUSTIFIEE: 'NON_JUSTIFIEE',
+  ANNULEE: 'ANNULEE'
+} as const
+
+export type SvAbsenceStatus = (typeof SvAbsenceStatus)[keyof typeof SvAbsenceStatus]
+
+
+export const SvLateStatus = {
+  ENREGISTRE: 'ENREGISTRE',
+  ANNULE: 'ANNULE'
+} as const
+
+export type SvLateStatus = (typeof SvLateStatus)[keyof typeof SvLateStatus]

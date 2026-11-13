@@ -11,6 +11,7 @@ export const SV_GED_ENTITY = {
   INVOICE: "sv_invoice",
   CONTRACT: "sv_contract",
   EXPENSE: "sv_expense_invoice",
+  ABSENCE: "sv_absence",
 } as const;
 
 export type SvGedDocType = "Contrats" | "Factures";
@@ -19,6 +20,8 @@ const SUIVI_ROOT_CODE = "08_SUIVI_TAMPON";
 const SUIVI_ROOT_NAME = "Suivi (tampon)";
 const CLIENTS_CODE = "clients";
 const CHARGES_CODE = "charges";
+const RH_CODE = "rh";
+const ABSENCES_CODE = "absences";
 
 const EXPENSE_FOLDER: Record<string, { code: string; name: string }> = {
   ORANGE_INTERNET: { code: "orange", name: "Orange Internet" },
@@ -489,6 +492,90 @@ export async function uploadSvExpenseBytes(opts: {
   });
   await prisma.svExpenseInvoice.update({
     where: { id: opts.expenseId },
+    data: { gedDocumentId: doc.id },
+  });
+  return { documentId: doc.id };
+}
+
+/**
+ * Assure `/{year}/08_SUIVI_TAMPON/rh/absences`.
+ */
+export async function ensureSvAbsencesFolder(opts: {
+  year?: number;
+  createdById?: string;
+}): Promise<FolderRef> {
+  const year = opts.year ?? new Date().getFullYear();
+  await ensureYearTree(year, opts.createdById);
+
+  const yearRoot = await prisma.documentFolder.findUniqueOrThrow({
+    where: { path: `/${year}` },
+    select: { id: true, path: true },
+  });
+
+  const suiviRoot = await ensureChild(
+    yearRoot.id,
+    yearRoot.path,
+    SUIVI_ROOT_CODE,
+    SUIVI_ROOT_NAME,
+    year,
+    opts.createdById,
+  );
+
+  const rhRoot = await ensureChild(
+    suiviRoot.id,
+    suiviRoot.path,
+    RH_CODE,
+    "RH Suivi",
+    year,
+    opts.createdById,
+  );
+
+  return ensureChild(
+    rhRoot.id,
+    rhRoot.path,
+    ABSENCES_CODE,
+    "Absences",
+    year,
+    opts.createdById,
+  );
+}
+
+/** Upload justificatif absence (PDF / image) → Document + lien + gedDocumentId. */
+export async function uploadSvAbsenceBytes(opts: {
+  absenceId: string;
+  originalName: string;
+  mime: string;
+  bytes: Buffer;
+  createdById: string;
+}): Promise<{ documentId: string }> {
+  const folder = await ensureSvAbsencesFolder({
+    createdById: opts.createdById,
+  });
+  const safe = storageSafeName(opts.originalName);
+  const storagePath = `${folder.path.replace(/^\//, "")}/${Date.now()}_${safe}`;
+  await uploadGedObject(storagePath, opts.bytes, opts.mime, { upsert: true });
+  const checksum = createHash("sha256").update(opts.bytes).digest("hex");
+  const doc = await prisma.document.create({
+    data: {
+      folderId: folder.id,
+      storagePath,
+      originalName: opts.originalName,
+      mime: opts.mime,
+      size: opts.bytes.byteLength,
+      checksum,
+      createdById: opts.createdById,
+      links: {
+        create: [
+          {
+            entityType: SV_GED_ENTITY.ABSENCE,
+            entityId: opts.absenceId,
+          },
+        ],
+      },
+    },
+  });
+  await prisma.svAbsence.update({
+    where: { id: opts.absenceId },
     data: { gedDocumentId: doc.id },
   });
   return { documentId: doc.id };

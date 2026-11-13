@@ -563,6 +563,8 @@ export type RhEmployeeWhereInput = {
   inpsLines?: Prisma.RhInpsLineListRelationFilter
   profileChanges?: Prisma.RhProfileChangeRequestListRelationFilter
   leaveMovements?: Prisma.RhLeaveMovementListRelationFilter
+  svAbsences?: Prisma.SvAbsenceListRelationFilter
+  svLates?: Prisma.SvLateListRelationFilter
 }
 
 export type RhEmployeeOrderByWithRelationInput = {
@@ -624,6 +626,8 @@ export type RhEmployeeOrderByWithRelationInput = {
   inpsLines?: Prisma.RhInpsLineOrderByRelationAggregateInput
   profileChanges?: Prisma.RhProfileChangeRequestOrderByRelationAggregateInput
   leaveMovements?: Prisma.RhLeaveMovementOrderByRelationAggregateInput
+  svAbsences?: Prisma.SvAbsenceOrderByRelationAggregateInput
+  svLates?: Prisma.SvLateOrderByRelationAggregateInput
 }
 
 export type RhEmployeeWhereUniqueInput = Prisma.AtLeast<{
@@ -688,6 +692,8 @@ export type RhEmployeeWhereUniqueInput = Prisma.AtLeast<{
   inpsLines?: Prisma.RhInpsLineListRelationFilter
   profileChanges?: Prisma.RhProfileChangeRequestListRelationFilter
   leaveMovements?: Prisma.RhLeaveMovementListRelationFilter
+  svAbsences?: Prisma.SvAbsenceListRelationFilter
+  svLates?: Prisma.SvLateListRelationFilter
 }, "id" | "userId">
 
 export type RhEmployeeOrderByWithAggregationInput = {
@@ -855,6 +861,8 @@ export type RhEmployeeCreateInput = {
   inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateInput = {
@@ -914,6 +922,8 @@ export type RhEmployeeUncheckedCreateInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUpdateInput = {
@@ -973,6 +983,8 @@ export type RhEmployeeUpdateInput = {
   inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateInput = {
@@ -1032,6 +1044,8 @@ export type RhEmployeeUncheckedUpdateInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeCreateManyInput = {
@@ -1574,6 +1588,34 @@ export type RhEmployeeUpdateOneRequiredWithoutInpsLinesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RhEmployeeUpdateToOneWithWhereWithoutInpsLinesInput, Prisma.RhEmployeeUpdateWithoutInpsLinesInput>, Prisma.RhEmployeeUncheckedUpdateWithoutInpsLinesInput>
 }
 
+export type RhEmployeeCreateNestedOneWithoutSvAbsencesInput = {
+  create?: Prisma.XOR<Prisma.RhEmployeeCreateWithoutSvAbsencesInput, Prisma.RhEmployeeUncheckedCreateWithoutSvAbsencesInput>
+  connectOrCreate?: Prisma.RhEmployeeCreateOrConnectWithoutSvAbsencesInput
+  connect?: Prisma.RhEmployeeWhereUniqueInput
+}
+
+export type RhEmployeeUpdateOneRequiredWithoutSvAbsencesNestedInput = {
+  create?: Prisma.XOR<Prisma.RhEmployeeCreateWithoutSvAbsencesInput, Prisma.RhEmployeeUncheckedCreateWithoutSvAbsencesInput>
+  connectOrCreate?: Prisma.RhEmployeeCreateOrConnectWithoutSvAbsencesInput
+  upsert?: Prisma.RhEmployeeUpsertWithoutSvAbsencesInput
+  connect?: Prisma.RhEmployeeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RhEmployeeUpdateToOneWithWhereWithoutSvAbsencesInput, Prisma.RhEmployeeUpdateWithoutSvAbsencesInput>, Prisma.RhEmployeeUncheckedUpdateWithoutSvAbsencesInput>
+}
+
+export type RhEmployeeCreateNestedOneWithoutSvLatesInput = {
+  create?: Prisma.XOR<Prisma.RhEmployeeCreateWithoutSvLatesInput, Prisma.RhEmployeeUncheckedCreateWithoutSvLatesInput>
+  connectOrCreate?: Prisma.RhEmployeeCreateOrConnectWithoutSvLatesInput
+  connect?: Prisma.RhEmployeeWhereUniqueInput
+}
+
+export type RhEmployeeUpdateOneRequiredWithoutSvLatesNestedInput = {
+  create?: Prisma.XOR<Prisma.RhEmployeeCreateWithoutSvLatesInput, Prisma.RhEmployeeUncheckedCreateWithoutSvLatesInput>
+  connectOrCreate?: Prisma.RhEmployeeCreateOrConnectWithoutSvLatesInput
+  upsert?: Prisma.RhEmployeeUpsertWithoutSvLatesInput
+  connect?: Prisma.RhEmployeeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RhEmployeeUpdateToOneWithWhereWithoutSvLatesInput, Prisma.RhEmployeeUpdateWithoutSvLatesInput>, Prisma.RhEmployeeUncheckedUpdateWithoutSvLatesInput>
+}
+
 export type RhEmployeeCreateWithoutUserInput = {
   id?: string
   firstName: string
@@ -1630,6 +1672,8 @@ export type RhEmployeeCreateWithoutUserInput = {
   inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateWithoutUserInput = {
@@ -1688,6 +1732,8 @@ export type RhEmployeeUncheckedCreateWithoutUserInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeCreateOrConnectWithoutUserInput = {
@@ -1762,6 +1808,8 @@ export type RhEmployeeUpdateWithoutUserInput = {
   inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateWithoutUserInput = {
@@ -1820,6 +1868,8 @@ export type RhEmployeeUncheckedUpdateWithoutUserInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeCreateWithoutReportsInput = {
@@ -1878,6 +1928,8 @@ export type RhEmployeeCreateWithoutReportsInput = {
   inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateWithoutReportsInput = {
@@ -1936,6 +1988,8 @@ export type RhEmployeeUncheckedCreateWithoutReportsInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeCreateOrConnectWithoutReportsInput = {
@@ -1999,6 +2053,8 @@ export type RhEmployeeCreateWithoutManagerInput = {
   inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateWithoutManagerInput = {
@@ -2057,6 +2113,8 @@ export type RhEmployeeUncheckedCreateWithoutManagerInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeCreateOrConnectWithoutManagerInput = {
@@ -2136,6 +2194,8 @@ export type RhEmployeeUpdateWithoutReportsInput = {
   inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateWithoutReportsInput = {
@@ -2194,6 +2254,8 @@ export type RhEmployeeUncheckedUpdateWithoutReportsInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUpsertWithWhereUniqueWithoutManagerInput = {
@@ -2321,6 +2383,8 @@ export type RhEmployeeCreateWithoutProfileChangesInput = {
   payslips?: Prisma.RhPayslipCreateNestedManyWithoutEmployeeInput
   inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateWithoutProfileChangesInput = {
@@ -2379,6 +2443,8 @@ export type RhEmployeeUncheckedCreateWithoutProfileChangesInput = {
   payslips?: Prisma.RhPayslipUncheckedCreateNestedManyWithoutEmployeeInput
   inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeCreateOrConnectWithoutProfileChangesInput = {
@@ -2453,6 +2519,8 @@ export type RhEmployeeUpdateWithoutProfileChangesInput = {
   payslips?: Prisma.RhPayslipUpdateManyWithoutEmployeeNestedInput
   inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateWithoutProfileChangesInput = {
@@ -2511,6 +2579,8 @@ export type RhEmployeeUncheckedUpdateWithoutProfileChangesInput = {
   payslips?: Prisma.RhPayslipUncheckedUpdateManyWithoutEmployeeNestedInput
   inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeCreateWithoutLeaveMovementsInput = {
@@ -2569,6 +2639,8 @@ export type RhEmployeeCreateWithoutLeaveMovementsInput = {
   payslips?: Prisma.RhPayslipCreateNestedManyWithoutEmployeeInput
   inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateWithoutLeaveMovementsInput = {
@@ -2627,6 +2699,8 @@ export type RhEmployeeUncheckedCreateWithoutLeaveMovementsInput = {
   payslips?: Prisma.RhPayslipUncheckedCreateNestedManyWithoutEmployeeInput
   inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeCreateOrConnectWithoutLeaveMovementsInput = {
@@ -2701,6 +2775,8 @@ export type RhEmployeeUpdateWithoutLeaveMovementsInput = {
   payslips?: Prisma.RhPayslipUpdateManyWithoutEmployeeNestedInput
   inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateWithoutLeaveMovementsInput = {
@@ -2759,6 +2835,8 @@ export type RhEmployeeUncheckedUpdateWithoutLeaveMovementsInput = {
   payslips?: Prisma.RhPayslipUncheckedUpdateManyWithoutEmployeeNestedInput
   inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeCreateWithoutContractsInput = {
@@ -2817,6 +2895,8 @@ export type RhEmployeeCreateWithoutContractsInput = {
   inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateWithoutContractsInput = {
@@ -2875,6 +2955,8 @@ export type RhEmployeeUncheckedCreateWithoutContractsInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeCreateOrConnectWithoutContractsInput = {
@@ -2949,6 +3031,8 @@ export type RhEmployeeUpdateWithoutContractsInput = {
   inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateWithoutContractsInput = {
@@ -3007,6 +3091,8 @@ export type RhEmployeeUncheckedUpdateWithoutContractsInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeCreateWithoutLeavesInput = {
@@ -3065,6 +3151,8 @@ export type RhEmployeeCreateWithoutLeavesInput = {
   inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateWithoutLeavesInput = {
@@ -3123,6 +3211,8 @@ export type RhEmployeeUncheckedCreateWithoutLeavesInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeCreateOrConnectWithoutLeavesInput = {
@@ -3197,6 +3287,8 @@ export type RhEmployeeUpdateWithoutLeavesInput = {
   inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateWithoutLeavesInput = {
@@ -3255,6 +3347,8 @@ export type RhEmployeeUncheckedUpdateWithoutLeavesInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeCreateWithoutAbsencesInput = {
@@ -3313,6 +3407,8 @@ export type RhEmployeeCreateWithoutAbsencesInput = {
   inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateWithoutAbsencesInput = {
@@ -3371,6 +3467,8 @@ export type RhEmployeeUncheckedCreateWithoutAbsencesInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeCreateOrConnectWithoutAbsencesInput = {
@@ -3445,6 +3543,8 @@ export type RhEmployeeUpdateWithoutAbsencesInput = {
   inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateWithoutAbsencesInput = {
@@ -3503,6 +3603,8 @@ export type RhEmployeeUncheckedUpdateWithoutAbsencesInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeCreateWithoutTimesheetsInput = {
@@ -3561,6 +3663,8 @@ export type RhEmployeeCreateWithoutTimesheetsInput = {
   inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateWithoutTimesheetsInput = {
@@ -3619,6 +3723,8 @@ export type RhEmployeeUncheckedCreateWithoutTimesheetsInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeCreateOrConnectWithoutTimesheetsInput = {
@@ -3693,6 +3799,8 @@ export type RhEmployeeUpdateWithoutTimesheetsInput = {
   inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateWithoutTimesheetsInput = {
@@ -3751,6 +3859,8 @@ export type RhEmployeeUncheckedUpdateWithoutTimesheetsInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeCreateWithoutPayslipsInput = {
@@ -3809,6 +3919,8 @@ export type RhEmployeeCreateWithoutPayslipsInput = {
   inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateWithoutPayslipsInput = {
@@ -3867,6 +3979,8 @@ export type RhEmployeeUncheckedCreateWithoutPayslipsInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeCreateOrConnectWithoutPayslipsInput = {
@@ -3941,6 +4055,8 @@ export type RhEmployeeUpdateWithoutPayslipsInput = {
   inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateWithoutPayslipsInput = {
@@ -3999,6 +4115,8 @@ export type RhEmployeeUncheckedUpdateWithoutPayslipsInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeCreateWithoutInpsLinesInput = {
@@ -4057,6 +4175,8 @@ export type RhEmployeeCreateWithoutInpsLinesInput = {
   payslips?: Prisma.RhPayslipCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeUncheckedCreateWithoutInpsLinesInput = {
@@ -4115,6 +4235,8 @@ export type RhEmployeeUncheckedCreateWithoutInpsLinesInput = {
   payslips?: Prisma.RhPayslipUncheckedCreateNestedManyWithoutEmployeeInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
 }
 
 export type RhEmployeeCreateOrConnectWithoutInpsLinesInput = {
@@ -4189,6 +4311,8 @@ export type RhEmployeeUpdateWithoutInpsLinesInput = {
   payslips?: Prisma.RhPayslipUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateWithoutInpsLinesInput = {
@@ -4247,6 +4371,520 @@ export type RhEmployeeUncheckedUpdateWithoutInpsLinesInput = {
   payslips?: Prisma.RhPayslipUncheckedUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
+}
+
+export type RhEmployeeCreateWithoutSvAbsencesInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  birthName?: string | null
+  email?: string | null
+  phone?: string | null
+  personalEmail?: string | null
+  personalPhone?: string | null
+  jobTitle?: string | null
+  department?: string | null
+  workLocation?: string | null
+  employeeCode?: string | null
+  employeeType?: $Enums.RhEmployeeType
+  status?: $Enums.RhEmployeeStatus
+  hireDate?: Date | string | null
+  endDate?: Date | string | null
+  birthDate?: Date | string | null
+  birthPlace?: string | null
+  nationality?: string | null
+  gender?: string | null
+  idDocumentType?: string | null
+  idDocumentNumber?: string | null
+  idIssuedOn?: Date | string | null
+  idExpiresOn?: Date | string | null
+  idIssuedBy?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  region?: string | null
+  postalCode?: string | null
+  country?: string | null
+  emergencyContact?: string | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  emergencyContactRelation?: string | null
+  bankName?: string | null
+  bankAccountHolder?: string | null
+  bankIban?: string | null
+  leaveBalanceDays?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reglementStatus?: $Enums.RhReglementStatus
+  reglementSignedAt?: Date | string | null
+  avatarDocumentId?: string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutRhEmployeeInput
+  manager?: Prisma.RhEmployeeCreateNestedOneWithoutReportsInput
+  reports?: Prisma.RhEmployeeCreateNestedManyWithoutManagerInput
+  contracts?: Prisma.RhContractCreateNestedManyWithoutEmployeeInput
+  leaves?: Prisma.RhLeaveRequestCreateNestedManyWithoutEmployeeInput
+  absences?: Prisma.RhAbsenceCreateNestedManyWithoutEmployeeInput
+  timesheets?: Prisma.RhTimesheetCreateNestedManyWithoutEmployeeInput
+  payslips?: Prisma.RhPayslipCreateNestedManyWithoutEmployeeInput
+  inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
+  profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
+  leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateCreateNestedManyWithoutEmployeeInput
+}
+
+export type RhEmployeeUncheckedCreateWithoutSvAbsencesInput = {
+  id?: string
+  userId?: string | null
+  firstName: string
+  lastName: string
+  birthName?: string | null
+  email?: string | null
+  phone?: string | null
+  personalEmail?: string | null
+  personalPhone?: string | null
+  jobTitle?: string | null
+  department?: string | null
+  workLocation?: string | null
+  employeeCode?: string | null
+  employeeType?: $Enums.RhEmployeeType
+  status?: $Enums.RhEmployeeStatus
+  hireDate?: Date | string | null
+  endDate?: Date | string | null
+  birthDate?: Date | string | null
+  birthPlace?: string | null
+  nationality?: string | null
+  gender?: string | null
+  idDocumentType?: string | null
+  idDocumentNumber?: string | null
+  idIssuedOn?: Date | string | null
+  idExpiresOn?: Date | string | null
+  idIssuedBy?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  region?: string | null
+  postalCode?: string | null
+  country?: string | null
+  emergencyContact?: string | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  emergencyContactRelation?: string | null
+  bankName?: string | null
+  bankAccountHolder?: string | null
+  bankIban?: string | null
+  managerEmployeeId?: string | null
+  leaveBalanceDays?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reglementStatus?: $Enums.RhReglementStatus
+  reglementSignedAt?: Date | string | null
+  avatarDocumentId?: string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  reports?: Prisma.RhEmployeeUncheckedCreateNestedManyWithoutManagerInput
+  contracts?: Prisma.RhContractUncheckedCreateNestedManyWithoutEmployeeInput
+  leaves?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  absences?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  timesheets?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutEmployeeInput
+  payslips?: Prisma.RhPayslipUncheckedCreateNestedManyWithoutEmployeeInput
+  inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
+  profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svLates?: Prisma.SvLateUncheckedCreateNestedManyWithoutEmployeeInput
+}
+
+export type RhEmployeeCreateOrConnectWithoutSvAbsencesInput = {
+  where: Prisma.RhEmployeeWhereUniqueInput
+  create: Prisma.XOR<Prisma.RhEmployeeCreateWithoutSvAbsencesInput, Prisma.RhEmployeeUncheckedCreateWithoutSvAbsencesInput>
+}
+
+export type RhEmployeeUpsertWithoutSvAbsencesInput = {
+  update: Prisma.XOR<Prisma.RhEmployeeUpdateWithoutSvAbsencesInput, Prisma.RhEmployeeUncheckedUpdateWithoutSvAbsencesInput>
+  create: Prisma.XOR<Prisma.RhEmployeeCreateWithoutSvAbsencesInput, Prisma.RhEmployeeUncheckedCreateWithoutSvAbsencesInput>
+  where?: Prisma.RhEmployeeWhereInput
+}
+
+export type RhEmployeeUpdateToOneWithWhereWithoutSvAbsencesInput = {
+  where?: Prisma.RhEmployeeWhereInput
+  data: Prisma.XOR<Prisma.RhEmployeeUpdateWithoutSvAbsencesInput, Prisma.RhEmployeeUncheckedUpdateWithoutSvAbsencesInput>
+}
+
+export type RhEmployeeUpdateWithoutSvAbsencesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  birthName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employeeCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employeeType?: Prisma.EnumRhEmployeeTypeFieldUpdateOperationsInput | $Enums.RhEmployeeType
+  status?: Prisma.EnumRhEmployeeStatusFieldUpdateOperationsInput | $Enums.RhEmployeeStatus
+  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  birthPlace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idDocumentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idIssuedOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  idExpiresOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  idIssuedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountHolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leaveBalanceDays?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reglementStatus?: Prisma.EnumRhReglementStatusFieldUpdateOperationsInput | $Enums.RhReglementStatus
+  reglementSignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutRhEmployeeNestedInput
+  manager?: Prisma.RhEmployeeUpdateOneWithoutReportsNestedInput
+  reports?: Prisma.RhEmployeeUpdateManyWithoutManagerNestedInput
+  contracts?: Prisma.RhContractUpdateManyWithoutEmployeeNestedInput
+  leaves?: Prisma.RhLeaveRequestUpdateManyWithoutEmployeeNestedInput
+  absences?: Prisma.RhAbsenceUpdateManyWithoutEmployeeNestedInput
+  timesheets?: Prisma.RhTimesheetUpdateManyWithoutEmployeeNestedInput
+  payslips?: Prisma.RhPayslipUpdateManyWithoutEmployeeNestedInput
+  inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
+  profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
+  leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
+}
+
+export type RhEmployeeUncheckedUpdateWithoutSvAbsencesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  birthName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employeeCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employeeType?: Prisma.EnumRhEmployeeTypeFieldUpdateOperationsInput | $Enums.RhEmployeeType
+  status?: Prisma.EnumRhEmployeeStatusFieldUpdateOperationsInput | $Enums.RhEmployeeStatus
+  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  birthPlace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idDocumentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idIssuedOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  idExpiresOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  idIssuedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountHolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  managerEmployeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leaveBalanceDays?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reglementStatus?: Prisma.EnumRhReglementStatusFieldUpdateOperationsInput | $Enums.RhReglementStatus
+  reglementSignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reports?: Prisma.RhEmployeeUncheckedUpdateManyWithoutManagerNestedInput
+  contracts?: Prisma.RhContractUncheckedUpdateManyWithoutEmployeeNestedInput
+  leaves?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  absences?: Prisma.RhAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  timesheets?: Prisma.RhTimesheetUncheckedUpdateManyWithoutEmployeeNestedInput
+  payslips?: Prisma.RhPayslipUncheckedUpdateManyWithoutEmployeeNestedInput
+  inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
+  profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
+}
+
+export type RhEmployeeCreateWithoutSvLatesInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  birthName?: string | null
+  email?: string | null
+  phone?: string | null
+  personalEmail?: string | null
+  personalPhone?: string | null
+  jobTitle?: string | null
+  department?: string | null
+  workLocation?: string | null
+  employeeCode?: string | null
+  employeeType?: $Enums.RhEmployeeType
+  status?: $Enums.RhEmployeeStatus
+  hireDate?: Date | string | null
+  endDate?: Date | string | null
+  birthDate?: Date | string | null
+  birthPlace?: string | null
+  nationality?: string | null
+  gender?: string | null
+  idDocumentType?: string | null
+  idDocumentNumber?: string | null
+  idIssuedOn?: Date | string | null
+  idExpiresOn?: Date | string | null
+  idIssuedBy?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  region?: string | null
+  postalCode?: string | null
+  country?: string | null
+  emergencyContact?: string | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  emergencyContactRelation?: string | null
+  bankName?: string | null
+  bankAccountHolder?: string | null
+  bankIban?: string | null
+  leaveBalanceDays?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reglementStatus?: $Enums.RhReglementStatus
+  reglementSignedAt?: Date | string | null
+  avatarDocumentId?: string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutRhEmployeeInput
+  manager?: Prisma.RhEmployeeCreateNestedOneWithoutReportsInput
+  reports?: Prisma.RhEmployeeCreateNestedManyWithoutManagerInput
+  contracts?: Prisma.RhContractCreateNestedManyWithoutEmployeeInput
+  leaves?: Prisma.RhLeaveRequestCreateNestedManyWithoutEmployeeInput
+  absences?: Prisma.RhAbsenceCreateNestedManyWithoutEmployeeInput
+  timesheets?: Prisma.RhTimesheetCreateNestedManyWithoutEmployeeInput
+  payslips?: Prisma.RhPayslipCreateNestedManyWithoutEmployeeInput
+  inpsLines?: Prisma.RhInpsLineCreateNestedManyWithoutEmployeeInput
+  profileChanges?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutEmployeeInput
+  leaveMovements?: Prisma.RhLeaveMovementCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceCreateNestedManyWithoutEmployeeInput
+}
+
+export type RhEmployeeUncheckedCreateWithoutSvLatesInput = {
+  id?: string
+  userId?: string | null
+  firstName: string
+  lastName: string
+  birthName?: string | null
+  email?: string | null
+  phone?: string | null
+  personalEmail?: string | null
+  personalPhone?: string | null
+  jobTitle?: string | null
+  department?: string | null
+  workLocation?: string | null
+  employeeCode?: string | null
+  employeeType?: $Enums.RhEmployeeType
+  status?: $Enums.RhEmployeeStatus
+  hireDate?: Date | string | null
+  endDate?: Date | string | null
+  birthDate?: Date | string | null
+  birthPlace?: string | null
+  nationality?: string | null
+  gender?: string | null
+  idDocumentType?: string | null
+  idDocumentNumber?: string | null
+  idIssuedOn?: Date | string | null
+  idExpiresOn?: Date | string | null
+  idIssuedBy?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  region?: string | null
+  postalCode?: string | null
+  country?: string | null
+  emergencyContact?: string | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  emergencyContactRelation?: string | null
+  bankName?: string | null
+  bankAccountHolder?: string | null
+  bankIban?: string | null
+  managerEmployeeId?: string | null
+  leaveBalanceDays?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reglementStatus?: $Enums.RhReglementStatus
+  reglementSignedAt?: Date | string | null
+  avatarDocumentId?: string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  reports?: Prisma.RhEmployeeUncheckedCreateNestedManyWithoutManagerInput
+  contracts?: Prisma.RhContractUncheckedCreateNestedManyWithoutEmployeeInput
+  leaves?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  absences?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+  timesheets?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutEmployeeInput
+  payslips?: Prisma.RhPayslipUncheckedCreateNestedManyWithoutEmployeeInput
+  inpsLines?: Prisma.RhInpsLineUncheckedCreateNestedManyWithoutEmployeeInput
+  profileChanges?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutEmployeeInput
+  leaveMovements?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutEmployeeInput
+  svAbsences?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutEmployeeInput
+}
+
+export type RhEmployeeCreateOrConnectWithoutSvLatesInput = {
+  where: Prisma.RhEmployeeWhereUniqueInput
+  create: Prisma.XOR<Prisma.RhEmployeeCreateWithoutSvLatesInput, Prisma.RhEmployeeUncheckedCreateWithoutSvLatesInput>
+}
+
+export type RhEmployeeUpsertWithoutSvLatesInput = {
+  update: Prisma.XOR<Prisma.RhEmployeeUpdateWithoutSvLatesInput, Prisma.RhEmployeeUncheckedUpdateWithoutSvLatesInput>
+  create: Prisma.XOR<Prisma.RhEmployeeCreateWithoutSvLatesInput, Prisma.RhEmployeeUncheckedCreateWithoutSvLatesInput>
+  where?: Prisma.RhEmployeeWhereInput
+}
+
+export type RhEmployeeUpdateToOneWithWhereWithoutSvLatesInput = {
+  where?: Prisma.RhEmployeeWhereInput
+  data: Prisma.XOR<Prisma.RhEmployeeUpdateWithoutSvLatesInput, Prisma.RhEmployeeUncheckedUpdateWithoutSvLatesInput>
+}
+
+export type RhEmployeeUpdateWithoutSvLatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  birthName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employeeCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employeeType?: Prisma.EnumRhEmployeeTypeFieldUpdateOperationsInput | $Enums.RhEmployeeType
+  status?: Prisma.EnumRhEmployeeStatusFieldUpdateOperationsInput | $Enums.RhEmployeeStatus
+  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  birthPlace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idDocumentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idIssuedOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  idExpiresOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  idIssuedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountHolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leaveBalanceDays?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reglementStatus?: Prisma.EnumRhReglementStatusFieldUpdateOperationsInput | $Enums.RhReglementStatus
+  reglementSignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutRhEmployeeNestedInput
+  manager?: Prisma.RhEmployeeUpdateOneWithoutReportsNestedInput
+  reports?: Prisma.RhEmployeeUpdateManyWithoutManagerNestedInput
+  contracts?: Prisma.RhContractUpdateManyWithoutEmployeeNestedInput
+  leaves?: Prisma.RhLeaveRequestUpdateManyWithoutEmployeeNestedInput
+  absences?: Prisma.RhAbsenceUpdateManyWithoutEmployeeNestedInput
+  timesheets?: Prisma.RhTimesheetUpdateManyWithoutEmployeeNestedInput
+  payslips?: Prisma.RhPayslipUpdateManyWithoutEmployeeNestedInput
+  inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
+  profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
+  leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+}
+
+export type RhEmployeeUncheckedUpdateWithoutSvLatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  birthName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  personalPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  workLocation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employeeCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employeeType?: Prisma.EnumRhEmployeeTypeFieldUpdateOperationsInput | $Enums.RhEmployeeType
+  status?: Prisma.EnumRhEmployeeStatusFieldUpdateOperationsInput | $Enums.RhEmployeeStatus
+  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  birthDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  birthPlace?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nationality?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idDocumentType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idIssuedOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  idExpiresOn?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  idIssuedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankAccountHolder?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankIban?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  managerEmployeeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leaveBalanceDays?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reglementStatus?: Prisma.EnumRhReglementStatusFieldUpdateOperationsInput | $Enums.RhReglementStatus
+  reglementSignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  avatarDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reports?: Prisma.RhEmployeeUncheckedUpdateManyWithoutManagerNestedInput
+  contracts?: Prisma.RhContractUncheckedUpdateManyWithoutEmployeeNestedInput
+  leaves?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  absences?: Prisma.RhAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  timesheets?: Prisma.RhTimesheetUncheckedUpdateManyWithoutEmployeeNestedInput
+  payslips?: Prisma.RhPayslipUncheckedUpdateManyWithoutEmployeeNestedInput
+  inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
+  profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
+  leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeCreateManyManagerInput = {
@@ -4354,6 +4992,8 @@ export type RhEmployeeUpdateWithoutManagerInput = {
   inpsLines?: Prisma.RhInpsLineUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateWithoutManagerInput = {
@@ -4412,6 +5052,8 @@ export type RhEmployeeUncheckedUpdateWithoutManagerInput = {
   inpsLines?: Prisma.RhInpsLineUncheckedUpdateManyWithoutEmployeeNestedInput
   profileChanges?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutEmployeeNestedInput
   leaveMovements?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutEmployeeNestedInput
+  svAbsences?: Prisma.SvAbsenceUncheckedUpdateManyWithoutEmployeeNestedInput
+  svLates?: Prisma.SvLateUncheckedUpdateManyWithoutEmployeeNestedInput
 }
 
 export type RhEmployeeUncheckedUpdateManyWithoutManagerInput = {
@@ -4478,6 +5120,8 @@ export type RhEmployeeCountOutputType = {
   inpsLines: number
   profileChanges: number
   leaveMovements: number
+  svAbsences: number
+  svLates: number
 }
 
 export type RhEmployeeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4490,6 +5134,8 @@ export type RhEmployeeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extens
   inpsLines?: boolean | RhEmployeeCountOutputTypeCountInpsLinesArgs
   profileChanges?: boolean | RhEmployeeCountOutputTypeCountProfileChangesArgs
   leaveMovements?: boolean | RhEmployeeCountOutputTypeCountLeaveMovementsArgs
+  svAbsences?: boolean | RhEmployeeCountOutputTypeCountSvAbsencesArgs
+  svLates?: boolean | RhEmployeeCountOutputTypeCountSvLatesArgs
 }
 
 /**
@@ -4565,6 +5211,20 @@ export type RhEmployeeCountOutputTypeCountLeaveMovementsArgs<ExtArgs extends run
   where?: Prisma.RhLeaveMovementWhereInput
 }
 
+/**
+ * RhEmployeeCountOutputType without action
+ */
+export type RhEmployeeCountOutputTypeCountSvAbsencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SvAbsenceWhereInput
+}
+
+/**
+ * RhEmployeeCountOutputType without action
+ */
+export type RhEmployeeCountOutputTypeCountSvLatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SvLateWhereInput
+}
+
 
 export type RhEmployeeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -4625,6 +5285,8 @@ export type RhEmployeeSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   inpsLines?: boolean | Prisma.RhEmployee$inpsLinesArgs<ExtArgs>
   profileChanges?: boolean | Prisma.RhEmployee$profileChangesArgs<ExtArgs>
   leaveMovements?: boolean | Prisma.RhEmployee$leaveMovementsArgs<ExtArgs>
+  svAbsences?: boolean | Prisma.RhEmployee$svAbsencesArgs<ExtArgs>
+  svLates?: boolean | Prisma.RhEmployee$svLatesArgs<ExtArgs>
   _count?: boolean | Prisma.RhEmployeeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rhEmployee"]>
 
@@ -4795,6 +5457,8 @@ export type RhEmployeeInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   inpsLines?: boolean | Prisma.RhEmployee$inpsLinesArgs<ExtArgs>
   profileChanges?: boolean | Prisma.RhEmployee$profileChangesArgs<ExtArgs>
   leaveMovements?: boolean | Prisma.RhEmployee$leaveMovementsArgs<ExtArgs>
+  svAbsences?: boolean | Prisma.RhEmployee$svAbsencesArgs<ExtArgs>
+  svLates?: boolean | Prisma.RhEmployee$svLatesArgs<ExtArgs>
   _count?: boolean | Prisma.RhEmployeeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RhEmployeeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4820,6 +5484,11 @@ export type $RhEmployeePayload<ExtArgs extends runtime.Types.Extensions.Internal
     inpsLines: Prisma.$RhInpsLinePayload<ExtArgs>[]
     profileChanges: Prisma.$RhProfileChangeRequestPayload<ExtArgs>[]
     leaveMovements: Prisma.$RhLeaveMovementPayload<ExtArgs>[]
+    /**
+     * Absences tampon Suivi (isolées de rh_absences).
+     */
+    svAbsences: Prisma.$SvAbsencePayload<ExtArgs>[]
+    svLates: Prisma.$SvLatePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -5283,6 +5952,8 @@ export interface Prisma__RhEmployeeClient<T, Null = never, ExtArgs extends runti
   inpsLines<T extends Prisma.RhEmployee$inpsLinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RhEmployee$inpsLinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RhInpsLinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   profileChanges<T extends Prisma.RhEmployee$profileChangesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RhEmployee$profileChangesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RhProfileChangeRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   leaveMovements<T extends Prisma.RhEmployee$leaveMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RhEmployee$leaveMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RhLeaveMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  svAbsences<T extends Prisma.RhEmployee$svAbsencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RhEmployee$svAbsencesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SvAbsencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  svLates<T extends Prisma.RhEmployee$svLatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RhEmployee$svLatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SvLatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6011,6 +6682,54 @@ export type RhEmployee$leaveMovementsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.RhLeaveMovementScalarFieldEnum | Prisma.RhLeaveMovementScalarFieldEnum[]
+}
+
+/**
+ * RhEmployee.svAbsences
+ */
+export type RhEmployee$svAbsencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SvAbsence
+   */
+  select?: Prisma.SvAbsenceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SvAbsence
+   */
+  omit?: Prisma.SvAbsenceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SvAbsenceInclude<ExtArgs> | null
+  where?: Prisma.SvAbsenceWhereInput
+  orderBy?: Prisma.SvAbsenceOrderByWithRelationInput | Prisma.SvAbsenceOrderByWithRelationInput[]
+  cursor?: Prisma.SvAbsenceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SvAbsenceScalarFieldEnum | Prisma.SvAbsenceScalarFieldEnum[]
+}
+
+/**
+ * RhEmployee.svLates
+ */
+export type RhEmployee$svLatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SvLate
+   */
+  select?: Prisma.SvLateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SvLate
+   */
+  omit?: Prisma.SvLateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SvLateInclude<ExtArgs> | null
+  where?: Prisma.SvLateWhereInput
+  orderBy?: Prisma.SvLateOrderByWithRelationInput | Prisma.SvLateOrderByWithRelationInput[]
+  cursor?: Prisma.SvLateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SvLateScalarFieldEnum | Prisma.SvLateScalarFieldEnum[]
 }
 
 /**

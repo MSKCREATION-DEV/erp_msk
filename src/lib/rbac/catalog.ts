@@ -139,6 +139,8 @@ export const PERMISSIONS: PermissionDef[] = [
   { code: "sv.accounts.manage", domain: "sv", description: "Créditer / débiter / transfert comptes Suivi" },
   { code: "sv.stock.view", domain: "sv", description: "Voir stocks Suivi" },
   { code: "sv.stock.manage", domain: "sv", description: "Ajuster / mouvements stock Suivi" },
+  { code: "sv.hr.view", domain: "sv", description: "Voir absences et retards Suivi" },
+  { code: "sv.hr.manage", domain: "sv", description: "Gérer absences et retards Suivi" },
 ];
 
 /** Pack Suivi complet — à attribuer Direction / Admin plateforme uniquement. */
@@ -156,6 +158,8 @@ export const SV_PERMISSIONS = [
   "sv.accounts.manage",
   "sv.stock.view",
   "sv.stock.manage",
+  "sv.hr.view",
+  "sv.hr.manage",
 ] as const;
 
 export const PACK_PERMISSIONS: Record<string, string[]> = {

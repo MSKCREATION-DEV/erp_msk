@@ -549,3 +549,14 @@ export type SvStockItem = Prisma.SvStockItemModel
  * 
  */
 export type SvStockMovement = Prisma.SvStockMovementModel
+/**
+ * Model SvAbsence
+ * Absence Suivi (tampon) — isolée de `rh_absences`. Lien collab = `RhEmployee`.
+ * Flag `deductLeave` = traçabilité seule ; ne crée pas de mouvement congés RH.
+ */
+export type SvAbsence = Prisma.SvAbsenceModel
+/**
+ * Model SvLate
+ * Retard Suivi (tampon) — isolé RH timesheet.
+ */
+export type SvLate = Prisma.SvLateModel

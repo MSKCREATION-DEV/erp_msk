@@ -502,7 +502,9 @@ export const ModelName = {
   SvExpenseInvoice: 'SvExpenseInvoice',
   SvExpensePayment: 'SvExpensePayment',
   SvStockItem: 'SvStockItem',
-  SvStockMovement: 'SvStockMovement'
+  SvStockMovement: 'SvStockMovement',
+  SvAbsence: 'SvAbsence',
+  SvLate: 'SvLate'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -518,7 +520,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organizationSettings" | "user" | "group" | "groupMember" | "permission" | "permissionPack" | "packPermission" | "userPack" | "userPermissionOverride" | "auditLog" | "passwordResetRequest" | "documentFolder" | "document" | "documentLink" | "documentAcl" | "brandAsset" | "brandLogo" | "brandColor" | "brandTypography" | "brandFontFile" | "brandResource" | "brandConfiguration" | "signatureAsset" | "orgNode" | "documentTemplate" | "catalogOffer" | "catalogOfferVersion" | "crmOrganization" | "crmContact" | "crmContactChannel" | "crmOpportunity" | "crmAssignmentRequest" | "crmOpportunityOffer" | "crmActivity" | "crmTask" | "crmAppointment" | "appNotification" | "crmScript" | "crmPeriodGoal" | "crmWeeklyReport" | "comNumberSequence" | "comClient" | "comQuote" | "comQuoteLine" | "comContract" | "comContractLine" | "comInvoice" | "comInvoiceLine" | "comInvoiceArrearsRef" | "comCreditNote" | "comPayment" | "comPaymentAllocation" | "comClientEvent" | "comInvoiceReminder" | "comImportBatch" | "comImportAnomaly" | "cptAccount" | "cptJournal" | "cptExercise" | "cptPeriod" | "cptEntry" | "cptEntryLine" | "cptBankAccount" | "cptBankTxn" | "cptFxRate" | "budExercise" | "budLine" | "budPatenteDue" | "rhEmployee" | "rhProfileChangeRequest" | "rhProfileChangeLine" | "rhLeaveTypeConfig" | "rhLeaveMovement" | "rhWorkSchedule" | "rhPublicHoliday" | "rhContract" | "rhLeaveRequest" | "rhAbsence" | "rhTimesheet" | "rhTimesheetLine" | "rhInpsSettings" | "rhPayrollPeriod" | "rhPayslip" | "rhPayslipLine" | "rhInpsLine" | "rhContractTypeRule" | "stkArticle" | "stkMovement" | "stkPurchase" | "stkPurchaseLine" | "patAsset" | "prjProject" | "prjMember" | "prjExpense" | "opsTicket" | "svClient" | "svInvoice" | "svInvoiceLine" | "svPayment" | "svContractMeta" | "svAccount" | "svCashMovement" | "svExpenseInvoice" | "svExpensePayment" | "svStockItem" | "svStockMovement"
+    modelProps: "organizationSettings" | "user" | "group" | "groupMember" | "permission" | "permissionPack" | "packPermission" | "userPack" | "userPermissionOverride" | "auditLog" | "passwordResetRequest" | "documentFolder" | "document" | "documentLink" | "documentAcl" | "brandAsset" | "brandLogo" | "brandColor" | "brandTypography" | "brandFontFile" | "brandResource" | "brandConfiguration" | "signatureAsset" | "orgNode" | "documentTemplate" | "catalogOffer" | "catalogOfferVersion" | "crmOrganization" | "crmContact" | "crmContactChannel" | "crmOpportunity" | "crmAssignmentRequest" | "crmOpportunityOffer" | "crmActivity" | "crmTask" | "crmAppointment" | "appNotification" | "crmScript" | "crmPeriodGoal" | "crmWeeklyReport" | "comNumberSequence" | "comClient" | "comQuote" | "comQuoteLine" | "comContract" | "comContractLine" | "comInvoice" | "comInvoiceLine" | "comInvoiceArrearsRef" | "comCreditNote" | "comPayment" | "comPaymentAllocation" | "comClientEvent" | "comInvoiceReminder" | "comImportBatch" | "comImportAnomaly" | "cptAccount" | "cptJournal" | "cptExercise" | "cptPeriod" | "cptEntry" | "cptEntryLine" | "cptBankAccount" | "cptBankTxn" | "cptFxRate" | "budExercise" | "budLine" | "budPatenteDue" | "rhEmployee" | "rhProfileChangeRequest" | "rhProfileChangeLine" | "rhLeaveTypeConfig" | "rhLeaveMovement" | "rhWorkSchedule" | "rhPublicHoliday" | "rhContract" | "rhLeaveRequest" | "rhAbsence" | "rhTimesheet" | "rhTimesheetLine" | "rhInpsSettings" | "rhPayrollPeriod" | "rhPayslip" | "rhPayslipLine" | "rhInpsLine" | "rhContractTypeRule" | "stkArticle" | "stkMovement" | "stkPurchase" | "stkPurchaseLine" | "patAsset" | "prjProject" | "prjMember" | "prjExpense" | "opsTicket" | "svClient" | "svInvoice" | "svInvoiceLine" | "svPayment" | "svContractMeta" | "svAccount" | "svCashMovement" | "svExpenseInvoice" | "svExpensePayment" | "svStockItem" | "svStockMovement" | "svAbsence" | "svLate"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -8366,6 +8368,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SvAbsence: {
+      payload: Prisma.$SvAbsencePayload<ExtArgs>
+      fields: Prisma.SvAbsenceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvAbsenceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvAbsencePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvAbsenceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvAbsencePayload>
+        }
+        findFirst: {
+          args: Prisma.SvAbsenceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvAbsencePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvAbsenceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvAbsencePayload>
+        }
+        findMany: {
+          args: Prisma.SvAbsenceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvAbsencePayload>[]
+        }
+        create: {
+          args: Prisma.SvAbsenceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvAbsencePayload>
+        }
+        createMany: {
+          args: Prisma.SvAbsenceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvAbsenceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvAbsencePayload>[]
+        }
+        delete: {
+          args: Prisma.SvAbsenceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvAbsencePayload>
+        }
+        update: {
+          args: Prisma.SvAbsenceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvAbsencePayload>
+        }
+        deleteMany: {
+          args: Prisma.SvAbsenceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvAbsenceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvAbsenceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvAbsencePayload>[]
+        }
+        upsert: {
+          args: Prisma.SvAbsenceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvAbsencePayload>
+        }
+        aggregate: {
+          args: Prisma.SvAbsenceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvAbsence>
+        }
+        groupBy: {
+          args: Prisma.SvAbsenceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvAbsenceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvAbsenceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvAbsenceCountAggregateOutputType> | number
+        }
+      }
+    }
+    SvLate: {
+      payload: Prisma.$SvLatePayload<ExtArgs>
+      fields: Prisma.SvLateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SvLateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvLatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SvLateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvLatePayload>
+        }
+        findFirst: {
+          args: Prisma.SvLateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvLatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SvLateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvLatePayload>
+        }
+        findMany: {
+          args: Prisma.SvLateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvLatePayload>[]
+        }
+        create: {
+          args: Prisma.SvLateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvLatePayload>
+        }
+        createMany: {
+          args: Prisma.SvLateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SvLateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvLatePayload>[]
+        }
+        delete: {
+          args: Prisma.SvLateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvLatePayload>
+        }
+        update: {
+          args: Prisma.SvLateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvLatePayload>
+        }
+        deleteMany: {
+          args: Prisma.SvLateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SvLateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SvLateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvLatePayload>[]
+        }
+        upsert: {
+          args: Prisma.SvLateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SvLatePayload>
+        }
+        aggregate: {
+          args: Prisma.SvLateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSvLate>
+        }
+        groupBy: {
+          args: Prisma.SvLateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvLateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SvLateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SvLateCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -10243,6 +10393,42 @@ export const SvStockMovementScalarFieldEnum = {
 export type SvStockMovementScalarFieldEnum = (typeof SvStockMovementScalarFieldEnum)[keyof typeof SvStockMovementScalarFieldEnum]
 
 
+export const SvAbsenceScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  status: 'status',
+  reason: 'reason',
+  reasonNote: 'reasonNote',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  deductLeave: 'deductLeave',
+  deductLeaveNote: 'deductLeaveNote',
+  gedDocumentId: 'gedDocumentId',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvAbsenceScalarFieldEnum = (typeof SvAbsenceScalarFieldEnum)[keyof typeof SvAbsenceScalarFieldEnum]
+
+
+export const SvLateScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  status: 'status',
+  lateDate: 'lateDate',
+  expectedAt: 'expectedAt',
+  arrivedAt: 'arrivedAt',
+  minutesLate: 'minutesLate',
+  note: 'note',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SvLateScalarFieldEnum = (typeof SvLateScalarFieldEnum)[keyof typeof SvLateScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -11411,6 +11597,48 @@ export type ListEnumSvStockMoveKindFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'SvAbsenceStatus'
+ */
+export type EnumSvAbsenceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvAbsenceStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SvAbsenceStatus[]'
+ */
+export type ListEnumSvAbsenceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvAbsenceStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SvAbsenceReason'
+ */
+export type EnumSvAbsenceReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvAbsenceReason'>
+    
+
+
+/**
+ * Reference to a field of type 'SvAbsenceReason[]'
+ */
+export type ListEnumSvAbsenceReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvAbsenceReason[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SvLateStatus'
+ */
+export type EnumSvLateStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvLateStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SvLateStatus[]'
+ */
+export type ListEnumSvLateStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvLateStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -11680,6 +11908,8 @@ export type GlobalOmitConfig = {
   svExpensePayment?: Prisma.SvExpensePaymentOmit
   svStockItem?: Prisma.SvStockItemOmit
   svStockMovement?: Prisma.SvStockMovementOmit
+  svAbsence?: Prisma.SvAbsenceOmit
+  svLate?: Prisma.SvLateOmit
 }
 
 /* Types for Logging */

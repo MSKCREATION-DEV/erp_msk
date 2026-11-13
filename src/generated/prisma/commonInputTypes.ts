@@ -1687,6 +1687,57 @@ export type EnumSvStockMoveKindWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumSvStockMoveKindFilter<$PrismaModel>
 }
 
+export type EnumSvAbsenceStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAbsenceStatus | Prisma.EnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAbsenceStatus[] | Prisma.ListEnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAbsenceStatus[] | Prisma.ListEnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAbsenceStatusFilter<$PrismaModel> | $Enums.SvAbsenceStatus
+}
+
+export type EnumSvAbsenceReasonFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAbsenceReason | Prisma.EnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAbsenceReason[] | Prisma.ListEnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAbsenceReason[] | Prisma.ListEnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAbsenceReasonFilter<$PrismaModel> | $Enums.SvAbsenceReason
+}
+
+export type EnumSvAbsenceStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAbsenceStatus | Prisma.EnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAbsenceStatus[] | Prisma.ListEnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAbsenceStatus[] | Prisma.ListEnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAbsenceStatusWithAggregatesFilter<$PrismaModel> | $Enums.SvAbsenceStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvAbsenceStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvAbsenceStatusFilter<$PrismaModel>
+}
+
+export type EnumSvAbsenceReasonWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAbsenceReason | Prisma.EnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAbsenceReason[] | Prisma.ListEnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAbsenceReason[] | Prisma.ListEnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAbsenceReasonWithAggregatesFilter<$PrismaModel> | $Enums.SvAbsenceReason
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvAbsenceReasonFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvAbsenceReasonFilter<$PrismaModel>
+}
+
+export type EnumSvLateStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvLateStatus | Prisma.EnumSvLateStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvLateStatus[] | Prisma.ListEnumSvLateStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvLateStatus[] | Prisma.ListEnumSvLateStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvLateStatusFilter<$PrismaModel> | $Enums.SvLateStatus
+}
+
+export type EnumSvLateStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvLateStatus | Prisma.EnumSvLateStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvLateStatus[] | Prisma.ListEnumSvLateStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvLateStatus[] | Prisma.ListEnumSvLateStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvLateStatusWithAggregatesFilter<$PrismaModel> | $Enums.SvLateStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvLateStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvLateStatusFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -3313,6 +3364,57 @@ export type NestedEnumSvStockMoveKindWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSvStockMoveKindFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSvStockMoveKindFilter<$PrismaModel>
+}
+
+export type NestedEnumSvAbsenceStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAbsenceStatus | Prisma.EnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAbsenceStatus[] | Prisma.ListEnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAbsenceStatus[] | Prisma.ListEnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAbsenceStatusFilter<$PrismaModel> | $Enums.SvAbsenceStatus
+}
+
+export type NestedEnumSvAbsenceReasonFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAbsenceReason | Prisma.EnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAbsenceReason[] | Prisma.ListEnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAbsenceReason[] | Prisma.ListEnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAbsenceReasonFilter<$PrismaModel> | $Enums.SvAbsenceReason
+}
+
+export type NestedEnumSvAbsenceStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAbsenceStatus | Prisma.EnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAbsenceStatus[] | Prisma.ListEnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAbsenceStatus[] | Prisma.ListEnumSvAbsenceStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAbsenceStatusWithAggregatesFilter<$PrismaModel> | $Enums.SvAbsenceStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvAbsenceStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvAbsenceStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumSvAbsenceReasonWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvAbsenceReason | Prisma.EnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  in?: $Enums.SvAbsenceReason[] | Prisma.ListEnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvAbsenceReason[] | Prisma.ListEnumSvAbsenceReasonFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvAbsenceReasonWithAggregatesFilter<$PrismaModel> | $Enums.SvAbsenceReason
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvAbsenceReasonFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvAbsenceReasonFilter<$PrismaModel>
+}
+
+export type NestedEnumSvLateStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvLateStatus | Prisma.EnumSvLateStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvLateStatus[] | Prisma.ListEnumSvLateStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvLateStatus[] | Prisma.ListEnumSvLateStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvLateStatusFilter<$PrismaModel> | $Enums.SvLateStatus
+}
+
+export type NestedEnumSvLateStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvLateStatus | Prisma.EnumSvLateStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.SvLateStatus[] | Prisma.ListEnumSvLateStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvLateStatus[] | Prisma.ListEnumSvLateStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvLateStatusWithAggregatesFilter<$PrismaModel> | $Enums.SvLateStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvLateStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvLateStatusFilter<$PrismaModel>
 }
 
 

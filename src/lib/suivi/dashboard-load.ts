@@ -42,6 +42,11 @@ export type SvInvoicePeriodKpis = {
   amountPaidPeriod: number;
 };
 
+export type SvHrKpis = {
+  absencesToday: number;
+  latesRecent: number;
+};
+
 export type SvDashboardData = {
   accounts: SvAccountBalance[];
   current: SvFlowTotals;
@@ -55,6 +60,7 @@ export type SvDashboardData = {
   expenses: SvExpenseKpis;
   alerts: SvDashboardAlert[];
   movementCount: number;
+  hr: SvHrKpis;
 };
 
 function toMoveRow(m: {
@@ -83,6 +89,7 @@ export async function loadSvDashboard(
     canInvoices: boolean;
     canClients: boolean;
     canExpenses: boolean;
+    canHr?: boolean;
   },
 ): Promise<SvDashboardData> {
   const emptyFlows: SvFlowTotals = {
@@ -308,6 +315,33 @@ export async function loadSvDashboard(
     debtors: opts.canClients ? debtors : [],
   });
 
+  let hr: SvHrKpis = { absencesToday: 0, latesRecent: 0 };
+  if (opts.canHr) {
+    const now = new Date();
+    const todayUtc = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
+    const weekAgo = new Date(todayUtc.getTime() - 6 * 86_400_000);
+    const [absencesToday, latesRecent] = await runSeries([
+      () =>
+        prisma.svAbsence.count({
+          where: {
+            status: { not: "ANNULEE" },
+            startDate: { lte: todayUtc },
+            endDate: { gte: todayUtc },
+          },
+        }),
+      () =>
+        prisma.svLate.count({
+          where: {
+            status: "ENREGISTRE",
+            lateDate: { gte: weekAgo, lte: todayUtc },
+          },
+        }),
+    ]);
+    hr = { absencesToday, latesRecent };
+  }
+
   return {
     accounts,
     current,
@@ -321,5 +355,6 @@ export async function loadSvDashboard(
     expenses,
     alerts,
     movementCount,
+    hr,
   };
 }

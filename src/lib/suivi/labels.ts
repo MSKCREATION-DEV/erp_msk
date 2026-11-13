@@ -1,6 +1,9 @@
 import type {
+  SvAbsenceReason,
+  SvAbsenceStatus,
   SvExpenseCategory,
   SvInvoiceStatus,
+  SvLateStatus,
 } from "@/generated/prisma/client";
 import type { BadgeTone } from "@/components/ui/badge";
 
@@ -58,3 +61,42 @@ export function formatSvXof(amount: number | null | undefined): string {
     }).format(n) + " F"
   );
 }
+
+export const SV_ABSENCE_REASON_LABEL: Record<SvAbsenceReason, string> = {
+  MALADIE: "Maladie",
+  PERSONNEL: "Personnel",
+  AUTORISEE: "Autorisée",
+  FORMATION: "Formation",
+  AUTRE: "Autre",
+};
+
+export const SV_ABSENCE_REASON_OPTIONS: {
+  value: SvAbsenceReason;
+  label: string;
+}[] = (Object.keys(SV_ABSENCE_REASON_LABEL) as SvAbsenceReason[]).map(
+  (value) => ({ value, label: SV_ABSENCE_REASON_LABEL[value] }),
+);
+
+export const SV_ABSENCE_STATUS_LABEL: Record<SvAbsenceStatus, string> = {
+  ENREGISTREE: "Enregistrée",
+  JUSTIFIEE: "Justifiée",
+  NON_JUSTIFIEE: "Non justifiée",
+  ANNULEE: "Annulée",
+};
+
+export const SV_ABSENCE_STATUS_TONE: Record<SvAbsenceStatus, BadgeTone> = {
+  ENREGISTREE: "blue",
+  JUSTIFIEE: "success",
+  NON_JUSTIFIEE: "coral",
+  ANNULEE: "ink",
+};
+
+export const SV_LATE_STATUS_LABEL: Record<SvLateStatus, string> = {
+  ENREGISTRE: "Enregistré",
+  ANNULE: "Annulé",
+};
+
+export const SV_LATE_STATUS_TONE: Record<SvLateStatus, BadgeTone> = {
+  ENREGISTRE: "coral",
+  ANNULE: "ink",
+};

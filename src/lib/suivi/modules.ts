@@ -6,6 +6,7 @@ export type SuiviHubSection =
   | "pilotage"
   | "clients"
   | "tresorerie"
+  | "rh"
   | "stocks";
 
 export type SuiviHubTone = "blue" | "coral" | "cyan" | "ink";
@@ -40,6 +41,11 @@ export const SUIVI_HUB_SECTIONS: {
     id: "tresorerie",
     title: "Charges et trésorerie",
     subtitle: "Fournisseurs, comptes, mouvements",
+  },
+  {
+    id: "rh",
+    title: "Absences et retards",
+    subtitle: "Tampon RH — collaborateurs",
   },
   {
     id: "stocks",
@@ -104,6 +110,24 @@ export const SUIVI_MODULES: SuiviModule[] = [
     permission: "sv.movements.view",
   },
   {
+    id: "absences",
+    href: "/suivi/absences",
+    title: "Absences",
+    description: "Maladie, autorisées — justificatif GED optionnel.",
+    section: "rh",
+    tone: "coral",
+    permission: "sv.hr.view",
+  },
+  {
+    id: "retards",
+    href: "/suivi/retards",
+    title: "Retards",
+    description: "Arrivées tardives — date et heure.",
+    section: "rh",
+    tone: "blue",
+    permission: "sv.hr.view",
+  },
+  {
     id: "stocks",
     href: "/suivi/stocks",
     title: "Stocks",
@@ -141,6 +165,16 @@ export const SUIVI_SUBNAV = [
     href: "/suivi/mouvements",
     label: "Mouvements",
     permission: "sv.movements.view",
+  },
+  {
+    href: "/suivi/absences",
+    label: "Absences",
+    permission: "sv.hr.view",
+  },
+  {
+    href: "/suivi/retards",
+    label: "Retards",
+    permission: "sv.hr.view",
   },
   { href: "/suivi/stocks", label: "Stocks", permission: "sv.stock.view" },
 ] as const;

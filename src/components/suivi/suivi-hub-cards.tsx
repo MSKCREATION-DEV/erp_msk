@@ -6,6 +6,8 @@ import {
   Users,
   Wallet,
   Building2,
+  CalendarOff,
+  Clock,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -28,6 +30,8 @@ const ICONS: Record<string, LucideIcon> = {
   charges: Building2,
   comptes: Wallet,
   mouvements: ArrowLeftRight,
+  absences: CalendarOff,
+  retards: Clock,
   stocks: Package,
 };
 
@@ -61,6 +65,13 @@ function moduleKpi(
       return { value: String(count), hint: "mouvements" };
     case "stocks":
       return { value: String(count), hint: "à zéro" };
+    case "absences":
+      return {
+        value: String(count),
+        hint: count > 1 ? "aujourd’hui" : "aujourd’hui",
+      };
+    case "retards":
+      return { value: String(count), hint: "7 jours" };
     default:
       return { value: String(count) };
   }

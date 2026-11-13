@@ -260,11 +260,31 @@ SvStockMovement
 
 Un seul « entrepôt logique » (emplacements texte : Armoire 1 / 2).
 
+### Absences & retards (décision K)
+
+```
+SvAbsence
+  id, employeeId (→ rh_employees), status, reason
+  startDate, endDate, reasonNote?
+  deductLeave, deductLeaveNote?   // trace seule — pas de write RH congés
+  gedDocumentId?, createdById
+  @@map("sv_absences")
+
+SvLate
+  id, employeeId, status, lateDate
+  expectedAt?, arrivedAt, minutesLate?, note?
+  createdById
+  @@map("sv_lates")
+```
+
+Isolé de `rh_absences` / `rh_leave_requests`. Permissions `sv.hr.view` / `sv.hr.manage`.
+
 ### GED (réutilisation)
 
 - Dossier client sous arborescence existante (ex. path `suivi/clients/{slug}`)
 - Upload des 2 contrats + PDFs/DOCX factures fournis
-- `DocumentLink` : `entityType` ∈ `sv_client` | `sv_invoice` | `sv_contract` | `sv_expense_invoice`
+- `DocumentLink` : `entityType` ∈ `sv_client` | `sv_invoice` | `sv_contract` | `sv_expense_invoice` | `sv_absence`
+- Justificatifs absences : `/{year}/08_SUIVI_TAMPON/rh/absences`
 
 ---
 
@@ -274,8 +294,26 @@ Référence UX : `src/app/(app)/commercial/` (hub cards, clients list + `Clickab
 
 ### Hub `/suivi`
 
-- Grille modules **par sections** (Pilotage · Clients et encaissements · Charges et trésorerie · Stocks) — KPI **par carte** (factures à encaisser ≠ charges à payer) ; **pas** de bandeau hybride « Impayés clients / charges »
+- Grille modules **par sections** (Pilotage · Clients et encaissements · Charges et trésorerie · **Absences et retards** · Stocks) — KPI **par carte** (factures à encaisser ≠ charges à payer) ; **pas** de bandeau hybride « Impayés clients / charges »
 - Pattern `CommercialHubGrid` / `MetricNavCard` / `SUIVI_HUB_SECTIONS`
+
+### Absences
+
+| Route | Intention |
+|-------|-----------|
+| `/suivi/absences` | Liste paginée + recherche + filtres motif/statut/aujourd’hui/congés |
+| `/suivi/absences/nouveau` | Stepper collab → détails → récap (+ justificatif optionnel) |
+| `/suivi/absences/[id]` | Fiche détail (bandeau identité) + GED + historique collab |
+| `/suivi/absences/[id]/edit` | Modifier + ajouter justificatif |
+
+### Retards
+
+| Route | Intention |
+|-------|-----------|
+| `/suivi/retards` | Liste paginée + filtres aujourd’hui / 7 j |
+| `/suivi/retards/nouveau` | Stepper collab → horaire → récap |
+| `/suivi/retards/[id]` | Fiche détail |
+| `/suivi/retards/[id]/edit` | Modifier |
 
 ### Clients
 

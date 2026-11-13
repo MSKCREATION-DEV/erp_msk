@@ -26,6 +26,7 @@ export default async function SuiviHubPage() {
   const canAccounts =
     hasPermission(user, "sv.accounts.view") || user.isSuperAdmin;
   const canStock = hasPermission(user, "sv.stock.view") || user.isSuperAdmin;
+  const canHr = hasPermission(user, "sv.hr.view") || user.isSuperAdmin;
 
   const allowed = new Set(
     [
@@ -36,8 +37,15 @@ export default async function SuiviHubPage() {
       "sv.accounts.view",
       "sv.movements.view",
       "sv.stock.view",
+      "sv.hr.view",
     ].filter((c) => hasPermission(user, c) || user.isSuperAdmin),
   );
+
+  const now = new Date();
+  const todayUtc = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  );
+  const weekAgo = new Date(todayUtc.getTime() - 6 * 86_400_000);
 
   const [
     clients,
@@ -46,6 +54,8 @@ export default async function SuiviHubPage() {
     stockZero,
     movementsCount,
     accountsCount,
+    absencesToday,
+    latesWeek,
   ] = await runSeries([
     () => (canClients ? prisma.svClient.count() : Promise.resolve(0)),
     () =>
@@ -69,6 +79,25 @@ export default async function SuiviHubPage() {
     () =>
       canMovements ? prisma.svCashMovement.count() : Promise.resolve(0),
     () => (canAccounts ? prisma.svAccount.count() : Promise.resolve(0)),
+    () =>
+      canHr
+        ? prisma.svAbsence.count({
+            where: {
+              status: { not: "ANNULEE" },
+              startDate: { lte: todayUtc },
+              endDate: { gte: todayUtc },
+            },
+          })
+        : Promise.resolve(0),
+    () =>
+      canHr
+        ? prisma.svLate.count({
+            where: {
+              status: "ENREGISTRE",
+              lateDate: { gte: weekAgo, lte: todayUtc },
+            },
+          })
+        : Promise.resolve(0),
   ]);
 
   const unpaid = unpaidInvoices.filter((i) => i.amountPaid < i.totalTtc).length;
@@ -104,6 +133,8 @@ export default async function SuiviHubPage() {
           charges: { value: unpaidCharges, hint: "à payer" },
           comptes: accountsCount || 2,
           mouvements: movementsCount,
+          absences: { value: absencesToday, hint: "aujourd’hui" },
+          retards: { value: latesWeek, hint: "7 jours" },
           stocks: { value: stockZero, hint: "à zéro" },
         }}
       />

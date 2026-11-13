@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-13 (module Admin Charte identité visuelle ; voir §8) |
+| Dernière mise à jour | 2026-11-13 (Suivi Absences & retards ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -110,7 +110,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
 | `faq-acces-refuse` | Accès refusé / module absent | accueil | `validated` | redirect `acces_refuse` |
 | `faq-mot-de-passe` | Mot de passe / reset | accueil | `validated` | parcours auth connus |
-| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `draft` | hub + **tableau-de-bord** + clients/factures clients/**charges**/comptes/mouvements/stocks — à rédiger dans `src/lib/guides` |
+| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `draft` | hub + **tableau-de-bord** + clients/factures clients/**charges**/comptes/mouvements/**absences**/retards/stocks — à rédiger dans `src/lib/guides` |
 
 *Les modules sans guide `validated` apparaissent en fiche « stub » (objectif + liens manuels, sans fausse procédure).*
 
@@ -134,7 +134,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | patrimoine | stub | 0 | |
 | projets | stub | 0 | |
 | anomalies | stub | 0 | |
-| suivi | stub / draft | 0 (`sv-hub-naviguer` draft) | valider hub→**TB**→clients→comptes→remix→mouvements→stocks |
+| suivi | stub / draft | 0 (`sv-hub-naviguer` draft) | valider hub→**TB**→clients→comptes→remix→mouvements→**absences/retards**→stocks |
 | catalogue | via commercial | 0 | offres / planchers |
 
 ### Rôles documentés (packs / groupes)
@@ -196,6 +196,18 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-13 — Suivi Absences & retards (décision K)
+
+| | |
+|---|---|
+| Quoi | Module tampon **Absences** + **Retards** : tables `sv_absences` / `sv_lates`, lien `RhEmployee`, justificatif GED optionnel, flag « déduire congés » sans write RH, listes paginées, fiches bandeau, permissions `sv.hr.*`, KPI légers hub/TB |
+| Pourquoi | Direction doit tracer absences/retards sans casser le module RH réel |
+| Fichiers | migration `20261113140000_sv_hr_absences_lates`, `schema.prisma`, `actions/suivi/hr.ts`, `app/(app)/suivi/{absences,retards}/**`, `components/suivi/*absence*|*late*`, `lib/suivi/{hr,ged,modules,labels}`, `DECISIONS-SEED` §12, `SPEC` |
+| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — ajouter parcours Absences / Retards / justificatif / flag congés |
+| Routes | `/suivi/absences` · `/suivi/absences/nouveau` · `/suivi/absences/[id]` · `/edit` · `/suivi/retards` (+ idem) |
+| Droits | `sv.hr.view` / `sv.hr.manage` |
+| Seed | Aucun (pas d’invention collabs) |
 
 ### 2026-11-13 — Administration Charte : module identité visuelle
 

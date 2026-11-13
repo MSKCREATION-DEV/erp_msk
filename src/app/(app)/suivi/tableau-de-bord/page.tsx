@@ -64,6 +64,7 @@ export default async function SuiviDashboardPage({
     hasPermission(user, "sv.clients.view") || user.isSuperAdmin;
   const canExpenses =
     hasPermission(user, "sv.expenses.view") || user.isSuperAdmin;
+  const canHr = hasPermission(user, "sv.hr.view") || user.isSuperAdmin;
 
   const raw = await searchParams;
   const scope = parseSvDashboardFilters(raw);
@@ -73,6 +74,7 @@ export default async function SuiviDashboardPage({
     canInvoices,
     canClients,
     canExpenses,
+    canHr,
   });
 
   const outHref = buildSvMovementsHref({
@@ -141,6 +143,33 @@ export default async function SuiviDashboardPage({
             ) : null}
           </div>
         )}
+
+        {canHr &&
+        (data.hr.absencesToday > 0 || data.hr.latesRecent > 0) ? (
+          <section aria-labelledby="sv-tb-rh" className="space-y-3">
+            <h2 id="sv-tb-rh" className={sectionTitle}>
+              Absences et retards
+            </h2>
+            <div className={gridKpi2}>
+              <KpiCard
+                href="/suivi/absences?aujourdhui=1"
+                icon={Users}
+                tone="coral"
+                label="Absences du jour"
+                value={String(data.hr.absencesToday)}
+                hint="en cours aujourd’hui"
+              />
+              <KpiCard
+                href="/suivi/retards?semaine=1"
+                icon={Clock}
+                tone="blue"
+                label="Retards récents"
+                value={String(data.hr.latesRecent)}
+                hint="7 derniers jours"
+              />
+            </div>
+          </section>
+        ) : null}
 
         {canAccounts ? (
           <section aria-labelledby="sv-tb-comptes" className="space-y-3">
