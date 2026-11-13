@@ -11,6 +11,17 @@ import {
 } from "pdf-lib";
 import { company } from "@/lib/company";
 import {
+  achatsLogicielsArticleText,
+  confidentialityArticleText,
+  disciplineArticleText,
+  dispositionsGeneralesArticleText,
+  employerIntroText,
+  materielArticleText,
+  propertyArticleText,
+  resiliationArticleText,
+  workScheduleArticleText,
+} from "@/lib/pdf/rh-clauses";
+import {
   formatDateFr,
   formatMoneyFr,
   toWinAnsi,
@@ -204,14 +215,23 @@ function drawMiniHeader(ctx: Ctx) {
   ctx.y -= 18;
 }
 
-export async function drawHeader(ctx: Ctx, title: string) {
+export type DrawHeaderOptions = {
+  /** Position du logo charte dans l’en-tête (Playground Studio). */
+  logoAlign?: "left" | "center" | "right";
+};
+
+export async function drawHeader(ctx: Ctx, title: string, options?: DrawHeaderOptions) {
+  const logoAlign = options?.logoAlign ?? "left";
   const logo = await embedLogo(ctx.pdf);
   if (logo) {
     const maxW = 120;
     const scale = maxW / logo.width;
     const h = logo.height * scale;
+    let logoX = MARGIN;
+    if (logoAlign === "center") logoX = (ctx.width - maxW) / 2;
+    if (logoAlign === "right") logoX = ctx.width - MARGIN - maxW;
     ctx.page.drawImage(logo, {
-      x: MARGIN,
+      x: logoX,
       y: ctx.y - h,
       width: maxW,
       height: h,
@@ -401,12 +421,7 @@ function drawKeyValueTable(
 }
 
 function employerIntro(): string {
-  return (
-    `La société ${company.legalName}, société à responsabilité limitée au capital de ${company.capital}, ` +
-    `dont le siège social est situé à Bamako, ${company.addressOneLine}, immatriculée au Registre du Commerce ` +
-    `et du Crédit Mobilier (RCCM) sous le numéro ${company.rccm}, représentée par Monsieur ${company.managerName}, ` +
-    `en sa qualité de ${company.managerTitle}, ci-après dénommée « l'Employeur » ou « la Société », d'une part,`
-  );
+  return employerIntroText();
 }
 
 function personFullName(p: RhPersonInput) {
@@ -482,75 +497,38 @@ export async function drawSignatureBlock(
 }
 
 function workScheduleArticle(): string {
-  return (
-    `La durée hebdomadaire de travail sera de ${company.weeklyHours} heures, réparties du lundi au vendredi. ` +
-    `Horaire type : lundi, mardi, jeudi, vendredi de 8h à 17h (pause 1h) ; mercredi de 8h à 17h (télétravail possible).`
-  );
+  return workScheduleArticleText();
 }
 
-// Clauses légales communes (invariantes) — texte identique au modèle MSK de
-// référence hors dépôt (Contrat de Travail…, Contrat de Stage…
-// Yaye Bah.docx) pour les points non spécifiques au contrat (confidentialité,
-// matériel, PI, discipline, achats, résiliation, dispositions générales).
 function confidentialityArticle(personLabel: string): string {
-  return (
-    `${personLabel} s'engage à conserver confidentiels, pendant toute la durée du contrat et après sa cessation, ` +
-    `tous les documents, informations, procédés techniques, bases de données, codes sources, identifiants, informations ` +
-    `commerciales ou stratégiques dont il/elle pourrait avoir connaissance dans le cadre de ses fonctions. Toute ` +
-    `divulgation non autorisée fera l'objet de poursuites disciplinaires et/ou judiciaires.`
-  );
+  return confidentialityArticleText(personLabel);
 }
 
 function materielArticle(personLabel: string): string {
-  return (
-    `${personLabel} s'engage à utiliser avec soin tout matériel, équipement ou ressource mis à sa disposition par ` +
-    `l'entreprise. Sauf autorisation écrite, tout matériel fourni (ordinateur, téléphone, logiciels, supports, etc.) ` +
-    `doit rester dans l'enceinte de l'entreprise et ne peut être utilisé à des fins personnelles. En cas de ` +
-    `télétravail autorisé, les règles de sécurité et de confidentialité restent applicables.`
-  );
+  return materielArticleText(personLabel);
 }
 
 function propertyArticle(personLabel: string): string {
-  return (
-    `Tout travail, développement, montage, code, design, contenu, base de données, logiciel, application ou ` +
-    `système réalisé par ${personLabel.toLowerCase()} dans le cadre de son contrat, ou avec les moyens de ` +
-    `l'entreprise, demeure la propriété exclusive de ${company.legalName}. ${personLabel} cède, à titre exclusif ` +
-    `et gratuit, l'ensemble de ses droits de propriété intellectuelle sur lesdites créations.`
-  );
+  return propertyArticleText(personLabel);
 }
 
 function disciplineArticle(): string {
-  return (
-    `Tout manquement aux obligations contractuelles pourra donner lieu à des sanctions disciplinaires ` +
-    `conformément aux dispositions du Code du travail malien, pouvant aller de l'avertissement au licenciement ` +
-    `pour faute grave.`
-  );
+  return disciplineArticleText();
 }
 
 function achatsLogicielsArticle(
   nounGenitive: "du salarié" | "du/de la stagiaire",
   personLabel: "le salarié" | "le/la stagiaire",
 ): string {
-  return (
-    `Tout achat de logiciel, abonnement, service en ligne, banque d'image, ou autre ressource nécessaire à ` +
-    `l'exercice des missions ${nounGenitive}, doit être pré-approuvé par l'entreprise et pris en charge ` +
-    `financièrement par ${company.legalName}. Aucun frais ne sera supporté personnellement par ${personLabel}.`
-  );
+  return achatsLogicielsArticleText(nounGenitive, personLabel);
 }
 
 function resiliationArticle(): string {
-  return (
-    `Le présent contrat peut être résilié par l'une ou l'autre des parties moyennant le respect du préavis légal ` +
-    `en vigueur au Mali, sauf en cas de faute grave justifiant un licenciement immédiat.`
-  );
+  return resiliationArticleText();
 }
 
 function dispositionsGeneralesArticle(): string {
-  return (
-    `Pour tout point non prévu au présent contrat, les parties se réfèrent aux dispositions du Code du travail ` +
-    `de la République du Mali. Tout litige relatif à l'interprétation ou à l'exécution du présent contrat ` +
-    `relèvera de la compétence des juridictions maliennes compétentes.`
-  );
+  return dispositionsGeneralesArticleText();
 }
 
 /**

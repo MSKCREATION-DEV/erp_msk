@@ -41,7 +41,7 @@ import {
 import { canTransformProspectToClient } from "@/lib/crm/guide-rules";
 import { canMutateCrmDeal } from "@/lib/crm/scope";
 import { commercialTeamUserIds, listCommercialRoster } from "@/lib/crm/team";
-import { generateCommercialPdf } from "@/lib/pdf/commercial";
+import { generateOfficialPdfFromTemplate } from "@/lib/studio/generate-official-pdf";
 import { uploadGedObject } from "@/lib/ged/storage";
 import { formatDateFr } from "@/lib/pdf/winansi";
 import { requireActiveTemplate, resolveTemplateSignature } from "@/lib/studio/engine";
@@ -1256,26 +1256,35 @@ export async function generateQuotePdfAction(
 
   let pdfBytes: Uint8Array;
   try {
-    pdfBytes = await generateCommercialPdf({
-      type: "DEVIS",
-      number: displayDocNumber(quote.number, quote.draftCode),
-      clientName: quote.client.contactName || quote.client.name,
-      clientCompany: quote.client.name,
-      clientAddress: [quote.client.address, quote.client.city]
-        .filter(Boolean)
-        .join(", "),
-      clientPhone: quote.client.phone ?? undefined,
-      issueDate: formatDateFr(quote.createdAt),
-      validityDate: quote.validUntil
-        ? formatDateFr(quote.validUntil)
-        : undefined,
-      object: quote.object ?? undefined,
-      missionNote: quote.missionNote ?? undefined,
-      lines,
-      currency: quote.currency === "EUR" ? "EUR" : "FCFA",
-      vatRate: quote.vatEnabled ? quote.vatRate : 0,
-      signaturePng: signature.bytes,
-      signatureLabel: signature.label,
+    pdfBytes = await generateOfficialPdfFromTemplate({
+      template,
+      payload: {
+        kind: "commercial",
+        input: {
+          type: "DEVIS",
+          number: displayDocNumber(quote.number, quote.draftCode),
+          clientName: quote.client.contactName || quote.client.name,
+          clientCompany: quote.client.name,
+          clientAddress: [quote.client.address, quote.client.city]
+            .filter(Boolean)
+            .join(", "),
+          clientPhone: quote.client.phone ?? undefined,
+          issueDate: formatDateFr(quote.createdAt),
+          validityDate: quote.validUntil
+            ? formatDateFr(quote.validUntil)
+            : undefined,
+          object: quote.object ?? undefined,
+          missionNote: quote.missionNote ?? undefined,
+          lines,
+          currency: quote.currency === "EUR" ? "EUR" : "FCFA",
+          vatRate: quote.vatEnabled ? quote.vatRate : 0,
+        },
+      },
+      signature: {
+        signaturePng: signature.bytes,
+        signatureLabel: signature.label,
+      },
+      strictVariables: true,
     });
   } catch (e) {
     return {
@@ -1614,27 +1623,36 @@ export async function generateInvoicePdfAction(
 
   let pdfBytes: Uint8Array;
   try {
-    pdfBytes = await generateCommercialPdf({
-      type: "FACTURE",
-      number: displayDocNumber(invoice.number, invoice.draftCode),
-      clientName: invoice.client.contactName || invoice.client.name,
-      clientCompany: invoice.client.name,
-      clientAddress: [invoice.client.address, invoice.client.city]
-        .filter(Boolean)
-        .join(", "),
-      clientPhone: invoice.client.phone ?? undefined,
-      issueDate: formatDateFr(invoice.issuedAt ?? invoice.createdAt),
-      object: invoice.object ?? undefined,
-      lines: invoice.lines.map((l) => ({
-        label: l.label,
-        qty: l.qty,
-        unitPrice: l.unitPrice,
-        vatRate: invoice.vatEnabled ? invoice.vatRate : 0,
-      })),
-      currency: invoice.currency === "EUR" ? "EUR" : "FCFA",
-      vatRate: invoice.vatEnabled ? invoice.vatRate : 0,
-      signaturePng: signature.bytes,
-      signatureLabel: signature.label,
+    pdfBytes = await generateOfficialPdfFromTemplate({
+      template,
+      payload: {
+        kind: "commercial",
+        input: {
+          type: "FACTURE",
+          number: displayDocNumber(invoice.number, invoice.draftCode),
+          clientName: invoice.client.contactName || invoice.client.name,
+          clientCompany: invoice.client.name,
+          clientAddress: [invoice.client.address, invoice.client.city]
+            .filter(Boolean)
+            .join(", "),
+          clientPhone: invoice.client.phone ?? undefined,
+          issueDate: formatDateFr(invoice.issuedAt ?? invoice.createdAt),
+          object: invoice.object ?? undefined,
+          lines: invoice.lines.map((l) => ({
+            label: l.label,
+            qty: l.qty,
+            unitPrice: l.unitPrice,
+            vatRate: invoice.vatEnabled ? invoice.vatRate : 0,
+          })),
+          currency: invoice.currency === "EUR" ? "EUR" : "FCFA",
+          vatRate: invoice.vatEnabled ? invoice.vatRate : 0,
+        },
+      },
+      signature: {
+        signaturePng: signature.bytes,
+        signatureLabel: signature.label,
+      },
+      strictVariables: true,
     });
   } catch (e) {
     return {

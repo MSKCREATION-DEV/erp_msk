@@ -31,12 +31,12 @@ import {
 import { COM_CLIENT_EVENT, logComClientEvent } from "@/lib/commercial/client-events";
 import { commercialTeamUserIds } from "@/lib/crm/team";
 import {
-  generateContractPdf,
   type ContractPdfInput,
   type ContractPdfScope,
 } from "@/lib/pdf/commercial";
 import { formatDateFr } from "@/lib/pdf/winansi";
-import { getSignaturePngBytes } from "@/lib/signatures/resolve";
+import { requireActiveTemplate, resolveTemplateSignature } from "@/lib/studio/engine";
+import { generateOfficialPdfFromTemplate } from "@/lib/studio/generate-official-pdf";
 import { uploadGedObject } from "@/lib/ged/storage";
 import { prisma } from "@/lib/prisma";
 
@@ -495,9 +495,21 @@ async function generateContractPdfCore(
   }
   const { family, serviceKind } = prestation;
 
-  const signature = await getSignaturePngBytes({
+  // Hook Studio documentaire — même registre central que Devis/Facture :
+  // signature jamais injectée si `signatureEnabled=false` sur le gabarit
+  // `contrat_commercial_msk`, même si le propriétaire a une signature
+  // active enregistrée.
+  let contractTemplate: Awaited<ReturnType<typeof requireActiveTemplate>>;
+  try {
+    contractTemplate = await requireActiveTemplate("contrat_commercial_msk");
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Gabarit indisponible" };
+  }
+  const signature = await resolveTemplateSignature({
+    template: contractTemplate,
     ownerUserId: contract.ownerId,
-  }).catch(() => null);
+    signerLabel: `${contract.owner.firstName} ${contract.owner.lastName}`,
+  });
 
   /**
    * Perimetre famille B / parametres famille A — JSON libre (analyse §6.3).
@@ -514,67 +526,74 @@ async function generateContractPdfCore(
 
   let pdfBytes: Uint8Array;
   try {
-    pdfBytes = await generateContractPdf({
-      number: contract.reference,
-      family,
-      serviceKind,
-      familyLabel: CONTRACT_FAMILY_LABELS[family],
-      serviceKindLabel: SERVICE_KIND_LABELS[serviceKind],
-      title: contract.title ?? undefined,
-      clientName: contract.client.contactName || contract.client.name,
-      clientCompany: contract.client.name,
-      clientRegistryId: contract.client.taxId ?? undefined,
-      clientAddress: [contract.client.address, contract.client.city]
-        .filter(Boolean)
-        .join(", "),
-      clientPhone: contract.client.phone ?? undefined,
-      clientEmail: contract.client.email ?? undefined,
-      contactName: contract.client.contactName ?? undefined,
-      contactTitle: contract.client.contactRole ?? undefined,
-      issueDate: formatDateFr(contract.createdAt),
-      startDate: contract.startDate ? formatDateFr(contract.startDate) : undefined,
-      billingDay: contract.billingDay,
-      currency: contract.currency,
-      vatRate: contract.vatEnabled ? contract.vatRate : 0,
-      lines: contract.lines.map((l) => ({
-        label: l.label,
-        qty: l.qty,
-        unitPrice: l.unitPrice,
-      })),
-      paymentTerms: contract.paymentTerms ?? undefined,
-      renewalTerms: contract.renewalTerms ?? undefined,
-      terminationTerms: contract.terminationTerms ?? undefined,
-      offerTier: scopeJson?.offerTier,
-      complementaryServices: scopeJson?.complementaryServices,
-      scope: scopeJson
-        ? {
-            interlocutorName: scopeJson.interlocutorName,
-            interlocutorTitle: scopeJson.interlocutorTitle,
-            location: scopeJson.location,
-            currentTools: scopeJson.currentTools,
-            contextProblems: scopeJson.contextProblems ?? [],
-            visionTarget: scopeJson.visionTarget,
-            objectives: scopeJson.objectives ?? [],
-            modules: scopeJson.modules,
-            pages: scopeJson.pages,
-            includedFeatures: scopeJson.includedFeatures,
-            roles: scopeJson.roles,
-            deliverables: scopeJson.deliverables ?? [],
-            planningPhases: scopeJson.planningPhases,
-            totalDurationLabel: scopeJson.totalDurationLabel,
-            delayRule: scopeJson.delayRule,
-            clientResources: scopeJson.clientResources,
-            acceptanceDays: scopeJson.acceptanceDays,
-            acceptanceChannel: scopeJson.acceptanceChannel,
-            outOfScope: scopeJson.outOfScope ?? [],
-            maintenanceMention: scopeJson.maintenanceMention,
-          }
-        : undefined,
-      signedAt: contract.signedAt ? formatDateFr(contract.signedAt) : undefined,
-      signaturePng: signature?.bytes,
-      signatureLabel: signature
-        ? `${contract.owner.firstName} ${contract.owner.lastName}`
-        : undefined,
+    pdfBytes = await generateOfficialPdfFromTemplate({
+      template: contractTemplate,
+      payload: {
+        kind: "commercial_contract",
+        input: {
+          number: contract.reference,
+          family,
+          serviceKind,
+          familyLabel: CONTRACT_FAMILY_LABELS[family],
+          serviceKindLabel: SERVICE_KIND_LABELS[serviceKind],
+          title: contract.title ?? undefined,
+          clientName: contract.client.contactName || contract.client.name,
+          clientCompany: contract.client.name,
+          clientRegistryId: contract.client.taxId ?? undefined,
+          clientAddress: [contract.client.address, contract.client.city]
+            .filter(Boolean)
+            .join(", "),
+          clientPhone: contract.client.phone ?? undefined,
+          clientEmail: contract.client.email ?? undefined,
+          contactName: contract.client.contactName ?? undefined,
+          contactTitle: contract.client.contactRole ?? undefined,
+          issueDate: formatDateFr(contract.createdAt),
+          startDate: contract.startDate ? formatDateFr(contract.startDate) : undefined,
+          billingDay: contract.billingDay,
+          currency: contract.currency,
+          vatRate: contract.vatEnabled ? contract.vatRate : 0,
+          lines: contract.lines.map((l) => ({
+            label: l.label,
+            qty: l.qty,
+            unitPrice: l.unitPrice,
+          })),
+          paymentTerms: contract.paymentTerms ?? undefined,
+          renewalTerms: contract.renewalTerms ?? undefined,
+          terminationTerms: contract.terminationTerms ?? undefined,
+          offerTier: scopeJson?.offerTier,
+          complementaryServices: scopeJson?.complementaryServices,
+          scope: scopeJson
+            ? {
+                interlocutorName: scopeJson.interlocutorName,
+                interlocutorTitle: scopeJson.interlocutorTitle,
+                location: scopeJson.location,
+                currentTools: scopeJson.currentTools,
+                contextProblems: scopeJson.contextProblems ?? [],
+                visionTarget: scopeJson.visionTarget,
+                objectives: scopeJson.objectives ?? [],
+                modules: scopeJson.modules,
+                pages: scopeJson.pages,
+                includedFeatures: scopeJson.includedFeatures,
+                roles: scopeJson.roles,
+                deliverables: scopeJson.deliverables ?? [],
+                planningPhases: scopeJson.planningPhases,
+                totalDurationLabel: scopeJson.totalDurationLabel,
+                delayRule: scopeJson.delayRule,
+                clientResources: scopeJson.clientResources,
+                acceptanceDays: scopeJson.acceptanceDays,
+                acceptanceChannel: scopeJson.acceptanceChannel,
+                outOfScope: scopeJson.outOfScope ?? [],
+                maintenanceMention: scopeJson.maintenanceMention,
+              }
+            : undefined,
+          signedAt: contract.signedAt ? formatDateFr(contract.signedAt) : undefined,
+        },
+      },
+      signature: {
+        signaturePng: signature.bytes,
+        signatureLabel: signature.label,
+      },
+      strictVariables: true,
     });
   } catch (e) {
     return {

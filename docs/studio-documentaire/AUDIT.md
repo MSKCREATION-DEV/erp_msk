@@ -15,8 +15,9 @@ conception. Rien ici n’est inventé — chaque ligne est traçable à un fichi
 | `src/actions/commercial.ts` — `generateQuotePdfAction` | PDF Devis (`devis_standard`) | ✅ **Hooké** — passe par `requireActiveTemplate` + `resolveTemplateSignature` (moteur central) |
 | `src/actions/commercial.ts` — `generateInvoicePdfAction` | PDF Facture (`facture_standard`) | ✅ **Hooké** — idem |
 | `src/actions/templates.ts` — `generateDemoPdfAction` | PDF démo depuis la fiche Gabarit (tous types) | ✅ Supporte désormais aussi `generatorKind: "ENGINE_BLOCKS"` (branche ajoutée) en plus du switch legacy existant |
-| `src/actions/rh.ts` (3 call sites : lignes ~843, ~944, ~1022) | PDF contrats collaborateur / stage / presta, attestations, règlement, solde, fiche paie | ⚠️ **Non migré** — appelle encore `getSignaturePngBytes` directement (signature toujours injectée si une signature ACTIVE existe, pas de garde `requireActiveTemplate`) |
-| `src/actions/contracts.ts` (1 call site, ligne ~498) | PDF contrat commercial (`contrat_commercial_msk`) | ⚠️ **Non migré** — idem |
+| `src/actions/rh.ts` (contrats, attestation, règlement — sites vérifiés 2026-11-13) | PDF RH | ✅ **Hooké** — `requireActiveTemplate` + `resolveTemplateSignature` par type |
+| `src/actions/contracts.ts` | PDF contrat commercial (`contrat_commercial_msk`) | ✅ **Hooké** — idem |
+| `src/actions/rh.ts` (solde, fiche paie si présents) | PDF complémentaires | **À revérifier** si nouveaux call sites — même pattern attendu |
 | `src/lib/pdf/rh.ts` | Primitives pdf-lib (header/footer/paragraphe/titre/signature) réutilisées par RH **et** par le nouveau moteur Studio (`src/lib/studio/render-blocks.ts`) | ✅ Primitives exportées, zéro régression (tests `test:pdf-rh` / `test:pdf-contract` toujours verts) |
 | `src/lib/pdf/commercial.ts` | Mise en page PDF devis/facture | Non modifié — consommé tel quel par `commercial.ts` |
 | `src/lib/signatures/resolve.ts` — `getSignaturePngBytes` | Résolution brute signature ACTIVE d’un user, **sans** notion de gabarit ni de toggle ON/OFF | Toujours utilisé directement par RH/contrats (dette ci-dessus) ; encapsulé par `resolveTemplateSignature` pour les flux migrés |

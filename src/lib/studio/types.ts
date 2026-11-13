@@ -6,6 +6,16 @@
  */
 import { z } from "zod";
 
+const CompositeRendererSchema = z.enum([
+  "commercial_devis",
+  "commercial_facture",
+  "commercial_contract",
+  "rh_contract_travail",
+  "rh_contract_stage",
+  "rh_contract_presta",
+  "rh_payslip",
+]);
+
 export const BlockSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("heading"), text: z.string().min(1) }),
   z.object({ kind: z.literal("paragraph"), text: z.string().min(1) }),
@@ -15,6 +25,10 @@ export const BlockSchema = z.discriminatedUnion("kind", [
     kind: z.literal("signature"),
     leftLabel: z.string().min(1),
     rightLabel: z.string().min(1),
+  }),
+  z.object({
+    kind: z.literal("composite"),
+    renderer: CompositeRendererSchema,
   }),
 ]);
 

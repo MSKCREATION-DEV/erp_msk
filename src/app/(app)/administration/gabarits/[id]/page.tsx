@@ -20,6 +20,8 @@ import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { GenerateDemoButton } from "@/components/admin/generate-demo-pdf";
 import { TemplateCardActions } from "@/components/admin/template-card-actions";
+import { TemplateExemplairePanel } from "@/components/admin/template-exemplaire-panel";
+import { canGenerateExemplaire } from "@/lib/studio/generate-sample-pdf";
 import { parseBlocks, parseDeclaredVariables } from "@/lib/studio/types";
 
 export const metadata: Metadata = { title: "Gabarit" };
@@ -71,6 +73,7 @@ export default async function GabaritDetailPage({
   const slots = templateSlots(template.structureJson);
   const ref = templateRef(template.structureJson);
   const generator = templateGenerator(template.structureJson);
+  const exemplaireOk = canGenerateExemplaire(template);
 
   return (
     <PageShell>
@@ -89,6 +92,12 @@ export default async function GabaritDetailPage({
             <Badge tone="muted">Inactif — génération désactivée</Badge>
           )
         }
+      />
+
+      <TemplateExemplairePanel
+        templateId={template.id}
+        templateName={template.name}
+        available={exemplaireOk}
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -256,6 +265,7 @@ function StudioTemplateDetail({
   const blocks = parseBlocks(published?.bodyJson);
   const variables = parseDeclaredVariables(published?.variablesJson);
   const draft = template.versions.find((v) => v.status === "DRAFT");
+  const exemplaireOk = canGenerateExemplaire(template);
 
   return (
     <PageShell>
@@ -316,6 +326,13 @@ function StudioTemplateDetail({
           </dl>
         </div>
       </Surface>
+
+      <TemplateExemplairePanel
+        templateId={template.id}
+        templateName={template.name}
+        available={exemplaireOk}
+        engineBlocks
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Surface className="space-y-4 p-5 lg:col-span-2">

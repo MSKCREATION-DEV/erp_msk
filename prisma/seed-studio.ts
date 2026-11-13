@@ -11,7 +11,12 @@
  *    génération réelle), signature OFF.
  */
 import type { PrismaClient } from "@/generated/prisma/client";
+import { company } from "../src/lib/company";
 import { textToBlocks } from "../src/lib/studio/dsl";
+import {
+  CHARGE_TEMPLATE_DSL_SPECS,
+  LEGACY_TEMPLATE_DSL_SPECS,
+} from "../src/lib/studio/template-dsl-bodies";
 import { extractVariableSlugs } from "../src/lib/studio/variables";
 
 /**
@@ -86,6 +91,66 @@ const VARIABLE_CATALOG = [
     category: "DOCUMENT" as const,
     sampleValue: "13/11/2026",
   },
+  {
+    slug: "document.validite",
+    label: "Date de validité (devis)",
+    category: "DOCUMENT" as const,
+    sampleValue: "13/12/2026",
+  },
+  {
+    slug: "collaborateur.civilite",
+    label: "Civilité",
+    category: "COLLABORATEUR" as const,
+    sampleValue: "Mme",
+  },
+  {
+    slug: "contrat.date_debut",
+    label: "Date de début",
+    category: "DOCUMENT" as const,
+    sampleValue: "01/09/2026",
+  },
+  {
+    slug: "contrat.date_fin",
+    label: "Date de fin",
+    category: "DOCUMENT" as const,
+    sampleValue: "30/09/2026",
+  },
+  {
+    slug: "contrat.lieu",
+    label: "Lieu (stage / mission)",
+    category: "DOCUMENT" as const,
+    sampleValue: "Bamako, Mali",
+  },
+  {
+    slug: "devis.objet",
+    label: "Objet du devis",
+    category: "DOCUMENT" as const,
+    sampleValue: "Gestion réseaux sociaux — 3 mois",
+  },
+  {
+    slug: "devis.mission",
+    label: "Note mission",
+    category: "DOCUMENT" as const,
+    sampleValue: "Community management et reporting mensuel.",
+  },
+  {
+    slug: "entreprise.representant",
+    label: "Représentant légal",
+    category: "ENTREPRISE" as const,
+    sampleValue: company.managerName,
+  },
+  {
+    slug: "entreprise.qualite_representant",
+    label: "Qualité du représentant",
+    category: "ENTREPRISE" as const,
+    sampleValue: company.managerTitle,
+  },
+  {
+    slug: "solde.montant",
+    label: "Montant solde (formaté)",
+    category: "DOCUMENT" as const,
+    sampleValue: "85 000 FCFA",
+  },
 ] satisfies Array<{
   slug: string;
   label: string;
@@ -106,6 +171,87 @@ const ATTESTATION_PRESENCE_BODY = [
   "",
   "[[SIGNATURE: Signature du collaborateur | Pour l'entreprise]]",
 ].join("\n");
+
+async function publishEngineBlocksVersion(
+  prisma: PrismaClient,
+  templateId: string,
+  body: string,
+  changelog: string,
+) {
+  const blocks = textToBlocks(body);
+  const slugs = extractVariableSlugs(body);
+  const variablesJson = slugs.map((slug) => ({
+    slug,
+    required: !slug.includes("suffixe") && !slug.includes("_block"),
+  }));
+
+  const existingV1 = await prisma.documentTemplateVersion.findUnique({
+    where: { templateId_version: { templateId, version: 1 } },
+  });
+
+  const versionId = existingV1
+    ? (
+        await prisma.documentTemplateVersion.update({
+          where: { id: existingV1.id },
+          data: { status: "PUBLISHED", bodyJson: blocks, variablesJson, changelog },
+        })
+      ).id
+    : (
+        await prisma.documentTemplateVersion.create({
+          data: {
+            templateId,
+            version: 1,
+            status: "PUBLISHED",
+            bodyJson: blocks,
+            variablesJson,
+            changelog,
+          },
+        })
+      ).id;
+
+  await prisma.documentTemplate.update({
+    where: { id: templateId },
+    data: {
+      generatorKind: "ENGINE_BLOCKS",
+      publishedVersionId: versionId,
+      signatureEnabled: false,
+    },
+  });
+}
+
+async function migrateLegacyTemplatesToEngineBlocks(prisma: PrismaClient) {
+  for (const spec of LEGACY_TEMPLATE_DSL_SPECS) {
+    const row = await prisma.documentTemplate.findUnique({ where: { code: spec.code } });
+    if (!row) continue;
+    await publishEngineBlocksVersion(prisma, row.id, spec.body, spec.changelog);
+  }
+}
+
+async function seedChargeTemplateShells(prisma: PrismaClient) {
+  for (const spec of CHARGE_TEMPLATE_DSL_SPECS) {
+    const template = await prisma.documentTemplate.upsert({
+      where: { code: spec.code },
+      create: {
+        code: spec.code,
+        type: "DOCUMENT_LIBRE",
+        name:
+          spec.code === "facture_charge_edm_msk"
+            ? "Facture charge EDM (à valider)"
+            : "Facture charge Loyer (à valider)",
+        description:
+          "Coque Studio — contenu issu du PDF `docs/` ; validation Direction avant usage.",
+        generatorKind: "ENGINE_BLOCKS",
+        signatureEnabled: false,
+        active: true,
+      },
+      update: {
+        signatureEnabled: false,
+        active: true,
+      },
+    });
+    await publishEngineBlocksVersion(prisma, template.id, spec.body, spec.changelog);
+  }
+}
 
 export async function seedPhaseStudioDocumentaire(prisma: PrismaClient) {
   // 1) Signature OFF — règle produit (idempotent, y compris legacy déjà true).
@@ -186,4 +332,10 @@ export async function seedPhaseStudioDocumentaire(prisma: PrismaClient) {
       data: { status: "PUBLISHED", bodyJson: blocks, variablesJson },
     });
   }
+
+  // 4) Migration legacy → ENGINE_BLOCKS (contenu DSL fidèle + composites).
+  await migrateLegacyTemplatesToEngineBlocks(prisma);
+
+  // 5) Coques charges fournisseurs (PDF docs/, statut à valider).
+  await seedChargeTemplateShells(prisma);
 }

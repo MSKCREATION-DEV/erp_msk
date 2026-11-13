@@ -207,6 +207,15 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 | Statut doc | `to_validate` — create+fichier → fiche Voir/Télécharger ; CTA upload depuis fiche |
 | Routes | `/suivi/absences/[id]` · `/suivi/absences/[id]/edit?focus=justificatif` |
 
+### 2026-11-13 — Studio : migration 10 gabarits → ENGINE_BLOCKS + moteur officiel
+
+| | |
+|---|---|
+| Quoi | Les 10 gabarits métier passent en `ENGINE_BLOCKS` (seed `template-dsl-bodies.ts` + version publiée v1). Blocs `[[COMPOSITE:…]]` pour Devis/Facture, contrat commercial, fiche paie, contrat presta RH. Point d’entrée unique `generateOfficialPdfFromTemplate` branché sur Commercial, Contrats, RH. Coques `facture_charge_edm_msk` / `facture_charge_loyer_msk` (à valider). Playground : alignement logo par boutons (plus de `<select>`). |
+| Pourquoi | Contenu éditable en base, génération toujours via gabarit publié, sans invention de clauses. |
+| Fichiers | `src/lib/studio/{template-dsl-bodies,generate-official-pdf,rh-template-context,composite,sample-official-payload}.ts`, `src/lib/pdf/rh-clauses.ts`, `prisma/seed-studio.ts`, actions `commercial` / `contracts` / `rh`, `docs/studio-documentaire/INVENTAIRE-REFERENCES.md`, ce suivi |
+| Dette restante | OCR charges Direction ; WYSIWYG Playground ; blocs tableau natifs (réduire composites) |
+
 ### 2026-11-13 — Studio documentaire : exemplaires, Playground, inventaire `docs/`
 
 | | |

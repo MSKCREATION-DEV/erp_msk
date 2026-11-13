@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import type { TemplateType } from "@/generated/prisma/client";
@@ -19,16 +18,10 @@ import {
 import { listKeyFromSearchParams } from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Surface } from "@/components/ui/surface";
 import { ListSearchForm } from "@/components/ui/list-search-form";
-import { GenerateDemoButton } from "@/components/admin/generate-demo-pdf";
+import { TemplateLibraryCard } from "@/components/admin/template-library-card";
 import { StudioTemplatesSection } from "./studio-section";
 
 export const metadata: Metadata = { title: "Gabarits" };
@@ -65,7 +58,21 @@ export default async function GabaritsPage({
   if (!hasPermission(user, "cfg.templates")) redirect("/accueil");
 
   const templates = await prisma.documentTemplate.findMany({
-    where: { generatorKind: "LEGACY_CODE" },
+    where: {
+      type: { in: [...COMMERCIAL_TEMPLATE_ORDER, ...RH_TEMPLATE_ORDER] },
+    },
+    select: {
+      id: true,
+      name: true,
+      code: true,
+      type: true,
+      version: true,
+      active: true,
+      generatorKind: true,
+      signatureEnabled: true,
+      publishedVersionId: true,
+      description: true,
+    },
   });
   const resultsKey = listKeyFromSearchParams(await searchParams, [
     "q",
@@ -77,13 +84,28 @@ export default async function GabaritsPage({
   return (
     <PageShell>
       <PageHeader
-        title="Gabarits"
-        description="Studio documentaire — moteur central de définition, versions, variables {{slug}} et génération PDF pour tout l’ERP."
+        title="Studio documentaire"
+        description="Gabarits centralisés — exemplaires toujours disponibles, Playground et génération PDF pour tout l’ERP."
         breadcrumbs={[
           { label: "Administration" },
           { label: "Gabarits" },
         ]}
       />
+
+      <Surface className="overflow-hidden p-0">
+        <div className="bg-gradient-to-br from-msk-blue/8 via-white to-msk-chalk/90 p-6 sm:p-8">
+          <p className="max-w-3xl text-sm leading-relaxed text-msk-ink/70">
+            Un document = un gabarit. Les modules métier consomment le registre central (
+            <code className="text-xs">requireActiveTemplate</code>) — jamais de mise en page improvisée.
+            Chaque carte : fiche, téléchargement d’exemplaire et Playground.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Badge tone="blue">Variables {"{{slug}}"}</Badge>
+            <Badge tone="muted">Signature OFF par défaut</Badge>
+            <Badge tone="success">Exemplaire à la demande</Badge>
+          </div>
+        </div>
+      </Surface>
 
       <div className="flex flex-col gap-10">
         <Suspense
@@ -131,50 +153,32 @@ export default async function GabaritsPage({
                   Aucun gabarit {section.family} — relancer le seed.
                 </p>
               ) : (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {items.map((t) => (
-                    <Card key={t.id}>
-                      <CardHeader>
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0">
-                            <CardTitle>
-                              <Link
-                                prefetch={false}
-                                href={`/administration/gabarits/${t.id}`}
-                                className="text-msk-blue hover:underline"
-                              >
-                                {t.name}
-                              </Link>
-                            </CardTitle>
-                            <CardDescription className="font-mono text-xs">
-                              {t.code} · v{t.version}
-                            </CardDescription>
-                          </div>
-                          <Badge tone={TEMPLATE_TYPE_TONE[t.type]}>
-                            {TEMPLATE_TYPE_LABEL[t.type]}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="flex items-center justify-between gap-3">
-                        <div className="min-w-0 space-y-2">
-                          <p className="text-xs leading-relaxed text-msk-ink/55">
-                            {t.active
-                              ? TEMPLATE_PURPOSE[t.type]
-                              : "Inactif — non proposé en génération démo."}
-                          </p>
-                          <Link
-                            prefetch={false}
-                            href={`/administration/gabarits/${t.id}`}
-                            className="text-xs font-medium text-msk-blue hover:underline"
-                          >
-                            Voir la fiche →
-                          </Link>
-                        </div>
-                        {t.active ? (
-                          <GenerateDemoButton templateId={t.id} compact />
-                        ) : null}
-                      </CardContent>
-                    </Card>
+                    <TemplateLibraryCard
+                      key={t.id}
+                      id={t.id}
+                      name={t.name}
+                      code={`${t.code} · v${t.version}`}
+                      description={
+                        t.description ??
+                        (t.active
+                          ? TEMPLATE_PURPOSE[t.type]
+                          : "Inactif — génération métier refusée.")
+                      }
+                      active={t.active}
+                      generatorKind={t.generatorKind}
+                      signatureEnabled={t.signatureEnabled}
+                      published={Boolean(t.publishedVersionId)}
+                      editHref={
+                        t.generatorKind === "ENGINE_BLOCKS"
+                          ? `/administration/gabarits/${t.id}/edit`
+                          : undefined
+                      }
+                      typeLabel={TEMPLATE_TYPE_LABEL[t.type]}
+                      typeTone={TEMPLATE_TYPE_TONE[t.type]}
+                      familyLabel={section.family}
+                    />
                   ))}
                 </div>
               )}
@@ -183,12 +187,10 @@ export default async function GabaritsPage({
         })}
 
         {templates.length === 0 ? (
-          <Card>
-            <CardContent className="py-10 text-center text-sm text-msk-ink/45">
-              Aucun gabarit — relancer le seed (
-              <code className="text-xs">npm run db:seed</code>).
-            </CardContent>
-          </Card>
+          <Surface className="py-10 text-center text-sm text-msk-ink/45">
+            Aucun gabarit — relancer le seed (
+            <code className="text-xs">npm run db:seed</code>).
+          </Surface>
         ) : null}
       </div>
     </PageShell>

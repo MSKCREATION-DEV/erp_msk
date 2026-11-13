@@ -10,6 +10,7 @@ import {
   draw,
   drawFooter,
   drawHeader,
+  type DrawHeaderOptions,
   drawParagraph,
   drawSignatureBlock,
   drawTitle,
@@ -31,6 +32,7 @@ export type RenderBlocksOptions = {
   signatureEnabled: boolean;
   signaturePng?: Uint8Array | Buffer;
   signatureLabel?: string;
+  logoAlign?: DrawHeaderOptions["logoAlign"];
 };
 
 function drawHighlight(ctx: Awaited<ReturnType<typeof createCtx>>, text: string) {
@@ -69,7 +71,9 @@ export async function renderBlocksToPdf(
   opts: RenderBlocksOptions,
 ): Promise<Uint8Array> {
   const ctx = await createCtx();
-  await drawHeader(ctx, opts.title.toUpperCase());
+  await drawHeader(ctx, opts.title.toUpperCase(), {
+    logoAlign: opts.logoAlign,
+  });
 
   const resolve = (text: string) =>
     resolveTemplateString(text, opts.context, { strict: opts.strictVariables });
@@ -98,6 +102,8 @@ export async function renderBlocksToPdf(
             opts.signatureLabel,
           );
         }
+        break;
+      case "composite":
         break;
       default:
         break;

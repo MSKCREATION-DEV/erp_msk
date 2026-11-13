@@ -46,6 +46,15 @@ function main() {
   const blocks2 = textToBlocks(text2);
   assert.deepEqual(blocks2, blocks, "round-trip texte ↔ blocs stable");
 
+  const composite = textToBlocks(
+    ["# Devis", "[[COMPOSITE: commercial_devis]]"].join("\n"),
+  );
+  assert.equal(composite[1].kind, "composite");
+  assert.equal(
+    (composite[1] as { renderer: string }).renderer,
+    "commercial_devis",
+  );
+
   console.log("✓ studio/dsl.test.ts — parsing DSL + round-trip OK");
 }
 

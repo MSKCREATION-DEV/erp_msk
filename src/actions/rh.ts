@@ -22,18 +22,10 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { writeAudit } from "@/lib/audit";
 import type { ActionResult } from "@/actions/auth";
 import { formatDateFr } from "@/lib/pdf/winansi";
-import {
-  generateAttestationStagePdf,
-  generateContractPrestaPdf,
-  generateContractStagePdf,
-  generateContractTravailPdf,
-  generateFichePaiePdf,
-  generateReglementInterieurPdf,
-  generateSoldeToutComptePdf,
-} from "@/lib/pdf/rh";
 import { uploadGedObject } from "@/lib/ged/storage";
 import { ensureCollaboratorSubfolder } from "@/lib/ged/tree";
-import { getSignaturePngBytes } from "@/lib/signatures/resolve";
+import { requireActiveTemplate, resolveTemplateSignature } from "@/lib/studio/engine";
+import { generateOfficialPdfFromTemplate } from "@/lib/studio/generate-official-pdf";
 import { CONTRACT_TYPE_LABEL, LEAVE_TYPE_LABEL } from "@/lib/rh/labels";
 import { RH_DOC } from "@/lib/rh/docs";
 import { signedGedUrl } from "@/lib/ged/storage";
@@ -840,9 +832,27 @@ export async function generateContractPdfAction(
   });
   if (!contract) return { ok: false, error: "Contrat introuvable" };
 
-  const signature = await getSignaturePngBytes({
+  // Hook Studio documentaire — même registre central que Devis/Facture
+  // (Commercial) : le gabarit fait autorité, signature jamais injectée si
+  // `signatureEnabled=false` sur le gabarit, même si l'acteur a une
+  // signature active enregistrée.
+  const contractTemplateCode =
+    contract.type === "STAGE"
+      ? "contrat_stage_msk"
+      : contract.type === "PRESTA"
+        ? "contrat_presta_msk"
+        : "contrat_travail_msk";
+  let contractTemplate: Awaited<ReturnType<typeof requireActiveTemplate>>;
+  try {
+    contractTemplate = await requireActiveTemplate(contractTemplateCode);
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Gabarit indisponible" };
+  }
+  const signature = await resolveTemplateSignature({
+    template: contractTemplate,
     ownerUserId: actor.id,
-  }).catch(() => null);
+    signerLabel: `${actor.firstName} ${actor.lastName}`,
+  });
 
   const person = {
     firstName: contract.employee.firstName,
@@ -858,25 +868,33 @@ export async function generateContractPdfAction(
     salaryXof: contract.salaryXof ?? undefined,
     notes: contract.notes ?? undefined,
     employee: person,
-    signaturePng: signature?.bytes,
-    signatureLabel: signature
-      ? `${actor.firstName} ${actor.lastName}`
-      : undefined,
+    signaturePng: signature.bytes,
+    signatureLabel: signature.label,
   };
 
   let pdfBytes: Uint8Array;
   let kindLabel: string;
+  const variant =
+    contract.type === "STAGE"
+      ? ("STAGE" as const)
+      : contract.type === "PRESTA"
+        ? ("PRESTA" as const)
+        : ("TRAVAIL" as const);
+  kindLabel = variant;
   try {
-    if (contract.type === "STAGE") {
-      pdfBytes = await generateContractStagePdf({ ...base, kind: "STAGE" });
-      kindLabel = "STAGE";
-    } else if (contract.type === "PRESTA") {
-      pdfBytes = await generateContractPrestaPdf({ ...base, kind: "PRESTA" });
-      kindLabel = "PRESTA";
-    } else {
-      pdfBytes = await generateContractTravailPdf({ ...base, kind: "TRAVAIL" });
-      kindLabel = "TRAVAIL";
-    }
+    pdfBytes = await generateOfficialPdfFromTemplate({
+      template: contractTemplate,
+      payload: {
+        kind: "rh_contract",
+        variant,
+        input: { ...base, kind: variant },
+      },
+      signature: {
+        signaturePng: signature.bytes,
+        signatureLabel: signature.label,
+      },
+      strictVariables: true,
+    });
   } catch (e) {
     return {
       ok: false,
@@ -941,33 +959,48 @@ export async function generateAttestationPdfAction(
   if (!employee) return { ok: false, error: "Collaborateur introuvable" };
 
   const c = employee.contracts[0];
-  const signature = await getSignaturePngBytes({
+  let attestationTemplate: Awaited<ReturnType<typeof requireActiveTemplate>>;
+  try {
+    attestationTemplate = await requireActiveTemplate("attestation_stage_msk");
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Gabarit indisponible" };
+  }
+  const signature = await resolveTemplateSignature({
+    template: attestationTemplate,
     ownerUserId: actor.id,
-  }).catch(() => null);
+    signerLabel: `${actor.firstName} ${actor.lastName}`,
+  });
 
   let pdfBytes: Uint8Array;
   try {
-    pdfBytes = await generateAttestationStagePdf({
-      employee: {
-        firstName: employee.firstName,
-        lastName: employee.lastName,
-        jobTitle: employee.jobTitle ?? undefined,
+    pdfBytes = await generateOfficialPdfFromTemplate({
+      template: attestationTemplate,
+      payload: {
+        kind: "rh_attestation",
+        input: {
+          employee: {
+            firstName: employee.firstName,
+            lastName: employee.lastName,
+            jobTitle: employee.jobTitle ?? undefined,
+          },
+          startDate: c
+            ? formatDateFr(c.startDate)
+            : employee.hireDate
+              ? formatDateFr(employee.hireDate)
+              : formatDateFr(),
+          endDate: c?.endDate
+            ? formatDateFr(c.endDate)
+            : employee.endDate
+              ? formatDateFr(employee.endDate)
+              : formatDateFr(),
+          jobTitle: employee.jobTitle ?? c?.title ?? "Stagiaire",
+        },
       },
-      startDate: c
-        ? formatDateFr(c.startDate)
-        : employee.hireDate
-          ? formatDateFr(employee.hireDate)
-          : formatDateFr(),
-      endDate: c?.endDate
-        ? formatDateFr(c.endDate)
-        : employee.endDate
-          ? formatDateFr(employee.endDate)
-          : formatDateFr(),
-      jobTitle: employee.jobTitle ?? c?.title ?? "Stagiaire",
-      signaturePng: signature?.bytes,
-      signatureLabel: signature
-        ? `${actor.firstName} ${actor.lastName}`
-        : undefined,
+      signature: {
+        signaturePng: signature.bytes,
+        signatureLabel: signature.label,
+      },
+      strictVariables: true,
     });
   } catch (e) {
     return {
@@ -1019,18 +1052,36 @@ export async function generateReglementPdfAction(
   const employee = await prisma.rhEmployee.findUnique({ where: { id: id.data } });
   if (!employee) return { ok: false, error: "Collaborateur introuvable" };
 
-  const signature = await getSignaturePngBytes({
+  let reglementTemplate: Awaited<ReturnType<typeof requireActiveTemplate>>;
+  try {
+    reglementTemplate = await requireActiveTemplate("reglement_interieur_msk");
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Gabarit indisponible" };
+  }
+  const signature = await resolveTemplateSignature({
+    template: reglementTemplate,
     ownerUserId: actor.id,
-  }).catch(() => null);
+    signerLabel: `${actor.firstName} ${actor.lastName}`,
+  });
 
   let pdfBytes: Uint8Array;
   try {
-    pdfBytes = await generateReglementInterieurPdf({
-      employee: {
-        firstName: employee.firstName,
-        lastName: employee.lastName,
+    pdfBytes = await generateOfficialPdfFromTemplate({
+      template: reglementTemplate,
+      payload: {
+        kind: "rh_reglement",
+        input: {
+          employee: {
+            firstName: employee.firstName,
+            lastName: employee.lastName,
+          },
+        },
       },
-      signaturePng: signature?.bytes,
+      signature: {
+        signaturePng: signature.bytes,
+        signatureLabel: signature.label,
+      },
+      strictVariables: true,
     });
   } catch (e) {
     return {
@@ -1088,15 +1139,38 @@ export async function generateSoldePdfAction(
 
   const paymentRef = String(formData.get("paymentRef") ?? "").trim() || undefined;
 
+  let soldeTemplate: Awaited<ReturnType<typeof requireActiveTemplate>>;
+  try {
+    soldeTemplate = await requireActiveTemplate("solde_tout_compte_msk");
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Gabarit indisponible" };
+  }
+  const signature = await resolveTemplateSignature({
+    template: soldeTemplate,
+    ownerUserId: actor.id,
+    signerLabel: `${actor.firstName} ${actor.lastName}`,
+  });
+
   let pdfBytes: Uint8Array;
   try {
-    pdfBytes = await generateSoldeToutComptePdf({
-      employee: {
-        firstName: employee.firstName,
-        lastName: employee.lastName,
+    pdfBytes = await generateOfficialPdfFromTemplate({
+      template: soldeTemplate,
+      payload: {
+        kind: "rh_solde",
+        input: {
+          employee: {
+            firstName: employee.firstName,
+            lastName: employee.lastName,
+          },
+          amountXof: amount.data,
+          paymentRef,
+        },
       },
-      amountXof: amount.data,
-      paymentRef,
+      signature: {
+        signaturePng: signature.bytes,
+        signatureLabel: signature.label,
+      },
+      strictVariables: true,
     });
   } catch (e) {
     return {
@@ -1170,22 +1244,45 @@ export async function generateFichePaiePdfAction(
   const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const periodEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
+  let paieTemplate: Awaited<ReturnType<typeof requireActiveTemplate>>;
+  try {
+    paieTemplate = await requireActiveTemplate("fiche_paie_msk");
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Gabarit indisponible" };
+  }
+  const signature = await resolveTemplateSignature({
+    template: paieTemplate,
+    ownerUserId: actor.id,
+    signerLabel: `${actor.firstName} ${actor.lastName}`,
+  });
+
   let pdfBytes: Uint8Array;
   try {
-    pdfBytes = await generateFichePaiePdf({
-      employee: {
-        firstName: employee.firstName,
-        lastName: employee.lastName,
-        email: employee.email ?? undefined,
-        jobTitle: employee.jobTitle ?? undefined,
+    pdfBytes = await generateOfficialPdfFromTemplate({
+      template: paieTemplate,
+      payload: {
+        kind: "rh_payslip",
+        input: {
+          employee: {
+            firstName: employee.firstName,
+            lastName: employee.lastName,
+            email: employee.email ?? undefined,
+            jobTitle: employee.jobTitle ?? undefined,
+          },
+          periodStart: formatDateFr(periodStart),
+          periodEnd: formatDateFr(periodEnd),
+          baseSalaryXof: salary,
+          netSalaryXof: salary,
+          contractTypeLabel: c ? CONTRACT_TYPE_LABEL[c.type] : undefined,
+          leaveBalanceDays: Number(employee.leaveBalanceDays),
+          leaveTakenDays: 0,
+        },
       },
-      periodStart: formatDateFr(periodStart),
-      periodEnd: formatDateFr(periodEnd),
-      baseSalaryXof: salary,
-      netSalaryXof: salary,
-      contractTypeLabel: c ? CONTRACT_TYPE_LABEL[c.type] : undefined,
-      leaveBalanceDays: Number(employee.leaveBalanceDays),
-      leaveTakenDays: 0,
+      signature: {
+        signaturePng: signature.bytes,
+        signatureLabel: signature.label,
+      },
+      strictVariables: true,
     });
   } catch (e) {
     return {

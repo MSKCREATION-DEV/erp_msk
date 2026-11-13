@@ -10,11 +10,9 @@ import {
 } from "@/lib/list/pagination";
 import { firstParam } from "@/lib/list/search-params";
 import { buildSortHref, type SortDir } from "@/lib/list/sort";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ListPagination } from "@/components/ui/list-pagination";
-import { GenerateDemoButton } from "@/components/admin/generate-demo-pdf";
-import { TemplateCardActions } from "@/components/admin/template-card-actions";
+import { TemplateLibraryCard } from "@/components/admin/template-library-card";
 
 const PAGE_PARAM = "spage";
 
@@ -37,6 +35,7 @@ export async function StudioTemplatesSection({
 
   const where = {
     generatorKind: "ENGINE_BLOCKS" as const,
+    type: "DOCUMENT_LIBRE" as const,
     ...(q
       ? {
           OR: [
@@ -170,58 +169,19 @@ export async function StudioTemplatesSection({
             const hasDraft = t.versions.length > 0;
             const isPublished = Boolean(t.publishedVersionId);
             return (
-              <Card key={t.id} className="flex flex-col">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <CardTitle>
-                        <Link
-                          prefetch={false}
-                          href={`/administration/gabarits/${t.id}`}
-                          className="text-msk-blue hover:underline"
-                        >
-                          {t.name}
-                        </Link>
-                      </CardTitle>
-                      <CardDescription className="font-mono text-xs">{t.code}</CardDescription>
-                    </div>
-                    <TemplateCardActions
-                      templateId={t.id}
-                      active={t.active}
-                      signatureEnabled={t.signatureEnabled}
-                      hasDraft={hasDraft}
-                      editHref={`/administration/gabarits/${t.id}/edit`}
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="flex flex-1 flex-col justify-between gap-3">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <Badge tone={t.active ? "success" : "muted"}>
-                      {t.active ? "Actif" : "Inactif"}
-                    </Badge>
-                    <Badge tone={isPublished ? "blue" : "coral"}>
-                      {isPublished ? "Publié" : "Non publié"}
-                    </Badge>
-                    {hasDraft ? <Badge tone="ink">Brouillon en attente</Badge> : null}
-                    <Badge tone={t.signatureEnabled ? "success" : "muted"}>
-                      {t.signatureEnabled ? "Signature ON" : "Signature OFF"}
-                    </Badge>
-                  </div>
-                  <p className="text-xs leading-relaxed text-msk-ink/55">
-                    {t.description ?? "—"}
-                  </p>
-                  <div className="flex items-center justify-between gap-2 border-t border-msk-ink/6 pt-3">
-                    <Link
-                      prefetch={false}
-                      href={`/administration/gabarits/${t.id}`}
-                      className="text-xs font-medium text-msk-blue hover:underline"
-                    >
-                      Voir la fiche →
-                    </Link>
-                    {isPublished ? <GenerateDemoButton templateId={t.id} compact /> : null}
-                  </div>
-                </CardContent>
-              </Card>
+              <TemplateLibraryCard
+                key={t.id}
+                id={t.id}
+                name={t.name}
+                code={t.code}
+                description={t.description}
+                active={t.active}
+                generatorKind="ENGINE_BLOCKS"
+                signatureEnabled={t.signatureEnabled}
+                published={isPublished}
+                hasDraft={hasDraft}
+                editHref={`/administration/gabarits/${t.id}/edit`}
+              />
             );
           })}
         </div>

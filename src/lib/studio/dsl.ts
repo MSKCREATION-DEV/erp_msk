@@ -8,12 +8,15 @@
  *   > Texte en évidence    → bloc highlight (lignes `>` consécutives fusionnées)
  *   ---                    → bloc spacer
  *   [[SIGNATURE: Gauche | Droite]] → bloc signature (ignoré si signature OFF)
+ *   [[COMPOSITE: commercial_devis]] → section tableau (générateur historique)
  *   (ligne(s) normales)    → bloc paragraph (lignes consécutives fusionnées,
  *                             séparées par un saut de ligne vide)
  */
+import { isCompositeRenderer } from "@/lib/studio/composite";
 import { type TemplateBlock } from "@/lib/studio/types";
 
 const SIGNATURE_RE = /^\[\[SIGNATURE:\s*(.+?)\s*\|\s*(.+?)\s*\]\]$/;
+const COMPOSITE_RE = /^\[\[COMPOSITE:\s*([a-z0-9_]+)\s*\]\]$/i;
 
 export function textToBlocks(source: string): TemplateBlock[] {
   const lines = source.replace(/\r\n/g, "\n").split("\n");
@@ -68,6 +71,15 @@ export function textToBlocks(source: string): TemplateBlock[] {
       });
       continue;
     }
+    const compositeMatch = COMPOSITE_RE.exec(line);
+    if (compositeMatch) {
+      flushParagraph();
+      const renderer = compositeMatch[1].toLowerCase();
+      if (isCompositeRenderer(renderer)) {
+        blocks.push({ kind: "composite", renderer });
+      }
+      continue;
+    }
     paragraphBuffer.push(line);
   }
   flushParagraph();
@@ -100,6 +112,9 @@ export function blocksToText(blocks: TemplateBlock[]): string {
         break;
       case "signature":
         lines.push(`[[SIGNATURE: ${b.leftLabel} | ${b.rightLabel}]]`);
+        break;
+      case "composite":
+        lines.push(`[[COMPOSITE: ${b.renderer}]]`);
         break;
     }
     lines.push("");
