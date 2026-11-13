@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import {
   absenceDaySpan,
+  assertJustifiedRequiresGed,
   combineSvDateTime,
   computeMinutesLate,
   parseSvDateOnly,
   statusAfterJustification,
+  SV_ABSENCE_JUSTIFIED_REQUIRES_GED,
 } from "@/lib/suivi/hr";
 
 const d = parseSvDateOnly("2026-11-13");
@@ -29,5 +31,12 @@ assert.equal(statusAfterJustification("ENREGISTREE", true), "JUSTIFIEE");
 assert.equal(statusAfterJustification("NON_JUSTIFIEE", true), "JUSTIFIEE");
 assert.equal(statusAfterJustification("ANNULEE", true), "ANNULEE");
 assert.equal(statusAfterJustification("ENREGISTREE", false), "ENREGISTREE");
+assert.equal(statusAfterJustification("JUSTIFIEE", false), "NON_JUSTIFIEE");
+assert.equal(statusAfterJustification("JUSTIFIEE", true), "JUSTIFIEE");
+
+assert.equal(assertJustifiedRequiresGed("JUSTIFIEE", false), SV_ABSENCE_JUSTIFIED_REQUIRES_GED);
+assert.equal(assertJustifiedRequiresGed("JUSTIFIEE", true), null);
+assert.equal(assertJustifiedRequiresGed("NON_JUSTIFIEE", false), null);
+assert.equal(assertJustifiedRequiresGed("ENREGISTREE", false), null);
 
 console.log("ok — suivi hr helpers");

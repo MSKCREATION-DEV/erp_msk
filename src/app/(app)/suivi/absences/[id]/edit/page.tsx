@@ -46,7 +46,7 @@ export default async function SuiviAbsenceEditPage({
     <PageShell>
       <PageHeader
         title="Modifier l’absence"
-        description="Mettre à jour les dates, le motif ou ajouter un justificatif."
+        description="Mettre à jour les dates, le motif ou le justificatif. Statut Justifiée = document GED obligatoire."
         backHref={`/suivi/absences/${id}`}
       />
       <SvAbsenceForm

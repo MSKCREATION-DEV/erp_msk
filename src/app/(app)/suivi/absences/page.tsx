@@ -90,7 +90,7 @@ export default async function SuiviAbsencesPage({
     <PageShell>
       <PageHeader
         title="Absences"
-        description="Absences collaborateurs — justificatif optionnel, trace congés sans écrire en RH."
+        description="Absences collaborateurs — Justifiée uniquement avec justificatif GED ; trace congés sans écrire en RH."
         backHref="/suivi"
         actions={
           canManage ? (

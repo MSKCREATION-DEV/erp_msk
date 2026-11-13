@@ -7,6 +7,7 @@ import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
 import { uploadSvAbsenceBytes } from "@/lib/suivi/ged";
 import {
+  assertJustifiedRequiresGed,
   combineSvDateTime,
   computeMinutesLate,
   parseSvDateOnly,
@@ -153,6 +154,15 @@ export async function createSvAbsence(
   const upload = await readOptionalUpload(formData);
   if (!upload.ok) return { ok: false, error: upload.error };
 
+  // Justifiée uniquement après justificatif GED réussi (pas avant l’upload).
+  const requestedStatus = formData.get("status");
+  const wantJustified =
+    requestedStatus === "JUSTIFIEE" || Boolean(upload.bytes);
+  if (wantJustified && !upload.bytes) {
+    const err = assertJustifiedRequiresGed("JUSTIFIEE", false);
+    return { ok: false, error: err ?? "Justificatif obligatoire." };
+  }
+
   let id: string;
   try {
     const row = await prisma.svAbsence.create({
@@ -166,7 +176,7 @@ export async function createSvAbsence(
         deductLeaveNote: deductLeave
           ? emptyToNull(parsed.data.deductLeaveNote)
           : null,
-        status: upload.bytes ? "JUSTIFIEE" : "ENREGISTREE",
+        status: "ENREGISTREE",
         createdById: user.id,
       },
       select: { id: true },
@@ -180,6 +190,10 @@ export async function createSvAbsence(
         mime: upload.mime,
         bytes: upload.bytes,
         createdById: user.id,
+      });
+      await prisma.svAbsence.update({
+        where: { id },
+        data: { status: "JUSTIFIEE" },
       });
     }
   } catch (e) {
@@ -257,10 +271,35 @@ export async function updateSvAbsence(
   const upload = await readOptionalUpload(formData);
   if (!upload.ok) return { ok: false, error: upload.error };
 
+  const willHaveJustificatif =
+    Boolean(existing.gedDocumentId) || Boolean(upload.bytes);
   let nextStatus = parsed.data.status ?? existing.status;
+  if (nextStatus === "ANNULEE") {
+    return { ok: false, error: "Utilisez l’action Annuler pour annuler." };
+  }
+  // Upload → promotion automatique vers Justifiée si encore Enregistrée / Non justifiée.
   if (upload.bytes) {
     nextStatus = statusAfterJustification(nextStatus, true);
   }
+
+  const justifiedErr = assertJustifiedRequiresGed(
+    nextStatus,
+    willHaveJustificatif,
+  );
+  if (justifiedErr) {
+    return { ok: false, error: justifiedErr };
+  }
+
+  // Justifiée sans GED déjà lié : on n’écrit le statut qu’après upload réussi.
+  const needsUploadForJustified =
+    nextStatus === "JUSTIFIEE" &&
+    !existing.gedDocumentId &&
+    Boolean(upload.bytes);
+  const statusForFirstWrite = needsUploadForJustified
+    ? existing.status === "JUSTIFIEE"
+      ? "ENREGISTREE"
+      : existing.status
+    : nextStatus;
 
   try {
     await prisma.svAbsence.update({
@@ -275,7 +314,7 @@ export async function updateSvAbsence(
         deductLeaveNote: deductLeave
           ? emptyToNull(parsed.data.deductLeaveNote)
           : null,
-        status: nextStatus,
+        status: statusForFirstWrite,
       },
     });
 

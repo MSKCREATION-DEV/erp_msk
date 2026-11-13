@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-13 (Suivi Absences & retards ; voir §8) |
+| Dernière mise à jour | 2026-11-13 (Absences Justifiée ⇒ GED ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -197,11 +197,21 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-13 — Absences Suivi : Justifiée ⇒ justificatif GED obligatoire
+
+| | |
+|---|---|
+| Quoi | Règle métier : statut **Justifiée** impossible sans document GED lié (ou upload). Validation UI + Server Action (`assertJustifiedRequiresGed`) ; message « Ajoutez un justificatif pour marquer l’absence justifiée ». Create : Justifiée seulement après upload réussi. Badges Justifiée / Non justifiée (labels/tones) cohérents. |
+| Pourquoi | Clarifier justifiée vs non justifiée ; éviter un statut Justifiée sans pièce |
+| Fichiers | `lib/suivi/hr.ts` (+ test), `actions/suivi/hr.ts`, `components/suivi/absence-form.tsx`, pages liste/edit absences, ce suivi |
+| Statut doc | Guide `sv-hub-naviguer` **`draft`** — mentionner la contrainte justificatif dans le parcours Absences |
+| Routes | inchangées `/suivi/absences/**` |
+
 ### 2026-11-13 — Suivi Absences & retards (décision K)
 
 | | |
 |---|---|
-| Quoi | Module tampon **Absences** + **Retards** : tables `sv_absences` / `sv_lates`, lien `RhEmployee`, justificatif GED optionnel, flag « déduire congés » sans write RH, listes paginées, fiches bandeau, permissions `sv.hr.*`, KPI légers hub/TB |
+| Quoi | Module tampon **Absences** + **Retards** : tables `sv_absences` / `sv_lates`, lien `RhEmployee`, justificatif GED (obligatoire pour Justifiée), flag « déduire congés » sans write RH, listes paginées, fiches bandeau, permissions `sv.hr.*`, KPI légers hub/TB |
 | Pourquoi | Direction doit tracer absences/retards sans casser le module RH réel |
 | Fichiers | migration `20261113140000_sv_hr_absences_lates`, `schema.prisma`, `actions/suivi/hr.ts`, `app/(app)/suivi/{absences,retards}/**`, `components/suivi/*absence*|*late*`, `lib/suivi/{hr,ged,modules,labels}`, `DECISIONS-SEED` §12, `SPEC` |
 | Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — ajouter parcours Absences / Retards / justificatif / flag congés |

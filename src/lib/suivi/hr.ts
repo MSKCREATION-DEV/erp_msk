@@ -111,7 +111,25 @@ export function employeeDisplayName(e: {
   return `${e.firstName} ${e.lastName}`.trim();
 }
 
-/** Après upload justificatif → statut Justifiée si encore Enregistrée. */
+/** Message UX / Server Action — Justifiée exige un document GED. */
+export const SV_ABSENCE_JUSTIFIED_REQUIRES_GED =
+  "Ajoutez un justificatif pour marquer l’absence justifiée";
+
+/**
+ * Justifiée ⇔ justificatif présent (GED lié ou fichier en cours d’upload).
+ * Retourne le message d’erreur, ou null si OK.
+ */
+export function assertJustifiedRequiresGed(
+  status: SvAbsenceStatusCode,
+  hasJustificatif: boolean,
+): string | null {
+  if (status === "JUSTIFIEE" && !hasJustificatif) {
+    return SV_ABSENCE_JUSTIFIED_REQUIRES_GED;
+  }
+  return null;
+}
+
+/** Après upload justificatif → statut Justifiée si encore Enregistrée / Non justifiée. */
 export function statusAfterJustification(
   current: SvAbsenceStatusCode,
   hasGed: boolean,
@@ -119,6 +137,10 @@ export function statusAfterJustification(
   if (current === "ANNULEE") return current;
   if (hasGed && (current === "ENREGISTREE" || current === "NON_JUSTIFIEE")) {
     return "JUSTIFIEE";
+  }
+  // Sans justificatif, Justifiée n’est pas tenable.
+  if (!hasGed && current === "JUSTIFIEE") {
+    return "NON_JUSTIFIEE";
   }
   return current;
 }
