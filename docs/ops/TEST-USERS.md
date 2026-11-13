@@ -28,9 +28,16 @@ Les comptes / orgs / clients de test **ne doivent jamais** rester en prod après
 
 - Seed fixtures CRM : `scripts/seed-crm-test-fixtures.mjs` (`PURGE=1` pour nettoyer).
 - Merge / purge orgs `[TEST]` historique : `scripts/crm-import-yaye-merge.ts`.
+- Purge RH smoke (picker Suivi) : `scripts/ops-cleanup-rh-test-employees.ts` (dry-run par défaut ; `CONFIRM_DELETE=YES` pour apply).
+- Création collabs Marketing (one-shot) : `scripts/ops-create-marketing-collabs.ts` — voir aussi `docs/ops/CREATE-MARKETING-COLLABS.md`.
 
 ## Historique
 
+- **2026-11-13** — inventaire picker Suivi absences :
+  - **Delete safe** (smoke) : `Review Collab*` + `Awa Traore` + suffixe numérique → script `ops-cleanup-rh-test-employees.ts` + GED `COLLAB05697_REVIEW`.
+  - **Conservé** : `Test Guiro` (`test.guiro@test.com`).
+  - **Ambiguïté** : doublon `Yaye Bah` orphelin (`pro.asguiro@gmail.com`, sans `userId`, mais contrats/paie/INPS) — **non supprimé**, à trancher.
+  - Yaye réelle `y.bah@mskcreation.net` **non touchée**.
 - **2026-11-06** — suppression définitive (Prisma + Auth) :
   - `test.yaye@test.msk.local` `267ac4bb-c3e2-4a94-a324-ed0a1c680c6b`
   - `test.mathieu.crm@test.msk.local` `c039f3c3-bf46-4aaa-82a6-de8aecb487cf`
@@ -39,4 +46,4 @@ Les comptes / orgs / clients de test **ne doivent jamais** rester en prod après
   - Compte réel Yaye Bah (`y.bah@mskcreation.net`) **non touché**.
 - **2026-11-06** — GED : purge doublon vide `/2026/05_COLLABORATEURS/BAH_YAYE_` (« Bah Yaye » + espace trailing, créé via slug non trimé). Conservé `BAH_YAYE` (8 docs). Fix `collabFolderSlug` + trim display name.
 - **2026-11-06** — GED : purge `GUIRO_TEST` (arbre vide).
-- Suspect GED encore présent : `COLLAB05697_REVIEW` (2 docs) — à trancher séparément.
+- GED `COLLAB05697_REVIEW` : purgé via `ops-cleanup-rh-test-employees.ts` (2026-11-13) si `CONFIRM_DELETE=YES`.
