@@ -873,14 +873,13 @@ export async function generateContractPdfAction(
   };
 
   let pdfBytes: Uint8Array;
-  let kindLabel: string;
   const variant =
     contract.type === "STAGE"
       ? ("STAGE" as const)
       : contract.type === "PRESTA"
         ? ("PRESTA" as const)
         : ("TRAVAIL" as const);
-  kindLabel = variant;
+  const kindLabel = variant;
   try {
     pdfBytes = await generateOfficialPdfFromTemplate({
       template: contractTemplate,

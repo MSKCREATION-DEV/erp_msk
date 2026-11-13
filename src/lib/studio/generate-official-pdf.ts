@@ -4,7 +4,6 @@
  */
 import "server-only";
 
-import type { DocumentTemplate } from "@/generated/prisma/client";
 import {
   generateCommercialPdf,
   generateContractPdf,

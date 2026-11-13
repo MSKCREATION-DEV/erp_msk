@@ -75,7 +75,16 @@ export function TemplatePlaygroundForm({
     } finally {
       setLoading(false);
     }
-  }, [bodyText, editable, exemplaireGet, headerTitle, logoAlign, signaturePreview, templateId]);
+  }, [
+    bodyText,
+    editable,
+    exemplaireGet,
+    headerTitle,
+    logoAlign,
+    previewUrl,
+    signaturePreview,
+    templateId,
+  ]);
 
   useEffect(() => {
     void refreshPreview();
