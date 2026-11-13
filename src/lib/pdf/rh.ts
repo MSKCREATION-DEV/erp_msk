@@ -2,8 +2,6 @@
  * Gabarits PDF RH — charte MSK (logo, bleu #1D73BC, ink, pied légal).
  * Sources métier : contrats / attestation / solde / règlement / fiche paie MSK.
  */
-import { readFile } from "fs/promises";
-import path from "path";
 import {
   PDFDocument,
   StandardFonts,
@@ -157,14 +155,8 @@ function wrap(
 }
 
 async function embedLogo(pdf: PDFDocument) {
-  try {
-    const bytes = await readFile(
-      path.join(process.cwd(), "public/brand/lockup.png"),
-    );
-    return pdf.embedPng(bytes);
-  } catch {
-    return null;
-  }
+  const { embedBrandLogo } = await import("@/lib/pdf/embed-brand-logo");
+  return embedBrandLogo(pdf);
 }
 
 async function createCtx(): Promise<Ctx> {

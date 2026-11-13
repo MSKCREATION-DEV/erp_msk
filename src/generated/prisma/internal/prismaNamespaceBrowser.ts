@@ -67,6 +67,12 @@ export const ModelName = {
   DocumentLink: 'DocumentLink',
   DocumentAcl: 'DocumentAcl',
   BrandAsset: 'BrandAsset',
+  BrandLogo: 'BrandLogo',
+  BrandColor: 'BrandColor',
+  BrandTypography: 'BrandTypography',
+  BrandFontFile: 'BrandFontFile',
+  BrandResource: 'BrandResource',
+  BrandConfiguration: 'BrandConfiguration',
   SignatureAsset: 'SignatureAsset',
   OrgNode: 'OrgNode',
   DocumentTemplate: 'DocumentTemplate',
@@ -375,6 +381,113 @@ export const BrandAssetScalarFieldEnum = {
 } as const
 
 export type BrandAssetScalarFieldEnum = (typeof BrandAssetScalarFieldEnum)[keyof typeof BrandAssetScalarFieldEnum]
+
+
+export const BrandLogoScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  label: 'label',
+  kind: 'kind',
+  status: 'status',
+  isDefaultDocuments: 'isDefaultDocuments',
+  description: 'description',
+  publicPath: 'publicPath',
+  storageOriginal: 'storageOriginal',
+  storageOptimized: 'storageOptimized',
+  mime: 'mime',
+  originalFileName: 'originalFileName',
+  fileSizeBytes: 'fileSizeBytes',
+  widthPx: 'widthPx',
+  heightPx: 'heightPx',
+  sortOrder: 'sortOrder',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandLogoScalarFieldEnum = (typeof BrandLogoScalarFieldEnum)[keyof typeof BrandLogoScalarFieldEnum]
+
+
+export const BrandColorScalarFieldEnum = {
+  id: 'id',
+  tokenKey: 'tokenKey',
+  label: 'label',
+  hex: 'hex',
+  category: 'category',
+  usageNotes: 'usageNotes',
+  status: 'status',
+  isReference: 'isReference',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandColorScalarFieldEnum = (typeof BrandColorScalarFieldEnum)[keyof typeof BrandColorScalarFieldEnum]
+
+
+export const BrandTypographyScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  familyName: 'familyName',
+  role: 'role',
+  status: 'status',
+  isDefaultErp: 'isDefaultErp',
+  isDefaultPdf: 'isDefaultPdf',
+  cssStack: 'cssStack',
+  notes: 'notes',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandTypographyScalarFieldEnum = (typeof BrandTypographyScalarFieldEnum)[keyof typeof BrandTypographyScalarFieldEnum]
+
+
+export const BrandFontFileScalarFieldEnum = {
+  id: 'id',
+  typographyId: 'typographyId',
+  weight: 'weight',
+  style: 'style',
+  storagePath: 'storagePath',
+  mime: 'mime',
+  originalFileName: 'originalFileName',
+  fileSizeBytes: 'fileSizeBytes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandFontFileScalarFieldEnum = (typeof BrandFontFileScalarFieldEnum)[keyof typeof BrandFontFileScalarFieldEnum]
+
+
+export const BrandResourceScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  label: 'label',
+  kind: 'kind',
+  status: 'status',
+  description: 'description',
+  publicPath: 'publicPath',
+  storagePath: 'storagePath',
+  mime: 'mime',
+  originalFileName: 'originalFileName',
+  fileSizeBytes: 'fileSizeBytes',
+  sortOrder: 'sortOrder',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandResourceScalarFieldEnum = (typeof BrandResourceScalarFieldEnum)[keyof typeof BrandResourceScalarFieldEnum]
+
+
+export const BrandConfigurationScalarFieldEnum = {
+  id: 'id',
+  defaultDocumentsLogoId: 'defaultDocumentsLogoId',
+  settingsJson: 'settingsJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandConfigurationScalarFieldEnum = (typeof BrandConfigurationScalarFieldEnum)[keyof typeof BrandConfigurationScalarFieldEnum]
 
 
 export const SignatureAssetScalarFieldEnum = {

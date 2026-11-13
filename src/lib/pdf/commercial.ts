@@ -1,5 +1,3 @@
-import { readFile } from "fs/promises";
-import path from "path";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import { company } from "@/lib/company";
 import {
@@ -116,13 +114,8 @@ function wrapParagraph(
 }
 
 async function embedLogo(pdf: PDFDocument) {
-  try {
-    const logoPath = path.join(process.cwd(), "public/brand/lockup.png");
-    const bytes = await readFile(logoPath);
-    return pdf.embedPng(bytes);
-  } catch {
-    return null;
-  }
+  const { embedBrandLogo } = await import("@/lib/pdf/embed-brand-logo");
+  return embedBrandLogo(pdf);
 }
 
 function addMonths(d: Date, months: number) {

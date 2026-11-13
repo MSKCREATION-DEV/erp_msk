@@ -61,6 +61,52 @@ enum SignatureStatus {
   REVOKED
 }
 
+/// Statut générique des éléments de charte (logos, couleurs, typos, ressources).
+enum BrandItemStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum BrandLogoKind {
+  PRINCIPAL
+  HORIZONTAL
+  VERTICAL
+  COMPACT
+  SYMBOLE
+  BLANC
+  MONO
+  DOCUMENTS
+  FAVICON
+  AUTRE
+}
+
+enum BrandColorCategory {
+  MARQUE
+  INTERFACE
+  FONCTIONNELLE
+  DOCUMENTAIRE
+}
+
+enum BrandTypographyRole {
+  HEADING
+  BODY
+  UI
+  PDF
+  ACCENT
+  IMPACT
+}
+
+enum BrandResourceKind {
+  ICONE
+  PICTO
+  ILLUSTRATION
+  MOTIF
+  FOND
+  SIGNATURE_GRAPH
+  AUTRE
+}
+
 enum TemplateType {
   DEVIS
   FACTURE
@@ -401,6 +447,8 @@ model User {
   svExpenseInvoicesCreated   SvExpenseInvoice[]  @relation("SvExpenseInvoiceCreator")
   svCashMovementsCreated     SvCashMovement[]    @relation("SvCashMovementCreator")
   svStockMovementsCreated    SvStockMovement[]   @relation("SvStockMovementCreator")
+  brandLogosCreated          BrandLogo[]         @relation("BrandLogoCreator")
+  brandResourcesCreated      BrandResource[]     @relation("BrandResourceCreator")
 
   @@index([status])
   @@map("users")
@@ -619,16 +667,137 @@ model DocumentAcl {
   @@map("document_acls")
 }
 
+/// Legacy seed/affichage — préférer BrandLogo pour la gestion Charte.
 model BrandAsset {
-  id        String   @id @default(cuid())
-  kind      String   @unique
-  label     String
+  id         String   @id @default(cuid())
+  kind       String   @unique
+  label      String
   publicPath String
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("brand_assets")
+}
+
+model BrandLogo {
+  id                 String          @id @default(cuid())
+  code               String          @unique
+  label              String
+  kind               BrandLogoKind   @default(AUTRE)
+  status             BrandItemStatus @default(ACTIVE)
+  isDefaultDocuments Boolean         @default(false)
+  description        String?
+  publicPath         String?
+  storageOriginal    String?
+  storageOptimized   String?
+  mime               String
+  originalFileName   String?
+  fileSizeBytes      Int?
+  widthPx            Int?
+  heightPx           Int?
+  sortOrder          Int             @default(0)
+  createdById        String?         @db.Uuid
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  createdBy            User?               @relation("BrandLogoCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  configurationDefault BrandConfiguration?
+
+  @@index([status])
+  @@index([kind])
+  @@index([isDefaultDocuments])
+  @@map("brand_logos")
+}
+
+model BrandColor {
+  id          String             @id @default(cuid())
+  tokenKey    String             @unique
+  label       String
+  hex         String
+  category    BrandColorCategory @default(MARQUE)
+  usageNotes  String?
+  status      BrandItemStatus    @default(ACTIVE)
+  isReference Boolean            @default(false)
+  sortOrder   Int                @default(0)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([status, category])
+  @@map("brand_colors")
+}
+
+model BrandTypography {
+  id           String              @id @default(cuid())
+  code         String              @unique
+  familyName   String
+  role         BrandTypographyRole
+  status       BrandItemStatus     @default(ACTIVE)
+  isDefaultErp Boolean             @default(false)
+  isDefaultPdf Boolean             @default(false)
+  cssStack     String?
+  notes        String?
+  sortOrder    Int                 @default(0)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  files BrandFontFile[]
+
+  @@index([status, role])
+  @@map("brand_typographies")
+}
+
+model BrandFontFile {
+  id               String   @id @default(cuid())
+  typographyId     String
+  weight           Int      @default(400)
+  style            String   @default("normal")
+  storagePath      String
+  mime             String
+  originalFileName String?
+  fileSizeBytes    Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  typography BrandTypography @relation(fields: [typographyId], references: [id], onDelete: Cascade)
+
+  @@unique([typographyId, weight, style])
+  @@index([typographyId])
+  @@map("brand_font_files")
+}
+
+model BrandResource {
+  id               String           @id @default(cuid())
+  code             String           @unique
+  label            String
+  kind             BrandResourceKind @default(AUTRE)
+  status           BrandItemStatus  @default(ACTIVE)
+  description      String?
+  publicPath       String?
+  storagePath      String?
+  mime             String
+  originalFileName String?
+  fileSizeBytes    Int?
+  sortOrder        Int              @default(0)
+  createdById      String?          @db.Uuid
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  createdBy User? @relation("BrandResourceCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([status, kind])
+  @@map("brand_resources")
+}
+
+model BrandConfiguration {
+  id                     String   @id @default("default")
+  defaultDocumentsLogoId String?  @unique
+  settingsJson           Json     @default("{}")
+  updatedAt              DateTime @updatedAt
+
+  defaultDocumentsLogo BrandLogo? @relation(fields: [defaultDocumentsLogoId], references: [id], onDelete: SetNull)
+
+  @@map("brand_configurations")
 }
 
 model SignatureAsset {

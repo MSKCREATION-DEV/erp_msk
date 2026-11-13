@@ -22,6 +22,7 @@
     "test:winansi": "tsx src/lib/pdf/winansi.test.ts",
     "test:pdf-rh": "tsx src/lib/pdf/rh.test.ts",
     "test:pdf-contract": "tsx src/lib/pdf/contract.test.ts",
+    "test:brand": "tsx src/lib/brand/colors.test.ts && tsx src/lib/brand/svg-sanitize.test.ts",
     "gate:phase0": "node scripts/gate-phase0.mjs",
     "gate:phase1": "node scripts/gate-phase1.mjs",
     "gate:phase2": "node scripts/gate-phase2.mjs",

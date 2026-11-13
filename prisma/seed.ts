@@ -358,7 +358,13 @@ async function seedPhase1Ged() {
       update: { label: a.label, publicPath: a.publicPath, active: true },
     });
   }
-  console.log("✓ Brand assets");
+  console.log("✓ Brand assets (legacy)");
+
+  const { seedBrandIdentity } = await import(
+    "../src/lib/brand/seed-identity"
+  );
+  await seedBrandIdentity();
+  console.log("✓ Brand identity (logos / couleurs / typos / config)");
 
   const templates = [
     {

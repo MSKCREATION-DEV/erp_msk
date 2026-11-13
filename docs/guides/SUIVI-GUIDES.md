@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-13 (en-tête fiche factures clients Suivi + règle `detail-page-header` ; voir §8) |
+| Dernière mise à jour | 2026-11-13 (module Admin Charte identité visuelle ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-13 — Administration Charte : module identité visuelle
+
+| | |
+|---|---|
+| Quoi | Module **Charte** opérationnel : vue d’ensemble Brand Preview, CRUD logos (upload/SVG sanitize/PNG optimisé/défaut documents), couleurs (palette référence + contraste WCAG + sync CSS vars), typographies (rôles + fichiers), ressources graphiques. Service `getBrandConfigForDocument` + hook PDF Commercial/RH. |
+| Pourquoi | Remplacer la page lecture seule tokens/assets seed par une vraie gestion d’identité visuelle |
+| Fichiers | `prisma/schema` + migration `20261113120000_brand_identity_charte`, `src/lib/brand/**`, `src/actions/brand.ts`, `src/app/(app)/administration/charte/**`, `src/components/admin/charte/**`, `src/lib/pdf/embed-brand-logo.ts`, PDF commercial/RH, seed, ce suivi |
+| Statut doc | Pas de guide utilisateur dédié encore — **`draft`** à créer (parcours Admin Charte) ; pas inventé comme `validated` |
+| Routes | `/administration/charte` · `/logos` · `/couleurs` · `/typographies` · `/ressources` (+ `/nouveau`, `/[id]`) |
+| Permission | `cfg.brand` (granulaire view/edit non découpée — dette assumée) |
 
 ### 2026-11-13 — Factures clients Suivi : en-tête fiche + règle plateforme
 

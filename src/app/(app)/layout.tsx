@@ -3,6 +3,7 @@ import { AppSidebar } from "@/components/app/app-sidebar";
 import { SidebarSkeleton } from "@/components/app/sidebar-skeleton";
 import { Topbar } from "@/components/app/topbar";
 import { NavigationProgress } from "@/components/ui/navigation-progress";
+import { BrandCssVars } from "@/components/admin/charte/brand-css-vars";
 
 /**
  * Shell authentifié — navigation instantanée.
@@ -23,6 +24,9 @@ export default function AppLayout({
   return (
     <>
       <NavigationProgress />
+      <Suspense fallback={null}>
+        <BrandCssVars />
+      </Suspense>
       {/*
         Shell figé viewport : sidebar + topbar fixes ;
         seul <main> défile (évite double scroll body + conteneur).

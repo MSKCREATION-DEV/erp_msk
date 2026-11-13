@@ -118,9 +118,39 @@ export type DocumentLink = Prisma.DocumentLinkModel
 export type DocumentAcl = Prisma.DocumentAclModel
 /**
  * Model BrandAsset
- * 
+ * Legacy seed/affichage — préférer BrandLogo pour la gestion Charte.
  */
 export type BrandAsset = Prisma.BrandAssetModel
+/**
+ * Model BrandLogo
+ * 
+ */
+export type BrandLogo = Prisma.BrandLogoModel
+/**
+ * Model BrandColor
+ * 
+ */
+export type BrandColor = Prisma.BrandColorModel
+/**
+ * Model BrandTypography
+ * 
+ */
+export type BrandTypography = Prisma.BrandTypographyModel
+/**
+ * Model BrandFontFile
+ * 
+ */
+export type BrandFontFile = Prisma.BrandFontFileModel
+/**
+ * Model BrandResource
+ * 
+ */
+export type BrandResource = Prisma.BrandResourceModel
+/**
+ * Model BrandConfiguration
+ * 
+ */
+export type BrandConfiguration = Prisma.BrandConfigurationModel
 /**
  * Model SignatureAsset
  * 

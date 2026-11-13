@@ -84,6 +84,66 @@ export const SignatureStatus = {
 export type SignatureStatus = (typeof SignatureStatus)[keyof typeof SignatureStatus]
 
 
+export const BrandItemStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type BrandItemStatus = (typeof BrandItemStatus)[keyof typeof BrandItemStatus]
+
+
+export const BrandLogoKind = {
+  PRINCIPAL: 'PRINCIPAL',
+  HORIZONTAL: 'HORIZONTAL',
+  VERTICAL: 'VERTICAL',
+  COMPACT: 'COMPACT',
+  SYMBOLE: 'SYMBOLE',
+  BLANC: 'BLANC',
+  MONO: 'MONO',
+  DOCUMENTS: 'DOCUMENTS',
+  FAVICON: 'FAVICON',
+  AUTRE: 'AUTRE'
+} as const
+
+export type BrandLogoKind = (typeof BrandLogoKind)[keyof typeof BrandLogoKind]
+
+
+export const BrandColorCategory = {
+  MARQUE: 'MARQUE',
+  INTERFACE: 'INTERFACE',
+  FONCTIONNELLE: 'FONCTIONNELLE',
+  DOCUMENTAIRE: 'DOCUMENTAIRE'
+} as const
+
+export type BrandColorCategory = (typeof BrandColorCategory)[keyof typeof BrandColorCategory]
+
+
+export const BrandTypographyRole = {
+  HEADING: 'HEADING',
+  BODY: 'BODY',
+  UI: 'UI',
+  PDF: 'PDF',
+  ACCENT: 'ACCENT',
+  IMPACT: 'IMPACT'
+} as const
+
+export type BrandTypographyRole = (typeof BrandTypographyRole)[keyof typeof BrandTypographyRole]
+
+
+export const BrandResourceKind = {
+  ICONE: 'ICONE',
+  PICTO: 'PICTO',
+  ILLUSTRATION: 'ILLUSTRATION',
+  MOTIF: 'MOTIF',
+  FOND: 'FOND',
+  SIGNATURE_GRAPH: 'SIGNATURE_GRAPH',
+  AUTRE: 'AUTRE'
+} as const
+
+export type BrandResourceKind = (typeof BrandResourceKind)[keyof typeof BrandResourceKind]
+
+
 export const TemplateType = {
   DEVIS: 'DEVIS',
   FACTURE: 'FACTURE',

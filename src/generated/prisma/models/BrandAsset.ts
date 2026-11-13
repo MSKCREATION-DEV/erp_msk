@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model BrandAsset
- * 
+ * Legacy seed/affichage — préférer BrandLogo pour la gestion Charte.
  */
 export type BrandAssetModel = runtime.Types.Result.DefaultSelection<Prisma.$BrandAssetPayload>
 

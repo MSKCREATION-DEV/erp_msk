@@ -413,6 +413,12 @@ export const ModelName = {
   DocumentLink: 'DocumentLink',
   DocumentAcl: 'DocumentAcl',
   BrandAsset: 'BrandAsset',
+  BrandLogo: 'BrandLogo',
+  BrandColor: 'BrandColor',
+  BrandTypography: 'BrandTypography',
+  BrandFontFile: 'BrandFontFile',
+  BrandResource: 'BrandResource',
+  BrandConfiguration: 'BrandConfiguration',
   SignatureAsset: 'SignatureAsset',
   OrgNode: 'OrgNode',
   DocumentTemplate: 'DocumentTemplate',
@@ -512,7 +518,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organizationSettings" | "user" | "group" | "groupMember" | "permission" | "permissionPack" | "packPermission" | "userPack" | "userPermissionOverride" | "auditLog" | "passwordResetRequest" | "documentFolder" | "document" | "documentLink" | "documentAcl" | "brandAsset" | "signatureAsset" | "orgNode" | "documentTemplate" | "catalogOffer" | "catalogOfferVersion" | "crmOrganization" | "crmContact" | "crmContactChannel" | "crmOpportunity" | "crmAssignmentRequest" | "crmOpportunityOffer" | "crmActivity" | "crmTask" | "crmAppointment" | "appNotification" | "crmScript" | "crmPeriodGoal" | "crmWeeklyReport" | "comNumberSequence" | "comClient" | "comQuote" | "comQuoteLine" | "comContract" | "comContractLine" | "comInvoice" | "comInvoiceLine" | "comInvoiceArrearsRef" | "comCreditNote" | "comPayment" | "comPaymentAllocation" | "comClientEvent" | "comInvoiceReminder" | "comImportBatch" | "comImportAnomaly" | "cptAccount" | "cptJournal" | "cptExercise" | "cptPeriod" | "cptEntry" | "cptEntryLine" | "cptBankAccount" | "cptBankTxn" | "cptFxRate" | "budExercise" | "budLine" | "budPatenteDue" | "rhEmployee" | "rhProfileChangeRequest" | "rhProfileChangeLine" | "rhLeaveTypeConfig" | "rhLeaveMovement" | "rhWorkSchedule" | "rhPublicHoliday" | "rhContract" | "rhLeaveRequest" | "rhAbsence" | "rhTimesheet" | "rhTimesheetLine" | "rhInpsSettings" | "rhPayrollPeriod" | "rhPayslip" | "rhPayslipLine" | "rhInpsLine" | "rhContractTypeRule" | "stkArticle" | "stkMovement" | "stkPurchase" | "stkPurchaseLine" | "patAsset" | "prjProject" | "prjMember" | "prjExpense" | "opsTicket" | "svClient" | "svInvoice" | "svInvoiceLine" | "svPayment" | "svContractMeta" | "svAccount" | "svCashMovement" | "svExpenseInvoice" | "svExpensePayment" | "svStockItem" | "svStockMovement"
+    modelProps: "organizationSettings" | "user" | "group" | "groupMember" | "permission" | "permissionPack" | "packPermission" | "userPack" | "userPermissionOverride" | "auditLog" | "passwordResetRequest" | "documentFolder" | "document" | "documentLink" | "documentAcl" | "brandAsset" | "brandLogo" | "brandColor" | "brandTypography" | "brandFontFile" | "brandResource" | "brandConfiguration" | "signatureAsset" | "orgNode" | "documentTemplate" | "catalogOffer" | "catalogOfferVersion" | "crmOrganization" | "crmContact" | "crmContactChannel" | "crmOpportunity" | "crmAssignmentRequest" | "crmOpportunityOffer" | "crmActivity" | "crmTask" | "crmAppointment" | "appNotification" | "crmScript" | "crmPeriodGoal" | "crmWeeklyReport" | "comNumberSequence" | "comClient" | "comQuote" | "comQuoteLine" | "comContract" | "comContractLine" | "comInvoice" | "comInvoiceLine" | "comInvoiceArrearsRef" | "comCreditNote" | "comPayment" | "comPaymentAllocation" | "comClientEvent" | "comInvoiceReminder" | "comImportBatch" | "comImportAnomaly" | "cptAccount" | "cptJournal" | "cptExercise" | "cptPeriod" | "cptEntry" | "cptEntryLine" | "cptBankAccount" | "cptBankTxn" | "cptFxRate" | "budExercise" | "budLine" | "budPatenteDue" | "rhEmployee" | "rhProfileChangeRequest" | "rhProfileChangeLine" | "rhLeaveTypeConfig" | "rhLeaveMovement" | "rhWorkSchedule" | "rhPublicHoliday" | "rhContract" | "rhLeaveRequest" | "rhAbsence" | "rhTimesheet" | "rhTimesheetLine" | "rhInpsSettings" | "rhPayrollPeriod" | "rhPayslip" | "rhPayslipLine" | "rhInpsLine" | "rhContractTypeRule" | "stkArticle" | "stkMovement" | "stkPurchase" | "stkPurchaseLine" | "patAsset" | "prjProject" | "prjMember" | "prjExpense" | "opsTicket" | "svClient" | "svInvoice" | "svInvoiceLine" | "svPayment" | "svContractMeta" | "svAccount" | "svCashMovement" | "svExpenseInvoice" | "svExpensePayment" | "svStockItem" | "svStockMovement"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1697,6 +1703,450 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.BrandAssetCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.BrandAssetCountAggregateOutputType> | number
+        }
+      }
+    }
+    BrandLogo: {
+      payload: Prisma.$BrandLogoPayload<ExtArgs>
+      fields: Prisma.BrandLogoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BrandLogoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandLogoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BrandLogoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandLogoPayload>
+        }
+        findFirst: {
+          args: Prisma.BrandLogoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandLogoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BrandLogoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandLogoPayload>
+        }
+        findMany: {
+          args: Prisma.BrandLogoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandLogoPayload>[]
+        }
+        create: {
+          args: Prisma.BrandLogoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandLogoPayload>
+        }
+        createMany: {
+          args: Prisma.BrandLogoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BrandLogoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandLogoPayload>[]
+        }
+        delete: {
+          args: Prisma.BrandLogoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandLogoPayload>
+        }
+        update: {
+          args: Prisma.BrandLogoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandLogoPayload>
+        }
+        deleteMany: {
+          args: Prisma.BrandLogoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BrandLogoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BrandLogoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandLogoPayload>[]
+        }
+        upsert: {
+          args: Prisma.BrandLogoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandLogoPayload>
+        }
+        aggregate: {
+          args: Prisma.BrandLogoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBrandLogo>
+        }
+        groupBy: {
+          args: Prisma.BrandLogoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandLogoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BrandLogoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandLogoCountAggregateOutputType> | number
+        }
+      }
+    }
+    BrandColor: {
+      payload: Prisma.$BrandColorPayload<ExtArgs>
+      fields: Prisma.BrandColorFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BrandColorFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandColorPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BrandColorFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandColorPayload>
+        }
+        findFirst: {
+          args: Prisma.BrandColorFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandColorPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BrandColorFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandColorPayload>
+        }
+        findMany: {
+          args: Prisma.BrandColorFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandColorPayload>[]
+        }
+        create: {
+          args: Prisma.BrandColorCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandColorPayload>
+        }
+        createMany: {
+          args: Prisma.BrandColorCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BrandColorCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandColorPayload>[]
+        }
+        delete: {
+          args: Prisma.BrandColorDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandColorPayload>
+        }
+        update: {
+          args: Prisma.BrandColorUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandColorPayload>
+        }
+        deleteMany: {
+          args: Prisma.BrandColorDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BrandColorUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BrandColorUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandColorPayload>[]
+        }
+        upsert: {
+          args: Prisma.BrandColorUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandColorPayload>
+        }
+        aggregate: {
+          args: Prisma.BrandColorAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBrandColor>
+        }
+        groupBy: {
+          args: Prisma.BrandColorGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandColorGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BrandColorCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandColorCountAggregateOutputType> | number
+        }
+      }
+    }
+    BrandTypography: {
+      payload: Prisma.$BrandTypographyPayload<ExtArgs>
+      fields: Prisma.BrandTypographyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BrandTypographyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandTypographyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BrandTypographyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandTypographyPayload>
+        }
+        findFirst: {
+          args: Prisma.BrandTypographyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandTypographyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BrandTypographyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandTypographyPayload>
+        }
+        findMany: {
+          args: Prisma.BrandTypographyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandTypographyPayload>[]
+        }
+        create: {
+          args: Prisma.BrandTypographyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandTypographyPayload>
+        }
+        createMany: {
+          args: Prisma.BrandTypographyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BrandTypographyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandTypographyPayload>[]
+        }
+        delete: {
+          args: Prisma.BrandTypographyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandTypographyPayload>
+        }
+        update: {
+          args: Prisma.BrandTypographyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandTypographyPayload>
+        }
+        deleteMany: {
+          args: Prisma.BrandTypographyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BrandTypographyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BrandTypographyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandTypographyPayload>[]
+        }
+        upsert: {
+          args: Prisma.BrandTypographyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandTypographyPayload>
+        }
+        aggregate: {
+          args: Prisma.BrandTypographyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBrandTypography>
+        }
+        groupBy: {
+          args: Prisma.BrandTypographyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandTypographyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BrandTypographyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandTypographyCountAggregateOutputType> | number
+        }
+      }
+    }
+    BrandFontFile: {
+      payload: Prisma.$BrandFontFilePayload<ExtArgs>
+      fields: Prisma.BrandFontFileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BrandFontFileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandFontFilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BrandFontFileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandFontFilePayload>
+        }
+        findFirst: {
+          args: Prisma.BrandFontFileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandFontFilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BrandFontFileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandFontFilePayload>
+        }
+        findMany: {
+          args: Prisma.BrandFontFileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandFontFilePayload>[]
+        }
+        create: {
+          args: Prisma.BrandFontFileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandFontFilePayload>
+        }
+        createMany: {
+          args: Prisma.BrandFontFileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BrandFontFileCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandFontFilePayload>[]
+        }
+        delete: {
+          args: Prisma.BrandFontFileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandFontFilePayload>
+        }
+        update: {
+          args: Prisma.BrandFontFileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandFontFilePayload>
+        }
+        deleteMany: {
+          args: Prisma.BrandFontFileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BrandFontFileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BrandFontFileUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandFontFilePayload>[]
+        }
+        upsert: {
+          args: Prisma.BrandFontFileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandFontFilePayload>
+        }
+        aggregate: {
+          args: Prisma.BrandFontFileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBrandFontFile>
+        }
+        groupBy: {
+          args: Prisma.BrandFontFileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandFontFileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BrandFontFileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandFontFileCountAggregateOutputType> | number
+        }
+      }
+    }
+    BrandResource: {
+      payload: Prisma.$BrandResourcePayload<ExtArgs>
+      fields: Prisma.BrandResourceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BrandResourceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandResourcePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BrandResourceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandResourcePayload>
+        }
+        findFirst: {
+          args: Prisma.BrandResourceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandResourcePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BrandResourceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandResourcePayload>
+        }
+        findMany: {
+          args: Prisma.BrandResourceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandResourcePayload>[]
+        }
+        create: {
+          args: Prisma.BrandResourceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandResourcePayload>
+        }
+        createMany: {
+          args: Prisma.BrandResourceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BrandResourceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandResourcePayload>[]
+        }
+        delete: {
+          args: Prisma.BrandResourceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandResourcePayload>
+        }
+        update: {
+          args: Prisma.BrandResourceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandResourcePayload>
+        }
+        deleteMany: {
+          args: Prisma.BrandResourceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BrandResourceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BrandResourceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandResourcePayload>[]
+        }
+        upsert: {
+          args: Prisma.BrandResourceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandResourcePayload>
+        }
+        aggregate: {
+          args: Prisma.BrandResourceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBrandResource>
+        }
+        groupBy: {
+          args: Prisma.BrandResourceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandResourceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BrandResourceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandResourceCountAggregateOutputType> | number
+        }
+      }
+    }
+    BrandConfiguration: {
+      payload: Prisma.$BrandConfigurationPayload<ExtArgs>
+      fields: Prisma.BrandConfigurationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BrandConfigurationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandConfigurationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BrandConfigurationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandConfigurationPayload>
+        }
+        findFirst: {
+          args: Prisma.BrandConfigurationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandConfigurationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BrandConfigurationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandConfigurationPayload>
+        }
+        findMany: {
+          args: Prisma.BrandConfigurationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandConfigurationPayload>[]
+        }
+        create: {
+          args: Prisma.BrandConfigurationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandConfigurationPayload>
+        }
+        createMany: {
+          args: Prisma.BrandConfigurationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BrandConfigurationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandConfigurationPayload>[]
+        }
+        delete: {
+          args: Prisma.BrandConfigurationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandConfigurationPayload>
+        }
+        update: {
+          args: Prisma.BrandConfigurationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandConfigurationPayload>
+        }
+        deleteMany: {
+          args: Prisma.BrandConfigurationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BrandConfigurationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BrandConfigurationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandConfigurationPayload>[]
+        }
+        upsert: {
+          args: Prisma.BrandConfigurationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BrandConfigurationPayload>
+        }
+        aggregate: {
+          args: Prisma.BrandConfigurationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBrandConfiguration>
+        }
+        groupBy: {
+          args: Prisma.BrandConfigurationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandConfigurationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BrandConfigurationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BrandConfigurationCountAggregateOutputType> | number
         }
       }
     }
@@ -8163,6 +8613,113 @@ export const BrandAssetScalarFieldEnum = {
 export type BrandAssetScalarFieldEnum = (typeof BrandAssetScalarFieldEnum)[keyof typeof BrandAssetScalarFieldEnum]
 
 
+export const BrandLogoScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  label: 'label',
+  kind: 'kind',
+  status: 'status',
+  isDefaultDocuments: 'isDefaultDocuments',
+  description: 'description',
+  publicPath: 'publicPath',
+  storageOriginal: 'storageOriginal',
+  storageOptimized: 'storageOptimized',
+  mime: 'mime',
+  originalFileName: 'originalFileName',
+  fileSizeBytes: 'fileSizeBytes',
+  widthPx: 'widthPx',
+  heightPx: 'heightPx',
+  sortOrder: 'sortOrder',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandLogoScalarFieldEnum = (typeof BrandLogoScalarFieldEnum)[keyof typeof BrandLogoScalarFieldEnum]
+
+
+export const BrandColorScalarFieldEnum = {
+  id: 'id',
+  tokenKey: 'tokenKey',
+  label: 'label',
+  hex: 'hex',
+  category: 'category',
+  usageNotes: 'usageNotes',
+  status: 'status',
+  isReference: 'isReference',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandColorScalarFieldEnum = (typeof BrandColorScalarFieldEnum)[keyof typeof BrandColorScalarFieldEnum]
+
+
+export const BrandTypographyScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  familyName: 'familyName',
+  role: 'role',
+  status: 'status',
+  isDefaultErp: 'isDefaultErp',
+  isDefaultPdf: 'isDefaultPdf',
+  cssStack: 'cssStack',
+  notes: 'notes',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandTypographyScalarFieldEnum = (typeof BrandTypographyScalarFieldEnum)[keyof typeof BrandTypographyScalarFieldEnum]
+
+
+export const BrandFontFileScalarFieldEnum = {
+  id: 'id',
+  typographyId: 'typographyId',
+  weight: 'weight',
+  style: 'style',
+  storagePath: 'storagePath',
+  mime: 'mime',
+  originalFileName: 'originalFileName',
+  fileSizeBytes: 'fileSizeBytes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandFontFileScalarFieldEnum = (typeof BrandFontFileScalarFieldEnum)[keyof typeof BrandFontFileScalarFieldEnum]
+
+
+export const BrandResourceScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  label: 'label',
+  kind: 'kind',
+  status: 'status',
+  description: 'description',
+  publicPath: 'publicPath',
+  storagePath: 'storagePath',
+  mime: 'mime',
+  originalFileName: 'originalFileName',
+  fileSizeBytes: 'fileSizeBytes',
+  sortOrder: 'sortOrder',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandResourceScalarFieldEnum = (typeof BrandResourceScalarFieldEnum)[keyof typeof BrandResourceScalarFieldEnum]
+
+
+export const BrandConfigurationScalarFieldEnum = {
+  id: 'id',
+  defaultDocumentsLogoId: 'defaultDocumentsLogoId',
+  settingsJson: 'settingsJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandConfigurationScalarFieldEnum = (typeof BrandConfigurationScalarFieldEnum)[keyof typeof BrandConfigurationScalarFieldEnum]
+
+
 export const SignatureAssetScalarFieldEnum = {
   id: 'id',
   ownerUserId: 'ownerUserId',
@@ -9902,6 +10459,76 @@ export type ListEnumAclRightFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
 
 
 /**
+ * Reference to a field of type 'BrandLogoKind'
+ */
+export type EnumBrandLogoKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrandLogoKind'>
+    
+
+
+/**
+ * Reference to a field of type 'BrandLogoKind[]'
+ */
+export type ListEnumBrandLogoKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrandLogoKind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'BrandItemStatus'
+ */
+export type EnumBrandItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrandItemStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'BrandItemStatus[]'
+ */
+export type ListEnumBrandItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrandItemStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'BrandColorCategory'
+ */
+export type EnumBrandColorCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrandColorCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'BrandColorCategory[]'
+ */
+export type ListEnumBrandColorCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrandColorCategory[]'>
+    
+
+
+/**
+ * Reference to a field of type 'BrandTypographyRole'
+ */
+export type EnumBrandTypographyRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrandTypographyRole'>
+    
+
+
+/**
+ * Reference to a field of type 'BrandTypographyRole[]'
+ */
+export type ListEnumBrandTypographyRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrandTypographyRole[]'>
+    
+
+
+/**
+ * Reference to a field of type 'BrandResourceKind'
+ */
+export type EnumBrandResourceKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrandResourceKind'>
+    
+
+
+/**
+ * Reference to a field of type 'BrandResourceKind[]'
+ */
+export type ListEnumBrandResourceKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrandResourceKind[]'>
+    
+
+
+/**
  * Reference to a field of type 'SignatureKind'
  */
 export type EnumSignatureKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SignatureKind'>
@@ -10963,6 +11590,12 @@ export type GlobalOmitConfig = {
   documentLink?: Prisma.DocumentLinkOmit
   documentAcl?: Prisma.DocumentAclOmit
   brandAsset?: Prisma.BrandAssetOmit
+  brandLogo?: Prisma.BrandLogoOmit
+  brandColor?: Prisma.BrandColorOmit
+  brandTypography?: Prisma.BrandTypographyOmit
+  brandFontFile?: Prisma.BrandFontFileOmit
+  brandResource?: Prisma.BrandResourceOmit
+  brandConfiguration?: Prisma.BrandConfigurationOmit
   signatureAsset?: Prisma.SignatureAssetOmit
   orgNode?: Prisma.OrgNodeOmit
   documentTemplate?: Prisma.DocumentTemplateOmit
