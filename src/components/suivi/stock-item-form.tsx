@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   createSvStockItem,
@@ -69,6 +69,7 @@ export function SvStockItemForm({
   );
   const [initialQuantity, setInitialQuantity] = useState("0");
   const [stepError, setStepError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   function validateStep(index: number): boolean {
     if (index === 0) {
@@ -90,8 +91,20 @@ export function SvStockItemForm({
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
   }
 
+  function submitForm() {
+    if (step < STEPS.length - 1) return;
+    const form = formRef.current;
+    if (!form) return;
+    formAction(new FormData(form));
+  }
+
+  /** Bloque tout submit natif (Enter / type-flip Continuer→submit). */
+  function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+  }
+
   return (
-    <form action={formAction}>
+    <form ref={formRef} action={formAction} onSubmit={onSubmit}>
       <input type="hidden" name="code" value={code} />
       <input type="hidden" name="family" value={family} />
       <input type="hidden" name="subFamily" value={subFamily} />
@@ -129,11 +142,21 @@ export function SvStockItemForm({
             </div>
             <div>
               {step < STEPS.length - 1 ? (
-                <Button type="button" disabled={pending} onClick={goNext}>
+                <Button
+                  key="step-next"
+                  type="button"
+                  disabled={pending}
+                  onClick={goNext}
+                >
                   Continuer
                 </Button>
               ) : (
-                <Button type="submit" disabled={pending}>
+                <Button
+                  key="step-submit"
+                  type="button"
+                  disabled={pending}
+                  onClick={submitForm}
+                >
                   {pending
                     ? "Enregistrement…"
                     : mode === "create"

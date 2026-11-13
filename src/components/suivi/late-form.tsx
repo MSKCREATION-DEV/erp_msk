@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   createSvLate,
@@ -60,6 +60,7 @@ export function SvLateForm({
   const [arrivedTime, setArrivedTime] = useState(initial?.arrivedTime ?? "");
   const [note, setNote] = useState(initial?.note ?? "");
   const [stepError, setStepError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const employeeLabel =
     employeeOptions.find((o) => o.value === employeeId)?.label ?? "—";
@@ -89,8 +90,20 @@ export function SvLateForm({
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
   }
 
+  function submitForm() {
+    if (step < STEPS.length - 1) return;
+    const form = formRef.current;
+    if (!form) return;
+    formAction(new FormData(form));
+  }
+
+  /** Bloque tout submit natif (Enter / type-flip Continuer→submit). */
+  function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+  }
+
   return (
-    <form action={formAction}>
+    <form ref={formRef} action={formAction} onSubmit={onSubmit}>
       <input type="hidden" name="employeeId" value={employeeId ?? ""} />
       <input type="hidden" name="lateDate" value={lateDate} />
       <input type="hidden" name="expectedTime" value={expectedTime} />
@@ -121,11 +134,21 @@ export function SvLateForm({
             </div>
             <div className="flex gap-2">
               {step < STEPS.length - 1 ? (
-                <Button type="button" disabled={pending} onClick={goNext}>
+                <Button
+                  key="step-next"
+                  type="button"
+                  disabled={pending}
+                  onClick={goNext}
+                >
                   Continuer
                 </Button>
               ) : (
-                <Button type="submit" disabled={pending}>
+                <Button
+                  key="step-submit"
+                  type="button"
+                  disabled={pending}
+                  onClick={submitForm}
+                >
                   {pending
                     ? "Enregistrement…"
                     : mode === "create"

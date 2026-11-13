@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, type FormEvent } from "react";
+import { useActionState, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   createSvAbsence,
@@ -94,6 +94,7 @@ export function SvAbsenceForm({
   );
   const [fileSelected, setFileSelected] = useState(false);
   const [stepError, setStepError] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const hasGed = Boolean(initial?.hasGed);
   const hasJustificatif = hasGed || fileSelected;
@@ -162,18 +163,28 @@ export function SvAbsenceForm({
     setStep((s) => Math.min(s + 1, steps.length - 1));
   }
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  function submitForm() {
+    if (step < steps.length - 1) return;
     if (mode === "edit") {
       const err = assertJustifiedRequiresGed(status, hasJustificatif);
       if (err) {
-        e.preventDefault();
         setStepError(err);
+        return;
       }
     }
+    const form = formRef.current;
+    if (!form) return;
+    formAction(new FormData(form));
+  }
+
+  /** Bloque tout submit natif (Enter / type-flip Continuer→submit). */
+  function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
   }
 
   return (
     <form
+      ref={formRef}
       action={formAction}
       encType="multipart/form-data"
       onSubmit={onSubmit}
@@ -213,11 +224,21 @@ export function SvAbsenceForm({
             </div>
             <div className="flex gap-2">
               {step < steps.length - 1 ? (
-                <Button type="button" disabled={pending} onClick={goNext}>
+                <Button
+                  key="step-next"
+                  type="button"
+                  disabled={pending}
+                  onClick={goNext}
+                >
                   Continuer
                 </Button>
               ) : (
-                <Button type="submit" disabled={pending}>
+                <Button
+                  key="step-submit"
+                  type="button"
+                  disabled={pending}
+                  onClick={submitForm}
+                >
                   {pending
                     ? "Enregistrement…"
                     : mode === "create"

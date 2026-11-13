@@ -203,14 +203,16 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                 if (pending) e.preventDefault();
               }}
               onOpenAutoFocus={(e) => {
+                // Ne jamais autofocus le CTA destructif : un Enter/Space
+                // qui ouvre la modale peut sinon « Confirmer » tout seul.
+                e.preventDefault();
                 const root = e.currentTarget as HTMLElement | null;
-                const target = root?.querySelector<HTMLButtonElement>(
-                  "[data-confirm-primary]",
-                );
-                if (target) {
-                  e.preventDefault();
-                  target.focus();
-                }
+                const toneNow = optionsRef.current?.tone ?? "danger";
+                const selector =
+                  toneNow === "danger"
+                    ? "[data-confirm-cancel]"
+                    : "[data-confirm-primary]";
+                root?.querySelector<HTMLButtonElement>(selector)?.focus();
               }}
             >
               <div className="px-6 pb-2 pt-6">
@@ -259,6 +261,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                   variant="secondary"
                   size="sm"
                   className="sm:min-w-28"
+                  data-confirm-cancel
                   disabled={pending}
                   onClick={() => finish(false)}
                 >
