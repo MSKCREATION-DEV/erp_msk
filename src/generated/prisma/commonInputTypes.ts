@@ -613,6 +613,13 @@ export type EnumTemplateTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumTemplateTypeFilter<$PrismaModel> | $Enums.TemplateType
 }
 
+export type EnumTemplateGeneratorKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateGeneratorKind | Prisma.EnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateGeneratorKind[] | Prisma.ListEnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateGeneratorKind[] | Prisma.ListEnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateGeneratorKindFilter<$PrismaModel> | $Enums.TemplateGeneratorKind
+}
+
 export type EnumTemplateTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.TemplateType | Prisma.EnumTemplateTypeFieldRefInput<$PrismaModel>
   in?: $Enums.TemplateType[] | Prisma.ListEnumTemplateTypeFieldRefInput<$PrismaModel>
@@ -621,6 +628,50 @@ export type EnumTemplateTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTemplateTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTemplateTypeFilter<$PrismaModel>
+}
+
+export type EnumTemplateGeneratorKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateGeneratorKind | Prisma.EnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateGeneratorKind[] | Prisma.ListEnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateGeneratorKind[] | Prisma.ListEnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateGeneratorKindWithAggregatesFilter<$PrismaModel> | $Enums.TemplateGeneratorKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTemplateGeneratorKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTemplateGeneratorKindFilter<$PrismaModel>
+}
+
+export type EnumTemplateVersionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateVersionStatus | Prisma.EnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateVersionStatus[] | Prisma.ListEnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateVersionStatus[] | Prisma.ListEnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateVersionStatusFilter<$PrismaModel> | $Enums.TemplateVersionStatus
+}
+
+export type EnumTemplateVersionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateVersionStatus | Prisma.EnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateVersionStatus[] | Prisma.ListEnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateVersionStatus[] | Prisma.ListEnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateVersionStatusWithAggregatesFilter<$PrismaModel> | $Enums.TemplateVersionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTemplateVersionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTemplateVersionStatusFilter<$PrismaModel>
+}
+
+export type EnumTemplateVariableCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateVariableCategory | Prisma.EnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateVariableCategory[] | Prisma.ListEnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateVariableCategory[] | Prisma.ListEnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateVariableCategoryFilter<$PrismaModel> | $Enums.TemplateVariableCategory
+}
+
+export type EnumTemplateVariableCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateVariableCategory | Prisma.EnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateVariableCategory[] | Prisma.ListEnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateVariableCategory[] | Prisma.ListEnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateVariableCategoryWithAggregatesFilter<$PrismaModel> | $Enums.TemplateVariableCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTemplateVariableCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTemplateVariableCategoryFilter<$PrismaModel>
 }
 
 export type EnumCatalogPillarFilter<$PrismaModel = never> = {
@@ -2292,6 +2343,13 @@ export type NestedEnumTemplateTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumTemplateTypeFilter<$PrismaModel> | $Enums.TemplateType
 }
 
+export type NestedEnumTemplateGeneratorKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateGeneratorKind | Prisma.EnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateGeneratorKind[] | Prisma.ListEnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateGeneratorKind[] | Prisma.ListEnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateGeneratorKindFilter<$PrismaModel> | $Enums.TemplateGeneratorKind
+}
+
 export type NestedEnumTemplateTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.TemplateType | Prisma.EnumTemplateTypeFieldRefInput<$PrismaModel>
   in?: $Enums.TemplateType[] | Prisma.ListEnumTemplateTypeFieldRefInput<$PrismaModel>
@@ -2300,6 +2358,50 @@ export type NestedEnumTemplateTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTemplateTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTemplateTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumTemplateGeneratorKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateGeneratorKind | Prisma.EnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateGeneratorKind[] | Prisma.ListEnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateGeneratorKind[] | Prisma.ListEnumTemplateGeneratorKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateGeneratorKindWithAggregatesFilter<$PrismaModel> | $Enums.TemplateGeneratorKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTemplateGeneratorKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTemplateGeneratorKindFilter<$PrismaModel>
+}
+
+export type NestedEnumTemplateVersionStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateVersionStatus | Prisma.EnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateVersionStatus[] | Prisma.ListEnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateVersionStatus[] | Prisma.ListEnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateVersionStatusFilter<$PrismaModel> | $Enums.TemplateVersionStatus
+}
+
+export type NestedEnumTemplateVersionStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateVersionStatus | Prisma.EnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateVersionStatus[] | Prisma.ListEnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateVersionStatus[] | Prisma.ListEnumTemplateVersionStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateVersionStatusWithAggregatesFilter<$PrismaModel> | $Enums.TemplateVersionStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTemplateVersionStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTemplateVersionStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumTemplateVariableCategoryFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateVariableCategory | Prisma.EnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateVariableCategory[] | Prisma.ListEnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateVariableCategory[] | Prisma.ListEnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateVariableCategoryFilter<$PrismaModel> | $Enums.TemplateVariableCategory
+}
+
+export type NestedEnumTemplateVariableCategoryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TemplateVariableCategory | Prisma.EnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  in?: $Enums.TemplateVariableCategory[] | Prisma.ListEnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TemplateVariableCategory[] | Prisma.ListEnumTemplateVariableCategoryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTemplateVariableCategoryWithAggregatesFilter<$PrismaModel> | $Enums.TemplateVariableCategory
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTemplateVariableCategoryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTemplateVariableCategoryFilter<$PrismaModel>
 }
 
 export type NestedEnumCatalogPillarFilter<$PrismaModel = never> = {

@@ -334,6 +334,9 @@ export type UserWhereInput = {
   svLatesCreated?: Prisma.SvLateListRelationFilter
   brandLogosCreated?: Prisma.BrandLogoListRelationFilter
   brandResourcesCreated?: Prisma.BrandResourceListRelationFilter
+  docTemplatesCreated?: Prisma.DocumentTemplateListRelationFilter
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionListRelationFilter
+  templateVariablesCreated?: Prisma.TemplateVariableDefListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -424,6 +427,9 @@ export type UserOrderByWithRelationInput = {
   svLatesCreated?: Prisma.SvLateOrderByRelationAggregateInput
   brandLogosCreated?: Prisma.BrandLogoOrderByRelationAggregateInput
   brandResourcesCreated?: Prisma.BrandResourceOrderByRelationAggregateInput
+  docTemplatesCreated?: Prisma.DocumentTemplateOrderByRelationAggregateInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionOrderByRelationAggregateInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -517,6 +523,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   svLatesCreated?: Prisma.SvLateListRelationFilter
   brandLogosCreated?: Prisma.BrandLogoListRelationFilter
   brandResourcesCreated?: Prisma.BrandResourceListRelationFilter
+  docTemplatesCreated?: Prisma.DocumentTemplateListRelationFilter
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionListRelationFilter
+  templateVariablesCreated?: Prisma.TemplateVariableDefListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -649,6 +658,9 @@ export type UserCreateInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -739,6 +751,9 @@ export type UserUncheckedCreateInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUpdateInput = {
@@ -829,6 +844,9 @@ export type UserUpdateInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -919,6 +937,9 @@ export type UserUncheckedUpdateInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1251,6 +1272,54 @@ export type UserUpdateOneWithoutOrgNodesNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOrgNodesInput, Prisma.UserUpdateWithoutOrgNodesInput>, Prisma.UserUncheckedUpdateWithoutOrgNodesInput>
+}
+
+export type UserCreateNestedOneWithoutDocTemplatesCreatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDocTemplatesCreatedInput, Prisma.UserUncheckedCreateWithoutDocTemplatesCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDocTemplatesCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutDocTemplatesCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDocTemplatesCreatedInput, Prisma.UserUncheckedCreateWithoutDocTemplatesCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDocTemplatesCreatedInput
+  upsert?: Prisma.UserUpsertWithoutDocTemplatesCreatedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDocTemplatesCreatedInput, Prisma.UserUpdateWithoutDocTemplatesCreatedInput>, Prisma.UserUncheckedUpdateWithoutDocTemplatesCreatedInput>
+}
+
+export type UserCreateNestedOneWithoutDocTemplateVersionsCreatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDocTemplateVersionsCreatedInput, Prisma.UserUncheckedCreateWithoutDocTemplateVersionsCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDocTemplateVersionsCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutDocTemplateVersionsCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDocTemplateVersionsCreatedInput, Prisma.UserUncheckedCreateWithoutDocTemplateVersionsCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDocTemplateVersionsCreatedInput
+  upsert?: Prisma.UserUpsertWithoutDocTemplateVersionsCreatedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDocTemplateVersionsCreatedInput, Prisma.UserUpdateWithoutDocTemplateVersionsCreatedInput>, Prisma.UserUncheckedUpdateWithoutDocTemplateVersionsCreatedInput>
+}
+
+export type UserCreateNestedOneWithoutTemplateVariablesCreatedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTemplateVariablesCreatedInput, Prisma.UserUncheckedCreateWithoutTemplateVariablesCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTemplateVariablesCreatedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutTemplateVariablesCreatedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTemplateVariablesCreatedInput, Prisma.UserUncheckedCreateWithoutTemplateVariablesCreatedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTemplateVariablesCreatedInput
+  upsert?: Prisma.UserUpsertWithoutTemplateVariablesCreatedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTemplateVariablesCreatedInput, Prisma.UserUpdateWithoutTemplateVariablesCreatedInput>, Prisma.UserUncheckedUpdateWithoutTemplateVariablesCreatedInput>
 }
 
 export type UserCreateNestedOneWithoutCrmOrgsOwnedInput = {
@@ -2196,6 +2265,9 @@ export type UserCreateWithoutGroupMembersInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutGroupMembersInput = {
@@ -2285,6 +2357,9 @@ export type UserUncheckedCreateWithoutGroupMembersInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutGroupMembersInput = {
@@ -2390,6 +2465,9 @@ export type UserUpdateWithoutGroupMembersInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGroupMembersInput = {
@@ -2479,6 +2557,9 @@ export type UserUncheckedUpdateWithoutGroupMembersInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutUserPacksInput = {
@@ -2568,6 +2649,9 @@ export type UserCreateWithoutUserPacksInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutUserPacksInput = {
@@ -2657,6 +2741,9 @@ export type UserUncheckedCreateWithoutUserPacksInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutUserPacksInput = {
@@ -2762,6 +2849,9 @@ export type UserUpdateWithoutUserPacksInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserPacksInput = {
@@ -2851,6 +2941,9 @@ export type UserUncheckedUpdateWithoutUserPacksInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutOverridesInput = {
@@ -2940,6 +3033,9 @@ export type UserCreateWithoutOverridesInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutOverridesInput = {
@@ -3029,6 +3125,9 @@ export type UserUncheckedCreateWithoutOverridesInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutOverridesInput = {
@@ -3134,6 +3233,9 @@ export type UserUpdateWithoutOverridesInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOverridesInput = {
@@ -3223,6 +3325,9 @@ export type UserUncheckedUpdateWithoutOverridesInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -3312,6 +3417,9 @@ export type UserCreateWithoutAuditLogsInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -3401,6 +3509,9 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -3506,6 +3617,9 @@ export type UserUpdateWithoutAuditLogsInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -3595,6 +3709,9 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutResetRequestsInput = {
@@ -3684,6 +3801,9 @@ export type UserCreateWithoutResetRequestsInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutResetRequestsInput = {
@@ -3773,6 +3893,9 @@ export type UserUncheckedCreateWithoutResetRequestsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutResetRequestsInput = {
@@ -3867,6 +3990,9 @@ export type UserCreateWithoutResetsResolvedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutResetsResolvedInput = {
@@ -3956,6 +4082,9 @@ export type UserUncheckedCreateWithoutResetsResolvedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutResetsResolvedInput = {
@@ -4061,6 +4190,9 @@ export type UserUpdateWithoutResetRequestsInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResetRequestsInput = {
@@ -4150,6 +4282,9 @@ export type UserUncheckedUpdateWithoutResetRequestsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutResetsResolvedInput = {
@@ -4250,6 +4385,9 @@ export type UserUpdateWithoutResetsResolvedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResetsResolvedInput = {
@@ -4339,6 +4477,9 @@ export type UserUncheckedUpdateWithoutResetsResolvedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutFoldersCreatedInput = {
@@ -4428,6 +4569,9 @@ export type UserCreateWithoutFoldersCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutFoldersCreatedInput = {
@@ -4517,6 +4661,9 @@ export type UserUncheckedCreateWithoutFoldersCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutFoldersCreatedInput = {
@@ -4622,6 +4769,9 @@ export type UserUpdateWithoutFoldersCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFoldersCreatedInput = {
@@ -4711,6 +4861,9 @@ export type UserUncheckedUpdateWithoutFoldersCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutDocsCreatedInput = {
@@ -4800,6 +4953,9 @@ export type UserCreateWithoutDocsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutDocsCreatedInput = {
@@ -4889,6 +5045,9 @@ export type UserUncheckedCreateWithoutDocsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutDocsCreatedInput = {
@@ -4994,6 +5153,9 @@ export type UserUpdateWithoutDocsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDocsCreatedInput = {
@@ -5083,6 +5245,9 @@ export type UserUncheckedUpdateWithoutDocsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutDocumentAclsInput = {
@@ -5172,6 +5337,9 @@ export type UserCreateWithoutDocumentAclsInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutDocumentAclsInput = {
@@ -5261,6 +5429,9 @@ export type UserUncheckedCreateWithoutDocumentAclsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutDocumentAclsInput = {
@@ -5366,6 +5537,9 @@ export type UserUpdateWithoutDocumentAclsInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDocumentAclsInput = {
@@ -5455,6 +5629,9 @@ export type UserUncheckedUpdateWithoutDocumentAclsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutBrandLogosCreatedInput = {
@@ -5544,6 +5721,9 @@ export type UserCreateWithoutBrandLogosCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceCreateNestedManyWithoutCreatedByInput
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutBrandLogosCreatedInput = {
@@ -5633,6 +5813,9 @@ export type UserUncheckedCreateWithoutBrandLogosCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutCreatedByInput
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutBrandLogosCreatedInput = {
@@ -5738,6 +5921,9 @@ export type UserUpdateWithoutBrandLogosCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceUpdateManyWithoutCreatedByNestedInput
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBrandLogosCreatedInput = {
@@ -5827,6 +6013,9 @@ export type UserUncheckedUpdateWithoutBrandLogosCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceUncheckedUpdateManyWithoutCreatedByNestedInput
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutBrandResourcesCreatedInput = {
@@ -5916,6 +6105,9 @@ export type UserCreateWithoutBrandResourcesCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceCreateNestedManyWithoutCreatedByInput
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutBrandResourcesCreatedInput = {
@@ -6005,6 +6197,9 @@ export type UserUncheckedCreateWithoutBrandResourcesCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutCreatedByInput
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutBrandResourcesCreatedInput = {
@@ -6110,6 +6305,9 @@ export type UserUpdateWithoutBrandResourcesCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceUpdateManyWithoutCreatedByNestedInput
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBrandResourcesCreatedInput = {
@@ -6199,6 +6397,9 @@ export type UserUncheckedUpdateWithoutBrandResourcesCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceUncheckedUpdateManyWithoutCreatedByNestedInput
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSignaturesInput = {
@@ -6288,6 +6489,9 @@ export type UserCreateWithoutSignaturesInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSignaturesInput = {
@@ -6377,6 +6581,9 @@ export type UserUncheckedCreateWithoutSignaturesInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSignaturesInput = {
@@ -6482,6 +6689,9 @@ export type UserUpdateWithoutSignaturesInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSignaturesInput = {
@@ -6571,6 +6781,9 @@ export type UserUncheckedUpdateWithoutSignaturesInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutOrgNodesInput = {
@@ -6660,6 +6873,9 @@ export type UserCreateWithoutOrgNodesInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutOrgNodesInput = {
@@ -6749,6 +6965,9 @@ export type UserUncheckedCreateWithoutOrgNodesInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutOrgNodesInput = {
@@ -6854,6 +7073,9 @@ export type UserUpdateWithoutOrgNodesInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrgNodesInput = {
@@ -6943,6 +7165,1161 @@ export type UserUncheckedUpdateWithoutOrgNodesInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutDocTemplatesCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
+  svAbsencesCreated?: Prisma.SvAbsenceCreateNestedManyWithoutCreatedByInput
+  svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
+  brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
+  brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutDocTemplatesCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackUncheckedCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclUncheckedCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetUncheckedCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeUncheckedCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityUncheckedCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationUncheckedCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientUncheckedCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientUncheckedCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberUncheckedCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svAbsencesCreated?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutCreatedByInput
+  svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
+  brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
+  brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutDocTemplatesCreatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDocTemplatesCreatedInput, Prisma.UserUncheckedCreateWithoutDocTemplatesCreatedInput>
+}
+
+export type UserUpsertWithoutDocTemplatesCreatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDocTemplatesCreatedInput, Prisma.UserUncheckedUpdateWithoutDocTemplatesCreatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDocTemplatesCreatedInput, Prisma.UserUncheckedCreateWithoutDocTemplatesCreatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDocTemplatesCreatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDocTemplatesCreatedInput, Prisma.UserUncheckedUpdateWithoutDocTemplatesCreatedInput>
+}
+
+export type UserUpdateWithoutDocTemplatesCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
+  svAbsencesCreated?: Prisma.SvAbsenceUpdateManyWithoutCreatedByNestedInput
+  svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
+  brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
+  brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDocTemplatesCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUncheckedUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUncheckedUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUncheckedUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUncheckedUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUncheckedUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUncheckedUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUncheckedUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svAbsencesCreated?: Prisma.SvAbsenceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
+  brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
+  brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutDocTemplateVersionsCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
+  svAbsencesCreated?: Prisma.SvAbsenceCreateNestedManyWithoutCreatedByInput
+  svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
+  brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
+  brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutDocTemplateVersionsCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackUncheckedCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclUncheckedCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetUncheckedCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeUncheckedCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityUncheckedCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationUncheckedCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientUncheckedCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientUncheckedCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberUncheckedCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svAbsencesCreated?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutCreatedByInput
+  svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
+  brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
+  brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutDocTemplateVersionsCreatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDocTemplateVersionsCreatedInput, Prisma.UserUncheckedCreateWithoutDocTemplateVersionsCreatedInput>
+}
+
+export type UserUpsertWithoutDocTemplateVersionsCreatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDocTemplateVersionsCreatedInput, Prisma.UserUncheckedUpdateWithoutDocTemplateVersionsCreatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDocTemplateVersionsCreatedInput, Prisma.UserUncheckedCreateWithoutDocTemplateVersionsCreatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDocTemplateVersionsCreatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDocTemplateVersionsCreatedInput, Prisma.UserUncheckedUpdateWithoutDocTemplateVersionsCreatedInput>
+}
+
+export type UserUpdateWithoutDocTemplateVersionsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
+  svAbsencesCreated?: Prisma.SvAbsenceUpdateManyWithoutCreatedByNestedInput
+  svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
+  brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
+  brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDocTemplateVersionsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUncheckedUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUncheckedUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUncheckedUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUncheckedUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUncheckedUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUncheckedUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUncheckedUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svAbsencesCreated?: Prisma.SvAbsenceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
+  brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
+  brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutTemplateVariablesCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceCreateNestedManyWithoutCreatedByInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementCreateNestedManyWithoutCreatedByInput
+  svAbsencesCreated?: Prisma.SvAbsenceCreateNestedManyWithoutCreatedByInput
+  svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
+  brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
+  brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutTemplateVariablesCreatedInput = {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  phone?: string | null
+  status?: $Enums.UserStatus
+  isSuperAdmin?: boolean
+  mustChangePassword?: boolean
+  invitedAt?: Date | string | null
+  activatedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  suspendedAt?: Date | string | null
+  archivedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  userPacks?: Prisma.UserPackUncheckedCreateNestedManyWithoutUserInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutUserInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedCreateNestedManyWithoutCreatedByInput
+  docsCreated?: Prisma.DocumentUncheckedCreateNestedManyWithoutCreatedByInput
+  documentAcls?: Prisma.DocumentAclUncheckedCreateNestedManyWithoutUserInput
+  signatures?: Prisma.SignatureAssetUncheckedCreateNestedManyWithoutOwnerInput
+  orgNodes?: Prisma.OrgNodeUncheckedCreateNestedManyWithoutUserInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedCreateNestedManyWithoutCreatedByInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutOwnerInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedCreateNestedManyWithoutCreatedByInput
+  crmActivities?: Prisma.CrmActivityUncheckedCreateNestedManyWithoutActorInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutAssigneeInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedCreateNestedManyWithoutCreatedByInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedCreateNestedManyWithoutAuthorInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedCreateNestedManyWithoutUserInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutRequesterInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedCreateNestedManyWithoutResolvedByInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutAssigneeInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  appNotifications?: Prisma.AppNotificationUncheckedCreateNestedManyWithoutUserInput
+  comClientsOwned?: Prisma.ComClientUncheckedCreateNestedManyWithoutOwnerInput
+  comClientsCreated?: Prisma.ComClientUncheckedCreateNestedManyWithoutCreatedByInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutOwnerInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutOwnerInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedCreateNestedManyWithoutRecordedByInput
+  comContractsOwned?: Prisma.ComContractUncheckedCreateNestedManyWithoutOwnerInput
+  comContractsCreated?: Prisma.ComContractUncheckedCreateNestedManyWithoutCreatedByInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedCreateNestedManyWithoutCreatedByInput
+  comClientEvents?: Prisma.ComClientEventUncheckedCreateNestedManyWithoutActorInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutCreatedByInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedCreateNestedManyWithoutValidatedByInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedCreateNestedManyWithoutCreatedByInput
+  budLinesCreated?: Prisma.BudLineUncheckedCreateNestedManyWithoutCreatedByInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedCreateNestedOneWithoutUserInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedCreateNestedManyWithoutValidatedByInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutDeclaredByInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedCreateNestedManyWithoutReviewedByInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutOwnerInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedCreateNestedManyWithoutValidatedByInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutOpenedByInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedCreateNestedManyWithoutApprovedByInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutRequesterInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedCreateNestedManyWithoutReviewedByInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedCreateNestedManyWithoutCreatedByInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedCreateNestedManyWithoutCreatedByInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedCreateNestedManyWithoutAssignedToInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedCreateNestedManyWithoutOwnerInput
+  prjMemberships?: Prisma.PrjMemberUncheckedCreateNestedManyWithoutUserInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedCreateNestedManyWithoutReviewedByInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutCreatedByInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  svAbsencesCreated?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutCreatedByInput
+  svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
+  brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
+  brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutTemplateVariablesCreatedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTemplateVariablesCreatedInput, Prisma.UserUncheckedCreateWithoutTemplateVariablesCreatedInput>
+}
+
+export type UserUpsertWithoutTemplateVariablesCreatedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTemplateVariablesCreatedInput, Prisma.UserUncheckedUpdateWithoutTemplateVariablesCreatedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTemplateVariablesCreatedInput, Prisma.UserUncheckedCreateWithoutTemplateVariablesCreatedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTemplateVariablesCreatedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTemplateVariablesCreatedInput, Prisma.UserUncheckedUpdateWithoutTemplateVariablesCreatedInput>
+}
+
+export type UserUpdateWithoutTemplateVariablesCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUpdateManyWithoutCreatedByNestedInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUpdateManyWithoutCreatedByNestedInput
+  svAbsencesCreated?: Prisma.SvAbsenceUpdateManyWithoutCreatedByNestedInput
+  svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
+  brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
+  brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTemplateVariablesCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  isSuperAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  activatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  suspendedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  groupMembers?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  userPacks?: Prisma.UserPackUncheckedUpdateManyWithoutUserNestedInput
+  overrides?: Prisma.UserPermissionOverrideUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  resetRequests?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutUserNestedInput
+  resetsResolved?: Prisma.PasswordResetRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  foldersCreated?: Prisma.DocumentFolderUncheckedUpdateManyWithoutCreatedByNestedInput
+  docsCreated?: Prisma.DocumentUncheckedUpdateManyWithoutCreatedByNestedInput
+  documentAcls?: Prisma.DocumentAclUncheckedUpdateManyWithoutUserNestedInput
+  signatures?: Prisma.SignatureAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  orgNodes?: Prisma.OrgNodeUncheckedUpdateManyWithoutUserNestedInput
+  crmOrgsOwned?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutOwnerNestedInput
+  crmOrgsCreated?: Prisma.CrmOrganizationUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmDealsOwned?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutOwnerNestedInput
+  crmDealsCreated?: Prisma.CrmOpportunityUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmActivities?: Prisma.CrmActivityUncheckedUpdateManyWithoutActorNestedInput
+  crmTasksAssigned?: Prisma.CrmTaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmTasksCreated?: Prisma.CrmTaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  crmWeeklyReports?: Prisma.CrmWeeklyReportUncheckedUpdateManyWithoutAuthorNestedInput
+  crmPeriodGoals?: Prisma.CrmPeriodGoalUncheckedUpdateManyWithoutUserNestedInput
+  crmAssignmentRequests?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  crmAssignmentResolved?: Prisma.CrmAssignmentRequestUncheckedUpdateManyWithoutResolvedByNestedInput
+  crmAppointmentsAssigned?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutAssigneeNestedInput
+  crmAppointmentsCreated?: Prisma.CrmAppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  appNotifications?: Prisma.AppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  comClientsOwned?: Prisma.ComClientUncheckedUpdateManyWithoutOwnerNestedInput
+  comClientsCreated?: Prisma.ComClientUncheckedUpdateManyWithoutCreatedByNestedInput
+  comQuotesOwned?: Prisma.ComQuoteUncheckedUpdateManyWithoutOwnerNestedInput
+  comQuotesCreated?: Prisma.ComQuoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comInvoicesOwned?: Prisma.ComInvoiceUncheckedUpdateManyWithoutOwnerNestedInput
+  comInvoicesCreated?: Prisma.ComInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  comPaymentsRecorded?: Prisma.ComPaymentUncheckedUpdateManyWithoutRecordedByNestedInput
+  comContractsOwned?: Prisma.ComContractUncheckedUpdateManyWithoutOwnerNestedInput
+  comContractsCreated?: Prisma.ComContractUncheckedUpdateManyWithoutCreatedByNestedInput
+  comCreditNotesCreated?: Prisma.ComCreditNoteUncheckedUpdateManyWithoutCreatedByNestedInput
+  comClientEvents?: Prisma.ComClientEventUncheckedUpdateManyWithoutActorNestedInput
+  comImportBatches?: Prisma.ComImportBatchUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesCreated?: Prisma.CptEntryUncheckedUpdateManyWithoutCreatedByNestedInput
+  cptEntriesValidated?: Prisma.CptEntryUncheckedUpdateManyWithoutValidatedByNestedInput
+  cptBankTxnsCreated?: Prisma.CptBankTxnUncheckedUpdateManyWithoutCreatedByNestedInput
+  budLinesCreated?: Prisma.BudLineUncheckedUpdateManyWithoutCreatedByNestedInput
+  rhEmployee?: Prisma.RhEmployeeUncheckedUpdateOneWithoutUserNestedInput
+  rhLeavesRequested?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhLeavesValidated?: Prisma.RhLeaveRequestUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhAbsencesDeclared?: Prisma.RhAbsenceUncheckedUpdateManyWithoutDeclaredByNestedInput
+  rhAbsencesReviewed?: Prisma.RhAbsenceUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhTimesheetsOwned?: Prisma.RhTimesheetUncheckedUpdateManyWithoutOwnerNestedInput
+  rhTimesheetsValidated?: Prisma.RhTimesheetUncheckedUpdateManyWithoutValidatedByNestedInput
+  rhPayrollOpened?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutOpenedByNestedInput
+  rhPayrollApproved?: Prisma.RhPayrollPeriodUncheckedUpdateManyWithoutApprovedByNestedInput
+  rhProfileChangesRequested?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutRequesterNestedInput
+  rhProfileChangesReviewed?: Prisma.RhProfileChangeRequestUncheckedUpdateManyWithoutReviewedByNestedInput
+  rhLeaveMovementsCreated?: Prisma.RhLeaveMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkArticlesCreated?: Prisma.StkArticleUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkMovementsCreated?: Prisma.StkMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  stkPurchasesCreated?: Prisma.StkPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsCreated?: Prisma.PatAssetUncheckedUpdateManyWithoutCreatedByNestedInput
+  patAssetsAssigned?: Prisma.PatAssetUncheckedUpdateManyWithoutAssignedToNestedInput
+  prjProjectsOwned?: Prisma.PrjProjectUncheckedUpdateManyWithoutOwnerNestedInput
+  prjMemberships?: Prisma.PrjMemberUncheckedUpdateManyWithoutUserNestedInput
+  prjExpensesCreated?: Prisma.PrjExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  prjExpensesReviewed?: Prisma.PrjExpenseUncheckedUpdateManyWithoutReviewedByNestedInput
+  opsTicketsCreated?: Prisma.OpsTicketUncheckedUpdateManyWithoutCreatedByNestedInput
+  opsTicketsAssigned?: Prisma.OpsTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  svInvoicesCreated?: Prisma.SvInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svExpenseInvoicesCreated?: Prisma.SvExpenseInvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svCashMovementsCreated?: Prisma.SvCashMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svStockMovementsCreated?: Prisma.SvStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  svAbsencesCreated?: Prisma.SvAbsenceUncheckedUpdateManyWithoutCreatedByNestedInput
+  svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
+  brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
+  brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmOrgsOwnedInput = {
@@ -7032,6 +8409,9 @@ export type UserCreateWithoutCrmOrgsOwnedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmOrgsOwnedInput = {
@@ -7121,6 +8501,9 @@ export type UserUncheckedCreateWithoutCrmOrgsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmOrgsOwnedInput = {
@@ -7215,6 +8598,9 @@ export type UserCreateWithoutCrmOrgsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmOrgsCreatedInput = {
@@ -7304,6 +8690,9 @@ export type UserUncheckedCreateWithoutCrmOrgsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmOrgsCreatedInput = {
@@ -7409,6 +8798,9 @@ export type UserUpdateWithoutCrmOrgsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmOrgsOwnedInput = {
@@ -7498,6 +8890,9 @@ export type UserUncheckedUpdateWithoutCrmOrgsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCrmOrgsCreatedInput = {
@@ -7598,6 +8993,9 @@ export type UserUpdateWithoutCrmOrgsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmOrgsCreatedInput = {
@@ -7687,6 +9085,9 @@ export type UserUncheckedUpdateWithoutCrmOrgsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmDealsOwnedInput = {
@@ -7776,6 +9177,9 @@ export type UserCreateWithoutCrmDealsOwnedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmDealsOwnedInput = {
@@ -7865,6 +9269,9 @@ export type UserUncheckedCreateWithoutCrmDealsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmDealsOwnedInput = {
@@ -7959,6 +9366,9 @@ export type UserCreateWithoutCrmDealsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmDealsCreatedInput = {
@@ -8048,6 +9458,9 @@ export type UserUncheckedCreateWithoutCrmDealsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmDealsCreatedInput = {
@@ -8153,6 +9566,9 @@ export type UserUpdateWithoutCrmDealsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmDealsOwnedInput = {
@@ -8242,6 +9658,9 @@ export type UserUncheckedUpdateWithoutCrmDealsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCrmDealsCreatedInput = {
@@ -8342,6 +9761,9 @@ export type UserUpdateWithoutCrmDealsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmDealsCreatedInput = {
@@ -8431,6 +9853,9 @@ export type UserUncheckedUpdateWithoutCrmDealsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmAssignmentRequestsInput = {
@@ -8520,6 +9945,9 @@ export type UserCreateWithoutCrmAssignmentRequestsInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmAssignmentRequestsInput = {
@@ -8609,6 +10037,9 @@ export type UserUncheckedCreateWithoutCrmAssignmentRequestsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmAssignmentRequestsInput = {
@@ -8703,6 +10134,9 @@ export type UserCreateWithoutCrmAssignmentResolvedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmAssignmentResolvedInput = {
@@ -8792,6 +10226,9 @@ export type UserUncheckedCreateWithoutCrmAssignmentResolvedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmAssignmentResolvedInput = {
@@ -8897,6 +10334,9 @@ export type UserUpdateWithoutCrmAssignmentRequestsInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmAssignmentRequestsInput = {
@@ -8986,6 +10426,9 @@ export type UserUncheckedUpdateWithoutCrmAssignmentRequestsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCrmAssignmentResolvedInput = {
@@ -9086,6 +10529,9 @@ export type UserUpdateWithoutCrmAssignmentResolvedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmAssignmentResolvedInput = {
@@ -9175,6 +10621,9 @@ export type UserUncheckedUpdateWithoutCrmAssignmentResolvedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmActivitiesInput = {
@@ -9264,6 +10713,9 @@ export type UserCreateWithoutCrmActivitiesInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmActivitiesInput = {
@@ -9353,6 +10805,9 @@ export type UserUncheckedCreateWithoutCrmActivitiesInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmActivitiesInput = {
@@ -9458,6 +10913,9 @@ export type UserUpdateWithoutCrmActivitiesInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmActivitiesInput = {
@@ -9547,6 +11005,9 @@ export type UserUncheckedUpdateWithoutCrmActivitiesInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmTasksAssignedInput = {
@@ -9636,6 +11097,9 @@ export type UserCreateWithoutCrmTasksAssignedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmTasksAssignedInput = {
@@ -9725,6 +11189,9 @@ export type UserUncheckedCreateWithoutCrmTasksAssignedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmTasksAssignedInput = {
@@ -9819,6 +11286,9 @@ export type UserCreateWithoutCrmTasksCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmTasksCreatedInput = {
@@ -9908,6 +11378,9 @@ export type UserUncheckedCreateWithoutCrmTasksCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmTasksCreatedInput = {
@@ -10013,6 +11486,9 @@ export type UserUpdateWithoutCrmTasksAssignedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmTasksAssignedInput = {
@@ -10102,6 +11578,9 @@ export type UserUncheckedUpdateWithoutCrmTasksAssignedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCrmTasksCreatedInput = {
@@ -10202,6 +11681,9 @@ export type UserUpdateWithoutCrmTasksCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmTasksCreatedInput = {
@@ -10291,6 +11773,9 @@ export type UserUncheckedUpdateWithoutCrmTasksCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmAppointmentsAssignedInput = {
@@ -10380,6 +11865,9 @@ export type UserCreateWithoutCrmAppointmentsAssignedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmAppointmentsAssignedInput = {
@@ -10469,6 +11957,9 @@ export type UserUncheckedCreateWithoutCrmAppointmentsAssignedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmAppointmentsAssignedInput = {
@@ -10563,6 +12054,9 @@ export type UserCreateWithoutCrmAppointmentsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmAppointmentsCreatedInput = {
@@ -10652,6 +12146,9 @@ export type UserUncheckedCreateWithoutCrmAppointmentsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmAppointmentsCreatedInput = {
@@ -10757,6 +12254,9 @@ export type UserUpdateWithoutCrmAppointmentsAssignedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmAppointmentsAssignedInput = {
@@ -10846,6 +12346,9 @@ export type UserUncheckedUpdateWithoutCrmAppointmentsAssignedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCrmAppointmentsCreatedInput = {
@@ -10946,6 +12449,9 @@ export type UserUpdateWithoutCrmAppointmentsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmAppointmentsCreatedInput = {
@@ -11035,6 +12541,9 @@ export type UserUncheckedUpdateWithoutCrmAppointmentsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAppNotificationsInput = {
@@ -11124,6 +12633,9 @@ export type UserCreateWithoutAppNotificationsInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAppNotificationsInput = {
@@ -11213,6 +12725,9 @@ export type UserUncheckedCreateWithoutAppNotificationsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAppNotificationsInput = {
@@ -11318,6 +12833,9 @@ export type UserUpdateWithoutAppNotificationsInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAppNotificationsInput = {
@@ -11407,6 +12925,9 @@ export type UserUncheckedUpdateWithoutAppNotificationsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmPeriodGoalsInput = {
@@ -11496,6 +13017,9 @@ export type UserCreateWithoutCrmPeriodGoalsInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmPeriodGoalsInput = {
@@ -11585,6 +13109,9 @@ export type UserUncheckedCreateWithoutCrmPeriodGoalsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmPeriodGoalsInput = {
@@ -11690,6 +13217,9 @@ export type UserUpdateWithoutCrmPeriodGoalsInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmPeriodGoalsInput = {
@@ -11779,6 +13309,9 @@ export type UserUncheckedUpdateWithoutCrmPeriodGoalsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmWeeklyReportsInput = {
@@ -11868,6 +13401,9 @@ export type UserCreateWithoutCrmWeeklyReportsInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmWeeklyReportsInput = {
@@ -11957,6 +13493,9 @@ export type UserUncheckedCreateWithoutCrmWeeklyReportsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmWeeklyReportsInput = {
@@ -12062,6 +13601,9 @@ export type UserUpdateWithoutCrmWeeklyReportsInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmWeeklyReportsInput = {
@@ -12151,6 +13693,9 @@ export type UserUncheckedUpdateWithoutCrmWeeklyReportsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComClientsOwnedInput = {
@@ -12240,6 +13785,9 @@ export type UserCreateWithoutComClientsOwnedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComClientsOwnedInput = {
@@ -12329,6 +13877,9 @@ export type UserUncheckedCreateWithoutComClientsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComClientsOwnedInput = {
@@ -12423,6 +13974,9 @@ export type UserCreateWithoutComClientsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComClientsCreatedInput = {
@@ -12512,6 +14066,9 @@ export type UserUncheckedCreateWithoutComClientsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComClientsCreatedInput = {
@@ -12617,6 +14174,9 @@ export type UserUpdateWithoutComClientsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComClientsOwnedInput = {
@@ -12706,6 +14266,9 @@ export type UserUncheckedUpdateWithoutComClientsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutComClientsCreatedInput = {
@@ -12806,6 +14369,9 @@ export type UserUpdateWithoutComClientsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComClientsCreatedInput = {
@@ -12895,6 +14461,9 @@ export type UserUncheckedUpdateWithoutComClientsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComQuotesOwnedInput = {
@@ -12984,6 +14553,9 @@ export type UserCreateWithoutComQuotesOwnedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComQuotesOwnedInput = {
@@ -13073,6 +14645,9 @@ export type UserUncheckedCreateWithoutComQuotesOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComQuotesOwnedInput = {
@@ -13167,6 +14742,9 @@ export type UserCreateWithoutComQuotesCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComQuotesCreatedInput = {
@@ -13256,6 +14834,9 @@ export type UserUncheckedCreateWithoutComQuotesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComQuotesCreatedInput = {
@@ -13361,6 +14942,9 @@ export type UserUpdateWithoutComQuotesOwnedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComQuotesOwnedInput = {
@@ -13450,6 +15034,9 @@ export type UserUncheckedUpdateWithoutComQuotesOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutComQuotesCreatedInput = {
@@ -13550,6 +15137,9 @@ export type UserUpdateWithoutComQuotesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComQuotesCreatedInput = {
@@ -13639,6 +15229,9 @@ export type UserUncheckedUpdateWithoutComQuotesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComContractsOwnedInput = {
@@ -13728,6 +15321,9 @@ export type UserCreateWithoutComContractsOwnedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComContractsOwnedInput = {
@@ -13817,6 +15413,9 @@ export type UserUncheckedCreateWithoutComContractsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComContractsOwnedInput = {
@@ -13911,6 +15510,9 @@ export type UserCreateWithoutComContractsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComContractsCreatedInput = {
@@ -14000,6 +15602,9 @@ export type UserUncheckedCreateWithoutComContractsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComContractsCreatedInput = {
@@ -14105,6 +15710,9 @@ export type UserUpdateWithoutComContractsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComContractsOwnedInput = {
@@ -14194,6 +15802,9 @@ export type UserUncheckedUpdateWithoutComContractsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutComContractsCreatedInput = {
@@ -14294,6 +15905,9 @@ export type UserUpdateWithoutComContractsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComContractsCreatedInput = {
@@ -14383,6 +15997,9 @@ export type UserUncheckedUpdateWithoutComContractsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComInvoicesOwnedInput = {
@@ -14472,6 +16089,9 @@ export type UserCreateWithoutComInvoicesOwnedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComInvoicesOwnedInput = {
@@ -14561,6 +16181,9 @@ export type UserUncheckedCreateWithoutComInvoicesOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComInvoicesOwnedInput = {
@@ -14655,6 +16278,9 @@ export type UserCreateWithoutComInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComInvoicesCreatedInput = {
@@ -14744,6 +16370,9 @@ export type UserUncheckedCreateWithoutComInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComInvoicesCreatedInput = {
@@ -14849,6 +16478,9 @@ export type UserUpdateWithoutComInvoicesOwnedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComInvoicesOwnedInput = {
@@ -14938,6 +16570,9 @@ export type UserUncheckedUpdateWithoutComInvoicesOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutComInvoicesCreatedInput = {
@@ -15038,6 +16673,9 @@ export type UserUpdateWithoutComInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComInvoicesCreatedInput = {
@@ -15127,6 +16765,9 @@ export type UserUncheckedUpdateWithoutComInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComCreditNotesCreatedInput = {
@@ -15216,6 +16857,9 @@ export type UserCreateWithoutComCreditNotesCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComCreditNotesCreatedInput = {
@@ -15305,6 +16949,9 @@ export type UserUncheckedCreateWithoutComCreditNotesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComCreditNotesCreatedInput = {
@@ -15410,6 +17057,9 @@ export type UserUpdateWithoutComCreditNotesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComCreditNotesCreatedInput = {
@@ -15499,6 +17149,9 @@ export type UserUncheckedUpdateWithoutComCreditNotesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComPaymentsRecordedInput = {
@@ -15588,6 +17241,9 @@ export type UserCreateWithoutComPaymentsRecordedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComPaymentsRecordedInput = {
@@ -15677,6 +17333,9 @@ export type UserUncheckedCreateWithoutComPaymentsRecordedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComPaymentsRecordedInput = {
@@ -15782,6 +17441,9 @@ export type UserUpdateWithoutComPaymentsRecordedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComPaymentsRecordedInput = {
@@ -15871,6 +17533,9 @@ export type UserUncheckedUpdateWithoutComPaymentsRecordedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComClientEventsInput = {
@@ -15960,6 +17625,9 @@ export type UserCreateWithoutComClientEventsInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComClientEventsInput = {
@@ -16049,6 +17717,9 @@ export type UserUncheckedCreateWithoutComClientEventsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComClientEventsInput = {
@@ -16154,6 +17825,9 @@ export type UserUpdateWithoutComClientEventsInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComClientEventsInput = {
@@ -16243,6 +17917,9 @@ export type UserUncheckedUpdateWithoutComClientEventsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutComImportBatchesInput = {
@@ -16332,6 +18009,9 @@ export type UserCreateWithoutComImportBatchesInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutComImportBatchesInput = {
@@ -16421,6 +18101,9 @@ export type UserUncheckedCreateWithoutComImportBatchesInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutComImportBatchesInput = {
@@ -16526,6 +18209,9 @@ export type UserUpdateWithoutComImportBatchesInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutComImportBatchesInput = {
@@ -16615,6 +18301,9 @@ export type UserUncheckedUpdateWithoutComImportBatchesInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCptEntriesCreatedInput = {
@@ -16704,6 +18393,9 @@ export type UserCreateWithoutCptEntriesCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCptEntriesCreatedInput = {
@@ -16793,6 +18485,9 @@ export type UserUncheckedCreateWithoutCptEntriesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCptEntriesCreatedInput = {
@@ -16887,6 +18582,9 @@ export type UserCreateWithoutCptEntriesValidatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCptEntriesValidatedInput = {
@@ -16976,6 +18674,9 @@ export type UserUncheckedCreateWithoutCptEntriesValidatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCptEntriesValidatedInput = {
@@ -17081,6 +18782,9 @@ export type UserUpdateWithoutCptEntriesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCptEntriesCreatedInput = {
@@ -17170,6 +18874,9 @@ export type UserUncheckedUpdateWithoutCptEntriesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutCptEntriesValidatedInput = {
@@ -17270,6 +18977,9 @@ export type UserUpdateWithoutCptEntriesValidatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCptEntriesValidatedInput = {
@@ -17359,6 +19069,9 @@ export type UserUncheckedUpdateWithoutCptEntriesValidatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCptBankTxnsCreatedInput = {
@@ -17448,6 +19161,9 @@ export type UserCreateWithoutCptBankTxnsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCptBankTxnsCreatedInput = {
@@ -17537,6 +19253,9 @@ export type UserUncheckedCreateWithoutCptBankTxnsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCptBankTxnsCreatedInput = {
@@ -17642,6 +19361,9 @@ export type UserUpdateWithoutCptBankTxnsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCptBankTxnsCreatedInput = {
@@ -17731,6 +19453,9 @@ export type UserUncheckedUpdateWithoutCptBankTxnsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutBudLinesCreatedInput = {
@@ -17820,6 +19545,9 @@ export type UserCreateWithoutBudLinesCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutBudLinesCreatedInput = {
@@ -17909,6 +19637,9 @@ export type UserUncheckedCreateWithoutBudLinesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutBudLinesCreatedInput = {
@@ -18014,6 +19745,9 @@ export type UserUpdateWithoutBudLinesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBudLinesCreatedInput = {
@@ -18103,6 +19837,9 @@ export type UserUncheckedUpdateWithoutBudLinesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhEmployeeInput = {
@@ -18192,6 +19929,9 @@ export type UserCreateWithoutRhEmployeeInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhEmployeeInput = {
@@ -18281,6 +20021,9 @@ export type UserUncheckedCreateWithoutRhEmployeeInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhEmployeeInput = {
@@ -18386,6 +20129,9 @@ export type UserUpdateWithoutRhEmployeeInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhEmployeeInput = {
@@ -18475,6 +20221,9 @@ export type UserUncheckedUpdateWithoutRhEmployeeInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhProfileChangesRequestedInput = {
@@ -18564,6 +20313,9 @@ export type UserCreateWithoutRhProfileChangesRequestedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhProfileChangesRequestedInput = {
@@ -18653,6 +20405,9 @@ export type UserUncheckedCreateWithoutRhProfileChangesRequestedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhProfileChangesRequestedInput = {
@@ -18747,6 +20502,9 @@ export type UserCreateWithoutRhProfileChangesReviewedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhProfileChangesReviewedInput = {
@@ -18836,6 +20594,9 @@ export type UserUncheckedCreateWithoutRhProfileChangesReviewedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhProfileChangesReviewedInput = {
@@ -18941,6 +20702,9 @@ export type UserUpdateWithoutRhProfileChangesRequestedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhProfileChangesRequestedInput = {
@@ -19030,6 +20794,9 @@ export type UserUncheckedUpdateWithoutRhProfileChangesRequestedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutRhProfileChangesReviewedInput = {
@@ -19130,6 +20897,9 @@ export type UserUpdateWithoutRhProfileChangesReviewedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhProfileChangesReviewedInput = {
@@ -19219,6 +20989,9 @@ export type UserUncheckedUpdateWithoutRhProfileChangesReviewedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhLeaveMovementsCreatedInput = {
@@ -19308,6 +21081,9 @@ export type UserCreateWithoutRhLeaveMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhLeaveMovementsCreatedInput = {
@@ -19397,6 +21173,9 @@ export type UserUncheckedCreateWithoutRhLeaveMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhLeaveMovementsCreatedInput = {
@@ -19502,6 +21281,9 @@ export type UserUpdateWithoutRhLeaveMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhLeaveMovementsCreatedInput = {
@@ -19591,6 +21373,9 @@ export type UserUncheckedUpdateWithoutRhLeaveMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhLeavesRequestedInput = {
@@ -19680,6 +21465,9 @@ export type UserCreateWithoutRhLeavesRequestedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhLeavesRequestedInput = {
@@ -19769,6 +21557,9 @@ export type UserUncheckedCreateWithoutRhLeavesRequestedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhLeavesRequestedInput = {
@@ -19863,6 +21654,9 @@ export type UserCreateWithoutRhLeavesValidatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhLeavesValidatedInput = {
@@ -19952,6 +21746,9 @@ export type UserUncheckedCreateWithoutRhLeavesValidatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhLeavesValidatedInput = {
@@ -20057,6 +21854,9 @@ export type UserUpdateWithoutRhLeavesRequestedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhLeavesRequestedInput = {
@@ -20146,6 +21946,9 @@ export type UserUncheckedUpdateWithoutRhLeavesRequestedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutRhLeavesValidatedInput = {
@@ -20246,6 +22049,9 @@ export type UserUpdateWithoutRhLeavesValidatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhLeavesValidatedInput = {
@@ -20335,6 +22141,9 @@ export type UserUncheckedUpdateWithoutRhLeavesValidatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhAbsencesDeclaredInput = {
@@ -20424,6 +22233,9 @@ export type UserCreateWithoutRhAbsencesDeclaredInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhAbsencesDeclaredInput = {
@@ -20513,6 +22325,9 @@ export type UserUncheckedCreateWithoutRhAbsencesDeclaredInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhAbsencesDeclaredInput = {
@@ -20607,6 +22422,9 @@ export type UserCreateWithoutRhAbsencesReviewedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhAbsencesReviewedInput = {
@@ -20696,6 +22514,9 @@ export type UserUncheckedCreateWithoutRhAbsencesReviewedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhAbsencesReviewedInput = {
@@ -20801,6 +22622,9 @@ export type UserUpdateWithoutRhAbsencesDeclaredInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhAbsencesDeclaredInput = {
@@ -20890,6 +22714,9 @@ export type UserUncheckedUpdateWithoutRhAbsencesDeclaredInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutRhAbsencesReviewedInput = {
@@ -20990,6 +22817,9 @@ export type UserUpdateWithoutRhAbsencesReviewedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhAbsencesReviewedInput = {
@@ -21079,6 +22909,9 @@ export type UserUncheckedUpdateWithoutRhAbsencesReviewedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhTimesheetsOwnedInput = {
@@ -21168,6 +23001,9 @@ export type UserCreateWithoutRhTimesheetsOwnedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhTimesheetsOwnedInput = {
@@ -21257,6 +23093,9 @@ export type UserUncheckedCreateWithoutRhTimesheetsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhTimesheetsOwnedInput = {
@@ -21351,6 +23190,9 @@ export type UserCreateWithoutRhTimesheetsValidatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhTimesheetsValidatedInput = {
@@ -21440,6 +23282,9 @@ export type UserUncheckedCreateWithoutRhTimesheetsValidatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhTimesheetsValidatedInput = {
@@ -21545,6 +23390,9 @@ export type UserUpdateWithoutRhTimesheetsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhTimesheetsOwnedInput = {
@@ -21634,6 +23482,9 @@ export type UserUncheckedUpdateWithoutRhTimesheetsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutRhTimesheetsValidatedInput = {
@@ -21734,6 +23585,9 @@ export type UserUpdateWithoutRhTimesheetsValidatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhTimesheetsValidatedInput = {
@@ -21823,6 +23677,9 @@ export type UserUncheckedUpdateWithoutRhTimesheetsValidatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutRhPayrollOpenedInput = {
@@ -21912,6 +23769,9 @@ export type UserCreateWithoutRhPayrollOpenedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhPayrollOpenedInput = {
@@ -22001,6 +23861,9 @@ export type UserUncheckedCreateWithoutRhPayrollOpenedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhPayrollOpenedInput = {
@@ -22095,6 +23958,9 @@ export type UserCreateWithoutRhPayrollApprovedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRhPayrollApprovedInput = {
@@ -22184,6 +24050,9 @@ export type UserUncheckedCreateWithoutRhPayrollApprovedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRhPayrollApprovedInput = {
@@ -22289,6 +24158,9 @@ export type UserUpdateWithoutRhPayrollOpenedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhPayrollOpenedInput = {
@@ -22378,6 +24250,9 @@ export type UserUncheckedUpdateWithoutRhPayrollOpenedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutRhPayrollApprovedInput = {
@@ -22478,6 +24353,9 @@ export type UserUpdateWithoutRhPayrollApprovedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRhPayrollApprovedInput = {
@@ -22567,6 +24445,9 @@ export type UserUncheckedUpdateWithoutRhPayrollApprovedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStkArticlesCreatedInput = {
@@ -22656,6 +24537,9 @@ export type UserCreateWithoutStkArticlesCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStkArticlesCreatedInput = {
@@ -22745,6 +24629,9 @@ export type UserUncheckedCreateWithoutStkArticlesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStkArticlesCreatedInput = {
@@ -22850,6 +24737,9 @@ export type UserUpdateWithoutStkArticlesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStkArticlesCreatedInput = {
@@ -22939,6 +24829,9 @@ export type UserUncheckedUpdateWithoutStkArticlesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStkMovementsCreatedInput = {
@@ -23028,6 +24921,9 @@ export type UserCreateWithoutStkMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStkMovementsCreatedInput = {
@@ -23117,6 +25013,9 @@ export type UserUncheckedCreateWithoutStkMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStkMovementsCreatedInput = {
@@ -23222,6 +25121,9 @@ export type UserUpdateWithoutStkMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStkMovementsCreatedInput = {
@@ -23311,6 +25213,9 @@ export type UserUncheckedUpdateWithoutStkMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutStkPurchasesCreatedInput = {
@@ -23400,6 +25305,9 @@ export type UserCreateWithoutStkPurchasesCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStkPurchasesCreatedInput = {
@@ -23489,6 +25397,9 @@ export type UserUncheckedCreateWithoutStkPurchasesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStkPurchasesCreatedInput = {
@@ -23594,6 +25505,9 @@ export type UserUpdateWithoutStkPurchasesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStkPurchasesCreatedInput = {
@@ -23683,6 +25597,9 @@ export type UserUncheckedUpdateWithoutStkPurchasesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutPatAssetsAssignedInput = {
@@ -23772,6 +25689,9 @@ export type UserCreateWithoutPatAssetsAssignedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPatAssetsAssignedInput = {
@@ -23861,6 +25781,9 @@ export type UserUncheckedCreateWithoutPatAssetsAssignedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPatAssetsAssignedInput = {
@@ -23955,6 +25878,9 @@ export type UserCreateWithoutPatAssetsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPatAssetsCreatedInput = {
@@ -24044,6 +25970,9 @@ export type UserUncheckedCreateWithoutPatAssetsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPatAssetsCreatedInput = {
@@ -24149,6 +26078,9 @@ export type UserUpdateWithoutPatAssetsAssignedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatAssetsAssignedInput = {
@@ -24238,6 +26170,9 @@ export type UserUncheckedUpdateWithoutPatAssetsAssignedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutPatAssetsCreatedInput = {
@@ -24338,6 +26273,9 @@ export type UserUpdateWithoutPatAssetsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatAssetsCreatedInput = {
@@ -24427,6 +26365,9 @@ export type UserUncheckedUpdateWithoutPatAssetsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutPrjProjectsOwnedInput = {
@@ -24516,6 +26457,9 @@ export type UserCreateWithoutPrjProjectsOwnedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPrjProjectsOwnedInput = {
@@ -24605,6 +26549,9 @@ export type UserUncheckedCreateWithoutPrjProjectsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPrjProjectsOwnedInput = {
@@ -24710,6 +26657,9 @@ export type UserUpdateWithoutPrjProjectsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrjProjectsOwnedInput = {
@@ -24799,6 +26749,9 @@ export type UserUncheckedUpdateWithoutPrjProjectsOwnedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutPrjMembershipsInput = {
@@ -24888,6 +26841,9 @@ export type UserCreateWithoutPrjMembershipsInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPrjMembershipsInput = {
@@ -24977,6 +26933,9 @@ export type UserUncheckedCreateWithoutPrjMembershipsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPrjMembershipsInput = {
@@ -25082,6 +27041,9 @@ export type UserUpdateWithoutPrjMembershipsInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrjMembershipsInput = {
@@ -25171,6 +27133,9 @@ export type UserUncheckedUpdateWithoutPrjMembershipsInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutPrjExpensesCreatedInput = {
@@ -25260,6 +27225,9 @@ export type UserCreateWithoutPrjExpensesCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPrjExpensesCreatedInput = {
@@ -25349,6 +27317,9 @@ export type UserUncheckedCreateWithoutPrjExpensesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPrjExpensesCreatedInput = {
@@ -25443,6 +27414,9 @@ export type UserCreateWithoutPrjExpensesReviewedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPrjExpensesReviewedInput = {
@@ -25532,6 +27506,9 @@ export type UserUncheckedCreateWithoutPrjExpensesReviewedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPrjExpensesReviewedInput = {
@@ -25637,6 +27614,9 @@ export type UserUpdateWithoutPrjExpensesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrjExpensesCreatedInput = {
@@ -25726,6 +27706,9 @@ export type UserUncheckedUpdateWithoutPrjExpensesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutPrjExpensesReviewedInput = {
@@ -25826,6 +27809,9 @@ export type UserUpdateWithoutPrjExpensesReviewedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrjExpensesReviewedInput = {
@@ -25915,6 +27901,9 @@ export type UserUncheckedUpdateWithoutPrjExpensesReviewedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutOpsTicketsAssignedInput = {
@@ -26004,6 +27993,9 @@ export type UserCreateWithoutOpsTicketsAssignedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutOpsTicketsAssignedInput = {
@@ -26093,6 +28085,9 @@ export type UserUncheckedCreateWithoutOpsTicketsAssignedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutOpsTicketsAssignedInput = {
@@ -26187,6 +28182,9 @@ export type UserCreateWithoutOpsTicketsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutOpsTicketsCreatedInput = {
@@ -26276,6 +28274,9 @@ export type UserUncheckedCreateWithoutOpsTicketsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutOpsTicketsCreatedInput = {
@@ -26381,6 +28382,9 @@ export type UserUpdateWithoutOpsTicketsAssignedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOpsTicketsAssignedInput = {
@@ -26470,6 +28474,9 @@ export type UserUncheckedUpdateWithoutOpsTicketsAssignedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutOpsTicketsCreatedInput = {
@@ -26570,6 +28577,9 @@ export type UserUpdateWithoutOpsTicketsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOpsTicketsCreatedInput = {
@@ -26659,6 +28669,9 @@ export type UserUncheckedUpdateWithoutOpsTicketsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSvInvoicesCreatedInput = {
@@ -26748,6 +28761,9 @@ export type UserCreateWithoutSvInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSvInvoicesCreatedInput = {
@@ -26837,6 +28853,9 @@ export type UserUncheckedCreateWithoutSvInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSvInvoicesCreatedInput = {
@@ -26942,6 +28961,9 @@ export type UserUpdateWithoutSvInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSvInvoicesCreatedInput = {
@@ -27031,6 +29053,9 @@ export type UserUncheckedUpdateWithoutSvInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSvCashMovementsCreatedInput = {
@@ -27120,6 +29145,9 @@ export type UserCreateWithoutSvCashMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSvCashMovementsCreatedInput = {
@@ -27209,6 +29237,9 @@ export type UserUncheckedCreateWithoutSvCashMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSvCashMovementsCreatedInput = {
@@ -27314,6 +29345,9 @@ export type UserUpdateWithoutSvCashMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSvCashMovementsCreatedInput = {
@@ -27403,6 +29437,9 @@ export type UserUncheckedUpdateWithoutSvCashMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSvExpenseInvoicesCreatedInput = {
@@ -27492,6 +29529,9 @@ export type UserCreateWithoutSvExpenseInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSvExpenseInvoicesCreatedInput = {
@@ -27581,6 +29621,9 @@ export type UserUncheckedCreateWithoutSvExpenseInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSvExpenseInvoicesCreatedInput = {
@@ -27686,6 +29729,9 @@ export type UserUpdateWithoutSvExpenseInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSvExpenseInvoicesCreatedInput = {
@@ -27775,6 +29821,9 @@ export type UserUncheckedUpdateWithoutSvExpenseInvoicesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSvStockMovementsCreatedInput = {
@@ -27864,6 +29913,9 @@ export type UserCreateWithoutSvStockMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSvStockMovementsCreatedInput = {
@@ -27953,6 +30005,9 @@ export type UserUncheckedCreateWithoutSvStockMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSvStockMovementsCreatedInput = {
@@ -28058,6 +30113,9 @@ export type UserUpdateWithoutSvStockMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSvStockMovementsCreatedInput = {
@@ -28147,6 +30205,9 @@ export type UserUncheckedUpdateWithoutSvStockMovementsCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSvAbsencesCreatedInput = {
@@ -28236,6 +30297,9 @@ export type UserCreateWithoutSvAbsencesCreatedInput = {
   svLatesCreated?: Prisma.SvLateCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSvAbsencesCreatedInput = {
@@ -28325,6 +30389,9 @@ export type UserUncheckedCreateWithoutSvAbsencesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSvAbsencesCreatedInput = {
@@ -28430,6 +30497,9 @@ export type UserUpdateWithoutSvAbsencesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSvAbsencesCreatedInput = {
@@ -28519,6 +30589,9 @@ export type UserUncheckedUpdateWithoutSvAbsencesCreatedInput = {
   svLatesCreated?: Prisma.SvLateUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSvLatesCreatedInput = {
@@ -28608,6 +30681,9 @@ export type UserCreateWithoutSvLatesCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSvLatesCreatedInput = {
@@ -28697,6 +30773,9 @@ export type UserUncheckedCreateWithoutSvLatesCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceUncheckedCreateNestedManyWithoutCreatedByInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedCreateNestedManyWithoutCreatedByInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSvLatesCreatedInput = {
@@ -28802,6 +30881,9 @@ export type UserUpdateWithoutSvLatesCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSvLatesCreatedInput = {
@@ -28891,6 +30973,9 @@ export type UserUncheckedUpdateWithoutSvLatesCreatedInput = {
   svAbsencesCreated?: Prisma.SvAbsenceUncheckedUpdateManyWithoutCreatedByNestedInput
   brandLogosCreated?: Prisma.BrandLogoUncheckedUpdateManyWithoutCreatedByNestedInput
   brandResourcesCreated?: Prisma.BrandResourceUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplatesCreated?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  docTemplateVersionsCreated?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  templateVariablesCreated?: Prisma.TemplateVariableDefUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 
@@ -28970,6 +31055,9 @@ export type UserCountOutputType = {
   svLatesCreated: number
   brandLogosCreated: number
   brandResourcesCreated: number
+  docTemplatesCreated: number
+  docTemplateVersionsCreated: number
+  templateVariablesCreated: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -29044,6 +31132,9 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   svLatesCreated?: boolean | UserCountOutputTypeCountSvLatesCreatedArgs
   brandLogosCreated?: boolean | UserCountOutputTypeCountBrandLogosCreatedArgs
   brandResourcesCreated?: boolean | UserCountOutputTypeCountBrandResourcesCreatedArgs
+  docTemplatesCreated?: boolean | UserCountOutputTypeCountDocTemplatesCreatedArgs
+  docTemplateVersionsCreated?: boolean | UserCountOutputTypeCountDocTemplateVersionsCreatedArgs
+  templateVariablesCreated?: boolean | UserCountOutputTypeCountTemplateVariablesCreatedArgs
 }
 
 /**
@@ -29553,6 +31644,27 @@ export type UserCountOutputTypeCountBrandResourcesCreatedArgs<ExtArgs extends ru
   where?: Prisma.BrandResourceWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDocTemplatesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentTemplateWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDocTemplateVersionsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentTemplateVersionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountTemplateVariablesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TemplateVariableDefWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -29642,6 +31754,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   svLatesCreated?: boolean | Prisma.User$svLatesCreatedArgs<ExtArgs>
   brandLogosCreated?: boolean | Prisma.User$brandLogosCreatedArgs<ExtArgs>
   brandResourcesCreated?: boolean | Prisma.User$brandResourcesCreatedArgs<ExtArgs>
+  docTemplatesCreated?: boolean | Prisma.User$docTemplatesCreatedArgs<ExtArgs>
+  docTemplateVersionsCreated?: boolean | Prisma.User$docTemplateVersionsCreatedArgs<ExtArgs>
+  templateVariablesCreated?: boolean | Prisma.User$templateVariablesCreatedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -29773,6 +31888,9 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   svLatesCreated?: boolean | Prisma.User$svLatesCreatedArgs<ExtArgs>
   brandLogosCreated?: boolean | Prisma.User$brandLogosCreatedArgs<ExtArgs>
   brandResourcesCreated?: boolean | Prisma.User$brandResourcesCreatedArgs<ExtArgs>
+  docTemplatesCreated?: boolean | Prisma.User$docTemplatesCreatedArgs<ExtArgs>
+  docTemplateVersionsCreated?: boolean | Prisma.User$docTemplateVersionsCreatedArgs<ExtArgs>
+  templateVariablesCreated?: boolean | Prisma.User$templateVariablesCreatedArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -29853,6 +31971,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     svLatesCreated: Prisma.$SvLatePayload<ExtArgs>[]
     brandLogosCreated: Prisma.$BrandLogoPayload<ExtArgs>[]
     brandResourcesCreated: Prisma.$BrandResourcePayload<ExtArgs>[]
+    docTemplatesCreated: Prisma.$DocumentTemplatePayload<ExtArgs>[]
+    docTemplateVersionsCreated: Prisma.$DocumentTemplateVersionPayload<ExtArgs>[]
+    templateVariablesCreated: Prisma.$TemplateVariableDefPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -30336,6 +32457,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   svLatesCreated<T extends Prisma.User$svLatesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$svLatesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SvLatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   brandLogosCreated<T extends Prisma.User$brandLogosCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$brandLogosCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BrandLogoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   brandResourcesCreated<T extends Prisma.User$brandResourcesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$brandResourcesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BrandResourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  docTemplatesCreated<T extends Prisma.User$docTemplatesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$docTemplatesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  docTemplateVersionsCreated<T extends Prisma.User$docTemplateVersionsCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$docTemplateVersionsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentTemplateVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  templateVariablesCreated<T extends Prisma.User$templateVariablesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$templateVariablesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TemplateVariableDefPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -32493,6 +34617,78 @@ export type User$brandResourcesCreatedArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.BrandResourceScalarFieldEnum | Prisma.BrandResourceScalarFieldEnum[]
+}
+
+/**
+ * User.docTemplatesCreated
+ */
+export type User$docTemplatesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DocumentTemplate
+   */
+  select?: Prisma.DocumentTemplateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DocumentTemplate
+   */
+  omit?: Prisma.DocumentTemplateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentTemplateInclude<ExtArgs> | null
+  where?: Prisma.DocumentTemplateWhereInput
+  orderBy?: Prisma.DocumentTemplateOrderByWithRelationInput | Prisma.DocumentTemplateOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentTemplateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentTemplateScalarFieldEnum | Prisma.DocumentTemplateScalarFieldEnum[]
+}
+
+/**
+ * User.docTemplateVersionsCreated
+ */
+export type User$docTemplateVersionsCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DocumentTemplateVersion
+   */
+  select?: Prisma.DocumentTemplateVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DocumentTemplateVersion
+   */
+  omit?: Prisma.DocumentTemplateVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentTemplateVersionInclude<ExtArgs> | null
+  where?: Prisma.DocumentTemplateVersionWhereInput
+  orderBy?: Prisma.DocumentTemplateVersionOrderByWithRelationInput | Prisma.DocumentTemplateVersionOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentTemplateVersionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentTemplateVersionScalarFieldEnum | Prisma.DocumentTemplateVersionScalarFieldEnum[]
+}
+
+/**
+ * User.templateVariablesCreated
+ */
+export type User$templateVariablesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TemplateVariableDef
+   */
+  select?: Prisma.TemplateVariableDefSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TemplateVariableDef
+   */
+  omit?: Prisma.TemplateVariableDefOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TemplateVariableDefInclude<ExtArgs> | null
+  where?: Prisma.TemplateVariableDefWhereInput
+  orderBy?: Prisma.TemplateVariableDefOrderByWithRelationInput | Prisma.TemplateVariableDefOrderByWithRelationInput[]
+  cursor?: Prisma.TemplateVariableDefWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TemplateVariableDefScalarFieldEnum | Prisma.TemplateVariableDefScalarFieldEnum[]
 }
 
 /**

@@ -713,6 +713,10 @@ async function main() {
   console.log("→ Suivi tampon…");
   const { seedSuiviTampon } = await import("./seed-suivi");
   await seedSuiviTampon(prisma);
+  console.log("→ Studio documentaire…");
+  const { seedPhaseStudioDocumentaire } = await import("./seed-studio");
+  await seedPhaseStudioDocumentaire(prisma);
+  console.log("✓ Studio documentaire (signature gabarits + catalogue variables + démonstrateur)");
   console.log("✅ Seed terminé");
 }
 

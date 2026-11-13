@@ -1,7 +1,7 @@
 import type { TemplateType } from "@/generated/prisma/client";
 
 /** Famille affichée sur /administration/gabarits. */
-export type TemplateFamily = "Commercial" | "RH";
+export type TemplateFamily = "Commercial" | "RH" | "Studio";
 
 /** Ordre d’affichage Commercial : Devis → Facture → Contrat client. */
 export const COMMERCIAL_TEMPLATE_ORDER: TemplateType[] = [
@@ -32,6 +32,7 @@ export const TEMPLATE_FAMILY: Record<TemplateType, TemplateFamily> = {
   REGLEMENT_INTERIEUR: "RH",
   SOLDE_TOUT_COMPTE: "RH",
   FICHE_PAIE: "RH",
+  DOCUMENT_LIBRE: "Studio",
 };
 
 /** Libellés courts badge (type). */
@@ -46,10 +47,11 @@ export const TEMPLATE_TYPE_LABEL: Record<TemplateType, string> = {
   REGLEMENT_INTERIEUR: "Règlement",
   SOLDE_TOUT_COMPTE: "Solde",
   FICHE_PAIE: "Paie",
+  DOCUMENT_LIBRE: "Gabarit Studio",
 };
 
-/** Commercial = blue, RH = ink (charte admin gabarits). */
-export const TEMPLATE_TYPE_TONE: Record<TemplateType, "blue" | "ink"> = {
+/** Commercial = blue, RH = ink, Studio = success (charte admin gabarits). */
+export const TEMPLATE_TYPE_TONE: Record<TemplateType, "blue" | "ink" | "success"> = {
   DEVIS: "blue",
   FACTURE: "blue",
   CONTRAT_COMMERCIAL: "blue",
@@ -60,6 +62,7 @@ export const TEMPLATE_TYPE_TONE: Record<TemplateType, "blue" | "ink"> = {
   REGLEMENT_INTERIEUR: "ink",
   SOLDE_TOUT_COMPTE: "ink",
   FICHE_PAIE: "ink",
+  DOCUMENT_LIBRE: "success",
 };
 
 /**
@@ -79,6 +82,8 @@ export const TEMPLATE_PURPOSE: Record<TemplateType, string> = {
   REGLEMENT_INTERIEUR: "PDF accusé de réception du règlement intérieur.",
   SOLDE_TOUT_COMPTE: "PDF solde de tout compte à la sortie.",
   FICHE_PAIE: "PDF fiche de paie indicative (INPS provisoire).",
+  DOCUMENT_LIBRE:
+    "Gabarit créé dans le Studio — blocs + variables {{slug}}, versionné, publié explicitement.",
 };
 
 export function sortTemplatesByFamilyOrder<T extends { type: TemplateType }>(

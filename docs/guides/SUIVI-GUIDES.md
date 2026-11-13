@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-13 (Absences Justifiée ⇒ GED ; voir §8) |
+| Dernière mise à jour | 2026-11-13 (Signatures gabarits OFF + Studio documentaire v1 ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,29 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-13 — Signatures gabarits : OFF par défaut (legacy inclus)
+
+| | |
+|---|---|
+| Quoi | Règle produit : **signature désactivée par défaut** sur tous les gabarits, y compris les 10 legacy. Seed `prisma/seed-studio.ts` force `signatureEnabled=false` (idempotent). Migration data `20261113150000_signature_enabled_off_templates` remet à `false` les lignes déjà à `true` en base. Docs CONCEPTION / AUDIT / manuel 07 alignés. |
+| Pourquoi | Décision métier confirmée : ne pas laisser `true` « pour préserver la prod ». Activation uniquement via bascule admin. |
+| Fichiers | `prisma/seed-studio.ts`, `prisma/migrations/20261113150000_signature_enabled_off_templates/migration.sql`, `docs/studio-documentaire/{CONCEPTION,AUDIT}.md`, `docs/manuels/07-signatures-gabarits.md`, ce suivi |
+| Statut doc | Manuel 07 + CONCEPTION à jour |
+| Dette restante | Générateurs RH / contrats qui appellent encore `getSignaturePngBytes` hors `resolveTemplateSignature` (hors hook Devis/Facture) |
+
+### 2026-11-13 — Administration Gabarits : Studio documentaire v1 (moteur central)
+
+| | |
+|---|---|
+| Quoi | `/administration/gabarits` devient le **Studio documentaire** : nouveau type `DOCUMENT_LIBRE` (« Gabarit Studio ») en plus des gabarits legacy Commercial/RH existants. Moteur central (`src/lib/studio/engine.ts`) : blocs DSL (`# Titre`, `> encadré`, `---`, `[[SIGNATURE: Gauche \| Droite]]`) + variables `{{slug}}` (catalogue central `TemplateVariableDef`), versions brouillon/publiée (`DocumentTemplateVersion`), publication explicite (jamais la version publiée écrasée en place). **Signature désactivée par défaut** — bascule explicite par gabarit. Section « Studio » ajoutée sur la liste (recherche + tri + pagination serveur, cartes cliquables, `ActionMenu`) sans toucher aux sections Commercial/RH existantes. Nouvelles pages : création (`/nouveau`, stepper 4 étapes), édition (`/[id]/edit`, nouvelle version brouillon), catalogue variables (`/variables`, `/variables/nouveau`). **Intégration réelle** : `generateQuotePdfAction` / `generateInvoicePdfAction` via `requireActiveTemplate` + `resolveTemplateSignature` (OFF → pas de bloc signature). |
+| Pourquoi | Mission : centraliser la définition/version/génération de tout document PDF de l’ERP dans un gabarit unique, avec erreur explicite si un gabarit manque, jamais de document improvisé. |
+| Fichiers | migration `20261113120000_studio_documentaire_v1`, `prisma/schema.prisma`, `prisma/seed-studio.ts` (+ `seed.ts`), `src/lib/studio/**`, `src/actions/studio-templates.ts`, `src/actions/templates.ts`, `src/actions/commercial.ts`, `src/lib/templates/labels.ts`, `src/lib/pdf/rh.ts`, `src/components/admin/template-*.tsx`, `src/app/(app)/administration/gabarits/**`, `docs/manuels/07-signatures-gabarits.md`, `docs/studio-documentaire/{AUDIT,CONCEPTION}.md`, ce suivi |
+| Statut doc | Pas de guide utilisateur `/guides` dédié encore — **`draft`** à créer (parcours Admin Studio) ; manuel `07-signatures-gabarits.md` mis à jour |
+| Routes | `/administration/gabarits` (+ section Studio), `/nouveau`, `/[id]`, `/[id]/edit`, `/variables`, `/variables/nouveau` |
+| Permission | `cfg.templates` (réutilisée) |
+| Build/Lint | `tsc --noEmit`, `next lint`, `next build` : OK. Tests Studio + régression PDF RH/contrat : OK. |
+| Dette restante | Pas de Playground 3 zones WYSIWYG ; pas d’OCR des PDF de référence `docs/` ; générateurs legacy RH/contrats pas encore tous branchés sur `resolveTemplateSignature` / `ENGINE_BLOCKS`. |
 
 ### 2026-11-13 — Absences Suivi : Justifiée ⇒ justificatif GED obligatoire
 

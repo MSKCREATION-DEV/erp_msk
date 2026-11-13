@@ -17,12 +17,12 @@ import {
   toWinAnsiLines,
 } from "@/lib/pdf/winansi";
 
-const BLUE = rgb(29 / 255, 115 / 255, 188 / 255);
-const INK = rgb(13 / 255, 19 / 255, 48 / 255);
+export const BLUE = rgb(29 / 255, 115 / 255, 188 / 255);
+export const INK = rgb(13 / 255, 19 / 255, 48 / 255);
 const MUTED = rgb(100 / 255, 110 / 255, 130 / 135);
-const LIGHT = rgb(0.9, 0.94, 0.98);
+export const LIGHT = rgb(0.9, 0.94, 0.98);
 const A4: [number, number] = [595.28, 841.89];
-const MARGIN = 48;
+export const MARGIN = 48;
 
 export type RhPersonInput = {
   firstName: string;
@@ -89,7 +89,12 @@ export type RhPayslipInput = {
   signaturePng?: Uint8Array | Buffer;
 };
 
-type Ctx = {
+/**
+ * Exportée pour `src/lib/studio/render-blocks.ts` (moteur central Studio
+ * documentaire — gabarits ENGINE_BLOCKS). Même primitive pdf-lib que les
+ * générateurs legacy RH/Commercial, pas de duplication de la charte.
+ */
+export type Ctx = {
   pdf: PDFDocument;
   page: PDFPage;
   font: PDFFont;
@@ -100,7 +105,7 @@ type Ctx = {
   y: number;
 };
 
-function draw(
+export function draw(
   page: PDFPage,
   text: string,
   opts: {
@@ -159,7 +164,7 @@ async function embedLogo(pdf: PDFDocument) {
   return embedBrandLogo(pdf);
 }
 
-async function createCtx(): Promise<Ctx> {
+export async function createCtx(): Promise<Ctx> {
   const pdf = await PDFDocument.create();
   const page = pdf.addPage(A4);
   const font = await pdf.embedFont(StandardFonts.Helvetica);
@@ -178,7 +183,7 @@ async function createCtx(): Promise<Ctx> {
   };
 }
 
-function ensureSpace(ctx: Ctx, needed: number) {
+export function ensureSpace(ctx: Ctx, needed: number) {
   if (ctx.y - needed > MARGIN + 40) return;
   drawFooter(ctx);
   ctx.page = ctx.pdf.addPage(A4);
@@ -199,7 +204,7 @@ function drawMiniHeader(ctx: Ctx) {
   ctx.y -= 18;
 }
 
-async function drawHeader(ctx: Ctx, title: string) {
+export async function drawHeader(ctx: Ctx, title: string) {
   const logo = await embedLogo(ctx.pdf);
   if (logo) {
     const maxW = 120;
@@ -249,7 +254,7 @@ async function drawHeader(ctx: Ctx, title: string) {
   ctx.y -= 28;
 }
 
-function drawFooter(ctx: Ctx) {
+export function drawFooter(ctx: Ctx) {
   const footer1 = `Adresse : ${company.addressOneLine}`;
   const footer2 = `NIF : ${company.fiscalId}  ·  ${company.email}  ·  ${company.phones}`;
   const footer3 = "PUBLIC - MSKCREATION";
@@ -282,7 +287,7 @@ function drawFooter(ctx: Ctx) {
   });
 }
 
-function drawParagraph(ctx: Ctx, text: string, size = 9.5, gap = 13) {
+export function drawParagraph(ctx: Ctx, text: string, size = 9.5, gap = 13) {
   const lines = wrap(text, ctx.font, size, ctx.width - MARGIN * 2);
   for (const line of lines) {
     ensureSpace(ctx, gap + 8);
@@ -296,7 +301,7 @@ function drawParagraph(ctx: Ctx, text: string, size = 9.5, gap = 13) {
   }
 }
 
-function drawTitle(ctx: Ctx, text: string) {
+export function drawTitle(ctx: Ctx, text: string) {
   ensureSpace(ctx, 22);
   draw(ctx.page, text, {
     x: MARGIN,
@@ -409,7 +414,7 @@ function personFullName(p: RhPersonInput) {
   return `${civ} ${p.firstName} ${p.lastName}`;
 }
 
-async function drawSignatureBlock(
+export async function drawSignatureBlock(
   ctx: Ctx,
   leftLabel: string,
   rightLabel: string,

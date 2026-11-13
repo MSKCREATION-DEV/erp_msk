@@ -76,6 +76,8 @@ export const ModelName = {
   SignatureAsset: 'SignatureAsset',
   OrgNode: 'OrgNode',
   DocumentTemplate: 'DocumentTemplate',
+  DocumentTemplateVersion: 'DocumentTemplateVersion',
+  TemplateVariableDef: 'TemplateVariableDef',
   CatalogOffer: 'CatalogOffer',
   CatalogOfferVersion: 'CatalogOfferVersion',
   CrmOrganization: 'CrmOrganization',
@@ -530,14 +532,50 @@ export const DocumentTemplateScalarFieldEnum = {
   type: 'type',
   code: 'code',
   name: 'name',
+  description: 'description',
   version: 'version',
   structureJson: 'structureJson',
+  generatorKind: 'generatorKind',
+  signatureEnabled: 'signatureEnabled',
   active: 'active',
+  publishedVersionId: 'publishedVersionId',
+  createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type DocumentTemplateScalarFieldEnum = (typeof DocumentTemplateScalarFieldEnum)[keyof typeof DocumentTemplateScalarFieldEnum]
+
+
+export const DocumentTemplateVersionScalarFieldEnum = {
+  id: 'id',
+  templateId: 'templateId',
+  version: 'version',
+  status: 'status',
+  bodyJson: 'bodyJson',
+  variablesJson: 'variablesJson',
+  changelog: 'changelog',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentTemplateVersionScalarFieldEnum = (typeof DocumentTemplateVersionScalarFieldEnum)[keyof typeof DocumentTemplateVersionScalarFieldEnum]
+
+
+export const TemplateVariableDefScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  label: 'label',
+  description: 'description',
+  category: 'category',
+  sampleValue: 'sampleValue',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TemplateVariableDefScalarFieldEnum = (typeof TemplateVariableDefScalarFieldEnum)[keyof typeof TemplateVariableDefScalarFieldEnum]
 
 
 export const CatalogOfferScalarFieldEnum = {

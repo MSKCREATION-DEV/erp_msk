@@ -163,9 +163,25 @@ export type SignatureAsset = Prisma.SignatureAssetModel
 export type OrgNode = Prisma.OrgNodeModel
 /**
  * Model DocumentTemplate
- * 
+ * Studio documentaire — gabarit central (un document = un gabarit).
+ * `structureJson` (hérité) garde les métadonnées des gabarits LEGACY_CODE
+ * (slots / ref / generator). Le contenu éditable des gabarits ENGINE_BLOCKS
+ * vit dans `DocumentTemplateVersion.bodyJson` (versionné, publié explicitement).
  */
 export type DocumentTemplate = Prisma.DocumentTemplateModel
+/**
+ * Model DocumentTemplateVersion
+ * Studio documentaire — version immuable du contenu d’un gabarit ENGINE_BLOCKS.
+ * `bodyJson` : tableau de blocs (heading/paragraph/highlight/keyValueTable/signatureBlock).
+ * `variablesJson` : catalogue des slugs `{{slug}}` déclarés par ce gabarit (requis/optionnels).
+ */
+export type DocumentTemplateVersion = Prisma.DocumentTemplateVersionModel
+/**
+ * Model TemplateVariableDef
+ * Studio documentaire — catalogue central des variables `{{slug}}` disponibles
+ * à l’insertion dans un gabarit ENGINE_BLOCKS. Source de vérité des slugs connus.
+ */
+export type TemplateVariableDef = Prisma.TemplateVariableDefModel
 /**
  * Model CatalogOffer
  * Offre catalogue MSK (5 piliers)

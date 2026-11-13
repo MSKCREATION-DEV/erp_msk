@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import type { TemplateType } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -15,6 +16,7 @@ import {
   sortTemplatesByFamilyOrder,
   type TemplateFamily,
 } from "@/lib/templates/labels";
+import { listKeyFromSearchParams } from "@/lib/list/sort";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import {
@@ -25,7 +27,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ListSearchForm } from "@/components/ui/list-search-form";
 import { GenerateDemoButton } from "@/components/admin/generate-demo-pdf";
+import { StudioTemplatesSection } from "./studio-section";
 
 export const metadata: Metadata = { title: "Gabarits" };
 
@@ -52,17 +56,29 @@ const SECTIONS: {
   },
 ];
 
-export default async function GabaritsPage() {
+export default async function GabaritsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await requireUser();
   if (!hasPermission(user, "cfg.templates")) redirect("/accueil");
 
-  const templates = await prisma.documentTemplate.findMany();
+  const templates = await prisma.documentTemplate.findMany({
+    where: { generatorKind: "LEGACY_CODE" },
+  });
+  const resultsKey = listKeyFromSearchParams(await searchParams, [
+    "q",
+    "ssort",
+    "sdir",
+    "spage",
+  ]);
 
   return (
     <PageShell>
       <PageHeader
         title="Gabarits"
-        description="Modèles PDF Commercial et RH — même layout que les documents métier. Démo classée dans GED · 04_MODELES."
+        description="Studio documentaire — moteur central de définition, versions, variables {{slug}} et génération PDF pour tout l’ERP."
         breadcrumbs={[
           { label: "Administration" },
           { label: "Gabarits" },
@@ -70,6 +86,26 @@ export default async function GabaritsPage() {
       />
 
       <div className="flex flex-col gap-10">
+        <Suspense
+          fallback={
+            <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk" />
+          }
+        >
+          <ListSearchForm placeholder="Rechercher un gabarit Studio…" className="sm:max-w-md" />
+        </Suspense>
+
+        <Suspense
+          key={resultsKey}
+          fallback={
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="h-44 animate-pulse rounded-2xl bg-msk-chalk" />
+              ))}
+            </div>
+          }
+        >
+          <StudioTemplatesSection searchParams={searchParams} />
+        </Suspense>
         {SECTIONS.map((section) => {
           const items = sortTemplatesByFamilyOrder(
             templates.filter((t) => TEMPLATE_FAMILY[t.type] === section.family),

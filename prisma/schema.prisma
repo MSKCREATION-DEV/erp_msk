@@ -119,6 +119,32 @@ enum TemplateType {
   REGLEMENT_INTERIEUR
   SOLDE_TOUT_COMPTE
   FICHE_PAIE
+  /// Gabarit libre créé depuis le Studio documentaire (générique, blocs + variables).
+  DOCUMENT_LIBRE
+}
+
+/// Studio documentaire — mode de rendu d’un gabarit.
+enum TemplateGeneratorKind {
+  /// Rendu par un générateur TypeScript dédié (`src/lib/pdf/*`) — hérité, non éditable depuis le Studio.
+  LEGACY_CODE
+  /// Rendu par le moteur central à partir des blocs `structureJson` de la version publiée.
+  ENGINE_BLOCKS
+}
+
+/// Studio documentaire — statut d’une version de gabarit.
+enum TemplateVersionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+/// Studio documentaire — catégorie du catalogue de variables `{{slug}}`.
+enum TemplateVariableCategory {
+  CLIENT
+  ENTREPRISE
+  DOCUMENT
+  COLLABORATEUR
+  DIVERS
 }
 
 enum CatalogPillar {
@@ -451,6 +477,9 @@ model User {
   svLatesCreated             SvLate[]            @relation("SvLateCreator")
   brandLogosCreated          BrandLogo[]         @relation("BrandLogoCreator")
   brandResourcesCreated      BrandResource[]     @relation("BrandResourceCreator")
+  docTemplatesCreated        DocumentTemplate[]        @relation("DocTemplateCreator")
+  docTemplateVersionsCreated DocumentTemplateVersion[] @relation("DocTemplateVersionCreator")
+  templateVariablesCreated   TemplateVariableDef[]     @relation("TemplateVariableCreator")
 
   @@index([status])
   @@map("users")
@@ -844,19 +873,78 @@ model OrgNode {
   @@map("org_nodes")
 }
 
+/// Studio documentaire — gabarit central (un document = un gabarit).
+/// `structureJson` (hérité) garde les métadonnées des gabarits LEGACY_CODE
+/// (slots / ref / generator). Le contenu éditable des gabarits ENGINE_BLOCKS
+/// vit dans `DocumentTemplateVersion.bodyJson` (versionné, publié explicitement).
 model DocumentTemplate {
   id            String       @id @default(cuid())
   type          TemplateType
   code          String       @unique
   name          String
+  description   String?
+  /// @deprecated conservé pour compat affichage — la version réelle est `publishedVersion.version`.
   version       Int          @default(1)
   structureJson Json         @default("{}")
+  generatorKind TemplateGeneratorKind @default(LEGACY_CODE)
+  /// Signature OFF par défaut (règle absolue Studio) — activation explicite par gabarit.
+  signatureEnabled Boolean   @default(false)
   active        Boolean      @default(true)
+  publishedVersionId String? @unique
+  createdById   String?      @db.Uuid
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
+  publishedVersion DocumentTemplateVersion? @relation("PublishedVersion", fields: [publishedVersionId], references: [id], onDelete: SetNull)
+  versions         DocumentTemplateVersion[] @relation("TemplateVersions")
+  createdBy        User?                     @relation("DocTemplateCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
   @@index([type])
+  @@index([generatorKind])
   @@map("document_templates")
+}
+
+/// Studio documentaire — version immuable du contenu d’un gabarit ENGINE_BLOCKS.
+/// `bodyJson` : tableau de blocs (heading/paragraph/highlight/keyValueTable/signatureBlock).
+/// `variablesJson` : catalogue des slugs `{{slug}}` déclarés par ce gabarit (requis/optionnels).
+model DocumentTemplateVersion {
+  id            String                 @id @default(cuid())
+  templateId    String
+  version       Int
+  status        TemplateVersionStatus  @default(DRAFT)
+  bodyJson      Json                   @default("[]")
+  variablesJson Json                   @default("[]")
+  changelog     String?
+  createdById   String?                @db.Uuid
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+
+  template    DocumentTemplate  @relation("TemplateVersions", fields: [templateId], references: [id], onDelete: Cascade)
+  publishedOf DocumentTemplate? @relation("PublishedVersion")
+  createdBy   User?             @relation("DocTemplateVersionCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@unique([templateId, version])
+  @@index([templateId, status])
+  @@map("document_template_versions")
+}
+
+/// Studio documentaire — catalogue central des variables `{{slug}}` disponibles
+/// à l’insertion dans un gabarit ENGINE_BLOCKS. Source de vérité des slugs connus.
+model TemplateVariableDef {
+  id          String                   @id @default(cuid())
+  slug        String                   @unique
+  label       String
+  description String?
+  category    TemplateVariableCategory @default(DIVERS)
+  sampleValue String?
+  createdById String?                  @db.Uuid
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
+
+  createdBy User? @relation("TemplateVariableCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([category])
+  @@map("template_variable_defs")
 }
 
 /// Offre catalogue MSK (5 piliers)

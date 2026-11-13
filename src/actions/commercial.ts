@@ -43,8 +43,8 @@ import { canMutateCrmDeal } from "@/lib/crm/scope";
 import { commercialTeamUserIds, listCommercialRoster } from "@/lib/crm/team";
 import { generateCommercialPdf } from "@/lib/pdf/commercial";
 import { uploadGedObject } from "@/lib/ged/storage";
-import { getSignaturePngBytes } from "@/lib/signatures/resolve";
 import { formatDateFr } from "@/lib/pdf/winansi";
+import { requireActiveTemplate, resolveTemplateSignature } from "@/lib/studio/engine";
 import type { ActionResult } from "@/actions/auth";
 import {
   COM_DOCS_GATED,
@@ -1231,9 +1231,19 @@ export async function generateQuotePdfAction(
     };
   }
 
-  const signature = await getSignaturePngBytes({
+  // Hook Studio documentaire — le gabarit central fait autorité : manquant /
+  // désactivé → erreur explicite (plus de génération « hors registre »).
+  let template: Awaited<ReturnType<typeof requireActiveTemplate>>;
+  try {
+    template = await requireActiveTemplate("devis_standard");
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Gabarit indisponible" };
+  }
+  const signature = await resolveTemplateSignature({
+    template,
     ownerUserId: quote.ownerId,
-  }).catch(() => null);
+    signerLabel: `${quote.owner.firstName} ${quote.owner.lastName}`,
+  });
 
   const lines = quote.lines
     .filter((l) => quote.includeTravel || !l.isTravel)
@@ -1264,10 +1274,8 @@ export async function generateQuotePdfAction(
       lines,
       currency: quote.currency === "EUR" ? "EUR" : "FCFA",
       vatRate: quote.vatEnabled ? quote.vatRate : 0,
-      signaturePng: signature?.bytes,
-      signatureLabel: signature
-        ? `${quote.owner.firstName} ${quote.owner.lastName}`
-        : undefined,
+      signaturePng: signature.bytes,
+      signatureLabel: signature.label,
     });
   } catch (e) {
     return {
@@ -1591,9 +1599,18 @@ export async function generateInvoicePdfAction(
     };
   }
 
-  const signature = await getSignaturePngBytes({
+  // Hook Studio documentaire — même registre central que le devis.
+  let template: Awaited<ReturnType<typeof requireActiveTemplate>>;
+  try {
+    template = await requireActiveTemplate("facture_standard");
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Gabarit indisponible" };
+  }
+  const signature = await resolveTemplateSignature({
+    template,
     ownerUserId: invoice.ownerId,
-  }).catch(() => null);
+    signerLabel: `${invoice.owner.firstName} ${invoice.owner.lastName}`,
+  });
 
   let pdfBytes: Uint8Array;
   try {
@@ -1616,10 +1633,8 @@ export async function generateInvoicePdfAction(
       })),
       currency: invoice.currency === "EUR" ? "EUR" : "FCFA",
       vatRate: invoice.vatEnabled ? invoice.vatRate : 0,
-      signaturePng: signature?.bytes,
-      signatureLabel: signature
-        ? `${invoice.owner.firstName} ${invoice.owner.lastName}`
-        : undefined,
+      signaturePng: signature.bytes,
+      signatureLabel: signature.label,
     });
   } catch (e) {
     return {

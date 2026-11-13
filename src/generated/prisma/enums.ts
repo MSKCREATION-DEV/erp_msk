@@ -154,10 +154,39 @@ export const TemplateType = {
   ATTESTATION_STAGE: 'ATTESTATION_STAGE',
   REGLEMENT_INTERIEUR: 'REGLEMENT_INTERIEUR',
   SOLDE_TOUT_COMPTE: 'SOLDE_TOUT_COMPTE',
-  FICHE_PAIE: 'FICHE_PAIE'
+  FICHE_PAIE: 'FICHE_PAIE',
+  DOCUMENT_LIBRE: 'DOCUMENT_LIBRE'
 } as const
 
 export type TemplateType = (typeof TemplateType)[keyof typeof TemplateType]
+
+
+export const TemplateGeneratorKind = {
+  LEGACY_CODE: 'LEGACY_CODE',
+  ENGINE_BLOCKS: 'ENGINE_BLOCKS'
+} as const
+
+export type TemplateGeneratorKind = (typeof TemplateGeneratorKind)[keyof typeof TemplateGeneratorKind]
+
+
+export const TemplateVersionStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type TemplateVersionStatus = (typeof TemplateVersionStatus)[keyof typeof TemplateVersionStatus]
+
+
+export const TemplateVariableCategory = {
+  CLIENT: 'CLIENT',
+  ENTREPRISE: 'ENTREPRISE',
+  DOCUMENT: 'DOCUMENT',
+  COLLABORATEUR: 'COLLABORATEUR',
+  DIVERS: 'DIVERS'
+} as const
+
+export type TemplateVariableCategory = (typeof TemplateVariableCategory)[keyof typeof TemplateVariableCategory]
 
 
 export const CatalogPillar = {

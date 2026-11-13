@@ -422,6 +422,8 @@ export const ModelName = {
   SignatureAsset: 'SignatureAsset',
   OrgNode: 'OrgNode',
   DocumentTemplate: 'DocumentTemplate',
+  DocumentTemplateVersion: 'DocumentTemplateVersion',
+  TemplateVariableDef: 'TemplateVariableDef',
   CatalogOffer: 'CatalogOffer',
   CatalogOfferVersion: 'CatalogOfferVersion',
   CrmOrganization: 'CrmOrganization',
@@ -520,7 +522,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organizationSettings" | "user" | "group" | "groupMember" | "permission" | "permissionPack" | "packPermission" | "userPack" | "userPermissionOverride" | "auditLog" | "passwordResetRequest" | "documentFolder" | "document" | "documentLink" | "documentAcl" | "brandAsset" | "brandLogo" | "brandColor" | "brandTypography" | "brandFontFile" | "brandResource" | "brandConfiguration" | "signatureAsset" | "orgNode" | "documentTemplate" | "catalogOffer" | "catalogOfferVersion" | "crmOrganization" | "crmContact" | "crmContactChannel" | "crmOpportunity" | "crmAssignmentRequest" | "crmOpportunityOffer" | "crmActivity" | "crmTask" | "crmAppointment" | "appNotification" | "crmScript" | "crmPeriodGoal" | "crmWeeklyReport" | "comNumberSequence" | "comClient" | "comQuote" | "comQuoteLine" | "comContract" | "comContractLine" | "comInvoice" | "comInvoiceLine" | "comInvoiceArrearsRef" | "comCreditNote" | "comPayment" | "comPaymentAllocation" | "comClientEvent" | "comInvoiceReminder" | "comImportBatch" | "comImportAnomaly" | "cptAccount" | "cptJournal" | "cptExercise" | "cptPeriod" | "cptEntry" | "cptEntryLine" | "cptBankAccount" | "cptBankTxn" | "cptFxRate" | "budExercise" | "budLine" | "budPatenteDue" | "rhEmployee" | "rhProfileChangeRequest" | "rhProfileChangeLine" | "rhLeaveTypeConfig" | "rhLeaveMovement" | "rhWorkSchedule" | "rhPublicHoliday" | "rhContract" | "rhLeaveRequest" | "rhAbsence" | "rhTimesheet" | "rhTimesheetLine" | "rhInpsSettings" | "rhPayrollPeriod" | "rhPayslip" | "rhPayslipLine" | "rhInpsLine" | "rhContractTypeRule" | "stkArticle" | "stkMovement" | "stkPurchase" | "stkPurchaseLine" | "patAsset" | "prjProject" | "prjMember" | "prjExpense" | "opsTicket" | "svClient" | "svInvoice" | "svInvoiceLine" | "svPayment" | "svContractMeta" | "svAccount" | "svCashMovement" | "svExpenseInvoice" | "svExpensePayment" | "svStockItem" | "svStockMovement" | "svAbsence" | "svLate"
+    modelProps: "organizationSettings" | "user" | "group" | "groupMember" | "permission" | "permissionPack" | "packPermission" | "userPack" | "userPermissionOverride" | "auditLog" | "passwordResetRequest" | "documentFolder" | "document" | "documentLink" | "documentAcl" | "brandAsset" | "brandLogo" | "brandColor" | "brandTypography" | "brandFontFile" | "brandResource" | "brandConfiguration" | "signatureAsset" | "orgNode" | "documentTemplate" | "documentTemplateVersion" | "templateVariableDef" | "catalogOffer" | "catalogOfferVersion" | "crmOrganization" | "crmContact" | "crmContactChannel" | "crmOpportunity" | "crmAssignmentRequest" | "crmOpportunityOffer" | "crmActivity" | "crmTask" | "crmAppointment" | "appNotification" | "crmScript" | "crmPeriodGoal" | "crmWeeklyReport" | "comNumberSequence" | "comClient" | "comQuote" | "comQuoteLine" | "comContract" | "comContractLine" | "comInvoice" | "comInvoiceLine" | "comInvoiceArrearsRef" | "comCreditNote" | "comPayment" | "comPaymentAllocation" | "comClientEvent" | "comInvoiceReminder" | "comImportBatch" | "comImportAnomaly" | "cptAccount" | "cptJournal" | "cptExercise" | "cptPeriod" | "cptEntry" | "cptEntryLine" | "cptBankAccount" | "cptBankTxn" | "cptFxRate" | "budExercise" | "budLine" | "budPatenteDue" | "rhEmployee" | "rhProfileChangeRequest" | "rhProfileChangeLine" | "rhLeaveTypeConfig" | "rhLeaveMovement" | "rhWorkSchedule" | "rhPublicHoliday" | "rhContract" | "rhLeaveRequest" | "rhAbsence" | "rhTimesheet" | "rhTimesheetLine" | "rhInpsSettings" | "rhPayrollPeriod" | "rhPayslip" | "rhPayslipLine" | "rhInpsLine" | "rhContractTypeRule" | "stkArticle" | "stkMovement" | "stkPurchase" | "stkPurchaseLine" | "patAsset" | "prjProject" | "prjMember" | "prjExpense" | "opsTicket" | "svClient" | "svInvoice" | "svInvoiceLine" | "svPayment" | "svContractMeta" | "svAccount" | "svCashMovement" | "svExpenseInvoice" | "svExpensePayment" | "svStockItem" | "svStockMovement" | "svAbsence" | "svLate"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2371,6 +2373,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DocumentTemplateCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DocumentTemplateCountAggregateOutputType> | number
+        }
+      }
+    }
+    DocumentTemplateVersion: {
+      payload: Prisma.$DocumentTemplateVersionPayload<ExtArgs>
+      fields: Prisma.DocumentTemplateVersionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentTemplateVersionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentTemplateVersionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentTemplateVersionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentTemplateVersionPayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentTemplateVersionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentTemplateVersionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentTemplateVersionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentTemplateVersionPayload>
+        }
+        findMany: {
+          args: Prisma.DocumentTemplateVersionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentTemplateVersionPayload>[]
+        }
+        create: {
+          args: Prisma.DocumentTemplateVersionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentTemplateVersionPayload>
+        }
+        createMany: {
+          args: Prisma.DocumentTemplateVersionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DocumentTemplateVersionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentTemplateVersionPayload>[]
+        }
+        delete: {
+          args: Prisma.DocumentTemplateVersionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentTemplateVersionPayload>
+        }
+        update: {
+          args: Prisma.DocumentTemplateVersionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentTemplateVersionPayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentTemplateVersionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentTemplateVersionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DocumentTemplateVersionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentTemplateVersionPayload>[]
+        }
+        upsert: {
+          args: Prisma.DocumentTemplateVersionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentTemplateVersionPayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentTemplateVersionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocumentTemplateVersion>
+        }
+        groupBy: {
+          args: Prisma.DocumentTemplateVersionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentTemplateVersionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentTemplateVersionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentTemplateVersionCountAggregateOutputType> | number
+        }
+      }
+    }
+    TemplateVariableDef: {
+      payload: Prisma.$TemplateVariableDefPayload<ExtArgs>
+      fields: Prisma.TemplateVariableDefFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TemplateVariableDefFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplateVariableDefPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TemplateVariableDefFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplateVariableDefPayload>
+        }
+        findFirst: {
+          args: Prisma.TemplateVariableDefFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplateVariableDefPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TemplateVariableDefFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplateVariableDefPayload>
+        }
+        findMany: {
+          args: Prisma.TemplateVariableDefFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplateVariableDefPayload>[]
+        }
+        create: {
+          args: Prisma.TemplateVariableDefCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplateVariableDefPayload>
+        }
+        createMany: {
+          args: Prisma.TemplateVariableDefCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TemplateVariableDefCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplateVariableDefPayload>[]
+        }
+        delete: {
+          args: Prisma.TemplateVariableDefDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplateVariableDefPayload>
+        }
+        update: {
+          args: Prisma.TemplateVariableDefUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplateVariableDefPayload>
+        }
+        deleteMany: {
+          args: Prisma.TemplateVariableDefDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TemplateVariableDefUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TemplateVariableDefUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplateVariableDefPayload>[]
+        }
+        upsert: {
+          args: Prisma.TemplateVariableDefUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TemplateVariableDefPayload>
+        }
+        aggregate: {
+          args: Prisma.TemplateVariableDefAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTemplateVariableDef>
+        }
+        groupBy: {
+          args: Prisma.TemplateVariableDefGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TemplateVariableDefGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TemplateVariableDefCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TemplateVariableDefCountAggregateOutputType> | number
         }
       }
     }
@@ -8908,14 +9058,50 @@ export const DocumentTemplateScalarFieldEnum = {
   type: 'type',
   code: 'code',
   name: 'name',
+  description: 'description',
   version: 'version',
   structureJson: 'structureJson',
+  generatorKind: 'generatorKind',
+  signatureEnabled: 'signatureEnabled',
   active: 'active',
+  publishedVersionId: 'publishedVersionId',
+  createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type DocumentTemplateScalarFieldEnum = (typeof DocumentTemplateScalarFieldEnum)[keyof typeof DocumentTemplateScalarFieldEnum]
+
+
+export const DocumentTemplateVersionScalarFieldEnum = {
+  id: 'id',
+  templateId: 'templateId',
+  version: 'version',
+  status: 'status',
+  bodyJson: 'bodyJson',
+  variablesJson: 'variablesJson',
+  changelog: 'changelog',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentTemplateVersionScalarFieldEnum = (typeof DocumentTemplateVersionScalarFieldEnum)[keyof typeof DocumentTemplateVersionScalarFieldEnum]
+
+
+export const TemplateVariableDefScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  label: 'label',
+  description: 'description',
+  category: 'category',
+  sampleValue: 'sampleValue',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TemplateVariableDefScalarFieldEnum = (typeof TemplateVariableDefScalarFieldEnum)[keyof typeof TemplateVariableDefScalarFieldEnum]
 
 
 export const CatalogOfferScalarFieldEnum = {
@@ -10757,6 +10943,48 @@ export type ListEnumTemplateTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'TemplateGeneratorKind'
+ */
+export type EnumTemplateGeneratorKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TemplateGeneratorKind'>
+    
+
+
+/**
+ * Reference to a field of type 'TemplateGeneratorKind[]'
+ */
+export type ListEnumTemplateGeneratorKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TemplateGeneratorKind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'TemplateVersionStatus'
+ */
+export type EnumTemplateVersionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TemplateVersionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'TemplateVersionStatus[]'
+ */
+export type ListEnumTemplateVersionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TemplateVersionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'TemplateVariableCategory'
+ */
+export type EnumTemplateVariableCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TemplateVariableCategory'>
+    
+
+
+/**
+ * Reference to a field of type 'TemplateVariableCategory[]'
+ */
+export type ListEnumTemplateVariableCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TemplateVariableCategory[]'>
+    
+
+
+/**
  * Reference to a field of type 'CatalogPillar'
  */
 export type EnumCatalogPillarFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CatalogPillar'>
@@ -11827,6 +12055,8 @@ export type GlobalOmitConfig = {
   signatureAsset?: Prisma.SignatureAssetOmit
   orgNode?: Prisma.OrgNodeOmit
   documentTemplate?: Prisma.DocumentTemplateOmit
+  documentTemplateVersion?: Prisma.DocumentTemplateVersionOmit
+  templateVariableDef?: Prisma.TemplateVariableDefOmit
   catalogOffer?: Prisma.CatalogOfferOmit
   catalogOfferVersion?: Prisma.CatalogOfferVersionOmit
   crmOrganization?: Prisma.CrmOrganizationOmit

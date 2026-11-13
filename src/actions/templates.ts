@@ -21,8 +21,15 @@ import {
 } from "@/lib/pdf/rh";
 import { uploadGedObject } from "@/lib/ged/storage";
 import { findModelesFolder } from "@/lib/ged/tree";
-import { getSignaturePngBytes } from "@/lib/signatures/resolve";
 import { formatDateFr } from "@/lib/pdf/winansi";
+import {
+  publishedBlocksOf,
+  publishedVariablesOf,
+  resolveTemplateSignature,
+  TemplateNotPublishedError,
+} from "@/lib/studio/engine";
+import { renderBlocksToPdf } from "@/lib/studio/render-blocks";
+import { buildSampleContextForSlugs } from "@/lib/studio/sample-context";
 import type { ActionResult } from "@/actions/auth";
 
 function modelesFolderFor(type: TemplateType): "Devis" | "Factures" | "Contrats" | "RH" {
@@ -49,6 +56,7 @@ export async function generateDemoPdfAction(
   const templateId = String(formData.get("templateId") ?? "");
   const template = await prisma.documentTemplate.findUnique({
     where: { id: templateId },
+    include: { publishedVersion: true },
   });
   if (!template || !template.active) {
     return { ok: false, error: "Gabarit introuvable" };
@@ -58,19 +66,77 @@ export async function generateDemoPdfAction(
   const folder = await findModelesFolder(typeFolder);
   const stamp = Date.now().toString().slice(-6);
 
-  const signature = await getSignaturePngBytes({
+  // Signature centralisée par le moteur Studio — jamais injectée si le
+  // gabarit n’a pas explicitement `signatureEnabled` (règle absolue).
+  const signature = await resolveTemplateSignature({
+    template,
     ownerUserId: actor.id,
-  }).catch((e) => {
-    console.error("[template] signature introuvable", e);
-    return null;
+    signerLabel: `${actor.firstName} ${actor.lastName}`,
   });
 
   const sig = {
-    signaturePng: signature?.bytes,
-    signatureLabel: signature
-      ? `${actor.firstName} ${actor.lastName}`
-      : undefined,
+    signaturePng: signature.bytes,
+    signatureLabel: signature.label,
   };
+
+  // Gabarit Studio (blocs + variables) — rendu par le moteur central, pas de
+  // générateur TypeScript dédié. Données d’exemple pour l’aperçu réel.
+  if (template.generatorKind === "ENGINE_BLOCKS") {
+    if (!template.publishedVersion) {
+      return { ok: false, error: new TemplateNotPublishedError(template.code).message };
+    }
+    try {
+      const blocks = publishedBlocksOf(template);
+      const declaredVars = publishedVariablesOf(template);
+      const sampleContext = await buildSampleContextForSlugs(
+        declaredVars.map((v) => v.slug),
+      );
+      const number = `${template.code.toUpperCase().slice(0, 12)}-DEMO-${stamp}`;
+      const pdfBytes = await renderBlocksToPdf(blocks, {
+        title: template.name,
+        context: sampleContext,
+        strictVariables: false,
+        signatureEnabled: template.signatureEnabled,
+        signaturePng: sig.signaturePng,
+        signatureLabel: sig.signatureLabel,
+      });
+
+      const storagePath = `${folder.path.replace(/^\//, "")}/${number}.pdf`;
+      await uploadGedObject(storagePath, pdfBytes, "application/pdf");
+      const checksum = createHash("sha256").update(pdfBytes).digest("hex");
+      const doc = await prisma.document.create({
+        data: {
+          folderId: folder.id,
+          storagePath,
+          originalName: `${number}.pdf`,
+          mime: "application/pdf",
+          size: pdfBytes.byteLength,
+          checksum,
+          createdById: actor.id,
+          links: { create: { entityType: "template", entityId: template.id } },
+        },
+      });
+      await writeAudit({
+        actorId: actor.id,
+        action: "template.generate_demo",
+        entityType: "document",
+        entityId: doc.id,
+        metadata: { templateId: template.id, number, type: template.type },
+      });
+      revalidatePath("/administration/gabarits");
+      revalidatePath("/ged");
+      return {
+        ok: true,
+        message: `PDF ${number} généré et classé dans ${folder.path}`,
+        documentId: doc.id,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: e instanceof Error ? `Génération PDF : ${e.message}` : "Échec génération PDF",
+      };
+    }
+  }
 
   const demoEmployee = {
     firstName: "Yaye",
