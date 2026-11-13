@@ -28,15 +28,19 @@ Les comptes / orgs / clients de test **ne doivent jamais** rester en prod après
 
 - Seed fixtures CRM : `scripts/seed-crm-test-fixtures.mjs` (`PURGE=1` pour nettoyer).
 - Merge / purge orgs `[TEST]` historique : `scripts/crm-import-yaye-merge.ts`.
-- Purge RH smoke (picker Suivi) : `scripts/ops-cleanup-rh-test-employees.ts` (dry-run par défaut ; `CONFIRM_DELETE=YES` pour apply).
+- Purge RH smoke (picker Suivi) : `scripts/ops-cleanup-rh-test-employees.ts` (dry-run par défaut ; `CONFIRM_DELETE=YES` pour apply smoke ; `CONFIRM_DELETE_YAYE_ORPHAN=YES` pour le doublon Yaye orphelin).
 - Création collabs Marketing (one-shot) : `scripts/ops-create-marketing-collabs.ts` — voir aussi `docs/ops/CREATE-MARKETING-COLLABS.md`.
 
 ## Historique
 
+- **2026-11-13** — purge doublon Yaye Bah orphelin (ordre humain) :
+  - Supprimé `cmv23h1k1006bvbc2il1lkaf2` (`pro.asguiro@gmail.com`, sans `userId`) + cascade : 1 contrat, 2 paies, 2 INPS, 8 DocumentLink, 8 docs GED liés.
+  - **Conservé** : Yaye réelle `cmvfcvjto0007icdejusyzszn` (`y.bah@mskcreation.net` + Auth) ; dossier GED `BAH_YAYE` (slug partagé) ; Test Guiro ; 4 collabs Marketing.
+  - Auth / MDP : **aucun** touché.
 - **2026-11-13** — inventaire picker Suivi absences :
   - **Delete safe** (smoke) : `Review Collab*` + `Awa Traore` + suffixe numérique → script `ops-cleanup-rh-test-employees.ts` + GED `COLLAB05697_REVIEW`.
   - **Conservé** : `Test Guiro` (`test.guiro@test.com`).
-  - **Ambiguïté** : doublon `Yaye Bah` orphelin (`pro.asguiro@gmail.com`, sans `userId`, mais contrats/paie/INPS) — **non supprimé**, à trancher.
+  - Doublon `Yaye Bah` orphelin : **purgé** le même jour (voir entrée ci-dessus).
   - Yaye réelle `y.bah@mskcreation.net` **non touchée**.
 - **2026-11-06** — suppression définitive (Prisma + Auth) :
   - `test.yaye@test.msk.local` `267ac4bb-c3e2-4a94-a324-ed0a1c680c6b`
