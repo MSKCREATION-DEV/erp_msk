@@ -1,0 +1,43 @@
+---
+description: En-tête fiche détail — bandeau identité, montants, actions (absolu ERP MSK)
+alwaysApply: true
+---
+
+# En-tête fiche détail (absolu)
+
+Toute page **détail / fiche** (actuelle ou future) — Suivi, Commercial, CRM, RH, Compta, Admin… — **doit** ouvrir par un bandeau d’identité scannable. Pas de fiche plate (badge + ligne de montants seuls).
+
+## Références à cloner
+
+| Canon | Route |
+|---|---|
+| Charge Suivi | `/suivi/charges/[id]` |
+| Facture client Suivi | `/suivi/factures/[id]` |
+| Client Suivi / Commercial | `/suivi/clients/[id]`, `/commercial/clients/[id]` |
+| Prospect CRM | `/crm/prospects/[id]` |
+
+Composant montants : `DetailHeroAmount` (`src/components/ui/detail-hero-amount.tsx`).
+
+## Structure obligatoire (haut de page)
+
+1. **`PageHeader`** — titre = réf. / n° / nom court ; `backHref` ; description courte FR.
+2. **Bandeau identité** (`Surface` `p-0` + fond `from-msk-blue/6 via-white to-msk-chalk/80`) :
+   - **Qui** : nom principal (h1) + pastille type (Client, Fournisseur, Facture…)
+   - **Statut** : `Badge` métier (+ Retard / alerte si pertinent)
+   - **Métadonnées** scannables : n°, objet, dates / échéance
+   - **Montants / KPI** : grille `DetailHeroAmount` (TTC / Payé / Reste, ou équivalent métier)
+   - **Actions** : barre sous séparateur — CTA principaux visibles (paiement, GED, fiche liée…) ; pas de formulaire toujours ouvert (→ modal / panneau toggle, réf. `list-actions-commercial-ref`)
+3. **Corps** ensuite : sections `Surface` (lignes, paiements, historique…)
+
+## Interdit
+
+- Fiche « plate » : titre + badge + montants en texte inline sans bandeau
+- Actions principales noyées en bas de page ou uniquement dans le `PageHeader`
+- Formulaire de paiement / validation **toujours ouvert** sur la fiche
+- Jargon anglais dans les libellés UI (FR simple MSK)
+- Inventer un autre layout d’en-tête module par module
+
+## Test mental
+
+> En **2 secondes** : qui / quoi / statut / combien / quoi faire ?
+> Si non → **dette design**, realigner avant gate.

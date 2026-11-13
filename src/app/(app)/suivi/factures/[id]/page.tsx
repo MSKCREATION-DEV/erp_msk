@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Building2, CalendarClock, FileText, Hash } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { requireSvPermission } from "@/lib/suivi/access";
@@ -12,14 +12,20 @@ import {
   SV_INVOICE_STATUS_LABEL,
   SV_INVOICE_STATUS_TONE,
 } from "@/lib/suivi/labels";
+import { formatSvDateFr } from "@/lib/suivi/dashboard-stats";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
-import { SvPaymentForm } from "@/components/suivi/payment-form";
-import { SvGedDocActions } from "@/components/suivi/ged-doc-actions";
+import { DetailHeroAmount } from "@/components/ui/detail-hero-amount";
+import { SvInvoiceDetailActions } from "@/components/suivi/invoice-detail-actions";
 
 export const metadata: Metadata = { title: "Facture · Suivi" };
+
+function fmtDate(d: Date | null | undefined): string {
+  if (!d) return "—";
+  return formatSvDateFr(d);
+}
 
 export default async function SuiviFactureDetailPage({
   params,
@@ -50,38 +56,109 @@ export default async function SuiviFactureDetailPage({
   });
   const primaryGed = gedLinks[0]?.document ?? null;
 
+  const now = new Date();
+  const overdue =
+    reste > 0 &&
+    invoice.dueAt != null &&
+    invoice.dueAt.getTime() < now.getTime() &&
+    invoice.status !== "ANNULEE";
+
   return (
     <PageShell>
       <PageHeader
         title={invoice.number ?? "Facture"}
-        description={`${invoice.client.name}${invoice.object ? ` · ${invoice.object}` : ""}`}
+        description="Facture client — détail et encaissement"
         backHref="/suivi/factures"
-        actions={
-          <Link
-            href={`/suivi/clients/${invoice.clientId}`}
-            className="inline-flex h-9 items-center rounded-lg border border-msk-ink/15 bg-white px-3 text-sm font-medium hover:bg-msk-chalk"
-          >
-            Fiche client
-          </Link>
-        }
       />
 
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <Badge tone={SV_INVOICE_STATUS_TONE[invoice.status]}>
-          {SV_INVOICE_STATUS_LABEL[invoice.status]}
-        </Badge>
-        <span className="text-sm text-msk-ink/60">
-          TTC {formatSvXof(invoice.totalTtc)} · Payé{" "}
-          {formatSvXof(invoice.amountPaid)} · Reste{" "}
-          <span className={reste > 0 ? "font-medium text-msk-coral" : ""}>
-            {formatSvXof(reste)}
-          </span>
-        </span>
-      </div>
+      <Surface className="mb-5 overflow-hidden p-0">
+        <div className="border-b border-msk-ink/6 bg-gradient-to-br from-msk-blue/6 via-white to-msk-chalk/80 px-5 py-5 sm:px-6 sm:py-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0 space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-msk-blue/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-caps text-msk-blue">
+                  <FileText className="size-3.5" aria-hidden />
+                  Facture client
+                </span>
+                <Badge tone={SV_INVOICE_STATUS_TONE[invoice.status]}>
+                  {SV_INVOICE_STATUS_LABEL[invoice.status]}
+                </Badge>
+                {overdue ? <Badge tone="coral">Retard</Badge> : null}
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-xl bg-white text-msk-blue shadow-sm ring-1 ring-msk-ink/6">
+                  <Building2 className="size-5" aria-hidden />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-medium uppercase tracking-caps text-msk-ink/40">
+                    Client
+                  </p>
+                  <h1 className="truncate text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
+                    {invoice.client.name}
+                  </h1>
+                  <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-msk-ink/55">
+                    <span className="inline-flex items-center gap-1 tabular-nums">
+                      <Hash className="size-3.5 opacity-50" aria-hidden />
+                      {invoice.number ?? "Sans n°"}
+                    </span>
+                    {invoice.object ? <span>{invoice.object}</span> : null}
+                    {invoice.issuedAt ? (
+                      <span className="inline-flex items-center gap-1">
+                        <CalendarClock
+                          className="size-3.5 opacity-50"
+                          aria-hidden
+                        />
+                        Émise {fmtDate(invoice.issuedAt)}
+                      </span>
+                    ) : null}
+                    {invoice.dueAt ? (
+                      <span
+                        className={`inline-flex items-center gap-1 ${
+                          overdue ? "font-medium text-msk-coral" : ""
+                        }`}
+                      >
+                        <CalendarClock
+                          className="size-3.5 opacity-50"
+                          aria-hidden
+                        />
+                        Échéance {fmtDate(invoice.dueAt)}
+                      </span>
+                    ) : null}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-      {canPay ? <SvPaymentForm invoiceId={invoice.id} reste={reste} /> : null}
+            <div className="grid w-full grid-cols-3 gap-2 sm:w-auto sm:min-w-72">
+              <DetailHeroAmount
+                label="TTC"
+                value={formatSvXof(invoice.totalTtc)}
+              />
+              <DetailHeroAmount
+                label="Payé"
+                value={formatSvXof(invoice.amountPaid)}
+              />
+              <DetailHeroAmount
+                label="Reste"
+                value={formatSvXof(reste)}
+                emphasize={reste > 0}
+              />
+            </div>
+          </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+          <div className="mt-5 border-t border-msk-ink/6 pt-4">
+            <SvInvoiceDetailActions
+              invoiceId={invoice.id}
+              clientId={invoice.clientId}
+              reste={reste}
+              canPay={canPay}
+              ged={primaryGed}
+            />
+          </div>
+        </div>
+      </Surface>
+
+      <div className="grid gap-5 lg:grid-cols-2">
         <Surface className="overflow-hidden p-0">
           <div className="border-b border-msk-ink/6 px-4 py-3">
             <h2 className="text-sm font-semibold">Lignes</h2>
@@ -128,6 +205,11 @@ export default async function SuiviFactureDetailPage({
               </span>
             </div>
           </div>
+          {invoice.notes ? (
+            <p className="border-t border-msk-ink/6 whitespace-pre-wrap px-4 py-3 text-sm text-msk-ink/65">
+              {invoice.notes}
+            </p>
+          ) : null}
         </Surface>
 
         <Surface className="overflow-hidden p-0">
@@ -135,55 +217,33 @@ export default async function SuiviFactureDetailPage({
             <h2 className="text-sm font-semibold">Paiements</h2>
           </div>
           {invoice.payments.length === 0 ? (
-            <p className="p-4 text-sm text-msk-ink/55">Aucun paiement.</p>
+            <p className="p-4 text-sm text-msk-ink/45">Aucun paiement.</p>
           ) : (
             <ul className="divide-y divide-msk-ink/6">
               {invoice.payments.map((p) => (
                 <li
                   key={p.id}
-                  className="flex justify-between px-4 py-3 text-sm"
+                  className="flex items-center justify-between gap-3 px-4 py-3 text-sm"
                 >
-                  <span>
-                    {p.paidAt.toLocaleDateString("fr-FR")}
-                    {p.method ? ` · ${p.method}` : ""}
-                    {p.reference ? ` · ${p.reference}` : ""}
-                  </span>
-                  <span className="tabular-nums font-medium">
-                    {formatSvXof(p.amount)}
-                  </span>
+                  <div>
+                    <p className="font-medium tabular-nums">
+                      {formatSvXof(p.amount)}
+                    </p>
+                    <p className="text-xs text-msk-ink/50">
+                      {fmtDate(p.paidAt)}
+                      {p.method ? ` · ${p.method}` : ""}
+                      {p.reference ? ` · ${p.reference}` : ""}
+                    </p>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
-          {invoice.notes ? (
-            <p className="border-t border-msk-ink/6 px-4 py-3 text-xs text-msk-ink/55">
-              {invoice.notes}
+          {!primaryGed && invoice.sourceDocument ? (
+            <p className="border-t border-msk-ink/6 px-4 py-3 text-xs text-msk-ink/40">
+              Source : {invoice.sourceDocument} (GED non lié — relancer seed)
             </p>
           ) : null}
-          <div className="border-t border-msk-ink/6 px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-caps text-msk-ink/45">
-              Document GED
-            </p>
-            {primaryGed ? (
-              <>
-                <p className="mt-1 text-sm text-msk-ink">
-                  {primaryGed.originalName}
-                </p>
-                <SvGedDocActions
-                  documentId={primaryGed.id}
-                  originalName={primaryGed.originalName}
-                  mime={primaryGed.mime}
-                  size={primaryGed.size}
-                />
-              </>
-            ) : invoice.sourceDocument ? (
-              <p className="mt-1 text-xs text-msk-ink/40">
-                Source : {invoice.sourceDocument} (GED non lié — relancer seed)
-              </p>
-            ) : (
-              <p className="mt-1 text-sm text-msk-ink/55">Aucun document lié.</p>
-            )}
-          </div>
         </Surface>
       </div>
     </PageShell>

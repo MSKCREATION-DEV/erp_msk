@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-13 (libellés FR Suivi, alertes Fournisseur+Type, en-têtes fiches ; voir §8) |
+| Dernière mise à jour | 2026-11-13 (en-tête fiche factures clients Suivi + règle `detail-page-header` ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-13 — Factures clients Suivi : en-tête fiche + règle plateforme
+
+| | |
+|---|---|
+| Quoi | **Fiche** `/suivi/factures/[id]` alignée sur charge : bandeau client + n° + statut + TTC/Payé/Reste + dates ; actions paiement / GED / fiche client (panneau, pas formulaire toujours ouvert). **Règle** `.cursor/rules/detail-page-header.mdc` (`alwaysApply`) + `fiche-detail-ux.mdc` renforcé. |
+| Pourquoi | Fiche facture plate vs canon charge / clients / prospects ; pattern en-tête obligatoire pour toutes les fiches futures |
+| Fichiers | `factures/[id]/page.tsx`, `invoice-detail-actions.tsx`, `payment-form.tsx`, `detail-page-header.mdc`, `fiche-detail-ux.mdc`, ce suivi |
+| Statut doc | Guide hub **`draft`** — en-tête facture à valider terrain |
+| Routes | `/suivi/factures/[id]` |
 
 ### 2026-11-13 — Libellés FR simples + alertes + en-têtes fiches
 

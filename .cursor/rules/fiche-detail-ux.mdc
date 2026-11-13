@@ -1,22 +1,18 @@
+---
+description: Fiches détail — structure sections, densité, composants (complète detail-page-header)
+alwaysApply: true
+---
+
 # Fiches détail — design canon (absolu ERP MSK)
 
-Toute page **détail / fiche** (prospect, utilisateur, profil Mon espace, client, devis, collab RH, contrat…) **doit** suivre le même langage visuel. Références à cloner :
+**En-tête** : règle dédiée [`.cursor/rules/detail-page-header.mdc`](detail-page-header.mdc) — bandeau identité + montants + actions (obligatoire).
 
-| Canon | Route |
-|---|---|
-| Fiche prospect | `/crm/prospects/[id]` |
-| Fiche utilisateur | `/administration/utilisateurs/[id]` (`UserProfileCard`) |
-| Fiche perso (self) | `/espace/profil` |
+Références globales : charge Suivi, facture client Suivi, clients, prospects, `UserProfileCard` admin, `/espace/profil`.
 
-## Structure obligatoire
+## Structure sous l’en-tête
 
-1. **`PageHeader`** — titre = **nom de l’entité** (pas un libellé générique « Fiche… » seul) ; `backHref` + fil d’Ariane ; badges / actions compactes dans `actions`.
-2. **Bandeau identité** — une `Surface` / `Card` :
-   - barre `brand-gradient` (h-1.5) en tête **ou** grille 2 colonnes (méta + panneau latéral chalk) façon prospect ;
-   - avatar / marqueur + nom + badges + contacts en liste plate ;
-   - **stats** en pastilles chalk (3 max) à droite si pertinent.
-3. **Sections** — `Surface` avec titre `text-sm font-semibold` ; contenu en `MetaItem` / liste `flex gap-2.5` / `divide-y` — **plein largeur**, grille `lg:grid-cols-12` si 2 colonnes.
-4. **Historique / secondaires** — section dédiée sous le corps, pas de drawer improvisé.
+1. **Sections** — `Surface` avec titre `text-sm font-semibold` ; contenu en `MetaItem` / liste `flex gap-2.5` / `divide-y` — **plein largeur**, grille `lg:grid-cols-12` ou `lg:grid-cols-2` si 2 colonnes.
+2. **Historique / secondaires** — section dédiée sous le corps, pas de drawer improvisé.
 
 ## Interdit
 
@@ -25,26 +21,26 @@ Toute page **détail / fiche** (prospect, utilisateur, profil Mon espace, client
 - Grappe de boutons (≥ 3 secondaires) sur une ligne d’item → `ActionMenu` (⋯)
 - Lien « Fiche » redondant quand on est déjà sur la fiche
 - Formulaire create inline sur une fiche détail (→ page `/…/edit` ou `/…/nouveau`)
-- Inventer un layout détail différent module par module
+- Inventer un layout détail différent module par module (voir aussi `detail-page-header`)
 
 ## Densité
 
 | Intention | Pattern |
 |---|---|
 | Données secondaires | Liste à plat / `MetaItem` / séparateur léger |
-| Action principale | 1 primaire visible |
+| Action principale | 1 primaire visible (dans le bandeau) |
 | Actions secondaires | `ActionMenu` |
 | Retard / alerte | Texte coral ou `Badge`, pas une carte de plus |
 
 ## Composants
 
-- `PageHeader` · `PageShell` · `Surface` · `Badge`
+- `PageHeader` · `PageShell` · `Surface` · `Badge` · `DetailHeroAmount`
 - `UserProfileCard` (admin) comme modèle bandeau identité
-- `ActionMenu` · `RelanceActions` / `AppointmentActions`
+- `ActionMenu` · `RelanceActions` / `AppointmentActions` · `SvExpenseDetailActions` / `SvInvoiceDetailActions`
 
 ## Test mental
 
-> En retirant le nom du module dans le fil d’Ariane, la page pourrait-elle être une fiche prospect / user MSK ?
+> En retirant le nom du module dans le fil d’Ariane, la page pourrait-elle être une fiche prospect / charge MSK ?
 > Si non → **dette design**, realigner avant gate.
 >
 > Si j’enlève bordure + fond du sous-bloc, l’info reste-t-elle claire ?
