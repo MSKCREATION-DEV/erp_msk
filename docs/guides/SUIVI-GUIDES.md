@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-13 (Suivi : actions ligne listes Absences/Retards/Charges/Factures ; voir §8) |
+| Dernière mise à jour | 2026-11-13 (Absences : justificatif confirm explicite ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-13 — Absences : justificatif = confirm explicite (plus d’auto-envoi)
+
+| | |
+|---|---|
+| Quoi | **Avant** : choisir un fichier (liste/fiche) → upload GED + Justifiée immédiat (« paff »). Create : input natif sur l’étape Absence, statut Justifiée déduit dès le pick. **Après** : dropzone MSK (pattern Charges) → aperçu (nom, taille, type) + « Vérification du fichier… » → bouton **Confirmer l’ajout du justificatif** (et option « Marquer Justifiée ») → seulement alors GED / statut. Create : étape Justificatif dédiée dans le stepper (4 étapes). Liste/fiche : modal dédiée (choisir ≠ envoyer). Pas d’auto-submit stepper. |
+| Pourquoi | Upload ≠ validation métier ; l’utilisateur doit vérifier avant enregistrement |
+| Fichiers | `absence-justificatif-picker.tsx`, `absence-justificatif-modal.tsx`, `absence-form.tsx`, `absence-{list,detail}-actions.tsx`, `actions/suivi/hr.ts`, ce suivi |
+| Statut doc | Guide `sv-hub-naviguer` **`draft`** / parcours Absences **`outdated`→à remettre `to_validate`** — confirmer dropzone + confirm |
+| Routes | `/suivi/absences` · `/nouveau` · `/[id]` · `/[id]/edit` |
 
 ### 2026-11-13 — Suivi : actions ligne listes (pattern Commercial)
 

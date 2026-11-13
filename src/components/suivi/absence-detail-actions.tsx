@@ -1,12 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { FilePlus2, FileText, Pencil } from "lucide-react";
-import {
-  attachSvAbsenceJustificatif,
-  cancelSvAbsence,
-} from "@/actions/suivi/hr";
+import { cancelSvAbsence } from "@/actions/suivi/hr";
+import { AbsenceJustificatifModal } from "@/components/suivi/absence-justificatif-modal";
 import { Button } from "@/components/ui/button";
 import { SvGedDocActions } from "@/components/suivi/ged-doc-actions";
 import { useConfirm } from "@/components/ui/confirm-dialog";
@@ -18,9 +16,6 @@ type GedDoc = {
   mime: string;
   size: number;
 };
-
-const ACCEPT =
-  "application/pdf,image/jpeg,image/png,image/webp";
 
 export function SvAbsenceDetailActions({
   absenceId,
@@ -35,7 +30,7 @@ export function SvAbsenceDetailActions({
 }) {
   const confirm = useConfirm();
   const { run, pending } = usePendingAction();
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [justifOpen, setJustifOpen] = useState(false);
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -65,34 +60,21 @@ export function SvAbsenceDetailActions({
         </div>
       ) : canManage && !cancelled ? (
         <>
-          <input
-            ref={fileRef}
-            type="file"
-            accept={ACCEPT}
-            className="sr-only"
-            tabIndex={-1}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              e.target.value = "";
-              if (!file) return;
-              void run(async () => {
-                const fd = new FormData();
-                fd.set("file", file);
-                const res = await attachSvAbsenceJustificatif(absenceId, fd);
-                if (res && !res.ok) throw new Error(res.error);
-              });
-            }}
-          />
           <Button
             type="button"
             size="sm"
             variant="secondary"
             disabled={pending}
-            onClick={() => fileRef.current?.click()}
+            onClick={() => setJustifOpen(true)}
           >
             <FilePlus2 className="size-4" aria-hidden />
-            {pending ? "Envoi…" : "Ajouter un justificatif"}
+            Ajouter un justificatif
           </Button>
+          <AbsenceJustificatifModal
+            open={justifOpen}
+            onOpenChange={setJustifOpen}
+            absenceId={absenceId}
+          />
         </>
       ) : (
         <span className="inline-flex h-9 items-center rounded-lg border border-dashed border-msk-ink/15 px-3 text-xs text-msk-ink/45">

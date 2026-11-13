@@ -1,21 +1,17 @@
 "use client";
 
-import { useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, FilePlus2, Pencil, XCircle } from "lucide-react";
-import {
-  attachSvAbsenceJustificatif,
-  cancelSvAbsence,
-} from "@/actions/suivi/hr";
+import { cancelSvAbsence } from "@/actions/suivi/hr";
+import { AbsenceJustificatifModal } from "@/components/suivi/absence-justificatif-modal";
 import { ActionMenu } from "@/components/ui/action-menu";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { usePendingAction } from "@/hooks/use-pending-action";
 
-const ACCEPT =
-  "application/pdf,image/jpeg,image/png,image/webp";
-
 /**
  * Actions ligne liste Absences Suivi — pattern Commercial (menu + confirm await).
+ * Justificatif : modal (choisir ≠ envoyer).
  */
 export function SvAbsenceListActions({
   absenceId,
@@ -31,7 +27,7 @@ export function SvAbsenceListActions({
   const router = useRouter();
   const confirm = useConfirm();
   const { run, pending } = usePendingAction();
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [justifOpen, setJustifOpen] = useState(false);
 
   const items = [
     {
@@ -56,7 +52,7 @@ export function SvAbsenceListActions({
                   label: "Ajouter justificatif",
                   icon: <FilePlus2 className="size-3.5" aria-hidden />,
                   disabled: pending,
-                  onSelect: () => fileRef.current?.click(),
+                  onSelect: () => setJustifOpen(true),
                 },
               ]
             : []),
@@ -96,23 +92,10 @@ export function SvAbsenceListActions({
       onKeyDown={(e) => e.stopPropagation()}
     >
       {!hasJustificatif && canManage && !cancelled ? (
-        <input
-          ref={fileRef}
-          type="file"
-          accept={ACCEPT}
-          className="sr-only"
-          tabIndex={-1}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            e.target.value = "";
-            if (!file) return;
-            void run(async () => {
-              const fd = new FormData();
-              fd.set("file", file);
-              const res = await attachSvAbsenceJustificatif(absenceId, fd);
-              if (res && !res.ok) throw new Error(res.error);
-            });
-          }}
+        <AbsenceJustificatifModal
+          open={justifOpen}
+          onOpenChange={setJustifOpen}
+          absenceId={absenceId}
         />
       ) : null}
       <ActionMenu items={items} label="Actions absence" />

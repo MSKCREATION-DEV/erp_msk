@@ -7,6 +7,7 @@ import {
   updateSvAbsence,
   type SvHrActionState,
 } from "@/actions/suivi/hr";
+import { AbsenceJustificatifPicker } from "@/components/suivi/absence-justificatif-picker";
 import { FormShell } from "@/components/ui/form-shell";
 import { FormSteps } from "@/components/ui/form-steps";
 import { FieldLabel } from "@/components/ui/field-label";
@@ -41,6 +42,7 @@ type Initial = {
 const CREATE_STEPS = [
   { id: "collab", label: "Collaborateur" },
   { id: "details", label: "Absence" },
+  { id: "justif", label: "Justificatif" },
   { id: "recap", label: "Confirmation" },
 ] as const;
 
@@ -98,23 +100,21 @@ export function SvAbsenceForm({
   const [status, setStatus] = useState<SvAbsenceStatus>(
     initial?.status ?? "ENREGISTREE",
   );
-  /** Fichier gardé en state : l’input n’est plus monté à l’étape Confirmation. */
+  /** Fichier confirmé (pas seulement choisi) — réinjecté au submit. */
   const [file, setFile] = useState<File | null>(null);
+  /** Create : cocher Justifiée après confirm fichier (défaut oui). */
+  const [wantJustified, setWantJustified] = useState(true);
   const [stepError, setStepError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   const hasGed = Boolean(initial?.hasGed);
   const hasJustificatif = hasGed || Boolean(file);
 
-  function onFilePicked(next: File | null) {
+  function onFileConfirmed(next: File | null) {
     setFile(next);
     setStepError(null);
-    if (
-      next &&
-      mode === "edit" &&
-      (status === "ENREGISTREE" || status === "NON_JUSTIFIEE")
-    ) {
-      setStatus("JUSTIFIEE");
+    if (!next && status === "JUSTIFIEE" && !hasGed) {
+      setStatus("ENREGISTREE");
     }
   }
 
@@ -157,13 +157,14 @@ export function SvAbsenceForm({
         );
         return false;
       }
-      // Statut Justifiée sans doc : validé à l’étape justificatif / récap.
     }
     if (stepId === "justif") {
-      const err = assertJustifiedRequiresGed(status, hasJustificatif);
-      if (err) {
-        setStepError(err);
-        return false;
+      if (mode === "edit") {
+        const err = assertJustifiedRequiresGed(status, hasJustificatif);
+        if (err) {
+          setStepError(err);
+          return false;
+        }
       }
     }
     if (stepId === "recap" && mode === "edit") {
@@ -194,11 +195,14 @@ export function SvAbsenceForm({
     const form = formRef.current;
     if (!form) return;
     const fd = new FormData(form);
-    // Réinjecte le fichier (démonté hors étape upload / Confirmation).
+    // Réinjecte le fichier confirmé (démonté hors étape upload / Confirmation).
     if (file) {
       fd.set("file", file);
     } else {
       fd.delete("file");
+    }
+    if (mode === "create" && file && wantJustified) {
+      fd.set("status", "JUSTIFIEE");
     }
     formAction(fd);
   }
@@ -207,6 +211,11 @@ export function SvAbsenceForm({
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
   }
+
+  const createStatusLabel =
+    file && wantJustified
+      ? SV_ABSENCE_STATUS_LABEL.JUSTIFIEE
+      : SV_ABSENCE_STATUS_LABEL.ENREGISTREE;
 
   return (
     <form
@@ -453,39 +462,10 @@ export function SvAbsenceForm({
                   {!hasJustificatif ? (
                     <p className="mt-2 text-xs text-msk-ink/45">
                       Sans justificatif : Enregistrée ou Non justifiée. Pour
-                      Justifiée, ajoutez un fichier à l’étape suivante puis
+                      Justifiée, confirmez un fichier à l’étape suivante puis
                       revenez sur ce choix.
                     </p>
                   ) : null}
-                </div>
-              ) : null}
-
-              {mode === "create" ? (
-                <div>
-                  <FieldLabel htmlFor="file">
-                    Justificatif (optionnel)
-                  </FieldLabel>
-                  <input
-                    id="file"
-                    type="file"
-                    accept="application/pdf,image/jpeg,image/png,image/webp"
-                    className="mt-1.5 block w-full text-sm text-msk-ink/70 file:mr-3 file:rounded-lg file:border-0 file:bg-msk-blue/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-msk-blue"
-                    disabled={pending}
-                    onChange={(e) => {
-                      onFilePicked(e.target.files?.[0] ?? null);
-                    }}
-                  />
-                  {file ? (
-                    <p className="mt-1.5 text-xs font-medium text-msk-blue">
-                      Fichier prêt : {file.name}
-                    </p>
-                  ) : null}
-                  <p className="mt-1 text-xs text-msk-ink/45">
-                    PDF ou image — max 8 Mo. Avec un fichier, l’absence sera
-                    marquée <span className="font-medium">Justifiée</span>.
-                    Sinon : Enregistrée (non justifiée tant qu’aucun
-                    justificatif).
-                  </p>
                 </div>
               ) : null}
             </div>
@@ -495,64 +475,73 @@ export function SvAbsenceForm({
             <div className="space-y-4">
               <p className="text-sm text-msk-ink/60">
                 {hasGed
-                  ? "Un justificatif est déjà lié. Vous pouvez en ajouter un nouveau."
-                  : "Ajoutez un justificatif (PDF ou image) pour pouvoir marquer l’absence Justifiée."}
+                  ? "Un justificatif est déjà lié. Vous pouvez en confirmer un nouveau."
+                  : mode === "create"
+                    ? "Optionnel — choisissez un fichier, vérifiez-le, puis confirmez. Rien n’est envoyé tant que vous n’enregistrez pas l’absence."
+                    : "Ajoutez un justificatif (PDF ou image) pour pouvoir marquer l’absence Justifiée."}
               </p>
-              <div>
-                <FieldLabel
-                  htmlFor="file"
-                  required={status === "JUSTIFIEE" && !hasGed}
-                >
-                  Justificatif
-                </FieldLabel>
-                <input
-                  id="file"
-                  type="file"
-                  accept="application/pdf,image/jpeg,image/png,image/webp"
-                  className="mt-1.5 block w-full text-sm text-msk-ink/70 file:mr-3 file:rounded-lg file:border-0 file:bg-msk-blue/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-msk-blue"
-                  disabled={pending}
-                  onChange={(e) => {
-                    onFilePicked(e.target.files?.[0] ?? null);
-                  }}
-                />
-                {file ? (
-                  <p className="mt-1.5 text-xs font-medium text-msk-blue">
-                    Fichier prêt : {file.name}
-                  </p>
-                ) : null}
-                <p className="mt-1 text-xs text-msk-ink/45">
-                  PDF ou image — max 8 Mo. Classé en GED Suivi.
-                </p>
-              </div>
-              <div>
-                <FieldLabel>Statut</FieldLabel>
-                <p className="mt-1 text-xs text-msk-ink/50">
-                  {SV_ABSENCE_JUSTIFIED_REQUIRES_GED}.
-                </p>
-                <div className="mt-2">
-                  <ChoiceCards
-                    name="status_justif_ui"
-                    columns={2}
-                    value={status}
-                    onChange={onStatusChange}
+
+              <AbsenceJustificatifPicker
+                confirmedFile={file}
+                onConfirmedChange={onFileConfirmed}
+                disabled={pending}
+                required={
+                  mode === "edit" && status === "JUSTIFIEE" && !hasGed
+                }
+                hint="PDF ou image — max 8 Mo. Confirmez le fichier avant de continuer."
+              />
+
+              {file && mode === "create" ? (
+                <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-msk-ink/8 bg-white px-3 py-2.5">
+                  <input
+                    type="checkbox"
+                    className="mt-0.5 size-4 rounded border-msk-ink/20 text-msk-blue focus:ring-msk-blue/30"
+                    checked={wantJustified}
                     disabled={pending}
-                    options={(
-                      [
-                        "ENREGISTREE",
-                        "JUSTIFIEE",
-                        "NON_JUSTIFIEE",
-                      ] as SvAbsenceStatus[]
-                    ).map((v) => ({
-                      value: v,
-                      label: SV_ABSENCE_STATUS_LABEL[v],
-                      description:
-                        v === "JUSTIFIEE" && !hasJustificatif
-                          ? "Justificatif requis"
-                          : undefined,
-                    }))}
+                    onChange={(e) => setWantJustified(e.target.checked)}
                   />
+                  <span className="text-sm text-msk-ink">
+                    <span className="font-medium">
+                      Marquer l’absence Justifiée
+                    </span>
+                    <span className="mt-0.5 block text-xs text-msk-ink/50">
+                      À l’enregistrement, le fichier sera lié en GED.
+                    </span>
+                  </span>
+                </label>
+              ) : null}
+
+              {mode === "edit" ? (
+                <div>
+                  <FieldLabel>Statut</FieldLabel>
+                  <p className="mt-1 text-xs text-msk-ink/50">
+                    {SV_ABSENCE_JUSTIFIED_REQUIRES_GED}.
+                  </p>
+                  <div className="mt-2">
+                    <ChoiceCards
+                      name="status_justif_ui"
+                      columns={2}
+                      value={status}
+                      onChange={onStatusChange}
+                      disabled={pending}
+                      options={(
+                        [
+                          "ENREGISTREE",
+                          "JUSTIFIEE",
+                          "NON_JUSTIFIEE",
+                        ] as SvAbsenceStatus[]
+                      ).map((v) => ({
+                        value: v,
+                        label: SV_ABSENCE_STATUS_LABEL[v],
+                        description:
+                          v === "JUSTIFIEE" && !hasJustificatif
+                            ? "Justificatif requis"
+                            : undefined,
+                      }))}
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : null}
             </div>
           ) : null}
 
@@ -596,9 +585,7 @@ export function SvAbsenceForm({
                 </dt>
                 <dd className="mt-0.5 font-medium">
                   {mode === "create"
-                    ? file
-                      ? SV_ABSENCE_STATUS_LABEL.JUSTIFIEE
-                      : SV_ABSENCE_STATUS_LABEL.ENREGISTREE
+                    ? createStatusLabel
                     : SV_ABSENCE_STATUS_LABEL[status]}
                 </dd>
               </div>
@@ -608,7 +595,7 @@ export function SvAbsenceForm({
                 </dt>
                 <dd className="mt-0.5 font-medium">
                   {file
-                    ? `Fichier prêt : ${file.name}`
+                    ? `Confirmé : ${file.name}`
                     : hasGed
                       ? "Déjà lié"
                       : "Aucun"}

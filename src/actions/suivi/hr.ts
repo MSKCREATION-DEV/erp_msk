@@ -154,10 +154,8 @@ export async function createSvAbsence(
   const upload = await readOptionalUpload(formData);
   if (!upload.ok) return { ok: false, error: upload.error };
 
-  // Justifiée uniquement après justificatif GED réussi (pas avant l’upload).
-  const requestedStatus = formData.get("status");
-  const wantJustified =
-    requestedStatus === "JUSTIFIEE" || Boolean(upload.bytes);
+  // Justifiée seulement si demandé ET justificatif présent (upload ≠ auto-Justifiée).
+  const wantJustified = formData.get("status") === "JUSTIFIEE";
   if (wantJustified && !upload.bytes) {
     const err = assertJustifiedRequiresGed("JUSTIFIEE", false);
     return { ok: false, error: err ?? "Justificatif obligatoire." };
@@ -191,10 +189,12 @@ export async function createSvAbsence(
         bytes: upload.bytes,
         createdById: user.id,
       });
-      await prisma.svAbsence.update({
-        where: { id },
-        data: { status: "JUSTIFIEE" },
-      });
+      if (wantJustified) {
+        await prisma.svAbsence.update({
+          where: { id },
+          data: { status: "JUSTIFIEE" },
+        });
+      }
     }
   } catch (e) {
     console.error("[createSvAbsence]", e);
@@ -273,14 +273,11 @@ export async function updateSvAbsence(
 
   const willHaveJustificatif =
     Boolean(existing.gedDocumentId) || Boolean(upload.bytes);
-  let nextStatus = parsed.data.status ?? existing.status;
+  const nextStatus = parsed.data.status ?? existing.status;
   if (nextStatus === "ANNULEE") {
     return { ok: false, error: "Utilisez l’action Annuler pour annuler." };
   }
-  // Upload → promotion automatique vers Justifiée si encore Enregistrée / Non justifiée.
-  if (upload.bytes) {
-    nextStatus = statusAfterJustification(nextStatus, true);
-  }
+  // Pas de promotion auto Justifiée à l’upload — le statut choisi dans le formulaire prime.
 
   const justifiedErr = assertJustifiedRequiresGed(
     nextStatus,
@@ -328,7 +325,7 @@ export async function updateSvAbsence(
       });
       await prisma.svAbsence.update({
         where: { id: absenceId },
-        data: { status: statusAfterJustification(nextStatus, true) },
+        data: { status: nextStatus },
       });
     }
   } catch (e) {
@@ -398,6 +395,9 @@ export async function attachSvAbsenceJustificatif(
     return { ok: false, error: "Choisissez un fichier justificatif." };
   }
 
+  // markJustified=0 : lier le doc sans forcer Justifiée (défaut = oui).
+  const markJustified = formData.get("markJustified") !== "0";
+
   try {
     await uploadSvAbsenceBytes({
       absenceId,
@@ -406,12 +406,14 @@ export async function attachSvAbsenceJustificatif(
       bytes: upload.bytes,
       createdById: user.id,
     });
-    await prisma.svAbsence.update({
-      where: { id: absenceId },
-      data: {
-        status: statusAfterJustification(existing.status, true),
-      },
-    });
+    if (markJustified) {
+      await prisma.svAbsence.update({
+        where: { id: absenceId },
+        data: {
+          status: statusAfterJustification(existing.status, true),
+        },
+      });
+    }
   } catch (e) {
     console.error("[attachSvAbsenceJustificatif]", e);
     return { ok: false, error: "Envoi du justificatif impossible." };
