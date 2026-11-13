@@ -37,6 +37,7 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { SvLatesToolbar } from "@/components/suivi/lates-toolbar";
+import { SvLateListActions } from "@/components/suivi/late-list-actions";
 
 const SORT_COLUMNS = {
   collab: (dir: SortDir) => ({ employee: { lastName: dir } }),
@@ -94,9 +95,12 @@ export default async function SuiviRetardsPage({
         </div>
         <Suspense
           key={resultsKey}
-          fallback={<ListTableSkeleton rows={8} cols={5} />}
+          fallback={<ListTableSkeleton rows={8} cols={6} />}
         >
-          <LatesResults searchParams={searchParams} />
+          <LatesResults
+            searchParams={searchParams}
+            canManage={canManage}
+          />
         </Suspense>
       </Surface>
     </PageShell>
@@ -105,8 +109,10 @@ export default async function SuiviRetardsPage({
 
 async function LatesResults({
   searchParams,
+  canManage,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+  canManage: boolean;
 }) {
   const raw = await searchParams;
   const q = (firstParam(raw.q) ?? "").trim();
@@ -241,43 +247,56 @@ async function LatesResults({
                 pathname="/suivi/retards"
                 searchParams={listParams}
               />
+              <PlainTh>
+                <span className="sr-only">Actions</span>
+              </PlainTh>
             </tr>
           </thead>
           <tbody className="divide-y divide-msk-ink/6">
-            {items.map((row) => (
-              <ClickableRowLink
-                key={row.id}
-                href={`/suivi/retards/${row.id}`}
-              >
-                <td className="px-4 py-3">
-                  <p className="font-medium text-msk-ink">
-                    {employeeDisplayName(row.employee)}
-                  </p>
-                  {row.employee.jobTitle ? (
-                    <p className="text-xs text-msk-ink/45">
-                      {row.employee.jobTitle}
+            {items.map((row) => {
+              const cancelled = row.status === "ANNULE";
+              return (
+                <ClickableRowLink
+                  key={row.id}
+                  href={`/suivi/retards/${row.id}`}
+                >
+                  <td className="px-4 py-3">
+                    <p className="font-medium text-msk-ink">
+                      {employeeDisplayName(row.employee)}
                     </p>
-                  ) : null}
-                </td>
-                <td className="px-4 py-3 tabular-nums">
-                  {formatSvDateFr(row.lateDate)}
-                </td>
-                <td className="px-4 py-3 tabular-nums">
-                  {formatSvTimeFr(row.expectedAt)}
-                </td>
-                <td className="px-4 py-3 tabular-nums">
-                  {formatSvTimeFr(row.arrivedAt)}
-                </td>
-                <td className="px-4 py-3 tabular-nums font-medium text-msk-coral">
-                  {row.minutesLate != null ? `${row.minutesLate} min` : "—"}
-                </td>
-                <td className="px-4 py-3">
-                  <Badge tone={SV_LATE_STATUS_TONE[row.status]}>
-                    {SV_LATE_STATUS_LABEL[row.status]}
-                  </Badge>
-                </td>
-              </ClickableRowLink>
-            ))}
+                    {row.employee.jobTitle ? (
+                      <p className="text-xs text-msk-ink/45">
+                        {row.employee.jobTitle}
+                      </p>
+                    ) : null}
+                  </td>
+                  <td className="px-4 py-3 tabular-nums">
+                    {formatSvDateFr(row.lateDate)}
+                  </td>
+                  <td className="px-4 py-3 tabular-nums">
+                    {formatSvTimeFr(row.expectedAt)}
+                  </td>
+                  <td className="px-4 py-3 tabular-nums">
+                    {formatSvTimeFr(row.arrivedAt)}
+                  </td>
+                  <td className="px-4 py-3 tabular-nums font-medium text-msk-coral">
+                    {row.minutesLate != null ? `${row.minutesLate} min` : "—"}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge tone={SV_LATE_STATUS_TONE[row.status]}>
+                      {SV_LATE_STATUS_LABEL[row.status]}
+                    </Badge>
+                  </td>
+                  <td className="px-2 py-3">
+                    <SvLateListActions
+                      lateId={row.id}
+                      canManage={canManage}
+                      cancelled={cancelled}
+                    />
+                  </td>
+                </ClickableRowLink>
+              );
+            })}
           </tbody>
         </table>
       </ListTableScroll>

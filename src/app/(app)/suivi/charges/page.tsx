@@ -45,6 +45,7 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { SvChargesToolbar } from "@/components/suivi/charges-toolbar";
+import { SvExpenseListActions } from "@/components/suivi/expense-list-actions";
 
 const CHARGE_SORT_COLUMNS = {
   number: (dir: SortDir) => ({ number: dir }),
@@ -289,6 +290,9 @@ async function ChargesResults({
                 pathname="/suivi/charges"
                 searchParams={listParams}
               />
+              <PlainTh>
+                <span className="sr-only">Actions</span>
+              </PlainTh>
             </tr>
           </thead>
           <tbody className="divide-y divide-msk-ink/6">
@@ -369,6 +373,13 @@ async function ChargesResults({
                   </td>
                   <td className="px-4 py-3 text-sm tabular-nums text-msk-ink/55">
                     {inv.number ?? "—"}
+                  </td>
+                  <td className="px-2 py-3">
+                    <SvExpenseListActions
+                      expenseId={inv.id}
+                      canPay={canManage}
+                      hasReste={reste > 0}
+                    />
                   </td>
                 </ClickableRowLink>
               );

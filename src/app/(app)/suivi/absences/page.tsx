@@ -38,6 +38,7 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { SvAbsencesToolbar } from "@/components/suivi/absences-toolbar";
+import { SvAbsenceListActions } from "@/components/suivi/absence-list-actions";
 
 const SORT_COLUMNS = {
   collab: (dir: SortDir) => ({
@@ -112,9 +113,12 @@ export default async function SuiviAbsencesPage({
         </div>
         <Suspense
           key={resultsKey}
-          fallback={<ListTableSkeleton rows={8} cols={6} />}
+          fallback={<ListTableSkeleton rows={8} cols={7} />}
         >
-          <AbsencesResults searchParams={searchParams} />
+          <AbsencesResults
+            searchParams={searchParams}
+            canManage={canManage}
+          />
         </Suspense>
       </Surface>
     </PageShell>
@@ -123,8 +127,10 @@ export default async function SuiviAbsencesPage({
 
 async function AbsencesResults({
   searchParams,
+  canManage,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+  canManage: boolean;
 }) {
   const raw = await searchParams;
   const q = (firstParam(raw.q) ?? "").trim();
@@ -197,7 +203,14 @@ async function AbsencesResults({
     orderBy: sort.orderBy as Prisma.SvAbsenceOrderByWithRelationInput[],
     skip: pageSkip(page, pageSize),
     take: pageSize,
-    include: {
+    select: {
+      id: true,
+      reason: true,
+      status: true,
+      startDate: true,
+      endDate: true,
+      deductLeave: true,
+      gedDocumentId: true,
       employee: {
         select: { firstName: true, lastName: true, jobTitle: true },
       },
@@ -270,11 +283,15 @@ async function AbsencesResults({
               />
               <PlainTh>Jours</PlainTh>
               <PlainTh>Congés</PlainTh>
+              <PlainTh>
+                <span className="sr-only">Actions</span>
+              </PlainTh>
             </tr>
           </thead>
           <tbody className="divide-y divide-msk-ink/6">
             {items.map((row) => {
               const days = absenceDaySpan(row.startDate, row.endDate);
+              const cancelled = row.status === "ANNULEE";
               return (
                 <ClickableRowLink
                   key={row.id}
@@ -313,6 +330,14 @@ async function AbsencesResults({
                     ) : (
                       <span className="text-xs text-msk-ink/40">—</span>
                     )}
+                  </td>
+                  <td className="px-2 py-3">
+                    <SvAbsenceListActions
+                      absenceId={row.id}
+                      canManage={canManage}
+                      cancelled={cancelled}
+                      hasJustificatif={Boolean(row.gedDocumentId)}
+                    />
                   </td>
                 </ClickableRowLink>
               );

@@ -38,6 +38,7 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { SvFacturesToolbar } from "@/components/suivi/factures-toolbar";
+import { SvInvoiceListActions } from "@/components/suivi/invoice-list-actions";
 
 const FACTURE_SORT_COLUMNS = {
   number: (dir: SortDir) => ({ number: dir }),
@@ -240,6 +241,9 @@ async function FacturesResults({
                 align="right"
               />
               <PlainTh align="right">Reste</PlainTh>
+              <PlainTh>
+                <span className="sr-only">Actions</span>
+              </PlainTh>
             </tr>
           </thead>
           <tbody className="divide-y divide-msk-ink/6">
@@ -271,6 +275,14 @@ async function FacturesResults({
                     }`}
                   >
                     {formatSvXof(reste)}
+                  </td>
+                  <td className="px-2 py-3">
+                    <SvInvoiceListActions
+                      invoiceId={inv.id}
+                      clientId={inv.client.id}
+                      canPay={canManage}
+                      hasReste={reste > 0}
+                    />
                   </td>
                 </ClickableRowLink>
               );

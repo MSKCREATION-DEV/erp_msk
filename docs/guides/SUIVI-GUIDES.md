@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-13 (Absences : GED justificatif persisté + CTA fiche ; voir §8) |
+| Dernière mise à jour | 2026-11-13 (Suivi : actions ligne listes Absences/Retards/Charges/Factures ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-13 — Suivi : actions ligne listes (pattern Commercial)
+
+| | |
+|---|---|
+| Quoi | Menus ⋯ sur chaque ligne des listes **Absences**, **Retards**, **Charges**, **Factures clients** (alignés Clients/Stocks déjà équipés). Absences : Voir / Modifier / Ajouter justificatif (si pas de GED) / Annuler (danger + `useConfirm` await). Retards : Voir / Modifier / Annuler si applicable. Charges : Voir / Enregistrer un paiement si reste. Factures : Voir / Paiement si reste / Fiche client. Ligne cliquable vers fiche ; `stopPropagation` sur le menu. Pas de textarea ouvert sur la liste. |
+| Pourquoi | `list-actions-commercial-ref` — décisions courtes en modal/confirm ; édition riche → fiche |
+| Fichiers | `components/suivi/{absence,late,expense,invoice}-list-actions.tsx`, pages `suivi/{absences,retards,charges,factures}/page.tsx`, ce suivi |
+| Statut doc | Guide `sv-hub-naviguer` **`draft`** — mentionner menus d’actions sur les listes RH tampon + finance |
+| Routes | `/suivi/absences` · `/suivi/retards` · `/suivi/charges` · `/suivi/factures` |
 
 ### 2026-11-13 — Absences : justificatif GED perdu à la Confirmation + CTA fiche
 
