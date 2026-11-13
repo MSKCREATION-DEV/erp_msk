@@ -373,6 +373,61 @@ export async function cancelSvAbsence(
   return null;
 }
 
+/** Ajoute / remplace le justificatif GED depuis la fiche (upload direct). */
+export async function attachSvAbsenceJustificatif(
+  absenceId: string,
+  formData: FormData,
+): Promise<SvHrActionState> {
+  const user = await requireUser();
+  if (!canManage(user)) {
+    return { ok: false, error: "Permission refusée." };
+  }
+
+  const existing = await prisma.svAbsence.findUnique({
+    where: { id: absenceId },
+    select: { id: true, status: true },
+  });
+  if (!existing) return { ok: false, error: "Absence introuvable." };
+  if (existing.status === "ANNULEE") {
+    return { ok: false, error: "Absence annulée — justificatif impossible." };
+  }
+
+  const upload = await readOptionalUpload(formData);
+  if (!upload.ok) return { ok: false, error: upload.error };
+  if (!upload.bytes) {
+    return { ok: false, error: "Choisissez un fichier justificatif." };
+  }
+
+  try {
+    await uploadSvAbsenceBytes({
+      absenceId,
+      originalName: upload.name,
+      mime: upload.mime,
+      bytes: upload.bytes,
+      createdById: user.id,
+    });
+    await prisma.svAbsence.update({
+      where: { id: absenceId },
+      data: {
+        status: statusAfterJustification(existing.status, true),
+      },
+    });
+  } catch (e) {
+    console.error("[attachSvAbsenceJustificatif]", e);
+    return { ok: false, error: "Envoi du justificatif impossible." };
+  }
+
+  revalidateHr([
+    `/suivi/absences/${absenceId}`,
+    `/suivi/absences/${absenceId}/edit`,
+  ]);
+  await redirectWithFlash(
+    `/suivi/absences/${absenceId}`,
+    "Justificatif ajouté.",
+  );
+  return null;
+}
+
 export async function createSvLate(
   _prev: SvHrActionState,
   formData: FormData,

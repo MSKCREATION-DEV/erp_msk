@@ -57,7 +57,27 @@ export default async function SuiviAbsenceDetailPage({
     entityType: SV_GED_ENTITY.ABSENCE,
     entityId: absence.id,
   });
-  const primaryGed = gedLinks[0]?.document ?? null;
+  const linkedGed = gedLinks[0]?.document ?? null;
+  // Repli si lien DocumentLink manquant mais gedDocumentId renseigné.
+  const fallbackGed =
+    !linkedGed && absence.gedDocumentId
+      ? await prisma.document.findFirst({
+          where: {
+            id: absence.gedDocumentId,
+            status: "ACTIVE",
+            softDeletedAt: null,
+          },
+          select: {
+            id: true,
+            originalName: true,
+            mime: true,
+            size: true,
+            storagePath: true,
+            createdAt: true,
+          },
+        })
+      : null;
+  const primaryGed = linkedGed ?? fallbackGed;
 
   const history = await prisma.svAbsence.findMany({
     where: {

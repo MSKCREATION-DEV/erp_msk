@@ -18,11 +18,14 @@ export function SvGedDocActions({
   originalName,
   mime,
   size = 0,
+  compact = false,
 }: {
   documentId: string;
   originalName: string;
   mime: string;
   size?: number;
+  /** Inline dans une barre d’actions (pas de marge haute). */
+  compact?: boolean;
 }) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const doc: PreviewDoc = {
@@ -33,7 +36,13 @@ export function SvGedDocActions({
   };
 
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-2">
+    <div
+      className={
+        compact
+          ? "inline-flex flex-wrap items-center gap-2"
+          : "mt-2 flex flex-wrap items-center gap-2"
+      }
+    >
       <Button
         type="button"
         variant="secondary"

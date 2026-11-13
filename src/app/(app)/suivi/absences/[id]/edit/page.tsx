@@ -13,12 +13,17 @@ export const metadata: Metadata = { title: "Modifier absence · Suivi" };
 
 export default async function SuiviAbsenceEditPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ focus?: string }>;
 }) {
   const user = await requireUser();
   requireSvPermission(user, "sv.hr.manage");
   const { id } = await params;
+  const sp = await searchParams;
+  const focusJustif =
+    sp.focus === "justificatif" || sp.focus === "justif";
 
   const absence = await prisma.svAbsence.findUnique({
     where: { id },
@@ -53,6 +58,7 @@ export default async function SuiviAbsenceEditPage({
         mode="edit"
         absenceId={absence.id}
         employeeOptions={employeeOptions}
+        initialStep={focusJustif ? 1 : 0}
         initial={{
           employeeId: absence.employeeId,
           reason: absence.reason,

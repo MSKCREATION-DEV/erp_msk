@@ -55,11 +55,14 @@ export function SvAbsenceForm({
   absenceId,
   employeeOptions,
   initial,
+  initialStep = 0,
 }: {
   mode: "create" | "edit";
   absenceId?: string;
   employeeOptions: OptionPickerItem[];
   initial?: Initial;
+  /** Index d’étape (ex. 1 = Justificatif en édition). */
+  initialStep?: number;
 }) {
   const action =
     mode === "create"
@@ -73,7 +76,10 @@ export function SvAbsenceForm({
   useActionStateToast(state);
 
   const steps = mode === "create" ? CREATE_STEPS : EDIT_STEPS;
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(() => {
+    const max = steps.length - 1;
+    return Math.min(Math.max(0, initialStep), max);
+  });
   const [employeeId, setEmployeeId] = useState<string | null>(
     initial?.employeeId ?? null,
   );
@@ -92,12 +98,25 @@ export function SvAbsenceForm({
   const [status, setStatus] = useState<SvAbsenceStatus>(
     initial?.status ?? "ENREGISTREE",
   );
-  const [fileSelected, setFileSelected] = useState(false);
+  /** Fichier gardé en state : l’input n’est plus monté à l’étape Confirmation. */
+  const [file, setFile] = useState<File | null>(null);
   const [stepError, setStepError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   const hasGed = Boolean(initial?.hasGed);
-  const hasJustificatif = hasGed || fileSelected;
+  const hasJustificatif = hasGed || Boolean(file);
+
+  function onFilePicked(next: File | null) {
+    setFile(next);
+    setStepError(null);
+    if (
+      next &&
+      mode === "edit" &&
+      (status === "ENREGISTREE" || status === "NON_JUSTIFIEE")
+    ) {
+      setStatus("JUSTIFIEE");
+    }
+  }
 
   const employeeLabel =
     employeeOptions.find((o) => o.value === employeeId)?.label ?? "—";
@@ -174,7 +193,14 @@ export function SvAbsenceForm({
     }
     const form = formRef.current;
     if (!form) return;
-    formAction(new FormData(form));
+    const fd = new FormData(form);
+    // Réinjecte le fichier (démonté hors étape upload / Confirmation).
+    if (file) {
+      fd.set("file", file);
+    } else {
+      fd.delete("file");
+    }
+    formAction(fd);
   }
 
   /** Bloque tout submit natif (Enter / type-flip Continuer→submit). */
@@ -441,17 +467,19 @@ export function SvAbsenceForm({
                   </FieldLabel>
                   <input
                     id="file"
-                    name="file"
                     type="file"
                     accept="application/pdf,image/jpeg,image/png,image/webp"
                     className="mt-1.5 block w-full text-sm text-msk-ink/70 file:mr-3 file:rounded-lg file:border-0 file:bg-msk-blue/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-msk-blue"
                     disabled={pending}
                     onChange={(e) => {
-                      const ok = Boolean(e.target.files?.[0]);
-                      setFileSelected(ok);
-                      setStepError(null);
+                      onFilePicked(e.target.files?.[0] ?? null);
                     }}
                   />
+                  {file ? (
+                    <p className="mt-1.5 text-xs font-medium text-msk-blue">
+                      Fichier prêt : {file.name}
+                    </p>
+                  ) : null}
                   <p className="mt-1 text-xs text-msk-ink/45">
                     PDF ou image — max 8 Mo. Avec un fichier, l’absence sera
                     marquée <span className="font-medium">Justifiée</span>.
@@ -479,25 +507,19 @@ export function SvAbsenceForm({
                 </FieldLabel>
                 <input
                   id="file"
-                  name="file"
                   type="file"
                   accept="application/pdf,image/jpeg,image/png,image/webp"
                   className="mt-1.5 block w-full text-sm text-msk-ink/70 file:mr-3 file:rounded-lg file:border-0 file:bg-msk-blue/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-msk-blue"
                   disabled={pending}
                   onChange={(e) => {
-                    const ok = Boolean(e.target.files?.[0]);
-                    setFileSelected(ok);
-                    if (ok) {
-                      setStepError(null);
-                      if (
-                        status === "ENREGISTREE" ||
-                        status === "NON_JUSTIFIEE"
-                      ) {
-                        setStatus("JUSTIFIEE");
-                      }
-                    }
+                    onFilePicked(e.target.files?.[0] ?? null);
                   }}
                 />
+                {file ? (
+                  <p className="mt-1.5 text-xs font-medium text-msk-blue">
+                    Fichier prêt : {file.name}
+                  </p>
+                ) : null}
                 <p className="mt-1 text-xs text-msk-ink/45">
                   PDF ou image — max 8 Mo. Classé en GED Suivi.
                 </p>
@@ -574,7 +596,7 @@ export function SvAbsenceForm({
                 </dt>
                 <dd className="mt-0.5 font-medium">
                   {mode === "create"
-                    ? fileSelected
+                    ? file
                       ? SV_ABSENCE_STATUS_LABEL.JUSTIFIEE
                       : SV_ABSENCE_STATUS_LABEL.ENREGISTREE
                     : SV_ABSENCE_STATUS_LABEL[status]}
@@ -585,11 +607,11 @@ export function SvAbsenceForm({
                   Justificatif
                 </dt>
                 <dd className="mt-0.5 font-medium">
-                  {hasJustificatif
-                    ? hasGed && !fileSelected
+                  {file
+                    ? `Fichier prêt : ${file.name}`
+                    : hasGed
                       ? "Déjà lié"
-                      : "Fichier prêt à envoyer"
-                    : "Aucun"}
+                      : "Aucun"}
                 </dd>
               </div>
               {reasonNote ? (

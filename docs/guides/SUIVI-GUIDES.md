@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-13 (Signatures gabarits OFF + Studio documentaire v1 ; voir §8) |
+| Dernière mise à jour | 2026-11-13 (Absences : GED justificatif persisté + CTA fiche ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,26 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-13 — Absences : justificatif GED perdu à la Confirmation + CTA fiche
+
+| | |
+|---|---|
+| Quoi | **Cause** : fichier choisi à l’étape upload démonté à Confirmation → `FormData` sans fichier → pas de DocumentLink / `gedDocumentId` (`JUSTIFICATIF: Non`). **Fix** : `File` en state + réinjection au submit (create/edit). Fiche : Voir/Télécharger si lié ; sinon **Ajouter un justificatif** (upload direct `attachSvAbsenceJustificatif`) ; repli lecture `gedDocumentId` ; edit `?focus=justificatif` conservé. |
+| Pourquoi | Bug prioritaire prod (ex. Djoulde KEITA) — justificatif choisi mais non persisté ; aucun moyen clair d’ajouter après coup |
+| Fichiers | `components/suivi/absence-form.tsx`, `absence-detail-actions.tsx`, `ged-doc-actions.tsx`, `actions/suivi/hr.ts`, pages `[id]` + `[id]/edit`, ce suivi |
+| Statut doc | `to_validate` — create+fichier → fiche Voir/Télécharger ; CTA upload depuis fiche |
+| Routes | `/suivi/absences/[id]` · `/suivi/absences/[id]/edit?focus=justificatif` |
+
+### 2026-11-13 — Studio documentaire : exemplaires, Playground, inventaire `docs/`
+
+| | |
+|---|---|
+| Quoi | Inventaire exhaustif `docs/studio-documentaire/INVENTAIRE-REFERENCES.md`. Moteur `generateSamplePdfForTemplate` + route `GET/POST /api/administration/gabarits/[id]/exemplaire` (exemplaire sans GED). UI : bandeau accueil, cartes entièrement cliquables (`TemplateLibraryCard` : Voir / Télécharger / Playground), iframe exemplaire sur fiche, page `/[id]/playground` (DSL + logo + signature preview pour Studio ; legacy = aperçu + toggle signature). RH solde / fiche paie branchés sur `requireActiveTemplate`. |
+| Pourquoi | Mission Studio : références tracées, exemplaire toujours disponible, Playground éditable pour blocs, intégrations gabarit complètes. |
+| Fichiers | `src/lib/studio/generate-sample-pdf.ts`, `src/app/api/administration/gabarits/[id]/exemplaire/route.ts`, `src/components/admin/template-{library-card,exemplaire-panel,playground-form}.tsx`, pages gabarits + playground, `src/actions/rh.ts`, `src/actions/templates.ts`, `docs/studio-documentaire/*`, ce suivi |
+| Statut doc | INVENTAIRE à jour ; guide `/guides` Studio toujours **`draft`** (à ouvrir) |
+| Dette restante | Migration texte legacy → `ENGINE_BLOCKS` ; gabarits charges fournisseurs ; WYSIWYG Playground ; OCR docs hors dépôt |
 
 ### 2026-11-13 — Signatures gabarits : OFF par défaut (legacy inclus)
 
