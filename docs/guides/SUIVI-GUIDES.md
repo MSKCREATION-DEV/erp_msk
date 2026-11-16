@@ -228,6 +228,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 | Statut doc | Guide `sv-hub-naviguer` **`draft`** — mentionner menus d’actions sur les listes RH tampon + finance |
 | Routes | `/suivi/absences` · `/suivi/retards` · `/suivi/charges` · `/suivi/factures` |
 
+### 2026-11-16 — Studio documentaire : fiche gabarit sticky (Exemplaire)
+
+| | |
+|---|---|
+| Quoi | Fiche `/administration/gabarits/[id]` : layout **2 colonnes** (grille stretch, pas `items-start`). Colonne droite **sticky** (`GabaritsStickyChrome` + `--gabarits-sticky-top`) avec **Exemplaire en miniature**, actions Télécharger / Playground, PDF démo GED, règles courtes / syntaxe Studio. Clic miniature → **modal** plein document (iframe exemplaire à la volée). Corps : contenu publié / slots, historique, démos. Lab `/ui-lab/gabarit-detail-sticky` + script `ui-check-gabarit-detail-sticky.mjs`. |
+| Pourquoi | Section Exemplaire plein largeur trop dominante ; alignement UX Documentero / PDFMonkey / Efalia (preview latérale + agrandir) sous charte MSK. |
+| Fichiers | `administration/gabarits/[id]/page.tsx`, `components/admin/template-{detail-sidebar,exemplaire-preview,exemplaire-panel}.tsx`, `ui-lab/gabarit-detail-sticky/page.tsx`, `scripts/ui-check-gabarit-detail-sticky.mjs`, ce suivi |
+| Statut doc | Guide `/guides` Studio toujours **`draft`** — parcours fiche à refléter (miniature → modal, sticky droite) |
+| Routes | `/administration/gabarits/[id]` · `/administration/gabarits/[id]/playground` |
+| Dette restante | Upload DOCX Documentero non prévu ; preview raster vraie page 1 (au lieu d’iframe scale) |
+
 ### 2026-11-16 — Studio documentaire : listing bibliothèque (inspiration Documentero)
 
 | | |
