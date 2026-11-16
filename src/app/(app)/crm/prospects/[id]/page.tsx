@@ -519,7 +519,7 @@ export default async function CrmProspectDetailPage({
                   <h1 className="truncate text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
                     {deal.organization.name}
                   </h1>
-                  <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-msk-ink/55">
+                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-msk-ink/55">
                     {primaryContactLabel ? (
                       <span className="inline-flex items-center gap-1">
                         <UserRound
@@ -556,7 +556,7 @@ export default async function CrmProspectDetailPage({
                     {deal.source ? (
                       <OriginChip source={deal.source} />
                     ) : null}
-                  </p>
+                  </div>
                 </div>
               </div>
             </div>

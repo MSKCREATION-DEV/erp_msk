@@ -197,6 +197,15 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-16 — Gate Playwright Prospects CRM UX + fix hydration fiche
+
+| | |
+|---|---|
+| Quoi | Script `npm run gate:prospects-crm-ux` (Playwright + magic link) : listing, fiche, hard-delete modal, clients, relances focus, social edit — preuves `tmp/gate-prospects-crm-ux/`. Fix hydration : méta bandeau fiche prospect (`<div>` au lieu de `<p>` autour de `OriginChip`). |
+| Pourquoi | Valider le plan UX sans parcours manuel ; supprimer warning React console sur fiche prospect. |
+| Fichiers | `scripts/gate-prospects-crm-ux.mjs`, `package.json`, `crm/prospects/[id]/page.tsx`, ce suivi |
+| Statut doc | Guides Prospects — gate automatisé ; parcours hard-delete complet à valider sur prospect non converti |
+
 ### 2026-11-16 — Prospects / clients : listing, hard-delete, fiche, réseaux
 
 | | |

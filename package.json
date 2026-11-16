@@ -48,6 +48,7 @@
     "audit:responsive:details": "node scripts/responsive-audit-details.mjs",
     "smoke:rbac": "node scripts/smoke-rbac.mjs",
     "smoke:commercial": "node scripts/smoke-commercial.mjs",
+    "gate:prospects-crm-ux": "node scripts/gate-prospects-crm-ux.mjs",
     "review:superadmin": "node scripts/review-superadmin-flows.mjs",
     "review:pdf": "node scripts/review-pdf-docs.mjs",
     "db:generate": "prisma generate",
