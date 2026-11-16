@@ -151,6 +151,10 @@ export function SvAbsenceForm({
         setStepError("La fin doit être après ou égale au début.");
         return false;
       }
+      if (reason === "AUTRE" && !reasonNote.trim()) {
+        setStepError("Précisez le motif (Autre).");
+        return false;
+      }
       if (deductLeave === "1" && !deductLeaveNote.trim()) {
         setStepError(
           "Note obligatoire si vous cochez « déduire des congés ».",
@@ -381,12 +385,21 @@ export function SvAbsenceForm({
               </div>
 
               <div>
-                <FieldLabel htmlFor="reasonNote">Précision</FieldLabel>
+                <FieldLabel
+                  htmlFor="reasonNote"
+                  required={reason === "AUTRE"}
+                >
+                  {reason === "AUTRE" ? "Préciser le motif" : "Précision"}
+                </FieldLabel>
                 <textarea
                   id="reasonNote"
-                  rows={3}
+                  rows={reason === "AUTRE" ? 3 : 2}
                   className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
-                  placeholder="Ex. arrêt médical, rendez-vous…"
+                  placeholder={
+                    reason === "AUTRE"
+                      ? "Obligatoire — ex. rendez-vous administratif…"
+                      : "Optionnel — ex. arrêt médical…"
+                  }
                   value={reasonNote}
                   onChange={(e) => setReasonNote(e.target.value)}
                   disabled={pending}

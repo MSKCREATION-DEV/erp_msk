@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-13 (Absences : justificatif confirm explicite ; voir §8) |
+| Dernière mise à jour | 2026-11-16 (Stocks code auto + mouvements Payé par / Mode / réf. ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-16 — Stocks : code article auto + mouvements Mode / Payé par / réf.
+
+- **Pourquoi** : code article saisi à la main (collisions) ; Mode / Payé par / Référence en texte libre sur mouvements ; pattern « Autre » absent.
+- **Quoi** :
+  - Code article généré serveur selon famille (PAP-/ECR-/BUR-/ALI-/HYI-/INF-/ENT-/DIV- + séquence) — champ lecture seule ; édition ne réécrit pas le code.
+  - Mouvements trésorerie : Payé par = picker collaborateurs RH ; Mode = ChoiceCards (Espèces, OM, Wave, Virement, Chèque, Autre) ; Référence générée `MV-AAAAMMJJ-NNN`.
+  - Pattern **Autre** : champ précision obligatoire (Mode, catégorie mouvement, motif absence AUTRE) — doc `src/lib/suivi/payment-modes.ts`.
+  - Étendu aux écritures compte + formulaires paiement facture/charge (Mode).
+- **Fichiers** : `lib/suivi/stock.ts`, `cash-reference.ts`, `payment-modes.ts`, `actions/suivi/stock.ts`, `movements.ts`, `accounts.ts`, `stock-item-form`, `movement-form`, `account-entry-form`, `payment-*-form`, `payment-mode-field`, `SUIVI-GUIDES.md`.
+- **Statut doc** : `sv-hub-naviguer` → `draft` / outdated partiel stocks+mouvements à valider terrain.
 
 ### 2026-11-13 — Absences : justificatif = confirm explicite (plus d’auto-envoi)
 

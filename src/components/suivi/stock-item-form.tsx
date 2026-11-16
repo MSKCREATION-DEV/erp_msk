@@ -13,6 +13,7 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
 import { ChoiceCards } from "@/components/ui/choice-cards";
 import {
+  stockFamilyPrefix,
   SV_STOCK_FAMILIES,
   SV_STOCK_UNITS,
   type SvStockUnit,
@@ -56,7 +57,6 @@ export function SvStockItemForm({
   useActionStateToast(state);
 
   const [step, setStep] = useState(0);
-  const [code, setCode] = useState(initial?.code ?? "");
   const [family, setFamily] = useState(initial?.family ?? "Papeterie");
   const [subFamily, setSubFamily] = useState(initial?.subFamily ?? "");
   const [label, setLabel] = useState(initial?.label ?? "");
@@ -71,14 +71,20 @@ export function SvStockItemForm({
   const [stepError, setStepError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
+  const codePrefix = stockFamilyPrefix(family) ?? "—";
+  const codeDisplay =
+    mode === "edit" && initial?.code
+      ? initial.code
+      : `${codePrefix}-… (auto)`;
+
   function validateStep(index: number): boolean {
     if (index === 0) {
-      if (!code.trim() || !label.trim() || !family.trim()) {
-        setStepError("Code, famille et libellé sont obligatoires.");
+      if (!label.trim() || !family.trim()) {
+        setStepError("Famille et libellé sont obligatoires.");
         return false;
       }
-      if (!/^[A-Za-z0-9\-]+$/.test(code.trim())) {
-        setStepError("Code : lettres, chiffres et tirets uniquement.");
+      if (!stockFamilyPrefix(family)) {
+        setStepError("Famille invalide.");
         return false;
       }
     }
@@ -105,7 +111,6 @@ export function SvStockItemForm({
 
   return (
     <form ref={formRef} action={formAction} onSubmit={onSubmit}>
-      <input type="hidden" name="code" value={code} />
       <input type="hidden" name="family" value={family} />
       <input type="hidden" name="subFamily" value={subFamily} />
       <input type="hidden" name="label" value={label} />
@@ -189,17 +194,19 @@ export function SvStockItemForm({
         {step === 0 ? (
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <FieldLabel htmlFor="code-vis" required>
-                Code
-              </FieldLabel>
+              <FieldLabel htmlFor="code-vis">Code</FieldLabel>
               <input
                 id="code-vis"
-                value={code}
-                onChange={(e) => setCode(e.target.value.toUpperCase())}
-                placeholder="Ex. PAP-020"
-                disabled={pending}
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm uppercase"
+                value={codeDisplay}
+                readOnly
+                disabled
+                className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-msk-chalk/60 px-3 py-2 text-sm uppercase text-msk-ink/70"
               />
+              <p className="mt-1 text-xs text-msk-ink/45">
+                {mode === "create"
+                  ? `Généré à l’enregistrement (préfixe ${codePrefix}- + n° unique).`
+                  : "Code figé à la création — non modifiable."}
+              </p>
             </div>
             <div className="sm:col-span-2">
               <FieldLabel htmlFor="label-vis" required>
@@ -313,7 +320,7 @@ export function SvStockItemForm({
             <dl className="mt-3 grid gap-2 sm:grid-cols-2">
               <div>
                 <dt className="text-msk-ink/45">Code</dt>
-                <dd className="font-medium">{code || "—"}</dd>
+                <dd className="font-medium">{codeDisplay}</dd>
               </div>
               <div>
                 <dt className="text-msk-ink/45">Libellé</dt>

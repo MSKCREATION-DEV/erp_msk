@@ -12,10 +12,15 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
 import { ChoiceCards } from "@/components/ui/choice-cards";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
+import { SvPaymentModeField } from "@/components/suivi/payment-mode-field";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 import { SV_ACCOUNT_BASELINE_CATEGORY } from "@/lib/suivi/accounts";
 import { SV_MOVEMENT_CATEGORY_OPTIONS } from "@/lib/suivi/categories";
+import {
+  SV_PAYMENT_MODE_OTHER,
+  type SvPaymentMode,
+} from "@/lib/suivi/payment-modes";
 
 const CATEGORIES = [
   "Banque / virement interne",
@@ -56,6 +61,8 @@ export function SvAccountEntryForm({
   const today = new Date().toISOString().slice(0, 10);
   const [op, setOp] = useState<Op>("CREDIT");
   const [category, setCategory] = useState(CATEGORIES[0]!);
+  const [paymentMode, setPaymentMode] = useState<SvPaymentMode>("Espèces");
+  const [paymentModeOther, setPaymentModeOther] = useState("");
 
   const opOptions = useMemo(() => {
     const base: { value: Op; label: string; description: string }[] = [
@@ -165,25 +172,39 @@ export function SvAccountEntryForm({
                 disabled={pending}
               />
               <input type="hidden" name="category" value={category} />
+              {category === "Autre" ? (
+                <div className="mt-3">
+                  <FieldLabel htmlFor="categoryOther" required>
+                    Préciser la catégorie
+                  </FieldLabel>
+                  <input
+                    id="categoryOther"
+                    name="categoryOther"
+                    placeholder="Ex. Frais divers"
+                    className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+                    disabled={pending}
+                  />
+                </div>
+              ) : null}
             </div>
+            <SvPaymentModeField
+              value={paymentMode}
+              onChange={(v) => {
+                setPaymentMode(v);
+                if (v !== SV_PAYMENT_MODE_OTHER) setPaymentModeOther("");
+              }}
+              otherDetail={paymentModeOther}
+              onOtherDetailChange={setPaymentModeOther}
+              disabled={pending}
+            />
             <div>
-              <FieldLabel htmlFor="paymentMethod">Mode</FieldLabel>
+              <FieldLabel htmlFor="reference-vis">Référence</FieldLabel>
               <input
-                id="paymentMethod"
-                name="paymentMethod"
-                placeholder="Espèces, virement, chèque…"
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-                disabled={pending}
-              />
-            </div>
-            <div>
-              <FieldLabel htmlFor="reference">Référence</FieldLabel>
-              <input
-                id="reference"
-                name="reference"
-                placeholder="N° bordereau…"
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-                disabled={pending}
+                id="reference-vis"
+                value="Générée à l’enregistrement (MV-…)"
+                readOnly
+                disabled
+                className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-msk-chalk/60 px-3 py-2 text-sm text-msk-ink/70"
               />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">

@@ -7,24 +7,34 @@ import { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
-import { nextStockQuantity, SV_STOCK_UNITS } from "@/lib/suivi/stock";
+import {
+  nextStockCodeFromExisting,
+  nextStockQuantity,
+  stockFamilyPrefix,
+  SV_STOCK_FAMILIES,
+  SV_STOCK_UNITS,
+} from "@/lib/suivi/stock";
 
 const unitSchema = z.enum(SV_STOCK_UNITS);
+const familySchema = z.enum(SV_STOCK_FAMILIES);
 
-const itemSchema = z.object({
-  code: z
-    .string()
-    .trim()
-    .min(2, "Code trop court")
-    .max(32)
-    .regex(/^[A-Za-z0-9\-]+$/, "Code : lettres, chiffres, tirets"),
-  family: z.string().trim().min(1, "Famille obligatoire").max(80),
+const itemCreateSchema = z.object({
+  family: familySchema,
   subFamily: z.string().trim().max(80).optional().or(z.literal("")),
   label: z.string().trim().min(1, "Libellé obligatoire").max(200),
   unit: unitSchema,
   location: z.string().trim().max(120).optional().or(z.literal("")),
   observations: z.string().trim().max(2000).optional().or(z.literal("")),
   initialQuantity: z.coerce.number().int().min(0).max(1_000_000).optional(),
+});
+
+const itemUpdateSchema = z.object({
+  family: familySchema,
+  subFamily: z.string().trim().max(80).optional().or(z.literal("")),
+  label: z.string().trim().min(1, "Libellé obligatoire").max(200),
+  unit: unitSchema,
+  location: z.string().trim().max(120).optional().or(z.literal("")),
+  observations: z.string().trim().max(2000).optional().or(z.literal("")),
 });
 
 const stockMoveSchema = z.object({
@@ -55,6 +65,27 @@ function revalidateStock(itemId?: string) {
   }
 }
 
+/**
+ * Alloue un code `PREFIX-NNN` atomiquement (lecture préfixe en tx + retry P2002).
+ */
+async function allocateStockCode(
+  tx: Prisma.TransactionClient,
+  family: z.infer<typeof familySchema>,
+): Promise<string> {
+  const prefix = stockFamilyPrefix(family);
+  if (!prefix) {
+    throw new Error("Famille invalide");
+  }
+  const rows = await tx.svStockItem.findMany({
+    where: { code: { startsWith: `${prefix}-` } },
+    select: { code: true },
+  });
+  return nextStockCodeFromExisting(
+    rows.map((r) => r.code),
+    prefix,
+  );
+}
+
 export async function createSvStockItem(
   _prev: SvStockActionState,
   formData: FormData,
@@ -64,8 +95,7 @@ export async function createSvStockItem(
     return { ok: false, error: "Droit insuffisant." };
   }
 
-  const parsed = itemSchema.safeParse({
-    code: formData.get("code"),
+  const parsed = itemCreateSchema.safeParse({
     family: formData.get("family"),
     subFamily: formData.get("subFamily") ?? "",
     label: formData.get("label"),
@@ -82,24 +112,53 @@ export async function createSvStockItem(
   }
 
   const d = parsed.data;
-  const code = d.code.toUpperCase();
   const qty = d.initialQuantity ?? 0;
   let id: string;
 
   try {
     id = await prisma.$transaction(async (tx) => {
-      const row = await tx.svStockItem.create({
-        data: {
-          code,
-          family: d.family,
-          subFamily: emptyToNull(d.subFamily),
-          label: d.label,
-          unit: d.unit,
-          quantity: qty,
-          location: emptyToNull(d.location),
-          observations: emptyToNull(d.observations),
-        },
-      });
+      let code = await allocateStockCode(tx, d.family);
+      let row: { id: string } | null = null;
+      for (let attempt = 0; attempt < 8; attempt++) {
+        try {
+          row = await tx.svStockItem.create({
+            data: {
+              code,
+              family: d.family,
+              subFamily: emptyToNull(d.subFamily),
+              label: d.label,
+              unit: d.unit,
+              quantity: qty,
+              location: emptyToNull(d.location),
+              observations: emptyToNull(d.observations),
+            },
+          });
+          break;
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === "P2002"
+          ) {
+            const rows = await tx.svStockItem.findMany({
+              where: {
+                code: {
+                  startsWith: `${stockFamilyPrefix(d.family)!}-`,
+                },
+              },
+              select: { code: true },
+            });
+            code = nextStockCodeFromExisting(
+              rows.map((r) => r.code),
+              stockFamilyPrefix(d.family)!,
+            );
+            continue;
+          }
+          throw e;
+        }
+      }
+      if (!row) {
+        throw new Error("Collision code article");
+      }
       if (qty > 0) {
         await tx.svStockMovement.create({
           data: {
@@ -113,13 +172,7 @@ export async function createSvStockItem(
       }
       return row.id;
     });
-  } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError &&
-      e.code === "P2002"
-    ) {
-      return { ok: false, error: "Ce code article existe déjà." };
-    }
+  } catch {
     return { ok: false, error: "Création impossible." };
   }
 
@@ -137,8 +190,7 @@ export async function updateSvStockItem(
     return { ok: false, error: "Droit insuffisant." };
   }
 
-  const parsed = itemSchema.omit({ initialQuantity: true }).safeParse({
-    code: formData.get("code"),
+  const parsed = itemUpdateSchema.safeParse({
     family: formData.get("family"),
     subFamily: formData.get("subFamily") ?? "",
     label: formData.get("label"),
@@ -159,13 +211,12 @@ export async function updateSvStockItem(
   }
 
   const d = parsed.data;
-  const code = d.code.toUpperCase();
 
   try {
     await prisma.svStockItem.update({
       where: { id: itemId },
       data: {
-        code,
+        // Code inchangé (généré à la création — jamais réécrit).
         family: d.family,
         subFamily: emptyToNull(d.subFamily),
         label: d.label,
@@ -174,13 +225,7 @@ export async function updateSvStockItem(
         observations: emptyToNull(d.observations),
       },
     });
-  } catch (e) {
-    if (
-      e instanceof Prisma.PrismaClientKnownRequestError &&
-      e.code === "P2002"
-    ) {
-      return { ok: false, error: "Ce code article existe déjà." };
-    }
+  } catch {
     return { ok: false, error: "Mise à jour impossible." };
   }
 

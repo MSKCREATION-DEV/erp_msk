@@ -7,8 +7,13 @@ import {
 } from "@/actions/suivi/invoices";
 import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
+import { SvPaymentModeField } from "@/components/suivi/payment-mode-field";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
 import { formatSvXof } from "@/lib/suivi/labels";
+import {
+  SV_PAYMENT_MODE_OTHER,
+  type SvPaymentMode,
+} from "@/lib/suivi/payment-modes";
 
 export function SvPaymentForm({
   invoiceId,
@@ -28,6 +33,8 @@ export function SvPaymentForm({
     FormData
   >(recordSvPayment, null);
   useActionStateToast(state);
+  const [paymentMode, setPaymentMode] = useState<SvPaymentMode>("Espèces");
+  const [paymentModeOther, setPaymentModeOther] = useState("");
 
   if (reste <= 0) return null;
 
@@ -93,22 +100,27 @@ export function SvPaymentForm({
             disabled={pending}
           />
         </div>
-        <div>
-          <FieldLabel htmlFor="method">Mode</FieldLabel>
-          <input
-            id="method"
+        <div className="sm:col-span-2 lg:col-span-4">
+          <SvPaymentModeField
             name="method"
-            placeholder="Espèce, Chèque…"
-            className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+            otherName="methodOther"
+            value={paymentMode}
+            onChange={(v) => {
+              setPaymentMode(v);
+              if (v !== SV_PAYMENT_MODE_OTHER) setPaymentModeOther("");
+            }}
+            otherDetail={paymentModeOther}
+            onOtherDetailChange={setPaymentModeOther}
             disabled={pending}
+            columns={3}
           />
         </div>
         <div>
-          <FieldLabel htmlFor="reference">Référence</FieldLabel>
+          <FieldLabel htmlFor="reference">Réf. externe (optionnel)</FieldLabel>
           <input
             id="reference"
             name="reference"
-            placeholder="N° chèque…"
+            placeholder="N° chèque, reçu…"
             className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
             disabled={pending}
           />

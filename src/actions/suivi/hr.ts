@@ -146,6 +146,18 @@ export async function createSvAbsence(
       error: "Précisez une note si vous cochez « déduire des congés ».",
     };
   }
+  if (
+    parsed.data.reason === "AUTRE" &&
+    !emptyToNull(parsed.data.reasonNote)
+  ) {
+    return { ok: false, error: "Précisez le motif (Autre)." };
+  }
+  if (
+    parsed.data.reason === "AUTRE" &&
+    !emptyToNull(parsed.data.reasonNote)
+  ) {
+    return { ok: false, error: "Précisez le motif (Autre)." };
+  }
 
   if (!(await assertActiveEmployee(parsed.data.employeeId))) {
     return { ok: false, error: "Collaborateur introuvable ou inactif." };
@@ -262,6 +274,12 @@ export async function updateSvAbsence(
       ok: false,
       error: "Précisez une note si vous cochez « déduire des congés ».",
     };
+  }
+  if (
+    parsed.data.reason === "AUTRE" &&
+    !emptyToNull(parsed.data.reasonNote)
+  ) {
+    return { ok: false, error: "Précisez le motif (Autre)." };
   }
 
   if (!(await assertActiveEmployee(parsed.data.employeeId))) {

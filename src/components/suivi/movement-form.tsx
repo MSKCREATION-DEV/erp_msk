@@ -10,13 +10,25 @@ import { FormShell } from "@/components/ui/form-shell";
 import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
 import { ChoiceCards } from "@/components/ui/choice-cards";
-import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
+import {
+  OptionPickerSingle,
+  type OptionPickerItem,
+} from "@/components/ui/option-picker-modal";
+import { SvPaymentModeField } from "@/components/suivi/payment-mode-field";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
 import { SV_MOVEMENT_CATEGORY_OPTIONS } from "@/lib/suivi/categories";
+import {
+  SV_PAYMENT_MODE_OTHER,
+  type SvPaymentMode,
+} from "@/lib/suivi/payment-modes";
 
 const CATEGORIES = [...SV_MOVEMENT_CATEGORY_OPTIONS];
 
-export function SvMovementForm() {
+export function SvMovementForm({
+  employeeOptions,
+}: {
+  employeeOptions: OptionPickerItem[];
+}) {
   const [state, formAction, pending] = useActionState<
     SvMovementActionState,
     FormData
@@ -29,9 +41,16 @@ export function SvMovementForm() {
   const [accountKind, setAccountKind] = useState<"PHYSICAL" | "BANK">(
     "PHYSICAL",
   );
+  const [paidById, setPaidById] = useState<string | null>(null);
+  const [paymentMode, setPaymentMode] = useState<SvPaymentMode>("Espèces");
+  const [paymentModeOther, setPaymentModeOther] = useState("");
+
+  const paidByLabel =
+    employeeOptions.find((o) => o.value === paidById)?.label ?? "";
 
   return (
     <form action={formAction}>
+      <input type="hidden" name="paidBy" value={paidByLabel} />
       <FormShell
         footer={
           <div className="flex flex-wrap justify-end gap-3">
@@ -139,24 +158,39 @@ export function SvMovementForm() {
                 disabled={pending}
               />
               <input type="hidden" name="category" value={category} />
+              {category === "Autre" ? (
+                <div className="mt-3">
+                  <FieldLabel htmlFor="categoryOther" required>
+                    Préciser la catégorie
+                  </FieldLabel>
+                  <input
+                    id="categoryOther"
+                    name="categoryOther"
+                    placeholder="Ex. Frais divers terrain"
+                    className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+                    disabled={pending}
+                  />
+                </div>
+              ) : null}
             </div>
-            <div>
-              <FieldLabel htmlFor="paymentMethod">Mode</FieldLabel>
-              <input
-                id="paymentMethod"
-                name="paymentMethod"
-                placeholder="Espèces, OM, Wave…"
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-                disabled={pending}
-              />
-            </div>
-            <div>
-              <FieldLabel htmlFor="paidBy">Payé par</FieldLabel>
-              <input
-                id="paidBy"
-                name="paidBy"
-                placeholder="Ex. Guiro"
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+            <SvPaymentModeField
+              value={paymentMode}
+              onChange={(v) => {
+                setPaymentMode(v);
+                if (v !== SV_PAYMENT_MODE_OTHER) setPaymentModeOther("");
+              }}
+              otherDetail={paymentModeOther}
+              onOtherDetailChange={setPaymentModeOther}
+              disabled={pending}
+            />
+            <div className="sm:col-span-2">
+              <OptionPickerSingle
+                label="Payé par"
+                value={paidById}
+                onChange={setPaidById}
+                options={employeeOptions}
+                placeholder="Choisir un collaborateur…"
+                modalTitle="Payé par"
                 disabled={pending}
               />
             </div>
@@ -190,14 +224,17 @@ export function SvMovementForm() {
               />
             </div>
             <div>
-              <FieldLabel htmlFor="reference">Référence</FieldLabel>
+              <FieldLabel htmlFor="reference-vis">Référence</FieldLabel>
               <input
-                id="reference"
-                name="reference"
-                placeholder="MSK-…"
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-                disabled={pending}
+                id="reference-vis"
+                value="Générée à l’enregistrement (MV-…)"
+                readOnly
+                disabled
+                className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-msk-chalk/60 px-3 py-2 text-sm text-msk-ink/70"
               />
+              <p className="mt-1 text-xs text-msk-ink/45">
+                Format MV-AAAAMMJJ-NNN — unique pour le jour.
+              </p>
             </div>
           </div>
         </div>

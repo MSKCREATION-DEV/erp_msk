@@ -1,5 +1,13 @@
 import assert from "node:assert/strict";
-import { nextStockQuantity } from "./stock";
+import {
+  formatStockCode,
+  nextStockCodeFromExisting,
+  nextStockQuantity,
+  parseStockCodeSeq,
+  stockFamilyPrefix,
+  SV_STOCK_FAMILIES,
+  SV_STOCK_FAMILY_PREFIX,
+} from "./stock";
 import {
   SV_SEED_STOCK,
   SV_SEED_STOCK_EXCEL_ARCHIVED_CODES,
@@ -31,5 +39,19 @@ assert.deepEqual(nextStockQuantity(5, "ADJUST", 2), {
   nextQty: 2,
   moveQty: 3,
 });
+
+assert.equal(stockFamilyPrefix("Papeterie"), "PAP");
+assert.equal(stockFamilyPrefix("Hygiène"), "HYI");
+assert.equal(stockFamilyPrefix("Inconnu"), null);
+assert.equal(SV_STOCK_FAMILIES.length, Object.keys(SV_STOCK_FAMILY_PREFIX).length);
+assert.equal(parseStockCodeSeq("PAP-020", "PAP"), 20);
+assert.equal(parseStockCodeSeq("pap-7", "PAP"), 7);
+assert.equal(parseStockCodeSeq("ECR-010", "PAP"), null);
+assert.equal(formatStockCode("PAP", 20), "PAP-020");
+assert.equal(
+  nextStockCodeFromExisting(["PAP-010", "PAP-020", "ECR-099"], "PAP"),
+  "PAP-021",
+);
+assert.equal(nextStockCodeFromExisting([], "DIV"), "DIV-001");
 
 console.log("✓ stock.test.ts");

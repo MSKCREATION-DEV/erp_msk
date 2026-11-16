@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirectWithFlash } from "@/lib/toast/flash";
 import { nanoid } from "nanoid";
 import { z } from "zod";
+import { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
@@ -11,22 +12,74 @@ import {
   countsTowardBalanceForDate,
   getSvAccountByKind,
 } from "@/lib/suivi/accounts";
+import {
+  nextSvCashMovementReferenceFromExisting,
+  svCashMovementReferencePrefix,
+} from "@/lib/suivi/cash-reference";
+import {
+  isSvPaymentModeOther,
+  resolveSvPaymentMethod,
+  SV_PAYMENT_MODES,
+} from "@/lib/suivi/payment-modes";
 
 export type SvAccountActionState = { ok: false; error: string } | null;
 
-const entrySchema = z.object({
-  accountId: z.string().min(1),
-  op: z.enum(["CREDIT", "DEBIT", "TRANSFER_TO_PHYSICAL", "TRANSFER_TO_BANK"]),
-  amount: z.coerce.number().int().positive().max(100_000_000),
-  movedAt: z.string().min(1),
-  category: z.string().trim().min(1).max(120),
-  description: z.string().trim().max(500).optional().or(z.literal("")),
-  paymentMethod: z.string().trim().max(80).optional().or(z.literal("")),
-  reference: z.string().trim().max(80).optional().or(z.literal("")),
-});
+const paymentModeSchema = z.enum(SV_PAYMENT_MODES);
 
-function emptyToNull(v: string | undefined) {
-  return v && v.length > 0 ? v : null;
+const entrySchema = z
+  .object({
+    accountId: z.string().min(1),
+    op: z.enum(["CREDIT", "DEBIT", "TRANSFER_TO_PHYSICAL", "TRANSFER_TO_BANK"]),
+    amount: z.coerce.number().int().positive().max(100_000_000),
+    movedAt: z.string().min(1),
+    category: z.string().trim().min(1).max(120),
+    categoryOther: z.string().trim().max(120).optional().or(z.literal("")),
+    description: z.string().trim().max(500).optional().or(z.literal("")),
+    paymentMethodMode: paymentModeSchema.optional().or(z.literal("")),
+    paymentMethod: z.string().trim().max(80).optional().or(z.literal("")),
+    paymentMethodOther: z.string().trim().max(80).optional().or(z.literal("")),
+  })
+  .superRefine((data, ctx) => {
+    if (data.category === "Autre" && !(data.categoryOther ?? "").trim()) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Précisez la catégorie (Autre).",
+        path: ["categoryOther"],
+      });
+    }
+    const mode = data.paymentMethodMode;
+    if (
+      mode &&
+      isSvPaymentModeOther(mode) &&
+      !(data.paymentMethodOther ?? "").trim() &&
+      !(data.paymentMethod ?? "").trim()
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Précisez le mode de paiement (Autre).",
+        path: ["paymentMethodOther"],
+      });
+    }
+  });
+
+function emptyToNull(v: string | undefined | null) {
+  const t = v?.trim();
+  return t ? t : null;
+}
+
+async function allocateCashMovementReference(
+  tx: Prisma.TransactionClient,
+  day: Date,
+): Promise<string> {
+  const prefix = svCashMovementReferencePrefix(day);
+  const rows = await tx.svCashMovement.findMany({
+    where: { reference: { startsWith: prefix } },
+    select: { reference: true },
+  });
+  return nextSvCashMovementReferenceFromExisting(
+    rows.map((r) => r.reference),
+    day,
+  );
 }
 
 function revalidateAccounts(accountId: string) {
@@ -54,9 +107,11 @@ export async function createSvAccountEntry(
     amount: formData.get("amount"),
     movedAt: formData.get("movedAt"),
     category: formData.get("category"),
+    categoryOther: formData.get("categoryOther") ?? "",
     description: formData.get("description") ?? "",
+    paymentMethodMode: formData.get("paymentMethodMode") ?? "",
     paymentMethod: formData.get("paymentMethod") ?? "",
-    reference: formData.get("reference") ?? "",
+    paymentMethodOther: formData.get("paymentMethodOther") ?? "",
   });
   if (!parsed.success) {
     return {
@@ -78,26 +133,37 @@ export async function createSvAccountEntry(
   }
 
   const desc = emptyToNull(parsed.data.description);
-  const method = emptyToNull(parsed.data.paymentMethod);
-  const ref = emptyToNull(parsed.data.reference);
-  const category = parsed.data.category;
+  const modeCard = parsed.data.paymentMethodMode || "";
+  const method = emptyToNull(
+    modeCard
+      ? resolveSvPaymentMethod(modeCard, parsed.data.paymentMethodOther) ||
+          parsed.data.paymentMethod
+      : parsed.data.paymentMethod,
+  );
+  const category =
+    parsed.data.category === "Autre"
+      ? parsed.data.categoryOther!.trim()
+      : parsed.data.category;
   const amount = parsed.data.amount;
 
   try {
     if (parsed.data.op === "CREDIT" || parsed.data.op === "DEBIT") {
-      await prisma.svCashMovement.create({
-        data: {
-          accountId: account.id,
-          movedAt,
-          direction: parsed.data.op === "CREDIT" ? "IN" : "OUT",
-          amount,
-          category,
-          description: desc,
-          paymentMethod: method,
-          reference: ref,
-          countsTowardBalance: countsTowardBalanceForDate(movedAt),
-          createdById: user.id,
-        },
+      await prisma.$transaction(async (tx) => {
+        const reference = await allocateCashMovementReference(tx, movedAt);
+        await tx.svCashMovement.create({
+          data: {
+            accountId: account.id,
+            movedAt,
+            direction: parsed.data.op === "CREDIT" ? "IN" : "OUT",
+            amount,
+            category,
+            description: desc,
+            paymentMethod: method,
+            reference,
+            countsTowardBalance: countsTowardBalanceForDate(movedAt),
+            createdById: user.id,
+          },
+        });
       });
     } else {
       const physical = await getSvAccountByKind("PHYSICAL", prisma);
@@ -130,8 +196,9 @@ export async function createSvAccountEntry(
           : "Versement caisse → banque");
 
       const towardBalance = countsTowardBalanceForDate(movedAt);
-      await prisma.$transaction([
-        prisma.svCashMovement.create({
+      await prisma.$transaction(async (tx) => {
+        const reference = await allocateCashMovementReference(tx, movedAt);
+        await tx.svCashMovement.create({
           data: {
             accountId: fromId,
             transferId,
@@ -141,12 +208,12 @@ export async function createSvAccountEntry(
             category: transferCat,
             description: transferDesc,
             paymentMethod: method ?? (toPhysical ? "Retrait" : "Versement"),
-            reference: ref,
+            reference,
             countsTowardBalance: towardBalance,
             createdById: user.id,
           },
-        }),
-        prisma.svCashMovement.create({
+        });
+        await tx.svCashMovement.create({
           data: {
             accountId: toId,
             transferId,
@@ -156,12 +223,12 @@ export async function createSvAccountEntry(
             category: transferCat,
             description: transferDesc,
             paymentMethod: method ?? (toPhysical ? "Retrait" : "Versement"),
-            reference: ref,
+            reference: `${reference}-R`,
             countsTowardBalance: towardBalance,
             createdById: user.id,
           },
-        }),
-      ]);
+        });
+      });
     }
   } catch {
     return { ok: false, error: "Enregistrement impossible." };
