@@ -16,7 +16,7 @@ import { Surface } from "@/components/ui/surface";
 import { KpiGrid } from "@/components/ui/kpi-card";
 import { EspaceIdentityHero } from "@/components/espace/espace-identity-hero";
 import { prisma } from "@/lib/prisma";
-import { signedGedUrl } from "@/lib/ged/storage";
+import { signedAvatarUrlFromDocumentId } from "@/lib/rh/avatar-url";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Mon espace" };
@@ -64,20 +64,9 @@ export default async function EspaceHubPage() {
     },
   });
 
-  let avatarUrl: string | null = null;
-  if (empFull?.avatarDocumentId) {
-    const doc = await prisma.document.findUnique({
-      where: { id: empFull.avatarDocumentId },
-      select: { storagePath: true },
-    });
-    if (doc?.storagePath) {
-      try {
-        avatarUrl = await signedGedUrl(doc.storagePath, 3600);
-      } catch {
-        avatarUrl = null;
-      }
-    }
-  }
+  const avatarUrl = await signedAvatarUrlFromDocumentId(
+    empFull?.avatarDocumentId,
+  );
 
   const hireLabel = employee.hireDate
     ? `Arrivée ${employee.hireDate.toLocaleDateString("fr-FR", {

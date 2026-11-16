@@ -21,6 +21,7 @@ export function UserProfileCard({
   groupCodes,
   packCodes,
   canEdit,
+  avatarUrl = null,
 }: {
   userId: string;
   firstName: string;
@@ -33,6 +34,8 @@ export function UserProfileCard({
   groupCodes: string[];
   packCodes: string[];
   canEdit?: boolean;
+  /** Photo profil GED (même source que organigramme / sidebar / espace). */
+  avatarUrl?: string | null;
 }) {
   return (
     <Card className="overflow-hidden">
@@ -43,6 +46,7 @@ export function UserProfileCard({
             <UserAvatar
               firstName={firstName}
               lastName={lastName}
+              src={avatarUrl}
               size="xl"
               className="ring-2 ring-white shadow-md shadow-msk-ink/10"
             />

@@ -1,4 +1,5 @@
 import { requireUser } from "@/lib/auth/session";
+import { resolveAvatarUrlForUserId } from "@/lib/rh/avatar-url";
 import { Sidebar } from "@/components/app/sidebar";
 import { MobileNav } from "@/components/app/mobile-nav";
 
@@ -8,9 +9,10 @@ import { MobileNav } from "@/components/app/mobile-nav";
  */
 export async function MobileNavHost() {
   const user = await requireUser();
+  const avatarUrl = await resolveAvatarUrlForUserId(user.id);
   return (
     <MobileNav>
-      <Sidebar user={user} variant="drawer" />
+      <Sidebar user={user} avatarUrl={avatarUrl} variant="drawer" />
     </MobileNav>
   );
 }

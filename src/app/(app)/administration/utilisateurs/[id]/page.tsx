@@ -20,6 +20,7 @@ import { EffectiveAccessCard } from "@/components/admin/effective-access-card";
 import { UserAccessForm } from "@/components/admin/user-access-form";
 import { UserSecurityCard } from "@/components/admin/user-security-card";
 import { UserProfileCard } from "@/components/admin/user-profile-card";
+import { resolveAvatarUrlForUserId } from "@/lib/rh/avatar-url";
 
 export const metadata: Metadata = {
   title: "Fiche utilisateur",
@@ -85,6 +86,7 @@ export default async function UserDetailPage({
   if (!target) notFound();
 
   const resolved = await resolveUserPermissions(target.id);
+  const avatarUrl = await resolveAvatarUrlForUserId(target.id);
   const permissionCount = target.isSuperAdmin
     ? await prisma.permission.count()
     : (resolved?.permissions.size ?? 0);
@@ -142,6 +144,7 @@ export default async function UserDetailPage({
         groupCodes={resolved?.groupCodes ?? []}
         packCodes={resolved?.packCodes ?? []}
         canEdit={hasPermission(actor, "users.edit_profile_any")}
+        avatarUrl={avatarUrl}
       />
 
       {hasPermission(actor, "users.reset_password") &&

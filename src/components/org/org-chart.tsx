@@ -337,22 +337,26 @@ export function OrgChart({ nodes }: { nodes: OrgChartNode[] }) {
             </div>
           ) : null}
 
-          {/* Descente Guiro → Issiaka · Madina */}
+          {/* Descente Guiro → Espoir */}
           {l2.length > 0 && l3.length > 0 ? (
             <div className="px-[8%]">
               <FanUp count={l3.length} />
             </div>
           ) : null}
 
-          {/* L3 — Issiaka · Madina */}
-          {l3.length > 0 ? (
+          {/* L3 — Espoir (centré) */}
+          {l3.length === 1 ? (
+            <div className="flex justify-center">
+              <PersonNode node={l3[0]!} size="md" />
+            </div>
+          ) : l3.length > 1 ? (
             <PeopleRow people={l3} size="md" className="px-[8%]" />
           ) : null}
 
-          {/* Issiaka·Madina liés → descente → 4 collaborateurs */}
-          {l3.length >= 2 && l4.length > 0 ? (
+          {/* Espoir → Yaye · Fatimatou · Djouldé · Eric */}
+          {l3.length > 0 && l4.length > 0 ? (
             <div className="px-[2%]">
-              <PairToFan fromCount={l3.length} toCount={l4.length} />
+              <FanUp count={l4.length} />
             </div>
           ) : null}
 

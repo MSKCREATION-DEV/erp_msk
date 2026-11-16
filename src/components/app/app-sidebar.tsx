@@ -1,4 +1,5 @@
 import { requireUser } from "@/lib/auth/session";
+import { resolveAvatarUrlForUserId } from "@/lib/rh/avatar-url";
 import { Sidebar } from "@/components/app/sidebar";
 
 /**
@@ -8,5 +9,6 @@ import { Sidebar } from "@/components/app/sidebar";
  */
 export async function AppSidebar() {
   const user = await requireUser();
-  return <Sidebar user={user} />;
+  const avatarUrl = await resolveAvatarUrlForUserId(user.id);
+  return <Sidebar user={user} avatarUrl={avatarUrl} />;
 }

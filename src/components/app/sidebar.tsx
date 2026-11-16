@@ -23,10 +23,13 @@ function canSeeNavItem(
 
 export function Sidebar({
   user,
+  avatarUrl = null,
   variant = "desktop",
   className,
 }: {
   user: SessionUser;
+  /** Photo profil GED (même source que organigramme / espace). */
+  avatarUrl?: string | null;
   /** `drawer` = pleine largeur dans le panneau mobile. */
   variant?: "desktop" | "drawer";
   className?: string;
@@ -63,6 +66,7 @@ export function Sidebar({
           <UserAvatar
             firstName={user.firstName}
             lastName={user.lastName}
+            src={avatarUrl}
             size="md"
           />
           <div className="min-w-0 flex-1">

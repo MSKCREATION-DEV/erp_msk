@@ -33,7 +33,7 @@ import { ProfileEditor } from "@/components/espace/profile-editor";
 import { AvatarUpload } from "@/components/espace/avatar-upload";
 import { AvatarPhotoViewer } from "@/components/espace/avatar-photo-viewer";
 import { RequestHistoryCard } from "@/components/espace/request-history-card";
-import { signedGedUrl } from "@/lib/ged/storage";
+import { signedAvatarUrlFromDocumentId } from "@/lib/rh/avatar-url";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Ma fiche personnelle" };
@@ -169,20 +169,9 @@ export default async function EspaceProfilPage() {
     `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`.toUpperCase();
   const fullName = `${employee.firstName} ${employee.lastName}`;
 
-  let avatarUrl: string | null = null;
-  if (employee.avatarDocumentId) {
-    const doc = await prisma.document.findUnique({
-      where: { id: employee.avatarDocumentId },
-      select: { storagePath: true },
-    });
-    if (doc?.storagePath) {
-      try {
-        avatarUrl = await signedGedUrl(doc.storagePath, 3600);
-      } catch {
-        avatarUrl = null;
-      }
-    }
-  }
+  const avatarUrl = await signedAvatarUrlFromDocumentId(
+    employee.avatarDocumentId,
+  );
 
   const hireLabel = employee.hireDate
     ? employee.hireDate.toLocaleDateString("fr-FR")

@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-16 (Stocks code auto + mouvements Payé par / Mode / réf. ; voir §8) |
+| Dernière mise à jour | 2026-11-16 (Organigramme Espoir/Eric + avatar GED unique ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -227,6 +227,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 | Fichiers | `components/suivi/{absence,late,expense,invoice}-list-actions.tsx`, pages `suivi/{absences,retards,charges,factures}/page.tsx`, ce suivi |
 | Statut doc | Guide `sv-hub-naviguer` **`draft`** — mentionner menus d’actions sur les listes RH tampon + finance |
 | Routes | `/suivi/absences` · `/suivi/retards` · `/suivi/charges` · `/suivi/factures` |
+
+### 2026-11-16 — Organigramme : Espoir sous Guiro + Eric GOLO + avatar unique GED
+
+| | |
+|---|---|
+| Quoi | Hiérarchie : retrait Issiaka / Madina ; Espoir sous Guiro ; Yaye / Fatimatou / Djouldé / **Eric Wilfried Golo** sous Espoir. Photo Eric dans `public/team`. Source photo unique = `RhEmployee.avatarDocumentId` (GED) affichée organigramme + sidebar + espace + fiche admin ; fallback `OrgNode.photoPath`. Sync bootstrap seed / `scripts/ops-sync-team-avatars.ts`. |
+| Pourquoi | Départs collabs + arrivée Eric ; une photo de profil partout (changement espace → répercussion org / sidebar). |
+| Fichiers | `lib/org/team.ts`, `org-chart.tsx`, `organisation/page.tsx`, `lib/rh/avatar-*.ts`, `upsert-avatar.ts`, `sync-team-avatars.ts`, sidebar / espace / admin, `seed.ts`, ce suivi |
+| Statut doc | Module organisation toujours **stub** — structure à refléter si guide ouvert |
+| Routes | `/organisation` · `/espace/profil` |
+| Dette restante | Archiver comptes Issiaka/Madina (hors scope chart) ; guide organisation non rédigé |
 
 ### 2026-11-16 — Studio documentaire : fiche gabarit sticky (Exemplaire)
 

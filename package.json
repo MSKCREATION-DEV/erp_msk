@@ -11,6 +11,7 @@
     "test:email": "tsx scripts/test-email.ts",
     "test:email:invite": "EMAIL_PREVIEW=invite tsx scripts/test-email.ts",
     "health:env": "node scripts/health-env.mjs",
+    "test:org": "tsx src/lib/org/team.test.ts",
     "test:nav": "tsx src/lib/nav.test.ts",
     "test:guides": "tsx src/lib/guides/guides.test.ts",
     "guides:shots": "node scripts/capture-guides-shots.mjs",

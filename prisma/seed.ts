@@ -707,6 +707,19 @@ async function main() {
   console.log("→ Utilisateurs équipe…");
   const { seedTeamUsers } = await import("./seed-team-users");
   await seedTeamUsers(prisma);
+  console.log("→ Avatars organigramme → GED…");
+  try {
+    const { syncTeamAvatarsFromStaticPhotos } = await import(
+      "../src/lib/org/sync-team-avatars"
+    );
+    const sync = await syncTeamAvatarsFromStaticPhotos();
+    console.log(
+      `✓ Avatars sync (upload=${sync.uploaded}, skip=${sync.skipped}, missing=${sync.missing.length})`,
+    );
+    for (const m of sync.missing) console.log(`  · ${m}`);
+  } catch (e) {
+    console.warn("⚠ Sync avatars organigramme:", e);
+  }
   console.log("→ Stocks…");
   const { seedPhase7aStocks } = await import("./seed-stocks");
   await seedPhase7aStocks(prisma);

@@ -1,13 +1,13 @@
 /**
  * Équipe MSK — source vérité seed + organigramme.
- * Photos : `public/team/*.jpg`
+ * Photos : `public/team/*.jpg` (fallback UI) ; source runtime = avatar GED RH.
  * E-mails : `initiale.nom@mskcreation.net`
- * Hiérarchie slide 05 (Assetou retiré) :
- *   L1 Mathieu · Isdalinia
- *   L2 Andile · Ismaël
- *   L3 Guiro
- *   L4 Issiaka · Madina
- *   L5 Yaye · Fatimatou · Espoir · Djouldé
+ * Hiérarchie (nov. 2026) :
+ *   L0 Mathieu · Isdalinia
+ *   L1 Andile · Ismaël
+ *   L2 Guiro
+ *   L3 Espoir
+ *   L4 Yaye · Fatimatou · Djouldé · Eric
  */
 export type TeamMemberDef = {
   key: string;
@@ -25,8 +25,8 @@ export const ORG_LEVEL_KEYS: readonly (readonly string[])[] = [
   ["mathieu", "isdalinia"],
   ["andile", "ismael"],
   ["guiro"],
-  ["issiaka", "madina"],
-  ["yaye", "fatimatou", "espoir", "djoulede"],
+  ["espoir"],
+  ["yaye", "fatimatou", "djoulede", "eric"],
 ] as const;
 
 /** `a.guiro@mskcreation.net` ← première lettre du prénom + nom de famille. */
@@ -102,23 +102,13 @@ export const MSK_TEAM: TeamMemberDef[] = [
     level: 2,
   },
   {
-    key: "issiaka",
-    fullName: "Issiaka Yacouba Traoré",
-    title: "Responsable Administratif & Financier",
-    email: mskEmail("Issiaka Yacouba Traoré"),
-    photoPath: "/team/issiaka-yacouba-traore.jpg",
+    key: "espoir",
+    fullName: "Espoir Lidaou Awesso",
+    title: "Monteur Vidéo",
+    email: mskEmail("Espoir Lidaou Awesso"),
+    photoPath: "/team/lidaou-espoir-awesso.jpg",
     parentKey: "guiro",
     sortOrder: 30,
-    level: 3,
-  },
-  {
-    key: "madina",
-    fullName: "Madina Tall",
-    title: "Assistante Marketing",
-    email: mskEmail("Madina Tall"),
-    photoPath: "/team/madina-tall.jpg",
-    parentKey: "guiro",
-    sortOrder: 31,
     level: 3,
   },
   {
@@ -127,7 +117,7 @@ export const MSK_TEAM: TeamMemberDef[] = [
     title: "Stagiaire Commerciale",
     email: mskEmail("Yaye Bah"),
     photoPath: "/team/yaye-bah.jpg",
-    parentKey: "issiaka",
+    parentKey: "espoir",
     sortOrder: 40,
     level: 4,
   },
@@ -137,18 +127,8 @@ export const MSK_TEAM: TeamMemberDef[] = [
     title: "Graphiste",
     email: mskEmail("Fatimatou Diallo"),
     photoPath: "/team/fatimatou-diallo.jpg",
-    parentKey: "madina",
+    parentKey: "espoir",
     sortOrder: 41,
-    level: 4,
-  },
-  {
-    key: "espoir",
-    fullName: "Espoir Lidaou Awesso",
-    title: "Monteur Vidéo",
-    email: mskEmail("Espoir Lidaou Awesso"),
-    photoPath: "/team/lidaou-espoir-awesso.jpg",
-    parentKey: "madina",
-    sortOrder: 42,
     level: 4,
   },
   {
@@ -157,7 +137,17 @@ export const MSK_TEAM: TeamMemberDef[] = [
     title: "Stagiaire Community",
     email: mskEmail("Djouldé Keita"),
     photoPath: "/team/djoulede-keita.jpg",
-    parentKey: "issiaka",
+    parentKey: "espoir",
+    sortOrder: 42,
+    level: 4,
+  },
+  {
+    key: "eric",
+    fullName: "Eric Wilfried Golo",
+    title: "Monteur Vidéo",
+    email: mskEmail("Eric Wilfried Golo"),
+    photoPath: "/team/eric-wilfried-golo.jpg",
+    parentKey: "espoir",
     sortOrder: 43,
     level: 4,
   },
