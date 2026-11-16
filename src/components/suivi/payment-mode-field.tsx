@@ -56,7 +56,7 @@ export function SvPaymentModeField({
       <input type="hidden" name={`${name}Mode`} value={value} />
       <input type="hidden" name={name} value={stored} />
       {showOther ? (
-        <div className="mt-3">
+        <div key={`${otherName}-slot`} className="mt-3">
           <FieldLabel htmlFor={`${otherName}-vis`} required={required}>
             Préciser le mode
           </FieldLabel>

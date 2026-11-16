@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { ChoiceCards } from "@/components/ui/choice-cards";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import { SvPaymentModeField } from "@/components/suivi/payment-mode-field";
+import { GeneratedValueField } from "@/components/ui/generated-value-field";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 import { SV_ACCOUNT_BASELINE_CATEGORY } from "@/lib/suivi/accounts";
@@ -173,7 +174,7 @@ export function SvAccountEntryForm({
               />
               <input type="hidden" name="category" value={category} />
               {category === "Autre" ? (
-                <div className="mt-3">
+                <div key="category-other" className="mt-3">
                   <FieldLabel htmlFor="categoryOther" required>
                     Préciser la catégorie
                   </FieldLabel>
@@ -197,16 +198,11 @@ export function SvAccountEntryForm({
               onOtherDetailChange={setPaymentModeOther}
               disabled={pending}
             />
-            <div>
-              <FieldLabel htmlFor="reference-vis">Référence</FieldLabel>
-              <input
-                id="reference-vis"
-                value="Générée à l’enregistrement (MV-…)"
-                readOnly
-                disabled
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-msk-chalk/60 px-3 py-2 text-sm text-msk-ink/70"
-              />
-            </div>
+            <GeneratedValueField
+              id="reference-vis"
+              label="Référence"
+              value="Générée à l’enregistrement (MV-…)"
+            />
             <div className="sm:col-span-2 lg:col-span-3">
               <FieldLabel htmlFor="description">Motif</FieldLabel>
               <input

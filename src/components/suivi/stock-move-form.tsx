@@ -121,7 +121,7 @@ export function SvStockMoveForm({
               />
             </div>
           </div>
-          <div>
+          <div key={`qty-slot-${kind}`}>
             <FieldLabel htmlFor="quantity" required>
               {qtyLabel}
             </FieldLabel>

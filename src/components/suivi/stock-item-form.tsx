@@ -12,6 +12,7 @@ import { FormSteps } from "@/components/ui/form-steps";
 import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
 import { ChoiceCards } from "@/components/ui/choice-cards";
+import { GeneratedValueField } from "@/components/ui/generated-value-field";
 import {
   stockFamilyPrefix,
   SV_STOCK_FAMILIES,
@@ -127,6 +128,7 @@ export function SvStockItemForm({
             <div className="flex gap-2">
               {step > 0 ? (
                 <Button
+                  key="footer-back"
                   type="button"
                   variant="secondary"
                   disabled={pending}
@@ -136,6 +138,7 @@ export function SvStockItemForm({
                 </Button>
               ) : (
                 <Link
+                  key="footer-cancel"
                   href={
                     itemId ? `/suivi/stocks/${itemId}` : "/suivi/stocks"
                   }
@@ -192,22 +195,21 @@ export function SvStockItemForm({
         ) : null}
 
         {step === 0 ? (
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div>
-              <FieldLabel htmlFor="code-vis">Code</FieldLabel>
-              <input
-                id="code-vis"
-                value={codeDisplay}
-                readOnly
-                disabled
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-msk-chalk/60 px-3 py-2 text-sm uppercase text-msk-ink/70"
-              />
-              <p className="mt-1 text-xs text-msk-ink/45">
-                {mode === "create"
+          <div
+            key="step-identite"
+            className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            <GeneratedValueField
+              id="code-vis"
+              label="Code"
+              value={codeDisplay}
+              valueClassName="uppercase"
+              hint={
+                mode === "create"
                   ? `Généré à l’enregistrement (préfixe ${codePrefix}- + n° unique).`
-                  : "Code figé à la création — non modifiable."}
-              </p>
-            </div>
+                  : "Code figé à la création — non modifiable."
+              }
+            />
             <div className="sm:col-span-2">
               <FieldLabel htmlFor="label-vis" required>
                 Libellé
@@ -252,7 +254,10 @@ export function SvStockItemForm({
         ) : null}
 
         {step === 1 ? (
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            key="step-stock"
+            className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          >
             <div className="sm:col-span-2 lg:col-span-3">
               <FieldLabel required>Unité</FieldLabel>
               <div className="mt-2">
@@ -270,7 +275,7 @@ export function SvStockItemForm({
               </div>
             </div>
             {mode === "create" ? (
-              <div>
+              <div key="qty-initial">
                 <FieldLabel htmlFor="qty-vis">Quantité initiale</FieldLabel>
                 <input
                   id="qty-vis"
@@ -313,7 +318,10 @@ export function SvStockItemForm({
         ) : null}
 
         {step === 2 ? (
-          <div className="mt-6 rounded-xl border border-msk-ink/8 bg-msk-chalk/40 p-4 text-sm">
+          <div
+            key="step-recap"
+            className="mt-6 rounded-xl border border-msk-ink/8 bg-msk-chalk/40 p-4 text-sm"
+          >
             <p className="text-xs uppercase tracking-caps text-msk-ink/45">
               Récapitulatif
             </p>
@@ -338,7 +346,7 @@ export function SvStockItemForm({
                 <dd>{unit}</dd>
               </div>
               {mode === "create" ? (
-                <div>
+                <div key="recap-qty">
                   <dt className="text-msk-ink/45">Quantité initiale</dt>
                   <dd className="tabular-nums">{initialQuantity}</dd>
                 </div>
@@ -348,7 +356,7 @@ export function SvStockItemForm({
                 <dd>{location || "—"}</dd>
               </div>
               {observations ? (
-                <div className="sm:col-span-2">
+                <div key="recap-obs" className="sm:col-span-2">
                   <dt className="text-msk-ink/45">Observations</dt>
                   <dd>{observations}</dd>
                 </div>

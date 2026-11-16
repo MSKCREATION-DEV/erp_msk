@@ -15,6 +15,7 @@ import {
   type OptionPickerItem,
 } from "@/components/ui/option-picker-modal";
 import { SvPaymentModeField } from "@/components/suivi/payment-mode-field";
+import { GeneratedValueField } from "@/components/ui/generated-value-field";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
 import { SV_MOVEMENT_CATEGORY_OPTIONS } from "@/lib/suivi/categories";
 import {
@@ -159,7 +160,7 @@ export function SvMovementForm({
               />
               <input type="hidden" name="category" value={category} />
               {category === "Autre" ? (
-                <div className="mt-3">
+                <div key="category-other" className="mt-3">
                   <FieldLabel htmlFor="categoryOther" required>
                     Préciser la catégorie
                   </FieldLabel>
@@ -223,19 +224,12 @@ export function SvMovementForm({
                 disabled={pending}
               />
             </div>
-            <div>
-              <FieldLabel htmlFor="reference-vis">Référence</FieldLabel>
-              <input
-                id="reference-vis"
-                value="Générée à l’enregistrement (MV-…)"
-                readOnly
-                disabled
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-msk-chalk/60 px-3 py-2 text-sm text-msk-ink/70"
-              />
-              <p className="mt-1 text-xs text-msk-ink/45">
-                Format MV-AAAAMMJJ-NNN — unique pour le jour.
-              </p>
-            </div>
+            <GeneratedValueField
+              id="reference-vis"
+              label="Référence"
+              value="Générée à l’enregistrement (MV-…)"
+              hint="Format MV-AAAAMMJJ-NNN — unique pour le jour."
+            />
           </div>
         </div>
       </FormShell>
