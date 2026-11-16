@@ -8,8 +8,8 @@ import { Surface } from "@/components/ui/surface";
  */
 export function TemplateStudioSidebar() {
   return (
-    // Desktop only : sous le header sticky gabarits (~13rem + marge). Mobile = flux normal.
-    <aside className="flex flex-col gap-4 lg:sticky lg:top-52 lg:z-10 lg:self-start">
+    // Desktop : sticky sous le bandeau mesuré (--gabarits-sticky-top). Mobile = flux.
+    <aside className="flex flex-col gap-4 lg:sticky lg:top-[var(--gabarits-sticky-top,13.75rem)] lg:z-10 lg:self-start">
       <Surface className="space-y-4 p-5">
         <div>
           <h2 className="text-sm font-semibold text-msk-ink">Nouveau gabarit</h2>

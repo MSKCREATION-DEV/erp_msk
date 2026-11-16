@@ -42,8 +42,11 @@ export async function updateSession(request: NextRequest) {
   );
   // Cron : auth Bearer dans la route (pas de session cookie Vercel Cron).
   const isCron = path === "/api/cron" || path.startsWith("/api/cron/");
+  // Lab UI local uniquement (jamais en prod build).
+  const isDevUiLab =
+    process.env.NODE_ENV === "development" && path.startsWith("/ui-lab/");
 
-  if (!user && !isPublic && !isCron) {
+  if (!user && !isPublic && !isCron && !isDevUiLab) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", path);

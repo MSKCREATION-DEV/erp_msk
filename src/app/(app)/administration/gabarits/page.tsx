@@ -14,6 +14,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
+import { GabaritsStickyChrome } from "@/components/admin/gabarits-sticky-chrome";
 import { TemplateStudioSidebar } from "@/components/admin/template-studio-sidebar";
 import { StudioTemplatesSection } from "./studio-section";
 
@@ -46,57 +47,64 @@ export default async function GabaritsPage({
 
   return (
     <PageShell>
-      {/*
-        Sticky dans le scroll de <main> (shell app) — pas le viewport.
-        Marges négatives = couvrir le padding de main pour fond opaque sans fuite.
-      */}
-      <div className="sticky top-0 z-20 -mx-4 -mt-5 space-y-4 border-b border-msk-ink/6 bg-[#F4F6F9] px-4 pb-4 pt-5 sm:-mx-6 sm:px-6 lg:-mx-6 xl:-mx-8 xl:px-8">
-        <PageHeader
-          title="Studio documentaire"
-          description="Bibliothèque centrale des gabarits PDF — dossiers Commercial, RH et Studio."
-          breadcrumbs={[
-            { label: "Administration" },
-            { label: "Gabarits" },
-          ]}
-          actions={
-            <div className="flex items-center gap-2 rounded-xl border border-msk-ink/8 bg-white px-3.5 py-2 shadow-sm">
-              <FileStack className="h-4 w-4 text-msk-blue" aria-hidden />
-              <div className="text-right leading-tight">
-                <p className="text-lg font-semibold tabular-nums text-msk-ink">
-                  {totalCount}
-                </p>
-                <p className="text-[11px] text-msk-ink/45">
-                  document{totalCount > 1 ? "s" : ""}
-                </p>
-              </div>
-            </div>
-          }
-        />
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <Suspense
-            fallback={
-              <div className="h-10 w-full max-w-md animate-pulse rounded-xl bg-msk-chalk" />
-            }
-          >
-            <ListSearchForm
-              placeholder="Rechercher un gabarit (nom, code…)"
-              className="w-full sm:max-w-md"
+      <GabaritsStickyChrome
+        header={
+          <>
+            <PageHeader
+              title="Studio documentaire"
+              description="Bibliothèque centrale des gabarits PDF — dossiers Commercial, RH et Studio."
+              breadcrumbs={[
+                { label: "Administration" },
+                { label: "Gabarits" },
+              ]}
+              actions={
+                <div className="flex items-center gap-2 rounded-xl border border-msk-ink/8 bg-white px-3.5 py-2 shadow-sm">
+                  <FileStack className="h-4 w-4 text-msk-blue" aria-hidden />
+                  <div className="text-right leading-tight">
+                    <p className="text-lg font-semibold tabular-nums text-msk-ink">
+                      {totalCount}
+                    </p>
+                    <p className="text-[11px] text-msk-ink/45">
+                      document{totalCount > 1 ? "s" : ""}
+                    </p>
+                  </div>
+                </div>
+              }
             />
-          </Suspense>
-        </div>
-      </div>
 
-      <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
-        <div className="min-w-0 space-y-4 lg:col-span-8 xl:col-span-9">
-          <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={8} cols={4} />}>
-            <StudioTemplatesSection searchParams={searchParams} />
-          </Suspense>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <Suspense
+                fallback={
+                  <div className="h-10 w-full max-w-md animate-pulse rounded-xl bg-msk-chalk" />
+                }
+              >
+                <ListSearchForm
+                  placeholder="Rechercher un gabarit (nom, code…)"
+                  className="w-full sm:max-w-md"
+                />
+              </Suspense>
+            </div>
+          </>
+        }
+      >
+        {/*
+          Pas de items-start sur la grille : la colonne droite doit s’étirer
+          à la hauteur du listing, sinon sticky n’a aucune plage (parent = hauteur aside).
+        */}
+        <div className="grid gap-6 lg:grid-cols-12">
+          <div className="min-w-0 space-y-4 lg:col-span-8 xl:col-span-9">
+            <Suspense
+              key={resultsKey}
+              fallback={<ListTableSkeleton rows={8} cols={4} />}
+            >
+              <StudioTemplatesSection searchParams={searchParams} />
+            </Suspense>
+          </div>
+          <div className="lg:col-span-4 xl:col-span-3">
+            <TemplateStudioSidebar />
+          </div>
         </div>
-        <div className="lg:col-span-4 xl:col-span-3">
-          <TemplateStudioSidebar />
-        </div>
-      </div>
+      </GabaritsStickyChrome>
     </PageShell>
   );
 }
