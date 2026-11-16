@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Download,
@@ -8,6 +8,7 @@ import {
   FileText,
   FileWarning,
   FlaskConical,
+  Loader2,
   Maximize2,
 } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
@@ -26,7 +27,10 @@ type Props = {
 
 /**
  * Miniature exemplaire PDF + actions — clic → modal plein document.
- * URL = génération à la volée (pas GED), même route que le listing.
+ *
+ * Ne pas iframe directement la route API : `X-Frame-Options: DENY` global
+ * (next.config) bloque l’affichage. Même pattern que le Playground :
+ * fetch → blob → `URL.createObjectURL` → iframe `blob:`.
  */
 export function TemplateExemplairePreview({
   templateId,
@@ -35,11 +39,56 @@ export function TemplateExemplairePreview({
   engineBlocks = false,
   className,
 }: Props) {
-  const src = useMemo(
+  const apiSrc = useMemo(
     () => `/api/administration/gabarits/${templateId}/exemplaire`,
     [templateId],
   );
   const [open, setOpen] = useState(false);
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!available) return;
+
+    let cancelled = false;
+    let objectUrl: string | null = null;
+
+    setLoading(true);
+    setError(null);
+    setBlobUrl(null);
+
+    void (async () => {
+      try {
+        const res = await fetch(apiSrc, { method: "GET", cache: "no-store" });
+        if (!res.ok) {
+          const json = (await res.json().catch(() => null)) as {
+            error?: string;
+          } | null;
+          throw new Error(json?.error ?? `Aperçu impossible (${res.status})`);
+        }
+        const contentType = res.headers.get("content-type") ?? "";
+        if (!contentType.includes("application/pdf")) {
+          throw new Error("Réponse non-PDF — aperçu impossible");
+        }
+        const blob = await res.blob();
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(blob);
+        setBlobUrl(objectUrl);
+      } catch (e) {
+        if (!cancelled) {
+          setError(e instanceof Error ? e.message : "Erreur aperçu");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [available, apiSrc]);
 
   if (!available) {
     return (
@@ -69,16 +118,45 @@ export function TemplateExemplairePreview({
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="group relative block w-full overflow-hidden rounded-xl border border-msk-ink/8 bg-msk-chalk text-left shadow-sm transition hover:border-msk-blue/35 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40"
+            disabled={loading || !blobUrl}
+            className="group relative block w-full overflow-hidden rounded-xl border border-msk-ink/8 bg-msk-chalk text-left shadow-sm transition hover:border-msk-blue/35 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-msk-blue/40 disabled:cursor-wait disabled:opacity-80"
             aria-label={`Agrandir l’exemplaire ${templateName}`}
           >
             <div className="relative h-52 w-full overflow-hidden bg-gradient-to-b from-msk-chalk to-white">
-              <iframe
-                title={`Miniature — ${templateName}`}
-                src={src}
-                tabIndex={-1}
-                className="pointer-events-none absolute inset-0 h-[280%] w-[280%] origin-top-left scale-[0.36] border-0 bg-white"
-              />
+              {loading ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-msk-ink/40">
+                  <Loader2
+                    className="h-7 w-7 animate-spin text-msk-blue"
+                    aria-hidden
+                  />
+                  <span className="text-[11px]">Génération…</span>
+                </div>
+              ) : null}
+              {error ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
+                  <FileWarning
+                    className="h-7 w-7 text-msk-coral/70"
+                    aria-hidden
+                  />
+                  <p className="text-[11px] text-msk-coral">{error}</p>
+                </div>
+              ) : null}
+              {blobUrl ? (
+                <iframe
+                  title={`Miniature — ${templateName}`}
+                  src={blobUrl}
+                  tabIndex={-1}
+                  className="pointer-events-none absolute inset-0 h-[280%] w-[280%] origin-top-left scale-[0.36] border-0 bg-white"
+                />
+              ) : null}
+              {!loading && !error && !blobUrl ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-msk-ink/35">
+                  <FileText className="h-10 w-10" aria-hidden />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider">
+                    PDF
+                  </span>
+                </div>
+              ) : null}
               <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-gradient-to-t from-msk-ink/70 to-transparent px-3 py-2.5">
                 <span className="flex items-center gap-1.5 text-[11px] font-medium text-white">
                   <FileText className="h-3.5 w-3.5" aria-hidden />
@@ -94,7 +172,7 @@ export function TemplateExemplairePreview({
 
           <div className="grid grid-cols-2 gap-2">
             <a
-              href={src}
+              href={apiSrc}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-msk-ink/15 bg-white px-2 text-xs font-medium text-msk-ink transition hover:bg-msk-chalk"
@@ -132,7 +210,7 @@ export function TemplateExemplairePreview({
               type="button"
               variant="secondary"
               size="sm"
-              onClick={() => window.open(src, "_blank", "noopener,noreferrer")}
+              onClick={() => window.open(apiSrc, "_blank", "noopener,noreferrer")}
             >
               <ExternalLink className="h-4 w-4" aria-hidden />
               Nouvel onglet
@@ -142,7 +220,7 @@ export function TemplateExemplairePreview({
               size="sm"
               onClick={() => {
                 const a = document.createElement("a");
-                a.href = src;
+                a.href = blobUrl ?? apiSrc;
                 a.download = `${templateName}.pdf`;
                 a.target = "_blank";
                 a.rel = "noopener";
@@ -156,12 +234,24 @@ export function TemplateExemplairePreview({
         }
       >
         <div className="p-3 sm:p-4">
-          {open ? (
+          {open && blobUrl ? (
             <iframe
               title={`Exemplaire — ${templateName}`}
-              src={src}
+              src={blobUrl}
               className="h-[min(75vh,40rem)] w-full rounded-lg border border-msk-ink/8 bg-white"
             />
+          ) : null}
+          {open && loading ? (
+            <div className="flex h-[min(75vh,40rem)] flex-col items-center justify-center gap-3 text-msk-ink/50">
+              <Loader2 className="h-8 w-8 animate-spin text-msk-blue" />
+              <p className="text-sm">Chargement de l’aperçu…</p>
+            </div>
+          ) : null}
+          {open && error ? (
+            <div className="flex h-48 flex-col items-center justify-center gap-3 text-center">
+              <FileWarning className="h-10 w-10 text-msk-coral/70" />
+              <p className="text-sm text-msk-coral">{error}</p>
+            </div>
           ) : null}
         </div>
       </Modal>
