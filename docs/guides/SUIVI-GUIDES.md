@@ -228,6 +228,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 | Statut doc | Guide `sv-hub-naviguer` **`draft`** — mentionner menus d’actions sur les listes RH tampon + finance |
 | Routes | `/suivi/absences` · `/suivi/retards` · `/suivi/charges` · `/suivi/factures` |
 
+### 2026-11-16 — Studio documentaire : listing bibliothèque (inspiration Documentero)
+
+| | |
+|---|---|
+| Quoi | Redesign du listing `/administration/gabarits` : en-tête + compteur documents, recherche globale, **dossiers** Commercial / RH / Studio (lignes denses), badges métadonnées (Variables/Slots, Blocs, PDF, signature), actions documentaires (fiche, éditer, exemplaire, Playground, ActionMenu), panneau latéral « Nouveau gabarit » + « Règles gabarit » (syntaxe MSK, **sans** upload DOCX). `loading.tsx` aligné skeleton table + sidebar. |
+| Pourquoi | Orienté gestion documentaire professionnelle ; IA UX Documentero (folders, meta fields/sections, sidebar create/rules) adaptée charte MSK. |
+| Fichiers | `administration/gabarits/{page,studio-section,loading}.tsx`, `components/admin/template-{library-row,folder-group,studio-sidebar}.tsx`, `lib/templates/list-meta.ts`, ce suivi |
+| Statut doc | Guide `/guides` Studio toujours **`draft`** — UX listing à refléter quand le guide sera ouvert |
+| Routes | `/administration/gabarits` |
+| Dette restante | Folders DB utilisateur ; upload DOCX ; WYSIWYG ; pagination globale hors Studio |
+
 ### 2026-11-13 — Absences : justificatif GED perdu à la Confirmation + CTA fiche
 
 | | |
