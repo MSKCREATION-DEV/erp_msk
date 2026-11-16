@@ -49,7 +49,16 @@ import {
   validateChannels,
   type ChannelInput,
 } from "@/lib/crm/channels";
-import { sanitizeUrl } from "@/lib/crm/social";
+import {
+  normalizeSocialField,
+  type SocialField,
+  type SocialUrls,
+} from "@/lib/crm/social";
+import {
+  hardDeleteProspect,
+  loadProspectHardDeleteInventory,
+} from "@/lib/crm/hard-delete";
+import type { HardDeleteInventory } from "@/lib/crm/hard-delete-meta";
 import {
   hasBlockingOrgDuplicate,
   searchContactDuplicates,
@@ -65,6 +74,26 @@ const sourceSchema = z.nativeEnum(CrmSource);
 const activitySchema = z.nativeEnum(CrmActivityType);
 const lossSchema = z.nativeEnum(CrmLossReason);
 const contactChannelSchema = z.enum(CONTACT_STAGE_CHANNELS);
+
+const SOCIAL_FIELDS = [
+  "instagramUrl",
+  "linkedinUrl",
+  "tiktokUrl",
+  "facebookUrl",
+  "whatsappUrl",
+] as const satisfies readonly SocialField[];
+
+function parseSocialUrlsFromData(
+  data: Record<SocialField, string>,
+): { ok: true; urls: SocialUrls } | { ok: false; error: string } {
+  const urls: SocialUrls = {};
+  for (const field of SOCIAL_FIELDS) {
+    const res = normalizeSocialField(field, data[field] ?? "");
+    if (!res.ok) return { ok: false, error: res.error };
+    urls[field] = res.url;
+  }
+  return { ok: true, urls };
+}
 
 const createProspectSchema = z
   .object({
@@ -287,6 +316,15 @@ export async function createProspectAction(
     };
   }
 
+  const socialParsed = parseSocialUrlsFromData({
+    instagramUrl: data.instagramUrl,
+    linkedinUrl: data.linkedinUrl,
+    tiktokUrl: data.tiktokUrl,
+    facebookUrl: data.facebookUrl,
+    whatsappUrl: data.whatsappUrl,
+  });
+  if (!socialParsed.ok) return { ok: false, error: socialParsed.error };
+
   const contactDupes = await searchContactDuplicates(channels);
   const ackContact = fdString(formData, "acknowledgeContactDupes") === "1";
   if (hasIdentityContactMatch(contactDupes) && !ackContact) {
@@ -332,11 +370,11 @@ export async function createProspectAction(
       sector,
       city,
       website,
-      instagramUrl: sanitizeUrl(data.instagramUrl),
-      linkedinUrl: sanitizeUrl(data.linkedinUrl),
-      tiktokUrl: sanitizeUrl(data.tiktokUrl),
-      facebookUrl: sanitizeUrl(data.facebookUrl),
-      whatsappUrl: sanitizeUrl(data.whatsappUrl),
+      instagramUrl: socialParsed.urls.instagramUrl ?? null,
+      linkedinUrl: socialParsed.urls.linkedinUrl ?? null,
+      tiktokUrl: socialParsed.urls.tiktokUrl ?? null,
+      facebookUrl: socialParsed.urls.facebookUrl ?? null,
+      whatsappUrl: socialParsed.urls.whatsappUrl ?? null,
       source: src,
       notes,
       ownerId: actor.id,
@@ -600,16 +638,17 @@ export async function updateProspectAction(
   if ((deal.organization.website ?? "") !== data.website) changed.push("website");
   if ((deal.organization.notes ?? "") !== data.notes) changed.push("notes");
   if (deal.organization.source !== data.source) changed.push("source");
-  const socialFields = [
-    "instagramUrl",
-    "linkedinUrl",
-    "tiktokUrl",
-    "facebookUrl",
-    "whatsappUrl",
-  ] as const;
-  for (const f of socialFields) {
+  const socialParsed = parseSocialUrlsFromData({
+    instagramUrl: data.instagramUrl,
+    linkedinUrl: data.linkedinUrl,
+    tiktokUrl: data.tiktokUrl,
+    facebookUrl: data.facebookUrl,
+    whatsappUrl: data.whatsappUrl,
+  });
+  if (!socialParsed.ok) return { ok: false, error: socialParsed.error };
+  for (const f of SOCIAL_FIELDS) {
     const prev = deal.organization[f] ?? "";
-    const next = sanitizeUrl(data[f]) ?? "";
+    const next = socialParsed.urls[f] ?? "";
     if (prev !== next) {
       changed.push("social");
       break;
@@ -643,11 +682,11 @@ export async function updateProspectAction(
         city: data.city || null,
         country: data.country || "ML",
         website: data.website || null,
-        instagramUrl: sanitizeUrl(data.instagramUrl),
-        linkedinUrl: sanitizeUrl(data.linkedinUrl),
-        tiktokUrl: sanitizeUrl(data.tiktokUrl),
-        facebookUrl: sanitizeUrl(data.facebookUrl),
-        whatsappUrl: sanitizeUrl(data.whatsappUrl),
+        instagramUrl: socialParsed.urls.instagramUrl ?? null,
+        linkedinUrl: socialParsed.urls.linkedinUrl ?? null,
+        tiktokUrl: socialParsed.urls.tiktokUrl ?? null,
+        facebookUrl: socialParsed.urls.facebookUrl ?? null,
+        whatsappUrl: socialParsed.urls.whatsappUrl ?? null,
         source: data.source,
         notes: data.notes || null,
       },
@@ -2108,4 +2147,63 @@ export async function saveWeeklyGoalsAction(
 ): Promise<ActionResult> {
   if (!formData.get("periodType")) formData.set("periodType", "WEEK");
   return savePeriodGoalsAction(formData);
+}
+
+/** Inventaire avant hard-delete prospect (Direction / habilité). */
+export async function previewProspectHardDeleteAction(
+  opportunityId: string,
+): Promise<
+  | { ok: true; inventory: HardDeleteInventory }
+  | { ok: false; error: string }
+> {
+  const actor = await requireUser({ permission: "crm.prospect.delete" });
+  if (!hasPermission(actor, "crm.prospect.delete")) {
+    return { ok: false, error: "Pas le droit de supprimer un prospect" };
+  }
+  const id = opportunityId.trim();
+  if (!id) return { ok: false, error: "Prospect manquant" };
+  const inventory = await loadProspectHardDeleteInventory(id);
+  if (!inventory) return { ok: false, error: "Prospect introuvable" };
+  return { ok: true, inventory };
+}
+
+/** Hard-delete prospect + enfants CRM (refuse si déjà client / devis). */
+export async function deleteProspectHardAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "crm.prospect.delete" });
+  if (!hasPermission(actor, "crm.prospect.delete")) {
+    return { ok: false, error: "Pas le droit de supprimer un prospect" };
+  }
+  const opportunityId = String(formData.get("opportunityId") ?? "").trim();
+  if (!opportunityId) return { ok: false, error: "Prospect manquant" };
+
+  const before = await loadProspectHardDeleteInventory(opportunityId);
+  if (!before) return { ok: false, error: "Prospect introuvable" };
+  if (before.blocked) {
+    return { ok: false, error: before.blockReason ?? "Suppression impossible" };
+  }
+
+  const res = await hardDeleteProspect(opportunityId);
+  if (!res.ok) return { ok: false, error: res.error };
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "crm.prospect.delete",
+    entityType: "crm_opportunity",
+    entityId: opportunityId,
+    metadata: {
+      label: before.label,
+      counts: before.counts,
+      willDeleteOrganization: before.willDeleteOrganization,
+    },
+  });
+
+  revalidatePath("/crm/prospects");
+  revalidatePath("/crm");
+  revalidatePath("/commercial/clients");
+  return redirectWithFlash(
+    "/crm/prospects",
+    "Prospect supprimé définitivement.",
+  );
 }

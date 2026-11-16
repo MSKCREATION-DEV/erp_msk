@@ -38,6 +38,7 @@ import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
 import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
+import { ProspectHardDeleteControl } from "@/components/crm/prospect-hard-delete";
 import { ListTableScroll } from "@/components/ui/list-table-scroll";
 import {
   OUTREACH_ACTIVITY_TYPES,
@@ -66,7 +67,6 @@ const PROSPECT_SORT_COLUMNS = {
     { updatedAt: "desc" as const },
   ],
   owner: (dir: SortDir) => ({ owner: { lastName: dir } }),
-  createdAt: (dir: SortDir) => ({ createdAt: dir }),
   createdBy: (dir: SortDir) => ({ createdBy: { lastName: dir } }),
 } satisfies SortColumnMap<
   | "org"
@@ -75,7 +75,6 @@ const PROSPECT_SORT_COLUMNS = {
   | "nextAction"
   | "followUpAt"
   | "owner"
-  | "createdAt"
   | "createdBy"
 >;
 
@@ -294,6 +293,8 @@ export async function ProspectsResults({
   );
 
   const canReassign = canReassignCrmDeal(user);
+  const canDeleteProspect = hasPermission(user, "crm.prospect.delete");
+  const showRowActions = canReassign || canDeleteProspect;
   const filterRoster = await listCommercialRoster({
     mode: "filter",
     extraIds: [user.id],
@@ -521,16 +522,6 @@ export async function ProspectsResults({
                 align="center"
               />
               <SortableTh
-                label="Créé"
-                column="createdAt"
-                sort={sort.key}
-                dir={sort.dir}
-                pathname="/crm/prospects"
-                searchParams={listParams}
-                defaultDir="desc"
-                align="center"
-              />
-              <SortableTh
                 label="Créé par"
                 column="createdBy"
                 sort={sort.key}
@@ -539,14 +530,22 @@ export async function ProspectsResults({
                 searchParams={listParams}
                 align="center"
               />
-              {canReassign ? <PlainTh align="center">Affecter</PlainTh> : null}
+              {showRowActions ? (
+                <PlainTh align="center">
+                  {canDeleteProspect && canReassign
+                    ? "Actions"
+                    : canDeleteProspect
+                      ? "Actions"
+                      : "Affecter"}
+                </PlainTh>
+              ) : null}
             </tr>
           </thead>
           <tbody className="divide-y divide-msk-ink/6">
             {deals.length === 0 ? (
               <tr>
                 <td
-                  colSpan={canReassign ? 12 : 11}
+                  colSpan={showRowActions ? 11 : 10}
                   className="px-4 py-10 text-center text-msk-ink/40"
                 >
                   {qTrim
@@ -641,30 +640,43 @@ export async function ProspectsResults({
                     <td className="px-4 py-3 text-xs text-msk-ink/70">
                       {d.owner.firstName} {d.owner.lastName}
                     </td>
-                    <td className="px-4 py-3 text-xs text-msk-ink/55">
-                      {d.createdAt.toLocaleDateString("fr-FR")}
-                    </td>
                     <td className="px-4 py-3 text-xs text-msk-ink/60">
-                      {d.createdBy.firstName} {d.createdBy.lastName}
+                      <span className="inline-flex flex-col items-center gap-0.5">
+                        <span className="font-medium text-msk-ink/80">
+                          {d.createdBy.firstName} {d.createdBy.lastName}
+                        </span>
+                        <span className="text-[11px] font-normal tabular-nums text-msk-ink/40">
+                          {d.createdAt.toLocaleDateString("fr-FR")}
+                        </span>
+                      </span>
                     </td>
-                    {canReassign ? (
+                    {showRowActions ? (
                       <StopPropagationTd className="px-4 py-3">
-                        <span className="inline-flex justify-center">
-                          <AssignProspectForm
-                            commercials={commercials}
-                            opportunityId={d.id}
-                            currentOwnerId={d.ownerId}
-                            prospects={[
-                              {
-                                id: d.id,
-                                label: d.organization.name,
-                                ownerId: d.ownerId,
-                                ownerLabel: `${d.owner.firstName} ${d.owner.lastName}`,
-                              },
-                            ]}
-                            triggerLabel="Affecter"
-                            iconOnly
-                          />
+                        <span className="inline-flex items-center justify-center gap-1">
+                          {canReassign ? (
+                            <AssignProspectForm
+                              commercials={commercials}
+                              opportunityId={d.id}
+                              currentOwnerId={d.ownerId}
+                              prospects={[
+                                {
+                                  id: d.id,
+                                  label: d.organization.name,
+                                  ownerId: d.ownerId,
+                                  ownerLabel: `${d.owner.firstName} ${d.owner.lastName}`,
+                                },
+                              ]}
+                              triggerLabel="Affecter"
+                              iconOnly
+                            />
+                          ) : null}
+                          {canDeleteProspect ? (
+                            <ProspectHardDeleteControl
+                              opportunityId={d.id}
+                              entityLabel={d.organization.name}
+                              compact
+                            />
+                          ) : null}
                         </span>
                       </StopPropagationTd>
                     ) : null}

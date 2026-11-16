@@ -44,10 +44,12 @@ import { ClickableRowLink } from "@/components/ui/clickable-row-link";
 import { ClientsToolbar } from "@/components/commercial/clients-toolbar";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
-import { SortableTh } from "@/components/ui/sortable-th";
+import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { Badge } from "@/components/ui/badge";
 import { ScopeFocusBanner } from "@/components/crm/scope-focus-banner";
 import { ListTableScroll } from "@/components/ui/list-table-scroll";
+import { StopPropagationTd } from "@/components/ui/stop-propagation-td";
+import { ClientHardDeleteControl } from "@/components/commercial/client-hard-delete";
 
 const CLIENT_SORT_COLUMNS = {
   name: (dir: SortDir) => ({ name: dir }),
@@ -85,6 +87,7 @@ export default async function CommercialClientsPage({
   }
 
   const canCreate = hasPermission(user, "com.clients.manage");
+  const canDelete = hasPermission(user, "com.clients.delete");
   const readTeam =
     comVisibility(user) === "global" || canFilterCrmOwners(user);
   const roster = readTeam ? await listCommercialRoster({ mode: "filter" }) : [];
@@ -135,6 +138,7 @@ export default async function CommercialClientsPage({
           <ClientsResults
             searchParams={searchParams}
             canCreate={canCreate}
+            canDelete={canDelete}
           />
         </Suspense>
       </Surface>
@@ -145,9 +149,11 @@ export default async function CommercialClientsPage({
 async function ClientsResults({
   searchParams,
   canCreate,
+  canDelete,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
   canCreate: boolean;
+  canDelete: boolean;
 }) {
   const user = await requireUser();
   const raw = await searchParams;
@@ -409,13 +415,14 @@ async function ClientsResults({
                 searchParams={listParams}
                 defaultDir="desc"
               />
+              {canDelete ? <PlainTh>Actions</PlainTh> : null}
             </tr>
           </thead>
           <tbody className="divide-y divide-msk-ink/6">
             {clients.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={canDelete ? 9 : 8}
                   className="px-4 py-10 text-center text-msk-ink/40"
                 >
                   {q ? (
@@ -483,6 +490,15 @@ async function ClientsResults({
                       c.sourceOpportunity?.wonAt ?? c.updatedAt
                     ).toLocaleDateString("fr-FR")}
                   </td>
+                  {canDelete ? (
+                    <StopPropagationTd className="px-4 py-3">
+                      <ClientHardDeleteControl
+                        clientId={c.id}
+                        entityLabel={c.name}
+                        compact
+                      />
+                    </StopPropagationTd>
+                  ) : null}
                 </ClickableRowLink>
               ))
             )}

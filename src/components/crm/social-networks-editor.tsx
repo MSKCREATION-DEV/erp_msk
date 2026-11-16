@@ -41,8 +41,9 @@ export function SocialNetworksEditor({
       <div>
         <FieldLabel>Réseaux sociaux de l’entreprise</FieldLabel>
         <FieldHint>
-          Sélectionnez les réseaux présents, puis renseignez les liens. Sans
-          sélection = pas de présence connue.
+          Sélectionnez les réseaux, puis l’URL du profil ou uniquement le nom
+          du compte (@resto, numéro WhatsApp…). Sans sélection = pas de
+          présence connue.
         </FieldHint>
       </div>
       <div className="flex flex-wrap gap-2">

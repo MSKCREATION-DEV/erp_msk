@@ -221,6 +221,7 @@ export default async function CommercialClientDetailPage({
   }
 
   const canEdit = hasPermission(user, "com.clients.manage");
+  const canDelete = hasPermission(user, "com.clients.delete");
   const canCreateQuote = hasPermission(user, "com.devis.create");
   const canReassignOwner = canEdit;
   const canManageContracts = hasPermission(user, "com.contrats.manage");
@@ -370,6 +371,7 @@ export default async function CommercialClientDetailPage({
     <PageShell>
       <PageHeader
         title={client.name}
+        hideTitle
         description="Client commercial — devis, factures et contrats"
         backHref="/commercial/clients"
         backLabel="Retour aux clients"
@@ -481,8 +483,10 @@ export default async function CommercialClientDetailPage({
           <div className="mt-5 border-t border-msk-ink/6 pt-4">
             <ClientDetailActions
               clientId={client.id}
+              clientName={client.name}
               canEdit={canEdit}
               canCreateQuote={canCreateQuote}
+              canDelete={canDelete}
               initial={{
                 name: client.name,
                 contactName: client.contactName ?? "",

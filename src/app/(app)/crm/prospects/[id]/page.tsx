@@ -53,6 +53,7 @@ import { ActivityJournalActions } from "@/components/crm/activity-journal-action
 import { OriginChip } from "@/components/crm/origin-chip";
 import { OfferConfigBadges } from "@/components/crm/offer-config-badges";
 import { SocialNetworkBadges } from "@/components/crm/social-network-badges";
+import { ProspectHardDeleteControl } from "@/components/crm/prospect-hard-delete";
 import { countOutreachActivities } from "@/lib/crm/follow-up-count";
 import { loadProspectLinkedEntities } from "@/lib/crm/prospect-linked-entities";
 import {
@@ -292,6 +293,7 @@ export default async function CrmProspectDetailPage({
     canMutate &&
     (user.isSuperAdmin || hasPermission(user, "crm.prospect.edit_own"));
   const canReassign = canReassignCrmDeal(user);
+  const canDeleteProspect = hasPermission(user, "crm.prospect.delete");
 
   const linkedClient = await prisma.comClient.findFirst({
     where: {
@@ -390,6 +392,7 @@ export default async function CrmProspectDetailPage({
     canEdit ||
     canReassign ||
     canLog ||
+    canDeleteProspect ||
     hasPermission(user, "crm.scripts.view") ||
     canCreateQuote ||
     canManageClients;
@@ -469,6 +472,7 @@ export default async function CrmProspectDetailPage({
     <PageShell>
       <PageHeader
         title={deal.organization.name}
+        hideTitle
         description={
           deal.title !== deal.organization.name
             ? deal.title
@@ -665,6 +669,12 @@ export default async function CrmProspectDetailPage({
               >
                 Planifier un RDV
               </ActionLink>
+            ) : null}
+            {canDeleteProspect ? (
+              <ProspectHardDeleteControl
+                opportunityId={deal.id}
+                entityLabel={deal.organization.name}
+              />
             ) : null}
           </div>
 
@@ -897,106 +907,146 @@ export default async function CrmProspectDetailPage({
 
       {/* Grille plein largeur */}
       <div className="grid gap-4 @xl:grid-cols-12">
-        <div className="@xl:col-span-5">
-          <Section title="Entreprise">
-            <ul className="space-y-3.5 text-sm text-msk-ink">
-              <li className="flex gap-2.5">
-                <Building2
-                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                  aria-hidden
-                />
-                <span>
-                  <span className="font-medium">{deal.organization.name}</span>
-                  {deal.organization.sector ? (
-                    <span className="block text-msk-ink/50">
-                      {deal.organization.sector}
+        <div className="@xl:col-span-7">
+          <Section title="Entreprise & notes">
+            <div className="grid gap-6 @md:grid-cols-12">
+              <div className="@md:col-span-5">
+                <ul className="space-y-3.5 text-sm text-msk-ink">
+                  <li className="flex gap-2.5">
+                    <Building2
+                      className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                      aria-hidden
+                    />
+                    <span>
+                      <span className="font-medium">
+                        {deal.organization.name}
+                      </span>
+                      {deal.organization.sector ? (
+                        <span className="block text-msk-ink/50">
+                          {deal.organization.sector}
+                        </span>
+                      ) : null}
                     </span>
-                  ) : null}
-                </span>
-              </li>
-              <li className="flex gap-2.5">
-                <MapPin
-                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                  aria-hidden
-                />
-                <span>
-                  {[deal.organization.city, deal.organization.country]
-                    .filter(Boolean)
-                    .join(" · ") || "Ville non renseignée"}
-                </span>
-              </li>
-              <li className="flex gap-2.5">
-                <Globe2
-                  className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
-                  aria-hidden
-                />
-                {deal.organization.website ? (
-                  <a
-                    href={deal.organization.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="break-all text-msk-blue hover:underline"
-                  >
-                    {deal.organization.website}
-                  </a>
+                  </li>
+                  <li className="flex gap-2.5">
+                    <MapPin
+                      className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                      aria-hidden
+                    />
+                    <span>
+                      {[deal.organization.city, deal.organization.country]
+                        .filter(Boolean)
+                        .join(" · ") || "Ville non renseignée"}
+                    </span>
+                  </li>
+                  <li className="flex gap-2.5">
+                    <Globe2
+                      className="mt-0.5 h-4 w-4 shrink-0 text-msk-ink/35"
+                      aria-hidden
+                    />
+                    {deal.organization.website ? (
+                      <a
+                        href={deal.organization.website}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="break-all text-msk-blue hover:underline"
+                      >
+                        {deal.organization.website}
+                      </a>
+                    ) : (
+                      <span className="text-msk-ink/40">Pas de site web</span>
+                    )}
+                  </li>
+                  <li className="border-t border-msk-ink/6 pt-3.5">
+                    <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                      Réseaux sociaux
+                    </p>
+                    <SocialNetworkBadges
+                      urls={{
+                        instagramUrl: deal.organization.instagramUrl,
+                        linkedinUrl: deal.organization.linkedinUrl,
+                        tiktokUrl: deal.organization.tiktokUrl,
+                        facebookUrl: deal.organization.facebookUrl,
+                        whatsappUrl: deal.organization.whatsappUrl,
+                      }}
+                      emptyLabel="Aucun réseau — ajoutez via Modifier."
+                    />
+                  </li>
+                </ul>
+              </div>
+              <div className="border-t border-msk-ink/6 pt-5 @md:col-span-7 @md:border-l @md:border-t-0 @md:pl-6 @md:pt-0">
+                <div className="mb-2 flex items-center gap-2">
+                  <MessageSquareText
+                    className="h-4 w-4 text-msk-ink/30"
+                    aria-hidden
+                  />
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
+                    Notes
+                  </p>
+                </div>
+                {deal.organization.notes ? (
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-msk-ink/80">
+                    {deal.organization.notes}
+                  </p>
                 ) : (
-                  <span className="text-msk-ink/40">Pas de site web</span>
+                  <p className="text-sm text-msk-ink/40">
+                    Aucune note — utile pour situer l’activité, le contexte ou
+                    les échanges longs. Saisissez-la via Modifier.
+                  </p>
                 )}
-              </li>
-              <li className="border-t border-msk-ink/6 pt-3.5">
-                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
-                  Réseaux sociaux
-                </p>
-                <SocialNetworkBadges
-                  urls={{
-                    instagramUrl: deal.organization.instagramUrl,
-                    linkedinUrl: deal.organization.linkedinUrl,
-                    tiktokUrl: deal.organization.tiktokUrl,
-                    facebookUrl: deal.organization.facebookUrl,
-                    whatsappUrl: deal.organization.whatsappUrl,
-                  }}
-                  emptyLabel="Aucun réseau — ajoutez via Modifier."
-                />
-              </li>
-            </ul>
+              </div>
+            </div>
           </Section>
         </div>
 
-        <div className="@xl:col-span-4">
-          <Section
-            title="Notes"
-            action={
-              <MessageSquareText
-                className="h-4 w-4 text-msk-ink/30"
-                aria-hidden
-              />
-            }
-          >
-            {deal.organization.notes ? (
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-msk-ink/80">
-                {deal.organization.notes}
-              </p>
-            ) : (
-              <p className="text-sm text-msk-ink/40">
-                Aucune note — utile pour situer l’activité, le contexte ou les
-                échanges longs. Saisissez-la via Modifier.
-              </p>
-            )}
-          </Section>
-        </div>
-
-        <div className="@xl:col-span-3">
+        <div className="@xl:col-span-5">
           <Section title="Suivi">
             <dl className="space-y-4">
-              <MetaItem label="Dernière action">
-                {lastActivity ? (
-                  <>
-                    <span className="font-medium">{lastActivity.summary}</span>
-                    <span className="mt-0.5 block text-xs text-msk-ink/40">
-                      {ACTIVITY_LABELS[lastActivity.type]} ·{" "}
-                      {lastActivity.occurredAt.toLocaleString("fr-FR")}
+              {lastActivity ? (
+                <>
+                  <MetaItem label="Dernière action">
+                    <span className="font-medium">
+                      {ACTIVITY_LABELS[lastActivity.type]}
                     </span>
-                  </>
+                    <span className="mt-0.5 block text-xs text-msk-ink/45">
+                      {lastActivity.occurredAt.toLocaleString("fr-FR")}
+                      {" · "}
+                      {lastActivity.actor.firstName}{" "}
+                      {lastActivity.actor.lastName}
+                    </span>
+                  </MetaItem>
+                  <MetaItem label="Canal / type d’action">
+                    {ACTIVITY_LABELS[lastActivity.type]}
+                  </MetaItem>
+                  <MetaItem label="Résumé de l’échange">
+                    {lastActivity.summary}
+                  </MetaItem>
+                  {lastActivity.body ? (
+                    <MetaItem label="Commentaire détaillé">
+                      <span className="whitespace-pre-wrap">
+                        {lastActivity.body}
+                      </span>
+                    </MetaItem>
+                  ) : null}
+                </>
+              ) : (
+                <MetaItem label="Dernière action">—</MetaItem>
+              )}
+              <MetaItem label="Prochaine action">
+                {deal.nextAction || "—"}
+              </MetaItem>
+              <MetaItem label="Prochaine relance">
+                {deal.followUpAt ? (
+                  <span
+                    className={
+                      overdue
+                        ? "font-medium text-msk-coral"
+                        : undefined
+                    }
+                  >
+                    {deal.followUpAt.toLocaleDateString("fr-FR")}
+                    {overdue ? " · En retard" : ""}
+                  </span>
                 ) : (
                   "—"
                 )}

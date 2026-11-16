@@ -10,27 +10,32 @@ import {
   ClientForm,
   type ClientFormInitial,
 } from "@/components/commercial/client-form";
+import { ClientHardDeleteControl } from "@/components/commercial/client-hard-delete";
 import { COM_DOCS_GATED } from "@/lib/commercial/gates";
 
 /**
- * Actions fiche client — Modifier (modal) · Nouveau devis (si non gelé).
+ * Actions fiche client — Modifier · Nouveau devis · Supprimer (si droit).
  */
 export function ClientDetailActions({
   clientId,
+  clientName,
   canEdit,
   canCreateQuote,
+  canDelete,
   initial,
 }: {
   clientId: string;
+  clientName: string;
   canEdit: boolean;
   canCreateQuote: boolean;
+  canDelete?: boolean;
   initial: ClientFormInitial;
 }) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const showNewQuote = canCreateQuote && !COM_DOCS_GATED;
 
-  if (!canEdit && !showNewQuote) return null;
+  if (!canEdit && !showNewQuote && !canDelete) return null;
 
   return (
     <>
@@ -53,6 +58,12 @@ export function ClientDetailActions({
           >
             Nouveau devis
           </ActionLink>
+        ) : null}
+        {canDelete ? (
+          <ClientHardDeleteControl
+            clientId={clientId}
+            entityLabel={clientName}
+          />
         ) : null}
       </div>
 

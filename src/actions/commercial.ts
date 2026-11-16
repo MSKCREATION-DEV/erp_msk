@@ -16,7 +16,13 @@ import {
 } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/rbac/resolve";
 import { writeAudit } from "@/lib/audit";
+import {
+  hardDeleteClient,
+  loadClientHardDeleteInventory,
+} from "@/lib/crm/hard-delete";
+import type { HardDeleteInventory } from "@/lib/crm/hard-delete-meta";
 import { computeDocTotals } from "@/lib/commercial/totals";
 import { nextComNumber } from "@/lib/commercial/numbering";
 import { ensureClientDocFolder } from "@/lib/commercial/ged-client";
@@ -1871,4 +1877,59 @@ export async function recordPaymentAction(
   );
   revalidateComptaBridge();
   return { ok: true, message: "Paiement enregistré" };
+}
+
+/** Inventaire avant hard-delete client (Direction / habilité). */
+export async function previewClientHardDeleteAction(
+  clientId: string,
+): Promise<
+  | { ok: true; inventory: HardDeleteInventory }
+  | { ok: false; error: string }
+> {
+  await requireUser({ permission: "com.clients.delete" });
+  const id = clientId.trim();
+  if (!id) return { ok: false, error: "Client manquant" };
+  const inventory = await loadClientHardDeleteInventory(id);
+  if (!inventory) return { ok: false, error: "Client introuvable" };
+  return { ok: true, inventory };
+}
+
+/** Hard-delete client + pièces commerciales + opportunité source / org orpheline. */
+export async function deleteClientHardAction(
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "com.clients.delete" });
+  if (!hasPermission(actor, "com.clients.delete") && !actor.isSuperAdmin) {
+    return { ok: false, error: "Pas le droit de supprimer un client" };
+  }
+  const clientId = String(formData.get("clientId") ?? "").trim();
+  if (!clientId) return { ok: false, error: "Client manquant" };
+
+  const before = await loadClientHardDeleteInventory(clientId);
+  if (!before) return { ok: false, error: "Client introuvable" };
+
+  const res = await hardDeleteClient(clientId);
+  if (!res.ok) return { ok: false, error: res.error };
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "com.clients.delete",
+    entityType: "com_client",
+    entityId: clientId,
+    metadata: {
+      label: before.label,
+      counts: before.counts,
+      willDeleteOrganization: before.willDeleteOrganization,
+    },
+  });
+
+  revalidatePath("/commercial/clients");
+  revalidatePath("/commercial");
+  revalidatePath("/crm/prospects");
+  revalidatePath("/crm");
+  revalidatePath("/comptabilite");
+  return redirectWithFlash(
+    "/commercial/clients",
+    "Client supprimé définitivement.",
+  );
 }

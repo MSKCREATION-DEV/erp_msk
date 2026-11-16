@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-16 (Studio Playground pro + catalogue variables gabarits ; voir §8) |
+| Dernière mise à jour | 2026-11-16 (Prospects : listing + hard-delete + fiche + réseaux ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -102,9 +102,9 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `demarrage-accueil` | Premiers pas dans l’ERP | accueil | `validated` | routes accueil, packs chips |
 | `iam-inviter-utilisateur` | Inviter un collaborateur | administration | `validated` | manuel 01 + routes admin |
 | `ged-comprendre-acces` | Comprendre son accès GED | ged | `validated` | manuel 02 + permissions |
-| `crm-creer-prospect` | Créer un prospect | commercial | `to_validate` | live doublons 3 car. + ack contact — revalider UI |
-| `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `outdated` | CRUD relances + RDV + Perdu sans min 3× — à réécrire |
-| `crm-transformer-client` | Transformer un prospect en client | commercial | `to_validate` | UX 2026-11-09 : identité figée CRM, source préremplie, composition picker + déplacement tarifé, récap crayons ; hors Perdu |
+| `crm-creer-prospect` | Créer un prospect | commercial | `to_validate` | live doublons 3 car. + ack contact — revalider UI ; réseaux handle→URL |
+| `crm-suivre-relancer` | Suivre et relancer un prospect | commercial | `outdated` | CRUD relances + RDV + Perdu sans min 3× — à réécrire ; fiche Suivi enrichi 2026-11-16 |
+| `crm-transformer-client` | Transformer un prospect en client | commercial | `outdated` | + hard-delete Direction (`crm.prospect.delete` / `com.clients.delete`) — à documenter |
 | `com-hub-naviguer` | Naviguer dans le hub Commercial | commercial | `outdated` | Rapport semaine : grille 4 KPI période + liens liste ; hub/cartes — revalider captures et libellés |
 | `com-clients-equipe-historique` | Clients COM : équipe, filtres, historique | commercial | `draft` | liste/fiche + URL `owners=` — parcours à valider humain |
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
@@ -196,6 +196,27 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-16 — Prospects / clients : listing, hard-delete, fiche, réseaux
+
+| | |
+|---|---|
+| Quoi | Listing prospects : date sous « Créé par » (plus de colonne Créé) ; hard-delete prospect/client avec inventaire + confirmation danger ; droits `crm.prospect.delete` / `com.clients.delete` (pack Direction) ; fiche prospect : Entreprise+Notes fusionnées, Suivi enrichi ; réseaux sociaux : handle → URL / validation domaine. |
+| Pourquoi | UX listing plus dense ; suppression cascade contrôlée Direction/habilités ; fiche suivi lisible ; saisie réseaux plus intelligente. |
+| Fichiers | `prospects-results.tsx`, `prospects/[id]/page.tsx`, `hard-delete.ts`, `hard-delete-meta.ts`, `prospect-hard-delete.tsx`, `client-hard-delete.tsx`, `hard-delete-confirm.tsx`, `actions/crm.ts`, `actions/commercial.ts`, `catalog.ts`, `social.ts`, `clients/page.tsx`, `client-detail-actions.tsx`, ce suivi |
+| Statut doc | Guides parcours Prospects / Clients → **`outdated`** / à remettre `to_validate` (suppression + droits) |
+| Routes | `/crm/prospects` · `/crm/prospects/[id]` · `/commercial/clients` · `/commercial/clients/[id]` |
+| Dette | Re-seed packs Direction pour pousser les 2 permissions en base ; purge blobs GED hors scope |
+
+### 2026-11-16 — UX fiches + recherche Relances (shell)
+
+| | |
+|---|---|
+| Quoi | Fiches prospect/client : `PageHeader` sans 2ᵉ titre (bandeau identité seul) ; `/crm/relances` : `ListSearchForm` hors `Suspense` (même pattern que Prospects — saisie stable, debounce → `?q=`). |
+| Pourquoi | Doublon visuel sous « Retour » ; recherche relances qui perdait le focus à chaque rechargement des résultats. |
+| Fichiers | `page-header.tsx`, `crm/prospects/[id]/page.tsx`, `commercial/clients/[id]/page.tsx`, `crm/relances/page.tsx`, `relances-results.tsx`, ce suivi |
+| Statut doc | `crm-suivre-relancer` reste `to_validate` (revalider recherche relances au clavier) |
+| Routes | `/crm/prospects/[id]` · `/commercial/clients/[id]` · `/crm/relances` |
 
 ### 2026-11-16 — Studio : Playground pro + alignement gabarits Commercial/RH
 
