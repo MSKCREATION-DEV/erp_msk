@@ -46,6 +46,8 @@ export type GenerateSamplePdfOptions = {
     blocks?: TemplateBlock[];
     headerTitle?: string;
     logoAlign?: DrawHeaderOptions["logoAlign"];
+    /** Valeurs `{{slug}}` éditables (écrase le catalogue sample). */
+    variableOverrides?: Record<string, string>;
   };
 };
 
@@ -316,7 +318,10 @@ export async function generateSamplePdfForTemplate(
         .map((b) => (b as { text: string }).text)
         .join("\n"),
     );
-    const sampleContext = await buildSampleContextForSlugs(declaredSlugs);
+    const sampleContext = await buildSampleContextForSlugs(
+      declaredSlugs,
+      opts.playground?.variableOverrides,
+    );
 
     const payload = playgroundOverride
       ? {

@@ -217,7 +217,10 @@ function contratStageDsl(): string {
 const contratPresta = [
   "# Contrat de prestation de services (RH)",
   "",
-  "> Gabarit prestataire RH (MSK = Client). Texte intégral, tableaux Parties et clauses réciproques : source `generateContractPrestaPdf` v3 — document de référence « CONTRAT DE PRESTATION DE SERVICES » (OCR ECOSOL).",
+  "> Prestataire : {{collaborateur.prenom}} {{collaborateur.nom}} — {{collaborateur.fonction}}",
+  "> Réf. {{document.numero}} — {{document.date}}",
+  "",
+  "Gabarit prestataire RH (MSK = Client). Texte intégral, tableaux Parties et clauses réciproques : source `generateContractPrestaPdf` v3 — référence locale `CONTRAT DE PRESTATION DE SERVICES.pdf` (adaptation rôles documentée, sans invention d'articles).",
   "",
   "[[COMPOSITE: rh_contract_presta]]",
 ].join("\n");
@@ -225,12 +228,14 @@ const contratPresta = [
 const devisStandard = [
   "# Devis",
   "",
-  "Référence {{document.numero}} — émis le {{document.date}}.",
+  "Référence {{document.numero}} — émis le {{document.date}} — validité {{document.validite}}.",
   "",
+  "> Client : {{client.nom}}",
+  "> Adresse : {{client.adresse}}",
   "> Objet : {{devis.objet}}",
   "> Mission : {{devis.mission}}",
   "",
-  "Le tableau des prestations, montants HT/TVA/TTC et pied de page légal reprend le gabarit Devis MSK (`generateCommercialPdf`, type DEVIS).",
+  "Le tableau des prestations (désignation, quantité, prix unitaire, montant), totaux HT / TVA / TTC, conditions (acompte), bloc signature et pied de page légal MSK sont rendus par le composite fidèle aux devis de référence (`DEVIS HOTEL RESIDENCE LES COLONNES`, `DEVIS-2 PROSPERITY MANAGEMENT`, `DEVIS CHARTRES GRAPHIQUE HOTEL COLONNES`).",
   "",
   "[[COMPOSITE: commercial_devis]]",
 ].join("\n");
@@ -241,8 +246,9 @@ const factureStandard = [
   "Référence {{document.numero}} — émise le {{document.date}}.",
   "",
   "> Client : {{client.nom}}",
+  "> Adresse : {{client.adresse}}",
   "",
-  "Le tableau des lignes facturées, TVA, soldes reportés éventuels et mentions légales reprend le gabarit Facture MSK (`generateCommercialPdf`, type FACTURE).",
+  "Le tableau des lignes facturées (dates éventuelles, désignation, quantité, PU, montant), TVA, totaux, mentions de règlement et pied de page légal MSK sont rendus par le composite fidèle aux factures de référence (`FACTURE ECOSOL`, factures KOUNDJI / PROSPERITY).",
   "",
   "[[COMPOSITE: commercial_facture]]",
 ].join("\n");
@@ -250,7 +256,10 @@ const factureStandard = [
 const contratCommercial = [
   "# Contrat de prestation commerciale (client MSK)",
   "",
-  "> Contrat multipages avec grilles d'offres, BDC et clauses validation — texte intégral issu de `generateContractPdf` (families PRESTATION / ABONNEMENT, OCR références ECOSOL).",
+  "> Client : {{client.nom}} — {{client.adresse}}",
+  "> Réf. {{document.numero}} — {{document.date}}",
+  "",
+  "Contrat multipages (parties, objet, offres / BDC, obligations, confidentialité, propriété intellectuelle, données personnelles, résiliation, droit applicable Bamako, signatures) — texte intégral issu de `generateContractPdf` (familles PRESTATION / ENGAGEMENT), références `CONTRAT DE PRESTATION DE SERVICES`, `CONTRAT D'ENGAGEMENT`, modèles RS.",
   "",
   "[[COMPOSITE: commercial_contract]]",
 ].join("\n");
@@ -258,7 +267,10 @@ const contratCommercial = [
 const fichePaie = [
   "# Bulletin de salaire",
   "",
-  "> Document indicatif — cotisations Mali (INPS/CANAM) alignées sur la fiche Guiro 09/2026 ; module Paie finalisera les taux officiels.",
+  "> Collaborateur : {{collaborateur.prenom}} {{collaborateur.nom}} — {{collaborateur.fonction}}",
+  "> Période / émission : {{document.date}} — réf. {{document.numero}}",
+  "",
+  "Document indicatif — cotisations Mali (INPS/CANAM) alignées sur la référence locale `Fiche de Paie de Guiro Amadou Samba du 01-09-2026 au 31-09-2026.pdf` ; module Paie finalisera les taux officiels.",
   "",
   "[[COMPOSITE: rh_payslip]]",
 ].join("\n");
@@ -285,17 +297,20 @@ export const LEGACY_TEMPLATE_DSL_SPECS: LegacyTemplateDslSpec[] = [
   {
     code: "devis_standard",
     body: devisStandard,
-    changelog: "Migration Studio — texte d’entête + composite commercial_devis.",
+    changelog:
+      "Studio — entête slots client/objet/mission/validité + composite commercial_devis (réfs DEVIS docs/).",
   },
   {
     code: "facture_standard",
     body: factureStandard,
-    changelog: "Migration Studio — entête + composite commercial_facture.",
+    changelog:
+      "Studio — entête client/adresse + composite commercial_facture (réfs FACTURE docs/).",
   },
   {
     code: "contrat_commercial_msk",
     body: contratCommercial,
-    changelog: "Migration Studio — composite commercial_contract (OCR ECOSOL).",
+    changelog:
+      "Studio — bandeau client/réf + composite commercial_contract (PRESTATION / ENGAGEMENT).",
   },
   {
     code: "contrat_travail_msk",
@@ -310,27 +325,28 @@ export const LEGACY_TEMPLATE_DSL_SPECS: LegacyTemplateDslSpec[] = [
   {
     code: "contrat_presta_msk",
     body: contratPresta,
-    changelog: "Migration Studio — composite rh_contract_presta.",
+    changelog:
+      "Studio — bandeau collab. + composite rh_contract_presta (réf. CONTRAT PRESTATION).",
   },
   {
     code: "attestation_stage_msk",
     body: attestationStage,
-    changelog: "Migration Studio — texte attestation Mangara v2.",
+    changelog: "Studio — texte attestation Mangara v2.",
   },
   {
     code: "reglement_interieur_msk",
     body: reglementInterieur,
-    changelog: "Migration Studio — résumé 6 chapitres + accusé (rh.ts).",
+    changelog: "Studio — résumé 6 chapitres + accusé (pas 22 art. intégral).",
   },
   {
     code: "solde_tout_compte_msk",
     body: soldeToutCompte,
-    changelog: "Migration Studio — texte solde Mangara v2.",
+    changelog: "Studio — texte solde Mangara v2.",
   },
   {
     code: "fiche_paie_msk",
     body: fichePaie,
-    changelog: "Migration Studio — composite rh_payslip.",
+    changelog: "Studio — bandeau collab. + composite rh_payslip (réf. Guiro 09/2026).",
   },
 ];
 

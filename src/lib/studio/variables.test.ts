@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  applyVariableOverrides,
   extractVariableSlugs,
   MissingVariableError,
   resolveTemplateString,
@@ -54,7 +55,22 @@ function main() {
     resolveTemplateString("{{document.numero}}", { document: {} }, { strict: true }),
   );
 
-  console.log("✓ studio/variables.test.ts — extraction + résolution stricte/aperçu OK");
+  // Overrides Playground — écrase le sample nested
+  const merged = applyVariableOverrides(
+    { collaborateur: { prenom: "Awa", nom: "Traoré" } },
+    { "collaborateur.prenom": "Fatou", "document.date": "16/11/2026" },
+  );
+  assert.equal(
+    (merged.collaborateur as { prenom: string }).prenom,
+    "Fatou",
+  );
+  assert.equal(
+    (merged.collaborateur as { nom: string }).nom,
+    "Traoré",
+  );
+  assert.equal((merged.document as { date: string }).date, "16/11/2026");
+
+  console.log("✓ studio/variables.test.ts — extraction + résolution + overrides OK");
 }
 
 main();

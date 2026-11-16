@@ -91,6 +91,7 @@ export async function POST(request: Request, context: RouteContext) {
       headerTitle?: string;
       logoAlign?: DrawHeaderOptions["logoAlign"];
       signaturePreview?: boolean;
+      variableOverrides?: Record<string, string>;
     };
 
     if (template.generatorKind !== "ENGINE_BLOCKS") {
@@ -100,6 +101,15 @@ export async function POST(request: Request, context: RouteContext) {
       );
     }
 
+    const variableOverrides =
+      body.variableOverrides && typeof body.variableOverrides === "object"
+        ? Object.fromEntries(
+            Object.entries(body.variableOverrides).filter(
+              ([k, v]) => typeof k === "string" && typeof v === "string",
+            ),
+          )
+        : undefined;
+
     const pdfBytes = await generateSamplePdfForTemplate(template, {
       ownerUserId: user.id,
       ownerDisplayName: `${user.firstName} ${user.lastName}`,
@@ -108,6 +118,7 @@ export async function POST(request: Request, context: RouteContext) {
         bodyText: body.bodyText,
         headerTitle: body.headerTitle,
         logoAlign: body.logoAlign,
+        variableOverrides,
       },
     });
 

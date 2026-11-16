@@ -151,6 +151,93 @@ const VARIABLE_CATALOG = [
     category: "DOCUMENT" as const,
     sampleValue: "85 000 FCFA",
   },
+  {
+    slug: "solde.montant_lettres",
+    label: "Montant solde en lettres",
+    category: "DOCUMENT" as const,
+    sampleValue: "(Quatre-vingt-cinq mille)",
+  },
+  {
+    slug: "solde.reference",
+    label: "Référence paiement solde",
+    category: "DOCUMENT" as const,
+    sampleValue: " par chèque N°2740277",
+  },
+  {
+    slug: "solde.attestation_clause",
+    label: "Clause attestation jointe (solde)",
+    category: "DOCUMENT" as const,
+    sampleValue: "mon attestation de stage ainsi que, ",
+  },
+  {
+    slug: "collaborateur.adresse_suffixe",
+    label: "Suffixe adresse collaborateur",
+    category: "COLLABORATEUR" as const,
+    sampleValue: ", demeurant à Yirimadio, Bamako",
+  },
+  {
+    slug: "collaborateur.naissance_suffixe",
+    label: "Suffixe date de naissance",
+    category: "COLLABORATEUR" as const,
+    sampleValue: ", né(e) le 03/03/2003",
+  },
+  {
+    slug: "collaborateur.piece_identite_suffixe",
+    label: "Suffixe pièce d'identité",
+    category: "COLLABORATEUR" as const,
+    sampleValue: ", titulaire de la pièce d'identité n° 199 19990504 000037",
+  },
+  {
+    slug: "contrat.date_debut_phrase",
+    label: "Phrase date d'effet (contrat travail)",
+    category: "DOCUMENT" as const,
+    sampleValue:
+      "Le présent contrat prend effet le 01/09/2026 et est conclu pour une durée indéterminée.",
+  },
+  {
+    slug: "contrat.date_debut_phrase_stage",
+    label: "Phrase durée (contrat stage)",
+    category: "DOCUMENT" as const,
+    sampleValue: "Le stage prend effet le 01/09/2026 et s'achève le 30/09/2026.",
+  },
+  {
+    slug: "contrat.periode_essai_mois",
+    label: "Durée période d'essai (mois)",
+    category: "DOCUMENT" as const,
+    sampleValue: "3",
+  },
+  {
+    slug: "contrat.remuneration_phrase",
+    label: "Phrase rémunération",
+    category: "DOCUMENT" as const,
+    sampleValue:
+      "En contrepartie, le salarié percevra une rémunération mensuelle nette de 250 000 FCFA, versée à terme échu par virement ou tout mode autorisé.",
+  },
+  {
+    slug: "contrat.gratification_phrase",
+    label: "Phrase gratification stage",
+    category: "DOCUMENT" as const,
+    sampleValue:
+      "Gratification mensuelle nette de 85 000 FCFA, versée à terme échu.",
+  },
+  {
+    slug: "contrat.dispositions_particulieres_block",
+    label: "Bloc dispositions particulières (optionnel)",
+    category: "DOCUMENT" as const,
+    sampleValue: "",
+  },
+  {
+    slug: "contrat.dispositions_generales_titre",
+    label: "Titre dispositions générales (travail)",
+    category: "DOCUMENT" as const,
+    sampleValue: "# Article 15 : Dispositions générales",
+  },
+  {
+    slug: "contrat.dispositions_generales_titre_stage",
+    label: "Titre dispositions générales (stage)",
+    category: "DOCUMENT" as const,
+    sampleValue: "# Article 12 : Dispositions générales",
+  },
 ] satisfies Array<{
   slug: string;
   label: string;

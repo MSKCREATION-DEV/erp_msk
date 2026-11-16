@@ -8,7 +8,9 @@ import { PageShell } from "@/components/ui/page-shell";
 import { TemplatePlaygroundForm } from "@/components/admin/template-playground-form";
 import { blocksToText } from "@/lib/studio/dsl";
 import { parseBlocks } from "@/lib/studio/types";
+import { findCompositeRenderer } from "@/lib/studio/composite";
 import { canGenerateExemplaire } from "@/lib/studio/generate-sample-pdf";
+import { extractVariableSlugs } from "@/lib/studio/variables";
 
 export const metadata: Metadata = { title: "Playground gabarit" };
 
@@ -32,16 +34,43 @@ export default async function GabaritPlaygroundPage({
   }
 
   const editable = template.generatorKind === "ENGINE_BLOCKS";
-  const initialBody =
+  const blocks =
     editable && template.publishedVersion
-      ? blocksToText(parseBlocks(template.publishedVersion.bodyJson))
-      : "";
+      ? parseBlocks(template.publishedVersion.bodyJson)
+      : [];
+  const initialBody = editable && blocks.length > 0 ? blocksToText(blocks) : "";
+  const hasComposite = Boolean(findCompositeRenderer(blocks));
+  const bodySlugs = extractVariableSlugs(initialBody);
+
+  let variableDefs: Array<{
+    slug: string;
+    label: string;
+    sampleValue: string | null;
+  }>;
+  if (bodySlugs.length === 0) {
+    variableDefs = await prisma.templateVariableDef.findMany({
+      orderBy: [{ category: "asc" }, { slug: "asc" }],
+      take: 40,
+      select: { slug: true, label: true, sampleValue: true },
+    });
+  } else {
+    const matched = await prisma.templateVariableDef.findMany({
+      where: { slug: { in: bodySlugs } },
+      orderBy: { slug: "asc" },
+      select: { slug: true, label: true, sampleValue: true },
+    });
+    const found = new Set(matched.map((m) => m.slug));
+    const missing = bodySlugs
+      .filter((s) => !found.has(s))
+      .map((slug) => ({ slug, label: slug, sampleValue: null as string | null }));
+    variableDefs = [...matched, ...missing];
+  }
 
   return (
     <PageShell>
       <PageHeader
         title="Playground"
-        description={`Aperçu éditable — ${template.name} (${template.code}). Les changements ne sont pas enregistrés tant que vous ne publiez pas depuis l’éditeur.`}
+        description={`Données test, contenu DSL et aperçu PDF réel — ${template.name} (${template.code}). Aucune modification n’est enregistrée ici.`}
         backHref={`/administration/gabarits/${id}`}
         backLabel="Retour à la fiche"
         breadcrumbs={[
@@ -55,9 +84,12 @@ export default async function GabaritPlaygroundPage({
       <TemplatePlaygroundForm
         templateId={template.id}
         templateName={template.name}
+        templateCode={template.code}
         initialBodyText={initialBody}
         signatureDefaultOff={!template.signatureEnabled}
         editable={editable}
+        variableDefs={variableDefs}
+        hasComposite={hasComposite}
       />
     </PageShell>
   );

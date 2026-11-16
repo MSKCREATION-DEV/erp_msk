@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-16 (Organigramme Espoir/Eric + avatar GED unique ; voir §8) |
+| Dernière mise à jour | 2026-11-16 (Studio Playground pro + catalogue variables gabarits ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-16 — Studio : Playground pro + alignement gabarits Commercial/RH
+
+| | |
+|---|---|
+| Quoi | Playground refondu (onglets Données test / Contenu DSL / Mise en page) : variables éditables, aperçu PDF live debounce, sticky preview, télécharger / réinitialiser, pending visible. Catalogue `TemplateVariableDef` complété (slugs RH solde/contrat). DSL Commercial & RH enrichi (slots client/réf. sans invention de clauses). API POST exemplaire accepte `variableOverrides`. |
+| Pourquoi | Chaque gabarit géré comme « Attestation de présence » (ENGINE_BLOCKS publié) ; Playground au niveau Documentero / PDFMonkey / Efalia (test data + aperçu réel). |
+| Fichiers | `template-playground-form.tsx`, `playground/page.tsx`, `exemplaire/route.ts`, `sample-context.ts`, `variables.ts`, `generate-sample-pdf.ts`, `template-dsl-bodies.ts`, `prisma/seed-studio.ts`, `docs/studio-documentaire/INVENTAIRE-REFERENCES.md`, ce suivi |
+| Statut doc | Inventaire maj ; guide `/guides` Studio toujours **`draft`** |
+| Routes | `/administration/gabarits/[id]/playground` |
+| Dette restante | `reglement_interieur_msk` = résumé 6 chapitres (22 art. intégral hors scope) ; solde reporté facture / grille offres devis = écarts assumés ; composites encore hors édition WYSIWYG tableaux |
 
 ### 2026-11-16 — Stocks : code article auto + mouvements Mode / Payé par / réf.
 

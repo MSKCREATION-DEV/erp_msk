@@ -36,6 +36,31 @@ export class UnknownVariableError extends Error {
   }
 }
 
+function setPath(target: Record<string, unknown>, path: string, value: string) {
+  const parts = path.split(".");
+  let cur: Record<string, unknown> = target;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const key = parts[i];
+    if (typeof cur[key] !== "object" || cur[key] === null) {
+      cur[key] = {};
+    }
+    cur = cur[key] as Record<string, unknown>;
+  }
+  cur[parts[parts.length - 1]] = value;
+}
+
+/** Merge des overrides Playground (slug → valeur) dans un contexte nested. */
+export function applyVariableOverrides(
+  base: Record<string, unknown>,
+  overrides: Record<string, string>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = structuredClone(base);
+  for (const [slug, value] of Object.entries(overrides)) {
+    setPath(out, slug, value);
+  }
+  return out;
+}
+
 /** Extrait tous les slugs `{{slug}}` d’un texte (dédupliqués, ordre d’apparition). */
 export function extractVariableSlugs(text: string): string[] {
   const out: string[] = [];
