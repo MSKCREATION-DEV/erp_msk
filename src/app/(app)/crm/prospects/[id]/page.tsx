@@ -24,7 +24,6 @@ import {
 import { listCommercialRoster } from "@/lib/crm/team";
 import { formatContactLabel } from "@/lib/crm/contact-label";
 import {
-  ACTIVITY_LABELS,
   formatXof,
   SOURCE_LABELS,
   STAGE_HINTS,
@@ -48,12 +47,12 @@ import { ProspectDetailActions } from "@/components/crm/prospect-detail-actions"
 import { AssignProspectForm } from "@/components/crm/assign-prospect-form";
 import { AssignmentRequestForm } from "@/components/crm/assignment-request-form";
 import { RelanceCountBadge } from "@/components/crm/relance-count-badge";
-import { RelanceActions } from "@/components/crm/relance-actions";
 import { ActivityJournalActions } from "@/components/crm/activity-journal-actions";
 import { OriginChip } from "@/components/crm/origin-chip";
 import { OfferConfigBadges } from "@/components/crm/offer-config-badges";
 import { SocialNetworkBadges } from "@/components/crm/social-network-badges";
 import { ProspectHardDeleteControl } from "@/components/crm/prospect-hard-delete";
+import { ProspectSuiviSection } from "@/components/crm/prospect-suivi-section";
 import { countOutreachActivities } from "@/lib/crm/follow-up-count";
 import { loadProspectLinkedEntities } from "@/lib/crm/prospect-linked-entities";
 import {
@@ -61,10 +60,7 @@ import {
   collectOwnerIdsFromActivityBodies,
   timelineKindLabel,
 } from "@/lib/crm/prospect-timeline";
-import {
-  followUpRequiredForStage,
-  normalizeUiStage,
-} from "@/lib/crm/guide-rules";
+import { normalizeUiStage } from "@/lib/crm/guide-rules";
 import { DocPdfThumb } from "@/components/commercial/doc-pdf-thumb";
 import {
   COM_DOCS_GATED,
@@ -126,7 +122,7 @@ function Section({
   className?: string;
 }) {
   return (
-    <Surface className={cn("flex h-full flex-col p-5 sm:p-6", className)}>
+    <Surface className={cn("p-5 sm:p-6", className)}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-sm font-semibold tracking-tight text-msk-ink">
           {title}
@@ -906,7 +902,7 @@ export default async function CrmProspectDetailPage({
       ) : null}
 
       {/* Grille plein largeur */}
-      <div className="grid gap-4 @xl:grid-cols-12">
+      <div className="grid items-start gap-4 @xl:grid-cols-12">
         <div className="@xl:col-span-7">
           <Section title="Entreprise & notes">
             <div className="grid gap-6 @md:grid-cols-12">
@@ -1001,121 +997,19 @@ export default async function CrmProspectDetailPage({
 
         <div className="@xl:col-span-5">
           <Section title="Suivi">
-            <dl className="space-y-4">
-              {lastActivity ? (
-                <>
-                  <MetaItem label="Dernière action">
-                    <span className="font-medium">
-                      {ACTIVITY_LABELS[lastActivity.type]}
-                    </span>
-                    <span className="mt-0.5 block text-xs text-msk-ink/45">
-                      {lastActivity.occurredAt.toLocaleString("fr-FR")}
-                      {" · "}
-                      {lastActivity.actor.firstName}{" "}
-                      {lastActivity.actor.lastName}
-                    </span>
-                  </MetaItem>
-                  <MetaItem label="Canal / type d’action">
-                    {ACTIVITY_LABELS[lastActivity.type]}
-                  </MetaItem>
-                  <MetaItem label="Résumé de l’échange">
-                    {lastActivity.summary}
-                  </MetaItem>
-                  {lastActivity.body ? (
-                    <MetaItem label="Commentaire détaillé">
-                      <span className="whitespace-pre-wrap">
-                        {lastActivity.body}
-                      </span>
-                    </MetaItem>
-                  ) : null}
-                </>
-              ) : (
-                <MetaItem label="Dernière action">—</MetaItem>
-              )}
-              <MetaItem label="Prochaine action">
-                {deal.nextAction || "—"}
-              </MetaItem>
-              <MetaItem label="Prochaine relance">
-                {deal.followUpAt ? (
-                  <span
-                    className={
-                      overdue
-                        ? "font-medium text-msk-coral"
-                        : undefined
-                    }
-                  >
-                    {deal.followUpAt.toLocaleDateString("fr-FR")}
-                    {overdue ? " · En retard" : ""}
-                  </span>
-                ) : (
-                  "—"
-                )}
-              </MetaItem>
-              {deal.probability != null || deal.expectedCloseAt ? (
-                <>
-                  <MetaItem label="Probabilité">
-                    {deal.probability != null ? `${deal.probability} %` : "—"}
-                  </MetaItem>
-                  <MetaItem label="Clôture prévue">
-                    {deal.expectedCloseAt
-                      ? deal.expectedCloseAt.toLocaleDateString("fr-FR")
-                      : "—"}
-                  </MetaItem>
-                </>
-              ) : null}
-            </dl>
-
-            {deal.tasks.length > 0 ? (
-              <div className="mt-5 border-t border-msk-ink/6 pt-4">
-                <p className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-msk-ink/35">
-                  À traiter
-                </p>
-                <ul className="divide-y divide-msk-ink/6">
-                  {deal.tasks.map((t) => {
-                    const overdue = t.dueAt < new Date();
-                    return (
-                      <li key={t.id} className="py-3 first:pt-0 last:pb-0">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium text-msk-ink">
-                              {t.title}
-                            </p>
-                            <p
-                              className={
-                                overdue
-                                  ? "mt-0.5 text-xs font-medium text-msk-coral"
-                                  : "mt-0.5 text-xs text-msk-ink/45"
-                              }
-                            >
-                              {t.dueAt.toLocaleDateString("fr-FR")}
-                              {overdue ? " · En retard" : ""}
-                            </p>
-                          </div>
-                          {canMutate ? (
-                            <RelanceActions
-                              className="shrink-0"
-                              taskId={t.id}
-                              opportunityId={deal.id}
-                              requireFollowUp={followUpRequiredForStage(
-                                normalizeUiStage(deal.stage),
-                              )}
-                              orgName={deal.organization.name}
-                              title={t.title}
-                              dueAt={t.dueAt}
-                              showFicheLink={false}
-                            />
-                          ) : null}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ) : (
-              <p className="mt-5 border-t border-msk-ink/6 pt-4 text-sm text-msk-ink/40">
-                Aucune relance ouverte.
-              </p>
-            )}
+            <ProspectSuiviSection
+              lastActivity={lastActivity}
+              nextAction={deal.nextAction}
+              followUpAt={deal.followUpAt}
+              followUpOverdue={overdue}
+              probability={deal.probability}
+              expectedCloseAt={deal.expectedCloseAt}
+              stage={deal.stage}
+              tasks={deal.tasks}
+              canMutate={canMutate}
+              opportunityId={deal.id}
+              orgName={deal.organization.name}
+            />
           </Section>
         </div>
 

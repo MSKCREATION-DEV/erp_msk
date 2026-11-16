@@ -90,6 +90,91 @@ function digitsOnly(raw: string): string {
   return raw.replace(/\D+/g, "");
 }
 
+function normalizeUrlForCompare(raw: string): string {
+  let v = raw.trim().toLowerCase().replace(/\/$/, "");
+  v = v.replace(/^https?:\/\/www\./, (m) =>
+    m.startsWith("https") ? "https://" : "http://",
+  );
+  return v;
+}
+
+/** Comparaison migration — ignore casse, slash final, www. */
+export function socialUrlsEquivalent(a: string, b: string): boolean {
+  return normalizeUrlForCompare(a) === normalizeUrlForCompare(b);
+}
+
+function pathSegments(pathname: string): string[] {
+  return pathname.split("/").filter(Boolean);
+}
+
+/**
+ * URL HTTPS canonique par réseau (sans www., sans slash final).
+ * Retourne null si le chemin est vide (profil incomplet) — sauf WhatsApp.
+ */
+function canonicalizeSocialUrl(
+  network: SocialNetworkKey,
+  urlString: string,
+): string | null {
+  try {
+    const u = new URL(
+      urlString.includes("://") ? urlString : `https://${urlString}`,
+    );
+    const segs = pathSegments(u.pathname);
+
+    if (network === "whatsapp") {
+      if (u.hostname.toLowerCase() === "wa.me") {
+        const n = segs[0] ?? digitsOnly(u.pathname);
+        if (n.length >= 8) return `https://wa.me/${n}`;
+      }
+      u.protocol = "https:";
+      return u.toString().replace(/\/$/, "");
+    }
+
+    if (segs.length === 0) return null;
+
+    switch (network) {
+      case "instagram": {
+        const handle = segs[0]!.replace(/^@+/, "");
+        if (!handle || ["p", "reel", "reels", "stories"].includes(handle)) {
+          u.protocol = "https:";
+          return u.toString().replace(/\/$/, "");
+        }
+        return `https://instagram.com/${handle}`;
+      }
+      case "linkedin": {
+        if (segs[0] === "company" && segs[1]) {
+          return `https://linkedin.com/company/${segs[1]}`;
+        }
+        if (segs[0] === "in" && segs[1]) {
+          return `https://linkedin.com/in/${segs[1]}`;
+        }
+        if (segs[0] === "school" && segs[1]) {
+          return `https://linkedin.com/school/${segs[1]}`;
+        }
+        const slug = segs[segs.length - 1]!;
+        if (slug) return `https://linkedin.com/company/${slug}`;
+        return null;
+      }
+      case "tiktok": {
+        let user = segs[0]!;
+        if (user === "@" || user === "") return null;
+        if (!user.startsWith("@")) user = `@${user.replace(/^@+/, "")}`;
+        return `https://tiktok.com/${user}`;
+      }
+      case "facebook": {
+        const page = segs[0]!;
+        if (!page) return null;
+        return `https://facebook.com/${page}`;
+      }
+      default:
+        u.protocol = "https:";
+        return u.toString().replace(/\/$/, "");
+    }
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Normalise une saisie réseau social :
  * - vide → null
@@ -119,9 +204,9 @@ export function normalizeSocialUrl(
         };
       }
       try {
-        const u = new URL(withScheme);
-        u.protocol = "https:";
-        return { ok: true, url: u.toString().replace(/\/$/, "") };
+        const canon = canonicalizeSocialUrl("whatsapp", withScheme);
+        if (!canon) return { ok: false, error: "Lien WhatsApp invalide" };
+        return { ok: true, url: canon };
       } catch {
         return { ok: false, error: "Lien WhatsApp invalide" };
       }
@@ -148,9 +233,14 @@ export function normalizeSocialUrl(
       };
     }
     try {
-      const u = new URL(withScheme);
-      u.protocol = "https:";
-      return { ok: true, url: u.toString().replace(/\/$/, "") };
+      const canon = canonicalizeSocialUrl(network, withScheme);
+      if (!canon) {
+        return {
+          ok: false,
+          error: `Lien ${def.label} incomplet — ajoutez le nom du compte ou l’URL complète.`,
+        };
+      }
+      return { ok: true, url: canon };
     } catch {
       return { ok: false, error: `Lien ${def.label} invalide` };
     }
@@ -191,4 +281,38 @@ export function normalizeSocialField(
   const net = SOCIAL_NETWORKS.find((n) => n.field === field);
   if (!net) return { ok: false, error: "Réseau inconnu" };
   return normalizeSocialUrl(net.key, raw);
+}
+
+/**
+ * Re-normalise une valeur déjà persistée (sanitize ancien, handle seul derrière https://).
+ * Ne jamais effacer une URL sans remplacement valide.
+ */
+export function remigrateSocialField(
+  field: SocialField,
+  stored: string,
+): NormalizeSocialResult {
+  const trimmed = stored.trim();
+  if (!trimmed) return { ok: true, url: null };
+
+  const attempts: NormalizeSocialResult[] = [
+    normalizeSocialField(field, trimmed),
+  ];
+
+  const withoutProto = trimmed.replace(/^https?:\/\//i, "").trim();
+  if (withoutProto && withoutProto !== trimmed) {
+    attempts.push(normalizeSocialField(field, withoutProto));
+  }
+
+  const net = SOCIAL_NETWORKS.find((n) => n.field === field);
+  if (net && !/^https?:\/\//i.test(trimmed)) {
+    attempts.push(normalizeSocialUrl(net.key, trimmed));
+  }
+
+  const winner = attempts.find((r) => r.ok && r.url);
+  if (winner) return winner;
+
+  const lastOk = attempts.find((r) => r.ok);
+  if (lastOk) return lastOk;
+
+  return attempts[0] ?? { ok: false, error: "Impossible de normaliser" };
 }

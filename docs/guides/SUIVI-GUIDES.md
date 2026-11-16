@@ -197,6 +197,15 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-16 — Fiche prospect : grille Suivi + resync URLs sociales
+
+| | |
+|---|---|
+| Quoi | Fiche `/crm/prospects/[id]` : grille `items-start` (plus d’étirement Entreprise/Suivi) ; carte Suivi densifiée (`ProspectSuiviSection`, ligne unique dernière action, commentaire scroll) ; script `scripts/resync-crm-social-urls.ts` + canonisation `normalizeSocialUrl` / `remigrateSocialField`. |
+| Pourquoi | UX prod : vides blancs sur carte courte ; répétitions « Note » ; URLs réseaux mal formées en base. |
+| Fichiers | `prospects/[id]/page.tsx`, `prospect-suivi-section.tsx`, `social.ts`, `resync-crm-social-urls.ts`, ce suivi |
+| Statut doc | Guide fiche prospect — à revalider terrain (layout Suivi) |
+
 ### 2026-11-16 — Gate Playwright Prospects CRM UX + fix hydration fiche
 
 | | |

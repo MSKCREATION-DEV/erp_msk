@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import {
   normalizeSocialUrl,
+  remigrateSocialField,
   sanitizeUrl,
+  socialUrlsEquivalent,
   SOCIAL_NETWORKS,
 } from "./social";
 
@@ -51,11 +53,15 @@ assert.deepEqual(normalizeSocialUrl("whatsapp", "+221 70 12 34 56"), {
   url: "https://wa.me/22170123456",
 });
 
-// URLs valides
-assert.equal(
-  normalizeSocialUrl("instagram", "https://www.instagram.com/resto/").ok,
-  true,
+// URLs valides → canoniques
+assert.deepEqual(
+  normalizeSocialUrl("instagram", "https://www.instagram.com/resto/"),
+  { ok: true, url: "https://instagram.com/resto" },
 );
+assert.deepEqual(normalizeSocialUrl("tiktok", "https://www.tiktok.com/msk"), {
+  ok: true,
+  url: "https://tiktok.com/@msk",
+});
 assert.equal(
   normalizeSocialUrl("whatsapp", "https://wa.me/22170123456").ok,
   true,
@@ -76,5 +82,24 @@ assert.deepEqual(normalizeSocialUrl("instagram", "  "), {
   ok: true,
   url: null,
 });
+
+// Lien incomplet (host seul)
+assert.equal(
+  normalizeSocialUrl("instagram", "https://instagram.com/").ok,
+  false,
+);
+
+// Ancien sanitize : handle derrière https://
+assert.deepEqual(remigrateSocialField("instagramUrl", "https://mon_resto"), {
+  ok: true,
+  url: "https://instagram.com/mon_resto",
+});
+
+assert.ok(
+  socialUrlsEquivalent(
+    "https://www.Instagram.com/resto/",
+    "https://instagram.com/resto",
+  ),
+);
 
 console.log("social.test.ts OK");
