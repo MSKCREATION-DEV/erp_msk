@@ -8,6 +8,7 @@ import { crmVisibility } from "@/lib/crm/scope";
 import { firstSearchParam } from "@/lib/crm/scope-period";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
+import { ListSearchForm } from "@/components/ui/list-search-form";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { RelancesResults } from "./relances-results";
 
@@ -48,6 +49,19 @@ export default async function CrmRelancesPage({
           { label: "Relances" },
         ]}
       />
+
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <Suspense
+          fallback={
+            <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk sm:max-w-md" />
+          }
+        >
+          <ListSearchForm
+            placeholder="Rechercher entreprise, contact, téléphone, commercial…"
+            className="min-w-0 flex-1 sm:max-w-md"
+          />
+        </Suspense>
+      </div>
 
       <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={10} cols={8} />}>
         <RelancesResults searchParams={searchParams} />

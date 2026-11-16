@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import type { CrmPipelineStage, Prisma } from "@/generated/prisma/client";
 import { CrmTaskStatus } from "@/generated/prisma/client";
@@ -53,7 +52,6 @@ import { formatContactLabel } from "@/lib/crm/contact-label";
 import { Surface } from "@/components/ui/surface";
 import { Badge } from "@/components/ui/badge";
 import { ListPagination } from "@/components/ui/list-pagination";
-import { ListSearchForm } from "@/components/ui/list-search-form";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { KpiRadial } from "@/components/crm/kpi-radial";
 import { RelanceActions } from "@/components/crm/relance-actions";
@@ -513,7 +511,7 @@ function RelanceTable({
   );
 }
 
-function SearchToolbar({
+function RelanceSearchFeedback({
   q,
   clearSearchHref,
   resultCount,
@@ -522,37 +520,24 @@ function SearchToolbar({
   clearSearchHref: string;
   resultCount: number | null;
 }) {
+  if (!q) return null;
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <Suspense
-        fallback={
-          <div className="h-10 w-full max-w-sm animate-pulse rounded-xl bg-msk-chalk sm:max-w-md" />
-        }
+    <div className="flex flex-wrap items-center gap-2 text-sm text-msk-ink/55">
+      <span>
+        {resultCount === 0
+          ? "Aucun résultat"
+          : resultCount === 1
+            ? "1 résultat"
+            : `${resultCount} résultats`}{" "}
+        pour «&nbsp;{q}&nbsp;»
+      </span>
+      <Link
+        prefetch={false}
+        href={clearSearchHref}
+        className="font-medium text-msk-blue hover:underline"
       >
-        <ListSearchForm
-          placeholder="Rechercher une relance, un prospect, un client…"
-          className="sm:max-w-md"
-        />
-      </Suspense>
-      {q ? (
-        <div className="flex flex-wrap items-center gap-2 text-sm text-msk-ink/55">
-          <span>
-            {resultCount === 0
-              ? "Aucun résultat"
-              : resultCount === 1
-                ? "1 résultat"
-                : `${resultCount} résultats`}{" "}
-            pour «&nbsp;{q}&nbsp;»
-          </span>
-          <Link
-            prefetch={false}
-            href={clearSearchHref}
-            className="font-medium text-msk-blue hover:underline"
-          >
-            Effacer
-          </Link>
-        </div>
-      ) : null}
+        Effacer
+      </Link>
     </div>
   );
 }
@@ -709,7 +694,7 @@ export async function RelancesResults({
             }
           />
           <div className="flex flex-col justify-end gap-3 sm:col-span-1 xl:col-span-2">
-            <SearchToolbar
+            <RelanceSearchFeedback
               q={q}
               clearSearchHref={clearSearchHref}
               resultCount={totalFaites}
@@ -1027,7 +1012,7 @@ export async function RelancesResults({
       </div>
 
       <div className="flex flex-col gap-3">
-        <SearchToolbar
+        <RelanceSearchFeedback
           q={q}
           clearSearchHref={clearSearchHref}
           resultCount={listTotal}

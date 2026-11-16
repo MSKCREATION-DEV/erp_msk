@@ -19,6 +19,8 @@ export function PageHeader({
   backHref,
   backLabel = "Retour",
   className,
+  /** Fiche détail : identité dans le bandeau hero — pas de 2ᵉ h1 sous le retour. */
+  hideTitle = false,
 }: {
   title: string;
   description?: string;
@@ -28,6 +30,7 @@ export function PageHeader({
   backHref?: string;
   backLabel?: string;
   className?: string;
+  hideTitle?: boolean;
 }) {
   const crumbs = filterPageBreadcrumbs(breadcrumbs ?? [], {
     title,
@@ -83,9 +86,11 @@ export function PageHeader({
             ))}
           </nav>
         ) : null}
-        <h1 className="break-words text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
-          {title}
-        </h1>
+        {hideTitle ? null : (
+          <h1 className="break-words text-2xl font-semibold tracking-tight text-msk-ink sm:text-3xl">
+            {title}
+          </h1>
+        )}
         {description && description !== title ? (
           <p className="mt-1.5 max-w-2xl break-words text-sm leading-relaxed text-msk-ink/55">
             {description}
