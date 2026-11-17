@@ -9,7 +9,7 @@ import type { CompositeRenderer } from "@/lib/studio/composite";
 import {
   compositeHtmlModel,
   type CompositeHtmlModel,
-} from "@/lib/studio/composite-regions";
+} from "@/lib/studio/composite-html-model";
 import type { OfficialPdfPayload } from "@/lib/studio/official-payload";
 import type { TemplateBlock } from "@/lib/studio/types";
 import { resolveTemplateString } from "@/lib/studio/variables";
