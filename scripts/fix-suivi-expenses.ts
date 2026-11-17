@@ -2,6 +2,7 @@
  * One-shot / idempotent : aligne charges Suivi sur seed-data (décision J).
  * Usage: npx tsx --env-file=.env.local scripts/fix-suivi-expenses.ts
  *
+ * Inclut corr. Direction 2026-11-17 : CB503620260901 → EMISE / paid=0 / payments [].
  * Ne touche PAS Auth / mots de passe.
  * Ne lance PAS le seed GED (évite hang réseau Storage).
  */

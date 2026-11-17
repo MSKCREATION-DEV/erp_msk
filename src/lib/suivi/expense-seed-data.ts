@@ -38,9 +38,10 @@ export type SvExpenseSeedRow = {
 
 /**
  * Synthèse OCR 2026-11-12 + confirmation Direction (statuts paiement) :
- * - Non payées (3) : Orange oct. CB503620261001 · EDM oct. · loyer nov.
- * - Payées (3) : Orange août/sept. (passé Direction) · loyer oct. (OCR Pour acquit).
+ * - Non payées (4) : Orange oct. CB503620261001 · Orange sept. CB503620260901 · EDM oct. · loyer nov.
+ * - Payées (2) : Orange août CB503620260801 (passé Direction) · loyer oct. (OCR Pour acquit).
  * - Orange : pdftotext · EDM / Loyer : scans photo.
+ * Correction Direction 2026-11-17 : sept. CB503620260901 n’est PAS payée (erreur humaine antérieure).
  * Date de paiement exacte inconnue → paidAt = échéance (ou émission) + note Direction.
  */
 export const SV_SEED_EXPENSE_INVOICES: SvExpenseSeedRow[] = [
@@ -110,7 +111,7 @@ export const SV_SEED_EXPENSE_INVOICES: SvExpenseSeedRow[] = [
   {
     sourceDocument: "docs/facture_CB503620260901.pdf",
     category: "ORANGE_INTERNET",
-    status: "PAYEE",
+    status: "EMISE",
     vendorName: "Orange Mali",
     vendorRef: "CB5036 / A00367302863",
     number: "CB503620260901",
@@ -122,18 +123,11 @@ export const SV_SEED_EXPENSE_INVOICES: SvExpenseSeedRow[] = [
     totalHt: 55000,
     totalVat: 9900,
     totalTtc: 71390,
-    amountPaid: 71390,
+    amountPaid: 0,
     object: "Orange Internet FO B2B — septembre 2026",
     notes:
-      "OCR pdftotext. HT 55 000 · TVA 9 900 · Facture 64 900 · FDS 6 490 · Total 71 390. PAYEE — soldé selon confirmation Direction (passé). Date exacte inconnue → paidAt = échéance. Pas de mouvement caisse inventé.",
-    payments: [
-      {
-        amount: 71390,
-        paidAt: "2026-11-13",
-        method: "Non précisé",
-        note: "soldé selon confirmation Direction (passé)",
-      },
-    ],
+      "OCR pdftotext. HT 55 000 · TVA 9 900 · Facture 64 900 · FDS 6 490 · Total 71 390. Statut : non payée (correction Direction 2026-11-17 — erreur « payée » antérieure).",
+    payments: [],
   },
   {
     sourceDocument: "docs/facture_CB503620260801.pdf",

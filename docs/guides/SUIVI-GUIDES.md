@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-17 (Studio : pipeline unifié DSL+régions ; voir §8) |
+| Dernière mise à jour | 2026-11-17 (Charges : Orange sept. CB503620260901 non payée ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -196,6 +196,15 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-17 — Charges : Orange sept. CB503620260901 non payée
+
+| | |
+|---|---|
+| Quoi | Correction Direction : charge Orange **CB503620260901** (sept. 2026) repasse **EMISE** / `amountPaid=0` / sans paiements seed (était PAYEE par erreur). Synthèse seed : **4 non payées** · **2 PAYEE** (août Orange + loyer oct.). |
+| Pourquoi | Confirmation humaine — la facture n’est pas payée. |
+| Fichiers | `expense-seed-data.ts`, `scripts/fix-suivi-expenses.ts`, `DECISIONS-SEED` §11 / décision J, `INVENTAIRE` §12, ce suivi |
+| Statut doc | Inventaire / décisions alignés ; guide hub reste **`draft`** |
 
 ### 2026-11-16 — Fiche prospect : grille Suivi + resync URLs sociales
 
@@ -523,8 +532,8 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 | | |
 |---|---|
-| Quoi | Alignement statuts seed charges : **3 non payées** (Orange oct. CB503620261001, EDM, loyer nov.) · **3 PAYEE** (Orange août/sept. + loyer oct.) ; script `fix-suivi-expenses.ts` |
-| Pourquoi | Confirmation Direction — Orange passé = soldé ; dates exactes inconnues → paidAt = échéance + note Direction |
+| Quoi | Alignement statuts seed charges (état 2026-11-12) : 3 non payées · 3 PAYEE — **obsolète partiel** : voir entrée 2026-11-17 (sept. CB503620260901 → non payée). Script `fix-suivi-expenses.ts` |
+| Pourquoi | Confirmation Direction initiale — corrigée ensuite pour Orange sept. |
 | Fichiers | `expense-seed-data.ts`, `scripts/fix-suivi-expenses.ts`, `DECISIONS-SEED` §11, `INVENTAIRE` §12 |
 | Statut doc | Inventaire / décisions mis à jour ; guide hub reste **`draft`** |
 

@@ -19,7 +19,7 @@
 | **G** | **Paiements / soldes clients (confirmation Direction 2026-11-10)** — voir §8. KOUNDJI & ISDALINIA = **tout payé / reste 0** (compléments datés `2026-11-10` + note « confirmation Direction » si date exacte inconnue). ECOSOL = paiements cash **uniquement** 200 000 (02/10 → FAC-155) + 260 000 (04/11 → 22910263) ; arriéré 106 800 reporté FAC-155→22910263 via écriture `Report facture` (pas un encaissement). Prosperity **387 000** = TTC **FAC-22710262** (pas FAC-122=424 000) ; FAC-122 reste Excel absorbé par report récap. |
 | **H** | **Stocks inventaire courant (confirmation Direction 2026-11-11)** — voir §9. Remplace le snapshot Excel ~33 lignes par **18 articles** listés par Direction (quantités exactes). Unités : pièce / paquet / paire / pack / sachet. Codes stables `PAP-` / `ECR-` / `BUR-` / `ALI-` / `HYI-` / `INF-`. Lignes Excel hors liste → **archivées** (`archivedAt`), pas supprimées. Resync soldes forcé via `SV_STOCK_FORCE_QTY=1` (`scripts/fix-suivi-stocks.ts`) — le seed normal ne réécrit pas les qté après go-live. |
 | **I** | **Comptes bascule Direction (confirmation 2026-11-12)** — voir §10. Soldes d’ouverture : **physique 145 000** · **banque 204 815** FCFA. Date de bascule = **12/11/2026 début de journée** Bamako (UTC+0 = `2026-11-12T00:00:00.000Z`). Historique antérieur (OUT seed, miroirs pre-bascule…) reste **visible** mais `countsTowardBalance=false` (exclu du solde). Solde courant = écriture d’ouverture IN + mouvements ≥ bascule. Pas de soldes négatifs dus au passé inconnu. |
-| **J** | **Charges / factures internes (2026-11-12)** — voir §11. Table **`sv_expense_invoices`** séparée des factures clients. UI **Charges** (`/suivi/charges`). Seed OCR 6 PDF (`docs/`). **Non payées (3)** : Orange oct. CB503620261001, EDM oct., loyer nov. **Payées (3)** : Orange août + sept. (confirmation Direction — passé ; date exacte inconnue → paidAt = échéance + note « soldé selon confirmation Direction (passé) ») ; loyer oct. (OCR « Pour acquit » signé, confirmé). GED `08_SUIVI_TAMPON/charges/{orange\|edm\|loyer}`. Paiement UI peut créer OUT lié (miroir). Script `scripts/fix-suivi-expenses.ts`. |
+| **J** | **Charges / factures internes (2026-11-12, corr. 2026-11-17)** — voir §11. Table **`sv_expense_invoices`** séparée des factures clients. UI **Charges** (`/suivi/charges`). Seed OCR 6 PDF (`docs/`). **Non payées (4)** : Orange oct. CB503620261001, Orange sept. CB503620260901, EDM oct., loyer nov. **Payées (2)** : Orange août CB503620260801 (confirmation Direction — passé ; date exacte inconnue → paidAt = échéance + note « soldé selon confirmation Direction (passé) ») ; loyer oct. (OCR « Pour acquit » signé, confirmé). Correction 2026-11-17 : sept. CB503620260901 **n’est PAS payée** (erreur humaine antérieure). GED `08_SUIVI_TAMPON/charges/{orange\|edm\|loyer}`. Paiement UI peut créer OUT lié (miroir). Script `scripts/fix-suivi-expenses.ts`. |
 
 Lien croisé : [`SPEC.md`](./SPEC.md) · [`docs/intent/module-suivi-tampon.md`](../../intent/module-suivi-tampon.md)
 
@@ -389,14 +389,14 @@ Fuseau : Bamako = UTC+0 → `baselineAt = 2026-11-12T00:00:00.000Z`.
 | Seed | Inventaire §12 — PAYEE uniquement avec preuve OCR **ou** confirmation Direction |
 | Fix DB | `npx tsx --env-file=.env.local scripts/fix-suivi-expenses.ts` |
 
-### Statuts paiement — confirmation Direction (2026-11-12)
+### Statuts paiement — confirmation Direction (2026-11-12, corr. 2026-11-17)
 
 | N° | Fichier | Statut final | amountPaid | paidAt | Note |
 |----|---------|--------------|------------|--------|------|
 | CB503620261001 | `facture_CB503620261001.pdf` | **EMISE** (non payée) | 0 | — | Confirmation Direction |
 | 455053 | `Fac-edm-octobre.pdf` | **EMISE** (non payée) | 0 | — | Confirmation Direction |
 | 2026/01597 | `Fac-location-novembre.pdf` | **EMISE** (non payée) | 0 | — | Confirmation Direction |
-| CB503620260901 | `facture_CB503620260901.pdf` | **PAYEE** | 71 390 (= TTC) | 2026-11-13 (= échéance) | soldé selon confirmation Direction (passé) — date exacte inconnue |
+| CB503620260901 | `facture_CB503620260901.pdf` | **EMISE** (non payée) | 0 | — | Correction Direction 2026-11-17 — n’est PAS payée (erreur « PAYEE » antérieure) |
 | CB503620260801 | `facture_CB503620260801.pdf` | **PAYEE** | 79 113 (= TTC) | 2026-10-12 (= échéance) | soldé selon confirmation Direction (passé) — date exacte inconnue |
 | 2026/01435 | `FACTURE_LOYER_OCT_2026-10-08.pdf` | **PAYEE** | 400 000 | 2026-10-08 | OCR Pour acquit + confirmé Direction |
 
