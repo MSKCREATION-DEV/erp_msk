@@ -2,7 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { z } from "zod";
-import { LayoutDashboard, Plus } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  Landmark,
+  LayoutDashboard,
+  PieChart,
+  Plus,
+  Wallet,
+} from "lucide-react";
 import type { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
@@ -20,9 +28,9 @@ import {
   familyToCategoryFilterValues,
   SV_CATEGORY_FAMILIES,
   SV_CATEGORY_FAMILY_LABEL,
+  type SvCategoryFamily,
 } from "@/lib/suivi/categories";
-import { formatSvXof } from "@/lib/suivi/labels";
-import { sumFlows } from "@/lib/suivi/dashboard-stats";
+import { expenseByFamily, sumFlows } from "@/lib/suivi/dashboard-stats";
 import {
   clampPage,
   DEFAULT_PAGE_SIZE,
@@ -37,6 +45,8 @@ import {
   type SortDir,
   listKeyFromSearchParams,
 } from "@/lib/list/sort";
+import { gridKpi2, gridKpi3 } from "@/lib/ui/layout-grids";
+import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -47,6 +57,7 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { SvMouvementsToolbar } from "@/components/suivi/mouvements-toolbar";
+import { SvMoneyText } from "@/components/suivi/sv-money-text";
 
 export const metadata: Metadata = { title: "Mouvements · Suivi" };
 
@@ -144,17 +155,126 @@ export default async function SuiviMouvementsPage({
 
 function MouvementsSummarySkeleton() {
   return (
-    <div className="mb-4 space-y-3">
+    <div className="mb-5 space-y-3">
       <div className="h-4 w-64 animate-pulse rounded bg-msk-chalk" />
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className={gridKpi3}>
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="h-24 animate-pulse rounded-xl border border-msk-ink/8 bg-white"
+            className="h-28 animate-pulse rounded-xl border border-msk-ink/8 bg-white"
+          />
+        ))}
+      </div>
+      <div className={gridKpi2}>
+        {[0, 1].map((i) => (
+          <div
+            key={i}
+            className="h-20 animate-pulse rounded-xl border border-msk-ink/8 bg-msk-chalk/40"
           />
         ))}
       </div>
     </div>
+  );
+}
+
+function buildMouvementsListHref(params: {
+  q?: string;
+  direction?: "IN" | "OUT";
+  from?: string;
+  to?: string;
+  compte?: "PHYSICAL" | "BANK";
+  categorie?: SvCategoryFamily;
+  category?: string;
+}): string {
+  const sp = new URLSearchParams();
+  if (params.q) sp.set("q", params.q);
+  if (params.direction) sp.set("direction", params.direction);
+  if (params.from) sp.set("from", params.from);
+  if (params.to) sp.set("to", params.to);
+  if (params.compte) sp.set("compte", params.compte);
+  if (params.categorie) sp.set("categorie", params.categorie);
+  if (params.category) sp.set("category", params.category);
+  const qs = sp.toString();
+  return qs ? `/suivi/mouvements?${qs}` : "/suivi/mouvements";
+}
+
+function ActivityKpiCard({
+  href,
+  icon: Icon,
+  tone,
+  label,
+  amount,
+  amountTone,
+  signed,
+  hint,
+  title,
+}: {
+  href?: string;
+  icon: typeof Wallet;
+  tone: "coral" | "blue" | "ink";
+  label: string;
+  amount?: number;
+  amountTone?: "neutral" | "in" | "out" | "warn";
+  signed?: boolean;
+  hint: string;
+  /** Ligne principale alternative (ex. nom de famille) au lieu du montant. */
+  title?: string;
+}) {
+  const iconBg =
+    tone === "coral"
+      ? "bg-msk-coral/10 text-msk-coral"
+      : tone === "blue"
+        ? "bg-msk-blue/8 text-msk-blue"
+        : "bg-msk-ink/6 text-msk-ink/70";
+
+  const body = (
+    <div className="flex items-start gap-3">
+      <span
+        className={cn(
+          "flex size-9 shrink-0 items-center justify-center rounded-lg",
+          iconBg,
+        )}
+      >
+        <Icon className="size-4" aria-hidden />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/40">
+          {label}
+        </p>
+        {title ? (
+          <p className="mt-1 truncate text-base font-semibold text-msk-ink">
+            {title}
+          </p>
+        ) : null}
+        {amount !== undefined ? (
+          <div className={cn(title ? "mt-0.5" : "mt-1")}>
+            <SvMoneyText
+              amount={amount}
+              tone={amountTone ?? "neutral"}
+              size={title ? "sm" : "lg"}
+              signed={signed}
+            />
+          </div>
+        ) : null}
+        <p className="mt-1 text-[11px] leading-snug text-msk-ink/40">{hint}</p>
+      </div>
+    </div>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        prefetch={false}
+        className="rounded-xl border border-msk-ink/8 bg-white p-4 transition hover:border-msk-blue/30 hover:shadow-sm"
+      >
+        {body}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-msk-ink/8 bg-white p-4">{body}</div>
   );
 }
 
@@ -303,12 +423,38 @@ async function MouvementsSummary({
   if (filters.category) filterChips.push(filters.category);
   if (q) filterChips.push(`« ${q} »`);
 
-  const netTone =
-    flows.netOps < 0
-      ? "text-msk-coral"
-      : flows.netOps > 0
-        ? "text-emerald-700"
-        : "text-msk-ink";
+  const topFamily = expenseByFamily(activityMoves)[0] ?? null;
+  const topSharePct =
+    topFamily && flows.outOps > 0
+      ? Math.round((topFamily.amount / flows.outOps) * 100)
+      : null;
+
+  const listFilterBase = {
+    q: q || undefined,
+    direction: filters.direction,
+    from: filters.from,
+    to: filters.to,
+    compte: filters.compte,
+    categorie: filters.categorie,
+    category: filters.category,
+  };
+
+  const outHref = buildMouvementsListHref({
+    ...listFilterBase,
+    direction: "OUT",
+  });
+  const inHref = buildMouvementsListHref({
+    ...listFilterBase,
+    direction: "IN",
+  });
+  const topFamilyHref = topFamily
+    ? buildMouvementsListHref({
+        ...listFilterBase,
+        categorie: topFamily.family,
+        category: undefined,
+        direction: "OUT",
+      })
+    : undefined;
 
   return (
     <div className="mb-5 space-y-3">
@@ -327,65 +473,85 @@ async function MouvementsSummary({
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
-          <p className="text-xs uppercase tracking-caps text-msk-ink/45">
-            Sorties d’activité
-          </p>
-          <p className="mt-1 text-xl font-semibold tabular-nums text-msk-coral">
-            {formatSvXof(flows.outOps)}
-          </p>
-          <p className="mt-1 text-[11px] leading-snug text-msk-ink/40">
-            Dépenses du filtre (pas le solde de caisse)
-          </p>
-        </div>
-        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
-          <p className="text-xs uppercase tracking-caps text-msk-ink/45">
-            Entrées d’activité
-          </p>
-          <p className="mt-1 text-xl font-semibold tabular-nums text-msk-blue">
-            {formatSvXof(flows.inOps)}
-          </p>
-          <p className="mt-1 text-[11px] leading-snug text-msk-ink/40">
-            Encaissements / rentrées du filtre
-          </p>
-        </div>
-        <div className="rounded-xl border border-msk-ink/8 bg-white p-4">
-          <p className="text-xs uppercase tracking-caps text-msk-ink/45">
-            Net activité
-          </p>
-          <p className={`mt-1 text-xl font-semibold tabular-nums ${netTone}`}>
-            {flows.netOps > 0 ? "+" : ""}
-            {formatSvXof(flows.netOps)}
-          </p>
-          <p className="mt-1 text-[11px] leading-snug text-msk-ink/40">
-            Entrées − sorties · négatif = plus de sorties que d’entrées
-          </p>
-        </div>
+      <div className={gridKpi3}>
+        <ActivityKpiCard
+          href={outHref}
+          icon={ArrowDownRight}
+          tone="coral"
+          label="Sorties d’activité"
+          amount={flows.outOps}
+          amountTone="out"
+          hint="Dépenses du filtre (pas le solde de caisse)"
+        />
+        <ActivityKpiCard
+          href={inHref}
+          icon={ArrowUpRight}
+          tone="blue"
+          label="Entrées d’activité"
+          amount={flows.inOps}
+          amountTone="in"
+          signed={flows.inOps > 0}
+          hint="Encaissements / rentrées du filtre"
+        />
+        {topFamily ? (
+          <ActivityKpiCard
+            href={topFamilyHref}
+            icon={PieChart}
+            tone="ink"
+            label="Principale dépense"
+            title={topFamily.label}
+            amount={topFamily.amount}
+            amountTone="out"
+            hint={
+              topSharePct !== null
+                ? `${topSharePct} % des sorties du filtre · voir le détail`
+                : "Plus grosse famille de dépenses du filtre"
+            }
+          />
+        ) : (
+          <ActivityKpiCard
+            icon={PieChart}
+            tone="ink"
+            label="Principale dépense"
+            title="Aucune sortie"
+            hint="Pas de dépense d’activité sur ce filtre"
+          />
+        )}
       </div>
 
       {!filters.compte && balanceByAccount.length > 0 ? (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className={gridKpi2}>
           {balanceByAccount.map((acc) => (
             <Link
               key={acc.id}
               prefetch={false}
               href={`/suivi/comptes/${acc.id}`}
-              className="rounded-xl border border-msk-ink/8 bg-msk-chalk/40 px-4 py-3 transition hover:border-msk-blue/30 hover:bg-white"
+              className="rounded-xl border border-msk-ink/8 bg-gradient-to-br from-white via-white to-msk-chalk/80 px-4 py-3.5 transition hover:border-msk-blue/30 hover:shadow-sm"
             >
-              <p className="text-[11px] font-medium uppercase tracking-caps text-msk-ink/40">
-                Solde {acc.label.replace(/^Compte\s+/i, "").toLowerCase()}
-              </p>
-              <p
-                className={`mt-0.5 text-lg font-semibold tabular-nums ${
-                  acc.balance < 0 ? "text-msk-coral" : "text-msk-ink"
-                }`}
-              >
-                {formatSvXof(acc.balance)}
-              </p>
-              <p className="text-[11px] text-msk-ink/40">
-                Cash réel courant · indépendant du filtre liste
-              </p>
+              <div className="flex items-start gap-3">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-msk-blue/8 text-msk-blue">
+                  {acc.kind === "BANK" ? (
+                    <Landmark className="size-4" aria-hidden />
+                  ) : (
+                    <Wallet className="size-4" aria-hidden />
+                  )}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold uppercase tracking-caps text-msk-ink/40">
+                    Solde {acc.label.replace(/^Compte\s+/i, "").toLowerCase()}
+                  </p>
+                  <div className="mt-0.5">
+                    <SvMoneyText
+                      amount={acc.balance}
+                      tone={acc.balance < 0 ? "warn" : "neutral"}
+                      size="md"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-msk-ink/40">
+                    Cash réel courant · indépendant du filtre liste
+                  </p>
+                </div>
+              </div>
             </Link>
           ))}
         </div>
@@ -541,8 +707,13 @@ async function MouvementsResults({
                 <td className="px-4 py-3 text-msk-ink/60">
                   {m.clientProject ?? "—"}
                 </td>
-                <td className="px-4 py-3 text-right tabular-nums font-medium">
-                  {formatSvXof(m.amount)}
+                <td className="px-4 py-3 text-right">
+                  <SvMoneyText
+                    amount={m.direction === "OUT" ? -m.amount : m.amount}
+                    tone={m.direction === "IN" ? "in" : "out"}
+                    size="sm"
+                    signed
+                  />
                 </td>
                 <td className="px-4 py-3 text-xs text-msk-ink/45">
                   {m.reference ?? "—"}

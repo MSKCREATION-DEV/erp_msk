@@ -61,10 +61,11 @@ Route : `/suivi/mouvements`.
 |------------|--------|----------|
 | Sorties d’activité | `sumFlows` sur filtre + `countsTowardBalance=true` | Dépenses du filtre, hors archive / ouverture / transferts |
 | Entrées d’activité | idem | Encaissements / rentrées du filtre |
-| Net activité | `inOps − outOps` | Explicitement « activité », pas le cash en caisse ; négatif = plus de sorties |
+| Principale dépense | `expenseByFamily` → top slice | Famille budgétaire dominante du filtre + % des sorties (remplace Net activité, redondant) |
 | Solde physique / banque | `accountBalanceFromMoves` (ledger courant) | Cash réel, **indépendant** du filtre liste (masqué si filtre `compte`) |
 
-Aide UI courte sous les cartes. Aligné sur les flux TB (même `sumFlows`).
+Aide UI courte sous les cartes. Aligné sur les flux TB (même `sumFlows` / `expenseByFamily`).  
+**Exclu (2026-11-17) :** Net activité (`inOps − outOps`) — redondant dès que Sorties + Entrées sont affichées.
 
 ---
 

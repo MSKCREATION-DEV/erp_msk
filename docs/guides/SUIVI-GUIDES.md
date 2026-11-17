@@ -269,6 +269,16 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 | Routes | `/administration/gabarits/[id]/playground` |
 | Dette restante | `reglement_interieur_msk` = résumé 6 chapitres (22 art. intégral hors scope) ; solde reporté facture / grille offres devis = écarts assumés ; composites encore hors édition WYSIWYG tableaux |
 
+### 2026-11-17 — Mouvements : montants + KPI « Principale dépense »
+
+| | |
+|---|---|
+| Quoi | Liste `/suivi/mouvements` : montants colorés / signés (`SvMoneyText`) ; KPI cartes alignées TB (icônes) ; **Net activité** remplacé par **Principale dépense** (top `expenseByFamily` + % sorties, lien filtre catégorie) |
+| Pourquoi | Net = redondant (Entrées − Sorties) ; montants peu scannables |
+| Fichiers | `mouvements/page.tsx`, `sv-money-text.tsx`, `DASHBOARD-KPI.md`, ce suivi |
+| Statut doc | Guide `sv-hub-naviguer` reste **`draft`** — revalider bandeau KPI mouvements |
+| Routes | `/suivi/mouvements` |
+
 ### 2026-11-16 — Stocks : code article auto + mouvements Mode / Payé par / réf.
 
 - **Pourquoi** : code article saisi à la main (collisions) ; Mode / Payé par / Référence en texte libre sur mouvements ; pattern « Autre » absent.
