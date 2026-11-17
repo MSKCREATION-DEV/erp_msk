@@ -1,6 +1,6 @@
 # Studio documentaire — Inventaire exhaustif `docs/` ↔ gabarits
 
-**Date** : 2026-11-13 · **MàJ** : 2026-11-16 (Playground pro + catalogue variables) · **Branche** : `dev`  
+**Date** : 2026-11-13 · **MàJ** : 2026-11-17 (DSL complet + preview HTML Playground) · **Branche** : `dev`  
 **Règle** : aucune invention — chaque ligne est traçable à un fichier du dépôt ou à une référence locale documentée (hors Git).
 
 Sources croisées : `docs/commercial/INVENTAIRE-ALIGNEMENT-DOCUMENTS-2026-11-08.md`, `docs/specs/suivi-tampon/INVENTAIRE-DOCUMENTS.md`, `prisma/seed.ts` / `prisma/seed-studio.ts`, code `src/lib/pdf/*`.
@@ -31,7 +31,7 @@ Sources croisées : `docs/commercial/INVENTAIRE-ALIGNEMENT-DOCUMENTS-2026-11-08.
 | `contrat_stage_msk` | CONTRAT_STAGE | ENGINE_BLOCKS | Articles stage en base | Contrat Yaye Bah.docx | v2 seed |
 | `contrat_presta_msk` | CONTRAT_PRESTA | ENGINE_BLOCKS | `[[COMPOSITE: rh_contract_presta]]` | CONTRAT PRESTATION SERVICES (OCR ECOSOL) | v3 — adaptation rôles |
 | `attestation_stage_msk` | ATTESTATION_STAGE | ENGINE_BLOCKS | Texte Mangara v2 en base | Attestation Mangara (scan) | v2 |
-| `reglement_interieur_msk` | REGLEMENT_INTERIEUR | ENGINE_BLOCKS | Résumé 6 chapitres + accusé | Règlement Fatoumata (~10 p. OCR) | **Partiel** — pas 22 art. intégral |
+| `reglement_interieur_msk` | REGLEMENT_INTERIEUR | ENGINE_BLOCKS | 6 chapitres détaillés + accusé (volume 22 art. en GED) | Règlement Fatoumata (~10 p. OCR) | **Accusé complet** — 22 art. hors PDF dynamique |
 | `solde_tout_compte_msk` | SOLDE_TOUT_COMPTE | ENGINE_BLOCKS | Texte solde v2 en base | Solde Mangara.pdf | v2 |
 | `fiche_paie_msk` | FICHE_PAIE | ENGINE_BLOCKS | `[[COMPOSITE: rh_payslip]]` | Fiche paie Guiro 09/2026 | v2 — indicatif (Phase Paie) |
 | `facture_charge_edm_msk` | DOCUMENT_LIBRE | ENGINE_BLOCKS | Coque — **à valider** | `docs/Fac-edm-octobre.pdf` | Pas d’OCR clauses ce lot |
@@ -87,13 +87,16 @@ Points **à valider** (reprise inventaires existants, non bloquants seed) :
 |-----------|---------|
 | Génération exemplaire (legacy + Studio) | `src/lib/studio/generate-sample-pdf.ts` |
 | Téléchargement / iframe | `GET /api/administration/gabarits/[id]/exemplaire` |
-| Playground POST (Studio) | `POST` même route — corps / logo / signature preview |
-| UI Playground | `/administration/gabarits/[id]/playground` — onglets Données test / DSL / Mise en page, debounce live, sticky PDF, `variableOverrides` |
+| Playground POST (Studio) | `POST` même route — corps / logo / signature preview / `variableOverrides` — mode texte (composites strippés, aligné HTML) |
+| Preview HTML | `renderBlocksToHtml` — chrome en-tête / pied MSK + blocs DSL + placeholder composite |
+| UI Playground | `/administration/gabarits/[id]/playground` — onglets Données / DSL / Structure / Mise en page ; **preview HTML live** ; CTA **Voir le PDF** (modal blob) |
 | Cartes bibliothèque | `TemplateLibraryCard` — Voir / Télécharger / Playground |
 
 Le bouton « PDF démo » (GED) reste optionnel ; l’exemplaire ne dépend plus d’un upload préalable.
 
-**Patterns retenus (Documentero / PDFMonkey / Efalia)** : formulaire de champs variables (Documentero) · test data + aperçu PDF réel (PDFMonkey) · mode aperçu conception (Efalia ONYX) — adaptés charte MSK, sans upload DOCX inventé.
+**Source de vérité Playground** : DSL / blocs → HTML live **et** PDF on-demand (`playgroundTextMode`). Modules métier : composites officiels inchangés.
+
+**Patterns retenus (Documentero / PDFMonkey / Efalia)** : formulaire de champs variables (Documentero) · test data + aperçu (PDFMonkey) · mode conception (Efalia) — adaptés charte MSK ; **pas** d’iframe PDF par défaut.
 
 ---
 
@@ -110,28 +113,29 @@ Le bouton « PDF démo » (GED) reste optionnel ; l’exemplaire ne dépend plus
 
 ---
 
-## 6. Matrice statut livrable (2026-11-16)
+## 6. Matrice statut livrable (2026-11-17)
 
-| Code | Source `docs/` locale | Slots / variables clés | Statut |
-|------|----------------------|------------------------|--------|
-| `devis_standard` | DEVIS HOTEL / PROSPERITY / CHARTRES (docx) | `document.*`, `client.*`, `devis.*` + composite | **aligné** |
-| `facture_standard` | FACTURE ECOSOL / KOUNDJI / PROSPERITY | `document.*`, `client.*` + composite | **aligné** (solde reporté = dette assumée) |
-| `contrat_commercial_msk` | CONTRAT PRESTATION / ENGAGEMENT | `client.*`, `document.*` + composite | **aligné** |
-| `contrat_travail_msk` | Contrat Travail Guiro.pdf | articles 1–16 + suffixes collab. | **aligné** |
-| `contrat_stage_msk` | Contrat Stage Yaye Bah.docx | articles stage + gratification | **aligné** |
-| `contrat_presta_msk` | CONTRAT DE PRESTATION DE SERVICES.pdf | composite RH v3 | **aligné** (rôles inversés doc.) |
-| `attestation_stage_msk` | ATTESTATION STAGE Mangara.pdf | collab. + dates stage | **aligné** |
-| `reglement_interieur_msk` | Règlement Fatoumata.pdf | 6 chapitres + accusé | **partiel** (pas 22 art.) |
-| `solde_tout_compte_msk` | Solde Mangara.pdf | `solde.*` + collab. | **aligné** |
-| `fiche_paie_msk` | Fiche Paie Guiro 09/2026.pdf | composite payslip | **aligné** (indicatif Paie) |
-| `attestation_presence_libre` | seed Studio (démonstrateur) | collab. + entreprise + document | **aligné** (pattern canon) |
+| Code | Source `docs/` locale | Sections DSL éditables | Composite | Statut |
+|------|----------------------|------------------------|-----------|--------|
+| `devis_standard` | DEVIS HOTEL / PROSPERITY / CHARTRES | Émetteur, client, objet, mission, conditions, mentions | `commercial_devis` | **complet** (tableau = composite) |
+| `facture_standard` | FACTURE ECOSOL / KOUNDJI / PROSPERITY | Émetteur, client, règlement, mentions | `commercial_facture` | **complet** (solde reporté = dette) |
+| `contrat_commercial_msk` | CONTRAT PRESTATION / ENGAGEMENT + ANALYSE | Articles 1–13 + méta / parties | `commercial_contract` | **complet** (multipages officiel = composite) |
+| `contrat_travail_msk` | Contrat Travail Guiro.pdf | Articles 1–16 | — | **complet** |
+| `contrat_stage_msk` | Contrat Stage Yaye Bah.docx | Articles stage | — | **complet** |
+| `contrat_presta_msk` | CONTRAT PRESTATION + COMPARAISON v2/v3 | Articles 1–10 | `rh_contract_presta` | **complet** |
+| `attestation_stage_msk` | ATTESTATION STAGE Mangara.pdf | Corps attestation | — | **complet** |
+| `reglement_interieur_msk` | Règlement Fatoumata.pdf | 6 chapitres détaillés + accusé | — | **accusé complet** (22 art. GED) |
+| `solde_tout_compte_msk` | Solde Mangara.pdf | Corps solde | — | **complet** |
+| `fiche_paie_msk` | Fiche Paie Guiro 09/2026.pdf | ID / rémun. / cotisations / congés | `rh_payslip` | **complet** (indicatif Paie) |
+| `attestation_presence_libre` | seed Studio | Corps démo | — | **canon Studio** |
 
 Aucun gabarit de la liste **bloqué manque ref** : les PDF/DOCX métier sont présents sur disque (souvent gitignorés).
 
 ## 7. Reste à faire (explicite)
 
 1. **OCR / validation Direction** des coques charges EDM & loyer + éventuels gabarits Orange.
-2. **Réduction des composites** — porter progressivement tableaux en blocs Studio dédiés.
-3. **Playground WYSIWYG** drag-and-drop (au-delà du DSL + données test actuel).
+2. **Réduction des composites** — blocs tableau natifs Studio (édition cellules).
+3. **Playground WYSIWYG** drag-and-drop (au-delà du DSL actuel).
 4. **Guide utilisateur** `/guides` Studio — statut `draft` dans `SUIVI-GUIDES.md`.
-5. **Règlement intérieur** intégral (22 articles) si Direction fournit le texte source propre (pas OCR seul).
+5. **Règlement intérieur** intégral (22 articles) si Direction fournit un texte source extractible (scan OCR vide aujourd’hui).
+6. **Republier en base** : `npm run db:seed` (met à jour `bodyJson` v1 + catalogue variables).

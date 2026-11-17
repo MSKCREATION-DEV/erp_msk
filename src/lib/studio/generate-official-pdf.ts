@@ -77,6 +77,13 @@ export type GenerateOfficialOptions = {
   logoAlign?: "left" | "center" | "right";
   /** Playground : corps alternatif. */
   blocksOverride?: TemplateBlock[];
+  /**
+   * Playground : ignorer les `[[COMPOSITE]]` et rendre le DSL texte
+   * (aligné preview HTML). Les modules métier ne passent pas ce flag.
+   */
+  playgroundTextMode?: boolean;
+  /** Playground : forcer l’affichage du bloc signature (toggle aperçu). */
+  signatureEnabledOverride?: boolean;
 };
 
 function stripCompositeBlocks(blocks: TemplateBlock[]): TemplateBlock[] {
@@ -162,7 +169,7 @@ export async function generateOfficialPdfFromTemplate(
     publishedBlocksOf(template);
 
   const composite = findCompositeRenderer(blocks);
-  if (composite) {
+  if (composite && !opts.playgroundTextMode) {
     return runComposite(composite, opts);
   }
 
@@ -181,7 +188,8 @@ export async function generateOfficialPdfFromTemplate(
     title: headerTitle,
     context,
     strictVariables: opts.strictVariables,
-    signatureEnabled: template.signatureEnabled,
+    signatureEnabled:
+      opts.signatureEnabledOverride ?? template.signatureEnabled,
     signaturePng: opts.signature.signaturePng,
     signatureLabel: opts.signature.signatureLabel,
     logoAlign: opts.logoAlign,

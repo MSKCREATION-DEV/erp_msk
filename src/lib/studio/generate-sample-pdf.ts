@@ -311,37 +311,50 @@ export async function generateSamplePdfForTemplate(
         ? textToBlocks(opts.playground.bodyText)
         : publishedBlocksOf(template as ActiveTemplate));
 
-    const playgroundOverride = opts.playground?.bodyText || opts.playground?.blocks;
+    const playgroundOverride = Boolean(
+      opts.playground?.bodyText || opts.playground?.blocks,
+    );
     const declaredSlugs = extractVariableSlugs(
-      opts.playground?.bodyText ?? blocks
-        .filter((b) => "text" in b && typeof b.text === "string")
-        .map((b) => (b as { text: string }).text)
-        .join("\n"),
+      opts.playground?.bodyText ??
+        blocks
+          .filter((b) => "text" in b && typeof b.text === "string")
+          .map((b) => (b as { text: string }).text)
+          .join("\n"),
     );
     const sampleContext = await buildSampleContextForSlugs(
       declaredSlugs,
       opts.playground?.variableOverrides,
     );
 
-    const payload = playgroundOverride
-      ? {
-          kind: "blocks_only" as const,
+    /**
+     * Playground = même source que la preview HTML : rendu des blocs DSL
+     * (composites traités comme sections structurelles / ignorés en pdf-lib
+     * texte). Les modules métier gardent le chemin composite officiel via
+     * `sampleOfficialPayload` (GET exemplaire sans override).
+     */
+    if (playgroundOverride) {
+      return generateOfficialPdfFromTemplate({
+        template: template as ActiveTemplate,
+        payload: {
+          kind: "blocks_only",
           context: sampleContext,
           headerTitle: opts.playground?.headerTitle ?? template.name,
-        }
-      : sampleOfficialPayloadForTemplate(template);
-
-    if (payload.kind === "blocks_only") {
-      Object.assign(payload.context, sampleContext);
+        },
+        signature: sig,
+        strictVariables: false,
+        logoAlign: opts.playground?.logoAlign,
+        blocksOverride: blocks,
+        playgroundTextMode: true,
+        signatureEnabledOverride: signatureEnabled,
+      });
     }
 
     return generateOfficialPdfFromTemplate({
       template: template as ActiveTemplate,
-      payload,
+      payload: sampleOfficialPayloadForTemplate(template),
       signature: sig,
       strictVariables: false,
       logoAlign: opts.playground?.logoAlign,
-      blocksOverride: playgroundOverride ? blocks : undefined,
     });
   }
 

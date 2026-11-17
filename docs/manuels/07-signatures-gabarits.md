@@ -26,6 +26,7 @@ Les PDF Commercial (devis, factures) **et RH** utilisent :
 |---|---|
 | Mes signatures | `/signatures` (ou menu Mon espace) |
 | Gabarits | `/administration/gabarits` |
+| Playground gabarit | `/administration/gabarits/[id]/playground` — preview HTML live + PDF à la demande |
 | Charte / brand | `/charte` (référence visuelle) |
 | PDF contrat | `/rh/contrats/[id]` → Générer PDF |
 | PDF collab | `/rh/collaborateurs/[id]` → Documents RH |

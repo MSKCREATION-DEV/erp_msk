@@ -70,7 +70,7 @@ export default async function GabaritPlaygroundPage({
     <PageShell>
       <PageHeader
         title="Playground"
-        description={`Données test, contenu DSL et aperçu PDF réel — ${template.name} (${template.code}). Aucune modification n’est enregistrée ici.`}
+        description={`Données test, contenu DSL, preview HTML live et PDF à la demande — ${template.name} (${template.code}). Aucune modification n’est enregistrée ici.`}
         backHref={`/administration/gabarits/${id}`}
         backLabel="Retour à la fiche"
         breadcrumbs={[

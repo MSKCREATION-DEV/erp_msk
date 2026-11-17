@@ -236,6 +236,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 | Statut doc | `crm-suivre-relancer` reste `to_validate` (revalider recherche relances au clavier) |
 | Routes | `/crm/prospects/[id]` · `/commercial/clients/[id]` · `/crm/relances` |
 
+### 2026-11-17 — Studio : DSL complets + Playground HTML live (PDF on-demand)
+
+| | |
+|---|---|
+| Quoi | Diagnostic « non modifiable » : composites court-circuitaient le DSL. Fix `playgroundTextMode` (PDF Playground = blocs texte, sync HTML). Corps DSL v3 (devis/facture/contrats/presta/paie/règlement) avec sections/articles/en-tête/pied éditables. Preview **HTML maison** (plus d’iframe PDF par défaut) ; CTA **Voir le PDF** modal. Onglet Structure. Catalogue variables étendu. |
+| Pourquoi | Gabarits prod réellement éditables ; visionneuse live type Documentero/Efalia ; PDF fidèle aux mods à la demande. |
+| Fichiers | `render-blocks-html.ts`, `template-playground-form.tsx`, `generate-sample-pdf.ts`, `generate-official-pdf.ts`, `template-dsl-bodies.ts`, `seed-studio.ts`, `textarea.tsx`, `INVENTAIRE-REFERENCES.md`, ce suivi |
+| Statut doc | Inventaire maj 2026-11-17 ; guide `/guides` Studio **`draft`** / outdated partiel Playground |
+| Routes | `/administration/gabarits/[id]/playground` |
+| Dette restante | Tableaux composites non éditables cellule par cellule ; 22 art. règlement = GED ; solde reporté facture ; republier seed en chaque env |
+
 ### 2026-11-16 — Studio : Playground pro + alignement gabarits Commercial/RH
 
 | | |
