@@ -83,7 +83,7 @@ export function AbsenceJustificatifModal({
         </>
       }
     >
-      <div className="space-y-4 p-5">
+      <div key="absence-justif-modal-body" className="space-y-4 p-5">
         <AbsenceJustificatifPicker
           confirmedFile={null}
           onConfirmedChange={() => {}}
@@ -93,23 +93,31 @@ export function AbsenceJustificatifModal({
           hint="PDF ou image — max 8 Mo. Rien n’est envoyé tant que vous n’avez pas confirmé."
         />
 
-        {draft ? (
-          <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-msk-ink/8 bg-white px-3 py-2.5">
-            <input
-              type="checkbox"
-              className="mt-0.5 size-4 rounded border-msk-ink/20 text-msk-blue focus:ring-msk-blue/30"
-              checked={markJustified}
-              disabled={pending}
-              onChange={(e) => setMarkJustified(e.target.checked)}
-            />
-            <span className="text-sm text-msk-ink">
-              <span className="font-medium">Marquer l’absence Justifiée</span>
-              <span className="mt-0.5 block text-xs text-msk-ink/50">
-                Recommandé dès qu’un justificatif est lié.
-              </span>
+        {/* Checkbox masquée (pas démontée) pour ne pas remanier le DOM près du file. */}
+        <label
+          key="mark-justified"
+          hidden={!draft}
+          aria-hidden={!draft}
+          className={
+            draft
+              ? "flex cursor-pointer items-start gap-2.5 rounded-lg border border-msk-ink/8 bg-white px-3 py-2.5"
+              : "hidden"
+          }
+        >
+          <input
+            type="checkbox"
+            className="mt-0.5 size-4 rounded border-msk-ink/20 text-msk-blue focus:ring-msk-blue/30"
+            checked={markJustified}
+            disabled={pending || !draft}
+            onChange={(e) => setMarkJustified(e.target.checked)}
+          />
+          <span className="text-sm text-msk-ink">
+            <span className="font-medium">Marquer l’absence Justifiée</span>
+            <span className="mt-0.5 block text-xs text-msk-ink/50">
+              Recommandé dès qu’un justificatif est lié.
             </span>
-          </label>
-        ) : null}
+          </span>
+        </label>
 
         {error ? (
           <p className="text-sm text-msk-coral" role="alert">

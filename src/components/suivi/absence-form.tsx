@@ -26,6 +26,7 @@ import {
 } from "@/lib/suivi/hr";
 import type { SvAbsenceReason, SvAbsenceStatus } from "@/generated/prisma/client";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
+import { cn } from "@/lib/utils";
 
 type Initial = {
   employeeId?: string;
@@ -245,6 +246,7 @@ export function SvAbsenceForm({
             <div className="flex gap-2">
               {step > 0 ? (
                 <Button
+                  key="footer-back"
                   type="button"
                   variant="secondary"
                   disabled={pending}
@@ -254,6 +256,7 @@ export function SvAbsenceForm({
                 </Button>
               ) : (
                 <Link
+                  key="footer-cancel"
                   href="/suivi/absences"
                   className="inline-flex h-10 items-center rounded-lg border border-msk-ink/10 bg-white px-4 text-sm font-medium text-msk-ink hover:bg-msk-chalk"
                 >
@@ -313,23 +316,25 @@ export function SvAbsenceForm({
 
         <div className="mt-6 space-y-5">
           {steps[step]?.id === "collab" ? (
-            <OptionPickerSingle
-              label="Collaborateur"
-              required
-              options={employeeOptions}
-              value={employeeId}
-              onChange={(id) => {
-                setEmployeeId(id);
-                setStepError(null);
-              }}
-              disabled={pending}
-              placeholder="Choisir un collaborateur"
-              modalTitle="Collaborateur concerné"
-            />
+            <div key="step-collab">
+              <OptionPickerSingle
+                label="Collaborateur"
+                required
+                options={employeeOptions}
+                value={employeeId}
+                onChange={(id) => {
+                  setEmployeeId(id);
+                  setStepError(null);
+                }}
+                disabled={pending}
+                placeholder="Choisir un collaborateur"
+                modalTitle="Collaborateur concerné"
+              />
+            </div>
           ) : null}
 
           {steps[step]?.id === "details" ? (
-            <div className="space-y-5">
+            <div key="step-details" className="space-y-5">
               {mode === "edit" ? (
                 <OptionPickerSingle
                   label="Collaborateur"
@@ -484,82 +489,106 @@ export function SvAbsenceForm({
             </div>
           ) : null}
 
-          {steps[step]?.id === "justif" ? (
-            <div className="space-y-4">
-              <p className="text-sm text-msk-ink/60">
-                {hasGed
-                  ? "Un justificatif est déjà lié. Vous pouvez en confirmer un nouveau."
-                  : mode === "create"
-                    ? "Optionnel — choisissez un fichier, vérifiez-le, puis confirmez. Rien n’est envoyé tant que vous n’enregistrez pas l’absence."
-                    : "Ajoutez un justificatif (PDF ou image) pour pouvoir marquer l’absence Justifiée."}
-              </p>
+          {/*
+            Justificatif toujours monté (caché hors étape) : l’<input type=file>
+            ne doit pas être démonté en passant à Confirmation → removeChild.
+          */}
+          <div
+            key="step-justif"
+            hidden={steps[step]?.id !== "justif"}
+            aria-hidden={steps[step]?.id !== "justif"}
+            className={cn(
+              "space-y-4",
+              steps[step]?.id !== "justif" && "hidden",
+            )}
+          >
+            <p className="text-sm text-msk-ink/60">
+              {hasGed
+                ? "Un justificatif est déjà lié. Vous pouvez en confirmer un nouveau."
+                : mode === "create"
+                  ? "Optionnel — choisissez un fichier, vérifiez-le, puis confirmez. Rien n’est envoyé tant que vous n’enregistrez pas l’absence."
+                  : "Ajoutez un justificatif (PDF ou image) pour pouvoir marquer l’absence Justifiée."}
+            </p>
 
-              <AbsenceJustificatifPicker
-                confirmedFile={file}
-                onConfirmedChange={onFileConfirmed}
-                disabled={pending}
-                required={
-                  mode === "edit" && status === "JUSTIFIEE" && !hasGed
+            <AbsenceJustificatifPicker
+              confirmedFile={file}
+              onConfirmedChange={onFileConfirmed}
+              disabled={pending || steps[step]?.id !== "justif"}
+              required={
+                mode === "edit" && status === "JUSTIFIEE" && !hasGed
+              }
+              hint="PDF ou image — max 8 Mo. Confirmez le fichier avant de continuer."
+            />
+
+            {mode === "create" ? (
+              <label
+                key="want-justified"
+                hidden={!file}
+                aria-hidden={!file}
+                className={
+                  file
+                    ? "flex cursor-pointer items-start gap-2.5 rounded-lg border border-msk-ink/8 bg-white px-3 py-2.5"
+                    : "hidden"
                 }
-                hint="PDF ou image — max 8 Mo. Confirmez le fichier avant de continuer."
-              />
-
-              {file && mode === "create" ? (
-                <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-msk-ink/8 bg-white px-3 py-2.5">
-                  <input
-                    type="checkbox"
-                    className="mt-0.5 size-4 rounded border-msk-ink/20 text-msk-blue focus:ring-msk-blue/30"
-                    checked={wantJustified}
-                    disabled={pending}
-                    onChange={(e) => setWantJustified(e.target.checked)}
-                  />
-                  <span className="text-sm text-msk-ink">
-                    <span className="font-medium">
-                      Marquer l’absence Justifiée
-                    </span>
-                    <span className="mt-0.5 block text-xs text-msk-ink/50">
-                      À l’enregistrement, le fichier sera lié en GED.
-                    </span>
+              >
+                <input
+                  type="checkbox"
+                  className="mt-0.5 size-4 rounded border-msk-ink/20 text-msk-blue focus:ring-msk-blue/30"
+                  checked={wantJustified}
+                  disabled={
+                    pending || steps[step]?.id !== "justif" || !file
+                  }
+                  onChange={(e) => setWantJustified(e.target.checked)}
+                />
+                <span className="text-sm text-msk-ink">
+                  <span className="font-medium">
+                    Marquer l’absence Justifiée
                   </span>
-                </label>
-              ) : null}
+                  <span className="mt-0.5 block text-xs text-msk-ink/50">
+                    À l’enregistrement, le fichier sera lié en GED.
+                  </span>
+                </span>
+              </label>
+            ) : null}
 
-              {mode === "edit" ? (
-                <div>
-                  <FieldLabel>Statut</FieldLabel>
-                  <p className="mt-1 text-xs text-msk-ink/50">
-                    {SV_ABSENCE_JUSTIFIED_REQUIRES_GED}.
-                  </p>
-                  <div className="mt-2">
-                    <ChoiceCards
-                      name="status_justif_ui"
-                      columns={2}
-                      value={status}
-                      onChange={onStatusChange}
-                      disabled={pending}
-                      options={(
-                        [
-                          "ENREGISTREE",
-                          "JUSTIFIEE",
-                          "NON_JUSTIFIEE",
-                        ] as SvAbsenceStatus[]
-                      ).map((v) => ({
-                        value: v,
-                        label: SV_ABSENCE_STATUS_LABEL[v],
-                        description:
-                          v === "JUSTIFIEE" && !hasJustificatif
-                            ? "Justificatif requis"
-                            : undefined,
-                      }))}
-                    />
-                  </div>
+            {mode === "edit" ? (
+              <div key="status-justif">
+                <FieldLabel>Statut</FieldLabel>
+                <p className="mt-1 text-xs text-msk-ink/50">
+                  {SV_ABSENCE_JUSTIFIED_REQUIRES_GED}.
+                </p>
+                <div className="mt-2">
+                  <ChoiceCards
+                    name="status_justif_ui"
+                    columns={2}
+                    value={status}
+                    onChange={onStatusChange}
+                    disabled={pending || steps[step]?.id !== "justif"}
+                    options={(
+                      [
+                        "ENREGISTREE",
+                        "JUSTIFIEE",
+                        "NON_JUSTIFIEE",
+                      ] as SvAbsenceStatus[]
+                    ).map((v) => ({
+                      value: v,
+                      label: SV_ABSENCE_STATUS_LABEL[v],
+                      description:
+                        v === "JUSTIFIEE" && !hasJustificatif
+                          ? "Justificatif requis"
+                          : undefined,
+                    }))}
+                  />
                 </div>
-              ) : null}
-            </div>
-          ) : null}
+              </div>
+            ) : null}
+          </div>
 
           {steps[step]?.id === "recap" ? (
-            <dl className="grid gap-3 text-sm sm:grid-cols-2">
+            <dl
+              key="step-recap"
+              className="grid gap-3 text-sm sm:grid-cols-2"
+            >
               <div>
                 <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
                   Collaborateur
@@ -615,7 +644,7 @@ export function SvAbsenceForm({
                 </dd>
               </div>
               {reasonNote ? (
-                <div className="sm:col-span-2">
+                <div key="recap-note" className="sm:col-span-2">
                   <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
                     Précision
                   </dt>

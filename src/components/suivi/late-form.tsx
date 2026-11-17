@@ -116,6 +116,7 @@ export function SvLateForm({
             <div className="flex gap-2">
               {step > 0 ? (
                 <Button
+                  key="footer-back"
                   type="button"
                   variant="secondary"
                   disabled={pending}
@@ -125,6 +126,7 @@ export function SvLateForm({
                 </Button>
               ) : (
                 <Link
+                  key="footer-cancel"
                   href="/suivi/retards"
                   className="inline-flex h-10 items-center rounded-lg border border-msk-ink/10 bg-white px-4 text-sm font-medium text-msk-ink hover:bg-msk-chalk"
                 >
@@ -183,25 +185,28 @@ export function SvLateForm({
         ) : null}
 
         <div className="mt-6 space-y-5">
+          {/* Pas de picker fichier ici — keys d’étape alignées stocks / absences. */}
           {STEPS[step]?.id === "collab" ||
           (STEPS[step]?.id === "horaire" && mode === "edit") ? (
-            <OptionPickerSingle
-              label="Collaborateur"
-              required
-              options={employeeOptions}
-              value={employeeId}
-              onChange={(id) => {
-                setEmployeeId(id);
-                setStepError(null);
-              }}
-              disabled={pending}
-              placeholder="Choisir un collaborateur"
-              modalTitle="Collaborateur concerné"
-            />
+            <div key="step-collab">
+              <OptionPickerSingle
+                label="Collaborateur"
+                required
+                options={employeeOptions}
+                value={employeeId}
+                onChange={(id) => {
+                  setEmployeeId(id);
+                  setStepError(null);
+                }}
+                disabled={pending}
+                placeholder="Choisir un collaborateur"
+                modalTitle="Collaborateur concerné"
+              />
+            </div>
           ) : null}
 
           {STEPS[step]?.id === "horaire" ? (
-            <div className="space-y-5">
+            <div key="step-horaire" className="space-y-5">
               <div className="grid gap-4 sm:grid-cols-3">
                 <div>
                   <FieldLabel htmlFor="lateDate" required>
@@ -257,7 +262,10 @@ export function SvLateForm({
           ) : null}
 
           {STEPS[step]?.id === "recap" ? (
-            <dl className="grid gap-3 text-sm sm:grid-cols-2">
+            <dl
+              key="step-recap"
+              className="grid gap-3 text-sm sm:grid-cols-2"
+            >
               <div>
                 <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
                   Collaborateur
@@ -289,7 +297,7 @@ export function SvLateForm({
                 </dd>
               </div>
               {note ? (
-                <div className="sm:col-span-2">
+                <div key="recap-note" className="sm:col-span-2">
                   <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
                     Note
                   </dt>

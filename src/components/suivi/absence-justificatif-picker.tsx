@@ -158,6 +158,7 @@ export function AbsenceJustificatifPicker({
     phase === "confirmed" && confirmedFile
       ? confirmedFile
       : draft;
+  const showPreview = Boolean(previewFile && phase !== "empty");
   const busy = disabled || phase === "reading";
 
   return (
@@ -166,7 +167,13 @@ export function AbsenceJustificatifPicker({
         {label}
       </FieldLabel>
 
+      {/*
+        Input file toujours monté (clé stable) — hors du dropzone.
+        Monter/démonter un <input type=file> (étape / phase) + extensions
+        → NotFoundError removeChild (même famille que stocks / GeneratedValueField).
+      */}
       <input
+        key="sv-absence-justif-file"
         ref={inputRef}
         id={inputId}
         type="file"
@@ -180,164 +187,148 @@ export function AbsenceJustificatifPicker({
         }}
       />
 
-      {showDropzone ? (
-        <div
-          role="button"
-          tabIndex={0}
-          aria-controls={inputId}
-          aria-label="Déposer le justificatif ou parcourir"
-          onKeyDown={(e) => {
-            if (busy) return;
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              inputRef.current?.click();
-            }
-          }}
-          onClick={() => {
-            if (!busy) inputRef.current?.click();
-          }}
-          onDragEnter={(e) => {
+      {/* Dropzone : cacher, ne pas démonter (évite remaniement DOM autour du file). */}
+      <div
+        key="sv-absence-justif-dropzone"
+        role="button"
+        tabIndex={showDropzone && !busy ? 0 : -1}
+        hidden={!showDropzone}
+        aria-hidden={!showDropzone}
+        aria-controls={inputId}
+        aria-label="Déposer le justificatif ou parcourir"
+        onKeyDown={(e) => {
+          if (!showDropzone || busy) return;
+          if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            e.stopPropagation();
-            if (!busy) setDragOver(true);
-          }}
-          onDragOver={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (!busy) setDragOver(true);
-          }}
-          onDragLeave={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setDragOver(false);
-          }}
-          onDrop={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setDragOver(false);
-            if (busy) return;
-            pickFile(e.dataTransfer.files?.[0] ?? null);
-          }}
-          className={cn(
-            "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-4 py-8 text-center transition sm:py-10",
-            dragOver
-              ? "border-msk-blue bg-msk-blue/5"
-              : "border-msk-ink/15 bg-msk-chalk/50 hover:border-msk-blue/40 hover:bg-msk-blue/4",
-            busy && "pointer-events-none opacity-60",
-          )}
-        >
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-msk-blue/10 text-msk-blue">
-            <Upload className="h-5 w-5" aria-hidden />
-          </span>
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-msk-ink">
-              Déposer le justificatif
-            </p>
-            <p className="text-xs text-msk-ink/45">{hint}</p>
-          </div>
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            disabled={busy}
-            onClick={(e) => {
-              e.stopPropagation();
-              inputRef.current?.click();
-            }}
-          >
-            Parcourir
-          </Button>
+            inputRef.current?.click();
+          }
+        }}
+        onClick={() => {
+          if (showDropzone && !busy) inputRef.current?.click();
+        }}
+        onDragEnter={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (showDropzone && !busy) setDragOver(true);
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (showDropzone && !busy) setDragOver(true);
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setDragOver(false);
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setDragOver(false);
+          if (!showDropzone || busy) return;
+          pickFile(e.dataTransfer.files?.[0] ?? null);
+        }}
+        className={cn(
+          "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-4 py-8 text-center transition sm:py-10",
+          !showDropzone && "hidden",
+          dragOver
+            ? "border-msk-blue bg-msk-blue/5"
+            : "border-msk-ink/15 bg-msk-chalk/50 hover:border-msk-blue/40 hover:bg-msk-blue/4",
+          busy && "pointer-events-none opacity-60",
+        )}
+      >
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-msk-blue/10 text-msk-blue">
+          <Upload className="h-5 w-5" aria-hidden />
+        </span>
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-msk-ink">
+            Déposer le justificatif
+          </p>
+          <p className="text-xs text-msk-ink/45">{hint}</p>
         </div>
-      ) : null}
-
-      {previewFile && phase !== "empty" ? (
-        <div
-          className={cn(
-            "rounded-xl border px-4 py-3 transition",
-            phase === "reading"
-              ? "border-msk-blue/25 bg-msk-blue/5"
-              : phase === "confirmed"
-                ? "border-msk-blue/20 bg-msk-blue/5"
-                : "border-msk-ink/10 bg-msk-chalk/30",
-          )}
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          disabled={busy || !showDropzone}
+          onClick={(e) => {
+            e.stopPropagation();
+            inputRef.current?.click();
+          }}
         >
-          <div className="flex items-start gap-3">
-            <span
-              className={cn(
-                "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
-                "bg-msk-blue/10 text-msk-blue",
-              )}
-            >
-              {phase === "reading" ? (
-                <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
-              ) : (
-                <FileText className="h-5 w-5" aria-hidden />
-              )}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-msk-ink">
-                {previewFile.name}
-              </p>
-              <p className="mt-0.5 text-xs text-msk-ink/45">
-                {formatJustificatifSize(previewFile.size)}
-                {" · "}
-                {justificatifTypeLabel(previewFile.type)}
-                {phase === "reading" ? " · Vérification du fichier…" : null}
-                {phase === "confirmed" ? " · Prêt à enregistrer" : null}
-              </p>
-            </div>
-            <div className="flex shrink-0 items-center gap-2">
-              {phase === "ready" || phase === "confirmed" ? (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  disabled={disabled}
-                  aria-label="Retirer le fichier"
-                  className="px-2 text-msk-ink/50 hover:text-msk-coral"
-                  onClick={() => {
-                    if (phase === "confirmed") clearConfirmed();
-                    else resetDraft();
-                  }}
-                >
-                  <X className="h-4 w-4" aria-hidden />
-                </Button>
-              ) : null}
-            </div>
+          Parcourir
+        </Button>
+      </div>
+
+      {/* Aperçu : masqué (pas démonté) pour garder un arbre DOM stable. */}
+      <div
+        key="sv-absence-justif-preview"
+        hidden={!showPreview}
+        aria-hidden={!showPreview}
+        className={cn(
+          "rounded-xl border px-4 py-3 transition",
+          !showPreview && "hidden",
+          phase === "reading"
+            ? "border-msk-blue/25 bg-msk-blue/5"
+            : phase === "confirmed"
+              ? "border-msk-blue/20 bg-msk-blue/5"
+              : "border-msk-ink/10 bg-msk-chalk/30",
+        )}
+      >
+        <div className="flex items-start gap-3">
+          <span
+            className={cn(
+              "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
+              "bg-msk-blue/10 text-msk-blue",
+            )}
+          >
+            {phase === "reading" ? (
+              <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+            ) : (
+              <FileText className="h-5 w-5" aria-hidden />
+            )}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-msk-ink">
+              {previewFile?.name ?? "—"}
+            </p>
+            <p className="mt-0.5 text-xs text-msk-ink/45">
+              {previewFile
+                ? `${formatJustificatifSize(previewFile.size)} · ${justificatifTypeLabel(previewFile.type)}`
+                : null}
+              {phase === "reading" ? " · Vérification du fichier…" : null}
+              {phase === "confirmed" ? " · Prêt à enregistrer" : null}
+            </p>
           </div>
+          <div className="flex shrink-0 items-center gap-2">
+            {phase === "ready" || phase === "confirmed" ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={disabled}
+                aria-label="Retirer le fichier"
+                className="px-2 text-msk-ink/50 hover:text-msk-coral"
+                onClick={() => {
+                  if (phase === "confirmed") clearConfirmed();
+                  else resetDraft();
+                }}
+              >
+                <X className="h-4 w-4" aria-hidden />
+              </Button>
+            ) : null}
+          </div>
+        </div>
 
-          {phase === "ready" && !deferConfirm ? (
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3">
-              <p className="text-xs text-msk-ink/50">
-                Vérifiez le fichier, puis confirmez avant enregistrement.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  disabled={disabled}
-                  onClick={resetDraft}
-                >
-                  Changer
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  disabled={disabled}
-                  onClick={confirmDraft}
-                >
-                  Confirmer l’ajout du justificatif
-                </Button>
-              </div>
-            </div>
-          ) : null}
-
-          {phase === "ready" && deferConfirm ? (
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3">
-              <p className="text-xs text-msk-ink/50">
-                Vérifiez le fichier, puis confirmez ci-dessous.
-              </p>
+        {phase === "ready" && !deferConfirm ? (
+          <div
+            key="justif-actions-confirm"
+            className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3"
+          >
+            <p className="text-xs text-msk-ink/50">
+              Vérifiez le fichier, puis confirmez avant enregistrement.
+            </p>
+            <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
                 variant="secondary"
@@ -347,30 +338,61 @@ export function AbsenceJustificatifPicker({
               >
                 Changer
               </Button>
-            </div>
-          ) : null}
-
-          {phase === "confirmed" ? (
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3">
-              <p className="text-xs font-medium text-msk-blue">
-                Justificatif confirmé — il sera lié à l’enregistrement.
-              </p>
               <Button
                 type="button"
-                variant="secondary"
                 size="sm"
                 disabled={disabled}
-                onClick={() => {
-                  clearConfirmed();
-                  inputRef.current?.click();
-                }}
+                onClick={confirmDraft}
               >
-                Changer de fichier
+                Confirmer l’ajout du justificatif
               </Button>
             </div>
-          ) : null}
-        </div>
-      ) : null}
+          </div>
+        ) : null}
+
+        {phase === "ready" && deferConfirm ? (
+          <div
+            key="justif-actions-defer"
+            className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3"
+          >
+            <p className="text-xs text-msk-ink/50">
+              Vérifiez le fichier, puis confirmez ci-dessous.
+            </p>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={disabled}
+              onClick={resetDraft}
+            >
+              Changer
+            </Button>
+          </div>
+        ) : null}
+
+        {phase === "confirmed" ? (
+          <div
+            key="justif-actions-confirmed"
+            className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3"
+          >
+            <p className="text-xs font-medium text-msk-blue">
+              Justificatif confirmé — il sera lié à l’enregistrement.
+            </p>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={disabled}
+              onClick={() => {
+                clearConfirmed();
+                inputRef.current?.click();
+              }}
+            >
+              Changer de fichier
+            </Button>
+          </div>
+        ) : null}
+      </div>
 
       {error ? (
         <p
