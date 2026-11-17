@@ -4,7 +4,7 @@
  */
 import type { DocumentTemplate } from "@/generated/prisma/client";
 import { formatDateFr } from "@/lib/pdf/winansi";
-import type { OfficialPdfPayload } from "@/lib/studio/generate-official-pdf";
+import type { OfficialPdfPayload } from "@/lib/studio/official-payload";
 
 const demoEmployee = {
   firstName: "Yaye",

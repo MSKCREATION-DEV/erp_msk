@@ -314,47 +314,45 @@ export async function generateSamplePdfForTemplate(
     const playgroundOverride = Boolean(
       opts.playground?.bodyText || opts.playground?.blocks,
     );
-    const declaredSlugs = extractVariableSlugs(
-      opts.playground?.bodyText ??
-        blocks
-          .filter((b) => "text" in b && typeof b.text === "string")
-          .map((b) => (b as { text: string }).text)
-          .join("\n"),
-    );
-    const sampleContext = await buildSampleContextForSlugs(
-      declaredSlugs,
-      opts.playground?.variableOverrides,
-    );
 
     /**
-     * Playground = même source que la preview HTML : rendu des blocs DSL
-     * (composites traités comme sections structurelles / ignorés en pdf-lib
-     * texte). Les modules métier gardent le chemin composite officiel via
-     * `sampleOfficialPayload` (GET exemplaire sans override).
+     * Pipeline unifié (ADR) : même `generateOfficialPdfFromTemplate` que
+     * les modules métier — DSL + régions composites. Playground peut
+     * surcharger le corps et les `{{slug}}` sans stripper les composites.
      */
-    if (playgroundOverride) {
-      return generateOfficialPdfFromTemplate({
-        template: template as ActiveTemplate,
-        payload: {
-          kind: "blocks_only",
-          context: sampleContext,
-          headerTitle: opts.playground?.headerTitle ?? template.name,
-        },
-        signature: sig,
-        strictVariables: false,
-        logoAlign: opts.playground?.logoAlign,
-        blocksOverride: blocks,
-        playgroundTextMode: true,
-        signatureEnabledOverride: signatureEnabled,
-      });
-    }
+    const basePayload = sampleOfficialPayloadForTemplate(template);
+    const payload =
+      playgroundOverride && basePayload.kind === "blocks_only"
+        ? {
+            kind: "blocks_only" as const,
+            context: await buildSampleContextForSlugs(
+              extractVariableSlugs(
+                opts.playground?.bodyText ??
+                  blocks
+                    .filter((b) => "text" in b && typeof b.text === "string")
+                    .map((b) => (b as { text: string }).text)
+                    .join("\n"),
+              ),
+              opts.playground?.variableOverrides,
+            ),
+            headerTitle: opts.playground?.headerTitle ?? template.name,
+          }
+        : basePayload.kind === "blocks_only" && opts.playground?.headerTitle
+          ? {
+              ...basePayload,
+              headerTitle: opts.playground.headerTitle,
+            }
+          : basePayload;
 
     return generateOfficialPdfFromTemplate({
       template: template as ActiveTemplate,
-      payload: sampleOfficialPayloadForTemplate(template),
+      payload,
       signature: sig,
       strictVariables: false,
       logoAlign: opts.playground?.logoAlign,
+      blocksOverride: playgroundOverride ? blocks : undefined,
+      signatureEnabledOverride: signatureEnabled,
+      variableOverrides: opts.playground?.variableOverrides,
     });
   }
 

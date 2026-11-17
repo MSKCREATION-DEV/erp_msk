@@ -13,6 +13,7 @@ import {
   PLAYGROUND_PREVIEW_CSS,
   renderBlocksToHtml,
 } from "@/lib/studio/render-blocks-html";
+import type { OfficialPdfPayload } from "@/lib/studio/official-payload";
 import {
   applyVariableOverrides,
   extractVariableSlugs,
@@ -37,6 +38,8 @@ type Props = {
   editable: boolean;
   variableDefs: PlaygroundVariableDef[];
   hasComposite: boolean;
+  /** Exemplaire métier — peuplent les régions `[[COMPOSITE]]` HTML = PDF. */
+  samplePayload?: OfficialPdfPayload;
 };
 
 function detectComposite(body: string): boolean {
@@ -60,6 +63,7 @@ export function TemplatePlaygroundForm({
   editable,
   variableDefs,
   hasComposite: initialHasComposite,
+  samplePayload,
 }: Props) {
   const [tab, setTab] = useState<TabId>("variables");
   const [headerTitle, setHeaderTitle] = useState(templateName);
@@ -114,8 +118,17 @@ export function TemplatePlaygroundForm({
       context,
       signatureEnabled: signaturePreview,
       logoAlign,
+      compositePayload: samplePayload,
     });
-  }, [bodyText, variables, headerTitle, templateName, signaturePreview, logoAlign]);
+  }, [
+    bodyText,
+    variables,
+    headerTitle,
+    templateName,
+    signaturePreview,
+    logoAlign,
+    samplePayload,
+  ]);
 
   const markDirty = useCallback(() => setDirty(true), []);
 
@@ -253,9 +266,9 @@ export function TemplatePlaygroundForm({
           </p>
           {hasComposite ? (
             <p className="rounded-lg border border-msk-blue/15 bg-msk-blue/4 px-3 py-2 text-xs leading-relaxed text-msk-ink/70">
-              Ce gabarit contient un <code className="text-[11px]">[[COMPOSITE]]</code> : le PDF
-              officiel des modules métier garde le générateur tableaux / multipages. Ici, le corps
-              texte + structure composite sont éditables et synchrones HTML ↔ PDF on-demand.
+              Région <code className="text-[11px]">[[COMPOSITE]]</code> : tableau / grille métier
+              rendu dans le même pipeline que le PDF officiel (DSL + région). HTML live et PDF à
+              la demande partagent cette source.
             </p>
           ) : null}
 

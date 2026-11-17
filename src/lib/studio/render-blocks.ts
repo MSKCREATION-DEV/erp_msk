@@ -1,8 +1,8 @@
 /**
  * Studio documentaire — moteur de rendu PDF des gabarits `ENGINE_BLOCKS`.
- * Réutilise les primitives pdf-lib charte MSK déjà éprouvées par les
- * générateurs RH (`src/lib/pdf/rh.ts`) — même en-tête / pied de page / police
- * / couleurs, pas de nouvelle mise en page parallèle.
+ * Réutilise les primitives pdf-lib charte MSK (`src/lib/pdf/rh.ts`).
+ * Les blocs `composite` = régions tableau/grille (Option A), pas un
+ * court-circuit document.
  */
 import {
   BLUE,
@@ -18,6 +18,8 @@ import {
   LIGHT,
   MARGIN,
 } from "@/lib/pdf/rh";
+import { drawCompositeRegion } from "@/lib/studio/composite-regions";
+import type { OfficialPdfPayload } from "@/lib/studio/official-payload";
 import { resolveTemplateString } from "@/lib/studio/variables";
 import type { TemplateBlock } from "@/lib/studio/types";
 
@@ -33,6 +35,11 @@ export type RenderBlocksOptions = {
   signaturePng?: Uint8Array | Buffer;
   signatureLabel?: string;
   logoAlign?: DrawHeaderOptions["logoAlign"];
+  /**
+   * Payload métier pour les régions `[[COMPOSITE]]` (lignes devis, grille
+   * paie…). Absent → région no-op (ex. document libre).
+   */
+  compositePayload?: OfficialPdfPayload;
 };
 
 function drawHighlight(ctx: Awaited<ReturnType<typeof createCtx>>, text: string) {
@@ -104,6 +111,7 @@ export async function renderBlocksToPdf(
         }
         break;
       case "composite":
+        drawCompositeRegion(ctx, block.renderer, opts.compositePayload);
         break;
       default:
         break;

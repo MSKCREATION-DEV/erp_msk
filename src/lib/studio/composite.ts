@@ -1,8 +1,7 @@
 /**
- * Blocs composites Studio — sections dont le rendu fidèle reste porté par
- * les générateurs historiques (tableaux Devis/Facture, contrat commercial
- * multipages, bulletin de paie). Le DSL contient le texte éditable + un
- * marqueur `[[COMPOSITE:…]]` traçable ; pas d’invention de clauses.
+ * Blocs composites Studio — **régions** (tableaux / grilles) rendues dans
+ * le flux DSL via `drawCompositeRegion` (Option A, ADR pipeline unifié).
+ * Le marqueur `[[COMPOSITE:…]]` n’est plus un court-circuit document.
  */
 import type { TemplateBlock } from "@/lib/studio/types";
 

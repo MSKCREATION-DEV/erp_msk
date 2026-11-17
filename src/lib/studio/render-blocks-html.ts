@@ -1,11 +1,16 @@
 /**
  * Preview HTML des gabarits `ENGINE_BLOCKS` — même DSL / blocs / variables
  * que `renderBlocksToPdf`. Utilisable côté client (Playground live).
- * Les blocs `composite` sont représentés par un encadré structurel (pas le
- * générateur pdf-lib) pour rester synchrones avec les mods du formulaire.
+ * Les blocs `composite` utilisent `compositeHtmlModel` quand un payload
+ * exemplaire est fourni (même source que le PDF métier).
  */
 import { company } from "@/lib/company";
 import type { CompositeRenderer } from "@/lib/studio/composite";
+import {
+  compositeHtmlModel,
+  type CompositeHtmlModel,
+} from "@/lib/studio/composite-regions";
+import type { OfficialPdfPayload } from "@/lib/studio/official-payload";
 import type { TemplateBlock } from "@/lib/studio/types";
 import { resolveTemplateString } from "@/lib/studio/variables";
 
@@ -16,6 +21,8 @@ export type RenderBlocksHtmlOptions = {
   logoAlign?: "left" | "center" | "right";
   /** Affiche le chrome en-tête / pied (défaut true). */
   showChrome?: boolean;
+  /** Payload exemplaire — régions composites fidèles au PDF. */
+  compositePayload?: OfficialPdfPayload;
 };
 
 const COMPOSITE_LABELS: Record<CompositeRenderer, string> = {
@@ -23,12 +30,11 @@ const COMPOSITE_LABELS: Record<CompositeRenderer, string> = {
     "Tableau des prestations (désignation, qté, PU, montant) + totaux HT / TVA / TTC",
   commercial_facture:
     "Lignes facturées + TVA + totaux + mentions de règlement",
-  commercial_contract:
-    "Parties, offre / BDC, articles juridiques multipages (générateur métier)",
-  rh_contract_travail: "Corps contrat de travail (générateur RH)",
-  rh_contract_stage: "Corps contrat de stage (générateur RH)",
-  rh_contract_presta: "Parties + articles prestation RH (générateur métier)",
-  rh_payslip: "Grille bulletin (brut, cotisations, net) — générateur paie",
+  commercial_contract: "Annexe prestations / BDC (lignes contrat)",
+  rh_contract_travail: "Corps contrat de travail (DSL)",
+  rh_contract_stage: "Corps contrat de stage (DSL)",
+  rh_contract_presta: "Récap parties (Client / Prestataire)",
+  rh_payslip: "Grille bulletin (brut, cotisations, net)",
 };
 
 function escapeHtml(raw: string): string {
@@ -52,21 +58,88 @@ function alignClass(align: "left" | "center" | "right" | undefined): string {
   return "text-left";
 }
 
-function renderCompositeHtml(renderer: string): string {
+function renderModelHtml(model: CompositeHtmlModel): string {
+  if (model.kind === "lines") {
+    const head = model.headers
+      .map((h) => `<th>${escapeHtml(h)}</th>`)
+      .join("");
+    const body = model.rows
+      .map(
+        (r) =>
+          `<tr>${r.map((c) => `<td>${escapeHtml(c)}</td>`).join("")}</tr>`,
+      )
+      .join("");
+    return [
+      `<table class="msk-sample-table" aria-label="Région composite">`,
+      `<thead><tr>${head}</tr></thead>`,
+      `<tbody>${body}</tbody>`,
+      `</table>`,
+      model.footer
+        ? `<p class="msk-composite-footer">${escapeHtml(model.footer)}</p>`
+        : "",
+    ].join("");
+  }
+  if (model.kind === "kv") {
+    return model.sections
+      .map((sec) => {
+        const rows = sec.rows
+          .filter(([, v]) => v)
+          .map(
+            ([k, v]) =>
+              `<tr><th scope="row">${escapeHtml(k)}</th><td>${escapeHtml(v)}</td></tr>`,
+          )
+          .join("");
+        return [
+          `<h3 class="msk-composite-sub">${escapeHtml(sec.title)}</h3>`,
+          `<table class="msk-sample-table msk-kv-table"><tbody>${rows}</tbody></table>`,
+        ].join("");
+      })
+      .join("");
+  }
+  const cotisRows = model.rows
+    .map(
+      (r) =>
+        `<tr><td>${escapeHtml(r.label)}</td><td>${escapeHtml(r.rate)}</td><td>${escapeHtml(r.amount)}</td></tr>`,
+    )
+    .join("");
+  return [
+    `<table class="msk-sample-table" aria-label="Cotisations">`,
+    `<thead><tr><th>Rubrique</th><th>Taux</th><th>Montant</th></tr></thead>`,
+    `<tbody>`,
+    `<tr><td>Salaire brut</td><td></td><td>${escapeHtml(model.brut)}</td></tr>`,
+    cotisRows,
+    `<tr><td colspan="2"><strong>Total charges</strong></td><td><strong>${escapeHtml(model.totalCotis)}</strong></td></tr>`,
+    `<tr class="msk-net-row"><td colspan="2"><strong>Net à payer</strong></td><td><strong>${escapeHtml(model.net)}</strong></td></tr>`,
+    `</tbody></table>`,
+  ].join("");
+}
+
+function renderCompositeHtml(
+  renderer: string,
+  payload: OfficialPdfPayload | undefined,
+): string {
   const label =
     (COMPOSITE_LABELS as Record<string, string>)[renderer] ??
     `Section composite « ${renderer} »`;
+  const model = compositeHtmlModel(
+    renderer as CompositeRenderer,
+    payload,
+  );
   return [
     `<section class="msk-composite" data-renderer="${escapeHtml(renderer)}">`,
-    `<p class="msk-composite-kicker">Bloc métier · [[COMPOSITE: ${escapeHtml(renderer)}]]</p>`,
+    `<p class="msk-composite-kicker">Région métier · [[COMPOSITE: ${escapeHtml(renderer)}]]</p>`,
     `<p class="msk-composite-label">${escapeHtml(label)}</p>`,
-    `<table class="msk-sample-table" aria-label="Aperçu structurel">`,
-    `<thead><tr><th>Désignation</th><th>Qté</th><th>PU</th><th>Montant</th></tr></thead>`,
-    `<tbody>`,
-    `<tr><td>Ligne d'exemple 1</td><td>1</td><td>—</td><td>—</td></tr>`,
-    `<tr><td>Ligne d'exemple 2</td><td>1</td><td>—</td><td>—</td></tr>`,
-    `</tbody></table>`,
-    `<p class="msk-composite-hint">Le PDF officiel conserve le tableau / multipages du générateur métier. Le corps texte ci-dessus reste éditable.</p>`,
+    model
+      ? renderModelHtml(model)
+      : [
+          `<table class="msk-sample-table" aria-label="Aperçu structurel">`,
+          `<thead><tr><th>Désignation</th><th>Qté</th><th>PU</th><th>Montant</th></tr></thead>`,
+          `<tbody>`,
+          `<tr><td>Ligne d'exemple 1</td><td>1</td><td>—</td><td>—</td></tr>`,
+          `<tr><td>Ligne d'exemple 2</td><td>1</td><td>—</td><td>—</td></tr>`,
+          `</tbody></table>`,
+          `<p class="msk-composite-hint">Chargez un exemplaire métier pour peupler cette région (mêmes données que le PDF).</p>`,
+        ].join(""),
     `</section>`,
   ].join("");
 }
@@ -75,6 +148,7 @@ function renderBlockHtml(
   block: TemplateBlock,
   context: Record<string, unknown>,
   signatureEnabled: boolean,
+  compositePayload: OfficialPdfPayload | undefined,
 ): string {
   switch (block.kind) {
     case "heading":
@@ -96,7 +170,7 @@ function renderBlockHtml(
         `</div>`,
       ].join("");
     case "composite":
-      return renderCompositeHtml(block.renderer);
+      return renderCompositeHtml(block.renderer, compositePayload);
     default:
       return "";
   }
@@ -121,10 +195,14 @@ export const PLAYGROUND_PREVIEW_CSS = `
 .msk-composite{margin:1rem 0;padding:1rem;border:1px dashed rgba(29,115,188,.35);border-radius:10px;background:rgba(29,115,188,.03)}
 .msk-composite-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#1D73BC;font-weight:600;margin:0 0 .25rem}
 .msk-composite-label{font-size:.8125rem;font-weight:600;margin:0 0 .75rem}
+.msk-composite-sub{font-size:.75rem;font-weight:700;margin:.75rem 0 .35rem;color:#1D73BC}
 .msk-sample-table{width:100%;border-collapse:collapse;font-size:.75rem;margin-bottom:.5rem}
 .msk-sample-table th{background:#1D73BC;color:#fff;text-align:left;padding:.4rem .5rem;font-weight:600}
 .msk-sample-table td{border-bottom:1px solid rgba(13,19,48,.08);padding:.4rem .5rem}
+.msk-kv-table th{background:transparent;color:rgba(13,19,48,.55);font-weight:600;width:9rem}
+.msk-composite-footer{font-size:11px;font-weight:600;color:#1D73BC;margin:.35rem 0 0}
 .msk-composite-hint{font-size:11px;color:rgba(13,19,48,.45);margin:0}
+.msk-net-row td{background:rgba(29,115,188,.06);color:#1D73BC}
 .msk-doc-chrome-footer{padding:.85rem 1.5rem 1rem;border-top:1px dashed rgba(29,115,188,.35);background:#F5F3EF;text-align:center;font-size:10px;line-height:1.45;color:rgba(13,19,48,.55)}
 .text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}
 `.trim();
@@ -139,7 +217,14 @@ export function renderBlocksToHtml(
   const showChrome = opts.showChrome !== false;
   const align = alignClass(opts.logoAlign);
   const body = blocks
-    .map((b) => renderBlockHtml(b, opts.context, opts.signatureEnabled))
+    .map((b) =>
+      renderBlockHtml(
+        b,
+        opts.context,
+        opts.signatureEnabled,
+        opts.compositePayload,
+      ),
+    )
     .join("\n");
 
   const header = showChrome

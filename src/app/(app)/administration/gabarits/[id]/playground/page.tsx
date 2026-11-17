@@ -10,6 +10,7 @@ import { blocksToText } from "@/lib/studio/dsl";
 import { parseBlocks } from "@/lib/studio/types";
 import { findCompositeRenderer } from "@/lib/studio/composite";
 import { canGenerateExemplaire } from "@/lib/studio/generate-sample-pdf";
+import { sampleOfficialPayloadForTemplate } from "@/lib/studio/sample-official-payload";
 import { extractVariableSlugs } from "@/lib/studio/variables";
 
 export const metadata: Metadata = { title: "Playground gabarit" };
@@ -90,6 +91,7 @@ export default async function GabaritPlaygroundPage({
         editable={editable}
         variableDefs={variableDefs}
         hasComposite={hasComposite}
+        samplePayload={sampleOfficialPayloadForTemplate(template)}
       />
     </PageShell>
   );

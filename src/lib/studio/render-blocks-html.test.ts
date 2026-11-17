@@ -33,6 +33,27 @@ function main() {
   assert.match(html, /Gauche/);
   assert.match(html, /NIF/);
 
+  const withPayload = renderBlocksToHtml(textToBlocks(body), {
+    title: "Titre test",
+    context: {
+      collaborateur: { prenom: "Awa", nom: "Traoré" },
+    },
+    signatureEnabled: true,
+    compositePayload: {
+      kind: "commercial",
+      input: {
+        type: "DEVIS",
+        number: "D-1",
+        clientName: "Client",
+        lines: [{ label: "Offre PRO", qty: 2, unitPrice: 50_000 }],
+        vatRate: 18,
+        currency: "FCFA",
+      },
+    },
+  });
+  assert.match(withPayload, /Offre PRO/);
+  assert.doesNotMatch(withPayload, /Ligne d'exemple 1/);
+
   const noSig = renderBlocksToHtml(textToBlocks("[[SIGNATURE: A | B]]"), {
     title: "X",
     context: {},

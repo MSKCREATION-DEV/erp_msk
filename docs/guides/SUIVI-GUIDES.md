@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-16 (Prospects : listing + hard-delete + fiche + réseaux ; voir §8) |
+| Dernière mise à jour | 2026-11-17 (Studio : pipeline unifié DSL+régions ; voir §8) |
 
 ### Légende statuts documentaires
 
@@ -236,6 +236,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 | Statut doc | `crm-suivre-relancer` reste `to_validate` (revalider recherche relances au clavier) |
 | Routes | `/crm/prospects/[id]` · `/commercial/clients/[id]` · `/crm/relances` |
 
+### 2026-11-17 — Studio : pipeline unifié (DSL + régions composites)
+
+| | |
+|---|---|
+| Quoi | **Option A** : plus de court-circuit composite → générateur TS. `[[COMPOSITE]]` = région (tableau lignes, grille cotisations, annexe BDC, récap parties) rendue **dans** `renderBlocksToPdf` / HTML. Playground et modules métier = même `generateOfficialPdfFromTemplate`. ADR `docs/architecture/ADR-studio-pipeline-unifie.md`. Tests `unified-pipeline.test.ts`. |
+| Pourquoi | Unifier la gestion de bout en bout sans uniformiser le contenu juridique ; Studio/Playground = PDF métier. |
+| Fichiers | `composite-regions.ts`, `payload-context.ts`, `official-payload.ts`, `generate-official-pdf.ts`, `render-blocks.ts`, `render-blocks-html.ts`, `generate-sample-pdf.ts`, Playground, inventaire, ADR, ce suivi |
+| Statut doc | Inventaire maj ; guide Studio **`draft`** |
+| Routes | `/administration/gabarits/[id]/playground` · PDF Commercial / Contrats / RH |
+| Dette restante | Cellules tableau non WYSIWYG ; 22 art. règlement GED ; solde reporté facture ; `npm run db:seed` pour republier versions en chaque env |
+
 ### 2026-11-17 — Studio : DSL complets + Playground HTML live (PDF on-demand)
 
 | | |
@@ -245,7 +256,7 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 | Fichiers | `render-blocks-html.ts`, `template-playground-form.tsx`, `generate-sample-pdf.ts`, `generate-official-pdf.ts`, `template-dsl-bodies.ts`, `seed-studio.ts`, `textarea.tsx`, `INVENTAIRE-REFERENCES.md`, ce suivi |
 | Statut doc | Inventaire maj 2026-11-17 ; guide `/guides` Studio **`draft`** / outdated partiel Playground |
 | Routes | `/administration/gabarits/[id]/playground` |
-| Dette restante | Tableaux composites non éditables cellule par cellule ; 22 art. règlement = GED ; solde reporté facture ; republier seed en chaque env |
+| Dette restante | **Levé en partie** par lot pipeline unifié (plus de `playgroundTextMode` menteur) ; reste WYSIWYG cellules / 22 art. / seed env |
 
 ### 2026-11-16 — Studio : Playground pro + alignement gabarits Commercial/RH
 

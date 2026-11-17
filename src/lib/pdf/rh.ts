@@ -30,7 +30,7 @@ import {
 
 export const BLUE = rgb(29 / 255, 115 / 255, 188 / 255);
 export const INK = rgb(13 / 255, 19 / 255, 48 / 255);
-const MUTED = rgb(100 / 255, 110 / 255, 130 / 135);
+export const MUTED = rgb(100 / 255, 110 / 255, 130 / 135);
 export const LIGHT = rgb(0.9, 0.94, 0.98);
 const A4: [number, number] = [595.28, 841.89];
 export const MARGIN = 48;

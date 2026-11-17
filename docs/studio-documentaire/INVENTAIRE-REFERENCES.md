@@ -1,9 +1,9 @@
 # Studio documentaire — Inventaire exhaustif `docs/` ↔ gabarits
 
-**Date** : 2026-11-13 · **MàJ** : 2026-11-17 (DSL complet + preview HTML Playground) · **Branche** : `dev`  
+**Date** : 2026-11-13 · **MàJ** : 2026-11-17 (pipeline unifié DSL + régions) · **Branche** : `dev`  
 **Règle** : aucune invention — chaque ligne est traçable à un fichier du dépôt ou à une référence locale documentée (hors Git).
 
-Sources croisées : `docs/commercial/INVENTAIRE-ALIGNEMENT-DOCUMENTS-2026-11-08.md`, `docs/specs/suivi-tampon/INVENTAIRE-DOCUMENTS.md`, `prisma/seed.ts` / `prisma/seed-studio.ts`, code `src/lib/pdf/*`.
+Sources croisées : `docs/commercial/INVENTAIRE-ALIGNEMENT-DOCUMENTS-2026-11-08.md`, `docs/specs/suivi-tampon/INVENTAIRE-DOCUMENTS.md`, `prisma/seed.ts` / `prisma/seed-studio.ts`, code `src/lib/pdf/*`, ADR `docs/architecture/ADR-studio-pipeline-unifie.md`.
 
 ---
 
@@ -12,11 +12,11 @@ Sources croisées : `docs/commercial/INVENTAIRE-ALIGNEMENT-DOCUMENTS-2026-11-08.
 | Statut | Décompte | Détail |
 |--------|----------|--------|
 | Gabarits ERP actifs (`DocumentTemplate`) | **13+** | 10 métier migrés `ENGINE_BLOCKS` + démo `attestation_presence_libre` + 2 coques charges (`à valider`) |
+| Pipeline | **Unifié** | DSL/blocs + variables → HTML live → PDF (`renderBlocksToPdf` + régions `[[COMPOSITE]]`) |
 | PDF/DOCX de référence dans `docs/` (versionnés) | **2** | Factures charges internes uniquement (§4) |
-| PDF/DOCX métier hors dépôt (gitignore) | **~25+** | Inventoriés dans commercial / suivi tampon — contenu déjà aligné dans `src/lib/pdf/*.ts` |
+| PDF/DOCX métier hors dépôt (gitignore) | **~25+** | Inventoriés dans commercial / suivi tampon — contenu déjà aligné dans DSL + régions |
 | Manuels `docs/manuels/*.md` | **12 + README** | Procédures UI — **pas** de clauses à seed comme gabarit |
 | Charte `docs/brand/CHARTE-GRAPHIQUE-MSK.pdf` | **1** | Tokens via `src/lib/brand.ts` — pas un gabarit documentaire |
-| XLSX / canvas / phases | **nombreux** | Hors périmètre gabarits PDF métier (pas de conversion en cours) |
 
 ---
 
@@ -24,118 +24,91 @@ Sources croisées : `docs/commercial/INVENTAIRE-ALIGNEMENT-DOCUMENTS-2026-11-08.
 
 | Code gabarit | Type | `generatorKind` | Texte / contenu | Référence documentaire | OCR / relecture |
 |--------------|------|-----------------|-----------------|------------------------|-----------------|
-| `devis_standard` | DEVIS | ENGINE_BLOCKS | DSL + `[[COMPOSITE: commercial_devis]]` → `commercial.ts` | DEVIS *.docx (hors dépôt) — §3 commercial | Aligné 2026-11-08 (structure) |
-| `facture_standard` | FACTURE | ENGINE_BLOCKS | idem `commercial_facture` | FACTURE ECOSOL / KOUNDJI… (hors dépôt + `docs/specs/suivi-tampon`) | Aligné ; **ligne solde reporté** = à valider métier |
-| `contrat_commercial_msk` | CONTRAT_COMMERCIAL | ENGINE_BLOCKS | `[[COMPOSITE: commercial_contract]]` | CONTRAT PRESTATION / ENGAGEMENT PDF (OCR) | Aligné 2026-11-06 |
-| `contrat_travail_msk` | CONTRAT_TRAVAIL | ENGINE_BLOCKS | Articles 1–16 en base (`template-dsl-bodies.ts`) | Contrat Guiro (sortie plateforme antérieure) | v2 seed |
-| `contrat_stage_msk` | CONTRAT_STAGE | ENGINE_BLOCKS | Articles stage en base | Contrat Yaye Bah.docx | v2 seed |
-| `contrat_presta_msk` | CONTRAT_PRESTA | ENGINE_BLOCKS | `[[COMPOSITE: rh_contract_presta]]` | CONTRAT PRESTATION SERVICES (OCR ECOSOL) | v3 — adaptation rôles |
-| `attestation_stage_msk` | ATTESTATION_STAGE | ENGINE_BLOCKS | Texte Mangara v2 en base | Attestation Mangara (scan) | v2 |
-| `reglement_interieur_msk` | REGLEMENT_INTERIEUR | ENGINE_BLOCKS | 6 chapitres détaillés + accusé (volume 22 art. en GED) | Règlement Fatoumata (~10 p. OCR) | **Accusé complet** — 22 art. hors PDF dynamique |
-| `solde_tout_compte_msk` | SOLDE_TOUT_COMPTE | ENGINE_BLOCKS | Texte solde v2 en base | Solde Mangara.pdf | v2 |
-| `fiche_paie_msk` | FICHE_PAIE | ENGINE_BLOCKS | `[[COMPOSITE: rh_payslip]]` | Fiche paie Guiro 09/2026 | v2 — indicatif (Phase Paie) |
-| `facture_charge_edm_msk` | DOCUMENT_LIBRE | ENGINE_BLOCKS | Coque — **à valider** | `docs/Fac-edm-octobre.pdf` | Pas d’OCR clauses ce lot |
+| `devis_standard` | DEVIS | ENGINE_BLOCKS | DSL + région `commercial_devis` (lignes + totaux) | DEVIS *.docx (hors dépôt) — §3 commercial | Aligné structure |
+| `facture_standard` | FACTURE | ENGINE_BLOCKS | DSL + région `commercial_facture` | FACTURE ECOSOL / KOUNDJI… | Aligné ; **solde reporté** = à valider |
+| `contrat_commercial_msk` | CONTRAT_COMMERCIAL | ENGINE_BLOCKS | DSL art. 1–13 + région annexe BDC | CONTRAT PRESTATION / ENGAGEMENT (OCR) | Aligné |
+| `contrat_travail_msk` | CONTRAT_TRAVAIL | ENGINE_BLOCKS | Articles 1–16 DSL | Contrat Guiro | v2 |
+| `contrat_stage_msk` | CONTRAT_STAGE | ENGINE_BLOCKS | Articles stage DSL | Contrat Yaye Bah.docx | v2 |
+| `contrat_presta_msk` | CONTRAT_PRESTA | ENGINE_BLOCKS | DSL art. 1–10 + région parties | CONTRAT PRESTATION SERVICES (OCR) | v3 |
+| `attestation_stage_msk` | ATTESTATION_STAGE | ENGINE_BLOCKS | Texte Mangara DSL | Attestation Mangara | v2 |
+| `reglement_interieur_msk` | REGLEMENT_INTERIEUR | ENGINE_BLOCKS | 6 chapitres + accusé | Règlement Fatoumata | Accusé ; 22 art. GED |
+| `solde_tout_compte_msk` | SOLDE_TOUT_COMPTE | ENGINE_BLOCKS | Texte solde DSL | Solde Mangara.pdf | v2 |
+| `fiche_paie_msk` | FICHE_PAIE | ENGINE_BLOCKS | DSL ID/rémun + région cotisations | Fiche paie Guiro 09/2026 | Indicatif Paie |
+| `facture_charge_edm_msk` | DOCUMENT_LIBRE | ENGINE_BLOCKS | Coque — **à valider** | `docs/Fac-edm-octobre.pdf` | Pas d’OCR clauses |
 | `facture_charge_loyer_msk` | DOCUMENT_LIBRE | ENGINE_BLOCKS | Coque — **à valider** | `docs/Fac-location-novembre.pdf` | Idem |
-| `attestation_presence_libre` | DOCUMENT_LIBRE | ENGINE_BLOCKS | Contenu DSL en base (`seed-studio.ts`) | **Aucun PDF papier** — texte seed explicite | N/A |
+| `attestation_presence_libre` | DOCUMENT_LIBRE | ENGINE_BLOCKS | Contenu DSL seed | Aucun PDF papier | N/A |
 
-**Signature** : tous les gabarits ci-dessus → `signatureEnabled = false` par défaut (seed + migration data).
-
----
-
-## 3. Fichiers `docs/` — classification
-
-### 3.1 Ne deviennent **pas** de gabarit PDF (hors mission contenu)
-
-| Fichier / dossier | Rôle |
-|-------------------|------|
-| `docs/manuels/**` | Guides procéduraux ERP |
-| `docs/phases/**`, `docs/architecture/**`, `docs/deploy/**`, `docs/ops/**`, `docs/quality/**`, `docs/intent/**`, `docs/msk/**` | Specs, plans, ops |
-| `docs/guides/SUIVI-GUIDES.md` | Suivi documentation |
-| `docs/studio-documentaire/*` | Conception / audit Studio |
-| `docs/brand/CHARTE-GRAPHIQUE-MSK.pdf` | Charte graphique |
-| `docs/*.xlsx` | Données tampon (stocks, dépenses, achats) |
-| `docs/architecture/*.canvas.tsx` | Artefact Cursor |
-
-### 3.2 PDF versionnés dans `docs/` (charges / fournisseurs)
-
-| Fichier | Nature | Gabarit ERP | Statut |
-|---------|--------|-------------|--------|
-| `docs/Fac-edm-octobre.pdf` | Facture EDM (charge) | **Aucun** — module Suivi charges (`sv_expense_invoices`), pas `DocumentTemplate` | OCR fait — voir suivi tampon §12 |
-| `docs/Fac-location-novembre.pdf` | Loyer | **Aucun** | Idem |
-| `facture_CB5036*.pdf` (réf. suivi, hors `docs/` racine) | Orange Mali | **Aucun** | Idem |
-
-→ **Dette** : gabarits PDF pour factures fournisseurs récurrentes (Orange, EDM, loyer) si la Direction souhaite les émettre depuis le Studio — non implémenté (pas d’invention de clauses).
-
-### 3.3 Lot métier client (hors dépôt Git — références locales)
-
-Liste complète : `docs/commercial/INVENTAIRE-ALIGNEMENT-DOCUMENTS-2026-11-08.md` §1 et `docs/specs/suivi-tampon/INVENTAIRE-DOCUMENTS.md` §2–3.
-
-Tous les types DEVIS / FACTURE / CONTRAT client listés sont **couverts** par les gabarits legacy §2 (contenu dans le code, pas re-OCR en base pour cette session).
-
-Points **à valider** (reprise inventaires existants, non bloquants seed) :
-
-- Grille offres STANDARD/PRO/PREMIUM visuelle dans devis générique
-- Ligne « solde reporté » facture (ECOSOL 413 600 F)
-- Case offre contrat ECOSOL OCR
-- Règlement intérieur : reproduction intégrale 22 articles
+**Signature** : tous → `signatureEnabled = false` par défaut.
 
 ---
 
-## 4. Moteur & exemplaires (cette session)
+## 3. Pipeline unifié (2026-11-17)
 
-| Composant | Fichier |
-|-----------|---------|
-| Génération exemplaire (legacy + Studio) | `src/lib/studio/generate-sample-pdf.ts` |
-| Téléchargement / iframe | `GET /api/administration/gabarits/[id]/exemplaire` |
-| Playground POST (Studio) | `POST` même route — corps / logo / signature preview / `variableOverrides` — mode texte (composites strippés, aligné HTML) |
-| Preview HTML | `renderBlocksToHtml` — chrome en-tête / pied MSK + blocs DSL + placeholder composite |
-| UI Playground | `/administration/gabarits/[id]/playground` — onglets Données / DSL / Structure / Mise en page ; **preview HTML live** ; CTA **Voir le PDF** (modal blob) |
-| Cartes bibliothèque | `TemplateLibraryCard` — Voir / Télécharger / Playground |
+```
+Réf docs → corps DSL (spécifique) + variables
+        → renderBlocksToHtml (preview live, régions peuplées)
+        → generateOfficialPdfFromTemplate → renderBlocksToPdf (+ drawCompositeRegion)
+```
 
-Le bouton « PDF démo » (GED) reste optionnel ; l’exemplaire ne dépend plus d’un upload préalable.
+| Avant | Après |
+|-------|-------|
+| Composite présent → ignore DSL, appelle `generateCommercialPdf` / `generateContractPdf` / … | Composite = **région** à sa place dans le flux blocs |
+| Playground `playgroundTextMode` strippe composites | Même pipeline métier ; overrides variables optionnels |
 
-**Source de vérité Playground** : DSL / blocs → HTML live **et** PDF on-demand (`playgroundTextMode`). Modules métier : composites officiels inchangés.
-
-**Patterns retenus (Documentero / PDFMonkey / Efalia)** : formulaire de champs variables (Documentero) · test data + aperçu (PDFMonkey) · mode conception (Efalia) — adaptés charte MSK ; **pas** d’iframe PDF par défaut.
+Point d’entrée modules : Commercial / Contrats / RH → `generateOfficialPdfFromTemplate` (inchangé côté actions).
 
 ---
 
-## 5. Intégrations modules métier (`requireActiveTemplate`)
+## 4. Matrice couverture vs refs (livrable)
 
-| Module | Actions | Gabarit(s) | Statut |
-|--------|---------|------------|--------|
-| Commercial | `generateQuotePdfAction`, `generateInvoicePdfAction` | `devis_standard`, `facture_standard` | ✅ |
-| Contrats commerciaux | `generateContractPdf` (contracts.ts) | `contrat_commercial_msk` | ✅ |
-| RH | contrats, attestation, règlement (+ autres PDF RH) | codes §2 | ✅ hook signature + template |
-| Studio | `generateDemoPdfAction` | tous | ✅ via `generateSamplePdfForTemplate` |
-
-**Composites** : marqueurs `[[COMPOSITE:…]]` — tableaux Devis/Facture, contrat commercial multipages, fiche paie et contrat presta RH restent rendus par `src/lib/pdf/*` (fidélité charte) ; le DSL porte l’entête / clauses éditables.
+| Code | Pipeline unifié ? | Couverture vs ref `docs/` / locale | Région composite |
+|------|-------------------|-------------------------------------|------------------|
+| `devis_standard` | **oui** | Sections émetteur/client/objet/mission/conditions — tableau = région | `commercial_devis` |
+| `facture_standard` | **oui** | Idem + règlement ; solde reporté = dette | `commercial_facture` |
+| `contrat_commercial_msk` | **oui** | Art. 1–13 DSL ; annexe lignes = région | `commercial_contract` |
+| `contrat_presta_msk` | **oui** | Art. 1–10 DSL ; récap parties = région | `rh_contract_presta` |
+| `fiche_paie_msk` | **oui** | ID/rémun DSL ; grille cotisations = région | `rh_payslip` |
+| `contrat_travail_msk` | **oui** (déjà DSL) | Art. 1–16 | — |
+| `contrat_stage_msk` | **oui** | Articles stage | — |
+| `attestation_stage_msk` | **oui** | Corps attestation | — |
+| `reglement_interieur_msk` | **oui** | 6 chapitres + accusé (22 art. hors PDF) | — |
+| `solde_tout_compte_msk` | **oui** | Corps solde | — |
+| `attestation_presence_libre` | **oui** | Démo Studio | — |
 
 ---
 
-## 6. Matrice statut livrable (2026-11-17)
+## 5. Fichiers `docs/` — classification (inchangé)
 
-| Code | Source `docs/` locale | Sections DSL éditables | Composite | Statut |
-|------|----------------------|------------------------|-----------|--------|
-| `devis_standard` | DEVIS HOTEL / PROSPERITY / CHARTRES | Émetteur, client, objet, mission, conditions, mentions | `commercial_devis` | **complet** (tableau = composite) |
-| `facture_standard` | FACTURE ECOSOL / KOUNDJI / PROSPERITY | Émetteur, client, règlement, mentions | `commercial_facture` | **complet** (solde reporté = dette) |
-| `contrat_commercial_msk` | CONTRAT PRESTATION / ENGAGEMENT + ANALYSE | Articles 1–13 + méta / parties | `commercial_contract` | **complet** (multipages officiel = composite) |
-| `contrat_travail_msk` | Contrat Travail Guiro.pdf | Articles 1–16 | — | **complet** |
-| `contrat_stage_msk` | Contrat Stage Yaye Bah.docx | Articles stage | — | **complet** |
-| `contrat_presta_msk` | CONTRAT PRESTATION + COMPARAISON v2/v3 | Articles 1–10 | `rh_contract_presta` | **complet** |
-| `attestation_stage_msk` | ATTESTATION STAGE Mangara.pdf | Corps attestation | — | **complet** |
-| `reglement_interieur_msk` | Règlement Fatoumata.pdf | 6 chapitres détaillés + accusé | — | **accusé complet** (22 art. GED) |
-| `solde_tout_compte_msk` | Solde Mangara.pdf | Corps solde | — | **complet** |
-| `fiche_paie_msk` | Fiche Paie Guiro 09/2026.pdf | ID / rémun. / cotisations / congés | `rh_payslip` | **complet** (indicatif Paie) |
-| `attestation_presence_libre` | seed Studio | Corps démo | — | **canon Studio** |
+### Ne deviennent pas gabarit PDF
 
-Aucun gabarit de la liste **bloqué manque ref** : les PDF/DOCX métier sont présents sur disque (souvent gitignorés).
+Manuels, phases, architecture, brand, xlsx, canvas — hors mission contenu.
 
-## 7. Reste à faire (explicite)
+### PDF versionnés charges
 
-1. **OCR / validation Direction** des coques charges EDM & loyer + éventuels gabarits Orange.
-2. **Réduction des composites** — blocs tableau natifs Studio (édition cellules).
-3. **Playground WYSIWYG** drag-and-drop (au-delà du DSL actuel).
-4. **Guide utilisateur** `/guides` Studio — statut `draft` dans `SUIVI-GUIDES.md`.
-5. **Règlement intérieur** intégral (22 articles) si Direction fournit un texte source extractible (scan OCR vide aujourd’hui).
-6. **Republier en base** : `npm run db:seed` (met à jour `bodyJson` v1 + catalogue variables).
+`Fac-edm-octobre.pdf` / `Fac-location-novembre.pdf` → module Suivi charges, pas `DocumentTemplate` métier client.
+
+### Lot métier hors Git
+
+Voir inventaires commercial / suivi tampon. Contenu porté en DSL + régions.
+
+---
+
+## 6. Intégrations modules
+
+| Module | Gabarit(s) | Statut |
+|--------|------------|--------|
+| Commercial | `devis_standard`, `facture_standard` | ✅ pipeline unifié |
+| Contrats | `contrat_commercial_msk` | ✅ |
+| RH | codes §2 | ✅ |
+| Studio Playground | tous | ✅ HTML + PDF même source |
+
+---
+
+## 7. Reste à faire
+
+1. OCR / validation Direction coques charges EDM & loyer.
+2. Édition cellules tableau (WYSIWYG) — Option B partielle.
+3. Playground drag-and-drop blocs.
+4. Guide `/guides` Studio — `draft`.
+5. Règlement 22 articles si texte extractible.
+6. **`npm run db:seed`** en chaque env pour republier `bodyJson`.

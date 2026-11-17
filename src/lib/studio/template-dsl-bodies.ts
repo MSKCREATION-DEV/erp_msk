@@ -1,8 +1,8 @@
 /**
  * Contenus DSL des 10 gabarits legacy migrés vers `ENGINE_BLOCKS`.
  * Texte repris de `src/lib/pdf/commercial.ts` et `src/lib/pdf/rh.ts` — pas
- * d’invention de clauses. Marqueurs `[[COMPOSITE:…]]` = sections tableau /
- * multipages encore rendues par le générateur historique (charte identique).
+ * d’invention de clauses. Marqueurs `[[COMPOSITE:…]]` = régions tableau /
+ * grille rendues dans le flux DSL (pipeline unifié — ADR).
  */
 import { company } from "@/lib/company";
 import {
@@ -482,19 +482,19 @@ export const LEGACY_TEMPLATE_DSL_SPECS: LegacyTemplateDslSpec[] = [
     code: "devis_standard",
     body: devisStandard,
     changelog:
-      "Studio v3 — sections complètes devis (émetteur, client, objet, mission, conditions, mentions) + composite tableau.",
+      "Studio v4 — pipeline unifié : DSL sections + région tableau (plus de court-circuit).",
   },
   {
     code: "facture_standard",
     body: factureStandard,
     changelog:
-      "Studio v3 — sections complètes facture (émetteur, client, règlement, mentions) + composite lignes.",
+      "Studio v4 — pipeline unifié : DSL sections + région lignes facture.",
   },
   {
     code: "contrat_commercial_msk",
     body: contratCommercial,
     changelog:
-      "Studio v3 — articles 1–13 famille A (ANALYSE contrats) + composite multipages officiel.",
+      "Studio v4 — pipeline unifié : articles 1–13 DSL + région annexe BDC.",
   },
   {
     code: "contrat_travail_msk",
@@ -510,7 +510,7 @@ export const LEGACY_TEMPLATE_DSL_SPECS: LegacyTemplateDslSpec[] = [
     code: "contrat_presta_msk",
     body: contratPresta,
     changelog:
-      "Studio v3 — articles 1–10 presta RH éditables + composite tableaux parties.",
+      "Studio v4 — pipeline unifié : articles 1–10 DSL + région récap parties.",
   },
   {
     code: "attestation_stage_msk",
@@ -532,7 +532,7 @@ export const LEGACY_TEMPLATE_DSL_SPECS: LegacyTemplateDslSpec[] = [
     code: "fiche_paie_msk",
     body: fichePaie,
     changelog:
-      "Studio v3 — identification / rémunération / cotisations / congés + composite grille.",
+      "Studio v4 — pipeline unifié : ID/rémun DSL + région grille cotisations.",
   },
 ];
 

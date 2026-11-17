@@ -1,22 +1,20 @@
-# Plan — Gabarits Studio complets + Playground HTML
+# Plan — Pipeline Studio unifié (DSL + régions)
 
-## Diagnostic (avant code)
+## Diagnostic (résolu)
 
-### Pourquoi « pas modifiable »
+1. **Composites** : dès qu’un `[[COMPOSITE]]` était présent, `generateOfficialPdfFromTemplate` **ignorait le DSL** → Playground ≠ PDF métier.
+2. **`playgroundTextMode`** : stripait les composites pour « sync » HTML — mentait sur le PDF métier.
 
-1. **Composites** (`[[COMPOSITE:…]]`) : dès qu’un composite est présent, `generateOfficialPdfFromTemplate` **ignore tout le DSL** et délègue au générateur TS (`commercial.ts` / `rh.ts`). Éditer le corps Playground n’impacte pas le PDF métier.
-2. **Playground POST + composite** : payload forcé en `blocks_only` → `runComposite` échoue (« Payload commercial attendu ») ou retombe sur un PDF opaque — variables / DSL sans effet réel.
-3. **Contenu coquille** : devis / facture / contrat commercial / presta / fiche paie = bandeau + marqueur composite, pas les sections éditables.
-4. **PDF iframe par défaut** : feedback lent, pas de visionneuse « source de vérité » HTML.
-
-### Architecture cible
+## Architecture cible (livrée — Option A)
 
 ```
 DSL / blocs (+ variables)
-        ├─→ renderBlocksToHtml  → preview live (colonne droite)
-        └─→ renderBlocksToPdf   → PDF on-demand (même corps, sans composite opaque)
-Official métier (modules)     → composite generators (fidélité tableaux)
+        ├─→ renderBlocksToHtml  (+ régions peuplées)
+        └─→ renderBlocksToPdf   (+ drawCompositeRegion)
+Official métier = Playground = même generateOfficialPdfFromTemplate
 ```
+
+ADR : `docs/architecture/ADR-studio-pipeline-unifie.md`.
 
 ## Tasks
 
