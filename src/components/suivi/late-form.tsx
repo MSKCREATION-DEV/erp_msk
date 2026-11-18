@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import type { OptionPickerItem } from "@/components/ui/option-picker-modal";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
+import { cn } from "@/lib/utils";
 
 type Initial = {
   employeeId?: string;
@@ -64,6 +65,11 @@ export function SvLateForm({
 
   const employeeLabel =
     employeeOptions.find((o) => o.value === employeeId)?.label ?? "—";
+  const stepId = STEPS[step]?.id;
+  const showCollab =
+    stepId === "collab" || (stepId === "horaire" && mode === "edit");
+  const showHoraire = stepId === "horaire";
+  const showRecap = stepId === "recap";
 
   function validateStep(index: number): boolean {
     const stepId = STEPS[index]?.id;
@@ -185,127 +191,141 @@ export function SvLateForm({
         ) : null}
 
         <div className="mt-6 space-y-5">
-          {/* Pas de picker fichier ici — keys d’étape alignées stocks / absences. */}
-          {STEPS[step]?.id === "collab" ||
-          (STEPS[step]?.id === "horaire" && mode === "edit") ? (
-            <div key="step-collab">
-              <OptionPickerSingle
-                label="Collaborateur"
-                required
-                options={employeeOptions}
-                value={employeeId}
-                onChange={(id) => {
-                  setEmployeeId(id);
-                  setStepError(null);
-                }}
-                disabled={pending}
-                placeholder="Choisir un collaborateur"
-                modalTitle="Collaborateur concerné"
-              />
-            </div>
-          ) : null}
+          {/*
+            Étapes toujours montées (cachées) — ne pas démonter date/time
+            focusés → NotFoundError removeChild (ext. autofill). Réf. 56ae162 / 4995270.
+          */}
+          <div
+            key="step-collab"
+            hidden={!showCollab}
+            aria-hidden={!showCollab}
+            className={cn(!showCollab && "hidden")}
+          >
+            <OptionPickerSingle
+              label="Collaborateur"
+              required
+              options={employeeOptions}
+              value={employeeId}
+              onChange={(id) => {
+                setEmployeeId(id);
+                setStepError(null);
+              }}
+              disabled={pending || !showCollab}
+              placeholder="Choisir un collaborateur"
+              modalTitle="Collaborateur concerné"
+            />
+          </div>
 
-          {STEPS[step]?.id === "horaire" ? (
-            <div key="step-horaire" className="space-y-5">
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div>
-                  <FieldLabel htmlFor="lateDate" required>
-                    Date
-                  </FieldLabel>
-                  <input
-                    id="lateDate"
-                    type="date"
-                    className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
-                    value={lateDate}
-                    onChange={(e) => setLateDate(e.target.value)}
-                    disabled={pending}
-                  />
-                </div>
-                <div>
-                  <FieldLabel htmlFor="expectedTime">Heure prévue</FieldLabel>
-                  <input
-                    id="expectedTime"
-                    type="time"
-                    className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
-                    value={expectedTime}
-                    onChange={(e) => setExpectedTime(e.target.value)}
-                    disabled={pending}
-                  />
-                </div>
-                <div>
-                  <FieldLabel htmlFor="arrivedTime" required>
-                    Heure d’arrivée
-                  </FieldLabel>
-                  <input
-                    id="arrivedTime"
-                    type="time"
-                    className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
-                    value={arrivedTime}
-                    onChange={(e) => setArrivedTime(e.target.value)}
-                    disabled={pending}
-                  />
-                </div>
+          <div
+            key="step-horaire"
+            hidden={!showHoraire}
+            aria-hidden={!showHoraire}
+            className={cn("space-y-5", !showHoraire && "hidden")}
+          >
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <FieldLabel htmlFor="lateDate" required>
+                  Date
+                </FieldLabel>
+                <input
+                  id="lateDate"
+                  type="date"
+                  className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
+                  value={lateDate}
+                  onChange={(e) => setLateDate(e.target.value)}
+                  disabled={pending || !showHoraire}
+                />
               </div>
               <div>
-                <FieldLabel htmlFor="note">Note</FieldLabel>
-                <textarea
-                  id="note"
-                  rows={3}
+                <FieldLabel htmlFor="expectedTime">Heure prévue</FieldLabel>
+                <input
+                  id="expectedTime"
+                  type="time"
                   className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
-                  placeholder="Ex. embouteillage, rendez-vous médical…"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  disabled={pending}
+                  value={expectedTime}
+                  onChange={(e) => setExpectedTime(e.target.value)}
+                  disabled={pending || !showHoraire}
+                />
+              </div>
+              <div>
+                <FieldLabel htmlFor="arrivedTime" required>
+                  Heure d’arrivée
+                </FieldLabel>
+                <input
+                  id="arrivedTime"
+                  type="time"
+                  className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
+                  value={arrivedTime}
+                  onChange={(e) => setArrivedTime(e.target.value)}
+                  disabled={pending || !showHoraire}
                 />
               </div>
             </div>
-          ) : null}
+            <div>
+              <FieldLabel htmlFor="note">Note</FieldLabel>
+              <textarea
+                id="note"
+                rows={3}
+                className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
+                placeholder="Ex. embouteillage, rendez-vous médical…"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                disabled={pending || !showHoraire}
+              />
+            </div>
+          </div>
 
-          {STEPS[step]?.id === "recap" ? (
-            <dl
-              key="step-recap"
-              className="grid gap-3 text-sm sm:grid-cols-2"
+          <dl
+            key="step-recap"
+            hidden={!showRecap}
+            aria-hidden={!showRecap}
+            className={cn(
+              "grid gap-3 text-sm sm:grid-cols-2",
+              !showRecap && "hidden",
+            )}
+          >
+            <div>
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Collaborateur
+              </dt>
+              <dd className="mt-0.5 font-medium">{employeeLabel}</dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Date
+              </dt>
+              <dd className="mt-0.5 font-medium tabular-nums">
+                {lateDate || "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Prévu
+              </dt>
+              <dd className="mt-0.5 font-medium tabular-nums">
+                {expectedTime || "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Arrivée
+              </dt>
+              <dd className="mt-0.5 font-medium tabular-nums">
+                {arrivedTime || "—"}
+              </dd>
+            </div>
+            <div
+              key="recap-note"
+              hidden={!note}
+              aria-hidden={!note}
+              className={cn("sm:col-span-2", !note && "hidden")}
             >
-              <div>
-                <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                  Collaborateur
-                </dt>
-                <dd className="mt-0.5 font-medium">{employeeLabel}</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                  Date
-                </dt>
-                <dd className="mt-0.5 font-medium tabular-nums">
-                  {lateDate || "—"}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                  Prévu
-                </dt>
-                <dd className="mt-0.5 font-medium tabular-nums">
-                  {expectedTime || "—"}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                  Arrivée
-                </dt>
-                <dd className="mt-0.5 font-medium tabular-nums">
-                  {arrivedTime || "—"}
-                </dd>
-              </div>
-              {note ? (
-                <div key="recap-note" className="sm:col-span-2">
-                  <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                    Note
-                  </dt>
-                  <dd className="mt-0.5">{note}</dd>
-                </div>
-              ) : null}
-            </dl>
-          ) : null}
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Note
+              </dt>
+              <dd className="mt-0.5">{note}</dd>
+            </div>
+          </dl>
         </div>
       </FormShell>
     </form>

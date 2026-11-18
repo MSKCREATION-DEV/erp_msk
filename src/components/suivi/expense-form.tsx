@@ -185,7 +185,12 @@ export function SvExpenseForm() {
             </p>
           </div>
 
+          {/*
+            Input file + dropzone toujours montés (cachés) — même famille
+            removeChild que justificatif absence (4995270).
+          */}
           <input
+            key="sv-expense-file"
             ref={fileInputRef}
             id="file"
             name="file"
@@ -200,142 +205,148 @@ export function SvExpenseForm() {
             }}
           />
 
-          {!selectedFile ? (
-            <div
-              role="button"
-              tabIndex={0}
-              aria-controls="file"
-              aria-label="Déposer le justificatif ou parcourir"
-              onKeyDown={(e) => {
-                if (busy) return;
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  fileInputRef.current?.click();
-                }
-              }}
-              onClick={() => {
-                if (!busy) fileInputRef.current?.click();
-              }}
-              onDragEnter={(e) => {
+          <div
+            key="sv-expense-dropzone"
+            role="button"
+            tabIndex={!selectedFile && !busy ? 0 : -1}
+            hidden={Boolean(selectedFile)}
+            aria-hidden={Boolean(selectedFile)}
+            aria-controls="file"
+            aria-label="Déposer le justificatif ou parcourir"
+            onKeyDown={(e) => {
+              if (selectedFile || busy) return;
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
+                fileInputRef.current?.click();
+              }
+            }}
+            onClick={() => {
+              if (!selectedFile && !busy) fileInputRef.current?.click();
+            }}
+            onDragEnter={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!selectedFile && !busy) setDragOver(true);
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!selectedFile && !busy) setDragOver(true);
+            }}
+            onDragLeave={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDragOver(false);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDragOver(false);
+              if (selectedFile || busy) return;
+              const f = e.dataTransfer.files?.[0];
+              if (f) assignFile(f, { autoRead: true });
+            }}
+            className={cn(
+              "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-4 py-8 text-center transition sm:py-10",
+              selectedFile && "hidden",
+              dragOver
+                ? "border-msk-blue bg-msk-blue/5"
+                : "border-msk-ink/15 bg-msk-chalk/50 hover:border-msk-blue/40 hover:bg-msk-blue/4",
+              busy && "pointer-events-none opacity-60",
+            )}
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-msk-blue/10 text-msk-blue">
+              <Upload className="h-5 w-5" aria-hidden />
+            </span>
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-msk-ink">
+                Déposer le PDF ou la photo
+              </p>
+              <p className="text-xs text-msk-ink/45">
+                PDF, JPEG, PNG ou WebP — max 12 Mo · classé en GED à
+                l’enregistrement
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={busy || Boolean(selectedFile)}
+              onClick={(e) => {
                 e.stopPropagation();
-                if (!busy) setDragOver(true);
+                fileInputRef.current?.click();
               }}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!busy) setDragOver(true);
-              }}
-              onDragLeave={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setDragOver(false);
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setDragOver(false);
-                if (busy) return;
-                const f = e.dataTransfer.files?.[0];
-                if (f) assignFile(f, { autoRead: true });
-              }}
-              className={cn(
-                "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-4 py-8 text-center transition sm:py-10",
-                dragOver
-                  ? "border-msk-blue bg-msk-blue/5"
-                  : "border-msk-ink/15 bg-msk-chalk/50 hover:border-msk-blue/40 hover:bg-msk-blue/4",
-                busy && "pointer-events-none opacity-60",
-              )}
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-msk-blue/10 text-msk-blue">
-                <Upload className="h-5 w-5" aria-hidden />
-              </span>
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-msk-ink">
-                  Déposer le PDF ou la photo
-                </p>
-                <p className="text-xs text-msk-ink/45">
-                  PDF, JPEG, PNG ou WebP — max 12 Mo · classé en GED à
-                  l’enregistrement
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                disabled={busy}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  fileInputRef.current?.click();
-                }}
+              Parcourir
+            </Button>
+          </div>
+
+          <div
+            key="sv-expense-file-preview"
+            hidden={!selectedFile}
+            aria-hidden={!selectedFile}
+            className={cn(
+              "rounded-xl border px-4 py-3 transition",
+              !selectedFile && "hidden",
+              ocrPending
+                ? "border-msk-blue/25 bg-msk-blue/5"
+                : ocrError
+                  ? "border-msk-coral/25 bg-msk-coral/5"
+                  : ocrOk
+                    ? "border-msk-ink/8 bg-msk-chalk/40"
+                    : "border-msk-ink/10 bg-msk-chalk/30",
+            )}
+          >
+            <div className="flex items-start gap-3">
+              <span
+                className={cn(
+                  "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
+                  ocrError
+                    ? "bg-msk-coral/10 text-msk-coral"
+                    : "bg-msk-blue/10 text-msk-blue",
+                )}
               >
-                Parcourir
-              </Button>
-            </div>
-          ) : (
-            <div
-              className={cn(
-                "rounded-xl border px-4 py-3 transition",
-                ocrPending
-                  ? "border-msk-blue/25 bg-msk-blue/5"
-                  : ocrError
-                    ? "border-msk-coral/25 bg-msk-coral/5"
-                    : ocrOk
-                      ? "border-msk-ink/8 bg-msk-chalk/40"
-                      : "border-msk-ink/10 bg-msk-chalk/30",
-              )}
-            >
-              <div className="flex items-start gap-3">
-                <span
-                  className={cn(
-                    "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
-                    ocrError
-                      ? "bg-msk-coral/10 text-msk-coral"
-                      : "bg-msk-blue/10 text-msk-blue",
-                  )}
+                {ocrPending ? (
+                  <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                ) : (
+                  <FileText className="h-5 w-5" aria-hidden />
+                )}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-msk-ink">
+                  {selectedFile?.name ?? ""}
+                </p>
+                <p className="mt-0.5 text-xs text-msk-ink/45">
+                  {selectedFile ? formatFileSize(selectedFile.size) : ""}
+                  {ocrPending ? " · Lecture du document…" : null}
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  hidden={ocrPending || ocrOk}
+                  className={cn((ocrPending || ocrOk) && "hidden")}
+                  disabled={busy || !selectedFile}
+                  onClick={() => void runDocumentRead()}
                 >
-                  {ocrPending ? (
-                    <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
-                  ) : (
-                    <FileText className="h-5 w-5" aria-hidden />
-                  )}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-msk-ink">
-                    {selectedFile.name}
-                  </p>
-                  <p className="mt-0.5 text-xs text-msk-ink/45">
-                    {formatFileSize(selectedFile.size)}
-                    {ocrPending ? " · Lecture du document…" : null}
-                  </p>
-                </div>
-                <div className="flex shrink-0 items-center gap-2">
-                  {!ocrPending && !ocrOk ? (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      disabled={busy}
-                      onClick={() => void runDocumentRead()}
-                    >
-                      {ocrError ? "Relire" : "Lire"}
-                    </Button>
-                  ) : null}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={busy}
-                    aria-label="Retirer le fichier"
-                    className="px-2 text-msk-ink/50 hover:text-msk-coral"
-                    onClick={clearFile}
-                  >
-                    <X className="h-4 w-4" aria-hidden />
-                  </Button>
-                </div>
+                  {ocrError ? "Relire" : "Lire"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={busy || !selectedFile}
+                  aria-label="Retirer le fichier"
+                  className="px-2 text-msk-ink/50 hover:text-msk-coral"
+                  onClick={clearFile}
+                >
+                  <X className="h-4 w-4" aria-hidden />
+                </Button>
               </div>
             </div>
-          )}
+          </div>
 
           {ocrOk ? (
             <div

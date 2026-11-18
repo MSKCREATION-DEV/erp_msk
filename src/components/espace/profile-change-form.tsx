@@ -10,6 +10,7 @@ import {
   type ProfileFieldMeta,
 } from "@/lib/rh/profile-fields";
 import { FieldLabel } from "@/components/ui/field-label";
+import { GeneratedValueField } from "@/components/ui/generated-value-field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -96,15 +97,11 @@ export function ProfileChangeForm({
             ))}
           </select>
         </div>
-        <div>
-          <FieldLabel>Valeur actuelle</FieldLabel>
-          <Input
-            value={current || "—"}
-            readOnly
-            disabled
-            className="bg-msk-chalk/60"
-          />
-        </div>
+        <GeneratedValueField
+          id="profile-current"
+          label="Valeur actuelle"
+          value={current || "—"}
+        />
       </div>
 
       <div>

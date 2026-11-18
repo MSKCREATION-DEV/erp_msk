@@ -40,6 +40,7 @@ Ex. : reporter une relance, saisir une note optionnelle, filtre liste.
 - Empiler tous les blocs d’un parcours multi-intention sur **une** carte sans stepper.
 - Stepper cosmétique sans validation d’étape.
 - Réinventer une barre d’étapes — réutiliser `FormSteps`.
+- **Démonter** les panels d’étape (`step === n ? … : null`) quand ils contiennent inputs focusables / file — voir `react-removechild-dom.mdc` (cacher, pas unmount).
 
 ## Test mental
 

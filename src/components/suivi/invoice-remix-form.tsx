@@ -12,6 +12,7 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { Button } from "@/components/ui/button";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
 import { formatSvXof } from "@/lib/suivi/labels";
+import { cn } from "@/lib/utils";
 
 type ClientOpt = { id: string; name: string };
 type InvoiceOpt = {
@@ -147,174 +148,193 @@ export function SvInvoiceRemixForm({
             </div>
           }
         >
-          {step === 0 ? (
-            <div>
-              <FieldLabel required>Client</FieldLabel>
-              <div className="mt-2 max-h-72 overflow-auto rounded-lg border border-msk-ink/10">
-                {clients.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => {
-                      setClientId(c.id);
-                      setSourceId("");
-                      setLines([]);
-                    }}
-                    className={`flex w-full px-4 py-3 text-left text-sm hover:bg-msk-blue/4 ${
-                      clientId === c.id
-                        ? "bg-msk-blue/8 font-medium text-msk-blue"
-                        : ""
-                    }`}
-                  >
-                    {c.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {step === 1 ? (
-            <div>
-              <FieldLabel>Facture source (optionnel)</FieldLabel>
-              <p className="mt-1 text-xs text-msk-ink/50">
-                Préremplit les lignes depuis l’historique. Vous pouvez aussi
-                partir sans source.
-              </p>
-              <div className="mt-2 max-h-72 overflow-auto rounded-lg border border-msk-ink/10">
+          <div
+            key="step-client"
+            hidden={step !== 0}
+            aria-hidden={step !== 0}
+            className={cn(step !== 0 && "hidden")}
+          >
+            <FieldLabel required>Client</FieldLabel>
+            <div className="mt-2 max-h-72 overflow-auto rounded-lg border border-msk-ink/10">
+              {clients.map((c) => (
                 <button
+                  key={c.id}
                   type="button"
-                  onClick={() => setSourceId("")}
+                  disabled={step !== 0}
+                  onClick={() => {
+                    setClientId(c.id);
+                    setSourceId("");
+                    setLines([]);
+                  }}
                   className={`flex w-full px-4 py-3 text-left text-sm hover:bg-msk-blue/4 ${
-                    !sourceId ? "bg-msk-blue/8 font-medium text-msk-blue" : ""
+                    clientId === c.id
+                      ? "bg-msk-blue/8 font-medium text-msk-blue"
+                      : ""
                   }`}
                 >
-                  Sans source — lignes vides
+                  {c.name}
                 </button>
-                {clientInvoices.map((inv) => (
-                  <button
-                    key={inv.id}
-                    type="button"
-                    onClick={() => setSourceId(inv.id)}
-                    className={`flex w-full flex-col px-4 py-3 text-left text-sm hover:bg-msk-blue/4 ${
-                      sourceId === inv.id
-                        ? "bg-msk-blue/8 font-medium text-msk-blue"
-                        : ""
-                    }`}
-                  >
-                    <span>{inv.number ?? "Sans n°"}</span>
-                    <span className="text-xs text-msk-ink/50">
-                      {inv.object ?? "—"}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {step === 2 ? (
-            <div className="space-y-4">
-              <div>
-                <FieldLabel htmlFor="object">Objet</FieldLabel>
-                <input
-                  id="object"
-                  value={object}
-                  onChange={(e) => setObject(e.target.value)}
-                  className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-                  placeholder="Objet de la facture"
-                />
-              </div>
-              {lines.map((line, idx) => (
-                <div
-                  key={idx}
-                  className="grid gap-3 rounded-lg border border-msk-ink/8 p-3 sm:grid-cols-12"
-                >
-                  <div className="sm:col-span-5">
-                    <FieldLabel required>Libellé</FieldLabel>
-                    <input
-                      value={line.label}
-                      onChange={(e) => {
-                        const next = [...lines];
-                        next[idx] = { ...line, label: e.target.value };
-                        setLines(next);
-                      }}
-                      className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-                    />
-                  </div>
-                  <div className="sm:col-span-3">
-                    <FieldLabel>Description</FieldLabel>
-                    <input
-                      value={line.description}
-                      onChange={(e) => {
-                        const next = [...lines];
-                        next[idx] = { ...line, description: e.target.value };
-                        setLines(next);
-                      }}
-                      className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-                    />
-                  </div>
-                  <div className="sm:col-span-1">
-                    <FieldLabel>Qté</FieldLabel>
-                    <input
-                      type="number"
-                      min={1}
-                      value={line.qty}
-                      onChange={(e) => {
-                        const next = [...lines];
-                        next[idx] = {
-                          ...line,
-                          qty: Number(e.target.value) || 1,
-                        };
-                        setLines(next);
-                      }}
-                      className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-                    />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <FieldLabel>PU</FieldLabel>
-                    <input
-                      type="number"
-                      min={0}
-                      value={line.unitPrice}
-                      onChange={(e) => {
-                        const next = [...lines];
-                        next[idx] = {
-                          ...line,
-                          unitPrice: Number(e.target.value) || 0,
-                        };
-                        setLines(next);
-                      }}
-                      className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-                    />
-                  </div>
-                  <div className="flex items-end sm:col-span-1">
-                    <Button
-                      type="button"
-                      variant="danger"
-                      size="sm"
-                      onClick={() =>
-                        setLines(lines.filter((_, i) => i !== idx))
-                      }
-                    >
-                      ×
-                    </Button>
-                  </div>
-                </div>
               ))}
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() =>
-                  setLines([
-                    ...lines,
-                    { label: "", description: "", qty: 1, unitPrice: 0 },
-                  ])
-                }
-              >
-                Ajouter une ligne
-              </Button>
             </div>
-          ) : null}
+          </div>
+
+          <div
+            key="step-source"
+            hidden={step !== 1}
+            aria-hidden={step !== 1}
+            className={cn(step !== 1 && "hidden")}
+          >
+            <FieldLabel>Facture source (optionnel)</FieldLabel>
+            <p className="mt-1 text-xs text-msk-ink/50">
+              Préremplit les lignes depuis l’historique. Vous pouvez aussi
+              partir sans source.
+            </p>
+            <div className="mt-2 max-h-72 overflow-auto rounded-lg border border-msk-ink/10">
+              <button
+                type="button"
+                disabled={step !== 1}
+                onClick={() => setSourceId("")}
+                className={`flex w-full px-4 py-3 text-left text-sm hover:bg-msk-blue/4 ${
+                  !sourceId ? "bg-msk-blue/8 font-medium text-msk-blue" : ""
+                }`}
+              >
+                Sans source — lignes vides
+              </button>
+              {clientInvoices.map((inv) => (
+                <button
+                  key={inv.id}
+                  type="button"
+                  disabled={step !== 1}
+                  onClick={() => setSourceId(inv.id)}
+                  className={`flex w-full flex-col px-4 py-3 text-left text-sm hover:bg-msk-blue/4 ${
+                    sourceId === inv.id
+                      ? "bg-msk-blue/8 font-medium text-msk-blue"
+                      : ""
+                  }`}
+                >
+                  <span>{inv.number ?? "Sans n°"}</span>
+                  <span className="text-xs text-msk-ink/50">
+                    {inv.object ?? "—"}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div
+            key="step-lignes"
+            hidden={step !== 2}
+            aria-hidden={step !== 2}
+            className={cn("space-y-4", step !== 2 && "hidden")}
+          >
+            <div>
+              <FieldLabel htmlFor="object">Objet</FieldLabel>
+              <input
+                id="object"
+                value={object}
+                onChange={(e) => setObject(e.target.value)}
+                disabled={step !== 2}
+                className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+                placeholder="Objet de la facture"
+              />
+            </div>
+            {lines.map((line, idx) => (
+              <div
+                key={`line-${idx}`}
+                className="grid gap-3 rounded-lg border border-msk-ink/8 p-3 sm:grid-cols-12"
+              >
+                <div className="sm:col-span-5">
+                  <FieldLabel required>Libellé</FieldLabel>
+                  <input
+                    value={line.label}
+                    disabled={step !== 2}
+                    onChange={(e) => {
+                      const next = [...lines];
+                      next[idx] = { ...line, label: e.target.value };
+                      setLines(next);
+                    }}
+                    className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="sm:col-span-3">
+                  <FieldLabel>Description</FieldLabel>
+                  <input
+                    value={line.description}
+                    disabled={step !== 2}
+                    onChange={(e) => {
+                      const next = [...lines];
+                      next[idx] = { ...line, description: e.target.value };
+                      setLines(next);
+                    }}
+                    className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="sm:col-span-1">
+                  <FieldLabel>Qté</FieldLabel>
+                  <input
+                    type="number"
+                    min={1}
+                    value={line.qty}
+                    disabled={step !== 2}
+                    onChange={(e) => {
+                      const next = [...lines];
+                      next[idx] = {
+                        ...line,
+                        qty: Number(e.target.value) || 1,
+                      };
+                      setLines(next);
+                    }}
+                    className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <FieldLabel>PU</FieldLabel>
+                  <input
+                    type="number"
+                    min={0}
+                    value={line.unitPrice}
+                    disabled={step !== 2}
+                    onChange={(e) => {
+                      const next = [...lines];
+                      next[idx] = {
+                        ...line,
+                        unitPrice: Number(e.target.value) || 0,
+                      };
+                      setLines(next);
+                    }}
+                    className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="flex items-end sm:col-span-1">
+                  <Button
+                    type="button"
+                    variant="danger"
+                    size="sm"
+                    disabled={step !== 2}
+                    onClick={() =>
+                      setLines(lines.filter((_, i) => i !== idx))
+                    }
+                  >
+                    ×
+                  </Button>
+                </div>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={step !== 2}
+              onClick={() =>
+                setLines([
+                  ...lines,
+                  { label: "", description: "", qty: 1, unitPrice: 0 },
+                ])
+              }
+            >
+              Ajouter une ligne
+            </Button>
+          </div>
         </FormShell>
       ) : (
         <form action={formAction}>

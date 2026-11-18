@@ -20,6 +20,7 @@ import {
   type SvStockUnit,
 } from "@/lib/suivi/stock";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
+import { cn } from "@/lib/utils";
 
 type Initial = {
   code?: string;
@@ -77,6 +78,9 @@ export function SvStockItemForm({
     mode === "edit" && initial?.code
       ? initial.code
       : `${codePrefix}-… (auto)`;
+  const showIdentite = step === 0;
+  const showStock = step === 1;
+  const showRecap = step === 2;
 
   function validateStep(index: number): boolean {
     if (index === 0) {
@@ -194,176 +198,194 @@ export function SvStockItemForm({
           <p className="mb-4 text-sm text-msk-coral">{stepError}</p>
         ) : null}
 
-        {step === 0 ? (
-          <div
-            key="step-identite"
-            className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            <GeneratedValueField
-              id="code-vis"
-              label="Code"
-              value={codeDisplay}
-              valueClassName="uppercase"
-              hint={
-                mode === "create"
-                  ? `Généré à l’enregistrement (préfixe ${codePrefix}- + n° unique).`
-                  : "Code figé à la création — non modifiable."
-              }
+        <div
+          key="step-identite"
+          hidden={!showIdentite}
+          aria-hidden={!showIdentite}
+          className={cn(
+            "mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3",
+            !showIdentite && "hidden",
+          )}
+        >
+          <GeneratedValueField
+            id="code-vis"
+            label="Code"
+            value={codeDisplay}
+            valueClassName="uppercase"
+            hint={
+              mode === "create"
+                ? `Généré à l’enregistrement (préfixe ${codePrefix}- + n° unique).`
+                : "Code figé à la création — non modifiable."
+            }
+          />
+          <div className="sm:col-span-2">
+            <FieldLabel htmlFor="label-vis" required>
+              Libellé
+            </FieldLabel>
+            <input
+              id="label-vis"
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              placeholder="Ex. Stylo bleu"
+              disabled={pending || !showIdentite}
+              className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
             />
-            <div className="sm:col-span-2">
-              <FieldLabel htmlFor="label-vis" required>
-                Libellé
-              </FieldLabel>
-              <input
-                id="label-vis"
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                placeholder="Ex. Stylo bleu"
-                disabled={pending}
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-              />
-            </div>
-            <div className="sm:col-span-2 lg:col-span-3">
-              <FieldLabel required>Famille</FieldLabel>
-              <div className="mt-2">
-                <ChoiceCards
-                  name="family-vis"
-                  value={family}
-                  onChange={setFamily}
-                  disabled={pending}
-                  columns={4}
-                  options={SV_STOCK_FAMILIES.map((f) => ({
-                    value: f,
-                    label: f,
-                  }))}
-                />
-              </div>
-            </div>
-            <div>
-              <FieldLabel htmlFor="subFamily-vis">Sous-famille</FieldLabel>
-              <input
-                id="subFamily-vis"
-                value={subFamily}
-                onChange={(e) => setSubFamily(e.target.value)}
-                placeholder="Optionnel"
-                disabled={pending}
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+          </div>
+          <div className="sm:col-span-2 lg:col-span-3">
+            <FieldLabel required>Famille</FieldLabel>
+            <div className="mt-2">
+              <ChoiceCards
+                name="family-vis"
+                value={family}
+                onChange={setFamily}
+                disabled={pending || !showIdentite}
+                columns={4}
+                options={SV_STOCK_FAMILIES.map((f) => ({
+                  value: f,
+                  label: f,
+                }))}
               />
             </div>
           </div>
-        ) : null}
+          <div>
+            <FieldLabel htmlFor="subFamily-vis">Sous-famille</FieldLabel>
+            <input
+              id="subFamily-vis"
+              value={subFamily}
+              onChange={(e) => setSubFamily(e.target.value)}
+              placeholder="Optionnel"
+              disabled={pending || !showIdentite}
+              className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+            />
+          </div>
+        </div>
 
-        {step === 1 ? (
-          <div
-            key="step-stock"
-            className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            <div className="sm:col-span-2 lg:col-span-3">
-              <FieldLabel required>Unité</FieldLabel>
-              <div className="mt-2">
-                <ChoiceCards
-                  name="unit-vis"
-                  value={unit}
-                  onChange={setUnit}
-                  disabled={pending}
-                  columns={3}
-                  options={SV_STOCK_UNITS.map((u) => ({
-                    value: u,
-                    label: u,
-                  }))}
-                />
-              </div>
-            </div>
-            {mode === "create" ? (
-              <div key="qty-initial">
-                <FieldLabel htmlFor="qty-vis">Quantité initiale</FieldLabel>
-                <input
-                  id="qty-vis"
-                  type="number"
-                  min={0}
-                  value={initialQuantity}
-                  onChange={(e) => setInitialQuantity(e.target.value)}
-                  disabled={pending}
-                  className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-                />
-                <p className="mt-1 text-xs text-msk-ink/45">
-                  Trace un mouvement d’ouverture si &gt; 0.
-                </p>
-              </div>
-            ) : null}
-            <div>
-              <FieldLabel htmlFor="loc-vis">Emplacement</FieldLabel>
-              <input
-                id="loc-vis"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Ex. Armoire 1"
-                disabled={pending}
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
-              />
-            </div>
-            <div className="sm:col-span-2 lg:col-span-3">
-              <FieldLabel htmlFor="obs-vis">Observations</FieldLabel>
-              <textarea
-                id="obs-vis"
-                rows={3}
-                value={observations}
-                onChange={(e) => setObservations(e.target.value)}
-                placeholder="Précisions packing, marque…"
-                disabled={pending}
-                className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+        <div
+          key="step-stock"
+          hidden={!showStock}
+          aria-hidden={!showStock}
+          className={cn(
+            "mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3",
+            !showStock && "hidden",
+          )}
+        >
+          <div className="sm:col-span-2 lg:col-span-3">
+            <FieldLabel required>Unité</FieldLabel>
+            <div className="mt-2">
+              <ChoiceCards
+                name="unit-vis"
+                value={unit}
+                onChange={setUnit}
+                disabled={pending || !showStock}
+                columns={3}
+                options={SV_STOCK_UNITS.map((u) => ({
+                  value: u,
+                  label: u,
+                }))}
               />
             </div>
           </div>
-        ) : null}
-
-        {step === 2 ? (
           <div
-            key="step-recap"
-            className="mt-6 rounded-xl border border-msk-ink/8 bg-msk-chalk/40 p-4 text-sm"
+            key="qty-initial"
+            hidden={mode !== "create"}
+            aria-hidden={mode !== "create"}
+            className={cn(mode !== "create" && "hidden")}
           >
-            <p className="text-xs uppercase tracking-caps text-msk-ink/45">
-              Récapitulatif
+            <FieldLabel htmlFor="qty-vis">Quantité initiale</FieldLabel>
+            <input
+              id="qty-vis"
+              type="number"
+              min={0}
+              value={initialQuantity}
+              onChange={(e) => setInitialQuantity(e.target.value)}
+              disabled={pending || !showStock || mode !== "create"}
+              className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+            />
+            <p className="mt-1 text-xs text-msk-ink/45">
+              Trace un mouvement d’ouverture si &gt; 0.
             </p>
-            <dl className="mt-3 grid gap-2 sm:grid-cols-2">
-              <div>
-                <dt className="text-msk-ink/45">Code</dt>
-                <dd className="font-medium">{codeDisplay}</dd>
-              </div>
-              <div>
-                <dt className="text-msk-ink/45">Libellé</dt>
-                <dd className="font-medium">{label || "—"}</dd>
-              </div>
-              <div>
-                <dt className="text-msk-ink/45">Famille</dt>
-                <dd>
-                  {family}
-                  {subFamily ? ` · ${subFamily}` : ""}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-msk-ink/45">Unité</dt>
-                <dd>{unit}</dd>
-              </div>
-              {mode === "create" ? (
-                <div key="recap-qty">
-                  <dt className="text-msk-ink/45">Quantité initiale</dt>
-                  <dd className="tabular-nums">{initialQuantity}</dd>
-                </div>
-              ) : null}
-              <div>
-                <dt className="text-msk-ink/45">Emplacement</dt>
-                <dd>{location || "—"}</dd>
-              </div>
-              {observations ? (
-                <div key="recap-obs" className="sm:col-span-2">
-                  <dt className="text-msk-ink/45">Observations</dt>
-                  <dd>{observations}</dd>
-                </div>
-              ) : null}
-            </dl>
           </div>
-        ) : null}
+          <div>
+            <FieldLabel htmlFor="loc-vis">Emplacement</FieldLabel>
+            <input
+              id="loc-vis"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Ex. Armoire 1"
+              disabled={pending || !showStock}
+              className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+            />
+          </div>
+          <div className="sm:col-span-2 lg:col-span-3">
+            <FieldLabel htmlFor="obs-vis">Observations</FieldLabel>
+            <textarea
+              id="obs-vis"
+              rows={3}
+              value={observations}
+              onChange={(e) => setObservations(e.target.value)}
+              placeholder="Précisions packing, marque…"
+              disabled={pending || !showStock}
+              className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
+            />
+          </div>
+        </div>
+
+        <div
+          key="step-recap"
+          hidden={!showRecap}
+          aria-hidden={!showRecap}
+          className={cn(
+            "mt-6 rounded-xl border border-msk-ink/8 bg-msk-chalk/40 p-4 text-sm",
+            !showRecap && "hidden",
+          )}
+        >
+          <p className="text-xs uppercase tracking-caps text-msk-ink/45">
+            Récapitulatif
+          </p>
+          <dl className="mt-3 grid gap-2 sm:grid-cols-2">
+            <div>
+              <dt className="text-msk-ink/45">Code</dt>
+              <dd className="font-medium">{codeDisplay}</dd>
+            </div>
+            <div>
+              <dt className="text-msk-ink/45">Libellé</dt>
+              <dd className="font-medium">{label || "—"}</dd>
+            </div>
+            <div>
+              <dt className="text-msk-ink/45">Famille</dt>
+              <dd>
+                {family}
+                {subFamily ? ` · ${subFamily}` : ""}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-msk-ink/45">Unité</dt>
+              <dd>{unit}</dd>
+            </div>
+            <div
+              key="recap-qty"
+              hidden={mode !== "create"}
+              aria-hidden={mode !== "create"}
+              className={cn(mode !== "create" && "hidden")}
+            >
+              <dt className="text-msk-ink/45">Quantité initiale</dt>
+              <dd className="tabular-nums">{initialQuantity}</dd>
+            </div>
+            <div>
+              <dt className="text-msk-ink/45">Emplacement</dt>
+              <dd>{location || "—"}</dd>
+            </div>
+            <div
+              key="recap-obs"
+              hidden={!observations}
+              aria-hidden={!observations}
+              className={cn("sm:col-span-2", !observations && "hidden")}
+            >
+              <dt className="text-msk-ink/45">Observations</dt>
+              <dd>{observations}</dd>
+            </div>
+          </dl>
+        </div>
       </FormShell>
     </form>
   );

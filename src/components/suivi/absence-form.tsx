@@ -121,6 +121,11 @@ export function SvAbsenceForm({
 
   const employeeLabel =
     employeeOptions.find((o) => o.value === employeeId)?.label ?? "—";
+  const activeStepId = steps[step]?.id;
+  const showCollab = activeStepId === "collab";
+  const showDetails = activeStepId === "details";
+  const showJustif = activeStepId === "justif";
+  const showRecap = activeStepId === "recap";
 
   function onStatusChange(next: SvAbsenceStatus) {
     if (next === "JUSTIFIEE" && !hasJustificatif) {
@@ -315,192 +320,211 @@ export function SvAbsenceForm({
         ) : null}
 
         <div className="mt-6 space-y-5">
-          {steps[step]?.id === "collab" ? (
-            <div key="step-collab">
+          {/*
+            Toutes les étapes restent montées (cachées) — date/time + file
+            ne doivent pas être démontés → removeChild. Réf. 56ae162 / 4995270.
+          */}
+          <div
+            key="step-collab"
+            hidden={!showCollab}
+            aria-hidden={!showCollab}
+            className={cn(!showCollab && "hidden")}
+          >
+            <OptionPickerSingle
+              label="Collaborateur"
+              required
+              options={employeeOptions}
+              value={employeeId}
+              onChange={(id) => {
+                setEmployeeId(id);
+                setStepError(null);
+              }}
+              disabled={pending || !showCollab}
+              placeholder="Choisir un collaborateur"
+              modalTitle="Collaborateur concerné"
+            />
+          </div>
+
+          <div
+            key="step-details"
+            hidden={!showDetails}
+            aria-hidden={!showDetails}
+            className={cn("space-y-5", !showDetails && "hidden")}
+          >
+            <div
+              key="details-collab-edit"
+              hidden={mode !== "edit"}
+              aria-hidden={mode !== "edit"}
+              className={cn(mode !== "edit" && "hidden")}
+            >
               <OptionPickerSingle
                 label="Collaborateur"
                 required
                 options={employeeOptions}
                 value={employeeId}
-                onChange={(id) => {
-                  setEmployeeId(id);
-                  setStepError(null);
-                }}
-                disabled={pending}
+                onChange={setEmployeeId}
+                disabled={pending || !showDetails || mode !== "edit"}
                 placeholder="Choisir un collaborateur"
                 modalTitle="Collaborateur concerné"
               />
             </div>
-          ) : null}
 
-          {steps[step]?.id === "details" ? (
-            <div key="step-details" className="space-y-5">
-              {mode === "edit" ? (
-                <OptionPickerSingle
-                  label="Collaborateur"
-                  required
-                  options={employeeOptions}
-                  value={employeeId}
-                  onChange={setEmployeeId}
-                  disabled={pending}
-                  placeholder="Choisir un collaborateur"
-                  modalTitle="Collaborateur concerné"
-                />
-              ) : null}
+            <div>
+              <FieldLabel required>Motif</FieldLabel>
+              <ChoiceCards
+                name="reason_ui"
+                columns={3}
+                value={reason}
+                onChange={setReason}
+                disabled={pending || !showDetails}
+                options={SV_ABSENCE_REASON_OPTIONS}
+              />
+            </div>
 
+            <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <FieldLabel required>Motif</FieldLabel>
+                <FieldLabel htmlFor="startDate" required>
+                  Début
+                </FieldLabel>
+                <input
+                  id="startDate"
+                  type="date"
+                  className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  disabled={pending || !showDetails}
+                />
+              </div>
+              <div>
+                <FieldLabel htmlFor="endDate" required>
+                  Fin
+                </FieldLabel>
+                <input
+                  id="endDate"
+                  type="date"
+                  className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  disabled={pending || !showDetails}
+                />
+              </div>
+            </div>
+
+            <div>
+              <FieldLabel
+                htmlFor="reasonNote"
+                required={reason === "AUTRE"}
+              >
+                {reason === "AUTRE" ? "Préciser le motif" : "Précision"}
+              </FieldLabel>
+              <textarea
+                id="reasonNote"
+                rows={reason === "AUTRE" ? 3 : 2}
+                className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
+                placeholder={
+                  reason === "AUTRE"
+                    ? "Obligatoire — ex. rendez-vous administratif…"
+                    : "Optionnel — ex. arrêt médical…"
+                }
+                value={reasonNote}
+                onChange={(e) => setReasonNote(e.target.value)}
+                disabled={pending || !showDetails}
+              />
+            </div>
+
+            <div>
+              <FieldLabel>Déduire des congés ?</FieldLabel>
+              <p className="mt-1 text-xs text-msk-ink/50">
+                Trace uniquement dans Suivi — ne modifie pas le solde congés
+                RH.
+              </p>
+              <div className="mt-2">
                 <ChoiceCards
-                  name="reason_ui"
-                  columns={3}
-                  value={reason}
-                  onChange={setReason}
-                  disabled={pending}
-                  options={SV_ABSENCE_REASON_OPTIONS}
+                  name="deduct_ui"
+                  columns={2}
+                  value={deductLeave}
+                  onChange={setDeductLeave}
+                  disabled={pending || !showDetails}
+                  options={[
+                    { value: "0", label: "Non" },
+                    { value: "1", label: "Oui — à tracer" },
+                  ]}
                 />
               </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <FieldLabel htmlFor="startDate" required>
-                    Début
-                  </FieldLabel>
-                  <input
-                    id="startDate"
-                    type="date"
-                    className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    disabled={pending}
-                  />
-                </div>
-                <div>
-                  <FieldLabel htmlFor="endDate" required>
-                    Fin
-                  </FieldLabel>
-                  <input
-                    id="endDate"
-                    type="date"
-                    className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    disabled={pending}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <FieldLabel
-                  htmlFor="reasonNote"
-                  required={reason === "AUTRE"}
-                >
-                  {reason === "AUTRE" ? "Préciser le motif" : "Précision"}
+              <div
+                key="deduct-leave-note"
+                hidden={deductLeave !== "1"}
+                aria-hidden={deductLeave !== "1"}
+                className={cn("mt-3", deductLeave !== "1" && "hidden")}
+              >
+                <FieldLabel htmlFor="deductLeaveNote" required>
+                  Note congés
                 </FieldLabel>
                 <textarea
-                  id="reasonNote"
-                  rows={reason === "AUTRE" ? 3 : 2}
+                  id="deductLeaveNote"
+                  rows={2}
                   className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
-                  placeholder={
-                    reason === "AUTRE"
-                      ? "Obligatoire — ex. rendez-vous administratif…"
-                      : "Optionnel — ex. arrêt médical…"
-                  }
-                  value={reasonNote}
-                  onChange={(e) => setReasonNote(e.target.value)}
-                  disabled={pending}
+                  placeholder="Ex. 2 jours à déduire manuellement en RH"
+                  value={deductLeaveNote}
+                  onChange={(e) => setDeductLeaveNote(e.target.value)}
+                  disabled={pending || !showDetails || deductLeave !== "1"}
                 />
               </div>
-
-              <div>
-                <FieldLabel>Déduire des congés ?</FieldLabel>
-                <p className="mt-1 text-xs text-msk-ink/50">
-                  Trace uniquement dans Suivi — ne modifie pas le solde congés
-                  RH.
-                </p>
-                <div className="mt-2">
-                  <ChoiceCards
-                    name="deduct_ui"
-                    columns={2}
-                    value={deductLeave}
-                    onChange={setDeductLeave}
-                    disabled={pending}
-                    options={[
-                      { value: "0", label: "Non" },
-                      { value: "1", label: "Oui — à tracer" },
-                    ]}
-                  />
-                </div>
-                {deductLeave === "1" ? (
-                  <div className="mt-3">
-                    <FieldLabel htmlFor="deductLeaveNote" required>
-                      Note congés
-                    </FieldLabel>
-                    <textarea
-                      id="deductLeaveNote"
-                      rows={2}
-                      className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
-                      placeholder="Ex. 2 jours à déduire manuellement en RH"
-                      value={deductLeaveNote}
-                      onChange={(e) => setDeductLeaveNote(e.target.value)}
-                      disabled={pending}
-                    />
-                  </div>
-                ) : null}
-              </div>
-
-              {mode === "edit" ? (
-                <div>
-                  <FieldLabel>Statut</FieldLabel>
-                  <p className="mt-1 text-xs text-msk-ink/50">
-                    {SV_ABSENCE_JUSTIFIED_REQUIRES_GED}.
-                  </p>
-                  <div className="mt-2">
-                    <ChoiceCards
-                      name="status_ui"
-                      columns={2}
-                      value={status}
-                      onChange={onStatusChange}
-                      disabled={pending}
-                      options={(
-                        [
-                          "ENREGISTREE",
-                          "JUSTIFIEE",
-                          "NON_JUSTIFIEE",
-                        ] as SvAbsenceStatus[]
-                      ).map((v) => ({
-                        value: v,
-                        label: SV_ABSENCE_STATUS_LABEL[v],
-                        description:
-                          v === "JUSTIFIEE" && !hasJustificatif
-                            ? "Justificatif requis"
-                            : undefined,
-                      }))}
-                    />
-                  </div>
-                  {!hasJustificatif ? (
-                    <p className="mt-2 text-xs text-msk-ink/45">
-                      Sans justificatif : Enregistrée ou Non justifiée. Pour
-                      Justifiée, confirmez un fichier à l’étape suivante puis
-                      revenez sur ce choix.
-                    </p>
-                  ) : null}
-                </div>
-              ) : null}
             </div>
-          ) : null}
 
-          {/*
-            Justificatif toujours monté (caché hors étape) : l’<input type=file>
-            ne doit pas être démonté en passant à Confirmation → removeChild.
-          */}
+            <div
+              key="details-status-edit"
+              hidden={mode !== "edit"}
+              aria-hidden={mode !== "edit"}
+              className={cn(mode !== "edit" && "hidden")}
+            >
+              <FieldLabel>Statut</FieldLabel>
+              <p className="mt-1 text-xs text-msk-ink/50">
+                {SV_ABSENCE_JUSTIFIED_REQUIRES_GED}.
+              </p>
+              <div className="mt-2">
+                <ChoiceCards
+                  name="status_ui"
+                  columns={2}
+                  value={status}
+                  onChange={onStatusChange}
+                  disabled={pending || !showDetails || mode !== "edit"}
+                  options={(
+                    [
+                      "ENREGISTREE",
+                      "JUSTIFIEE",
+                      "NON_JUSTIFIEE",
+                    ] as SvAbsenceStatus[]
+                  ).map((v) => ({
+                    value: v,
+                    label: SV_ABSENCE_STATUS_LABEL[v],
+                    description:
+                      v === "JUSTIFIEE" && !hasJustificatif
+                        ? "Justificatif requis"
+                        : undefined,
+                  }))}
+                />
+              </div>
+              <p
+                hidden={hasJustificatif}
+                aria-hidden={hasJustificatif}
+                className={cn(
+                  "mt-2 text-xs text-msk-ink/45",
+                  hasJustificatif && "hidden",
+                )}
+              >
+                Sans justificatif : Enregistrée ou Non justifiée. Pour
+                Justifiée, confirmez un fichier à l’étape suivante puis
+                revenez sur ce choix.
+              </p>
+            </div>
+          </div>
+
           <div
             key="step-justif"
-            hidden={steps[step]?.id !== "justif"}
-            aria-hidden={steps[step]?.id !== "justif"}
-            className={cn(
-              "space-y-4",
-              steps[step]?.id !== "justif" && "hidden",
-            )}
+            hidden={!showJustif}
+            aria-hidden={!showJustif}
+            className={cn("space-y-4", !showJustif && "hidden")}
           >
             <p className="text-sm text-msk-ink/60">
               {hasGed
@@ -513,7 +537,7 @@ export function SvAbsenceForm({
             <AbsenceJustificatifPicker
               confirmedFile={file}
               onConfirmedChange={onFileConfirmed}
-              disabled={pending || steps[step]?.id !== "justif"}
+              disabled={pending || !showJustif}
               required={
                 mode === "edit" && status === "JUSTIFIEE" && !hasGed
               }
@@ -535,9 +559,7 @@ export function SvAbsenceForm({
                   type="checkbox"
                   className="mt-0.5 size-4 rounded border-msk-ink/20 text-msk-blue focus:ring-msk-blue/30"
                   checked={wantJustified}
-                  disabled={
-                    pending || steps[step]?.id !== "justif" || !file
-                  }
+                  disabled={pending || !showJustif || !file}
                   onChange={(e) => setWantJustified(e.target.checked)}
                 />
                 <span className="text-sm text-msk-ink">
@@ -563,7 +585,7 @@ export function SvAbsenceForm({
                     columns={2}
                     value={status}
                     onChange={onStatusChange}
-                    disabled={pending || steps[step]?.id !== "justif"}
+                    disabled={pending || !showJustif}
                     options={(
                       [
                         "ENREGISTREE",
@@ -584,75 +606,81 @@ export function SvAbsenceForm({
             ) : null}
           </div>
 
-          {steps[step]?.id === "recap" ? (
-            <dl
-              key="step-recap"
-              className="grid gap-3 text-sm sm:grid-cols-2"
+          <dl
+            key="step-recap"
+            hidden={!showRecap}
+            aria-hidden={!showRecap}
+            className={cn(
+              "grid gap-3 text-sm sm:grid-cols-2",
+              !showRecap && "hidden",
+            )}
+          >
+            <div>
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Collaborateur
+              </dt>
+              <dd className="mt-0.5 font-medium">{employeeLabel}</dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Motif
+              </dt>
+              <dd className="mt-0.5 font-medium">
+                {SV_ABSENCE_REASON_LABEL[reason]}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Période
+              </dt>
+              <dd className="mt-0.5 font-medium tabular-nums">
+                {startDate || "—"} → {endDate || "—"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Congés
+              </dt>
+              <dd className="mt-0.5 font-medium">
+                {deductLeave === "1"
+                  ? `Oui — ${deductLeaveNote || "note à préciser"}`
+                  : "Non"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Statut
+              </dt>
+              <dd className="mt-0.5 font-medium">
+                {mode === "create"
+                  ? createStatusLabel
+                  : SV_ABSENCE_STATUS_LABEL[status]}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Justificatif
+              </dt>
+              <dd className="mt-0.5 font-medium">
+                {file
+                  ? `Confirmé : ${file.name}`
+                  : hasGed
+                    ? "Déjà lié"
+                    : "Aucun"}
+              </dd>
+            </div>
+            <div
+              key="recap-note"
+              hidden={!reasonNote}
+              aria-hidden={!reasonNote}
+              className={cn("sm:col-span-2", !reasonNote && "hidden")}
             >
-              <div>
-                <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                  Collaborateur
-                </dt>
-                <dd className="mt-0.5 font-medium">{employeeLabel}</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                  Motif
-                </dt>
-                <dd className="mt-0.5 font-medium">
-                  {SV_ABSENCE_REASON_LABEL[reason]}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                  Période
-                </dt>
-                <dd className="mt-0.5 font-medium tabular-nums">
-                  {startDate || "—"} → {endDate || "—"}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                  Congés
-                </dt>
-                <dd className="mt-0.5 font-medium">
-                  {deductLeave === "1"
-                    ? `Oui — ${deductLeaveNote || "note à préciser"}`
-                    : "Non"}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                  Statut
-                </dt>
-                <dd className="mt-0.5 font-medium">
-                  {mode === "create"
-                    ? createStatusLabel
-                    : SV_ABSENCE_STATUS_LABEL[status]}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                  Justificatif
-                </dt>
-                <dd className="mt-0.5 font-medium">
-                  {file
-                    ? `Confirmé : ${file.name}`
-                    : hasGed
-                      ? "Déjà lié"
-                      : "Aucun"}
-                </dd>
-              </div>
-              {reasonNote ? (
-                <div key="recap-note" className="sm:col-span-2">
-                  <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
-                    Précision
-                  </dt>
-                  <dd className="mt-0.5">{reasonNote}</dd>
-                </div>
-              ) : null}
-            </dl>
-          ) : null}
+              <dt className="text-xs uppercase tracking-caps text-msk-ink/45">
+                Précision
+              </dt>
+              <dd className="mt-0.5">{reasonNote}</dd>
+            </div>
+          </dl>
         </div>
       </FormShell>
     </form>

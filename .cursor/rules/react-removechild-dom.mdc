@@ -1,0 +1,38 @@
+---
+description: Interdit React removeChild — steps cachés, file stable, GeneratedValueField (absolu)
+alwaysApply: true
+---
+
+# React `removeChild` / DOM désync (absolu ERP MSK)
+
+Erreur typique : `NotFoundError: Failed to execute 'removeChild' on 'Node'`.
+
+Cause : React croit retirer un nœud déjà déplacé/supprimé (extensions autofill, gestionnaires MDP, traducteurs) **ou** un unmount conditionnel d’inputs focusés / `type=file` / disabled affichage.
+
+Réf. fixes : stocks `56ae162` · absences `4995270` · composant `GeneratedValueField`.
+
+## Interdit
+
+| Piège | Pourquoi |
+|---|---|
+| `<input type="file">` monté/démonté selon step / phase / « fichier choisi » | Le nœud file + siblings dropzone cassent le commit DOM |
+| Dropzone / preview en ternaire `{cond ? A : B}` autour du file | Même famille |
+| Stepper qui **démonté** les panels (`step === n ? … : null`) avec inputs date/time/text focusables | Unmount pendant focus + extensions |
+| Valeur générée / lecture seule en `<input disabled\|readOnly value={…}>` qui change | Autofill mutile le DOM autour de l’input factice |
+| Keys instables sur panels d’étape ou file input | Remount inutile → même crash |
+
+## Obligatoire
+
+1. **Valeurs générées / affichage** → `GeneratedValueField` (`<output>` + clé) — jamais input disabled/readOnly décoratif.
+2. **`<input type="file">`** → toujours monté, `sr-only`, **clé stable**, hors du bloc dropzone conditionnel.
+3. **Dropzone / preview** → toujours montés ; `hidden` / `className={cn(!show && "hidden")}` + `aria-hidden` — **pas** de ternaire unmount.
+4. **Stepper multi-étape** → panels **toujours montés**, visibles via `hidden` / `cn(step !== n && "hidden")` (modèle : `prospect-create-form`, retards, absences, stocks).
+5. **Keys stables** sur panels d’étape (`key="step-horaire"`) et file (`key="…-file"`).
+6. Inputs hors étape active → `disabled` OK ; le nœud reste dans le DOM.
+
+## Test mental
+
+> En changeant d’étape / phase fichier avec une ext. autofill active, React retire-t-il un nœud que le navigateur a déjà bougé ?
+> Si oui → **bug bloquant**, cacher au lieu de démonter ; `GeneratedValueField` pour l’affichage.
+
+Complète `forms-stepper.mdc` (UX étapes) — ici = **intégrité DOM**.
