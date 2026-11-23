@@ -797,6 +797,14 @@ export const SvAccountKind = {
 export type SvAccountKind = (typeof SvAccountKind)[keyof typeof SvAccountKind]
 
 
+export const SvCountry = {
+  MALI: 'MALI',
+  TOGO: 'TOGO'
+} as const
+
+export type SvCountry = (typeof SvCountry)[keyof typeof SvCountry]
+
+
 export const SvStockMoveKind = {
   IN: 'IN',
   OUT: 'OUT',

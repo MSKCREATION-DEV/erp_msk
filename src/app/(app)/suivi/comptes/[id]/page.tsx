@@ -7,7 +7,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { Plus } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { requireSvPermission } from "@/lib/suivi/access";
+import { requireSvResourceCountry } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
 import { runSeries } from "@/lib/db/serial";
 import {
@@ -16,7 +16,13 @@ import {
   SV_ACCOUNT_KIND_HINT,
   SV_ACCOUNT_KIND_LABEL,
 } from "@/lib/suivi/accounts";
+import {
+  SV_COUNTRY_TO_URL,
+  svCountryDisplayLabel,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 import { formatSvXof } from "@/lib/suivi/labels";
+import type { SvCountry } from "@/generated/prisma/client";
 import {
   clampPage,
   DEFAULT_PAGE_SIZE,
@@ -54,11 +60,18 @@ export default async function SuiviCompteDetailPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await requireUser();
-  requireSvPermission(user, "sv.accounts.view");
   const { id } = await params;
+  const rawSp = await searchParams;
 
   const account = await prisma.svAccount.findUnique({ where: { id } });
   if (!account) notFound();
+
+  const country = requireSvResourceCountry(
+    user,
+    "sv.accounts.view",
+    rawSp,
+    account.country,
+  );
 
   const balanceMoves = await prisma.svCashMovement.findMany({
     where: { accountId: id, countsTowardBalance: true },
@@ -76,19 +89,22 @@ export default async function SuiviCompteDetailPage({
     ? formatSvBaselineDateFr(account.baselineAt)
     : null;
 
-  const rawSp = await searchParams;
   const resultsKey = listKeyFromSearchParams(rawSp);
+  const countryLabel = svCountryDisplayLabel(country);
 
   return (
     <PageShell>
       <PageHeader
         title={SV_ACCOUNT_KIND_LABEL[account.kind]}
-        description={SV_ACCOUNT_KIND_HINT[account.kind]}
-        backHref="/suivi/comptes"
+        description={`${SV_ACCOUNT_KIND_HINT[account.kind]} · ${countryLabel}`}
+        backHref={withSvCountryQuery("/suivi/comptes", country)}
         actions={
           canManage ? (
             <ActionLink
-              href={`/suivi/comptes/${account.id}/mouvement`}
+              href={withSvCountryQuery(
+                `/suivi/comptes/${account.id}/mouvement`,
+                country,
+              )}
               icon={Plus}
             >
               Créditer / débiter
@@ -147,6 +163,7 @@ export default async function SuiviCompteDetailPage({
       <Suspense key={resultsKey} fallback={<CompteHistorySkeleton />}>
         <CompteHistorySections
           accountId={id}
+          country={country}
           canManage={canManage}
           baselineLabel={baselineLabel}
           searchParams={searchParams}
@@ -168,11 +185,13 @@ function CompteHistorySkeleton() {
 
 async function CompteHistorySections({
   accountId,
+  country,
   canManage,
   baselineLabel,
   searchParams,
 }: {
   accountId: string;
+  country: SvCountry;
   canManage: boolean;
   baselineLabel: string | null;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -248,6 +267,7 @@ async function CompteHistorySections({
   ]);
 
   const listParams: Record<string, string | undefined> = {
+    pays: SV_COUNTRY_TO_URL[country],
     q: q || undefined,
     direction: filters.direction,
     from: filters.from,
@@ -284,7 +304,10 @@ async function CompteHistorySections({
               <>
                 {" "}
                 <Link
-                  href={`/suivi/comptes/${accountId}/mouvement`}
+                  href={withSvCountryQuery(
+                    `/suivi/comptes/${accountId}/mouvement`,
+                    country,
+                  )}
                   className="font-medium text-msk-blue hover:underline"
                 >
                   Saisir une opération

@@ -143,9 +143,19 @@ export const PERMISSIONS: PermissionDef[] = [
   { code: "sv.stock.manage", domain: "sv", description: "Ajuster / mouvements stock Suivi" },
   { code: "sv.hr.view", domain: "sv", description: "Voir absences et retards Suivi" },
   { code: "sv.hr.manage", domain: "sv", description: "Gérer absences et retards Suivi" },
+  {
+    code: "sv.country.mali",
+    domain: "sv",
+    description: "Portée pays Suivi — Mali (comptes / mouvements / stocks)",
+  },
+  {
+    code: "sv.country.togo",
+    domain: "sv",
+    description: "Portée pays Suivi — Togo (comptes / mouvements / stocks)",
+  },
 ];
 
-/** Pack Suivi complet — à attribuer Direction / Admin plateforme uniquement. */
+/** Pack Suivi complet — Direction / Admin plateforme (capacité + deux pays). */
 export const SV_PERMISSIONS = [
   "sv.access",
   "sv.clients.view",
@@ -162,6 +172,20 @@ export const SV_PERMISSIONS = [
   "sv.stock.manage",
   "sv.hr.view",
   "sv.hr.manage",
+  "sv.country.mali",
+  "sv.country.togo",
+] as const;
+
+/** Capacités 3 piliers + accès — GRANT Espoir Togo (sans clients/charges/HR). */
+export const SV_TOGO_OPS_PERMISSIONS = [
+  "sv.access",
+  "sv.accounts.view",
+  "sv.accounts.manage",
+  "sv.movements.view",
+  "sv.movements.manage",
+  "sv.stock.view",
+  "sv.stock.manage",
+  "sv.country.togo",
 ] as const;
 
 export const PACK_PERMISSIONS: Record<string, string[]> = {

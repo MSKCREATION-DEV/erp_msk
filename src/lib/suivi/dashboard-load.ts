@@ -105,7 +105,9 @@ export async function loadSvDashboard(
 
   if (opts.canAccounts) {
     await ensureSvAccounts(prisma);
+    // Phase A : Mali implicite (Phase B → ?pays=)
     const rows = await prisma.svAccount.findMany({
+      where: { country: "MALI" },
       orderBy: { kind: "asc" },
       include: {
         movements: {
@@ -138,9 +140,21 @@ export async function loadSvDashboard(
 
   if (opts.canMovements) {
     /** Ledger courant uniquement (archive pre-bascule exclue — décision I). */
-    const ledgerWhere = {
-      countsTowardBalance: true as const,
-      ...(accountFilterId ? { accountId: accountFilterId } : {}),
+    /** Phase A : Mali implicite (Phase B → ?pays=). */
+    const ledgerWhere: {
+      countsTowardBalance: true;
+      accountId?: string;
+      OR?: Array<{ account: { country: "MALI" } } | { accountId: null }>;
+    } = {
+      countsTowardBalance: true,
+      ...(accountFilterId
+        ? { accountId: accountFilterId }
+        : {
+            OR: [
+              { account: { country: "MALI" as const } },
+              { accountId: null },
+            ],
+          }),
     };
     const [curRaw, prevRaw] = await runSeries([
       () =>

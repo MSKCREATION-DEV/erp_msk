@@ -2,6 +2,7 @@ import type {
   PrismaClient,
   SvAccountKind,
   SvCashDirection,
+  SvCountry,
 } from "@/generated/prisma/client";
 
 export const SV_ACCOUNT_KIND_LABEL: Record<SvAccountKind, string> = {
@@ -20,6 +21,7 @@ export const SV_ACCOUNT_KIND_HINT: Record<SvAccountKind, string> = {
  * Historique antérieur = archive (countsTowardBalance=false).
  * Solde courant = écriture d’ouverture IN + mouvements post-bascule.
  * Décision I — docs/specs/suivi-tampon/DECISIONS-SEED.md
+ * **Mali uniquement** — pas de bascule Direction Togo (coquille à 0).
  */
 export const SV_ACCOUNT_BASELINE_AT = new Date("2026-11-12T00:00:00.000Z");
 
@@ -30,11 +32,13 @@ export const SV_ACCOUNT_BASELINE_BALANCES: Record<SvAccountKind, number> = {
 
 export const SV_ACCOUNT_BASELINE_CATEGORY = "Ouverture / Bascule Direction";
 
+export const SV_ACCOUNT_BASELINE_COUNTRY: SvCountry = "MALI";
+
 export function svBaselineReference(kind: SvAccountKind): string {
   return `sv-baseline:${kind}:2026-11-12`;
 }
 
-/** Métadonnées comptes — notes mises à jour après bascule (décision I). */
+/** Métadonnées comptes Mali — notes mises à jour après bascule (décision I). */
 export const SV_ACCOUNT_SEED = [
   {
     kind: "PHYSICAL" as const,
@@ -47,6 +51,22 @@ export const SV_ACCOUNT_SEED = [
     label: "Compte banque",
     notes:
       "Bascule Direction 12/11/2026 (début de journée) : solde d’ouverture 204 815 FCFA. Historique antérieur archivé (hors solde courant).",
+  },
+] as const;
+
+/** Coquille Togo — soldes 0, pas de baseline Direction. */
+export const SV_ACCOUNT_SEED_TOGO = [
+  {
+    kind: "PHYSICAL" as const,
+    label: "Compte physique",
+    notes:
+      "Compte Togo ouvert à 0 FCFA. Les mouvements saisis ici n’affectent pas le Mali.",
+  },
+  {
+    kind: "BANK" as const,
+    label: "Compte banque",
+    notes:
+      "Compte Togo ouvert à 0 FCFA. Les mouvements saisis ici n’affectent pas le Mali.",
   },
 ] as const;
 
@@ -76,19 +96,29 @@ export function formatSvBaselineDateFr(
   });
 }
 
-/** true si la date est ≥ bascule (compte dans le solde courant). */
+/** true si la date est ≥ bascule (compte dans le solde courant). Mali only. */
 export function countsTowardBalanceForDate(movedAt: Date): boolean {
   return movedAt.getTime() >= SV_ACCOUNT_BASELINE_AT.getTime();
 }
 
+function accountUniqueWhere(country: SvCountry, kind: SvAccountKind) {
+  return { country_kind: { country, kind } } as const;
+}
+
+/**
+ * Idempotent : Mali (baseline meta si nouveau) + Togo (coquille 0, sans baseline).
+ * Ne reset jamais les soldes / baseline Mali existants.
+ * Ne touche pas Auth / mots de passe.
+ */
 export async function ensureSvAccounts(db: PrismaClient) {
   for (const a of SV_ACCOUNT_SEED) {
     const existing = await db.svAccount.findUnique({
-      where: { kind: a.kind },
+      where: accountUniqueWhere("MALI", a.kind),
     });
     if (existing) continue;
     await db.svAccount.create({
       data: {
+        country: "MALI",
         kind: a.kind,
         label: a.label,
         notes: a.notes,
@@ -97,11 +127,28 @@ export async function ensureSvAccounts(db: PrismaClient) {
       },
     });
   }
+
+  for (const a of SV_ACCOUNT_SEED_TOGO) {
+    const existing = await db.svAccount.findUnique({
+      where: accountUniqueWhere("TOGO", a.kind),
+    });
+    if (existing) continue;
+    await db.svAccount.create({
+      data: {
+        country: "TOGO",
+        kind: a.kind,
+        label: a.label,
+        notes: a.notes,
+        baselineAt: null,
+        baselineBalance: null,
+      },
+    });
+  }
 }
 
 /**
- * Idempotent : archive pre-bascule + écritures d’ouverture Direction.
- * Ne touche pas Auth / mots de passe.
+ * Idempotent : archive pre-bascule + écritures d’ouverture Direction (**Mali only**).
+ * Ne touche pas Auth / mots de passe. Ne touche pas les comptes Togo.
  */
 export async function applySvAccountBaseline(
   db: PrismaClient,
@@ -111,7 +158,7 @@ export async function applySvAccountBaseline(
 
   for (const a of SV_ACCOUNT_SEED) {
     const account = await db.svAccount.findUniqueOrThrow({
-      where: { kind: a.kind },
+      where: accountUniqueWhere("MALI", a.kind),
     });
     const balance = SV_ACCOUNT_BASELINE_BALANCES[a.kind];
 
@@ -174,12 +221,20 @@ export async function applySvAccountBaseline(
   }
 }
 
+/**
+ * Résout le compte (kind × pays). Défaut **MALI** — obligatoire pour les
+ * miroirs charges / factures clients (hors scope pays V1). Les 3 piliers
+ * passent toujours `country` depuis `?pays=`.
+ */
 export async function getSvAccountByKind(
   kind: SvAccountKind,
   db: PrismaClient,
+  country: SvCountry = "MALI",
 ) {
   await ensureSvAccounts(db);
-  return db.svAccount.findUniqueOrThrow({ where: { kind } });
+  return db.svAccount.findUniqueOrThrow({
+    where: accountUniqueWhere(country, kind),
+  });
 }
 
 /** Heuristique mode paiement → compte (miroir facture / saisie rapide). */

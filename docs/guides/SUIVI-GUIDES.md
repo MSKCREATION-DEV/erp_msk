@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-17 (Charges : Orange sept. CB503620260901 non payée ; voir §8) |
+| Dernière mise à jour | 2026-11-23 (Suivi Mali/Togo **V1 done** Phase C gate — voir §8) |
 
 ### Légende statuts documentaires
 
@@ -53,7 +53,7 @@ Branche de travail : `dev`.
 | patrimoine | `/patrimoine` | `pat.access` | stub module |
 | projets | `/projets` | `prj.access` | stub module |
 | anomalies | `/ops/anomalies` | `ops.access` | stub module |
-| suivi | `/suivi` | `sv.access` | draft (2026-11-10) |
+| suivi | `/suivi` | `sv.access` (+ `sv.country.*` ; 3 piliers `?pays=`) | to_validate (V1 A–C OK — valider terrain) |
 
 ### Groupes / packs (libellés UI)
 
@@ -110,7 +110,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
 | `faq-acces-refuse` | Accès refusé / module absent | accueil | `validated` | redirect `acces_refuse` |
 | `faq-mot-de-passe` | Mot de passe / reset | accueil | `validated` | parcours auth connus |
-| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `draft` | hub + **tableau-de-bord** + clients/factures clients/**charges**/comptes/mouvements/**absences**/retards/stocks — à rédiger dans `src/lib/guides` |
+| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `to_validate` | hub **choix pays** Mali/Togo → comptes/mouvements/stocks `?pays=` ; TB / clients / charges hors pays — valider terrain Espoir + Direction |
 
 *Les modules sans guide `validated` apparaissent en fiche « stub » (objectif + liens manuels, sans fausse procédure).*
 
@@ -134,7 +134,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | patrimoine | stub | 0 | |
 | projets | stub | 0 | |
 | anomalies | stub | 0 | |
-| suivi | stub / draft | 0 (`sv-hub-naviguer` draft) | valider hub→**TB**→clients→comptes→remix→mouvements→**absences/retards**→stocks |
+| suivi | stub / to_validate | 0 (`sv-hub-naviguer` to_validate) | valider hub→**pays**→comptes/mouvements/stocks + TB/clients/charges/RH |
 | catalogue | via commercial | 0 | offres / planchers |
 
 ### Rôles documentés (packs / groupes)
@@ -196,6 +196,39 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-23 — Suivi Mali / Togo Phase C (gate qualité V1)
+
+| | |
+|---|---|
+| Quoi | Gate V1 : `npm run build` OK ; miroirs paiement **charge** / facture client → `getSvAccountByKind(…, SV_COUNTRY_DEFAULT)` = **MALI** explicite (jamais Togo) ; tests `country.test.ts` + `accounts.test.ts` ; checklist manuelle Direction/Espoir dans intent ; **pas** de commit/push auto. |
+| Pourquoi | Clore V1 sans régression Mali ni injection pays sur charges hors scope |
+| Fichiers | `actions/suivi/{expenses,invoices}.ts`, `lib/suivi/{accounts,accounts.test}.ts`, `docs/intent/suivi-mali-togo.md`, ce suivi |
+| Statut doc | Guide `sv-hub-naviguer` reste **`to_validate`** (checklist terrain) ; intent = **V1 done** |
+| Routes | inchangées Phase B |
+| Dette | **TB multi-pays = Phase 2** (hors V1) ; browser E2E si credentials |
+
+### 2026-11-23 — Suivi Mali / Togo Phase B (hub pays + UI `?pays=`)
+
+| | |
+|---|---|
+| Quoi | Hub `/suivi` = choix pays Mali (ML) / Togo (TG) selon `sv.country.*` ; 3 piliers Comptes / Mouvements / Stocks exigent `?pays=ml\|tg` (absent → 404) ; queries + actions filtrées par pays ; pays imposé (hidden form) ; transferts / stocks inter-pays refusés ; empty states FR ; nav propage `pays` ; sans droit pays → message hub clair (pas 404). |
+| Pourquoi | Séparer trésorerie/stocks Mali vs Togo en UX (intent Phase B) |
+| Fichiers | `lib/suivi/{country,access,modules}.ts`, `suivi/page.tsx`, `suivi-country-picker`, pages/actions comptes·mouvements·stocks, forms, nav, `country.test.ts`, intent, ce suivi |
+| Statut doc | Guide `sv-hub-naviguer` → **`to_validate`** (parcours hub→pays→piliers à confirmer terrain) |
+| Routes | `/suivi` · `/suivi/comptes?pays=` · `/suivi/mouvements?pays=` · `/suivi/stocks?pays=` (+ fiches / create) |
+| Dette | ~~Phase C~~ → **faite** ; TB multi-pays = Phase 2 |
+
+### 2026-11-23 — Suivi Mali / Togo Phase A (data + droits pays)
+
+| | |
+|---|---|
+| Quoi | Enum `SvCountry` (MALI\|TOGO) sur comptes + stocks ; uniques `[country,kind]` / `[country,code]` ; backfill Mali ; coquille Togo seedable (2 comptes 0, familles familles stock qté 0) ; permissions `sv.country.mali` / `sv.country.togo` dans packs Direction + admin_plateforme ; GRANT Espoir Togo only (`e.awesso@…`) ; helpers `parseSvCountryParam` / `canSvCountry` / `requireSvCountry`. Listes 3 piliers restent **Mali implicite** jusqu’à Phase B (`?pays=`). |
+| Pourquoi | Piloter trésorerie/stocks séparément Mali vs Togo sans mélange (intent `docs/intent/suivi-mali-togo.md`) |
+| Fichiers | `prisma/schema.prisma`, migration `20261123160000_sv_country_mali_togo`, `lib/suivi/{country,accounts,access}.ts`, `rbac/catalog.ts`, `seed-suivi.ts`, filtres Mali listes, ce suivi |
+| Statut doc | Guide `sv-hub-naviguer` / droits Suivi → **`outdated`** (portée pays non documentée UI) — Phase B mettra à jour parcours + hub choix pays |
+| Routes | `/suivi` (inchangé UX A) · comptes / mouvements / stocks (filtre Mali implicite) |
+| Dette | Phase B : hub choix pays, `?pays=` obligatoire, empty states FR, Espoir ne voit que Togo en UI |
 
 ### 2026-11-17 — Charges : Orange sept. CB503620260901 non payée
 

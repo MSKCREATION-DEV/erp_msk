@@ -13,6 +13,11 @@ import {
   inferAccountKindFromPaymentMethod,
 } from "@/lib/suivi/accounts";
 import {
+  canSvCountry,
+  parseSvCountryParam,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
+import {
   nextSvCashMovementReferenceFromExisting,
   svCashMovementReferencePrefix,
 } from "@/lib/suivi/cash-reference";
@@ -94,6 +99,14 @@ export async function createSvCashMovement(
     return { ok: false, error: "Droit insuffisant." };
   }
 
+  const country = parseSvCountryParam(String(formData.get("pays") ?? ""));
+  if (!country) {
+    return { ok: false, error: "Pays obligatoire." };
+  }
+  if (!canSvCountry(user, country) && !user.isSuperAdmin) {
+    return { ok: false, error: "Droit pays insuffisant." };
+  }
+
   const parsed = movementSchema.safeParse({
     direction: formData.get("direction"),
     amount: formData.get("amount"),
@@ -141,7 +154,7 @@ export async function createSvCashMovement(
       : inferAccountKindFromPaymentMethod(methodFinal);
 
   try {
-    const account = await getSvAccountByKind(kind, prisma);
+    const account = await getSvAccountByKind(kind, prisma, country);
     await prisma.$transaction(async (tx) => {
       let reference = await allocateCashMovementReference(tx, movedAt);
       for (let attempt = 0; attempt < 8; attempt++) {
@@ -195,5 +208,8 @@ export async function createSvCashMovement(
   revalidatePath("/suivi/mouvements");
   revalidatePath("/suivi/comptes");
   revalidatePath("/suivi");
-  return redirectWithFlash("/suivi/mouvements", "Mouvement enregistré.");
+  return redirectWithFlash(
+    withSvCountryQuery("/suivi/mouvements", country),
+    "Mouvement enregistré.",
+  );
 }

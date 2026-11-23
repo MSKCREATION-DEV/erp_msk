@@ -6,8 +6,10 @@ import {
   inferAccountKindFromPaymentMethod,
   SV_ACCOUNT_BASELINE_AT,
   SV_ACCOUNT_BASELINE_BALANCES,
+  SV_ACCOUNT_BASELINE_COUNTRY,
   svBaselineReference,
 } from "./accounts";
+import { SV_COUNTRY_DEFAULT } from "./country";
 
 assert.equal(
   accountBalanceFromMoves([
@@ -72,5 +74,10 @@ assert.equal(inferAccountKindFromPaymentMethod("Espèces"), "PHYSICAL");
 assert.equal(inferAccountKindFromPaymentMethod(null), "PHYSICAL");
 assert.equal(inferAccountKindFromPaymentMethod("Virement"), "BANK");
 assert.equal(inferAccountKindFromPaymentMethod("Chèque 117"), "BANK");
+
+/** Garde-fou V1 : miroirs paiement charge/facture → cash Mali (jamais Togo implicite). */
+assert.equal(SV_COUNTRY_DEFAULT, "MALI");
+assert.equal(SV_ACCOUNT_BASELINE_COUNTRY, "MALI");
+assert.equal(SV_COUNTRY_DEFAULT, SV_ACCOUNT_BASELINE_COUNTRY);
 
 console.log("ok suivi accounts");

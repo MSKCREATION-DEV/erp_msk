@@ -13,6 +13,11 @@ import {
   getSvAccountByKind,
 } from "@/lib/suivi/accounts";
 import {
+  canSvCountry,
+  parseSvCountryParam,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
+import {
   nextSvCashMovementReferenceFromExisting,
   svCashMovementReferencePrefix,
 } from "@/lib/suivi/cash-reference";
@@ -132,6 +137,16 @@ export async function createSvAccountEntry(
     return { ok: false, error: "Compte introuvable." };
   }
 
+  const paysParam = parseSvCountryParam(
+    String(formData.get("pays") ?? ""),
+  );
+  if (!paysParam || paysParam !== account.country) {
+    return { ok: false, error: "Pays obligatoire ou incohérent." };
+  }
+  if (!canSvCountry(user, account.country) && !user.isSuperAdmin) {
+    return { ok: false, error: "Droit pays insuffisant." };
+  }
+
   const desc = emptyToNull(parsed.data.description);
   const modeCard = parsed.data.paymentMethodMode || "";
   const method = emptyToNull(
@@ -166,8 +181,13 @@ export async function createSvAccountEntry(
         });
       });
     } else {
-      const physical = await getSvAccountByKind("PHYSICAL", prisma);
-      const bank = await getSvAccountByKind("BANK", prisma);
+      // Transfert intra-pays uniquement (même country que le compte source).
+      const physical = await getSvAccountByKind(
+        "PHYSICAL",
+        prisma,
+        account.country,
+      );
+      const bank = await getSvAccountByKind("BANK", prisma, account.country);
       const transferId = nanoid();
       const toPhysical = parsed.data.op === "TRANSFER_TO_PHYSICAL";
 
@@ -236,7 +256,7 @@ export async function createSvAccountEntry(
 
   revalidateAccounts(account.id);
   return redirectWithFlash(
-    `/suivi/comptes/${account.id}`,
+    withSvCountryQuery(`/suivi/comptes/${account.id}`, account.country),
     "Écriture enregistrée.",
   );
 }

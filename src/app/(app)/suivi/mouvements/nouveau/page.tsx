@@ -1,26 +1,39 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth/session";
-import { requireSvPermission } from "@/lib/suivi/access";
+import { requireSvPermissionFromPaysParam } from "@/lib/suivi/access";
 import { listSvHrEmployeeOptions } from "@/lib/suivi/hr-employees";
+import {
+  svCountryDisplayLabel,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { SvMovementForm } from "@/components/suivi/movement-form";
 
 export const metadata: Metadata = { title: "Nouveau mouvement · Suivi" };
 
-export default async function SuiviMouvementNouveauPage() {
+export default async function SuiviMouvementNouveauPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await requireUser();
-  requireSvPermission(user, "sv.movements.manage");
+  const rawSp = await searchParams;
+  const country = requireSvPermissionFromPaysParam(
+    user,
+    "sv.movements.manage",
+    rawSp,
+  );
   const employeeOptions = await listSvHrEmployeeOptions();
 
   return (
     <PageShell>
       <PageHeader
         title="Nouveau mouvement"
-        description="Entrée ou sortie — registre trésorerie tampon."
-        backHref="/suivi/mouvements"
+        description={`Entrée ou sortie — registre trésorerie tampon · ${svCountryDisplayLabel(country)}.`}
+        backHref={withSvCountryQuery("/suivi/mouvements", country)}
       />
-      <SvMovementForm employeeOptions={employeeOptions} />
+      <SvMovementForm employeeOptions={employeeOptions} country={country} />
     </PageShell>
   );
 }

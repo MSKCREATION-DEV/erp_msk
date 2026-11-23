@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import Link from "next/link";
+import type { SvCountry } from "@/generated/prisma/client";
 import {
   createSvCashMovement,
   type SvMovementActionState,
@@ -19,6 +20,10 @@ import { GeneratedValueField } from "@/components/ui/generated-value-field";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
 import { SV_MOVEMENT_CATEGORY_OPTIONS } from "@/lib/suivi/categories";
 import {
+  SV_COUNTRY_TO_URL,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
+import {
   SV_PAYMENT_MODE_OTHER,
   type SvPaymentMode,
 } from "@/lib/suivi/payment-modes";
@@ -27,8 +32,10 @@ const CATEGORIES = [...SV_MOVEMENT_CATEGORY_OPTIONS];
 
 export function SvMovementForm({
   employeeOptions,
+  country,
 }: {
   employeeOptions: OptionPickerItem[];
+  country: SvCountry;
 }) {
   const [state, formAction, pending] = useActionState<
     SvMovementActionState,
@@ -52,11 +59,12 @@ export function SvMovementForm({
   return (
     <form action={formAction}>
       <input type="hidden" name="paidBy" value={paidByLabel} />
+      <input type="hidden" name="pays" value={SV_COUNTRY_TO_URL[country]} />
       <FormShell
         footer={
           <div className="flex flex-wrap justify-end gap-3">
             <Link
-              href="/suivi/mouvements"
+              href={withSvCountryQuery("/suivi/mouvements", country)}
               className="inline-flex h-11 items-center rounded-lg border border-msk-ink/15 px-4 text-sm font-medium hover:bg-msk-chalk"
             >
               Annuler

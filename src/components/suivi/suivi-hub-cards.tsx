@@ -108,8 +108,11 @@ export function SuiviHubGrid({
   counts?: SuiviHubCounts;
   allowed: Set<string>;
 }) {
+  // 3 piliers → entrée via SuiviCountryPicker (`?pays=`), pas de carte directe.
   const modules = SUIVI_MODULES.filter(
-    (m) => allowed.has(m.permission) || allowed.has("sv.access"),
+    (m) =>
+      !m.countryScoped &&
+      (allowed.has(m.permission) || allowed.has("sv.access")),
   );
 
   const bySection = (id: SuiviModule["section"]) =>

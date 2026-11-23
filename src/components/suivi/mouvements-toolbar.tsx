@@ -174,7 +174,9 @@ export function SvMouvementsToolbar() {
   function clearAll() {
     start(() => {
       const q = searchParams.get("q");
+      const pays = searchParams.get("pays");
       const params = new URLSearchParams();
+      if (pays) params.set("pays", pays);
       if (q) params.set("q", q);
       const qs = params.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });

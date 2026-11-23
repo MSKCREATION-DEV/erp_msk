@@ -22,7 +22,7 @@ async function main() {
 
   console.log("\n→ Vérification inventaire actif…");
   const active = await prisma.svStockItem.findMany({
-    where: { archivedAt: null },
+    where: { country: "MALI", archivedAt: null },
     orderBy: [{ family: "asc" }, { code: "asc" }],
   });
   const byCode = new Map(active.map((r) => [r.code, r]));
@@ -60,10 +60,15 @@ async function main() {
 
   const archived = await prisma.svStockItem.count({
     where: {
+      country: "MALI",
       code: { in: [...SV_SEED_STOCK_EXCEL_ARCHIVED_CODES] },
       archivedAt: { not: null },
     },
   });
+  const togoShell = await prisma.svStockItem.count({
+    where: { country: "TOGO", archivedAt: null },
+  });
+  console.log(`✓ Coquille stocks Togo actifs : ${togoShell}`);
   console.log(
     `\n✓ Excel archivés (codes listés) : ${archived}/${SV_SEED_STOCK_EXCEL_ARCHIVED_CODES.length}`,
   );

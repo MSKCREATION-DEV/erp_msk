@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth/session";
-import { requireSvPermission } from "@/lib/suivi/access";
+import { requireSvPermissionFromPaysParam } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
+import {
+  svCountryDisplayLabel,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
+import { firstParam } from "@/lib/list/search-params";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { SvStockMoveForm } from "@/components/suivi/stock-move-form";
@@ -11,14 +16,19 @@ export const metadata: Metadata = { title: "Mouvement stock · Suivi" };
 export default async function SuiviStockMoveNouveauPage({
   searchParams,
 }: {
-  searchParams: Promise<{ itemId?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await requireUser();
-  requireSvPermission(user, "sv.stock.manage");
-  const { itemId } = await searchParams;
+  const rawSp = await searchParams;
+  const country = requireSvPermissionFromPaysParam(
+    user,
+    "sv.stock.manage",
+    rawSp,
+  );
+  const itemIdParam = firstParam(rawSp.itemId);
 
   const items = await prisma.svStockItem.findMany({
-    where: { archivedAt: null },
+    where: { country, archivedAt: null },
     orderBy: { code: "asc" },
     select: {
       id: true,
@@ -30,20 +40,26 @@ export default async function SuiviStockMoveNouveauPage({
   });
 
   const defaultItemId =
-    itemId && items.some((i) => i.id === itemId) ? itemId : undefined;
+    itemIdParam && items.some((i) => i.id === itemIdParam)
+      ? itemIdParam
+      : undefined;
 
   return (
     <PageShell>
       <PageHeader
         title="Mouvement stock"
-        description="Entrée, sortie ou ajustement — toujours traçable."
+        description={`Entrée, sortie ou ajustement — toujours traçable · ${svCountryDisplayLabel(country)}.`}
         backHref={
           defaultItemId
-            ? `/suivi/stocks/${defaultItemId}`
-            : "/suivi/stocks"
+            ? withSvCountryQuery(`/suivi/stocks/${defaultItemId}`, country)
+            : withSvCountryQuery("/suivi/stocks", country)
         }
       />
-      <SvStockMoveForm items={items} defaultItemId={defaultItemId} />
+      <SvStockMoveForm
+        items={items}
+        defaultItemId={defaultItemId}
+        country={country}
+      />
     </PageShell>
   );
 }

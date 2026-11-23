@@ -17,6 +17,7 @@ import type * as Prisma from "../internal/prismaNamespace"
  * Compte trésorerie tampon (caisse physique ou banque).
  * Solde courant = Σ IN − Σ OUT des mouvements liés avec `countsTowardBalance=true`
  * (écritures d’ouverture bascule Direction + mouvements post-bascule).
+ * Unicité : un PHYSICAL + un BANK **par pays** (4 comptes V1).
  */
 export type SvAccountModel = runtime.Types.Result.DefaultSelection<Prisma.$SvAccountPayload>
 
@@ -38,6 +39,7 @@ export type SvAccountSumAggregateOutputType = {
 
 export type SvAccountMinAggregateOutputType = {
   id: string | null
+  country: $Enums.SvCountry | null
   kind: $Enums.SvAccountKind | null
   label: string | null
   notes: string | null
@@ -49,6 +51,7 @@ export type SvAccountMinAggregateOutputType = {
 
 export type SvAccountMaxAggregateOutputType = {
   id: string | null
+  country: $Enums.SvCountry | null
   kind: $Enums.SvAccountKind | null
   label: string | null
   notes: string | null
@@ -60,6 +63,7 @@ export type SvAccountMaxAggregateOutputType = {
 
 export type SvAccountCountAggregateOutputType = {
   id: number
+  country: number
   kind: number
   label: number
   notes: number
@@ -81,6 +85,7 @@ export type SvAccountSumAggregateInputType = {
 
 export type SvAccountMinAggregateInputType = {
   id?: true
+  country?: true
   kind?: true
   label?: true
   notes?: true
@@ -92,6 +97,7 @@ export type SvAccountMinAggregateInputType = {
 
 export type SvAccountMaxAggregateInputType = {
   id?: true
+  country?: true
   kind?: true
   label?: true
   notes?: true
@@ -103,6 +109,7 @@ export type SvAccountMaxAggregateInputType = {
 
 export type SvAccountCountAggregateInputType = {
   id?: true
+  country?: true
   kind?: true
   label?: true
   notes?: true
@@ -201,6 +208,7 @@ export type SvAccountGroupByArgs<ExtArgs extends runtime.Types.Extensions.Intern
 
 export type SvAccountGroupByOutputType = {
   id: string
+  country: $Enums.SvCountry
   kind: $Enums.SvAccountKind
   label: string
   notes: string | null
@@ -235,6 +243,7 @@ export type SvAccountWhereInput = {
   OR?: Prisma.SvAccountWhereInput[]
   NOT?: Prisma.SvAccountWhereInput | Prisma.SvAccountWhereInput[]
   id?: Prisma.StringFilter<"SvAccount"> | string
+  country?: Prisma.EnumSvCountryFilter<"SvAccount"> | $Enums.SvCountry
   kind?: Prisma.EnumSvAccountKindFilter<"SvAccount"> | $Enums.SvAccountKind
   label?: Prisma.StringFilter<"SvAccount"> | string
   notes?: Prisma.StringNullableFilter<"SvAccount"> | string | null
@@ -247,6 +256,7 @@ export type SvAccountWhereInput = {
 
 export type SvAccountOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   label?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -259,10 +269,12 @@ export type SvAccountOrderByWithRelationInput = {
 
 export type SvAccountWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  kind?: $Enums.SvAccountKind
+  country_kind?: Prisma.SvAccountCountryKindCompoundUniqueInput
   AND?: Prisma.SvAccountWhereInput | Prisma.SvAccountWhereInput[]
   OR?: Prisma.SvAccountWhereInput[]
   NOT?: Prisma.SvAccountWhereInput | Prisma.SvAccountWhereInput[]
+  country?: Prisma.EnumSvCountryFilter<"SvAccount"> | $Enums.SvCountry
+  kind?: Prisma.EnumSvAccountKindFilter<"SvAccount"> | $Enums.SvAccountKind
   label?: Prisma.StringFilter<"SvAccount"> | string
   notes?: Prisma.StringNullableFilter<"SvAccount"> | string | null
   baselineAt?: Prisma.DateTimeNullableFilter<"SvAccount"> | Date | string | null
@@ -270,10 +282,11 @@ export type SvAccountWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"SvAccount"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SvAccount"> | Date | string
   movements?: Prisma.SvCashMovementListRelationFilter
-}, "id" | "kind">
+}, "id" | "country_kind">
 
 export type SvAccountOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   label?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -293,6 +306,7 @@ export type SvAccountScalarWhereWithAggregatesInput = {
   OR?: Prisma.SvAccountScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SvAccountScalarWhereWithAggregatesInput | Prisma.SvAccountScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"SvAccount"> | string
+  country?: Prisma.EnumSvCountryWithAggregatesFilter<"SvAccount"> | $Enums.SvCountry
   kind?: Prisma.EnumSvAccountKindWithAggregatesFilter<"SvAccount"> | $Enums.SvAccountKind
   label?: Prisma.StringWithAggregatesFilter<"SvAccount"> | string
   notes?: Prisma.StringNullableWithAggregatesFilter<"SvAccount"> | string | null
@@ -304,6 +318,7 @@ export type SvAccountScalarWhereWithAggregatesInput = {
 
 export type SvAccountCreateInput = {
   id?: string
+  country?: $Enums.SvCountry
   kind: $Enums.SvAccountKind
   label: string
   notes?: string | null
@@ -316,6 +331,7 @@ export type SvAccountCreateInput = {
 
 export type SvAccountUncheckedCreateInput = {
   id?: string
+  country?: $Enums.SvCountry
   kind: $Enums.SvAccountKind
   label: string
   notes?: string | null
@@ -328,6 +344,7 @@ export type SvAccountUncheckedCreateInput = {
 
 export type SvAccountUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   kind?: Prisma.EnumSvAccountKindFieldUpdateOperationsInput | $Enums.SvAccountKind
   label?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -340,6 +357,7 @@ export type SvAccountUpdateInput = {
 
 export type SvAccountUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   kind?: Prisma.EnumSvAccountKindFieldUpdateOperationsInput | $Enums.SvAccountKind
   label?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -352,6 +370,7 @@ export type SvAccountUncheckedUpdateInput = {
 
 export type SvAccountCreateManyInput = {
   id?: string
+  country?: $Enums.SvCountry
   kind: $Enums.SvAccountKind
   label: string
   notes?: string | null
@@ -363,6 +382,7 @@ export type SvAccountCreateManyInput = {
 
 export type SvAccountUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   kind?: Prisma.EnumSvAccountKindFieldUpdateOperationsInput | $Enums.SvAccountKind
   label?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -374,6 +394,7 @@ export type SvAccountUpdateManyMutationInput = {
 
 export type SvAccountUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   kind?: Prisma.EnumSvAccountKindFieldUpdateOperationsInput | $Enums.SvAccountKind
   label?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -383,8 +404,14 @@ export type SvAccountUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type SvAccountCountryKindCompoundUniqueInput = {
+  country: $Enums.SvCountry
+  kind: $Enums.SvAccountKind
+}
+
 export type SvAccountCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   label?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -400,6 +427,7 @@ export type SvAccountAvgOrderByAggregateInput = {
 
 export type SvAccountMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   label?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -411,6 +439,7 @@ export type SvAccountMaxOrderByAggregateInput = {
 
 export type SvAccountMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   kind?: Prisma.SortOrder
   label?: Prisma.SortOrder
   notes?: Prisma.SortOrder
@@ -427,6 +456,10 @@ export type SvAccountSumOrderByAggregateInput = {
 export type SvAccountNullableScalarRelationFilter = {
   is?: Prisma.SvAccountWhereInput | null
   isNot?: Prisma.SvAccountWhereInput | null
+}
+
+export type EnumSvCountryFieldUpdateOperationsInput = {
+  set?: $Enums.SvCountry
 }
 
 export type EnumSvAccountKindFieldUpdateOperationsInput = {
@@ -451,6 +484,7 @@ export type SvAccountUpdateOneWithoutMovementsNestedInput = {
 
 export type SvAccountCreateWithoutMovementsInput = {
   id?: string
+  country?: $Enums.SvCountry
   kind: $Enums.SvAccountKind
   label: string
   notes?: string | null
@@ -462,6 +496,7 @@ export type SvAccountCreateWithoutMovementsInput = {
 
 export type SvAccountUncheckedCreateWithoutMovementsInput = {
   id?: string
+  country?: $Enums.SvCountry
   kind: $Enums.SvAccountKind
   label: string
   notes?: string | null
@@ -489,6 +524,7 @@ export type SvAccountUpdateToOneWithWhereWithoutMovementsInput = {
 
 export type SvAccountUpdateWithoutMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   kind?: Prisma.EnumSvAccountKindFieldUpdateOperationsInput | $Enums.SvAccountKind
   label?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -500,6 +536,7 @@ export type SvAccountUpdateWithoutMovementsInput = {
 
 export type SvAccountUncheckedUpdateWithoutMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   kind?: Prisma.EnumSvAccountKindFieldUpdateOperationsInput | $Enums.SvAccountKind
   label?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -542,6 +579,7 @@ export type SvAccountCountOutputTypeCountMovementsArgs<ExtArgs extends runtime.T
 
 export type SvAccountSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  country?: boolean
   kind?: boolean
   label?: boolean
   notes?: boolean
@@ -555,6 +593,7 @@ export type SvAccountSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type SvAccountSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  country?: boolean
   kind?: boolean
   label?: boolean
   notes?: boolean
@@ -566,6 +605,7 @@ export type SvAccountSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
 
 export type SvAccountSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  country?: boolean
   kind?: boolean
   label?: boolean
   notes?: boolean
@@ -577,6 +617,7 @@ export type SvAccountSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
 
 export type SvAccountSelectScalar = {
   id?: boolean
+  country?: boolean
   kind?: boolean
   label?: boolean
   notes?: boolean
@@ -586,7 +627,7 @@ export type SvAccountSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SvAccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "kind" | "label" | "notes" | "baselineAt" | "baselineBalance" | "createdAt" | "updatedAt", ExtArgs["result"]["svAccount"]>
+export type SvAccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "country" | "kind" | "label" | "notes" | "baselineAt" | "baselineBalance" | "createdAt" | "updatedAt", ExtArgs["result"]["svAccount"]>
 export type SvAccountInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   movements?: boolean | Prisma.SvAccount$movementsArgs<ExtArgs>
   _count?: boolean | Prisma.SvAccountCountOutputTypeDefaultArgs<ExtArgs>
@@ -601,11 +642,13 @@ export type $SvAccountPayload<ExtArgs extends runtime.Types.Extensions.InternalA
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    country: $Enums.SvCountry
     kind: $Enums.SvAccountKind
     label: string
     notes: string | null
     /**
      * Instant de bascule Direction (début de journée locale Bamako = UTC).
+     * Null pour Togo V1 (coquille à 0, pas de bascule Direction Togo).
      */
     baselineAt: Date | null
     /**
@@ -1039,6 +1082,7 @@ export interface Prisma__SvAccountClient<T, Null = never, ExtArgs extends runtim
  */
 export interface SvAccountFieldRefs {
   readonly id: Prisma.FieldRef<"SvAccount", 'String'>
+  readonly country: Prisma.FieldRef<"SvAccount", 'SvCountry'>
   readonly kind: Prisma.FieldRef<"SvAccount", 'SvAccountKind'>
   readonly label: Prisma.FieldRef<"SvAccount", 'String'>
   readonly notes: Prisma.FieldRef<"SvAccount", 'String'>

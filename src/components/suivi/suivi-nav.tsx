@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { SUIVI_SUBNAV } from "@/lib/suivi/modules";
+import {
+  parseSvCountryParam,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 import { cn } from "@/lib/utils";
 
 function isActive(pathname: string, href: string, exact?: boolean): boolean {
@@ -12,6 +16,9 @@ function isActive(pathname: string, href: string, exact?: boolean): boolean {
 
 export function SuiviNav() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const paysRaw = searchParams.get("pays");
+  const country = parseSvCountryParam(paysRaw);
 
   return (
     <nav
@@ -21,12 +28,21 @@ export function SuiviNav() {
       <div className="flex gap-0 overflow-x-auto overscroll-x-contain px-1 scrollbar-thin">
         {SUIVI_SUBNAV.map((item) => {
           const exact = "exact" in item ? Boolean(item.exact) : false;
+          const countryScoped =
+            "countryScoped" in item && Boolean(item.countryScoped);
           const active = isActive(pathname, item.href, exact);
+
+          const href: string = countryScoped
+            ? country
+              ? withSvCountryQuery(item.href, country)
+              : "/suivi"
+            : item.href;
+
           return (
             <Link
               key={item.href}
               prefetch={false}
-              href={item.href}
+              href={href}
               className={cn(
                 "relative shrink-0 whitespace-nowrap px-3 py-2.5 text-sm font-medium transition",
                 active

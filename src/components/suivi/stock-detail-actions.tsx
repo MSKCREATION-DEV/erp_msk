@@ -1,19 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import type { SvCountry } from "@/generated/prisma/client";
 import { Archive, PackagePlus, Pencil } from "lucide-react";
 import { ActionLink } from "@/components/ui/action-link";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { usePendingAction } from "@/hooks/use-pending-action";
 import { archiveSvStockItem } from "@/actions/suivi/stock";
+import { withSvCountryQuery } from "@/lib/suivi/country";
 
 export function SvStockDetailActions({
   itemId,
   canManage,
+  country,
 }: {
   itemId: string;
   canManage: boolean;
+  country: SvCountry;
 }) {
   const router = useRouter();
   const confirm = useConfirm();
@@ -24,13 +28,15 @@ export function SvStockDetailActions({
   return (
     <div className="flex flex-wrap gap-2">
       <ActionLink
-        href={`/suivi/stocks/mouvements/nouveau?itemId=${itemId}`}
+        href={withSvCountryQuery("/suivi/stocks/mouvements/nouveau", country, {
+          itemId,
+        })}
         icon={PackagePlus}
       >
         Ajuster le stock
       </ActionLink>
       <ActionLink
-        href={`/suivi/stocks/${itemId}/edit`}
+        href={withSvCountryQuery(`/suivi/stocks/${itemId}/edit`, country)}
         icon={Pencil}
         variant="secondary"
       >
@@ -53,7 +59,7 @@ export function SvStockDetailActions({
               run(async () => {
                 const res = await archiveSvStockItem(itemId);
                 if (!res.ok) throw new Error(res.error);
-                router.push("/suivi/stocks");
+                router.push(withSvCountryQuery("/suivi/stocks", country));
                 router.refresh();
               }),
           });

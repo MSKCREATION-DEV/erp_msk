@@ -7,6 +7,12 @@ import { Prisma } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { prisma } from "@/lib/prisma";
+import type { SvCountry } from "@/generated/prisma/client";
+import {
+  canSvCountry,
+  parseSvCountryParam,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 import {
   nextStockCodeFromExisting,
   nextStockQuantity,
@@ -71,19 +77,32 @@ function revalidateStock(itemId?: string) {
 async function allocateStockCode(
   tx: Prisma.TransactionClient,
   family: z.infer<typeof familySchema>,
+  country: SvCountry,
 ): Promise<string> {
   const prefix = stockFamilyPrefix(family);
   if (!prefix) {
     throw new Error("Famille invalide");
   }
   const rows = await tx.svStockItem.findMany({
-    where: { code: { startsWith: `${prefix}-` } },
+    where: { country, code: { startsWith: `${prefix}-` } },
     select: { code: true },
   });
   return nextStockCodeFromExisting(
     rows.map((r) => r.code),
     prefix,
   );
+}
+
+function requirePaysFromForm(
+  formData: FormData,
+  user: Parameters<typeof canSvCountry>[0],
+): SvCountry | { ok: false; error: string } {
+  const country = parseSvCountryParam(String(formData.get("pays") ?? ""));
+  if (!country) return { ok: false, error: "Pays obligatoire." };
+  if (!canSvCountry(user, country) && !user.isSuperAdmin) {
+    return { ok: false, error: "Droit pays insuffisant." };
+  }
+  return country;
 }
 
 export async function createSvStockItem(
@@ -94,6 +113,12 @@ export async function createSvStockItem(
   if (!canManage(user)) {
     return { ok: false, error: "Droit insuffisant." };
   }
+
+  const countryOrErr = requirePaysFromForm(formData, user);
+  if (typeof countryOrErr === "object" && "ok" in countryOrErr) {
+    return countryOrErr;
+  }
+  const country = countryOrErr;
 
   const parsed = itemCreateSchema.safeParse({
     family: formData.get("family"),
@@ -117,12 +142,13 @@ export async function createSvStockItem(
 
   try {
     id = await prisma.$transaction(async (tx) => {
-      let code = await allocateStockCode(tx, d.family);
+      let code = await allocateStockCode(tx, d.family, country);
       let row: { id: string } | null = null;
       for (let attempt = 0; attempt < 8; attempt++) {
         try {
           row = await tx.svStockItem.create({
             data: {
+              country,
               code,
               family: d.family,
               subFamily: emptyToNull(d.subFamily),
@@ -141,6 +167,7 @@ export async function createSvStockItem(
           ) {
             const rows = await tx.svStockItem.findMany({
               where: {
+                country,
                 code: {
                   startsWith: `${stockFamilyPrefix(d.family)!}-`,
                 },
@@ -177,7 +204,10 @@ export async function createSvStockItem(
   }
 
   revalidateStock(id);
-  return redirectWithFlash(`/suivi/stocks/${id}`, "Article créé.");
+  return redirectWithFlash(
+    withSvCountryQuery(`/suivi/stocks/${id}`, country),
+    "Article créé.",
+  );
 }
 
 export async function updateSvStockItem(
@@ -205,9 +235,18 @@ export async function updateSvStockItem(
     };
   }
 
+  const countryOrErr = requirePaysFromForm(formData, user);
+  if (typeof countryOrErr === "object" && "ok" in countryOrErr) {
+    return countryOrErr;
+  }
+  const country = countryOrErr;
+
   const existing = await prisma.svStockItem.findUnique({ where: { id: itemId } });
   if (!existing || existing.archivedAt) {
     return { ok: false, error: "Article introuvable ou archivé." };
+  }
+  if (existing.country !== country) {
+    return { ok: false, error: "Pays incohérent avec l’article." };
   }
 
   const d = parsed.data;
@@ -230,7 +269,10 @@ export async function updateSvStockItem(
   }
 
   revalidateStock(itemId);
-  return redirectWithFlash(`/suivi/stocks/${itemId}`, "Article mis à jour.");
+  return redirectWithFlash(
+    withSvCountryQuery(`/suivi/stocks/${itemId}`, country),
+    "Article mis à jour.",
+  );
 }
 
 export async function archiveSvStockItem(
@@ -243,6 +285,9 @@ export async function archiveSvStockItem(
 
   const existing = await prisma.svStockItem.findUnique({ where: { id: itemId } });
   if (!existing) return { ok: false, error: "Article introuvable." };
+  if (!canSvCountry(user, existing.country) && !user.isSuperAdmin) {
+    return { ok: false, error: "Droit pays insuffisant." };
+  }
   if (existing.archivedAt) {
     revalidateStock(itemId);
     return { ok: true };
@@ -297,11 +342,20 @@ export async function createSvStockMovement(
     return { ok: false, error: "Date invalide." };
   }
 
+  const countryOrErr = requirePaysFromForm(formData, user);
+  if (typeof countryOrErr === "object" && "ok" in countryOrErr) {
+    return countryOrErr;
+  }
+  const country = countryOrErr;
+
   const item = await prisma.svStockItem.findUnique({
     where: { id: parsed.data.itemId },
   });
   if (!item || item.archivedAt) {
     return { ok: false, error: "Article introuvable ou archivé." };
+  }
+  if (item.country !== country) {
+    return { ok: false, error: "Mouvement inter-pays interdit." };
   }
 
   if (parsed.data.kind !== "ADJUST" && parsed.data.quantity < 1) {
@@ -346,5 +400,8 @@ export async function createSvStockMovement(
   }
 
   revalidateStock(item.id);
-  return redirectWithFlash(`/suivi/stocks/${item.id}`, "Mouvement stock enregistré.");
+  return redirectWithFlash(
+    withSvCountryQuery(`/suivi/stocks/${item.id}`, country),
+    "Mouvement stock enregistré.",
+  );
 }

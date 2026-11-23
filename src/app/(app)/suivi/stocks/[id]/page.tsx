@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { requireSvPermission } from "@/lib/suivi/access";
+import { requireSvResourceCountry } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
+import {
+  svCountryDisplayLabel,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -19,13 +23,15 @@ const KIND_LABEL: Record<string, string> = {
 
 export default async function SuiviStockDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await requireUser();
-  requireSvPermission(user, "sv.stock.view");
   const canManage = hasPermission(user, "sv.stock.manage");
   const { id } = await params;
+  const rawSp = await searchParams;
 
   const item = await prisma.svStockItem.findUnique({
     where: { id },
@@ -43,6 +49,13 @@ export default async function SuiviStockDetailPage({
   });
   if (!item) notFound();
 
+  const country = requireSvResourceCountry(
+    user,
+    "sv.stock.view",
+    rawSp,
+    item.country,
+  );
+
   return (
     <PageShell>
       <PageHeader
@@ -51,14 +64,19 @@ export default async function SuiviStockDetailPage({
           item.family,
           item.subFamily,
           item.location,
+          svCountryDisplayLabel(country),
           item.archivedAt ? "Archivé" : null,
         ]
           .filter(Boolean)
           .join(" · ")}
-        backHref="/suivi/stocks"
+        backHref={withSvCountryQuery("/suivi/stocks", country)}
         actions={
           item.archivedAt ? null : (
-            <SvStockDetailActions itemId={item.id} canManage={canManage} />
+            <SvStockDetailActions
+              itemId={item.id}
+              canManage={canManage}
+              country={country}
+            />
           )
         }
       />

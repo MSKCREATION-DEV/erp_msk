@@ -1938,6 +1938,7 @@ export type SvContractMetaScalarFieldEnum = (typeof SvContractMetaScalarFieldEnu
 
 export const SvAccountScalarFieldEnum = {
   id: 'id',
+  country: 'country',
   kind: 'kind',
   label: 'label',
   notes: 'notes',
@@ -2022,6 +2023,7 @@ export type SvExpensePaymentScalarFieldEnum = (typeof SvExpensePaymentScalarFiel
 
 export const SvStockItemScalarFieldEnum = {
   id: 'id',
+  country: 'country',
   code: 'code',
   family: 'family',
   subFamily: 'subFamily',

@@ -11,10 +11,10 @@ import {
   Plus,
   Wallet,
 } from "lucide-react";
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma, SvCountry } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { requireSvPermission } from "@/lib/suivi/access";
+import { requireSvPermissionFromPaysParam } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
 import { runSeries } from "@/lib/db/serial";
 import {
@@ -24,6 +24,11 @@ import {
   getSvAccountByKind,
   SV_ACCOUNT_KIND_LABEL,
 } from "@/lib/suivi/accounts";
+import {
+  SV_COUNTRY_TO_URL,
+  svCountryDisplayLabel,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 import {
   familyToCategoryFilterValues,
   SV_CATEGORY_FAMILIES,
@@ -100,17 +105,22 @@ export default async function SuiviMouvementsPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await requireUser();
-  requireSvPermission(user, "sv.movements.view");
+  const rawSp = await searchParams;
+  const country = requireSvPermissionFromPaysParam(
+    user,
+    "sv.movements.view",
+    rawSp,
+  );
   const canManage =
     hasPermission(user, "sv.movements.manage") || user.isSuperAdmin;
 
-  const rawSp = await searchParams;
   const resultsKey = listKeyFromSearchParams(rawSp);
+  const countryLabel = svCountryDisplayLabel(country);
 
   return (
     <PageShell>
       <PageHeader
-        title="Mouvements"
+        title={`Mouvements · ${countryLabel}`}
         description="Registre entrées / sorties — trésorerie tampon (pas de caisse métier)."
         backHref="/suivi"
         actions={
@@ -123,7 +133,10 @@ export default async function SuiviMouvementsPage({
               Tableau de bord
             </ActionLink>
             {canManage ? (
-              <ActionLink href="/suivi/mouvements/nouveau" icon={Plus}>
+              <ActionLink
+                href={withSvCountryQuery("/suivi/mouvements/nouveau", country)}
+                icon={Plus}
+              >
                 Nouveau mouvement
               </ActionLink>
             ) : null}
@@ -132,7 +145,7 @@ export default async function SuiviMouvementsPage({
       />
 
       <Suspense fallback={<MouvementsSummarySkeleton />}>
-        <MouvementsSummary searchParams={searchParams} />
+        <MouvementsSummary searchParams={searchParams} country={country} />
       </Suspense>
 
       <Surface className="overflow-hidden p-0">
@@ -146,7 +159,7 @@ export default async function SuiviMouvementsPage({
           </Suspense>
         </div>
         <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={8} cols={8} />}>
-          <MouvementsResults searchParams={searchParams} />
+          <MouvementsResults searchParams={searchParams} country={country} />
         </Suspense>
       </Surface>
     </PageShell>
@@ -177,25 +190,27 @@ function MouvementsSummarySkeleton() {
   );
 }
 
-function buildMouvementsListHref(params: {
-  q?: string;
-  direction?: "IN" | "OUT";
-  from?: string;
-  to?: string;
-  compte?: "PHYSICAL" | "BANK";
-  categorie?: SvCategoryFamily;
-  category?: string;
-}): string {
-  const sp = new URLSearchParams();
-  if (params.q) sp.set("q", params.q);
-  if (params.direction) sp.set("direction", params.direction);
-  if (params.from) sp.set("from", params.from);
-  if (params.to) sp.set("to", params.to);
-  if (params.compte) sp.set("compte", params.compte);
-  if (params.categorie) sp.set("categorie", params.categorie);
-  if (params.category) sp.set("category", params.category);
-  const qs = sp.toString();
-  return qs ? `/suivi/mouvements?${qs}` : "/suivi/mouvements";
+function buildMouvementsListHref(
+  country: SvCountry,
+  params: {
+    q?: string;
+    direction?: "IN" | "OUT";
+    from?: string;
+    to?: string;
+    compte?: "PHYSICAL" | "BANK";
+    categorie?: SvCategoryFamily;
+    category?: string;
+  },
+): string {
+  return withSvCountryQuery("/suivi/mouvements", country, {
+    q: params.q,
+    direction: params.direction,
+    from: params.from,
+    to: params.to,
+    compte: params.compte,
+    categorie: params.categorie,
+    category: params.category,
+  });
 }
 
 function ActivityKpiCard({
@@ -280,6 +295,7 @@ function ActivityKpiCard({
 
 async function buildMovementWhere(
   raw: Record<string, string | string[] | undefined>,
+  country: SvCountry,
 ): Promise<{
   where: Prisma.SvCashMovementWhereInput;
   filters: z.infer<typeof filterSchema>;
@@ -309,8 +325,16 @@ async function buildMovementWhere(
   }
   if (filters.compte) {
     await ensureSvAccounts(prisma);
-    const acc = await getSvAccountByKind(filters.compte, prisma);
+    const acc = await getSvAccountByKind(filters.compte, prisma, country);
     where.accountId = acc.id;
+  } else if (country === "MALI") {
+    // Legacy : mouvements sans compte = Mali
+    where.OR = [
+      { account: { country: "MALI" } },
+      { accountId: null },
+    ];
+  } else {
+    where.account = { country };
   }
   if (filters.category) {
     where.category = filters.category;
@@ -344,11 +368,13 @@ async function buildMovementWhere(
  */
 async function MouvementsSummary({
   searchParams,
+  country,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+  country: SvCountry;
 }) {
   const raw = await searchParams;
-  const { where, filters, q } = await buildMovementWhere(raw);
+  const { where, filters, q } = await buildMovementWhere(raw, country);
   const hasFilters = Boolean(
     q ||
       filters.direction ||
@@ -379,13 +405,24 @@ async function MouvementsSummary({
     async () => {
       await ensureSvAccounts(prisma);
       return prisma.svAccount.findMany({
+        where: { country },
         orderBy: { kind: "asc" },
         select: { id: true, kind: true, label: true },
       });
     },
     () =>
       prisma.svCashMovement.findMany({
-        where: { countsTowardBalance: true },
+        where: {
+          countsTowardBalance: true,
+          ...(country === "MALI"
+            ? {
+                OR: [
+                  { account: { country: "MALI" as const } },
+                  { accountId: null },
+                ],
+              }
+            : { account: { country } }),
+        },
         select: {
           accountId: true,
           direction: true,
@@ -439,16 +476,16 @@ async function MouvementsSummary({
     category: filters.category,
   };
 
-  const outHref = buildMouvementsListHref({
+  const outHref = buildMouvementsListHref(country, {
     ...listFilterBase,
     direction: "OUT",
   });
-  const inHref = buildMouvementsListHref({
+  const inHref = buildMouvementsListHref(country, {
     ...listFilterBase,
     direction: "IN",
   });
   const topFamilyHref = topFamily
-    ? buildMouvementsListHref({
+    ? buildMouvementsListHref(country, {
         ...listFilterBase,
         categorie: topFamily.family,
         category: undefined,
@@ -525,7 +562,7 @@ async function MouvementsSummary({
             <Link
               key={acc.id}
               prefetch={false}
-              href={`/suivi/comptes/${acc.id}`}
+              href={withSvCountryQuery(`/suivi/comptes/${acc.id}`, country)}
               className="rounded-xl border border-msk-ink/8 bg-gradient-to-br from-white via-white to-msk-chalk/80 px-4 py-3.5 transition hover:border-msk-blue/30 hover:shadow-sm"
             >
               <div className="flex items-start gap-3">
@@ -562,14 +599,18 @@ async function MouvementsSummary({
 
 async function MouvementsResults({
   searchParams,
+  country,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+  country: SvCountry;
 }) {
   const raw = await searchParams;
-  const { where, filters, q } = await buildMovementWhere(raw);
+  const { where, filters, q } = await buildMovementWhere(raw, country);
   const requestedPage = parsePage(firstParam(raw.page));
   const pageSize = DEFAULT_PAGE_SIZE;
+  const pays = SV_COUNTRY_TO_URL[country];
   const sp: Record<string, string | undefined> = {
+    pays,
     q: q || undefined,
     direction: filters.direction,
     from: filters.from,
@@ -602,6 +643,7 @@ async function MouvementsResults({
 
   const pages = totalPages(total, pageSize);
   const listParams: Record<string, string | undefined> = {
+    pays,
     q: q || undefined,
     direction: filters.direction,
     from: filters.from,
@@ -624,11 +666,34 @@ async function MouvementsResults({
   );
 
   if (rows.length === 0) {
+    const isTogoEmpty = country === "TOGO" && !hasFilters;
     return (
-      <p className="p-6 text-sm text-msk-ink/55">
-        Aucun mouvement
-        {hasFilters ? " pour ces filtres" : ""}.
-      </p>
+      <div className="px-6 py-12 text-center" role="status">
+        <p className="text-sm font-medium text-msk-ink">
+          {isTogoEmpty
+            ? "Aucun mouvement Togo"
+            : hasFilters
+              ? "Aucun mouvement sur ce filtre"
+              : "Aucun mouvement"}
+        </p>
+        <p className="mt-1 text-sm text-msk-ink/55">
+          {isTogoEmpty
+            ? "Aucune entrée ni sortie enregistrée pour le Togo. Commencez par un crédit de caisse ou de banque."
+            : hasFilters
+              ? "Aucun résultat pour ces critères (période, compte, sens…)."
+              : "Aucune écriture sur ce registre."}
+        </p>
+        {isTogoEmpty ? (
+          <div className="mt-4 flex justify-center">
+            <ActionLink
+              href={withSvCountryQuery("/suivi/mouvements/nouveau", country)}
+              icon={Plus}
+            >
+              Saisir un mouvement
+            </ActionLink>
+          </div>
+        ) : null}
+      </div>
     );
   }
 

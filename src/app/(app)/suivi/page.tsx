@@ -3,9 +3,11 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { requireSvAccess } from "@/lib/suivi/access";
+import { listSvCountriesForUser } from "@/lib/suivi/country";
 import { prisma } from "@/lib/prisma";
 import { runSeries } from "@/lib/db/serial";
 import { SuiviHubGrid } from "@/components/suivi/suivi-hub-cards";
+import { SuiviCountryPicker } from "@/components/suivi/suivi-country-picker";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 
@@ -15,18 +17,19 @@ export default async function SuiviHubPage() {
   const user = await requireUser();
   requireSvAccess(user);
 
+  const countries = listSvCountriesForUser(user);
   const canClients =
     hasPermission(user, "sv.clients.view") || user.isSuperAdmin;
   const canInvoices =
     hasPermission(user, "sv.invoices.view") || user.isSuperAdmin;
   const canExpenses =
     hasPermission(user, "sv.expenses.view") || user.isSuperAdmin;
-  const canMovements =
-    hasPermission(user, "sv.movements.view") || user.isSuperAdmin;
-  const canAccounts =
-    hasPermission(user, "sv.accounts.view") || user.isSuperAdmin;
-  const canStock = hasPermission(user, "sv.stock.view") || user.isSuperAdmin;
   const canHr = hasPermission(user, "sv.hr.view") || user.isSuperAdmin;
+  const canCountryPillars =
+    hasPermission(user, "sv.accounts.view") ||
+    hasPermission(user, "sv.movements.view") ||
+    hasPermission(user, "sv.stock.view") ||
+    user.isSuperAdmin;
 
   const allowed = new Set(
     [
@@ -51,9 +54,6 @@ export default async function SuiviHubPage() {
     clients,
     unpaidInvoices,
     unpaidExpenses,
-    stockZero,
-    movementsCount,
-    accountsCount,
     absencesToday,
     latesWeek,
   ] = await runSeries([
@@ -72,13 +72,6 @@ export default async function SuiviHubPage() {
             select: { totalTtc: true, amountPaid: true },
           })
         : Promise.resolve([] as { totalTtc: number; amountPaid: number }[]),
-    () =>
-      canStock
-        ? prisma.svStockItem.count({ where: { quantity: 0 } })
-        : Promise.resolve(0),
-    () =>
-      canMovements ? prisma.svCashMovement.count() : Promise.resolve(0),
-    () => (canAccounts ? prisma.svAccount.count() : Promise.resolve(0)),
     () =>
       canHr
         ? prisma.svAbsence.count({
@@ -109,7 +102,7 @@ export default async function SuiviHubPage() {
     <PageShell>
       <PageHeader
         title="Suivi"
-        description="Tampon clients · mouvements · stocks — direction / admins."
+        description="Tampon clients · trésorerie par pays · stocks — direction / admins."
         breadcrumbs={[{ label: "Accueil", href: "/accueil" }]}
         actions={
           <Link
@@ -121,23 +114,21 @@ export default async function SuiviHubPage() {
           </Link>
         }
       />
-      {/*
-        Pas de bandeau KPI hybride (ex. « Impayés clients / charges »).
-        Comme Commercial : un KPI par carte module, sections métier séparées.
-      */}
-      <SuiviHubGrid
-        allowed={allowed}
-        counts={{
-          clients,
-          factures: { value: unpaid, hint: "à encaisser" },
-          charges: { value: unpaidCharges, hint: "à payer" },
-          comptes: accountsCount || 2,
-          mouvements: movementsCount,
-          absences: { value: absencesToday, hint: "aujourd’hui" },
-          retards: { value: latesWeek, hint: "7 jours" },
-          stocks: { value: stockZero, hint: "à zéro" },
-        }}
-      />
+      <div className="space-y-8">
+        {canCountryPillars ? (
+          <SuiviCountryPicker countries={countries} />
+        ) : null}
+        <SuiviHubGrid
+          allowed={allowed}
+          counts={{
+            clients,
+            factures: { value: unpaid, hint: "à encaisser" },
+            charges: { value: unpaidCharges, hint: "à payer" },
+            absences: { value: absencesToday, hint: "aujourd’hui" },
+            retards: { value: latesWeek, hint: "7 jours" },
+          }}
+        />
+      </div>
     </PageShell>
   );
 }

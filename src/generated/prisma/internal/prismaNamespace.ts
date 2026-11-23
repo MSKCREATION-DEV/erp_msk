@@ -10464,6 +10464,7 @@ export type SvContractMetaScalarFieldEnum = (typeof SvContractMetaScalarFieldEnu
 
 export const SvAccountScalarFieldEnum = {
   id: 'id',
+  country: 'country',
   kind: 'kind',
   label: 'label',
   notes: 'notes',
@@ -10548,6 +10549,7 @@ export type SvExpensePaymentScalarFieldEnum = (typeof SvExpensePaymentScalarFiel
 
 export const SvStockItemScalarFieldEnum = {
   id: 'id',
+  country: 'country',
   code: 'code',
   family: 'family',
   subFamily: 'subFamily',
@@ -11765,6 +11767,20 @@ export type EnumSvInvoiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$
  * Reference to a field of type 'SvInvoiceStatus[]'
  */
 export type ListEnumSvInvoiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvInvoiceStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SvCountry'
+ */
+export type EnumSvCountryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvCountry'>
+    
+
+
+/**
+ * Reference to a field of type 'SvCountry[]'
+ */
+export type ListEnumSvCountryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SvCountry[]'>
     
 
 

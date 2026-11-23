@@ -36,6 +36,7 @@ export type SvStockItemSumAggregateOutputType = {
 
 export type SvStockItemMinAggregateOutputType = {
   id: string | null
+  country: $Enums.SvCountry | null
   code: string | null
   family: string | null
   subFamily: string | null
@@ -51,6 +52,7 @@ export type SvStockItemMinAggregateOutputType = {
 
 export type SvStockItemMaxAggregateOutputType = {
   id: string | null
+  country: $Enums.SvCountry | null
   code: string | null
   family: string | null
   subFamily: string | null
@@ -66,6 +68,7 @@ export type SvStockItemMaxAggregateOutputType = {
 
 export type SvStockItemCountAggregateOutputType = {
   id: number
+  country: number
   code: number
   family: number
   subFamily: number
@@ -91,6 +94,7 @@ export type SvStockItemSumAggregateInputType = {
 
 export type SvStockItemMinAggregateInputType = {
   id?: true
+  country?: true
   code?: true
   family?: true
   subFamily?: true
@@ -106,6 +110,7 @@ export type SvStockItemMinAggregateInputType = {
 
 export type SvStockItemMaxAggregateInputType = {
   id?: true
+  country?: true
   code?: true
   family?: true
   subFamily?: true
@@ -121,6 +126,7 @@ export type SvStockItemMaxAggregateInputType = {
 
 export type SvStockItemCountAggregateInputType = {
   id?: true
+  country?: true
   code?: true
   family?: true
   subFamily?: true
@@ -223,6 +229,7 @@ export type SvStockItemGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type SvStockItemGroupByOutputType = {
   id: string
+  country: $Enums.SvCountry
   code: string
   family: string
   subFamily: string | null
@@ -261,6 +268,7 @@ export type SvStockItemWhereInput = {
   OR?: Prisma.SvStockItemWhereInput[]
   NOT?: Prisma.SvStockItemWhereInput | Prisma.SvStockItemWhereInput[]
   id?: Prisma.StringFilter<"SvStockItem"> | string
+  country?: Prisma.EnumSvCountryFilter<"SvStockItem"> | $Enums.SvCountry
   code?: Prisma.StringFilter<"SvStockItem"> | string
   family?: Prisma.StringFilter<"SvStockItem"> | string
   subFamily?: Prisma.StringNullableFilter<"SvStockItem"> | string | null
@@ -277,6 +285,7 @@ export type SvStockItemWhereInput = {
 
 export type SvStockItemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   code?: Prisma.SortOrder
   family?: Prisma.SortOrder
   subFamily?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -293,10 +302,12 @@ export type SvStockItemOrderByWithRelationInput = {
 
 export type SvStockItemWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  code?: string
+  country_code?: Prisma.SvStockItemCountryCodeCompoundUniqueInput
   AND?: Prisma.SvStockItemWhereInput | Prisma.SvStockItemWhereInput[]
   OR?: Prisma.SvStockItemWhereInput[]
   NOT?: Prisma.SvStockItemWhereInput | Prisma.SvStockItemWhereInput[]
+  country?: Prisma.EnumSvCountryFilter<"SvStockItem"> | $Enums.SvCountry
+  code?: Prisma.StringFilter<"SvStockItem"> | string
   family?: Prisma.StringFilter<"SvStockItem"> | string
   subFamily?: Prisma.StringNullableFilter<"SvStockItem"> | string | null
   label?: Prisma.StringFilter<"SvStockItem"> | string
@@ -308,10 +319,11 @@ export type SvStockItemWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"SvStockItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SvStockItem"> | Date | string
   movements?: Prisma.SvStockMovementListRelationFilter
-}, "id" | "code">
+}, "id" | "country_code">
 
 export type SvStockItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   code?: Prisma.SortOrder
   family?: Prisma.SortOrder
   subFamily?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -335,6 +347,7 @@ export type SvStockItemScalarWhereWithAggregatesInput = {
   OR?: Prisma.SvStockItemScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SvStockItemScalarWhereWithAggregatesInput | Prisma.SvStockItemScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"SvStockItem"> | string
+  country?: Prisma.EnumSvCountryWithAggregatesFilter<"SvStockItem"> | $Enums.SvCountry
   code?: Prisma.StringWithAggregatesFilter<"SvStockItem"> | string
   family?: Prisma.StringWithAggregatesFilter<"SvStockItem"> | string
   subFamily?: Prisma.StringNullableWithAggregatesFilter<"SvStockItem"> | string | null
@@ -350,6 +363,7 @@ export type SvStockItemScalarWhereWithAggregatesInput = {
 
 export type SvStockItemCreateInput = {
   id?: string
+  country?: $Enums.SvCountry
   code: string
   family: string
   subFamily?: string | null
@@ -366,6 +380,7 @@ export type SvStockItemCreateInput = {
 
 export type SvStockItemUncheckedCreateInput = {
   id?: string
+  country?: $Enums.SvCountry
   code: string
   family: string
   subFamily?: string | null
@@ -382,6 +397,7 @@ export type SvStockItemUncheckedCreateInput = {
 
 export type SvStockItemUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   code?: Prisma.StringFieldUpdateOperationsInput | string
   family?: Prisma.StringFieldUpdateOperationsInput | string
   subFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -398,6 +414,7 @@ export type SvStockItemUpdateInput = {
 
 export type SvStockItemUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   code?: Prisma.StringFieldUpdateOperationsInput | string
   family?: Prisma.StringFieldUpdateOperationsInput | string
   subFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -414,6 +431,7 @@ export type SvStockItemUncheckedUpdateInput = {
 
 export type SvStockItemCreateManyInput = {
   id?: string
+  country?: $Enums.SvCountry
   code: string
   family: string
   subFamily?: string | null
@@ -429,6 +447,7 @@ export type SvStockItemCreateManyInput = {
 
 export type SvStockItemUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   code?: Prisma.StringFieldUpdateOperationsInput | string
   family?: Prisma.StringFieldUpdateOperationsInput | string
   subFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -444,6 +463,7 @@ export type SvStockItemUpdateManyMutationInput = {
 
 export type SvStockItemUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   code?: Prisma.StringFieldUpdateOperationsInput | string
   family?: Prisma.StringFieldUpdateOperationsInput | string
   subFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -457,8 +477,14 @@ export type SvStockItemUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type SvStockItemCountryCodeCompoundUniqueInput = {
+  country: $Enums.SvCountry
+  code: string
+}
+
 export type SvStockItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   code?: Prisma.SortOrder
   family?: Prisma.SortOrder
   subFamily?: Prisma.SortOrder
@@ -478,6 +504,7 @@ export type SvStockItemAvgOrderByAggregateInput = {
 
 export type SvStockItemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   code?: Prisma.SortOrder
   family?: Prisma.SortOrder
   subFamily?: Prisma.SortOrder
@@ -493,6 +520,7 @@ export type SvStockItemMaxOrderByAggregateInput = {
 
 export type SvStockItemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  country?: Prisma.SortOrder
   code?: Prisma.SortOrder
   family?: Prisma.SortOrder
   subFamily?: Prisma.SortOrder
@@ -531,6 +559,7 @@ export type SvStockItemUpdateOneRequiredWithoutMovementsNestedInput = {
 
 export type SvStockItemCreateWithoutMovementsInput = {
   id?: string
+  country?: $Enums.SvCountry
   code: string
   family: string
   subFamily?: string | null
@@ -546,6 +575,7 @@ export type SvStockItemCreateWithoutMovementsInput = {
 
 export type SvStockItemUncheckedCreateWithoutMovementsInput = {
   id?: string
+  country?: $Enums.SvCountry
   code: string
   family: string
   subFamily?: string | null
@@ -577,6 +607,7 @@ export type SvStockItemUpdateToOneWithWhereWithoutMovementsInput = {
 
 export type SvStockItemUpdateWithoutMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   code?: Prisma.StringFieldUpdateOperationsInput | string
   family?: Prisma.StringFieldUpdateOperationsInput | string
   subFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -592,6 +623,7 @@ export type SvStockItemUpdateWithoutMovementsInput = {
 
 export type SvStockItemUncheckedUpdateWithoutMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.EnumSvCountryFieldUpdateOperationsInput | $Enums.SvCountry
   code?: Prisma.StringFieldUpdateOperationsInput | string
   family?: Prisma.StringFieldUpdateOperationsInput | string
   subFamily?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -638,6 +670,7 @@ export type SvStockItemCountOutputTypeCountMovementsArgs<ExtArgs extends runtime
 
 export type SvStockItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  country?: boolean
   code?: boolean
   family?: boolean
   subFamily?: boolean
@@ -655,6 +688,7 @@ export type SvStockItemSelect<ExtArgs extends runtime.Types.Extensions.InternalA
 
 export type SvStockItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  country?: boolean
   code?: boolean
   family?: boolean
   subFamily?: boolean
@@ -670,6 +704,7 @@ export type SvStockItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
 
 export type SvStockItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  country?: boolean
   code?: boolean
   family?: boolean
   subFamily?: boolean
@@ -685,6 +720,7 @@ export type SvStockItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
 
 export type SvStockItemSelectScalar = {
   id?: boolean
+  country?: boolean
   code?: boolean
   family?: boolean
   subFamily?: boolean
@@ -698,7 +734,7 @@ export type SvStockItemSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SvStockItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "family" | "subFamily" | "label" | "unit" | "quantity" | "location" | "observations" | "archivedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["svStockItem"]>
+export type SvStockItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "country" | "code" | "family" | "subFamily" | "label" | "unit" | "quantity" | "location" | "observations" | "archivedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["svStockItem"]>
 export type SvStockItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   movements?: boolean | Prisma.SvStockItem$movementsArgs<ExtArgs>
   _count?: boolean | Prisma.SvStockItemCountOutputTypeDefaultArgs<ExtArgs>
@@ -713,6 +749,7 @@ export type $SvStockItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    country: $Enums.SvCountry
     code: string
     family: string
     subFamily: string | null
@@ -1152,6 +1189,7 @@ export interface Prisma__SvStockItemClient<T, Null = never, ExtArgs extends runt
  */
 export interface SvStockItemFieldRefs {
   readonly id: Prisma.FieldRef<"SvStockItem", 'String'>
+  readonly country: Prisma.FieldRef<"SvStockItem", 'SvCountry'>
   readonly code: Prisma.FieldRef<"SvStockItem", 'String'>
   readonly family: Prisma.FieldRef<"SvStockItem", 'String'>
   readonly subFamily: Prisma.FieldRef<"SvStockItem", 'String'>

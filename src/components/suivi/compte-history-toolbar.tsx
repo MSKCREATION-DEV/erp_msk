@@ -45,7 +45,11 @@ export function SvCompteHistoryToolbar() {
 
   function clearAll() {
     start(() => {
-      router.replace(pathname, { scroll: false });
+      const pays = searchParams.get("pays");
+      const params = new URLSearchParams();
+      if (pays) params.set("pays", pays);
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     });
   }
 

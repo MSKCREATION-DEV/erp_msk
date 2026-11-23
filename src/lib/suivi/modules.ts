@@ -19,7 +19,22 @@ export type SuiviModule = {
   section: SuiviHubSection;
   tone: SuiviHubTone;
   permission: string;
+  /** Comptes / mouvements / stocks — entrée via choix pays (`?pays=`). */
+  countryScoped?: boolean;
 };
+
+/** Modules des 3 piliers (URL `?pays=` obligatoire). */
+export const SV_COUNTRY_SCOPED_PATH_PREFIXES = [
+  "/suivi/comptes",
+  "/suivi/mouvements",
+  "/suivi/stocks",
+] as const;
+
+export function isSvCountryScopedPath(pathname: string): boolean {
+  return SV_COUNTRY_SCOPED_PATH_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  );
+}
 
 /** Ordre d’affichage — comme Commercial : Pilotage d’abord. */
 export const SUIVI_HUB_SECTIONS: {
@@ -99,6 +114,7 @@ export const SUIVI_MODULES: SuiviModule[] = [
     section: "tresorerie",
     tone: "ink",
     permission: "sv.accounts.view",
+    countryScoped: true,
   },
   {
     id: "mouvements",
@@ -108,6 +124,7 @@ export const SUIVI_MODULES: SuiviModule[] = [
     section: "tresorerie",
     tone: "cyan",
     permission: "sv.movements.view",
+    countryScoped: true,
   },
   {
     id: "absences",
@@ -135,6 +152,7 @@ export const SUIVI_MODULES: SuiviModule[] = [
     section: "stocks",
     tone: "coral",
     permission: "sv.stock.view",
+    countryScoped: true,
   },
 ];
 
@@ -160,11 +178,13 @@ export const SUIVI_SUBNAV = [
     href: "/suivi/comptes",
     label: "Comptes",
     permission: "sv.accounts.view",
+    countryScoped: true,
   },
   {
     href: "/suivi/mouvements",
     label: "Mouvements",
     permission: "sv.movements.view",
+    countryScoped: true,
   },
   {
     href: "/suivi/absences",
@@ -176,5 +196,10 @@ export const SUIVI_SUBNAV = [
     label: "Retards",
     permission: "sv.hr.view",
   },
-  { href: "/suivi/stocks", label: "Stocks", permission: "sv.stock.view" },
+  {
+    href: "/suivi/stocks",
+    label: "Stocks",
+    permission: "sv.stock.view",
+    countryScoped: true,
+  },
 ] as const;

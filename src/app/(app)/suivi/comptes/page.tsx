@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Wallet } from "lucide-react";
+import { Plus, Wallet } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
-import { requireSvPermission } from "@/lib/suivi/access";
+import { hasPermission } from "@/lib/rbac/resolve";
+import { requireSvPermissionFromPaysParam } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
 import {
   accountBalanceFromMoves,
@@ -11,18 +12,36 @@ import {
   SV_ACCOUNT_KIND_HINT,
   SV_ACCOUNT_KIND_LABEL,
 } from "@/lib/suivi/accounts";
+import {
+  svCountryDisplayLabel,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 import { formatSvXof } from "@/lib/suivi/labels";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
+import { ActionLink } from "@/components/ui/action-link";
+
 export const metadata: Metadata = { title: "Comptes · Suivi" };
 
-export default async function SuiviComptesPage() {
+export default async function SuiviComptesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await requireUser();
-  requireSvPermission(user, "sv.accounts.view");
+  const rawSp = await searchParams;
+  const country = requireSvPermissionFromPaysParam(
+    user,
+    "sv.accounts.view",
+    rawSp,
+  );
+  const canManage =
+    hasPermission(user, "sv.accounts.manage") || user.isSuperAdmin;
   await ensureSvAccounts(prisma);
 
   const accounts = await prisma.svAccount.findMany({
+    where: { country },
     orderBy: { kind: "asc" },
     include: {
       movements: {
@@ -35,13 +54,46 @@ export default async function SuiviComptesPage() {
     },
   });
 
+  const countryLabel = svCountryDisplayLabel(country);
+  const isTogo = country === "TOGO";
+  const balances = accounts.map((a) => accountBalanceFromMoves(a.movements));
+  const togoShellReady =
+    isTogo && accounts.length > 0 && balances.every((b) => b === 0);
+
   return (
     <PageShell>
       <PageHeader
-        title="Comptes"
-        description="Caisse physique et compte banque — solde courant depuis la bascule Direction ; historique antérieur archivé."
+        title={`Comptes · ${countryLabel}`}
+        description={
+          isTogo
+            ? "Caisse physique et banque Togo — soldes indépendants du Mali."
+            : "Caisse physique et compte banque — solde courant depuis la bascule Direction ; historique antérieur archivé."
+        }
         backHref="/suivi"
+        actions={
+          canManage ? (
+            <ActionLink
+              href={withSvCountryQuery("/suivi/mouvements/nouveau", country)}
+              icon={Plus}
+            >
+              Nouveau mouvement
+            </ActionLink>
+          ) : null
+        }
       />
+
+      {togoShellReady ? (
+        <Surface className="mb-4 p-4" role="status">
+          <p className="text-sm font-semibold text-msk-ink">
+            Comptes Togo prêts
+          </p>
+          <p className="mt-1 text-sm text-msk-ink/55">
+            Caisse physique et banque sont ouvertes à 0 FCFA. Les mouvements
+            saisis ici n’affectent pas le Mali.
+          </p>
+        </Surface>
+      ) : null}
+
       <div className="grid gap-3 sm:grid-cols-2">
         {accounts.map((acc) => {
           const balance = accountBalanceFromMoves(acc.movements);
@@ -55,7 +107,7 @@ export default async function SuiviComptesPage() {
           return (
             <Link
               key={acc.id}
-              href={`/suivi/comptes/${acc.id}`}
+              href={withSvCountryQuery(`/suivi/comptes/${acc.id}`, country)}
               className="group block rounded-xl border border-msk-ink/8 bg-white p-5 transition hover:border-msk-blue/30 hover:shadow-sm"
             >
               <div className="flex items-start gap-3">
@@ -98,10 +150,12 @@ export default async function SuiviComptesPage() {
         })}
       </div>
       {accounts.length === 0 ? (
-        <Surface className="p-6">
-          <p className="text-sm text-msk-ink/55">
-            Aucun compte. Relancez le seed Suivi ou ouvrez cette page après
-            migration.
+        <Surface className="p-6" role="status">
+          <p className="text-sm font-medium text-msk-ink">
+            Aucun compte {countryLabel}
+          </p>
+          <p className="mt-1 text-sm text-msk-ink/55">
+            Relancez le seed Suivi ou contactez un administrateur.
           </p>
         </Surface>
       ) : null}

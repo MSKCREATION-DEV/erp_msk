@@ -46,7 +46,7 @@ async function main() {
 
   for (const kind of kinds) {
     const account = await prisma.svAccount.findUniqueOrThrow({
-      where: { kind },
+      where: { country_kind: { country: "MALI", kind } },
     });
     const expected = SV_ACCOUNT_BASELINE_BALANCES[kind];
     const moves = await prisma.svCashMovement.findMany({

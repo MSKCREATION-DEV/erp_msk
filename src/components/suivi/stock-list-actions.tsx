@@ -1,17 +1,21 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import type { SvCountry } from "@/generated/prisma/client";
 import { Archive, Eye, Pencil, PackagePlus } from "lucide-react";
 import { ActionMenu } from "@/components/ui/action-menu";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import { archiveSvStockItem } from "@/actions/suivi/stock";
+import { withSvCountryQuery } from "@/lib/suivi/country";
 
 export function SvStockListActions({
   itemId,
   canManage,
+  country,
 }: {
   itemId: string;
   canManage: boolean;
+  country: SvCountry;
 }) {
   const router = useRouter();
   const confirm = useConfirm();
@@ -21,7 +25,8 @@ export function SvStockListActions({
       id: "view",
       label: "Ouvrir la fiche",
       icon: <Eye className="size-3.5" aria-hidden />,
-      onSelect: () => router.push(`/suivi/stocks/${itemId}`),
+      onSelect: () =>
+        router.push(withSvCountryQuery(`/suivi/stocks/${itemId}`, country)),
     },
     ...(canManage
       ? [
@@ -31,14 +36,21 @@ export function SvStockListActions({
             icon: <PackagePlus className="size-3.5" aria-hidden />,
             onSelect: () =>
               router.push(
-                `/suivi/stocks/mouvements/nouveau?itemId=${itemId}`,
+                withSvCountryQuery(
+                  "/suivi/stocks/mouvements/nouveau",
+                  country,
+                  { itemId },
+                ),
               ),
           },
           {
             id: "edit",
             label: "Modifier",
             icon: <Pencil className="size-3.5" aria-hidden />,
-            onSelect: () => router.push(`/suivi/stocks/${itemId}/edit`),
+            onSelect: () =>
+              router.push(
+                withSvCountryQuery(`/suivi/stocks/${itemId}/edit`, country),
+              ),
           },
           {
             id: "archive",
@@ -55,7 +67,7 @@ export function SvStockListActions({
                 action: async () => {
                   const res = await archiveSvStockItem(itemId);
                   if (!res.ok) throw new Error(res.error);
-                  router.push("/suivi/stocks");
+                  router.push(withSvCountryQuery("/suivi/stocks", country));
                   router.refresh();
                 },
               });

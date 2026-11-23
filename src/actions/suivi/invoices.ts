@@ -12,6 +12,7 @@ import {
   getSvAccountByKind,
   inferAccountKindFromPaymentMethod,
 } from "@/lib/suivi/accounts";
+import { SV_COUNTRY_DEFAULT } from "@/lib/suivi/country";
 
 export type SvInvoiceActionState = { ok: false; error: string } | null;
 
@@ -207,9 +208,11 @@ export async function recordSvPayment(
         if (!hasPermission(user, "sv.movements.manage") && !user.isSuperAdmin) {
           return;
         }
+        // Factures clients hors scope pays V1 → miroir cash toujours Mali (jamais Togo).
         const account = await getSvAccountByKind(
           inferAccountKindFromPaymentMethod(parsed.data.method),
           prisma,
+          SV_COUNTRY_DEFAULT,
         );
         await tx.svCashMovement.create({
           data: {

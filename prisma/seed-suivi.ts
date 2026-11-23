@@ -1,7 +1,10 @@
 /**
  * Seed module Suivi (tampon) — data depuis inventaire + DECISIONS-SEED uniquement.
+ * Phase A Mali/Togo : Mali inchangé ; coquille Togo à 0 ; GRANT Espoir Togo.
+ * Ne touche jamais Auth / mots de passe.
  */
 import type { PrismaClient } from "../src/generated/prisma/client";
+import { OverrideEffect } from "../src/generated/prisma/client";
 import {
   SV_SEED_CLIENTS,
   SV_SEED_CONTRACTS,
@@ -17,6 +20,10 @@ import {
   ensureSvAccounts,
   getSvAccountByKind,
 } from "../src/lib/suivi/accounts";
+import { SV_TOGO_OPS_PERMISSIONS } from "../src/lib/rbac/catalog";
+
+/** Espoir — ops Togo uniquement (intent suivi-mali-togo). */
+const ESPOIR_SV_TOGO_EMAIL = "e.awesso@mskcreation.net";
 
 export async function seedSuiviTampon(prisma: PrismaClient) {
   const actor =
@@ -163,10 +170,10 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
   }
   console.log(`✓ Sv contrats ${contractCount}`);
 
-  // Comptes physique / banque — seed OUT puis bascule Direction (décision I)
+  // Comptes Mali + coquille Togo (ensure) — seed OUT puis bascule Direction Mali (décision I)
   await ensureSvAccounts(prisma);
-  const physical = await getSvAccountByKind("PHYSICAL", prisma);
-  console.log("✓ Sv comptes PHYSICAL + BANK");
+  const physical = await getSvAccountByKind("PHYSICAL", prisma, "MALI");
+  console.log("✓ Sv comptes Mali PHYSICAL+BANK · Togo coquille 0");
 
   let moveCount = 0;
   for (const m of SV_SEED_MOVEMENTS) {
@@ -221,7 +228,7 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
   let stockQtySynced = 0;
   for (const s of SV_SEED_STOCK) {
     const existing = await prisma.svStockItem.findUnique({
-      where: { code: s.code },
+      where: { country_code: { country: "MALI", code: s.code } },
     });
     if (existing) {
       const qtyChanged = forceStockQty && existing.quantity !== s.quantity;
@@ -255,6 +262,7 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
     }
     const row = await prisma.svStockItem.create({
       data: {
+        country: "MALI",
         code: s.code,
         family: s.family,
         label: s.label,
@@ -283,7 +291,9 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
   const archiveAt = new Date("2026-11-11T12:00:00.000Z");
   for (const code of SV_SEED_STOCK_EXCEL_ARCHIVED_CODES) {
     if (activeCodes.has(code)) continue;
-    const row = await prisma.svStockItem.findUnique({ where: { code } });
+    const row = await prisma.svStockItem.findUnique({
+      where: { country_code: { country: "MALI", code } },
+    });
     if (!row || row.archivedAt) continue;
     await prisma.svStockItem.update({
       where: { id: row.id },
@@ -299,9 +309,13 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
     });
     stockArchived += 1;
   }
-  // Tout article actif hors liste courante (sécurité)
+  // Tout article Mali actif hors liste courante (sécurité) — ne touche pas Togo
   const stray = await prisma.svStockItem.findMany({
-    where: { archivedAt: null, code: { notIn: [...activeCodes] } },
+    where: {
+      country: "MALI",
+      archivedAt: null,
+      code: { notIn: [...activeCodes] },
+    },
   });
   for (const row of stray) {
     await prisma.svStockItem.update({
@@ -319,10 +333,55 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
     stockArchived += 1;
   }
   console.log(
-    `✓ Sv stocks créés ${stockCreated} · méta ${stockUpdated} · qty forcées ${stockQtySynced} · archivés ${stockArchived}${
+    `✓ Sv stocks Mali créés ${stockCreated} · méta ${stockUpdated} · qty forcées ${stockQtySynced} · archivés ${stockArchived}${
       forceStockQty ? " (SV_STOCK_FORCE_QTY=1)" : ""
     }`,
   );
+
+  // Coquille Togo : mêmes familles / codes, qté 0, 0 mouvements — idempotent
+  let togoStockCreated = 0;
+  let togoStockUpdated = 0;
+  for (const s of SV_SEED_STOCK) {
+    const existing = await prisma.svStockItem.findUnique({
+      where: { country_code: { country: "TOGO", code: s.code } },
+    });
+    if (existing) {
+      await prisma.svStockItem.update({
+        where: { id: existing.id },
+        data: {
+          family: s.family,
+          label: s.label,
+          unit: s.unit,
+          location: s.location ?? existing.location,
+          observations:
+            existing.observations ??
+            "Coquille Togo — quantités à 0 (inventaire à renseigner).",
+          archivedAt: null,
+          // Ne jamais forcer qty Togo sauf création (évite écraser ops)
+        },
+      });
+      togoStockUpdated += 1;
+      continue;
+    }
+    await prisma.svStockItem.create({
+      data: {
+        country: "TOGO",
+        code: s.code,
+        family: s.family,
+        label: s.label,
+        unit: s.unit,
+        quantity: 0,
+        location: s.location ?? null,
+        observations: "Coquille Togo — quantités à 0 (inventaire à renseigner).",
+      },
+    });
+    togoStockCreated += 1;
+  }
+  console.log(
+    `✓ Sv stocks Togo créés ${togoStockCreated} · méta ${togoStockUpdated} (qté 0, 0 mvts)`,
+  );
+
+  await seedEspoirSvTogoGrants(prisma);
 
   // Charges entreprise (décision J) — factures internes / fournisseurs
   let expenseCreated = 0;
@@ -407,4 +466,55 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
 
   // Task 14 — dépôt GED contrats + factures clients + charges
   await seedSuiviGed(prisma, actor.id);
+}
+
+/**
+ * GRANT idempotent Espoir → 3 piliers + sv.country.togo (pas Mali, pas clients/HR).
+ * Ne crée pas l’utilisateur ; no-op si email absent. Ne touche pas Auth MDP.
+ */
+export async function seedEspoirSvTogoGrants(prisma: PrismaClient) {
+  const user = await prisma.user.findUnique({
+    where: { email: ESPOIR_SV_TOGO_EMAIL },
+    select: { id: true, email: true },
+  });
+  if (!user) {
+    console.log(
+      `⚠ Espoir Suivi Togo : user ${ESPOIR_SV_TOGO_EMAIL} introuvable — GRANT ignoré`,
+    );
+    return;
+  }
+
+  const perms = await prisma.permission.findMany({
+    where: { code: { in: [...SV_TOGO_OPS_PERMISSIONS] } },
+    select: { id: true, code: true },
+  });
+  const byCode = Object.fromEntries(perms.map((p) => [p.code, p.id]));
+
+  let granted = 0;
+  for (const code of SV_TOGO_OPS_PERMISSIONS) {
+    const permissionId = byCode[code];
+    if (!permissionId) {
+      console.warn(`⚠ Permission manquante catalogue: ${code}`);
+      continue;
+    }
+    await prisma.userPermissionOverride.upsert({
+      where: {
+        userId_permissionId: { userId: user.id, permissionId },
+      },
+      create: {
+        userId: user.id,
+        permissionId,
+        effect: OverrideEffect.GRANT,
+        reason: "Suivi Togo ops (Phase A Mali/Togo) — sans Mali",
+      },
+      update: {
+        effect: OverrideEffect.GRANT,
+        reason: "Suivi Togo ops (Phase A Mali/Togo) — sans Mali",
+      },
+    });
+    granted += 1;
+  }
+  console.log(
+    `✓ Espoir GRANT Suivi Togo (${granted}/${SV_TOGO_OPS_PERMISSIONS.length}) — ${user.email}`,
+  );
 }

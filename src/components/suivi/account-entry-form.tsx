@@ -2,7 +2,7 @@
 
 import { useActionState, useMemo, useState } from "react";
 import Link from "next/link";
-import type { SvAccountKind } from "@/generated/prisma/client";
+import type { SvAccountKind, SvCountry } from "@/generated/prisma/client";
 import {
   createSvAccountEntry,
   type SvAccountActionState,
@@ -18,6 +18,10 @@ import { useActionStateToast } from "@/hooks/use-action-state-toast";
 
 import { SV_ACCOUNT_BASELINE_CATEGORY } from "@/lib/suivi/accounts";
 import { SV_MOVEMENT_CATEGORY_OPTIONS } from "@/lib/suivi/categories";
+import {
+  SV_COUNTRY_TO_URL,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 import {
   SV_PAYMENT_MODE_OTHER,
   type SvPaymentMode,
@@ -49,9 +53,11 @@ type Op =
 export function SvAccountEntryForm({
   accountId,
   accountKind,
+  country,
 }: {
   accountId: string;
   accountKind: SvAccountKind;
+  country: SvCountry;
 }) {
   const [state, formAction, pending] = useActionState<
     SvAccountActionState,
@@ -97,11 +103,12 @@ export function SvAccountEntryForm({
   return (
     <form action={formAction}>
       <input type="hidden" name="accountId" value={accountId} />
+      <input type="hidden" name="pays" value={SV_COUNTRY_TO_URL[country]} />
       <FormShell
         footer={
           <div className="flex flex-wrap justify-end gap-3">
             <Link
-              href={`/suivi/comptes/${accountId}`}
+              href={withSvCountryQuery(`/suivi/comptes/${accountId}`, country)}
               className="inline-flex h-11 items-center rounded-lg border border-msk-ink/15 px-4 text-sm font-medium hover:bg-msk-chalk"
             >
               Annuler

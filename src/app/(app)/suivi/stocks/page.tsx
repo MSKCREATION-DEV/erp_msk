@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { PackagePlus, Plus } from "lucide-react";
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma, SvCountry } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { requireSvPermission } from "@/lib/suivi/access";
+import { requireSvPermissionFromPaysParam } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
 import {
   clampPage,
@@ -20,6 +20,11 @@ import {
   type SortDir,
   listKeyFromSearchParams,
 } from "@/lib/list/sort";
+import {
+  SV_COUNTRY_TO_URL,
+  svCountryDisplayLabel,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
@@ -29,6 +34,7 @@ import { ActionLink } from "@/components/ui/action-link";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { ListTableSkeleton } from "@/components/ui/list-table-skeleton";
 import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
+import { Badge } from "@/components/ui/badge";
 import { SvStockListActions } from "@/components/suivi/stock-list-actions";
 import { SvStocksToolbar } from "@/components/suivi/stocks-toolbar";
 
@@ -50,29 +56,40 @@ export default async function SuiviStocksPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const user = await requireUser();
-  requireSvPermission(user, "sv.stock.view");
+  const rawSp = await searchParams;
+  const country = requireSvPermissionFromPaysParam(
+    user,
+    "sv.stock.view",
+    rawSp,
+  );
   const canManage = hasPermission(user, "sv.stock.manage");
 
-  const rawSp = await searchParams;
   const resultsKey = listKeyFromSearchParams(rawSp);
+  const countryLabel = svCountryDisplayLabel(country);
 
   return (
     <PageShell>
       <PageHeader
-        title="Stocks"
+        title={`Stocks · ${countryLabel}`}
         description="Inventaire courant — articles tampon Suivi."
         backHref="/suivi"
         actions={
           canManage ? (
             <div className="flex flex-wrap gap-2">
               <ActionLink
-                href="/suivi/stocks/mouvements/nouveau"
+                href={withSvCountryQuery(
+                  "/suivi/stocks/mouvements/nouveau",
+                  country,
+                )}
                 icon={PackagePlus}
                 variant="secondary"
               >
                 Mouvement
               </ActionLink>
-              <ActionLink href="/suivi/stocks/nouveau" icon={Plus}>
+              <ActionLink
+                href={withSvCountryQuery("/suivi/stocks/nouveau", country)}
+                icon={Plus}
+              >
                 Nouvel article
               </ActionLink>
             </div>
@@ -90,7 +107,11 @@ export default async function SuiviStocksPage({
           </Suspense>
         </div>
         <Suspense key={resultsKey} fallback={<ListTableSkeleton rows={8} cols={7} />}>
-          <StocksResults searchParams={searchParams} canManage={canManage} />
+          <StocksResults
+            searchParams={searchParams}
+            canManage={canManage}
+            country={country}
+          />
         </Suspense>
       </Surface>
     </PageShell>
@@ -100,16 +121,20 @@ export default async function SuiviStocksPage({
 async function StocksResults({
   searchParams,
   canManage,
+  country,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
   canManage: boolean;
+  country: SvCountry;
 }) {
   const raw = await searchParams;
   const q = (firstParam(raw.q) ?? "").trim();
   const onlyRupture = firstParam(raw.rupture) === "1";
   const requestedPage = parsePage(firstParam(raw.page));
   const pageSize = DEFAULT_PAGE_SIZE;
+  const pays = SV_COUNTRY_TO_URL[country];
   const sp: Record<string, string | undefined> = {
+    pays,
     q: q || undefined,
     rupture: onlyRupture ? "1" : undefined,
     sort: firstParam(raw.sort),
@@ -121,6 +146,7 @@ async function StocksResults({
   });
 
   const where: Prisma.SvStockItemWhereInput = {
+    country,
     archivedAt: null,
     AND: [
       ...(onlyRupture ? [{ quantity: 0 }] : []),
@@ -156,26 +182,44 @@ async function StocksResults({
 
   const pages = totalPages(total, pageSize);
   const listParams: Record<string, string | undefined> = {
+    pays,
     q: q || undefined,
     rupture: onlyRupture ? "1" : undefined,
     sort: sort.key,
     dir: sort.dir,
   };
 
+  const allQtyZero =
+    items.length > 0 &&
+    !q &&
+    !onlyRupture &&
+    items.every((i) => i.quantity === 0) &&
+    country === "TOGO";
+
   if (items.length === 0) {
+    const isTogoSeedFail = country === "TOGO" && !q && !onlyRupture;
     return (
       <div className="px-6 py-12 text-center" role="status">
         <p className="text-sm font-medium text-msk-ink">
-          {q || onlyRupture ? "Aucun article pour ces critères" : "Aucun article"}
+          {q || onlyRupture
+            ? "Aucun article pour ces critères"
+            : isTogoSeedFail
+              ? "Aucun article Togo"
+              : "Aucun article"}
         </p>
-        {!q && !onlyRupture ? (
-          <p className="mt-1 text-sm text-msk-ink/55">
-            Créez un article ou lancez le seed inventaire Direction.
-          </p>
-        ) : null}
-        {canManage && !q && !onlyRupture ? (
+        <p className="mt-1 text-sm text-msk-ink/55">
+          {q || onlyRupture
+            ? "Modifiez la recherche ou le filtre rupture."
+            : isTogoSeedFail
+              ? "Les familles stock Togo ne sont pas encore créées. Contactez un administrateur."
+              : "Créez un article ou lancez le seed inventaire Direction."}
+        </p>
+        {canManage && !q && !onlyRupture && !isTogoSeedFail ? (
           <div className="mt-4 flex justify-center">
-            <ActionLink href="/suivi/stocks/nouveau" icon={Plus}>
+            <ActionLink
+              href={withSvCountryQuery("/suivi/stocks/nouveau", country)}
+              icon={Plus}
+            >
               Nouvel article
             </ActionLink>
           </div>
@@ -186,6 +230,13 @@ async function StocksResults({
 
   return (
     <>
+      {allQtyZero ? (
+        <div className="border-b border-msk-ink/6 bg-msk-chalk/50 px-4 py-2.5">
+          <Badge tone="muted">
+            Quantités à 0 — inventaire Togo à renseigner
+          </Badge>
+        </div>
+      ) : null}
       <ListTableScroll>
         <table className="w-full min-w-[44rem] text-left text-sm">
           <thead className="border-b border-msk-ink/6 bg-msk-chalk/60 text-xs uppercase tracking-caps text-msk-ink/45">
@@ -242,7 +293,7 @@ async function StocksResults({
             {items.map((item) => (
               <ClickableRowLink
                 key={item.id}
-                href={`/suivi/stocks/${item.id}`}
+                href={withSvCountryQuery(`/suivi/stocks/${item.id}`, country)}
                 className={item.quantity === 0 ? "bg-msk-coral/4" : undefined}
               >
                 <td className="px-4 py-3 font-medium tabular-nums">
@@ -272,6 +323,7 @@ async function StocksResults({
                   <SvStockListActions
                     itemId={item.id}
                     canManage={canManage}
+                    country={country}
                   />
                 </td>
               </ClickableRowLink>

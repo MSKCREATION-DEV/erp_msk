@@ -2813,6 +2813,12 @@ enum SvAccountKind {
   BANK
 }
 
+/// Pays Suivi tampon (V1) — Mali / Togo. Mouvements cash via compte ; stocks via item.
+enum SvCountry {
+  MALI
+  TOGO
+}
+
 enum SvStockMoveKind {
   IN
   OUT
@@ -2932,12 +2938,15 @@ model SvContractMeta {
 /// Compte trésorerie tampon (caisse physique ou banque).
 /// Solde courant = Σ IN − Σ OUT des mouvements liés avec `countsTowardBalance=true`
 /// (écritures d’ouverture bascule Direction + mouvements post-bascule).
+/// Unicité : un PHYSICAL + un BANK **par pays** (4 comptes V1).
 model SvAccount {
   id              String        @id @default(cuid())
-  kind            SvAccountKind @unique
+  country         SvCountry     @default(MALI)
+  kind            SvAccountKind
   label           String
   notes           String?
   /// Instant de bascule Direction (début de journée locale Bamako = UTC).
+  /// Null pour Togo V1 (coquille à 0, pas de bascule Direction Togo).
   baselineAt      DateTime?
   /// Solde documenté à la bascule (FCFA) — UI « Solde au … » ; source ledger = mouvement IN ouverture.
   baselineBalance Int?
@@ -2946,6 +2955,8 @@ model SvAccount {
 
   movements SvCashMovement[]
 
+  @@unique([country, kind])
+  @@index([country])
   @@map("sv_accounts")
 }
 
@@ -3050,7 +3061,8 @@ model SvExpensePayment {
 
 model SvStockItem {
   id            String    @id @default(cuid())
-  code          String    @unique
+  country       SvCountry @default(MALI)
+  code          String
   family        String
   subFamily     String?
   label         String
@@ -3065,8 +3077,10 @@ model SvStockItem {
 
   movements SvStockMovement[]
 
+  @@unique([country, code])
   @@index([family])
   @@index([archivedAt])
+  @@index([country])
   @@map("sv_stock_items")
 }
 

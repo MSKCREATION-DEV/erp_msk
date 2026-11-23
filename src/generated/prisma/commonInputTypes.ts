@@ -1670,11 +1670,28 @@ export type EnumSvInvoiceStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumSvInvoiceStatusFilter<$PrismaModel>
 }
 
+export type EnumSvCountryFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvCountry | Prisma.EnumSvCountryFieldRefInput<$PrismaModel>
+  in?: $Enums.SvCountry[] | Prisma.ListEnumSvCountryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvCountry[] | Prisma.ListEnumSvCountryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvCountryFilter<$PrismaModel> | $Enums.SvCountry
+}
+
 export type EnumSvAccountKindFilter<$PrismaModel = never> = {
   equals?: $Enums.SvAccountKind | Prisma.EnumSvAccountKindFieldRefInput<$PrismaModel>
   in?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
   notIn?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumSvAccountKindFilter<$PrismaModel> | $Enums.SvAccountKind
+}
+
+export type EnumSvCountryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvCountry | Prisma.EnumSvCountryFieldRefInput<$PrismaModel>
+  in?: $Enums.SvCountry[] | Prisma.ListEnumSvCountryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvCountry[] | Prisma.ListEnumSvCountryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvCountryWithAggregatesFilter<$PrismaModel> | $Enums.SvCountry
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvCountryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvCountryFilter<$PrismaModel>
 }
 
 export type EnumSvAccountKindWithAggregatesFilter<$PrismaModel = never> = {
@@ -3400,11 +3417,28 @@ export type NestedEnumSvInvoiceStatusWithAggregatesFilter<$PrismaModel = never> 
   _max?: Prisma.NestedEnumSvInvoiceStatusFilter<$PrismaModel>
 }
 
+export type NestedEnumSvCountryFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvCountry | Prisma.EnumSvCountryFieldRefInput<$PrismaModel>
+  in?: $Enums.SvCountry[] | Prisma.ListEnumSvCountryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvCountry[] | Prisma.ListEnumSvCountryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvCountryFilter<$PrismaModel> | $Enums.SvCountry
+}
+
 export type NestedEnumSvAccountKindFilter<$PrismaModel = never> = {
   equals?: $Enums.SvAccountKind | Prisma.EnumSvAccountKindFieldRefInput<$PrismaModel>
   in?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
   notIn?: $Enums.SvAccountKind[] | Prisma.ListEnumSvAccountKindFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumSvAccountKindFilter<$PrismaModel> | $Enums.SvAccountKind
+}
+
+export type NestedEnumSvCountryWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SvCountry | Prisma.EnumSvCountryFieldRefInput<$PrismaModel>
+  in?: $Enums.SvCountry[] | Prisma.ListEnumSvCountryFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SvCountry[] | Prisma.ListEnumSvCountryFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSvCountryWithAggregatesFilter<$PrismaModel> | $Enums.SvCountry
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSvCountryFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSvCountryFilter<$PrismaModel>
 }
 
 export type NestedEnumSvAccountKindWithAggregatesFilter<$PrismaModel = never> = {

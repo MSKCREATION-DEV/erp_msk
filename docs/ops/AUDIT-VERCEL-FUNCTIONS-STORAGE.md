@@ -196,3 +196,69 @@ Donc : même avec peu de traffic, un ERP Next « gras » + pushes fréquents **r
 - [Deployment retention](https://vercel.com/docs/deployment-retention)
 - [Delete deployment API](https://vercel.com/docs/rest-api/deployments/delete-a-deployment)
 - Repo : `next.config.ts`, `package.json`, `src/lib/suivi/expense-ocr.ts`, `vercel.json`
+
+---
+
+## 11. Actions effectuées (quick wins ops) — 2026-11-23
+
+**Exécutant** : agent deployment-expert (MCP `user-vercel` + CLI `vercel api`).  
+**Périmètre** : purge deploys + rétention — **aucun** changement code app (`next.config`, OCR, Prisma).
+
+### 11.1 Inventaire avant purge (READY)
+
+| Projet | READY avant | Détail |
+|--------|-------------|--------|
+| `erp-msk` | **7** | 4 production + 3 preview (`dev` ×2, branche analytics) |
+| `site-web-msk` | **10** | 10 preview (`dev` + 1 archive) — **0** production READY |
+
+Prod aliasée **conservée** : `erp-msk.vercel.app` → `dpl_9cAt41FEGHv4f32y8BQHFT5tJurR` (vérifié après purge).
+
+### 11.2 Purge (DELETE `/v13/deployments/{id}`)
+
+| Projet | Supprimés | Conservés |
+|--------|-----------|-----------|
+| `erp-msk` | **5** | **2** prod : actuelle `dpl_9cAt41…` + rollback `dpl_BDCT3g…` |
+| `site-web-msk` | **9** | **1** preview récente `dpl_GBtaCnFa…` (`dev`) |
+| **Total** | **14** | — |
+
+**erp-msk supprimés** : `dpl_FLw9kAE…` (preview `dev`), `dpl_Exr6TSJJ…` (preview `dev`), `dpl_Bd6Eaom…` / `dpl_HtULAcs…` (anciens prod), `dpl_5DFuHtMW…` (preview analytics).
+
+**site-web-msk** : 9 anciens preview READY ; dernière preview `dev` gardée.
+
+Tous les DELETE ont répondu `{"state":"DELETED"}` (CLI `--dangerously-skip-permissions`). MCP `user-vercel` **n’expose pas** d’outil de suppression de déploiement.
+
+### 11.3 Rétention (Deployment Retention)
+
+| Niveau | Avant | Après (API) | Statut |
+|--------|-------|-------------|--------|
+| **Team** `mskcreations-projects` `defaultExpirationSettings` | preview/prod/canceled/errored = 30 j, keep 10 | preview / canceled / errored = **7 j** (`1w`) ; prod = **30 j** (`1m`) ; keep **10** inchangé | **Fait** via `PATCH /v2/teams/{teamId}` |
+| **Projet** `erp-msk` `deploymentExpiration` | 30 / 30 / 30 / 30, keep 10 | **inchangé** | **À faire manuellement** — `PATCH /v9/projects` refuse `deploymentExpiration` |
+| **Projet** `site-web-msk` | idem 30 j / keep 10 | **inchangé** | **À faire manuellement** |
+
+Les defaults team s’appliquent aux **nouveaux** projets (et éventuellement « tous les projets » seulement si choisi au dashboard). Les projets existants gardent leur policy projet tant qu’elle n’est pas resserrée.
+
+#### Action humaine dashboard (recommandée)
+
+1. [Team → Settings → Build and Deployment → Deployment Retention](https://vercel.com/mskcreations-projects/~/settings/build-and-deployment) — appliquer la policy **à tous les projets existants** si l’UI le propose (preview **1 week**).
+2. [erp-msk → Settings → Build and Deployment → Deployment Retention](https://vercel.com/mskcreations-projects/erp-msk/settings/build-and-deployment) — Preview **1 week**, Production **1 month**, Canceled/Errored **1 week** ; réduire « deployments to keep » si exposé (cible 2–3).
+3. [site-web-msk → Settings → Build and Deployment → Deployment Retention](https://vercel.com/mskcreations-projects/site-web-msk/settings/build-and-deployment) — même resserrage preview (cible **1 week**, keep minimal).
+
+### 11.4 Espace / quota
+
+- Jauge Functions Storage **non exposée** numériquement via MCP/API → pas de mesure post-cleanup fiable ici.
+- **Estimation** : 14 deploys marqués `DELETED` ; pour `erp-msk` (bundles lourds), ordre de grandeur **plusieurs Go** potentiels si chaque deploy pesait ~1–2 Go d’artefacts (borne audit §4).
+- **Important** : les deploys manuellement supprimés entrent en **période de recovery** (souvent ≥ 1 jour, jusqu’à ~30 j selon âge) avant GC définitif — la jauge dashboard peut **baisser avec délai**, pas instantanément. Vérifier Usage team dans 24–48 h puis après recovery.
+
+### 11.5 État post-purge (READY)
+
+| Projet | READY restants |
+|--------|----------------|
+| `erp-msk` | 2 production (`dpl_9cAt41…` + `dpl_BDCT3g…`) |
+| `site-web-msk` | 1 preview (`dpl_GBtaCnFa…`) |
+
+### 11.6 Prochaines étapes si quota encore serré
+
+1. Attendre recovery + re-lire Usage Functions Storage (cible &lt; 50–60 %).
+2. Appliquer rétention projet (dashboard, §11.3).
+3. Purger autres projets team si besoin (`prosperity-travel`, etc.).
+4. Moyen terme code (hors ce lot) : §7 audit — OCR isolé, `outputFileTracingExcludes`, réduire fan-out Prisma/Sharp.

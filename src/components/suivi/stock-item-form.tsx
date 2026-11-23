@@ -2,6 +2,7 @@
 
 import { useActionState, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
+import type { SvCountry } from "@/generated/prisma/client";
 import {
   createSvStockItem,
   updateSvStockItem,
@@ -19,6 +20,10 @@ import {
   SV_STOCK_UNITS,
   type SvStockUnit,
 } from "@/lib/suivi/stock";
+import {
+  SV_COUNTRY_TO_URL,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
 import { cn } from "@/lib/utils";
 
@@ -42,10 +47,12 @@ export function SvStockItemForm({
   mode,
   itemId,
   initial,
+  country,
 }: {
   mode: "create" | "edit";
   itemId?: string;
   initial?: Initial;
+  country: SvCountry;
 }) {
   const action =
     mode === "create"
@@ -114,8 +121,13 @@ export function SvStockItemForm({
     e.preventDefault();
   }
 
+  const cancelHref = itemId
+    ? withSvCountryQuery(`/suivi/stocks/${itemId}`, country)
+    : withSvCountryQuery("/suivi/stocks", country);
+
   return (
     <form ref={formRef} action={formAction} onSubmit={onSubmit}>
+      <input type="hidden" name="pays" value={SV_COUNTRY_TO_URL[country]} />
       <input type="hidden" name="family" value={family} />
       <input type="hidden" name="subFamily" value={subFamily} />
       <input type="hidden" name="label" value={label} />
@@ -145,9 +157,7 @@ export function SvStockItemForm({
               </Button>
               <Link
                 key="footer-cancel"
-                href={
-                  itemId ? `/suivi/stocks/${itemId}` : "/suivi/stocks"
-                }
+                href={cancelHref}
                 hidden={step > 0}
                 aria-hidden={step > 0}
                 tabIndex={step > 0 ? -1 : undefined}

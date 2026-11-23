@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import Link from "next/link";
+import type { SvCountry } from "@/generated/prisma/client";
 import {
   createSvStockMovement,
   type SvStockActionState,
@@ -12,6 +13,10 @@ import { Button } from "@/components/ui/button";
 import { ChoiceCards } from "@/components/ui/choice-cards";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
+import {
+  SV_COUNTRY_TO_URL,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 
 type ItemOpt = {
   id: string;
@@ -24,9 +29,11 @@ type ItemOpt = {
 export function SvStockMoveForm({
   items,
   defaultItemId,
+  country,
 }: {
   items: ItemOpt[];
   defaultItemId?: string;
+  country: SvCountry;
 }) {
   const [state, formAction, pending] = useActionState<
     SvStockActionState,
@@ -49,12 +56,13 @@ export function SvStockMoveForm({
       : "Ex. 2";
 
   const cancelHref = itemId
-    ? `/suivi/stocks/${itemId}`
-    : "/suivi/stocks";
+    ? withSvCountryQuery(`/suivi/stocks/${itemId}`, country)
+    : withSvCountryQuery("/suivi/stocks", country);
 
   return (
     <form action={formAction}>
       <input type="hidden" name="itemId" value={itemId ?? ""} />
+      <input type="hidden" name="pays" value={SV_COUNTRY_TO_URL[country]} />
       <FormShell
         footer={
           <div className="flex flex-wrap justify-end gap-3">
