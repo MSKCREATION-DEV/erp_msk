@@ -71,21 +71,31 @@ export function OptionPickerSingle({
           {selected ? "Changer" : placeholder}
         </Button>
       </div>
-      {selected ? (
-        <span className="inline-flex items-center gap-1 rounded-lg border border-msk-ink/10 bg-msk-chalk px-2 py-1 text-xs font-medium text-msk-ink">
-          {selected.label}
-          {!disabled ? (
-            <button
-              type="button"
-              className="rounded p-0.5 text-msk-ink/40 hover:text-msk-coral"
-              aria-label="Retirer"
-              onClick={() => onChange(null)}
-            >
-              <X className="h-3 w-3" />
-            </button>
-          ) : null}
-        </span>
-      ) : null}
+      {/* Chip toujours monté (caché) — unmount à la sélection + extensions → removeChild. */}
+      <span
+        hidden={!selected}
+        aria-hidden={!selected}
+        className={cn(
+          "inline-flex items-center gap-1 rounded-lg border border-msk-ink/10 bg-msk-chalk px-2 py-1 text-xs font-medium text-msk-ink",
+          !selected && "hidden",
+        )}
+      >
+        {selected?.label ?? ""}
+        <button
+          type="button"
+          hidden={disabled || !selected}
+          aria-hidden={disabled || !selected}
+          tabIndex={disabled || !selected ? -1 : undefined}
+          className={cn(
+            "rounded p-0.5 text-msk-ink/40 hover:text-msk-coral",
+            (disabled || !selected) && "hidden",
+          )}
+          aria-label="Retirer"
+          onClick={() => onChange(null)}
+        >
+          <X className="h-3 w-3" />
+        </button>
+      </span>
       <Modal
         open={open}
         onOpenChange={setOpen}

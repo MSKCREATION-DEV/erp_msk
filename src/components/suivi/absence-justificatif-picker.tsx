@@ -49,6 +49,10 @@ type Phase = "empty" | "reading" | "ready" | "confirmed";
 /**
  * Dropzone justificatif absence — choisir ≠ valider.
  * Aperçu + confirmation explicite avant que le fichier soit « accepté ».
+ *
+ * DOM absolu : rien n’est démonté selon `phase` (input file, dropzone,
+ * preview, barres d’actions). Unmount conditionnel + extensions autofill
+ * → NotFoundError removeChild. Réf. 4995270 / 3c2933d.
  */
 export function AbsenceJustificatifPicker({
   confirmedFile,
@@ -83,6 +87,10 @@ export function AbsenceJustificatifPicker({
   );
   const [error, setError] = useState<string | null>(null);
   const readToken = useRef(0);
+  /** Ref miroir de `disabled` — le file input n’est jamais disabled (évite
+   * remaniement DOM / extensions autour d’un input file disabled). */
+  const disabledRef = useRef(disabled);
+  disabledRef.current = disabled;
 
   useEffect(() => {
     if (confirmedFile) {
@@ -110,7 +118,7 @@ export function AbsenceJustificatifPicker({
   }
 
   function pickFile(file: File | null) {
-    if (!file || disabled) return;
+    if (!file || disabledRef.current) return;
     const err = validateJustificatifFile(file);
     if (err) {
       setError(err);
@@ -138,7 +146,7 @@ export function AbsenceJustificatifPicker({
   }
 
   function confirmDraft() {
-    if (!draft || phase !== "ready" || disabled) return;
+    if (!draft || phase !== "ready" || disabledRef.current) return;
     onConfirmedChange(draft);
     setDraft(null);
     setPhase("confirmed");
@@ -160,6 +168,11 @@ export function AbsenceJustificatifPicker({
       : draft;
   const showPreview = Boolean(previewFile && phase !== "empty");
   const busy = disabled || phase === "reading";
+  const showRemove = phase === "ready" || phase === "confirmed";
+  const showConfirmActions = phase === "ready" && !deferConfirm;
+  const showDeferActions = phase === "ready" && deferConfirm;
+  const showConfirmedActions = phase === "confirmed";
+  const isReading = phase === "reading";
 
   return (
     <div className="space-y-3">
@@ -168,9 +181,9 @@ export function AbsenceJustificatifPicker({
       </FieldLabel>
 
       {/*
-        Input file toujours monté (clé stable) — hors du dropzone.
-        Monter/démonter un <input type=file> (étape / phase) + extensions
-        → NotFoundError removeChild (même famille que stocks / GeneratedValueField).
+        Input file TOUJOURS monté, JAMAIS disabled, clé stable, hors
+        du dropzone. Monter/démonter / disabled toggle + extensions
+        → NotFoundError removeChild.
       */}
       <input
         key="sv-absence-justif-file"
@@ -180,14 +193,13 @@ export function AbsenceJustificatifPicker({
         accept={SV_ABSENCE_JUSTIF_ACCEPT}
         className="sr-only"
         tabIndex={-1}
-        disabled={disabled}
         onChange={(e) => {
           const f = e.target.files?.[0] ?? null;
           pickFile(f);
         }}
       />
 
-      {/* Dropzone : cacher, ne pas démonter (évite remaniement DOM autour du file). */}
+      {/* Dropzone : cacher, ne pas démonter. */}
       <div
         key="sv-absence-justif-dropzone"
         role="button"
@@ -260,7 +272,7 @@ export function AbsenceJustificatifPicker({
         </Button>
       </div>
 
-      {/* Aperçu : masqué (pas démonté) pour garder un arbre DOM stable. */}
+      {/* Aperçu + actions : TOUT toujours monté, visible via hidden. */}
       <div
         key="sv-absence-justif-preview"
         hidden={!showPreview}
@@ -268,7 +280,7 @@ export function AbsenceJustificatifPicker({
         className={cn(
           "rounded-xl border px-4 py-3 transition",
           !showPreview && "hidden",
-          phase === "reading"
+          isReading
             ? "border-msk-blue/25 bg-msk-blue/5"
             : phase === "confirmed"
               ? "border-msk-blue/20 bg-msk-blue/5"
@@ -282,11 +294,19 @@ export function AbsenceJustificatifPicker({
               "bg-msk-blue/10 text-msk-blue",
             )}
           >
-            {phase === "reading" ? (
-              <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
-            ) : (
-              <FileText className="h-5 w-5" aria-hidden />
-            )}
+            <Loader2
+              key="justif-icon-reading"
+              className={cn(
+                "h-5 w-5 animate-spin",
+                !isReading && "hidden",
+              )}
+              aria-hidden={!isReading}
+            />
+            <FileText
+              key="justif-icon-file"
+              className={cn("h-5 w-5", isReading && "hidden")}
+              aria-hidden={isReading}
+            />
           </span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-msk-ink">
@@ -296,112 +316,145 @@ export function AbsenceJustificatifPicker({
               {previewFile
                 ? `${formatJustificatifSize(previewFile.size)} · ${justificatifTypeLabel(previewFile.type)}`
                 : null}
-              {phase === "reading" ? " · Vérification du fichier…" : null}
-              {phase === "confirmed" ? " · Prêt à enregistrer" : null}
+              <span
+                key="justif-status-reading"
+                hidden={!isReading}
+                className={cn(!isReading && "hidden")}
+              >
+                {" "}
+                · Vérification du fichier…
+              </span>
+              <span
+                key="justif-status-confirmed"
+                hidden={phase !== "confirmed"}
+                className={cn(phase !== "confirmed" && "hidden")}
+              >
+                {" "}
+                · Prêt à enregistrer
+              </span>
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
-            {phase === "ready" || phase === "confirmed" ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                disabled={disabled}
-                aria-label="Retirer le fichier"
-                className="px-2 text-msk-ink/50 hover:text-msk-coral"
-                onClick={() => {
-                  if (phase === "confirmed") clearConfirmed();
-                  else resetDraft();
-                }}
-              >
-                <X className="h-4 w-4" aria-hidden />
-              </Button>
-            ) : null}
+          <div
+            key="justif-remove-wrap"
+            hidden={!showRemove}
+            aria-hidden={!showRemove}
+            className={cn(
+              "flex shrink-0 items-center gap-2",
+              !showRemove && "hidden",
+            )}
+          >
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={disabled || !showRemove}
+              aria-label="Retirer le fichier"
+              className="px-2 text-msk-ink/50 hover:text-msk-coral"
+              onClick={() => {
+                if (phase === "confirmed") clearConfirmed();
+                else resetDraft();
+              }}
+            >
+              <X className="h-4 w-4" aria-hidden />
+            </Button>
           </div>
         </div>
 
-        {phase === "ready" && !deferConfirm ? (
-          <div
-            key="justif-actions-confirm"
-            className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3"
-          >
-            <p className="text-xs text-msk-ink/50">
-              Vérifiez le fichier, puis confirmez avant enregistrement.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                disabled={disabled}
-                onClick={resetDraft}
-              >
-                Changer
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                disabled={disabled}
-                onClick={confirmDraft}
-              >
-                Confirmer l’ajout du justificatif
-              </Button>
-            </div>
-          </div>
-        ) : null}
-
-        {phase === "ready" && deferConfirm ? (
-          <div
-            key="justif-actions-defer"
-            className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3"
-          >
-            <p className="text-xs text-msk-ink/50">
-              Vérifiez le fichier, puis confirmez ci-dessous.
-            </p>
+        <div
+          key="justif-actions-confirm"
+          hidden={!showConfirmActions}
+          aria-hidden={!showConfirmActions}
+          className={cn(
+            "mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3",
+            !showConfirmActions && "hidden",
+          )}
+        >
+          <p className="text-xs text-msk-ink/50">
+            Vérifiez le fichier, puis confirmez avant enregistrement.
+          </p>
+          <div className="flex flex-wrap gap-2">
             <Button
               type="button"
               variant="secondary"
               size="sm"
-              disabled={disabled}
+              disabled={disabled || !showConfirmActions}
               onClick={resetDraft}
             >
               Changer
             </Button>
-          </div>
-        ) : null}
-
-        {phase === "confirmed" ? (
-          <div
-            key="justif-actions-confirmed"
-            className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3"
-          >
-            <p className="text-xs font-medium text-msk-blue">
-              Justificatif confirmé — il sera lié à l’enregistrement.
-            </p>
             <Button
               type="button"
-              variant="secondary"
               size="sm"
-              disabled={disabled}
-              onClick={() => {
-                clearConfirmed();
-                inputRef.current?.click();
-              }}
+              disabled={disabled || !showConfirmActions}
+              onClick={confirmDraft}
             >
-              Changer de fichier
+              Confirmer l’ajout du justificatif
             </Button>
           </div>
-        ) : null}
+        </div>
+
+        <div
+          key="justif-actions-defer"
+          hidden={!showDeferActions}
+          aria-hidden={!showDeferActions}
+          className={cn(
+            "mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3",
+            !showDeferActions && "hidden",
+          )}
+        >
+          <p className="text-xs text-msk-ink/50">
+            Vérifiez le fichier, puis confirmez ci-dessous.
+          </p>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={disabled || !showDeferActions}
+            onClick={resetDraft}
+          >
+            Changer
+          </Button>
+        </div>
+
+        <div
+          key="justif-actions-confirmed"
+          hidden={!showConfirmedActions}
+          aria-hidden={!showConfirmedActions}
+          className={cn(
+            "mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-msk-ink/6 pt-3",
+            !showConfirmedActions && "hidden",
+          )}
+        >
+          <p className="text-xs font-medium text-msk-blue">
+            Justificatif confirmé — il sera lié à l’enregistrement.
+          </p>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={disabled || !showConfirmedActions}
+            onClick={() => {
+              clearConfirmed();
+              inputRef.current?.click();
+            }}
+          >
+            Changer de fichier
+          </Button>
+        </div>
       </div>
 
-      {error ? (
-        <p
-          className="rounded-lg border border-msk-coral/30 bg-msk-coral/5 px-3 py-2 text-sm text-msk-coral"
-          role="alert"
-        >
-          {error}
-        </p>
-      ) : null}
+      <p
+        key="justif-error"
+        hidden={!error}
+        aria-hidden={!error}
+        className={cn(
+          "rounded-lg border border-msk-coral/30 bg-msk-coral/5 px-3 py-2 text-sm text-msk-coral",
+          !error && "hidden",
+        )}
+        role={error ? "alert" : undefined}
+      >
+        {error ?? ""}
+      </p>
     </div>
   );
 }

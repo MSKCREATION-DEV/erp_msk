@@ -16,19 +16,24 @@ Réf. fixes : stocks `56ae162` · absences `4995270` · composant `GeneratedValu
 | Piège | Pourquoi |
 |---|---|
 | `<input type="file">` monté/démonté selon step / phase / « fichier choisi » | Le nœud file + siblings dropzone cassent le commit DOM |
-| Dropzone / preview en ternaire `{cond ? A : B}` autour du file | Même famille |
+| `disabled` sur `<input type="file">` (toggle step/pending) | Extensions remanient le nœud disabled |
+| Dropzone / preview / **barres d’actions phase** en ternaire `{cond ? A : null}` | Unmount près du file après choix → crash |
 | Stepper qui **démonté** les panels (`step === n ? … : null`) avec inputs date/time/text focusables | Unmount pendant focus + extensions |
+| Footer stepper `step > 0 ? Retour : Annuler` / Continuer↔Submit | Unmount à chaque étape |
+| Chip / description monté-démonté (`selected ? chip : null`) | Même famille près des boutons |
 | Valeur générée / lecture seule en `<input disabled\|readOnly value={…}>` qui change | Autofill mutile le DOM autour de l’input factice |
 | Keys instables sur panels d’étape ou file input | Remount inutile → même crash |
 
 ## Obligatoire
 
 1. **Valeurs générées / affichage** → `GeneratedValueField` (`<output>` + clé) — jamais input disabled/readOnly décoratif.
-2. **`<input type="file">`** → toujours monté, `sr-only`, **clé stable**, hors du bloc dropzone conditionnel.
-3. **Dropzone / preview** → toujours montés ; `hidden` / `className={cn(!show && "hidden")}` + `aria-hidden` — **pas** de ternaire unmount.
-4. **Stepper multi-étape** → panels **toujours montés**, visibles via `hidden` / `cn(step !== n && "hidden")` (modèle : `prospect-create-form`, retards, absences, stocks).
-5. **Keys stables** sur panels d’étape (`key="step-horaire"`) et file (`key="…-file"`).
-6. Inputs hors étape active → `disabled` OK ; le nœud reste dans le DOM.
+2. **`<input type="file">`** → toujours monté, `sr-only`, **clé stable**, **jamais `disabled`** — gate dans `onChange` / ref.
+3. **Dropzone / preview / actions phase** → toujours montés ; `hidden` / `className={cn(!show && "hidden")}` + `aria-hidden` — **pas** de ternaire unmount.
+4. **Stepper multi-étape** → panels **toujours montés**, visibles via `hidden` / `cn(step !== n && "hidden")` (modèle : retards, absences, stocks).
+5. **Footer stepper** → Annuler + Retour + Continuer + Submit **tous montés**, `hidden` selon l’étape.
+6. **Keys stables** sur panels d’étape (`key="step-horaire"`) et file (`key="…-file"`).
+7. Inputs texte/date hors étape active → `disabled` OK ; le nœud reste dans le DOM. **Pas** sur `type=file`.
+8. Garde-fou : `src/lib/ui/removechild-dom-guard.test.ts`.
 
 ## Test mental
 

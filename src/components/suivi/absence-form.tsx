@@ -248,51 +248,64 @@ export function SvAbsenceForm({
       <FormShell
         footer={
           <div className="flex flex-wrap items-center justify-between gap-3">
+            {/*
+              Footer toujours monté (caché) — swap Annuler↔Retour /
+              Continuer↔Submit démonte des nœuds près du form → removeChild.
+            */}
             <div className="flex gap-2">
-              {step > 0 ? (
-                <Button
-                  key="footer-back"
-                  type="button"
-                  variant="secondary"
-                  disabled={pending}
-                  onClick={() => setStep((s) => s - 1)}
-                >
-                  Retour
-                </Button>
-              ) : (
-                <Link
-                  key="footer-cancel"
-                  href="/suivi/absences"
-                  className="inline-flex h-10 items-center rounded-lg border border-msk-ink/10 bg-white px-4 text-sm font-medium text-msk-ink hover:bg-msk-chalk"
-                >
-                  Annuler
-                </Link>
-              )}
+              <Button
+                key="footer-back"
+                type="button"
+                variant="secondary"
+                disabled={pending || step === 0}
+                hidden={step === 0}
+                aria-hidden={step === 0}
+                className={cn(step === 0 && "hidden")}
+                onClick={() => setStep((s) => s - 1)}
+              >
+                Retour
+              </Button>
+              <Link
+                key="footer-cancel"
+                href="/suivi/absences"
+                hidden={step > 0}
+                aria-hidden={step > 0}
+                tabIndex={step > 0 ? -1 : undefined}
+                className={cn(
+                  "inline-flex h-10 items-center rounded-lg border border-msk-ink/10 bg-white px-4 text-sm font-medium text-msk-ink hover:bg-msk-chalk",
+                  step > 0 && "hidden",
+                )}
+              >
+                Annuler
+              </Link>
             </div>
             <div className="flex gap-2">
-              {step < steps.length - 1 ? (
-                <Button
-                  key="step-next"
-                  type="button"
-                  disabled={pending}
-                  onClick={goNext}
-                >
-                  Continuer
-                </Button>
-              ) : (
-                <Button
-                  key="step-submit"
-                  type="button"
-                  disabled={pending}
-                  onClick={submitForm}
-                >
-                  {pending
-                    ? "Enregistrement…"
-                    : mode === "create"
-                      ? "Enregistrer l’absence"
-                      : "Enregistrer les modifications"}
-                </Button>
-              )}
+              <Button
+                key="step-next"
+                type="button"
+                disabled={pending || step >= steps.length - 1}
+                hidden={step >= steps.length - 1}
+                aria-hidden={step >= steps.length - 1}
+                className={cn(step >= steps.length - 1 && "hidden")}
+                onClick={goNext}
+              >
+                Continuer
+              </Button>
+              <Button
+                key="step-submit"
+                type="button"
+                disabled={pending || step < steps.length - 1}
+                hidden={step < steps.length - 1}
+                aria-hidden={step < steps.length - 1}
+                className={cn(step < steps.length - 1 && "hidden")}
+                onClick={submitForm}
+              >
+                {pending
+                  ? "Enregistrement…"
+                  : mode === "create"
+                    ? "Enregistrer l’absence"
+                    : "Enregistrer les modifications"}
+              </Button>
             </div>
           </div>
         }
@@ -544,66 +557,69 @@ export function SvAbsenceForm({
               hint="PDF ou image — max 8 Mo. Confirmez le fichier avant de continuer."
             />
 
-            {mode === "create" ? (
-              <label
-                key="want-justified"
-                hidden={!file}
-                aria-hidden={!file}
-                className={
-                  file
-                    ? "flex cursor-pointer items-start gap-2.5 rounded-lg border border-msk-ink/8 bg-white px-3 py-2.5"
-                    : "hidden"
+            {/* Create/edit : toujours montés (mode fixe) — cacher, ne pas démonter. */}
+            <label
+              key="want-justified"
+              hidden={mode !== "create" || !file}
+              aria-hidden={mode !== "create" || !file}
+              className={cn(
+                "flex cursor-pointer items-start gap-2.5 rounded-lg border border-msk-ink/8 bg-white px-3 py-2.5",
+                (mode !== "create" || !file) && "hidden",
+              )}
+            >
+              <input
+                type="checkbox"
+                className="mt-0.5 size-4 rounded border-msk-ink/20 text-msk-blue focus:ring-msk-blue/30"
+                checked={wantJustified}
+                disabled={
+                  pending || !showJustif || !file || mode !== "create"
                 }
-              >
-                <input
-                  type="checkbox"
-                  className="mt-0.5 size-4 rounded border-msk-ink/20 text-msk-blue focus:ring-msk-blue/30"
-                  checked={wantJustified}
-                  disabled={pending || !showJustif || !file}
-                  onChange={(e) => setWantJustified(e.target.checked)}
-                />
-                <span className="text-sm text-msk-ink">
-                  <span className="font-medium">
-                    Marquer l’absence Justifiée
-                  </span>
-                  <span className="mt-0.5 block text-xs text-msk-ink/50">
-                    À l’enregistrement, le fichier sera lié en GED.
-                  </span>
+                onChange={(e) => setWantJustified(e.target.checked)}
+              />
+              <span className="text-sm text-msk-ink">
+                <span className="font-medium">
+                  Marquer l’absence Justifiée
                 </span>
-              </label>
-            ) : null}
+                <span className="mt-0.5 block text-xs text-msk-ink/50">
+                  À l’enregistrement, le fichier sera lié en GED.
+                </span>
+              </span>
+            </label>
 
-            {mode === "edit" ? (
-              <div key="status-justif">
-                <FieldLabel>Statut</FieldLabel>
-                <p className="mt-1 text-xs text-msk-ink/50">
-                  {SV_ABSENCE_JUSTIFIED_REQUIRES_GED}.
-                </p>
-                <div className="mt-2">
-                  <ChoiceCards
-                    name="status_justif_ui"
-                    columns={2}
-                    value={status}
-                    onChange={onStatusChange}
-                    disabled={pending || !showJustif}
-                    options={(
-                      [
-                        "ENREGISTREE",
-                        "JUSTIFIEE",
-                        "NON_JUSTIFIEE",
-                      ] as SvAbsenceStatus[]
-                    ).map((v) => ({
-                      value: v,
-                      label: SV_ABSENCE_STATUS_LABEL[v],
-                      description:
-                        v === "JUSTIFIEE" && !hasJustificatif
-                          ? "Justificatif requis"
-                          : undefined,
-                    }))}
-                  />
-                </div>
+            <div
+              key="status-justif"
+              hidden={mode !== "edit"}
+              aria-hidden={mode !== "edit"}
+              className={cn(mode !== "edit" && "hidden")}
+            >
+              <FieldLabel>Statut</FieldLabel>
+              <p className="mt-1 text-xs text-msk-ink/50">
+                {SV_ABSENCE_JUSTIFIED_REQUIRES_GED}.
+              </p>
+              <div className="mt-2">
+                <ChoiceCards
+                  name="status_justif_ui"
+                  columns={2}
+                  value={status}
+                  onChange={onStatusChange}
+                  disabled={pending || !showJustif || mode !== "edit"}
+                  options={(
+                    [
+                      "ENREGISTREE",
+                      "JUSTIFIEE",
+                      "NON_JUSTIFIEE",
+                    ] as SvAbsenceStatus[]
+                  ).map((v) => ({
+                    value: v,
+                    label: SV_ABSENCE_STATUS_LABEL[v],
+                    description:
+                      v === "JUSTIFIEE" && !hasJustificatif
+                        ? "Justificatif requis"
+                        : undefined,
+                  }))}
+                />
               </div>
-            ) : null}
+            </div>
           </div>
 
           <dl

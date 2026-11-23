@@ -72,11 +72,16 @@ export function ChoiceCards<T extends string>({
             >
               {opt.label}
             </span>
-            {opt.description ? (
-              <span className="mt-0.5 block text-xs text-msk-ink/45">
-                {opt.description}
-              </span>
-            ) : null}
+            <span
+              hidden={!opt.description}
+              aria-hidden={!opt.description}
+              className={cn(
+                "mt-0.5 block text-xs text-msk-ink/45",
+                !opt.description && "hidden",
+              )}
+            >
+              {opt.description ?? ""}
+            </span>
           </button>
         );
       })}

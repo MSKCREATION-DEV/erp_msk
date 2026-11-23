@@ -129,53 +129,63 @@ export function SvStockItemForm({
       <FormShell
         footer={
           <div className="flex flex-wrap items-center justify-between gap-3">
+            {/* Footer toujours monté — swap démonte → removeChild. */}
             <div className="flex gap-2">
-              {step > 0 ? (
-                <Button
-                  key="footer-back"
-                  type="button"
-                  variant="secondary"
-                  disabled={pending}
-                  onClick={() => setStep((s) => s - 1)}
-                >
-                  Retour
-                </Button>
-              ) : (
-                <Link
-                  key="footer-cancel"
-                  href={
-                    itemId ? `/suivi/stocks/${itemId}` : "/suivi/stocks"
-                  }
-                  className="inline-flex h-11 items-center rounded-lg border border-msk-ink/15 bg-white px-4 text-sm font-medium text-msk-ink hover:bg-msk-chalk"
-                >
-                  Annuler
-                </Link>
-              )}
+              <Button
+                key="footer-back"
+                type="button"
+                variant="secondary"
+                disabled={pending || step === 0}
+                hidden={step === 0}
+                aria-hidden={step === 0}
+                className={cn(step === 0 && "hidden")}
+                onClick={() => setStep((s) => s - 1)}
+              >
+                Retour
+              </Button>
+              <Link
+                key="footer-cancel"
+                href={
+                  itemId ? `/suivi/stocks/${itemId}` : "/suivi/stocks"
+                }
+                hidden={step > 0}
+                aria-hidden={step > 0}
+                tabIndex={step > 0 ? -1 : undefined}
+                className={cn(
+                  "inline-flex h-11 items-center rounded-lg border border-msk-ink/15 bg-white px-4 text-sm font-medium text-msk-ink hover:bg-msk-chalk",
+                  step > 0 && "hidden",
+                )}
+              >
+                Annuler
+              </Link>
             </div>
-            <div>
-              {step < STEPS.length - 1 ? (
-                <Button
-                  key="step-next"
-                  type="button"
-                  disabled={pending}
-                  onClick={goNext}
-                >
-                  Continuer
-                </Button>
-              ) : (
-                <Button
-                  key="step-submit"
-                  type="button"
-                  disabled={pending}
-                  onClick={submitForm}
-                >
-                  {pending
-                    ? "Enregistrement…"
-                    : mode === "create"
-                      ? "Créer l’article"
-                      : "Enregistrer"}
-                </Button>
-              )}
+            <div className="flex gap-2">
+              <Button
+                key="step-next"
+                type="button"
+                disabled={pending || step >= STEPS.length - 1}
+                hidden={step >= STEPS.length - 1}
+                aria-hidden={step >= STEPS.length - 1}
+                className={cn(step >= STEPS.length - 1 && "hidden")}
+                onClick={goNext}
+              >
+                Continuer
+              </Button>
+              <Button
+                key="step-submit"
+                type="button"
+                disabled={pending || step < STEPS.length - 1}
+                hidden={step < STEPS.length - 1}
+                aria-hidden={step < STEPS.length - 1}
+                className={cn(step < STEPS.length - 1 && "hidden")}
+                onClick={submitForm}
+              >
+                {pending
+                  ? "Enregistrement…"
+                  : mode === "create"
+                    ? "Créer l’article"
+                    : "Enregistrer"}
+              </Button>
             </div>
           </div>
         }
