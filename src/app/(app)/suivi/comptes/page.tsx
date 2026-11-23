@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Plus, Wallet } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { requireSvPermissionFromPaysParam } from "@/lib/suivi/access";
+import { resolveSvPermissionFromPaysParam } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
 import {
   accountBalanceFromMoves,
@@ -13,16 +13,20 @@ import {
   SV_ACCOUNT_KIND_LABEL,
 } from "@/lib/suivi/accounts";
 import {
+  listSvCountriesForUser,
   svCountryDisplayLabel,
   withSvCountryQuery,
 } from "@/lib/suivi/country";
 import { formatSvXof } from "@/lib/suivi/labels";
+import { SuiviCountryGate } from "@/components/suivi/suivi-country-gate";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 import { Surface } from "@/components/ui/surface";
 import { ActionLink } from "@/components/ui/action-link";
 
 export const metadata: Metadata = { title: "Comptes · Suivi" };
+
+const TARGET = "/suivi/comptes";
 
 export default async function SuiviComptesPage({
   searchParams,
@@ -31,11 +35,21 @@ export default async function SuiviComptesPage({
 }) {
   const user = await requireUser();
   const rawSp = await searchParams;
-  const country = requireSvPermissionFromPaysParam(
+  const country = resolveSvPermissionFromPaysParam(
     user,
     "sv.accounts.view",
     rawSp,
+    TARGET,
   );
+  if (!country) {
+    return (
+      <SuiviCountryGate
+        countries={listSvCountriesForUser(user)}
+        targetPath={TARGET}
+        pillarLabel="Comptes"
+      />
+    );
+  }
   const canManage =
     hasPermission(user, "sv.accounts.manage") || user.isSuperAdmin;
   await ensureSvAccounts(prisma);

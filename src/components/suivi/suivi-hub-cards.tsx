@@ -108,11 +108,10 @@ export function SuiviHubGrid({
   counts?: SuiviHubCounts;
   allowed: Set<string>;
 }) {
-  // 3 piliers → entrée via SuiviCountryPicker (`?pays=`), pas de carte directe.
+  // 3 piliers (Comptes / Mouvements / Stocks) → lien sans `?pays=` ;
+  // la page affiche le choix pays (ou redirect si 1 seul).
   const modules = SUIVI_MODULES.filter(
-    (m) =>
-      !m.countryScoped &&
-      (allowed.has(m.permission) || allowed.has("sv.access")),
+    (m) => allowed.has(m.permission) || allowed.has("sv.access"),
   );
 
   const bySection = (id: SuiviModule["section"]) =>

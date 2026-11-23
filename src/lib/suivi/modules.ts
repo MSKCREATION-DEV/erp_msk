@@ -19,11 +19,11 @@ export type SuiviModule = {
   section: SuiviHubSection;
   tone: SuiviHubTone;
   permission: string;
-  /** Comptes / mouvements / stocks — entrée via choix pays (`?pays=`). */
+  /** Comptes / mouvements / stocks — `?pays=` après choix (ou redirect si 1 pays). */
   countryScoped?: boolean;
 };
 
-/** Modules des 3 piliers (URL `?pays=` obligatoire). */
+/** Modules des 3 piliers (liste sans `pays` = écran de choix). */
 export const SV_COUNTRY_SCOPED_PATH_PREFIXES = [
   "/suivi/comptes",
   "/suivi/mouvements",

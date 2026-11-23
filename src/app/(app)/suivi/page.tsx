@@ -3,11 +3,9 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
 import { requireSvAccess } from "@/lib/suivi/access";
-import { listSvCountriesForUser } from "@/lib/suivi/country";
 import { prisma } from "@/lib/prisma";
 import { runSeries } from "@/lib/db/serial";
 import { SuiviHubGrid } from "@/components/suivi/suivi-hub-cards";
-import { SuiviCountryPicker } from "@/components/suivi/suivi-country-picker";
 import { PageHeader } from "@/components/ui/page-header";
 import { PageShell } from "@/components/ui/page-shell";
 
@@ -17,7 +15,6 @@ export default async function SuiviHubPage() {
   const user = await requireUser();
   requireSvAccess(user);
 
-  const countries = listSvCountriesForUser(user);
   const canClients =
     hasPermission(user, "sv.clients.view") || user.isSuperAdmin;
   const canInvoices =
@@ -25,11 +22,6 @@ export default async function SuiviHubPage() {
   const canExpenses =
     hasPermission(user, "sv.expenses.view") || user.isSuperAdmin;
   const canHr = hasPermission(user, "sv.hr.view") || user.isSuperAdmin;
-  const canCountryPillars =
-    hasPermission(user, "sv.accounts.view") ||
-    hasPermission(user, "sv.movements.view") ||
-    hasPermission(user, "sv.stock.view") ||
-    user.isSuperAdmin;
 
   const allowed = new Set(
     [
@@ -114,21 +106,16 @@ export default async function SuiviHubPage() {
           </Link>
         }
       />
-      <div className="space-y-8">
-        {canCountryPillars ? (
-          <SuiviCountryPicker countries={countries} />
-        ) : null}
-        <SuiviHubGrid
-          allowed={allowed}
-          counts={{
-            clients,
-            factures: { value: unpaid, hint: "à encaisser" },
-            charges: { value: unpaidCharges, hint: "à payer" },
-            absences: { value: absencesToday, hint: "aujourd’hui" },
-            retards: { value: latesWeek, hint: "7 jours" },
-          }}
-        />
-      </div>
+      <SuiviHubGrid
+        allowed={allowed}
+        counts={{
+          clients,
+          factures: { value: unpaid, hint: "à encaisser" },
+          charges: { value: unpaidCharges, hint: "à payer" },
+          absences: { value: absencesToday, hint: "aujourd’hui" },
+          retards: { value: latesWeek, hint: "7 jours" },
+        }}
+      />
     </PageShell>
   );
 }

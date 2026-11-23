@@ -23,6 +23,7 @@ export default async function SuiviMouvementNouveauPage({
     user,
     "sv.movements.manage",
     rawSp,
+    { missingHref: "/suivi/mouvements" },
   );
   const employeeOptions = await listSvHrEmployeeOptions();
 

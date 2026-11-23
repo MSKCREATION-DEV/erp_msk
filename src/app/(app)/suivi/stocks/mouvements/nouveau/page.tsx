@@ -24,6 +24,7 @@ export default async function SuiviStockMoveNouveauPage({
     user,
     "sv.stock.manage",
     rawSp,
+    { missingHref: "/suivi/stocks" },
   );
   const itemIdParam = firstParam(rawSp.itemId);
 

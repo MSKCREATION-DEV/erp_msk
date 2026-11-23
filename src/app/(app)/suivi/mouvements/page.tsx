@@ -14,7 +14,7 @@ import {
 import type { Prisma, SvCountry } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { requireSvPermissionFromPaysParam } from "@/lib/suivi/access";
+import { resolveSvPermissionFromPaysParam } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
 import { runSeries } from "@/lib/db/serial";
 import {
@@ -26,9 +26,11 @@ import {
 } from "@/lib/suivi/accounts";
 import {
   SV_COUNTRY_TO_URL,
+  listSvCountriesForUser,
   svCountryDisplayLabel,
   withSvCountryQuery,
 } from "@/lib/suivi/country";
+import { SuiviCountryGate } from "@/components/suivi/suivi-country-gate";
 import {
   familyToCategoryFilterValues,
   SV_CATEGORY_FAMILIES,
@@ -99,6 +101,8 @@ function categoryWhereForFamily(
   return { notIn: other };
 }
 
+const TARGET = "/suivi/mouvements";
+
 export default async function SuiviMouvementsPage({
   searchParams,
 }: {
@@ -106,11 +110,21 @@ export default async function SuiviMouvementsPage({
 }) {
   const user = await requireUser();
   const rawSp = await searchParams;
-  const country = requireSvPermissionFromPaysParam(
+  const country = resolveSvPermissionFromPaysParam(
     user,
     "sv.movements.view",
     rawSp,
+    TARGET,
   );
+  if (!country) {
+    return (
+      <SuiviCountryGate
+        countries={listSvCountriesForUser(user)}
+        targetPath={TARGET}
+        pillarLabel="Mouvements"
+      />
+    );
+  }
   const canManage =
     hasPermission(user, "sv.movements.manage") || user.isSuperAdmin;
 

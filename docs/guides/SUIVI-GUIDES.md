@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-23 (Suivi Mali/Togo **V1 done** Phase C gate — voir §8) |
+| Dernière mise à jour | 2026-11-23 (Suivi Mali/Togo — **choix pays au clic pilier**, plus de bloc Pays hub — voir §8) |
 
 ### Légende statuts documentaires
 
@@ -110,7 +110,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | `espace-conges` | Demander un congé (Mon espace) | espace | `to_validate` | routes espace — détails UI à confirmer |
 | `faq-acces-refuse` | Accès refusé / module absent | accueil | `validated` | redirect `acces_refuse` |
 | `faq-mot-de-passe` | Mot de passe / reset | accueil | `validated` | parcours auth connus |
-| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `to_validate` | hub **choix pays** Mali/Togo → comptes/mouvements/stocks `?pays=` ; TB / clients / charges hors pays — valider terrain Espoir + Direction |
+| `sv-hub-naviguer` | Naviguer dans le hub Suivi (tampon) | suivi | `to_validate` | hub cartes Comptes/Mouvements/Stocks → **choix pays au clic** (ou redirect 1 pays) → `?pays=` ; TB / clients / charges hors pays — valider terrain Espoir + Direction |
 
 *Les modules sans guide `validated` apparaissent en fiche « stub » (objectif + liens manuels, sans fausse procédure).*
 
@@ -134,7 +134,7 @@ Packs : Collaborateur, Commercial, Admin CRM, Admin RH, Comptable, Admin Compta,
 | patrimoine | stub | 0 | |
 | projets | stub | 0 | |
 | anomalies | stub | 0 | |
-| suivi | stub / to_validate | 0 (`sv-hub-naviguer` to_validate) | valider hub→**pays**→comptes/mouvements/stocks + TB/clients/charges/RH |
+| suivi | stub / to_validate | 0 (`sv-hub-naviguer` to_validate) | valider hub→pilier→**choix pays**→liste + TB/clients/charges/RH |
 | catalogue | via commercial | 0 | offres / planchers |
 
 ### Rôles documentés (packs / groupes)
@@ -196,6 +196,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 ---
 
 ## 8. Changelog
+
+### 2026-11-23 — Suivi Mali / Togo — choix pays au clic pilier (UX)
+
+| | |
+|---|---|
+| Quoi | Retrait du bloc hub « Pays » (2×3 liens). Hub / nav = Comptes · Mouvements · Stocks. Sans `?pays=` → écran de choix Mali\|Togo **pour ce périmètre** (`SuiviCountryGate`) ; 1 seul pays → redirect direct ; `pays` invalide → 404 (absent ≠ 404). Nav propage `pays` entre piliers ; hub Menu sans pays collé. |
+| Pourquoi | Citation humaine : le choix pays doit venir au clic sur le périmètre, pas depuis le menu (sinon tabs trop complexes) |
+| Fichiers | `suivi/page.tsx`, `suivi-hub-cards`, `suivi-nav`, `suivi-country-gate` (remplace picker hub), `access` / `country`, pages comptes·mouvements·stocks, intent, ce suivi |
+| Statut doc | Guide `sv-hub-naviguer` → **`to_validate`** (parcours hub→pilier→pays) |
+| Routes | `/suivi` · `/suivi/comptes` (± `?pays=`) · idem mouvements / stocks |
+| Dette | Checklist terrain Direction (2 pays) + Espoir (redirect Togo) ; TB multi-pays = Phase 2 |
 
 ### 2026-11-23 — Suivi Mali / Togo Phase C (gate qualité V1)
 

@@ -28,7 +28,7 @@ Permettre de **piloter séparément** la trésorerie tampon et les stocks Suivi 
 1. **Régression Mali** : comptes / mouvements / stocks inchangés fonctionnellement (données backfillées Mali).
 2. **Coquille Togo** : 2 comptes (physique + banque) à 0, mêmes familles stock à 0, 0 mouvements — seed/prod idempotent.
 3. **Droits** : modèle pays + capacités ; Direction/admins voient les deux ; Espoir Togo only ; Super Admin toujours les deux.
-4. **Entrée** : écran choix pays → navigation avec pays dans l’URL ; deep-link sans pays sur routes scopées → 404.
+4. **Entrée** : hub / nav = Comptes · Mouvements · Stocks (sans bloc Pays) ; au clic sur un pilier **sans** `?pays=` → choix Mali|Togo pour **ce** périmètre (ou redirect direct si 1 seul pays) ; `pays` invalide → 404 (absent ≠ 404).
 5. Pays **imposé** par le contexte URL (pas de cookie / localStorage).
 
 ### Hors scope V1
@@ -178,13 +178,16 @@ Clients / factures / charges / HR : **hors scope pays V1** — restent permissio
 |---------|----------------|-------------------------|
 | Alignement listes MSK (`q`, `page`, `sort`) | Excellent — même pattern | OK mais refonte routes |
 | Persistance « URL seule » | Oui | Oui |
-| Deep-link sans pays → 404 | Guard sur pages scopées | Segment manquant = autre route |
+| Deep-link sans pays → choix | Guard : absent = gate ; invalide = 404 | Segment manquant = autre route |
 | Charge migration | Faible | Forte (layouts, subnav, liens) |
-| Contexte imposé | Oui (parse + refuse si absent) | Plus « structurel » |
+| Contexte imposé | Oui (`pays` dans l’URL une fois choisi) | Plus « structurel » |
 
-**Entrée :** hub `/suivi` = **écran de choix** (cartes Mali / Togo selon droits) → push vers `/suivi/comptes?pays=ml` (ou stocks / mouvements).  
+**Entrée :** hub `/suivi` et nav = cartes / liens **Comptes · Mouvements · Stocks** (comme avant) — **pas** de section « Pays » qui duplique 2×3 liens.  
+Au clic sur un pilier **sans** `?pays=` : écran de choix **Mali | Togo** (selon `sv.country.*`) pour **ce** périmètre seulement → `/suivi/comptes?pays=ml` (etc.).  
+Un seul pays autorisé (ex. Espoir = Togo) → **redirect direct** `?pays=tg` (pas d’écran inutile).  
 **Routes hors 3 piliers** (clients, charges, HR, TB V1) : **pas** de `pays` obligatoire.  
-**Routes 3 piliers** : `pays` obligatoire ; absent / invalide → **404**.
+**Routes 3 piliers** : `pays` **invalide** → **404** ; `pays` **absent** → gate (ou redirect 1 pays) ; `pays` valide → liste filtrée.  
+Nav entre Comptes ↔ Mouvements ↔ Stocks : **propager** `pays` ; retour hub Menu → pas de pays collé.
 
 Codes URL : `ml` | `tg` (minuscules). Affichage : « Mali (ML) » / « Togo (TG) ».
 
@@ -213,7 +216,8 @@ Codes URL : `ml` | `tg` (minuscules). Affichage : « Mali (ML) » / « Togo (TG)
 | Stocks Togo aucun article (échec seed) | Aucun article Togo | Les familles stock Togo ne sont pas encore créées. Contactez un administrateur. | — |
 | Choix pays — un seul pays autorisé | — | Auto-rediriger vers ce pays (pas d’écran vide) | — |
 | Choix pays — aucun `sv.country.*` | Accès pays Suivi manquant | Votre compte n’a pas de périmètre Mali ou Togo. Demandez l’accès à la Direction. | Retour accueil |
-| 404 deep-link sans `pays` | Page introuvable | Les comptes, mouvements et stocks Suivi exigent un pays dans l’adresse (Mali ou Togo). | Choisir un pays |
+| Deep-link sans `pays` (liste pilier) | Choix pays (ou redirect 1 pays) | Choisissez le pays pour ce périmètre. | Mali / Togo |
+| 404 `pays` invalide | Page introuvable | Code pays inconnu dans l’adresse. | Retour Suivi |
 
 ---
 
@@ -230,13 +234,13 @@ Codes URL : `ml` | `tg` (minuscules). Affichage : « Mali (ML) » / « Togo (TG)
 
 ### Phase B — Contexte URL + UI 3 piliers
 
-1. Hub `/suivi` = choix pays (selon droits).
-2. Listes / fiches / actions Comptes, Mouvements, Stocks : `?pays=` obligatoire ; filtre Prisma strict.
+1. Hub `/suivi` = cartes normales Comptes / Mouvements / Stocks (pas de bloc Pays double).
+2. Clic pilier sans `?pays=` → gate Mali|Togo pour ce périmètre (ou redirect si 1 pays) ; listes / fiches / actions avec `?pays=` valide ; filtre Prisma strict ; `pays` invalide → 404.
 3. Interdit inter-pays côté actions (transfert, mouvement, stock).
 4. Empty states FR ci-dessus ; libellés Mali/Togo + ML/TG ; pas de suffixe « Togo » sur labels comptes.
-5. Liens internes des 3 piliers propagent `pays`.
+5. Liens internes des 3 piliers propagent `pays` ; hub Menu sans pays collé.
 
-**Gate B :** ✅ 2026-11-23 — hub choix Mali/Togo ; `?pays=` obligatoire sur comptes/mouvements/stocks (404 si absent) ; filtres Prisma + actions par pays ; inter-pays interdit ; empty states FR ; Espoir = carte Togo seulement ; Direction = les deux.
+**Gate B :** ✅ 2026-11-23 — hub + `?pays=` + filtres ; **corrigé UX** (même jour) : choix pays au clic pilier, plus de section Pays sur le hub.
 
 ### Phase C — Hardening
 
@@ -250,10 +254,10 @@ Codes URL : `ml` | `tg` (minuscules). Affichage : « Mali (ML) » / « Togo (TG)
 
 | # | Qui | Parcours | Attendu |
 |---|-----|----------|---------|
-| 1 | Direction | `/suivi` | Cartes Mali **et** Togo |
-| 2 | Direction | Comptes/Mouvements/Stocks `?pays=ml` puis `tg` | Données séparées ; Togo soldes/qté 0 si coquille neuve |
-| 3 | Direction | Deep-link `/suivi/comptes` sans `pays` | 404 |
-| 4 | Espoir | `/suivi` | Carte **Togo seulement** |
+| 1 | Direction | `/suivi` | Cartes Comptes / Mouvements / Stocks (**pas** de bloc Pays) |
+| 2 | Direction | Clic Comptes → choix Mali|Togo → liste | Données séparées ; Togo soldes/qté 0 si coquille neuve |
+| 3 | Direction | Deep-link `/suivi/comptes` sans `pays` | Écran de choix (pas 404) ; `?pays=xx` → 404 |
+| 4 | Espoir | Clic Comptes | Redirect direct `?pays=tg` (pas d’écran choix) |
 | 5 | Espoir | `/suivi/comptes?pays=ml` | Redirect hub / refus |
 | 6 | Direction | Paiement charge avec miroir mouvement ON | Mouvement **OUT** sur compte **Mali** (pas Togo) |
 | 7 | Direction | Transfert / mouvement inter-pays | Refusé |
@@ -278,7 +282,7 @@ Le TB doit **représenter** Mali et Togo comme jeux distincts :
 | Point | Défaut proposé |
 |-------|----------------|
 | Espoir : accès hub Suivi hors 3 piliers (clients, HR…) | **Non** — seulement 3 piliers + `sv.access` + `sv.country.togo` |
-| Refus droits pays : 404 vs redirect hub | Deep-link **sans** `pays` → 404 ; `pays` OK mais **sans droit** → redirect `/suivi` |
+| Refus droits pays : 404 vs redirect hub | Deep-link **sans** `pays` → gate / redirect 1 pays ; `pays` **invalide** → 404 ; `pays` OK mais **sans droit** → redirect `/suivi` |
 | Pack `sv_togo_ops` | Overrides GRANT en V1 ; pack optionnel plus tard |
 | TB V1 | Inchangé / hors scope (peut rester Mali-implicite ou masquer si pas de pays — à trancher en Phase 2) |
 

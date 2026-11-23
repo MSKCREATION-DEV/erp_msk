@@ -3,6 +3,7 @@ import { UserStatus } from "@/generated/prisma/client";
 import type { SessionUser } from "@/lib/rbac/session-user";
 import {
   canSvCountry,
+  classifySvCountryParam,
   listSvCountriesForUser,
   parseSvCountryParam,
   SV_COUNTRY_DEFAULT,
@@ -47,6 +48,20 @@ assert.equal(parseSvCountryParam("togo"), "TOGO");
 assert.equal(parseSvCountryParam("MALI"), "MALI");
 assert.equal(parseSvCountryParam("TOGO"), "TOGO");
 assert.equal(parseSvCountryParam(["tg", "ml"]), "TOGO");
+
+assert.deepEqual(classifySvCountryParam(undefined), { kind: "absent" });
+assert.deepEqual(classifySvCountryParam(null), { kind: "absent" });
+assert.deepEqual(classifySvCountryParam(""), { kind: "absent" });
+assert.deepEqual(classifySvCountryParam("   "), { kind: "absent" });
+assert.deepEqual(classifySvCountryParam("xx"), { kind: "invalid" });
+assert.deepEqual(classifySvCountryParam("ml"), {
+  kind: "ok",
+  country: "MALI",
+});
+assert.deepEqual(classifySvCountryParam("tg"), {
+  kind: "ok",
+  country: "TOGO",
+});
 
 assert.equal(SV_COUNTRY_FROM_URL.ml, "MALI");
 assert.equal(SV_COUNTRY_FROM_URL.tg, "TOGO");

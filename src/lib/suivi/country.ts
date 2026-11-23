@@ -72,19 +72,37 @@ export function isSvCountry(value: unknown): value is SvCountry {
 
 /**
  * Parse `pays` query (`ml` | `tg` | `MALI` | `TOGO`, case-insensitive).
- * Retourne null si absent / invalide (Phase B → 404 sur routes scopées).
+ * Retourne null si absent **ou** invalide — préférer `classifySvCountryParam`
+ * quand il faut distinguer (gate vs 404).
  */
 export function parseSvCountryParam(
   raw: string | string[] | null | undefined,
 ): SvCountry | null {
+  const classified = classifySvCountryParam(raw);
+  return classified.kind === "ok" ? classified.country : null;
+}
+
+export type SvCountryParamClass =
+  | { kind: "absent" }
+  | { kind: "invalid" }
+  | { kind: "ok"; country: SvCountry };
+
+/**
+ * Distingue `pays` absent (écran de choix) vs invalide (404) vs OK.
+ */
+export function classifySvCountryParam(
+  raw: string | string[] | null | undefined,
+): SvCountryParamClass {
   const v = Array.isArray(raw) ? raw[0] : raw;
-  if (!v || typeof v !== "string") return null;
+  if (v == null || typeof v !== "string" || v.trim() === "") {
+    return { kind: "absent" };
+  }
   const t = v.trim().toLowerCase();
-  if (t === "ml" || t === "mali") return "MALI";
-  if (t === "tg" || t === "togo") return "TOGO";
+  if (t === "ml" || t === "mali") return { kind: "ok", country: "MALI" };
+  if (t === "tg" || t === "togo") return { kind: "ok", country: "TOGO" };
   const upper = v.trim().toUpperCase();
-  if (isSvCountry(upper)) return upper;
-  return null;
+  if (isSvCountry(upper)) return { kind: "ok", country: upper };
+  return { kind: "invalid" };
 }
 
 export function svCountryPermission(country: SvCountry): string {

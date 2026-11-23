@@ -32,10 +32,12 @@ export function SuiviNav() {
             "countryScoped" in item && Boolean(item.countryScoped);
           const active = isActive(pathname, item.href, exact);
 
+          // Propager `pays` entre piliers ; sans pays → chemin nu (écran de choix).
+          // Hub Menu : pas de `pays` collé.
           const href: string = countryScoped
             ? country
               ? withSvCountryQuery(item.href, country)
-              : "/suivi"
+              : item.href
             : item.href;
 
           return (

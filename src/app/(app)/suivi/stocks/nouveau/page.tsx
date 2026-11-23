@@ -22,6 +22,7 @@ export default async function SuiviStockNouveauPage({
     user,
     "sv.stock.manage",
     rawSp,
+    { missingHref: "/suivi/stocks" },
   );
 
   return (

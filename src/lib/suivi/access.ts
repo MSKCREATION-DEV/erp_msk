@@ -2,7 +2,12 @@ import { notFound, redirect } from "next/navigation";
 import type { SvCountry } from "@/generated/prisma/client";
 import { hasPermission } from "@/lib/rbac/resolve";
 import type { SessionUser } from "@/lib/rbac/session-user";
-import { canSvCountry, parseSvCountryParam } from "@/lib/suivi/country";
+import {
+  canSvCountry,
+  classifySvCountryParam,
+  listSvCountriesForUser,
+  withSvCountryQuery,
+} from "@/lib/suivi/country";
 
 export function requireSvAccess(user: SessionUser) {
   if (!hasPermission(user, "sv.access") && !user.isSuperAdmin) {
@@ -43,26 +48,53 @@ export function requireSvPermissionInCountry(
 }
 
 /**
- * Routes 3 piliers : `?pays=` obligatoire.
- * Absent / invalide → 404 ; pays connu sans droit → redirect hub.
+ * Listes 3 piliers : `?pays=` valide → pays ; **absent** → `null` (écran de choix) ;
+ * invalide → 404 ; sans droit pays → redirect hub.
+ * Si un seul pays autorisé et `pays` absent → redirect direct vers `targetPath?pays=`.
+ */
+export function resolveSvPermissionFromPaysParam(
+  user: SessionUser,
+  code: string,
+  searchParams: Record<string, string | string[] | undefined>,
+  targetPath: string,
+): SvCountry | null {
+  const classified = classifySvCountryParam(searchParams.pays);
+  if (classified.kind === "absent") {
+    requireSvPermission(user, code);
+    const countries = listSvCountriesForUser(user);
+    if (countries.length === 1) {
+      redirect(withSvCountryQuery(targetPath, countries[0]));
+    }
+    return null;
+  }
+  if (classified.kind === "invalid") notFound();
+  requireSvPermissionInCountry(user, code, classified.country);
+  return classified.country;
+}
+
+/**
+ * Create / nested : `?pays=` requis.
+ * Absent → redirect vers `missingHref` (liste = gate) ; invalide → 404.
  */
 export function requireSvPermissionFromPaysParam(
   user: SessionUser,
   code: string,
   searchParams: Record<string, string | string[] | undefined>,
+  options?: { missingHref?: string },
 ): SvCountry {
-  const raw = searchParams.pays;
-  const country = parseSvCountryParam(
-    Array.isArray(raw) ? raw[0] : raw,
-  );
-  if (!country) notFound();
-  requireSvPermissionInCountry(user, code, country);
-  return country;
+  const classified = classifySvCountryParam(searchParams.pays);
+  if (classified.kind === "absent") {
+    requireSvPermission(user, code);
+    redirect(options?.missingHref ?? "/suivi");
+  }
+  if (classified.kind === "invalid") notFound();
+  requireSvPermissionInCountry(user, code, classified.country);
+  return classified.country;
 }
 
 /**
- * Fiche détail : `?pays=` obligatoire et doit matcher la ressource.
- * Absent / invalide / mismatch → 404 ; sans droit pays → redirect hub.
+ * Fiche détail : si `pays` absent → utilise le pays de la ressource (si droits) ;
+ * invalide / mismatch → 404 ; sans droit pays → redirect hub.
  */
 export function requireSvResourceCountry(
   user: SessionUser,
@@ -70,7 +102,13 @@ export function requireSvResourceCountry(
   searchParams: Record<string, string | string[] | undefined>,
   resourceCountry: SvCountry,
 ): SvCountry {
-  const country = requireSvPermissionFromPaysParam(user, code, searchParams);
-  if (country !== resourceCountry) notFound();
-  return country;
+  const classified = classifySvCountryParam(searchParams.pays);
+  if (classified.kind === "absent") {
+    requireSvPermissionInCountry(user, code, resourceCountry);
+    return resourceCountry;
+  }
+  if (classified.kind === "invalid") notFound();
+  requireSvPermissionInCountry(user, code, classified.country);
+  if (classified.country !== resourceCountry) notFound();
+  return classified.country;
 }

@@ -4,7 +4,7 @@ import { PackagePlus, Plus } from "lucide-react";
 import type { Prisma, SvCountry } from "@/generated/prisma/client";
 import { requireUser } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/rbac/resolve";
-import { requireSvPermissionFromPaysParam } from "@/lib/suivi/access";
+import { resolveSvPermissionFromPaysParam } from "@/lib/suivi/access";
 import { prisma } from "@/lib/prisma";
 import {
   clampPage,
@@ -22,6 +22,7 @@ import {
 } from "@/lib/list/sort";
 import {
   SV_COUNTRY_TO_URL,
+  listSvCountriesForUser,
   svCountryDisplayLabel,
   withSvCountryQuery,
 } from "@/lib/suivi/country";
@@ -37,6 +38,7 @@ import { SortableTh, PlainTh } from "@/components/ui/sortable-th";
 import { Badge } from "@/components/ui/badge";
 import { SvStockListActions } from "@/components/suivi/stock-list-actions";
 import { SvStocksToolbar } from "@/components/suivi/stocks-toolbar";
+import { SuiviCountryGate } from "@/components/suivi/suivi-country-gate";
 
 const STOCK_SORT_COLUMNS = {
   code: (dir: SortDir) => ({ code: dir }),
@@ -50,6 +52,8 @@ const STOCK_SORT_COLUMNS = {
 
 export const metadata: Metadata = { title: "Stocks · Suivi" };
 
+const TARGET = "/suivi/stocks";
+
 export default async function SuiviStocksPage({
   searchParams,
 }: {
@@ -57,11 +61,21 @@ export default async function SuiviStocksPage({
 }) {
   const user = await requireUser();
   const rawSp = await searchParams;
-  const country = requireSvPermissionFromPaysParam(
+  const country = resolveSvPermissionFromPaysParam(
     user,
     "sv.stock.view",
     rawSp,
+    TARGET,
   );
+  if (!country) {
+    return (
+      <SuiviCountryGate
+        countries={listSvCountriesForUser(user)}
+        targetPath={TARGET}
+        pillarLabel="Stocks"
+      />
+    );
+  }
   const canManage = hasPermission(user, "sv.stock.manage");
 
   const resultsKey = listKeyFromSearchParams(rawSp);
