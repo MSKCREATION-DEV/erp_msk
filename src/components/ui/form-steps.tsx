@@ -58,7 +58,14 @@ export function FormSteps({
                   )}
                   aria-hidden
                 >
-                  {done ? <Check className="h-3 w-3" /> : i + 1}
+                  {/* Check + n° toujours montés — swap → removeChild (ext.). */}
+                  <Check
+                    className={cn("h-3 w-3", !done && "hidden")}
+                    aria-hidden={!done}
+                  />
+                  <span className={cn(done && "hidden")} aria-hidden={done}>
+                    {i + 1}
+                  </span>
                 </span>
                 <span
                   className={cn(

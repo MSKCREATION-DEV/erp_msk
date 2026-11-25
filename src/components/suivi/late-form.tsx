@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { OptionPickerSingle } from "@/components/ui/option-picker-modal";
 import type { OptionPickerItem } from "@/components/ui/option-picker-modal";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
+import { useSafeStep } from "@/hooks/use-safe-step";
 import { cn } from "@/lib/utils";
 
 type Initial = {
@@ -50,7 +51,7 @@ export function SvLateForm({
   >(action, null);
   useActionStateToast(state);
 
-  const [step, setStep] = useState(mode === "edit" ? 1 : 0);
+  const [step, setStep] = useSafeStep(mode === "edit" ? 1 : 0);
   const [employeeId, setEmployeeId] = useState<string | null>(
     initial?.employeeId ?? null,
   );
@@ -72,12 +73,12 @@ export function SvLateForm({
   const showRecap = stepId === "recap";
 
   function validateStep(index: number): boolean {
-    const stepId = STEPS[index]?.id;
-    if (stepId === "collab" && !employeeId) {
+    const id = STEPS[index]?.id;
+    if (id === "collab" && !employeeId) {
       setStepError("Choisissez un collaborateur.");
       return false;
     }
-    if (stepId === "horaire") {
+    if (id === "horaire") {
       if (!employeeId) {
         setStepError("Choisissez un collaborateur.");
         return false;
@@ -189,26 +190,42 @@ export function SvLateForm({
           }}
         />
 
-        {stepError ? (
-          <p className="mt-4 text-sm text-msk-coral" role="alert">
-            {stepError}
-          </p>
-        ) : null}
-        {state && !state.ok ? (
-          <p className="mt-4 text-sm text-msk-coral" role="alert">
-            {state.error}
-          </p>
-        ) : null}
+        <p
+          key="step-error"
+          hidden={!stepError}
+          aria-hidden={!stepError}
+          role={stepError ? "alert" : undefined}
+          className={cn(
+            "mt-4 text-sm text-msk-coral",
+            !stepError && "hidden",
+          )}
+        >
+          {stepError ?? ""}
+        </p>
+        <p
+          key="action-error"
+          hidden={!state || state.ok}
+          aria-hidden={!state || state.ok}
+          role={state && !state.ok ? "alert" : undefined}
+          className={cn(
+            "mt-4 text-sm text-msk-coral",
+            (!state || state.ok) && "hidden",
+          )}
+        >
+          {state && !state.ok ? state.error : ""}
+        </p>
 
         <div className="mt-6 space-y-5">
           {/*
-            Étapes toujours montées (cachées) — ne pas démonter date/time
-            focusés → NotFoundError removeChild (ext. autofill). Réf. 56ae162 / 4995270.
+            Étapes toujours montées (cachées). Date/time : JAMAIS disabled
+            selon l’étape (seulement pending) — disabled + autofill Brave
+            → removeChild. inert + hidden pour bloquer l’interaction.
           */}
           <div
             key="step-collab"
             hidden={!showCollab}
             aria-hidden={!showCollab}
+            inert={!showCollab ? true : undefined}
             className={cn(!showCollab && "hidden")}
           >
             <OptionPickerSingle
@@ -230,6 +247,7 @@ export function SvLateForm({
             key="step-horaire"
             hidden={!showHoraire}
             aria-hidden={!showHoraire}
+            inert={!showHoraire ? true : undefined}
             className={cn("space-y-5", !showHoraire && "hidden")}
           >
             <div className="grid gap-4 sm:grid-cols-3">
@@ -243,7 +261,8 @@ export function SvLateForm({
                   className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
                   value={lateDate}
                   onChange={(e) => setLateDate(e.target.value)}
-                  disabled={pending || !showHoraire}
+                  disabled={pending}
+                  tabIndex={showHoraire ? undefined : -1}
                 />
               </div>
               <div>
@@ -254,7 +273,8 @@ export function SvLateForm({
                   className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
                   value={expectedTime}
                   onChange={(e) => setExpectedTime(e.target.value)}
-                  disabled={pending || !showHoraire}
+                  disabled={pending}
+                  tabIndex={showHoraire ? undefined : -1}
                 />
               </div>
               <div>
@@ -267,7 +287,8 @@ export function SvLateForm({
                   className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
                   value={arrivedTime}
                   onChange={(e) => setArrivedTime(e.target.value)}
-                  disabled={pending || !showHoraire}
+                  disabled={pending}
+                  tabIndex={showHoraire ? undefined : -1}
                 />
               </div>
             </div>
@@ -280,7 +301,8 @@ export function SvLateForm({
                 placeholder="Ex. embouteillage, rendez-vous médical…"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                disabled={pending || !showHoraire}
+                disabled={pending}
+                tabIndex={showHoraire ? undefined : -1}
               />
             </div>
           </div>
@@ -289,6 +311,7 @@ export function SvLateForm({
             key="step-recap"
             hidden={!showRecap}
             aria-hidden={!showRecap}
+            inert={!showRecap ? true : undefined}
             className={cn(
               "grid gap-3 text-sm sm:grid-cols-2",
               !showRecap && "hidden",

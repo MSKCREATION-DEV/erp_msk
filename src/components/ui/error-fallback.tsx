@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AlertTriangle, Home, RefreshCw, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import {
   toUserFacingError,
   type UserFacingKind,
 } from "@/lib/errors/user-facing";
+import { isRemoveChildDomError } from "@/lib/ui/dom-safe";
 
 type Props = {
   error: Error & { digest?: string };
@@ -27,6 +28,9 @@ const ICON: Record<UserFacingKind, typeof AlertTriangle> = {
   unknown: AlertTriangle,
 };
 
+/** Anti-boucle si removeChild revient immédiatement après reset. */
+let lastRemoveChildAutoResetAt = 0;
+
 export function ErrorFallback({
   error,
   reset,
@@ -36,6 +40,10 @@ export function ErrorFallback({
 }: Props) {
   const facing = toUserFacingError(error);
   const Icon = ICON[facing.kind];
+  const autoResetAttempted = useRef(false);
+  const [suppressUi, setSuppressUi] = useState(() =>
+    isRemoveChildDomError(error),
+  );
 
   useEffect(() => {
     // Toujours logger le détail côté navigateur (devtools) — jamais dans l’UI
@@ -45,6 +53,34 @@ export function ErrorFallback({
       name: error.name,
     });
   }, [error, scope]);
+
+  /**
+   * Filet removeChild : auto-réessayer une fois (extensions autofill).
+   * Si ça revient < 2,5 s → afficher l’UI d’erreur (évite boucle).
+   */
+  useEffect(() => {
+    if (!reset || !isRemoveChildDomError(error)) {
+      setSuppressUi(false);
+      return;
+    }
+    if (autoResetAttempted.current) return;
+    const now = Date.now();
+    if (now - lastRemoveChildAutoResetAt < 2500) {
+      setSuppressUi(false);
+      return;
+    }
+    autoResetAttempted.current = true;
+    lastRemoveChildAutoResetAt = now;
+    setSuppressUi(true);
+    const t = window.setTimeout(() => {
+      reset();
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [error, reset]);
+
+  if (suppressUi && isRemoveChildDomError(error)) {
+    return null;
+  }
 
   return (
     <div

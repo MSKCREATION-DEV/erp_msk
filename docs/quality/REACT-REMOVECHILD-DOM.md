@@ -4,38 +4,38 @@
 
 `NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.`
 
-Souvent capturé par `app/error` (`[MSK app/error]`). Vu sur Suivi retards / absences / stocks / charges — surtout **création d’absence avec justificatif**.
+Souvent capturé par `app/error` / `suivi/error`. Vu sur Suivi **retards** / absences / stocks — surtout changement d’étape avec `date`/`time` focusés (Brave + autofill).
 
 ## Cause
 
-Désync entre le DOM réel et l’arbre React. Unmount conditionnel **pendant** qu’une extension (autofill, gestionnaire MDP, traducteur) a déplacé un nœud.
-
-Pièges confirmés dans ce repo :
+Désync entre le DOM réel et l’arbre React. Unmount / `disabled` / fermeture Modal **pendant** qu’une extension (autofill, gestionnaire MDP, traducteur, Brave Shields) a déplacé un nœud.
 
 | Piège | Exemple |
 |---|---|
-| `<input type="file">` monté/démonté | Step / phase / « fichier choisi » |
-| Dropzone en ternaire autour du file | `{cond ? dropzone : preview}` |
-| Stepper qui **démonté** les panels | `step === n ? … : null` + date/time focusés |
-| Barres d’actions phase | `phase === "ready" ? actions : null` **près du file** |
-| Footer stepper swap | `step > 0 ? Retour : Annuler` |
-| Chip sélection démonté | OptionPicker `selected ? chip : null` |
-| `<input disabled\|readOnly>` valeur générée | Code article auto → `GeneratedValueField` |
-| Toggle `disabled` sur file input | Extensions remanient le nœud |
+| Changer d’étape avec date/time focusé | Continuer après saisie horaire |
+| `disabled={… \|\| !showStep}` sur date/time | Autofill + toggle disabled |
+| `<input type="file">` monté/démonté / disabled | Justificatif absence |
+| Barres d’actions phase en ternaire | `phase === "ready" ? … : null` |
+| Footer stepper swap | Annuler↔Retour |
+| Fermeture Modal Portal synchrone | Choix collaborateur → chip |
+| Swap Check / n° dans FormSteps | Avancer d’étape |
 
-## Correctifs canon
+## Correctifs canon (couches)
 
-| Pattern | Remède |
-|---|---|
-| Code / réf. auto | `GeneratedValueField` (`<output>`) |
-| Justificatif fichier | Input file **toujours** monté `sr-only`, **jamais** `disabled` ; gate dans `onChange` |
-| Dropzone / preview / actions phase | Toujours montés ; `hidden` / `cn(… && "hidden")` |
-| Stepper | Étapes toujours montées, clés stables |
-| Footer Continuer / Submit | Les deux boutons toujours montés + `hidden` |
-| Chip picker | Toujours monté + `hidden` |
+1. **Prévention**
+   - Stepper : panels toujours montés (`hidden` + `inert`)
+   - Date/time/texte : **jamais** `disabled` selon l’étape (seulement `pending`) ; `tabIndex={-1}` hors étape
+   - File : toujours monté, **jamais** `disabled` ; gate `onChange`
+   - Actions phase / footer / chips : toujours montés + `hidden`
+   - Changement d’étape via `useSafeStep` (blur + double rAF) — `src/hooks/use-safe-step.ts`
+   - Fermeture Modal différée (`requestAnimationFrame`) après sélection picker
+
+2. **Filet UX**
+   - `ErrorFallback` auto-`reset()` une fois sur `isRemoveChildDomError` (`src/lib/ui/dom-safe.ts`)
+   - Message utilisateur sans jargon `removeChild` (`toUserFacingError`)
+
+3. **Garde-fou**
+   - `src/lib/ui/removechild-dom-guard.test.ts`
+   - `src/lib/ui/dom-safe.test.ts`
 
 Règle agent : `.cursor/rules/react-removechild-dom.mdc` (alwaysApply).
-
-Garde-fou : `src/lib/ui/removechild-dom-guard.test.ts` (`npx tsx …`).
-
-Commits de référence : `56ae162` (stocks) · `4995270` (file stable) · `3c2933d` (steppers) · correctif phase/footer (picker actions + footer toujours montés).

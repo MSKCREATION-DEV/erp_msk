@@ -25,6 +25,7 @@ import {
   withSvCountryQuery,
 } from "@/lib/suivi/country";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
+import { useSafeStep } from "@/hooks/use-safe-step";
 import { cn } from "@/lib/utils";
 
 type Initial = {
@@ -65,7 +66,7 @@ export function SvStockItemForm({
   >(action, null);
   useActionStateToast(state);
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useSafeStep(0);
   const [family, setFamily] = useState(initial?.family ?? "Papeterie");
   const [subFamily, setSubFamily] = useState(initial?.subFamily ?? "");
   const [label, setLabel] = useState(initial?.label ?? "");
@@ -209,19 +210,36 @@ export function SvStockItemForm({
           }}
         />
 
-        {state && !state.ok ? (
-          <p className="mb-4 rounded-lg border border-msk-coral/30 bg-msk-coral/5 px-3 py-2 text-sm text-msk-coral">
-            {state.error}
-          </p>
-        ) : null}
-        {stepError ? (
-          <p className="mb-4 text-sm text-msk-coral">{stepError}</p>
-        ) : null}
+        <p
+          key="action-error"
+          hidden={!state || state.ok}
+          aria-hidden={!state || state.ok}
+          role={state && !state.ok ? "alert" : undefined}
+          className={cn(
+            "mb-4 rounded-lg border border-msk-coral/30 bg-msk-coral/5 px-3 py-2 text-sm text-msk-coral",
+            (!state || state.ok) && "hidden",
+          )}
+        >
+          {state && !state.ok ? state.error : ""}
+        </p>
+        <p
+          key="step-error"
+          hidden={!stepError}
+          aria-hidden={!stepError}
+          role={stepError ? "alert" : undefined}
+          className={cn(
+            "mb-4 text-sm text-msk-coral",
+            !stepError && "hidden",
+          )}
+        >
+          {stepError ?? ""}
+        </p>
 
         <div
           key="step-identite"
           hidden={!showIdentite}
           aria-hidden={!showIdentite}
+          inert={!showIdentite ? true : undefined}
           className={cn(
             "mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3",
             !showIdentite && "hidden",
@@ -247,7 +265,8 @@ export function SvStockItemForm({
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="Ex. Stylo bleu"
-              disabled={pending || !showIdentite}
+              disabled={pending}
+              tabIndex={showIdentite ? undefined : -1}
               className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
             />
           </div>
@@ -274,7 +293,8 @@ export function SvStockItemForm({
               value={subFamily}
               onChange={(e) => setSubFamily(e.target.value)}
               placeholder="Optionnel"
-              disabled={pending || !showIdentite}
+              disabled={pending}
+              tabIndex={showIdentite ? undefined : -1}
               className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
             />
           </div>
@@ -284,6 +304,7 @@ export function SvStockItemForm({
           key="step-stock"
           hidden={!showStock}
           aria-hidden={!showStock}
+          inert={!showStock ? true : undefined}
           className={cn(
             "mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3",
             !showStock && "hidden",
@@ -318,7 +339,8 @@ export function SvStockItemForm({
               min={0}
               value={initialQuantity}
               onChange={(e) => setInitialQuantity(e.target.value)}
-              disabled={pending || !showStock || mode !== "create"}
+              disabled={pending || mode !== "create"}
+              tabIndex={showStock && mode === "create" ? undefined : -1}
               className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
             />
             <p className="mt-1 text-xs text-msk-ink/45">
@@ -332,7 +354,8 @@ export function SvStockItemForm({
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Ex. Armoire 1"
-              disabled={pending || !showStock}
+              disabled={pending}
+              tabIndex={showStock ? undefined : -1}
               className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
             />
           </div>
@@ -344,7 +367,8 @@ export function SvStockItemForm({
               value={observations}
               onChange={(e) => setObservations(e.target.value)}
               placeholder="Précisions packing, marque…"
-              disabled={pending || !showStock}
+              disabled={pending}
+              tabIndex={showStock ? undefined : -1}
               className="mt-1.5 w-full rounded-lg border border-msk-ink/15 px-3 py-2 text-sm"
             />
           </div>
@@ -354,6 +378,7 @@ export function SvStockItemForm({
           key="step-recap"
           hidden={!showRecap}
           aria-hidden={!showRecap}
+          inert={!showRecap ? true : undefined}
           className={cn(
             "mt-6 rounded-xl border border-msk-ink/8 bg-msk-chalk/40 p-4 text-sm",
             !showRecap && "hidden",

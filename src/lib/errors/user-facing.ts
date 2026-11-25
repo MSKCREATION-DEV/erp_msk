@@ -31,6 +31,19 @@ export function toUserFacingError(
 ): UserFacingError {
   const raw = (error.message ?? "").toLowerCase();
 
+  // DOM désync (extensions autofill) — jamais exposer removeChild brut.
+  if (
+    /removechild|not a child of this node|node to be removed/i.test(raw)
+  ) {
+    return {
+      title: "Affichage interrompu",
+      description:
+        "L’écran a été interrompu par une extension du navigateur. Réessayez — vos données ne sont pas perdues côté serveur.",
+      hint: "Si ça revient, essayez une fenêtre privée sans extensions (ou Brave Shields assouplis sur ce site).",
+      kind: "transient",
+    };
+  }
+
   if (
     /emaxconn|max clients|too many connections|connection pool|pool_size|remaining connection slots/i.test(
       raw,

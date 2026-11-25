@@ -24,4 +24,12 @@ assert.equal(
 assert.equal(isTechnicalErrorMessage("Invalid `prisma.user.count()`"), true);
 assert.equal(isTechnicalErrorMessage("Dossier créé"), false);
 
+const removeChild = toUserFacingError(
+  new Error(
+    "Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
+  ),
+);
+assert.equal(removeChild.kind, "transient");
+assert.equal(/removeChild/i.test(removeChild.description), false);
+
 console.log("user-facing.test.ts OK");

@@ -29,11 +29,13 @@ Réf. fixes : stocks `56ae162` · absences `4995270` · composant `GeneratedValu
 1. **Valeurs générées / affichage** → `GeneratedValueField` (`<output>` + clé) — jamais input disabled/readOnly décoratif.
 2. **`<input type="file">`** → toujours monté, `sr-only`, **clé stable**, **jamais `disabled`** — gate dans `onChange` / ref.
 3. **Dropzone / preview / actions phase** → toujours montés ; `hidden` / `className={cn(!show && "hidden")}` + `aria-hidden` — **pas** de ternaire unmount.
-4. **Stepper multi-étape** → panels **toujours montés**, visibles via `hidden` / `cn(step !== n && "hidden")` (modèle : retards, absences, stocks).
-5. **Footer stepper** → Annuler + Retour + Continuer + Submit **tous montés**, `hidden` selon l’étape.
-6. **Keys stables** sur panels d’étape (`key="step-horaire"`) et file (`key="…-file"`).
-7. Inputs texte/date hors étape active → `disabled` OK ; le nœud reste dans le DOM. **Pas** sur `type=file`.
-8. Garde-fou : `src/lib/ui/removechild-dom-guard.test.ts`.
+4. **Stepper multi-étape** → panels **toujours montés** + `inert` hors étape ; changement via `useSafeStep` (blur + rAF).
+5. **Date / time / texte** → `disabled={pending}` seulement — **interdit** `disabled={… \|\| !showStep}` (autofill Brave). Hors étape : `tabIndex={-1}` + parent `inert`.
+6. **Footer stepper** → Annuler + Retour + Continuer + Submit **tous montés**, `hidden` selon l’étape.
+7. **Keys stables** sur panels d’étape (`key="step-horaire"`) et file (`key="…-file"`).
+8. **Modal picker** → fermeture différée après sélection ; Input recherche toujours monté.
+9. **Filet** → `ErrorFallback` auto-reset sur `isRemoveChildDomError` (`src/lib/ui/dom-safe.ts`).
+10. Garde-fou : `src/lib/ui/removechild-dom-guard.test.ts` + `dom-safe.test.ts`.
 
 ## Test mental
 

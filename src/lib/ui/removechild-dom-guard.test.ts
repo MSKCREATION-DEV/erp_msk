@@ -18,9 +18,14 @@ const formPath = join(
   process.cwd(),
   "src/components/suivi/absence-form.tsx",
 );
+const latePath = join(
+  process.cwd(),
+  "src/components/suivi/late-form.tsx",
+);
 
 const picker = readFileSync(pickerPath, "utf8");
 const form = readFileSync(formPath, "utf8");
+const late = readFileSync(latePath, "utf8");
 
 const offenders: string[] = [];
 
@@ -76,6 +81,21 @@ if (/step\s*<\s*steps\.length\s*-\s*1\s*\?\s*\(/.test(form)) {
   offenders.push(
     "absence-form: footer Continuer/Submit en ternaire — toujours montés + hidden",
   );
+}
+
+// Retards : date/time ne doivent pas être disabled selon l’étape
+if (/type=["']date["'][\s\S]{0,220}disabled=\{pending\s*\|\|/.test(late)) {
+  offenders.push(
+    "late-form: input date disabled selon étape — utiliser disabled={pending} + inert",
+  );
+}
+if (/type=["']time["'][\s\S]{0,220}disabled=\{pending\s*\|\|/.test(late)) {
+  offenders.push(
+    "late-form: input time disabled selon étape — utiliser disabled={pending} + inert",
+  );
+}
+if (!late.includes("useSafeStep")) {
+  offenders.push("late-form: utiliser useSafeStep (blur avant changement d’étape)");
 }
 
 assert.deepEqual(

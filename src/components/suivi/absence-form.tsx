@@ -26,6 +26,7 @@ import {
 } from "@/lib/suivi/hr";
 import type { SvAbsenceReason, SvAbsenceStatus } from "@/generated/prisma/client";
 import { useActionStateToast } from "@/hooks/use-action-state-toast";
+import { useSafeStep } from "@/hooks/use-safe-step";
 import { cn } from "@/lib/utils";
 
 type Initial = {
@@ -79,10 +80,9 @@ export function SvAbsenceForm({
   useActionStateToast(state);
 
   const steps = mode === "create" ? CREATE_STEPS : EDIT_STEPS;
-  const [step, setStep] = useState(() => {
-    const max = steps.length - 1;
-    return Math.min(Math.max(0, initialStep), max);
-  });
+  const [step, setStep] = useSafeStep(
+    Math.min(Math.max(0, initialStep), steps.length - 1),
+  );
   const [employeeId, setEmployeeId] = useState<string | null>(
     initial?.employeeId ?? null,
   );
@@ -321,26 +321,38 @@ export function SvAbsenceForm({
           }}
         />
 
-        {stepError ? (
-          <p className="mt-4 text-sm text-msk-coral" role="alert">
-            {stepError}
-          </p>
-        ) : null}
-        {state && !state.ok ? (
-          <p className="mt-4 text-sm text-msk-coral" role="alert">
-            {state.error}
-          </p>
-        ) : null}
+        <p
+          key="step-error"
+          hidden={!stepError}
+          aria-hidden={!stepError}
+          role={stepError ? "alert" : undefined}
+          className={cn("mt-4 text-sm text-msk-coral", !stepError && "hidden")}
+        >
+          {stepError ?? ""}
+        </p>
+        <p
+          key="action-error"
+          hidden={!state || state.ok}
+          aria-hidden={!state || state.ok}
+          role={state && !state.ok ? "alert" : undefined}
+          className={cn(
+            "mt-4 text-sm text-msk-coral",
+            (!state || state.ok) && "hidden",
+          )}
+        >
+          {state && !state.ok ? state.error : ""}
+        </p>
 
         <div className="mt-6 space-y-5">
           {/*
-            Toutes les étapes restent montées (cachées) — date/time + file
-            ne doivent pas être démontés → removeChild. Réf. 56ae162 / 4995270.
+            Étapes toujours montées. Date : jamais disabled selon l’étape
+            (seulement pending) — disabled + autofill → removeChild.
           */}
           <div
             key="step-collab"
             hidden={!showCollab}
             aria-hidden={!showCollab}
+            inert={!showCollab ? true : undefined}
             className={cn(!showCollab && "hidden")}
           >
             <OptionPickerSingle
@@ -362,6 +374,7 @@ export function SvAbsenceForm({
             key="step-details"
             hidden={!showDetails}
             aria-hidden={!showDetails}
+            inert={!showDetails ? true : undefined}
             className={cn("space-y-5", !showDetails && "hidden")}
           >
             <div
@@ -405,7 +418,8 @@ export function SvAbsenceForm({
                   className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  disabled={pending || !showDetails}
+                  disabled={pending}
+                  tabIndex={showDetails ? undefined : -1}
                 />
               </div>
               <div>
@@ -418,7 +432,8 @@ export function SvAbsenceForm({
                   className="mt-1.5 w-full rounded-lg border border-msk-ink/10 bg-white px-3 py-2 text-sm"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  disabled={pending || !showDetails}
+                  disabled={pending}
+                  tabIndex={showDetails ? undefined : -1}
                 />
               </div>
             </div>
@@ -441,7 +456,8 @@ export function SvAbsenceForm({
                 }
                 value={reasonNote}
                 onChange={(e) => setReasonNote(e.target.value)}
-                disabled={pending || !showDetails}
+                disabled={pending}
+                tabIndex={showDetails ? undefined : -1}
               />
             </div>
 
@@ -480,7 +496,10 @@ export function SvAbsenceForm({
                   placeholder="Ex. 2 jours à déduire manuellement en RH"
                   value={deductLeaveNote}
                   onChange={(e) => setDeductLeaveNote(e.target.value)}
-                  disabled={pending || !showDetails || deductLeave !== "1"}
+                  disabled={pending || deductLeave !== "1"}
+                  tabIndex={
+                    showDetails && deductLeave === "1" ? undefined : -1
+                  }
                 />
               </div>
             </div>
@@ -537,6 +556,7 @@ export function SvAbsenceForm({
             key="step-justif"
             hidden={!showJustif}
             aria-hidden={!showJustif}
+            inert={!showJustif ? true : undefined}
             className={cn("space-y-4", !showJustif && "hidden")}
           >
             <p className="text-sm text-msk-ink/60">
@@ -626,6 +646,7 @@ export function SvAbsenceForm({
             key="step-recap"
             hidden={!showRecap}
             aria-hidden={!showRecap}
+            inert={!showRecap ? true : undefined}
             className={cn(
               "grid gap-3 text-sm sm:grid-cols-2",
               !showRecap && "hidden",

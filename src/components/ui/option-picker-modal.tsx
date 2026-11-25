@@ -103,14 +103,16 @@ export function OptionPickerSingle({
         size="md"
       >
         <div className="space-y-3 p-4">
-          {options.length > 8 ? (
-            <Input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Rechercher…"
-              autoFocus
-            />
-          ) : null}
+          {/* Recherche toujours montée (cachée) — unmount Input focusé → removeChild. */}
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Rechercher…"
+            autoFocus={options.length > 8}
+            hidden={options.length <= 8}
+            aria-hidden={options.length <= 8}
+            className={cn(options.length <= 8 && "hidden")}
+          />
           <ul className="max-h-[50vh] space-y-1 overflow-y-auto">
             {filtered.map((o) => (
               <li key={o.value}>
@@ -118,7 +120,9 @@ export function OptionPickerSingle({
                   type="button"
                   onClick={() => {
                     onChange(o.value);
-                    setOpen(false);
+                    // Fermer après settle — unmount Portal pendant commit chip
+                    // + autofill → removeChild.
+                    requestAnimationFrame(() => setOpen(false));
                   }}
                   className={cn(
                     "flex w-full flex-col rounded-xl border px-3 py-2.5 text-left transition",
@@ -130,11 +134,16 @@ export function OptionPickerSingle({
                   <span className="text-sm font-medium text-msk-ink">
                     {o.label}
                   </span>
-                  {o.description ? (
-                    <span className="text-xs text-msk-ink/45">
-                      {o.description}
-                    </span>
-                  ) : null}
+                  <span
+                    hidden={!o.description}
+                    aria-hidden={!o.description}
+                    className={cn(
+                      "text-xs text-msk-ink/45",
+                      !o.description && "hidden",
+                    )}
+                  >
+                    {o.description ?? ""}
+                  </span>
                 </button>
               </li>
             ))}
