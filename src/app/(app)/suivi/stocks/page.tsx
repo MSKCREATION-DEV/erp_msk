@@ -203,6 +203,7 @@ async function StocksResults({
     dir: sort.dir,
   };
 
+  /** Ancienne coquille Togo (tout à 0) — plus l’état attendu après inventaire terrain. */
   const allQtyZero =
     items.length > 0 &&
     !q &&
@@ -225,7 +226,7 @@ async function StocksResults({
           {q || onlyRupture
             ? "Modifiez la recherche ou le filtre rupture."
             : isTogoSeedFail
-              ? "Les familles stock Togo ne sont pas encore créées. Contactez un administrateur."
+              ? "L’inventaire Togo n’est pas encore chargé. Contactez un administrateur (seed inventaire terrain)."
               : "Créez un article ou lancez le seed inventaire Direction."}
         </p>
         {canManage && !q && !onlyRupture && !isTogoSeedFail ? (
@@ -247,7 +248,7 @@ async function StocksResults({
       {allQtyZero ? (
         <div className="border-b border-msk-ink/6 bg-msk-chalk/50 px-4 py-2.5">
           <Badge tone="muted">
-            Quantités à 0 — inventaire Togo à renseigner
+            Toutes les quantités sont à 0 — vérifiez l’inventaire Togo
           </Badge>
         </div>
       ) : null}

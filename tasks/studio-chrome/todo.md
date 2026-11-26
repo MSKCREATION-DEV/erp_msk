@@ -4,7 +4,7 @@
 - [x] Task 2: Wire HTML / PDF / embedBrandLogo(logoId) / generate-* 
 - [x] Task 3: Playground UI + page logos Charte + persist action
 - [x] Task 4: Tests + ADR + SUIVI-GUIDES + inventaire
-- [ ] Task 5: Commit `dev` + push / align `main`
+- [x] Task 5: Commit `dev` (`2e0d51d`) — push SSH à faire par l’humain
 
 ## Checkpoint
 - [x] Édition header/footer/align/logo Charte dans Playground

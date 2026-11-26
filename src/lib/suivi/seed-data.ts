@@ -1015,6 +1015,139 @@ export const SV_SEED_STOCK: {
   },
 ];
 
+/**
+ * Inventaire bureau / studio Togo (liste terrain Direction 2026-11).
+ * Remplace l’ancienne coquille (copies Mali qté 0).
+ * Familles existantes uniquement — Informatique · Bureau · Divers (AV/studio).
+ */
+export const SV_SEED_STOCK_TOGO: {
+  code: string;
+  family: string;
+  label: string;
+  unit: string;
+  quantity: number;
+  location?: string;
+  observations?: string;
+}[] = [
+  {
+    code: "INF-101",
+    family: "Informatique",
+    label: "PC MacBook Pro M4 avec chargeur",
+    unit: "pièce",
+    quantity: 1,
+  },
+  {
+    code: "INF-102",
+    family: "Informatique",
+    label: "Souris avec fil",
+    unit: "pièce",
+    quantity: 2,
+  },
+  {
+    code: "INF-103",
+    family: "Informatique",
+    label: "Clavier",
+    unit: "pièce",
+    quantity: 1,
+  },
+  {
+    code: "INF-104",
+    family: "Informatique",
+    label: "Pack d’enceintes haut-parleurs",
+    unit: "pack",
+    quantity: 1,
+  },
+  {
+    code: "INF-105",
+    family: "Informatique",
+    label: "Écran",
+    unit: "pièce",
+    quantity: 1,
+  },
+  {
+    code: "INF-106",
+    family: "Informatique",
+    label: "Mini PC avec chargeur",
+    unit: "pièce",
+    quantity: 1,
+  },
+  {
+    code: "DIV-101",
+    family: "Divers",
+    label: "Projecteur lumière 300 W",
+    unit: "pièce",
+    quantity: 2,
+  },
+  {
+    code: "DIV-102",
+    family: "Divers",
+    label: "Softbox",
+    unit: "pièce",
+    quantity: 2,
+    observations: "Dont 1 défectueux",
+  },
+  {
+    code: "BUR-101",
+    family: "Bureau",
+    label: "Chaise coulissable",
+    unit: "pièce",
+    quantity: 1,
+    observations: "Avec tête",
+  },
+  {
+    code: "BUR-102",
+    family: "Bureau",
+    label: "Chaise non coulissable",
+    unit: "pièce",
+    quantity: 1,
+    observations: "Sans tête",
+  },
+  {
+    code: "DIV-103",
+    family: "Divers",
+    label: "Gros pied de projecteur",
+    unit: "pièce",
+    quantity: 2,
+    observations: "Dont 1 défectueux",
+  },
+  {
+    code: "DIV-104",
+    family: "Divers",
+    label: "Caméra DJI Osmo Pocket 3",
+    unit: "pièce",
+    quantity: 1,
+    observations: "Couvercle perdu",
+  },
+  {
+    code: "DIV-105",
+    family: "Divers",
+    label: "Ring light",
+    unit: "pièce",
+    quantity: 1,
+  },
+  {
+    code: "DIV-106",
+    family: "Divers",
+    label: "Micro DJI Mic 2",
+    unit: "pièce",
+    quantity: 1,
+  },
+  {
+    code: "DIV-107",
+    family: "Divers",
+    label: "Drone DJI Mini 4 Pro",
+    unit: "pièce",
+    quantity: 1,
+  },
+  {
+    code: "DIV-108",
+    family: "Divers",
+    label: "Micro DJI Mic Mini 2",
+    unit: "pièce",
+    quantity: 1,
+  },
+];
+
 /** Codes Excel snapshot (§5.2) hors inventaire Direction → archivés (décision H). */
 export const SV_SEED_STOCK_EXCEL_ARCHIVED_CODES = [
   "PAP-001",

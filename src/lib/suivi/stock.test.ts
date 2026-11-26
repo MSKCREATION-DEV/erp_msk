@@ -11,6 +11,7 @@ import {
 import {
   SV_SEED_STOCK,
   SV_SEED_STOCK_EXCEL_ARCHIVED_CODES,
+  SV_SEED_STOCK_TOGO,
 } from "./seed-data";
 
 assert.equal(SV_SEED_STOCK.length, 18, "18 articles Direction (décision H)");
@@ -27,6 +28,18 @@ for (const code of codes) {
 const allowed = new Set(["pièce", "paquet", "paire", "pack", "sachet"]);
 for (const s of SV_SEED_STOCK) {
   assert.ok(allowed.has(s.unit), `${s.code}: unité ${s.unit}`);
+}
+
+assert.equal(SV_SEED_STOCK_TOGO.length, 16, "16 articles inventaire Togo");
+const togoCodes = SV_SEED_STOCK_TOGO.map((s) => s.code);
+assert.equal(new Set(togoCodes).size, togoCodes.length, "codes Togo uniques");
+for (const s of SV_SEED_STOCK_TOGO) {
+  assert.ok(allowed.has(s.unit), `Togo ${s.code}: unité ${s.unit}`);
+  assert.ok(
+    stockFamilyPrefix(s.family),
+    `Togo ${s.code}: famille ${s.family}`,
+  );
+  assert.ok(s.quantity >= 1, `Togo ${s.code}: qté >= 1`);
 }
 
 assert.deepEqual(nextStockQuantity(5, "IN", 2), { nextQty: 7, moveQty: 2 });

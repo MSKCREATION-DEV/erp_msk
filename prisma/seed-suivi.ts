@@ -1,6 +1,6 @@
 /**
  * Seed module Suivi (tampon) — data depuis inventaire + DECISIONS-SEED uniquement.
- * Phase A Mali/Togo : Mali inchangé ; coquille Togo à 0 ; GRANT Espoir Togo.
+ * Phase A Mali/Togo : Mali inchangé ; inventaire Togo terrain ; GRANT Espoir Togo.
  * Ne touche jamais Auth / mots de passe.
  */
 import type { PrismaClient } from "../src/generated/prisma/client";
@@ -12,6 +12,7 @@ import {
   SV_SEED_MOVEMENTS,
   SV_SEED_STOCK,
   SV_SEED_STOCK_EXCEL_ARCHIVED_CODES,
+  SV_SEED_STOCK_TOGO,
 } from "../src/lib/suivi/seed-data";
 import { SV_SEED_EXPENSE_INVOICES } from "../src/lib/suivi/expense-seed-data";
 import { seedSuiviGed } from "../src/lib/suivi/seed-ged";
@@ -338,47 +339,101 @@ export async function seedSuiviTampon(prisma: PrismaClient) {
     }`,
   );
 
-  // Coquille Togo : mêmes familles / codes, qté 0, 0 mouvements — idempotent
+  // Inventaire Togo terrain (liste Direction) — remplace l’ancienne coquille Mali.
+  const togoActiveCodes = new Set(SV_SEED_STOCK_TOGO.map((s) => s.code));
   let togoStockCreated = 0;
   let togoStockUpdated = 0;
-  for (const s of SV_SEED_STOCK) {
+  let togoStockQtySynced = 0;
+  for (const s of SV_SEED_STOCK_TOGO) {
     const existing = await prisma.svStockItem.findUnique({
       where: { country_code: { country: "TOGO", code: s.code } },
     });
     if (existing) {
+      const qtyChanged = forceStockQty && existing.quantity !== s.quantity;
       await prisma.svStockItem.update({
         where: { id: existing.id },
         data: {
           family: s.family,
           label: s.label,
           unit: s.unit,
+          ...(qtyChanged ? { quantity: s.quantity } : {}),
           location: s.location ?? existing.location,
-          observations:
-            existing.observations ??
-            "Coquille Togo — quantités à 0 (inventaire à renseigner).",
+          observations: s.observations ?? existing.observations,
           archivedAt: null,
-          // Ne jamais forcer qty Togo sauf création (évite écraser ops)
         },
       });
+      if (qtyChanged) {
+        await prisma.svStockMovement.create({
+          data: {
+            itemId: existing.id,
+            kind: "ADJUST",
+            quantity: Math.abs(s.quantity - existing.quantity),
+            note: "Inventaire Togo terrain (resync)",
+            sourceRef: "seed:togo-inventaire",
+            createdById: actor.id,
+          },
+        });
+        togoStockQtySynced += 1;
+      }
       togoStockUpdated += 1;
       continue;
     }
-    await prisma.svStockItem.create({
+    const row = await prisma.svStockItem.create({
       data: {
         country: "TOGO",
         code: s.code,
         family: s.family,
         label: s.label,
         unit: s.unit,
-        quantity: 0,
+        quantity: s.quantity,
         location: s.location ?? null,
-        observations: "Coquille Togo — quantités à 0 (inventaire à renseigner).",
+        observations: s.observations ?? null,
       },
     });
+    if (s.quantity > 0) {
+      await prisma.svStockMovement.create({
+        data: {
+          itemId: row.id,
+          kind: "ADJUST",
+          quantity: s.quantity,
+          note: "Ouverture inventaire Togo terrain",
+          sourceRef: "seed:togo-inventaire",
+          createdById: actor.id,
+        },
+      });
+    }
     togoStockCreated += 1;
   }
+
+  // Archive ancienne coquille (codes Mali clonés) + tout actif hors liste Togo
+  let togoStockArchived = 0;
+  const togoArchiveAt = new Date("2026-11-26T12:00:00.000Z");
+  const togoStray = await prisma.svStockItem.findMany({
+    where: {
+      country: "TOGO",
+      archivedAt: null,
+      code: { notIn: [...togoActiveCodes] },
+    },
+  });
+  for (const row of togoStray) {
+    await prisma.svStockItem.update({
+      where: { id: row.id },
+      data: {
+        archivedAt: togoArchiveAt,
+        observations: [
+          row.observations,
+          "Archivé : hors inventaire Togo terrain (remplace coquille Mali)",
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      },
+    });
+    togoStockArchived += 1;
+  }
   console.log(
-    `✓ Sv stocks Togo créés ${togoStockCreated} · méta ${togoStockUpdated} (qté 0, 0 mvts)`,
+    `✓ Sv stocks Togo créés ${togoStockCreated} · méta ${togoStockUpdated} · qty forcées ${togoStockQtySynced} · archivés ${togoStockArchived}${
+      forceStockQty ? " (SV_STOCK_FORCE_QTY=1)" : ""
+    }`,
   );
 
   await seedEspoirSvTogoGrants(prisma);

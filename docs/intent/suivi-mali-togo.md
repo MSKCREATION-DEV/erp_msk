@@ -26,7 +26,7 @@ Permettre de **piloter séparément** la trésorerie tampon et les stocks Suivi 
 ### Succès V1 (done)
 
 1. **Régression Mali** : comptes / mouvements / stocks inchangés fonctionnellement (données backfillées Mali).
-2. **Coquille Togo** : 2 comptes (physique + banque) à 0, mêmes familles stock à 0, 0 mouvements — seed/prod idempotent.
+2. **Togo** : 2 comptes (physique + banque) à 0 ; **inventaire stock terrain** (`SV_SEED_STOCK_TOGO`, 16 articles) — plus de coquille copies Mali.
 3. **Droits** : modèle pays + capacités ; Direction/admins voient les deux ; Espoir Togo only ; Super Admin toujours les deux.
 4. **Entrée** : hub / nav = Comptes · Mouvements · Stocks (sans bloc Pays) ; au clic sur un pilier **sans** `?pays=` → choix Mali|Togo pour **ce** périmètre (ou redirect direct si 1 seul pays) ; `pays` invalide → 404 (absent ≠ 404).
 5. Pays **imposé** par le contexte URL (pas de cookie / localStorage).
