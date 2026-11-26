@@ -12,6 +12,8 @@ import { findCompositeRenderer } from "@/lib/studio/composite";
 import { canGenerateExemplaire } from "@/lib/studio/generate-sample-pdf";
 import { sampleOfficialPayloadForTemplate } from "@/lib/studio/sample-official-payload";
 import { extractVariableSlugs } from "@/lib/studio/variables";
+import { parseDocumentChrome } from "@/lib/studio/document-chrome";
+import { listActiveCharteLogos } from "@/lib/studio/charte-logos";
 
 export const metadata: Metadata = { title: "Playground gabarit" };
 
@@ -42,6 +44,9 @@ export default async function GabaritPlaygroundPage({
   const initialBody = editable && blocks.length > 0 ? blocksToText(blocks) : "";
   const hasComposite = Boolean(findCompositeRenderer(blocks));
   const bodySlugs = extractVariableSlugs(initialBody);
+  const initialChrome = parseDocumentChrome(template.structureJson);
+
+  const charteLogos = await listActiveCharteLogos();
 
   let variableDefs: Array<{
     slug: string;
@@ -63,7 +68,11 @@ export default async function GabaritPlaygroundPage({
     const found = new Set(matched.map((m) => m.slug));
     const missing = bodySlugs
       .filter((s) => !found.has(s))
-      .map((slug) => ({ slug, label: slug, sampleValue: null as string | null }));
+      .map((slug) => ({
+        slug,
+        label: slug,
+        sampleValue: null as string | null,
+      }));
     variableDefs = [...matched, ...missing];
   }
 
@@ -71,7 +80,7 @@ export default async function GabaritPlaygroundPage({
     <PageShell>
       <PageHeader
         title="Playground"
-        description={`Données test, contenu DSL, preview HTML live et PDF à la demande — ${template.name} (${template.code}). Aucune modification n’est enregistrée ici.`}
+        description={`Chrome (en-tête / pied / logo Charte), données test, DSL, preview HTML live et PDF — ${template.name} (${template.code}).`}
         backHref={`/administration/gabarits/${id}`}
         backLabel="Retour à la fiche"
         breadcrumbs={[
@@ -92,6 +101,8 @@ export default async function GabaritPlaygroundPage({
         variableDefs={variableDefs}
         hasComposite={hasComposite}
         samplePayload={sampleOfficialPayloadForTemplate(template)}
+        initialChrome={initialChrome}
+        charteLogos={charteLogos}
       />
     </PageShell>
   );

@@ -13,7 +13,7 @@ Branche de travail : `dev`.
 | Route app | `/guides` |
 | Contenu source | `src/lib/guides/` (TypeScript typé + Zod) |
 | Manuels techniques | `docs/manuels/` (référence éditoriale) |
-| Dernière mise à jour | 2026-11-23 (Suivi Mali/Togo — **choix pays au clic pilier**, plus de bloc Pays hub — voir §8) |
+| Dernière mise à jour | 2026-11-26 (Studio chrome document + Charte liée Playground) |
 
 ### Légende statuts documentaires
 
@@ -197,6 +197,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 
 ## 8. Changelog
 
+### 2026-11-26 — Stocks Togo — inventaire terrain (16 articles)
+
+| | |
+|---|---|
+| Quoi | Remplace la coquille Togo (copies Mali qté 0) par l’inventaire bureau/studio terrain : 16 articles (INF/BUR/DIV), quantités + observations (défectueux, couvercle perdu). Seed idempotent + archive anciens codes coquille. |
+| Pourquoi | Liste Direction « articles au Togo » à intégrer dans `/suivi/stocks?pays=tg` |
+| Fichiers | `lib/suivi/seed-data.ts` (`SV_SEED_STOCK_TOGO`), `prisma/seed-suivi.ts`, `scripts/fix-suivi-stocks.ts`, empty state stocks, ce suivi |
+| Statut doc | Guide stocks Suivi → **`to_validate`** (vérifier liste Togo en UI) |
+| Routes | `/suivi/stocks?pays=tg` |
+| Dette | Aucune si seed prod passé (`npx tsx --env-file=.env.local scripts/fix-suivi-stocks.ts`) |
+
 ### 2026-11-23 — Suivi Mali / Togo — choix pays au clic pilier (UX)
 
 | | |
@@ -288,6 +299,17 @@ créer · consulter · suivre · transformer · demander · dépanner — à ét
 | Fichiers | `page-header.tsx`, `crm/prospects/[id]/page.tsx`, `commercial/clients/[id]/page.tsx`, `crm/relances/page.tsx`, `relances-results.tsx`, ce suivi |
 | Statut doc | `crm-suivre-relancer` reste `to_validate` (revalider recherche relances au clavier) |
 | Routes | `/crm/prospects/[id]` · `/commercial/clients/[id]` · `/crm/relances` |
+
+### 2026-11-26 — Studio : chrome document + Charte liée
+
+| | |
+|---|---|
+| Quoi | Modèle `DocumentChrome` (header/footer/aligns/logo) persisté dans `structureJson.chrome`. Playground onglet **Chrome** : édition live + PDF sync + **Enregistrer**. Logos = uniquement `BrandLogo` ACTIVE (Charte) — pas de choix fantôme. Snippets blocs (modularité DSL). ADR `docs/architecture/ADR-studio-document-chrome.md`. |
+| Pourquoi | En-tête / pied / alignements n’étaient pas modifiables ; Charte non liée au picker document. |
+| Fichiers | `document-chrome.ts`, `charte-logos.ts`, `embed-brand-logo.ts`, `rh.ts` (drawHeader/Footer), `render-blocks*.ts`, Playground, `studio-templates.ts`, inventaire, ADR, ce suivi |
+| Statut doc | Inventaire maj ; guide Studio / signatures-gabarits **`outdated`→`draft`** à revalider onglet Chrome |
+| Routes | `/administration/gabarits/[id]/playground` · `/administration/charte/logos` |
+| Dette restante | Typo PDF Charte non branchée ; WYSIWYG cellules ; chrome non appliqué aux générateurs `LEGACY_CODE` |
 
 ### 2026-11-17 — Studio : pipeline unifié (DSL + régions composites)
 

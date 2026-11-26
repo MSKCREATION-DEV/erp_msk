@@ -26,7 +26,8 @@ Les PDF Commercial (devis, factures) **et RH** utilisent :
 |---|---|
 | Mes signatures | `/signatures` (ou menu Mon espace) |
 | Gabarits | `/administration/gabarits` |
-| Playground gabarit | `/administration/gabarits/[id]/playground` — preview HTML live + PDF à la demande |
+| Playground gabarit | `/administration/gabarits/[id]/playground` — onglet Chrome (en-tête/pied/logo Charte), DSL, preview HTML live + PDF |
+| Charte logos | `/administration/charte/logos` — seule source de logos sélectionnables sur un document |
 | Charte / brand | `/charte` (référence visuelle) |
 | PDF contrat | `/rh/contrats/[id]` → Générer PDF |
 | PDF collab | `/rh/collaborateurs/[id]` → Documents RH |
@@ -42,6 +43,7 @@ Les PDF Commercial (devis, factures) **et RH** utilisent :
 
 ## Changelog manuel
 
+- 2026-11-26 — **Chrome document** : Playground édite en-tête / pied / alignements / logo ; logos = Charte ACTIVE uniquement ; persistance `structureJson.chrome`.
 - 2026-11-13 — **Signatures OFF (règle produit)** : seed + migration data forcent `signatureEnabled=false` sur **tous** les gabarits (10 legacy inclus). Plus d’exception « préserver la prod ». Activation uniquement via bascule admin sur `/administration/gabarits/[id]`.
 - 2026-11-13 — **Studio documentaire v1** : nouveau moteur central (`src/lib/studio/engine.ts`) pour les gabarits créés dans le Studio (blocs DSL `# Titre` / `> encadré` / `---` / `[[SIGNATURE: …]]` + variables `{{slug}}`, versions brouillon/publiée). Signature **désactivée par défaut** — bascule explicite par gabarit (`signatureEnabled`) via la fiche `/administration/gabarits/[id]`. Hook réel sur **Devis** et **Facture** Commercial : résolution via `requireActiveTemplate` + `resolveTemplateSignature` (si OFF → pas d’image / pas de bloc vide). Catalogue central de variables : `/administration/gabarits/variables`.
 - 2026-10-10 — Gabarits RH (contrats, attestation, règlement, solde, fiche paie) + fix WinAnsi CR.

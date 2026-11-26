@@ -61,6 +61,39 @@ function main() {
   });
   assert.match(noSig, /Signature désactivée/);
 
+  const noChrome = renderBlocksToHtml(textToBlocks("# Corps"), {
+    title: "Sans chrome",
+    context: {},
+    signatureEnabled: false,
+    chrome: {
+      showHeader: false,
+      showFooter: false,
+      footerLines: ["Custom pied"],
+    },
+  });
+  assert.doesNotMatch(noChrome, /msk-doc-chrome-header/);
+  assert.doesNotMatch(noChrome, /msk-doc-chrome-footer/);
+  assert.match(noChrome, /Corps/);
+
+  const customFooter = renderBlocksToHtml(textToBlocks("# X"), {
+    title: "Titre",
+    context: {},
+    signatureEnabled: false,
+    chrome: {
+      showHeader: true,
+      showFooter: true,
+      titleAlign: "left",
+      footerAlign: "right",
+      footerLines: ["Ligne pied custom"],
+      brandLabel: "MARQUE TEST",
+      showLogo: false,
+    },
+  });
+  assert.match(customFooter, /Ligne pied custom/);
+  assert.match(customFooter, /MARQUE TEST/);
+  assert.match(customFooter, /msk-doc-title text-left/);
+  assert.match(customFooter, /msk-doc-chrome-footer text-right/);
+
   console.log("✓ studio/render-blocks-html.test.ts — preview HTML OK");
 }
 

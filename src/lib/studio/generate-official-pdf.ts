@@ -16,6 +16,11 @@ import {
   applyVariableOverrides,
   extractVariableSlugs,
 } from "@/lib/studio/variables";
+import {
+  mergeDocumentChrome,
+  parseDocumentChrome,
+  type DocumentChromeInput,
+} from "@/lib/studio/document-chrome";
 
 export type OfficialPdfSignature = {
   signaturePng?: Uint8Array | Buffer;
@@ -36,6 +41,8 @@ export type GenerateOfficialOptions = {
   signature: OfficialPdfSignature;
   strictVariables: boolean;
   logoAlign?: "left" | "center" | "right";
+  /** Playground / persist : chrome document (merge sur structureJson). */
+  chromeOverride?: Partial<DocumentChromeInput> | null;
   /** Playground : corps alternatif. */
   blocksOverride?: TemplateBlock[];
   /**
@@ -64,10 +71,20 @@ export async function generateOfficialPdfFromTemplate(
     context = applyVariableOverrides(context, opts.variableOverrides);
   }
 
+  const baseChrome = parseDocumentChrome(template.structureJson);
+  const chrome = mergeDocumentChrome(baseChrome, {
+    ...opts.chromeOverride,
+    logoAlign:
+      opts.chromeOverride?.logoAlign ?? opts.logoAlign ?? baseChrome.logoAlign,
+  });
+
   const headerTitle =
-    opts.payload.kind === "blocks_only" && opts.payload.headerTitle
+    opts.chromeOverride?.headerTitle?.trim() ||
+    (opts.payload.kind === "blocks_only" && opts.payload.headerTitle
       ? opts.payload.headerTitle
-      : template.name;
+      : null) ||
+    chrome.headerTitle?.trim() ||
+    template.name;
 
   return renderBlocksToPdf(blocks, {
     title: headerTitle,
@@ -77,7 +94,8 @@ export async function generateOfficialPdfFromTemplate(
       opts.signatureEnabledOverride ?? template.signatureEnabled,
     signaturePng: opts.signature.signaturePng,
     signatureLabel: opts.signature.signatureLabel,
-    logoAlign: opts.logoAlign,
+    logoAlign: chrome.logoAlign,
+    chrome,
     compositePayload: opts.payload,
   });
 }

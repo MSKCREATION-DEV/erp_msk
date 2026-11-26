@@ -1,9 +1,9 @@
 # Studio documentaire — Inventaire exhaustif `docs/` ↔ gabarits
 
-**Date** : 2026-11-13 · **MàJ** : 2026-11-17 (pipeline unifié DSL + régions) · **Branche** : `dev`  
+**Date** : 2026-11-13 · **MàJ** : 2026-11-26 (chrome document + Charte liée) · **Branche** : `dev`  
 **Règle** : aucune invention — chaque ligne est traçable à un fichier du dépôt ou à une référence locale documentée (hors Git).
 
-Sources croisées : `docs/commercial/INVENTAIRE-ALIGNEMENT-DOCUMENTS-2026-11-08.md`, `docs/specs/suivi-tampon/INVENTAIRE-DOCUMENTS.md`, `prisma/seed.ts` / `prisma/seed-studio.ts`, code `src/lib/pdf/*`, ADR `docs/architecture/ADR-studio-pipeline-unifie.md`.
+Sources croisées : `docs/commercial/INVENTAIRE-ALIGNEMENT-DOCUMENTS-2026-11-08.md`, `docs/specs/suivi-tampon/INVENTAIRE-DOCUMENTS.md`, `prisma/seed.ts` / `prisma/seed-studio.ts`, code `src/lib/pdf/*`, ADR `docs/architecture/ADR-studio-pipeline-unifie.md`, ADR `docs/architecture/ADR-studio-document-chrome.md`.
 
 ---
 
@@ -13,6 +13,7 @@ Sources croisées : `docs/commercial/INVENTAIRE-ALIGNEMENT-DOCUMENTS-2026-11-08.
 |--------|----------|--------|
 | Gabarits ERP actifs (`DocumentTemplate`) | **13+** | 10 métier migrés `ENGINE_BLOCKS` + démo `attestation_presence_libre` + 2 coques charges (`à valider`) |
 | Pipeline | **Unifié** | DSL/blocs + variables → HTML live → PDF (`renderBlocksToPdf` + régions `[[COMPOSITE]]`) |
+| Chrome | **`DocumentChrome`** | En-tête / pied / aligns / logo Charte dans `structureJson.chrome` — Playground onglet Chrome |
 | PDF/DOCX de référence dans `docs/` (versionnés) | **2** | Factures charges internes uniquement (§4) |
 | PDF/DOCX métier hors dépôt (gitignore) | **~25+** | Inventoriés dans commercial / suivi tampon — contenu déjà aligné dans DSL + régions |
 | Manuels `docs/manuels/*.md` | **12 + README** | Procédures UI — **pas** de clauses à seed comme gabarit |
@@ -42,10 +43,11 @@ Sources croisées : `docs/commercial/INVENTAIRE-ALIGNEMENT-DOCUMENTS-2026-11-08.
 
 ---
 
-## 3. Pipeline unifié (2026-11-17)
+## 3. Pipeline unifié (2026-11-17) + chrome (2026-11-26)
 
 ```
 Réf docs → corps DSL (spécifique) + variables
+        → DocumentChrome (structureJson.chrome + Charte logos ACTIVE)
         → renderBlocksToHtml (preview live, régions peuplées)
         → generateOfficialPdfFromTemplate → renderBlocksToPdf (+ drawCompositeRegion)
 ```
@@ -54,8 +56,9 @@ Réf docs → corps DSL (spécifique) + variables
 |-------|-------|
 | Composite présent → ignore DSL, appelle `generateCommercialPdf` / `generateContractPdf` / … | Composite = **région** à sa place dans le flux blocs |
 | Playground `playgroundTextMode` strippe composites | Même pipeline métier ; overrides variables optionnels |
+| Header/footer hardcodés | Chrome éditable + logo uniquement Charte ACTIVE |
 
-Point d’entrée modules : Commercial / Contrats / RH → `generateOfficialPdfFromTemplate` (inchangé côté actions).
+Point d’entrée modules : Commercial / Contrats / RH → `generateOfficialPdfFromTemplate` (chrome persisté appliqué).
 
 ---
 

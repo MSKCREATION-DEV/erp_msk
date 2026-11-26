@@ -10,7 +10,6 @@ import {
   draw,
   drawFooter,
   drawHeader,
-  type DrawHeaderOptions,
   drawParagraph,
   drawSignatureBlock,
   drawTitle,
@@ -19,6 +18,13 @@ import {
   MARGIN,
 } from "@/lib/pdf/rh";
 import { drawCompositeRegion } from "@/lib/studio/composite-regions";
+import {
+  defaultDocumentChrome,
+  mergeDocumentChrome,
+  resolveFooterLines,
+  type DocumentChrome,
+  type DocumentChromeInput,
+} from "@/lib/studio/document-chrome";
 import type { OfficialPdfPayload } from "@/lib/studio/official-payload";
 import { resolveTemplateString } from "@/lib/studio/variables";
 import type { TemplateBlock } from "@/lib/studio/types";
@@ -34,7 +40,10 @@ export type RenderBlocksOptions = {
   signatureEnabled: boolean;
   signaturePng?: Uint8Array | Buffer;
   signatureLabel?: string;
-  logoAlign?: DrawHeaderOptions["logoAlign"];
+  /** @deprecated Préférer `chrome.logoAlign`. */
+  logoAlign?: DocumentChrome["logoAlign"];
+  /** Chrome document (Charte + mise en page). */
+  chrome?: DocumentChrome | DocumentChromeInput;
   /**
    * Payload métier pour les régions `[[COMPOSITE]]` (lignes devis, grille
    * paie…). Absent → région no-op (ex. document libre).
@@ -77,9 +86,31 @@ export async function renderBlocksToPdf(
   blocks: TemplateBlock[],
   opts: RenderBlocksOptions,
 ): Promise<Uint8Array> {
+  const chrome = mergeDocumentChrome(
+    defaultDocumentChrome(),
+    {
+      ...opts.chrome,
+      logoAlign: opts.chrome?.logoAlign ?? opts.logoAlign,
+    },
+  );
+
   const ctx = await createCtx();
+  ctx.footerChrome = {
+    show: chrome.showFooter,
+    align: chrome.footerAlign,
+    lines: resolveFooterLines(chrome),
+  };
+
   await drawHeader(ctx, opts.title.toUpperCase(), {
-    logoAlign: opts.logoAlign,
+    showHeader: chrome.showHeader,
+    logoAlign: chrome.logoAlign,
+    titleAlign: chrome.titleAlign,
+    showLogo: chrome.showLogo,
+    showTagline: chrome.showTagline,
+    showBrandLabel: chrome.showBrandLabel,
+    brandLabel: chrome.brandLabel,
+    tagline: chrome.tagline,
+    logoId: chrome.logoId,
   });
 
   const resolve = (text: string) =>

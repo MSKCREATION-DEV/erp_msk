@@ -105,6 +105,13 @@ export type RhPayslipInput = {
  * documentaire — gabarits ENGINE_BLOCKS). Même primitive pdf-lib que les
  * générateurs legacy RH/Commercial, pas de duplication de la charte.
  */
+/** Pied configurable (Studio chrome) — reporté sur chaque page via ensureSpace. */
+export type CtxFooterChrome = {
+  show: boolean;
+  align: "left" | "center" | "right";
+  lines: string[];
+};
+
 export type Ctx = {
   pdf: PDFDocument;
   page: PDFPage;
@@ -114,6 +121,7 @@ export type Ctx = {
   width: number;
   height: number;
   y: number;
+  footerChrome?: CtxFooterChrome;
 };
 
 export function draw(
@@ -170,9 +178,9 @@ function wrap(
   return out.length ? out : [""];
 }
 
-async function embedLogo(pdf: PDFDocument) {
+async function embedLogo(pdf: PDFDocument, logoId?: string | null) {
   const { embedBrandLogo } = await import("@/lib/pdf/embed-brand-logo");
-  return embedBrandLogo(pdf);
+  return embedBrandLogo(pdf, { logoId });
 }
 
 export async function createCtx(): Promise<Ctx> {
@@ -218,43 +226,88 @@ function drawMiniHeader(ctx: Ctx) {
 export type DrawHeaderOptions = {
   /** Position du logo charte dans l’en-tête (Playground Studio). */
   logoAlign?: "left" | "center" | "right";
+  titleAlign?: "left" | "center" | "right";
+  showLogo?: boolean;
+  showTagline?: boolean;
+  showBrandLabel?: boolean;
+  brandLabel?: string;
+  tagline?: string;
+  /** BrandLogo Charte ACTIVE — sinon défaut documents. */
+  logoId?: string | null;
+  /** Si false, n’affiche ni logo ni marque ni titre (chrome off). */
+  showHeader?: boolean;
 };
 
+function textXForAlign(
+  align: "left" | "center" | "right",
+  textWidth: number,
+  pageWidth: number,
+): number {
+  if (align === "center") return (pageWidth - textWidth) / 2;
+  if (align === "right") return pageWidth - MARGIN - textWidth;
+  return MARGIN;
+}
+
 export async function drawHeader(ctx: Ctx, title: string, options?: DrawHeaderOptions) {
+  if (options?.showHeader === false) return;
+
   const logoAlign = options?.logoAlign ?? "left";
-  const logo = await embedLogo(ctx.pdf);
-  if (logo) {
-    const maxW = 120;
-    const scale = maxW / logo.width;
-    const h = logo.height * scale;
-    let logoX = MARGIN;
-    if (logoAlign === "center") logoX = (ctx.width - maxW) / 2;
-    if (logoAlign === "right") logoX = ctx.width - MARGIN - maxW;
-    ctx.page.drawImage(logo, {
-      x: logoX,
-      y: ctx.y - h,
-      width: maxW,
-      height: h,
-    });
-    ctx.y -= h + 8;
-  } else {
-    draw(ctx.page, company.legalName, {
-      x: MARGIN,
+  const titleAlign = options?.titleAlign ?? "center";
+  const showLogo = options?.showLogo !== false;
+  const showTagline = options?.showTagline !== false;
+  const showBrandLabel = options?.showBrandLabel !== false;
+  const brandLabel = options?.brandLabel?.trim() || company.legalName;
+  const tagline = options?.tagline?.trim() || company.tagline;
+
+  let drewVisual = false;
+  if (showLogo) {
+    const logo = await embedLogo(ctx.pdf, options?.logoId);
+    if (logo) {
+      const maxW = 120;
+      const scale = maxW / logo.width;
+      const h = logo.height * scale;
+      let logoX = MARGIN;
+      if (logoAlign === "center") logoX = (ctx.width - maxW) / 2;
+      if (logoAlign === "right") logoX = ctx.width - MARGIN - maxW;
+      ctx.page.drawImage(logo, {
+        x: logoX,
+        y: ctx.y - h,
+        width: maxW,
+        height: h,
+      });
+      ctx.y -= h + 8;
+      drewVisual = true;
+    }
+  }
+
+  if (!drewVisual && showBrandLabel) {
+    const labelW = ctx.fontBold.widthOfTextAtSize(toWinAnsi(brandLabel), 14);
+    draw(ctx.page, brandLabel, {
+      x: textXForAlign(logoAlign, labelW, ctx.width),
       y: ctx.y,
       size: 14,
       font: ctx.fontBold,
       color: BLUE,
     });
     ctx.y -= 18;
+  } else if (drewVisual && showBrandLabel && logoAlign !== "center") {
+    // Marque déjà portée par le logo — pas de doublon texte.
   }
-  draw(ctx.page, company.tagline, {
-    x: MARGIN,
-    y: ctx.y,
-    size: 8,
-    font: ctx.fontOblique,
-    color: MUTED,
-  });
-  ctx.y -= 22;
+
+  if (showTagline) {
+    const tw = ctx.fontOblique.widthOfTextAtSize(toWinAnsi(tagline), 8);
+    draw(ctx.page, tagline, {
+      x: textXForAlign(logoAlign, tw, ctx.width),
+      y: ctx.y,
+      size: 8,
+      font: ctx.fontOblique,
+      color: MUTED,
+    });
+    ctx.y -= 22;
+  } else {
+    ctx.y -= 8;
+  }
+
   ctx.page.drawRectangle({
     x: MARGIN,
     y: ctx.y - 4,
@@ -263,9 +316,9 @@ export async function drawHeader(ctx: Ctx, title: string, options?: DrawHeaderOp
     color: BLUE,
   });
   ctx.y -= 28;
-  const tw = ctx.fontBold.widthOfTextAtSize(toWinAnsi(title), 16);
+  const titleW = ctx.fontBold.widthOfTextAtSize(toWinAnsi(title), 16);
   draw(ctx.page, title, {
-    x: (ctx.width - tw) / 2,
+    x: textXForAlign(titleAlign, titleW, ctx.width),
     y: ctx.y,
     size: 16,
     font: ctx.fontBold,
@@ -274,36 +327,44 @@ export async function drawHeader(ctx: Ctx, title: string, options?: DrawHeaderOp
   ctx.y -= 28;
 }
 
-export function drawFooter(ctx: Ctx) {
-  const footer1 = `Adresse : ${company.addressOneLine}`;
-  const footer2 = `NIF : ${company.fiscalId}  ·  ${company.email}  ·  ${company.phones}`;
-  const footer3 = "PUBLIC - MSKCREATION";
-  const y1 = 32;
-  const y2 = 20;
-  const y3 = 10;
-  const f1 = toWinAnsi(footer1);
-  const f2 = toWinAnsi(footer2);
-  const f3 = toWinAnsi(footer3);
-  ctx.page.drawText(f1, {
-    x: (ctx.width - ctx.font.widthOfTextAtSize(f1, 6.5)) / 2,
-    y: y1,
-    size: 6.5,
-    font: ctx.font,
-    color: MUTED,
-  });
-  ctx.page.drawText(f2, {
-    x: (ctx.width - ctx.font.widthOfTextAtSize(f2, 6.5)) / 2,
-    y: y2,
-    size: 6.5,
-    font: ctx.font,
-    color: MUTED,
-  });
-  ctx.page.drawText(f3, {
-    x: (ctx.width - ctx.fontOblique.widthOfTextAtSize(f3, 6)) / 2,
-    y: y3,
-    size: 6,
-    font: ctx.fontOblique,
-    color: MUTED,
+export type DrawFooterOptions = {
+  show?: boolean;
+  align?: "left" | "center" | "right";
+  lines?: string[];
+};
+
+export function drawFooter(ctx: Ctx, options?: DrawFooterOptions) {
+  const chrome = ctx.footerChrome;
+  const show = options?.show ?? chrome?.show ?? true;
+  if (!show) return;
+
+  const align = options?.align ?? chrome?.align ?? "center";
+  const lines =
+    options?.lines && options.lines.length > 0
+      ? options.lines
+      : chrome?.lines && chrome.lines.length > 0
+        ? chrome.lines
+        : [
+            `Adresse : ${company.addressOneLine}`,
+            `NIF : ${company.fiscalId}  ·  ${company.email}  ·  ${company.phones}`,
+            "PUBLIC - MSKCREATION",
+          ];
+
+  const baseY = 10;
+  const step = 12;
+  const startY = baseY + (Math.min(lines.length, 5) - 1) * step;
+  lines.slice(0, 5).forEach((line, i) => {
+    const size = i === lines.length - 1 && lines.length >= 3 ? 6 : 6.5;
+    const font = i === lines.length - 1 && lines.length >= 3 ? ctx.fontOblique : ctx.font;
+    const encoded = toWinAnsi(line);
+    const tw = font.widthOfTextAtSize(encoded, size);
+    ctx.page.drawText(encoded, {
+      x: textXForAlign(align, tw, ctx.width),
+      y: startY - i * step,
+      size,
+      font,
+      color: MUTED,
+    });
   });
 }
 

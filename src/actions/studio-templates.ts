@@ -315,3 +315,81 @@ export async function createTemplateVariableAction(
 
 /** Pré-remplit l’éditeur en texte (DSL) à partir des blocs stockés — pour la page d’édition. */
 export { blocksToText };
+
+const ChromeSaveSchema = z.object({
+  templateId: z.string().min(1),
+  chromeJson: z.string().min(2).max(8000),
+});
+
+/**
+ * Persiste le chrome document (en-tête / pied / alignements / logo Charte)
+ * dans `structureJson.chrome`. LogoId hors Charte ACTIVE → rejeté.
+ */
+export async function updateTemplateChromeAction(
+  _prev: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const actor = await requireUser({ permission: "cfg.templates" });
+  const parsed = ChromeSaveSchema.safeParse({
+    templateId: formData.get("templateId"),
+    chromeJson: formData.get("chromeJson"),
+  });
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Formulaire invalide" };
+  }
+
+  const { templateId, chromeJson } = parsed.data;
+  let raw: unknown;
+  try {
+    raw = JSON.parse(chromeJson);
+  } catch {
+    return { ok: false, error: "Chrome JSON invalide" };
+  }
+
+  const {
+    DocumentChromeSchema,
+    defaultDocumentChrome,
+    mergeDocumentChrome,
+    withChromeInStructure,
+  } = await import("@/lib/studio/document-chrome");
+  const chromeParsed = DocumentChromeSchema.safeParse(raw);
+  if (!chromeParsed.success) {
+    return { ok: false, error: chromeParsed.error.issues[0]?.message ?? "Chrome invalide" };
+  }
+
+  const { assertActiveCharteLogoId } = await import("@/lib/studio/charte-logos");
+  const logoId = await assertActiveCharteLogoId(chromeParsed.data.logoId);
+  const chrome = mergeDocumentChrome(defaultDocumentChrome(), {
+    ...chromeParsed.data,
+    logoId,
+  });
+
+  const template = await prisma.documentTemplate.findUnique({ where: { id: templateId } });
+  if (!template) return { ok: false, error: "Gabarit introuvable" };
+  if (template.generatorKind !== "ENGINE_BLOCKS") {
+    return { ok: false, error: "Chrome réservé aux gabarits Studio (blocs)" };
+  }
+
+  const nextStructure = withChromeInStructure(template.structureJson, chrome);
+  await prisma.documentTemplate.update({
+    where: { id: templateId },
+    data: { structureJson: nextStructure as object },
+  });
+
+  await writeAudit({
+    actorId: actor.id,
+    action: "studio.template.chrome",
+    entityType: "document_template",
+    entityId: templateId,
+    metadata: {
+      logoId: chrome.logoId,
+      logoAlign: chrome.logoAlign,
+      showHeader: chrome.showHeader,
+      showFooter: chrome.showFooter,
+    },
+  });
+
+  revalidatePath(`/administration/gabarits/${templateId}`);
+  revalidatePath(`/administration/gabarits/${templateId}/playground`);
+  return { ok: true, message: "Mise en page (chrome) enregistrée" };
+}

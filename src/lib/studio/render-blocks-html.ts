@@ -4,12 +4,18 @@
  * Les blocs `composite` utilisent `compositeHtmlModel` quand un payload
  * exemplaire est fourni (même source que le PDF métier).
  */
-import { company } from "@/lib/company";
 import type { CompositeRenderer } from "@/lib/studio/composite";
 import {
   compositeHtmlModel,
   type CompositeHtmlModel,
 } from "@/lib/studio/composite-html-model";
+import {
+  defaultDocumentChrome,
+  mergeDocumentChrome,
+  resolveFooterLines,
+  type DocumentChrome,
+  type DocumentChromeInput,
+} from "@/lib/studio/document-chrome";
 import type { OfficialPdfPayload } from "@/lib/studio/official-payload";
 import type { TemplateBlock } from "@/lib/studio/types";
 import { resolveTemplateString } from "@/lib/studio/variables";
@@ -18,9 +24,14 @@ export type RenderBlocksHtmlOptions = {
   title: string;
   context: Record<string, unknown>;
   signatureEnabled: boolean;
+  /** @deprecated Préférer `chrome.logoAlign`. */
   logoAlign?: "left" | "center" | "right";
-  /** Affiche le chrome en-tête / pied (défaut true). */
+  /** Affiche le chrome en-tête / pied (défaut true) — override grossier. */
   showChrome?: boolean;
+  /** Chrome document (alignements, footer, logo…). */
+  chrome?: DocumentChrome | DocumentChromeInput;
+  /** URL preview logo Charte (serveur → client). */
+  logoPreviewUrl?: string | null;
   /** Payload exemplaire — régions composites fidèles au PDF. */
   compositePayload?: OfficialPdfPayload;
 };
@@ -180,9 +191,13 @@ function renderBlockHtml(
 export const PLAYGROUND_PREVIEW_CSS = `
 .msk-doc-sheet{font-family:Jost,system-ui,sans-serif;color:#0D1330;background:#fff;border:1px solid rgba(13,19,48,.08);border-radius:12px;overflow:hidden}
 .msk-doc-chrome-header{padding:1.25rem 1.5rem 1rem;background:linear-gradient(180deg,rgba(29,115,188,.06),#fff 70%);border-bottom:1px solid rgba(13,19,48,.06)}
+.msk-doc-logo{display:block;max-height:48px;max-width:160px;width:auto;height:auto;margin:0 0 .5rem}
+.msk-doc-logo-wrap.text-center .msk-doc-logo{margin-left:auto;margin-right:auto}
+.msk-doc-logo-wrap.text-right .msk-doc-logo{margin-left:auto}
 .msk-doc-tagline{font-size:11px;color:rgba(13,19,48,.45);font-style:italic;margin:0 0 .35rem}
 .msk-doc-brand{font-size:13px;font-weight:700;color:#1D73BC;letter-spacing:.04em;text-transform:uppercase;margin:0}
 .msk-doc-title{font-size:1.15rem;font-weight:700;margin:.65rem 0 0;color:#0D1330}
+.msk-doc-title.text-left{text-align:left}.msk-doc-title.text-center{text-align:center}.msk-doc-title.text-right{text-align:right}
 .msk-doc-body{padding:1.25rem 1.5rem 1.5rem;min-height:12rem}
 .msk-doc-h{font-size:.95rem;font-weight:700;margin:1.1rem 0 .45rem;padding-bottom:.3rem;border-bottom:2px solid #1D73BC;color:#0D1330}
 .msk-doc-h:first-child{margin-top:0}
@@ -203,7 +218,7 @@ export const PLAYGROUND_PREVIEW_CSS = `
 .msk-composite-footer{font-size:11px;font-weight:600;color:#1D73BC;margin:.35rem 0 0}
 .msk-composite-hint{font-size:11px;color:rgba(13,19,48,.45);margin:0}
 .msk-net-row td{background:rgba(29,115,188,.06);color:#1D73BC}
-.msk-doc-chrome-footer{padding:.85rem 1.5rem 1rem;border-top:1px dashed rgba(29,115,188,.35);background:#F5F3EF;text-align:center;font-size:10px;line-height:1.45;color:rgba(13,19,48,.55)}
+.msk-doc-chrome-footer{padding:.85rem 1.5rem 1rem;border-top:1px dashed rgba(29,115,188,.35);background:#F5F3EF;font-size:10px;line-height:1.45;color:rgba(13,19,48,.55)}
 .text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}
 `.trim();
 
@@ -214,8 +229,17 @@ export function renderBlocksToHtml(
   blocks: TemplateBlock[],
   opts: RenderBlocksHtmlOptions,
 ): string {
+  const chrome = mergeDocumentChrome(defaultDocumentChrome(), {
+    ...opts.chrome,
+    logoAlign: opts.chrome?.logoAlign ?? opts.logoAlign,
+  });
   const showChrome = opts.showChrome !== false;
-  const align = alignClass(opts.logoAlign);
+  const showHeader = showChrome && chrome.showHeader;
+  const showFooter = showChrome && chrome.showFooter;
+  const logoAlign = alignClass(chrome.logoAlign);
+  const titleAlign = alignClass(chrome.titleAlign);
+  const footerAlign = alignClass(chrome.footerAlign);
+
   const body = blocks
     .map((b) =>
       renderBlockHtml(
@@ -227,22 +251,36 @@ export function renderBlocksToHtml(
     )
     .join("\n");
 
-  const header = showChrome
+  const logoHtml =
+    chrome.showLogo && opts.logoPreviewUrl
+      ? `<div class="msk-doc-logo-wrap ${logoAlign}"><img class="msk-doc-logo" src="${escapeHtml(opts.logoPreviewUrl)}" alt="Logo charte" /></div>`
+      : "";
+
+  const brandHtml =
+    chrome.showBrandLabel && !(chrome.showLogo && opts.logoPreviewUrl)
+      ? `<p class="msk-doc-brand">${escapeHtml(chrome.brandLabel ?? "")}</p>`
+      : "";
+
+  const taglineHtml = chrome.showTagline
+    ? `<p class="msk-doc-tagline">${escapeHtml(chrome.tagline ?? "")}</p>`
+    : "";
+
+  const header = showHeader
     ? [
-        `<header class="msk-doc-chrome-header ${align}">`,
-        `<p class="msk-doc-brand">${escapeHtml(company.legalName)}</p>`,
-        `<p class="msk-doc-tagline">${escapeHtml(company.tagline)}</p>`,
-        `<h1 class="msk-doc-title">${escapeHtml(opts.title)}</h1>`,
+        `<header class="msk-doc-chrome-header ${logoAlign}">`,
+        logoHtml,
+        brandHtml,
+        taglineHtml,
+        `<h1 class="msk-doc-title ${titleAlign}">${escapeHtml(opts.title)}</h1>`,
         `</header>`,
       ].join("")
     : "";
 
-  const footer = showChrome
+  const footerLines = resolveFooterLines(chrome);
+  const footer = showFooter
     ? [
-        `<footer class="msk-doc-chrome-footer">`,
-        `<div>Adresse : ${escapeHtml(company.addressOneLine)}</div>`,
-        `<div>NIF : ${escapeHtml(company.fiscalId)} · ${escapeHtml(company.email)} · ${escapeHtml(company.phones)}</div>`,
-        `<div>PUBLIC — ${escapeHtml(company.legalName)}</div>`,
+        `<footer class="msk-doc-chrome-footer ${footerAlign}">`,
+        ...footerLines.map((line) => `<div>${escapeHtml(line)}</div>`),
         `</footer>`,
       ].join("")
     : "";

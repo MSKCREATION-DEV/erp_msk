@@ -33,6 +33,7 @@ import { buildSampleContextForSlugs } from "@/lib/studio/sample-context";
 import { textToBlocks } from "@/lib/studio/dsl";
 import { extractVariableSlugs } from "@/lib/studio/variables";
 import type { TemplateBlock } from "@/lib/studio/types";
+import type { DocumentChromeInput } from "@/lib/studio/document-chrome";
 
 export type GenerateSamplePdfOptions = {
   /** Utilisateur connecté — résolution signature si gabarit ON (ou override). */
@@ -46,6 +47,7 @@ export type GenerateSamplePdfOptions = {
     blocks?: TemplateBlock[];
     headerTitle?: string;
     logoAlign?: DrawHeaderOptions["logoAlign"];
+    chrome?: Partial<DocumentChromeInput>;
     /** Valeurs `{{slug}}` éditables (écrase le catalogue sample). */
     variableOverrides?: Record<string, string>;
   };
@@ -344,12 +346,24 @@ export async function generateSamplePdfForTemplate(
             }
           : basePayload;
 
+    const chromeOverride: Partial<DocumentChromeInput> | undefined =
+      opts.playground?.chrome || opts.playground?.headerTitle || opts.playground?.logoAlign
+        ? {
+            ...opts.playground?.chrome,
+            headerTitle:
+              opts.playground?.chrome?.headerTitle ?? opts.playground?.headerTitle,
+            logoAlign:
+              opts.playground?.chrome?.logoAlign ?? opts.playground?.logoAlign,
+          }
+        : undefined;
+
     return generateOfficialPdfFromTemplate({
       template: template as ActiveTemplate,
       payload,
       signature: sig,
       strictVariables: false,
       logoAlign: opts.playground?.logoAlign,
+      chromeOverride,
       blocksOverride: playgroundOverride ? blocks : undefined,
       signatureEnabledOverride: signatureEnabled,
       variableOverrides: opts.playground?.variableOverrides,

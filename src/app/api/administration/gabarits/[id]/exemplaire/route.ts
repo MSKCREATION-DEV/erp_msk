@@ -7,6 +7,8 @@ import {
   generateSamplePdfForTemplate,
 } from "@/lib/studio/generate-sample-pdf";
 import type { DrawHeaderOptions } from "@/lib/pdf/rh";
+import { DocumentChromeSchema } from "@/lib/studio/document-chrome";
+import { assertActiveCharteLogoId } from "@/lib/studio/charte-logos";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -90,6 +92,7 @@ export async function POST(request: Request, context: RouteContext) {
       bodyText?: string;
       headerTitle?: string;
       logoAlign?: DrawHeaderOptions["logoAlign"];
+      chrome?: unknown;
       signaturePreview?: boolean;
       variableOverrides?: Record<string, string>;
     };
@@ -110,6 +113,15 @@ export async function POST(request: Request, context: RouteContext) {
           )
         : undefined;
 
+    let chromePartial: ReturnType<typeof DocumentChromeSchema.parse> | undefined;
+    if (body.chrome && typeof body.chrome === "object") {
+      const parsed = DocumentChromeSchema.safeParse(body.chrome);
+      if (parsed.success) {
+        const logoId = await assertActiveCharteLogoId(parsed.data.logoId);
+        chromePartial = { ...parsed.data, logoId };
+      }
+    }
+
     const pdfBytes = await generateSamplePdfForTemplate(template, {
       ownerUserId: user.id,
       ownerDisplayName: `${user.firstName} ${user.lastName}`,
@@ -118,6 +130,7 @@ export async function POST(request: Request, context: RouteContext) {
         bodyText: body.bodyText,
         headerTitle: body.headerTitle,
         logoAlign: body.logoAlign,
+        chrome: chromePartial,
         variableOverrides,
       },
     });
